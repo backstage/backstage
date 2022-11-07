@@ -27933,9 +27933,9 @@ __metadata:
   linkType: hard
 
 "kafkajs@npm:^2.0.0":
-  version: 2.1.0
-  resolution: "kafkajs@npm:2.1.0"
-  checksum: b751b06f8005ac9ff192d98306f59c6ae018ce09acc0f959dfbfd4fbb4731fe7dfd42de0c3592d45a6b66b6d5caa40926673a02eb764b701c2953ea203ced60c
+  version: 2.2.2
+  resolution: "kafkajs@npm:2.2.2"
+  checksum: 3e539bd678d3d665e878f754f80cbaef358b6a06e48bc834e167db0a2edd4fc15e1894c1ff8f3f12af68ce1d020f8ec8e39b537d5d17601cbefb756e9f23717a
   languageName: node
   linkType: hard
 
