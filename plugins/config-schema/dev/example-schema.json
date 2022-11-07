@@ -665,7 +665,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "Rules to apply to all catalog entities, from any location.\n\nAn undefined list of matchers means match all, an empty list of\nmatchers means match none.\n\nThis is commonly used to put in what amounts to a whitelist of kinds\nthat regular users of Backstage are permitted to register locations\nfor. This can be used to stop them from registering yaml files\ndescribing for example a Group entity called \"admin\" that they make\nthemselves members of, or similar.",
+          "description": "Rules to apply to all catalog entities, from any location.\n\nAn undefined list of matchers means match all, an empty list of\nmatchers means match none.\n\nThis is commonly used to put in what amounts to an allowlist of kinds\nthat regular users of Backstage are permitted to register locations\nfor. This can be used to stop them from registering yaml files\ndescribing for example a Group entity called \"admin\" that they make\nthemselves members of, or similar.",
           "type": "array",
           "items": {
             "type": "object",
