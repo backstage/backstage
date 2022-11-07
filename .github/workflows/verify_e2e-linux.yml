@@ -31,7 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     env:
       CI: true

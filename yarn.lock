@@ -3148,7 +3148,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@google-cloud/storage": ^6.0.0
     "@keyv/redis": ^2.2.3
-    "@kubernetes/client-node": ^0.17.0
+    "@kubernetes/client-node": 0.17.0
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
     "@types/archiver": ^5.1.0
@@ -3209,7 +3209,7 @@ __metadata:
     selfsigned: ^2.0.0
     stoppable: ^1.1.0
     supertest: ^6.1.3
-    tar: ^6.1.2
+    tar: ^6.1.12
     uuid: ^8.3.2
     winston: ^3.2.1
     yauzl: ^2.10.0
@@ -3474,7 +3474,7 @@ __metadata:
     style-loader: ^3.3.1
     sucrase: ^3.20.2
     swc-loader: ^0.2.3
-    tar: ^6.1.2
+    tar: ^6.1.12
     terser-webpack-plugin: ^5.1.3
     ts-node: ^10.0.0
     type-fest: ^2.0.0
@@ -4296,7 +4296,7 @@ __metadata:
     msw: ^0.47.0
     node-cache: ^5.1.2
     node-fetch: ^2.6.7
-    openid-client: ^5.1.3
+    openid-client: ^5.2.1
     passport: ^0.6.0
     passport-auth0: ^1.4.3
     passport-bitbucket-oauth2: ^0.1.2
@@ -5485,7 +5485,7 @@ __metadata:
     "@types/recharts": ^1.8.14
     "@types/regression": ^2.0.0
     "@types/yup": ^0.29.13
-    canvas: ^2.6.1
+    canvas: ^2.10.2
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     history: ^5.0.0
@@ -6220,7 +6220,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@google-cloud/container": ^4.0.0
-    "@kubernetes/client-node": ^0.17.0
+    "@kubernetes/client-node": 0.17.0
     "@types/aws4": ^1.5.1
     "@types/express": ^4.17.6
     "@types/luxon": ^3.0.0
@@ -6249,7 +6249,7 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@kubernetes/client-node": ^0.17.0
+    "@kubernetes/client-node": 0.17.0
   languageName: unknown
   linkType: soft
 
@@ -6268,7 +6268,7 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@kubernetes/client-node": ^0.17.0
+    "@kubernetes/client-node": 0.17.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
@@ -7741,7 +7741,7 @@ __metadata:
     "@types/dompurify": ^2.2.2
     "@types/event-source-polyfill": ^1.0.0
     "@types/node": ^16.11.26
-    canvas: ^2.6.1
+    canvas: ^2.10.2
     cross-fetch: ^3.1.5
     dompurify: ^2.2.9
     event-source-polyfill: 1.0.25
@@ -10671,7 +10671,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes/client-node@npm:^0.17.0":
+"@kubernetes/client-node@npm:0.17.0":
   version: 0.17.0
   resolution: "@kubernetes/client-node@npm:0.17.0"
   dependencies:
@@ -14332,11 +14332,11 @@ __metadata:
   linkType: hard
 
 "@types/minipass@npm:*":
-  version: 3.3.5
-  resolution: "@types/minipass@npm:3.3.5"
+  version: 3.1.2
+  resolution: "@types/minipass@npm:3.1.2"
   dependencies:
-    minipass: "*"
-  checksum: 160f4ae5416697c947e0c0ee1225fe25973acf73a30d01bdf202447f12bd32ba3ea33d2fc4f2517a038dc408022a5aff5f7a1d92da0157a9b04276d1b0209550
+    "@types/node": "*"
+  checksum: 0d01e11b5b959625385a482ad29ea16352be42506b459555b0f77fd82235e9c540946cc9c05a73fed1ae30b132914baaa4ccf257ed2cad20bc9773f0a06f4bac
   languageName: node
   linkType: hard
 
@@ -14394,7 +14394,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
   version: 18.11.9
   resolution: "@types/node@npm:18.11.9"
   checksum: cc0aae109e9b7adefc32eecb838d6fad931663bb06484b5e9cbbbf74865c721b03d16fd8d74ad90e31dbe093d956a7c2c306ba5429ba0c00f3f7505103d7a496
@@ -14405,6 +14405,13 @@ __metadata:
   version: 12.20.24
   resolution: "@types/node@npm:12.20.24"
   checksum: e7a13460e2f5b0b5a32c0f3af7daf1a05201552a66d542d3cc3b1ea8b52d4730250f9eb1961d755e31cfe5d03c78340911a6242657a0a9a17d6f7e341fc9f366
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:>= 8":
+  version: 18.7.4
+  resolution: "@types/node@npm:18.7.4"
+  checksum: 051d2147e4d8129fceb63ee9384259b2f224dbc4e4b0c46d96a6b61cbaad4e3fe4060950e7f4fc3d5692b1e6ea47e68ad03b61155754bfa169593747cfe3f8f4
   languageName: node
   linkType: hard
 
@@ -14754,14 +14761,14 @@ __metadata:
   linkType: hard
 
 "@types/request@npm:^2.47.1":
-  version: 2.48.5
-  resolution: "@types/request@npm:2.48.5"
+  version: 2.48.8
+  resolution: "@types/request@npm:2.48.8"
   dependencies:
     "@types/caseless": "*"
     "@types/node": "*"
     "@types/tough-cookie": "*"
     form-data: ^2.5.0
-  checksum: 02572a0558b9a95ae1a2fa3912b45c4c12f587e25773b2d9bdbf5dfa6f2da5e3787d22256ee0dc4836250f39cf2dcb39fc4ded5bf554c0f948a623c8772e8bd3
+  checksum: 0b7754941e08205dce51635d894ec524df276d2b83ca13b9aab723f9281acecf1108841e9554494cb1cb60f6d6ddbb47ebea97392bcf2bf607f035b3a9b4af45
   languageName: node
   linkType: hard
 
@@ -14952,11 +14959,11 @@ __metadata:
   linkType: hard
 
 "@types/stream-buffers@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "@types/stream-buffers@npm:3.0.3"
+  version: 3.0.4
+  resolution: "@types/stream-buffers@npm:3.0.4"
   dependencies:
     "@types/node": "*"
-  checksum: c3456fa2a18f89d31c54fe169621d8288a9735fb7e92aba45786642659d93be26fa0b4caa5c1043b21f4cfaeeefc24d247fa833586a8a0f3aecedf03adb7b5ac
+  checksum: 5b432b2bf963d612747b79ac317562888236d6a9ea14414fb055c24e7be9643b5e3c7b7470841fa82802aa1c1c0d752a4ba935bbc0cfb12de6b89f7e1dadee92
   languageName: node
   linkType: hard
 
@@ -15086,9 +15093,9 @@ __metadata:
   linkType: hard
 
 "@types/underscore@npm:^1.8.9":
-  version: 1.10.23
-  resolution: "@types/underscore@npm:1.10.23"
-  checksum: 5e9458888e8c09a0f61f93f5958d4ce57e02e317b21444319f7e4a11796445e58a78d6c743dad17365aa8fb9c31fa23d5f4d30a9047fa2df30d446ccc5e42023
+  version: 1.11.4
+  resolution: "@types/underscore@npm:1.11.4"
+  checksum: db9f8486bc851b732259e51f42d62aad1ae2158be5724612dc125ece5f5d61c51447f9dea28284c2a0f79cb95e788d01cb5ce97709880019213e69fab0dd1696
   languageName: node
   linkType: hard
 
@@ -17984,7 +17991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"canvas@npm:^2.6.1":
+"canvas@npm:^2.10.2":
   version: 2.10.2
   resolution: "canvas@npm:2.10.2"
   dependencies:
@@ -27150,14 +27157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.1.4":
-  version: 4.5.0
-  resolution: "jose@npm:4.5.0"
-  checksum: 51142150a9f571ca318842d34ac0daec49fb70bfb6034c68fd46d8c804a8325065876067202310c8ff3cbfc5ca8e44d4712467b4da0d3cadf1e47c96989ca4ca
-  languageName: node
-  linkType: hard
-
-"jose@npm:^4.6.0":
+"jose@npm:^4.10.0, jose@npm:^4.6.0":
   version: 4.10.4
   resolution: "jose@npm:4.10.4"
   checksum: 0e6caaae0b0303534c0ac23711d45eadfbdbff63d9aeed80965c668b5532c254ab25b48afddc3e1ecfcfd36b4275dee41174a097c5a47a25ce04268c78f3c130
@@ -30074,15 +30074,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minipass@npm:*":
-  version: 3.3.4
-  resolution: "minipass@npm:3.3.4"
-  dependencies:
-    yallist: ^4.0.0
-  checksum: 5d95a7738c54852ba78d484141e850c792e062666a2d0c681a5ac1021275beb7e1acb077e59f9523ff1defb80901aea4e30fac10ded9a20a25d819a42916ef1b
-  languageName: node
-  linkType: hard
-
 "minipass@npm:^3.0.0, minipass@npm:^3.1.0, minipass@npm:^3.1.1, minipass@npm:^3.1.3, minipass@npm:^3.1.6":
   version: 3.1.6
   resolution: "minipass@npm:3.1.6"
@@ -30594,7 +30585,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp@npm:latest":
+"node-gyp@npm:^9.1.0, node-gyp@npm:latest":
   version: 9.1.0
   resolution: "node-gyp@npm:9.1.0"
   dependencies:
@@ -31238,27 +31229,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^5.1.3":
-  version: 5.1.10
-  resolution: "openid-client@npm:5.1.10"
+"openid-client@npm:^5.1.6, openid-client@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "openid-client@npm:5.2.1"
   dependencies:
-    jose: ^4.1.4
+    jose: ^4.10.0
     lru-cache: ^6.0.0
     object-hash: ^2.0.1
     oidc-token-hash: ^5.0.1
-  checksum: 38a4bf08ea4ee4576043968307cf53f0369df224bd025c1bc348b295152df36c47d2a836dfe1505d15c6b79c05f86aadefad798bd3ea3ccbe90834be01f2245c
-  languageName: node
-  linkType: hard
-
-"openid-client@npm:^5.1.6":
-  version: 5.1.9
-  resolution: "openid-client@npm:5.1.9"
-  dependencies:
-    jose: ^4.1.4
-    lru-cache: ^6.0.0
-    object-hash: ^2.0.1
-    oidc-token-hash: ^5.0.1
-  checksum: 55390a7eceaafdc340a5f2ece576eb4863fcb4cd8840e4a7a1af66bbaf830623b18cf1dd0b8ce472c6f36c6313e78f92db48ca0c10eb8c681a81e5a3d607fc9f
+  checksum: b2e9ee8bafb30981fe8eb4446d86578649f05e61d6289abfe79c863578ef8ab24eb4430461c2b8dbb50cbaff89af01e77439df5ebb87c391ed1e336a0e69e590
   languageName: node
   linkType: hard
 
@@ -35450,6 +35429,7 @@ __metadata:
     husky: ^8.0.0
     lint-staged: ^13.0.0
     minimist: ^1.2.5
+    node-gyp: ^9.1.0
     prettier: ^2.2.1
     semver: ^7.3.2
     shx: ^0.3.2
@@ -37550,7 +37530,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:^6.1.2":
+"tar@npm:^6.1.12, tar@npm:^6.1.2":
   version: 6.1.12
   resolution: "tar@npm:6.1.12"
   dependencies:

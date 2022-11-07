@@ -21,12 +21,12 @@ This is made easy with a version manager such as
 # Installing current LTS release
 nvm install --lts
 > Installing latest LTS version.
-> Downloading and installing node v14.15.1...
-> Now using node v14.15.1 (npm v6.14.8)
+> Downloading and installing node v16.16.0...
+> Now using node v16.16.0 (npm v8.11.0)
 
 # Checking your version
 node --version
-> v14.15.1
+> v16.16.0
 ```
 
 - Yarn
