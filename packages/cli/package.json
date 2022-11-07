@@ -68,7 +68,7 @@
     "commander": "^9.1.0",
     "css-loader": "^6.5.1",
     "diff": "^5.0.0",
-    "esbuild": "^0.14.10",
+    "esbuild": "^0.15.0",
     "esbuild-loader": "^2.18.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
