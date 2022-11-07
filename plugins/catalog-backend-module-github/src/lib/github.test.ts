@@ -25,6 +25,11 @@ import {
   getOrganizationRepositories,
   QueryResponse,
 } from './github';
+import fetch from 'node-fetch';
+
+// Workaround for Node.js 18, where native fetch is available, but not yet picked up by msw
+// TODO(Rugvip): remove once https://github.com/mswjs/msw/issues/1388 is resolved
+(global as any).fetch = fetch;
 
 describe('github', () => {
   const server = setupServer();
