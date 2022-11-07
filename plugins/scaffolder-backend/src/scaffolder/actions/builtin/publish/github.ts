@@ -149,11 +149,6 @@ export function createPublishGithubAction(options: {
         token: providedToken,
       } = ctx.input;
 
-      const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-
-      console.log('Now waiting for 5 minutes');
-      await delay(2 * 60 * 1000); // 2 min
-
       const octokitOptions = await getOctokitOptions({
         integrations,
         credentialsProvider: githubCredentialsProvider,
