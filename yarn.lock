@@ -27582,12 +27582,12 @@ __metadata:
   linkType: hard
 
 "keyv-memcache@npm:^1.2.5":
-  version: 1.2.9
-  resolution: "keyv-memcache@npm:1.2.9"
+  version: 1.3.3
+  resolution: "keyv-memcache@npm:1.3.3"
   dependencies:
     json-buffer: ^3.0.1
     memjs: ^1.3.0
-  checksum: d5134c69be50407498b425d4b8a45204d3a69cfcc2572dd089804f95f4fd9516e7bc6e1fce0e90d036a615e79d72fe8f0f9b17c30dbc66ceabf77f891ac4bbcf
+  checksum: ddef602c027a325fc1d18917788799e79cf73f46cbbfefeeda893ca585531544aa4b50de6601c1c5e0427a94bb52ad64e9144c919105b26aac0b173ebcdabc28
   languageName: node
   linkType: hard
 
