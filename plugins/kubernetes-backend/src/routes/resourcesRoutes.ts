@@ -102,8 +102,8 @@ export const addResourceRoutesToRouter = (
       entity,
       auth: req.body.auth,
     });
-    console.log('authresponse:', authorizeResponse);
     var editedResponse = response;
+
     if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
       var permissionCondition =
         authorizeResponse.conditions as PermissionCondition;
@@ -114,7 +114,6 @@ export const addResourceRoutesToRouter = (
         permissionCondition.params.kind !== undefined
       ) {
         let paramString = permissionCondition.params.kind as string;
-        console.log('paramstring:', paramString);
         var filteredResponse = {
           items: response.items.map(clusterObjects => ({
             ...clusterObjects,
