@@ -59,7 +59,6 @@ hosts:
   code](https://github.com/seanfisher/passport-microsoft/blob/0456aa9bce05579c18e77f51330176eb26373658/lib/strategy.js#L93-L95)).
   If this host is unreachable, users may see an `Authentication failed, failed to fetch user profile` error when they attempt to log in.
 
-
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `microsoftAuthApiRef` reference and
