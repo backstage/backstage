@@ -37,6 +37,7 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { KubernetesErrorIndicator } from './KubernetesErrorIndicator';
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -202,7 +203,7 @@ export class KubernetesBuilder {
   protected buildFetcher(): KubernetesFetcher {
     return new KubernetesClientBasedFetcher({
       kubernetesClientProvider: new KubernetesClientProvider(),
-      logger: this.env.logger,
+      rejectionHandler: new KubernetesErrorIndicator(this.env.logger),
     });
   }
 

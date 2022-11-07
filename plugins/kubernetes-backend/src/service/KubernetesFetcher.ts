@@ -16,26 +16,25 @@
 
 import { topPods } from '@kubernetes/client-node';
 import lodash, { Dictionary } from 'lodash';
-import { Logger } from 'winston';
 import {
   ClusterDetails,
   FetchResponseWrapper,
   KubernetesFetcher,
   KubernetesObjectTypes,
+  KubernetesRejectionHandler,
   ObjectFetchParams,
   ObjectToFetch,
 } from '../types/types';
 import {
   FetchResponse,
   KubernetesFetchError,
-  KubernetesErrorTypes,
   PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 
 export interface KubernetesClientBasedFetcherOptions {
   kubernetesClientProvider: KubernetesClientProvider;
-  logger: Logger;
+  rejectionHandler: KubernetesRejectionHandler;
 }
 
 type FetchResult = FetchResponse | KubernetesFetchError;
@@ -56,31 +55,16 @@ function fetchResultsToResponseWrapper(
   } as FetchResponseWrapper; // TODO would be nice to get rid of this 'as'
 }
 
-const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
-  switch (statusCode) {
-    case 400:
-      return 'BAD_REQUEST';
-    case 401:
-      return 'UNAUTHORIZED_ERROR';
-    case 404:
-      return 'NOT_FOUND';
-    case 500:
-      return 'SYSTEM_ERROR';
-    default:
-      return 'UNKNOWN_ERROR';
-  }
-};
-
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private readonly kubernetesClientProvider: KubernetesClientProvider;
-  private readonly logger: Logger;
+  private readonly rejectionHandler: KubernetesRejectionHandler;
 
   constructor({
     kubernetesClientProvider,
-    logger,
+    rejectionHandler,
   }: KubernetesClientBasedFetcherOptions) {
     this.kubernetesClientProvider = kubernetesClientProvider;
-    this.logger = logger;
+    this.rejectionHandler = rejectionHandler;
   }
 
   fetchObjectsForService(
@@ -96,7 +80,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
             `backstage.io/kubernetes-id=${params.serviceId}`,
           toFetch.objectType,
           params.namespace,
-        ).catch(this.captureKubernetesErrorsRethrowOthers.bind(this));
+        );
       });
 
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
@@ -121,26 +105,19 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
             resources: r,
           } as PodStatusFetchResponse;
         })
-        .catch(this.captureKubernetesErrorsRethrowOthers.bind(this)),
+        .catch(reason =>
+          this.rejectionHandler.onRejected(
+            reason,
+            // NOTE this is isn't completely honest -- technically topPods makes
+            // two calls, one for core/v1 pods and another for this kind --
+            // but if there are HTTP errors when fetching pods they'll actually
+            // have already occurred when calling fetchObjectsForService.
+            `/apis/metrics.k8s.io/v1beta1/namespaces/${ns}/pods`,
+          ),
+        ),
     );
 
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
-  }
-
-  private captureKubernetesErrorsRethrowOthers(e: any): KubernetesFetchError {
-    if (e.response && e.response.statusCode) {
-      this.logger.warn(
-        `statusCode=${e.response.statusCode} for resource ${
-          e.response.request.uri.pathname
-        } body=[${JSON.stringify(e.response.body)}]`,
-      );
-      return {
-        errorType: statusCodeToErrorType(e.response.statusCode),
-        statusCode: e.response.statusCode,
-        resourcePath: e.response.request.uri.pathname,
-      };
-    }
-    throw e;
   }
 
   private fetchResource(
@@ -149,50 +126,62 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     labelSelector: string,
     objectType: KubernetesObjectTypes,
     namespace?: string,
-  ): Promise<FetchResponse> {
+  ): Promise<FetchResult> {
     const customObjects =
       this.kubernetesClientProvider.getCustomObjectsClient(clusterDetails);
 
+    const fixCoreResourcePath = (path: string) =>
+      path.replace('/apis//v1/', '/api/v1/');
+
     customObjects.addInterceptor((requestOptions: any) => {
-      requestOptions.uri = requestOptions.uri.replace('/apis//v1/', '/api/v1/');
+      requestOptions.uri = fixCoreResourcePath(requestOptions.uri);
     });
 
+    const { group, apiVersion, plural } = resource;
+    const encode = (s: string) => encodeURIComponent(String(s));
+    let resourcePath = `/apis/${encode(group)}/${encode(apiVersion)}`;
     if (namespace) {
-      return customObjects
-        .listNamespacedCustomObject(
-          resource.group,
-          resource.apiVersion,
-          namespace,
-          resource.plural,
-          '',
-          false,
-          '',
-          '',
-          labelSelector,
-        )
-        .then(r => {
-          return {
-            type: objectType,
-            resources: (r.body as any).items,
-          };
-        });
+      resourcePath += `/namespaces/${encode(namespace)}`;
     }
-    return customObjects
-      .listClusterCustomObject(
-        resource.group,
-        resource.apiVersion,
-        resource.plural,
-        '',
-        false,
-        '',
-        '',
-        labelSelector,
-      )
+    resourcePath = fixCoreResourcePath(`${resourcePath}/${encode(plural)}`);
+
+    return (
+      namespace
+        ? customObjects.listNamespacedCustomObject(
+            group,
+            apiVersion,
+            namespace,
+            plural,
+            '',
+            false,
+            '',
+            '',
+            labelSelector,
+          )
+        : customObjects.listClusterCustomObject(
+            group,
+            apiVersion,
+            plural,
+            '',
+            false,
+            '',
+            '',
+            labelSelector,
+          )
+    )
       .then(r => {
         return {
           type: objectType,
           resources: (r.body as any).items,
         };
-      });
+      })
+      .catch(reason =>
+        this.rejectionHandler
+          .onRejected(reason, resourcePath)
+          .then(kubernetesFetchError => ({
+            ...kubernetesFetchError,
+            resourcePath,
+          })),
+      );
   }
 }
