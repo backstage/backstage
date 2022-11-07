@@ -1,5 +1,11 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.2
+
+### Patch Changes
+
+- eaa02d457a: Fixed bug when sending data by Post in `runChecks` and `runBulkChecks` functions of the `TechInsightsClient` class, the default `Content-Type` used was `plain/text`
+
 ## 0.3.1
 
 ### Patch Changes
