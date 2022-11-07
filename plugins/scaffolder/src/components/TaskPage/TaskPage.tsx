@@ -364,7 +364,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
                     className={classes.button}
                     onClick={handleAbort}
                     disabled={completed}
-                    variant="contained"
+                    variant="outlined"
                     color="secondary"
                   >
                     Abort

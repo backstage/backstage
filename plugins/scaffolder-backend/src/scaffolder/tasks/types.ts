@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AbortSignal } from 'node-abort-controller';
 import { JsonValue, JsonObject, Observable } from '@backstage/types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateAction } from '../actions';
@@ -105,18 +104,6 @@ export type TaskBrokerDispatchOptions = {
 };
 
 /**
- * It used to abort a running task.
- *
- * @public
- */
-export type AbortContext = {
-  abort(): void;
-  abortListener: () => void;
-  setAbortListener(listener: () => void): void;
-  signal: AbortSignal;
-};
-
-/**
  * Task
  *
  * @public
@@ -124,7 +111,6 @@ export type AbortContext = {
 export interface TaskContext {
   spec: TaskSpec;
   secrets?: TaskSecrets;
-  abortContext?: AbortContext;
   createdBy?: string;
   done: boolean;
   isDryRun?: boolean;

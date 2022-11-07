@@ -29,6 +29,7 @@ import {
 import * as inputProps from '../github/inputProperties';
 import * as outputProps from '../github/outputProperties';
 import { parseRepoUrl } from './util';
+
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
  * and publishes it to GitHub.
@@ -147,6 +148,11 @@ export function createPublishGithubAction(options: {
         topics,
         token: providedToken,
       } = ctx.input;
+
+      const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+      console.log('Now waiting for 5 minutes');
+      await delay(2 * 60 * 1000); // 2 min
 
       const octokitOptions = await getOctokitOptions({
         integrations,

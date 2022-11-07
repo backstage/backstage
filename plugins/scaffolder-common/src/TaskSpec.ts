@@ -51,7 +51,7 @@ export type TemplateInfo = {
  */
 export interface TaskStep {
   /**
-   * A unqiue identifier for this step.
+   * A unique identifier for this step.
    */
   id: string;
   /**

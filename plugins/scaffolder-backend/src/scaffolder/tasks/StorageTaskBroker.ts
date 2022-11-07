@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AbortController } from 'node-abort-controller';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
@@ -37,7 +36,7 @@ import {
  */
 export class TaskManager implements TaskContext {
   private isDone = false;
-  private ac = new AbortController();
+
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
   static create(task: CurrentClaimedTask, storage: TaskStore, logger: Logger) {
@@ -59,38 +58,6 @@ export class TaskManager implements TaskContext {
 
   get secrets() {
     return this.task.secrets;
-  }
-
-  get abortContext() {
-    const context = {
-      abort: async () => {
-        this.ac.abort();
-        this.ac.signal.removeEventListener('abort', context.abortListener);
-
-        await this.storage.completeTask({
-          taskId: this.task.taskId,
-          status: 'aborted',
-          eventBody: {
-            message: `Run completed with status: aborted`,
-            error: {
-              name: 'TaskAborted',
-              message: 'The task has been aborted',
-            },
-          },
-        });
-        this.isDone = true;
-        if (this.heartbeatTimeoutId) {
-          clearTimeout(this.heartbeatTimeoutId);
-        }
-      },
-      abortListener: () => {},
-      setAbortListener: (listener: () => void) => {
-        context.abortListener = listener;
-        context.signal.addEventListener('abort', listener, { once: true });
-      },
-      signal: this.ac.signal,
-    };
-    return context;
   }
 
   get createdBy() {
@@ -197,21 +164,6 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   private deferredDispatch = defer();
-  private taskManagerRegistry = new Map<String, TaskManager>();
-
-  private async registerTaskManager(taskManager: TaskManager) {
-    const taskId = await taskManager.getWorkspaceName();
-    this.taskManagerRegistry.set(taskId, taskManager);
-
-    const subscription = this.event$({ taskId }).subscribe(
-      ({ events }: { events: SerializedTaskEvent[] }) => {
-        if (events.some((e: SerializedTaskEvent) => e.type === 'completion')) {
-          this.taskManagerRegistry.delete(taskId);
-          subscription.unsubscribe();
-        }
-      },
-    );
-  }
 
   /**
    * {@inheritdoc TaskBroker.claim}
@@ -220,7 +172,7 @@ export class StorageTaskBroker implements TaskBroker {
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
-        const taskManager = TaskManager.create(
+        return TaskManager.create(
           {
             taskId: pendingTask.id,
             spec: pendingTask.spec,
@@ -230,9 +182,6 @@ export class StorageTaskBroker implements TaskBroker {
           this.storage,
           this.logger,
         );
-        await this.registerTaskManager(taskManager);
-
-        return taskManager;
       }
 
       await this.waitForDispatch();
@@ -324,9 +273,31 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   async abort(taskId: string) {
-    const taskManager = this.taskManagerRegistry.get(taskId);
-    if (taskManager) {
-      await taskManager.abortContext.abort();
-    }
+    const currentStepId = (await this.storage.listEvents({ taskId })).events
+      .filter(({ body }) => body?.stepId)
+      .reduce((prev, curr) => (prev.id > curr.id ? prev : curr)).body.stepId;
+
+    await this.storage.emitLogEvent({
+      taskId,
+      body: {
+        message: `Step ${currentStepId} has been aborted.`,
+        ...{
+          stepId: currentStepId,
+          status: 'aborted',
+        },
+      },
+    });
+
+    await this.storage.completeTask({
+      taskId,
+      status: 'aborted',
+      eventBody: {
+        message: `Run completed with status: aborted`,
+        error: {
+          name: 'TaskAborted',
+          message: 'The task has been aborted',
+        },
+      },
+    });
   }
 }

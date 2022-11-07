@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AbortSignal } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
@@ -61,11 +60,6 @@ export type ActionContext<Input extends JsonObject> = {
      */
     ref?: string;
   };
-
-  /**
-   * Implement the signal to make your custom step abortable https://developer.mozilla.org/en-US/docs/Web/API/AbortController/signal
-   */
-  signal?: AbortSignal;
 };
 
 /** @public */
