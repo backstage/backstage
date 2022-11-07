@@ -377,7 +377,7 @@ describe('resourcesRoutes', () => {
                 resourceType: 'kubernetes-resource',
                 rule: 'IS_OF_KIND',
                 params: {
-                  kind: ['pods'] ,
+                  kind: 'pods',
                 },
               },
             },
