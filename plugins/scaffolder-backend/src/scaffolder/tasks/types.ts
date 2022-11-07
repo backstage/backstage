@@ -15,8 +15,7 @@
  */
 
 import { JsonValue, JsonObject, Observable } from '@backstage/types';
-import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
-import { TemplateAction } from '../actions';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
 /**
  * The status of each step of the Task
@@ -216,16 +215,6 @@ export interface TaskStore {
 }
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };
-
-export type TaskTrackType = {
-  markAborted: (step: TaskStep) => Promise<void>;
-  markFailed: (step: TaskStep, err: Error) => Promise<void>;
-  markSuccessful: () => Promise<void>;
-  skipDryRun: (
-    step: TaskStep,
-    action: TemplateAction<JsonObject>,
-  ) => Promise<void>;
-};
 
 export interface WorkflowRunner {
   execute(task: TaskContext): Promise<WorkflowResponse>;
