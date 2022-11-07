@@ -208,7 +208,7 @@ jobs:
       - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: |
-          yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --coverage
+          yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=800M --coverage
           bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
         env:
           BACKSTAGE_NEXT_TESTS: 1
