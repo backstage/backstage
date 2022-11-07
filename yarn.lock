@@ -27478,15 +27478,15 @@ __metadata:
   linkType: hard
 
 "json-schema-library@npm:^7.0.0":
-  version: 7.2.1
-  resolution: "json-schema-library@npm:7.2.1"
+  version: 7.3.0
+  resolution: "json-schema-library@npm:7.3.0"
   dependencies:
     deepmerge: ^4.2.2
     fast-deep-equal: ^3.1.3
     gson-pointer: ^4.1.1
     gson-query: ^5.1.0
     valid-url: ^1.0.9
-  checksum: 65bc4014cdfe22c4f46d6cb0a0c059d94045128fb96189c4823dff653b6788c2dbab8d5d2e8475bbdc65fd47abf19cedcc3f02df608452c5413fea5d6e675003
+  checksum: 3d148d4be1e59e058bd777d247c181e2cb4820f9f5b9c97f7258f88fa73e1c0ed5c8e07c3fef4e1e8e892666def02b2b5fe5366d3d8d2bed09be3752e5593319
   languageName: node
   linkType: hard
 
