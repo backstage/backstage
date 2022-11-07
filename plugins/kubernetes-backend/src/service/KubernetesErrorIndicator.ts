@@ -43,10 +43,10 @@ export class KubernetesErrorIndicator implements KubernetesRejectionHandler {
     this.logger = logger;
     this.statusCodeErrorTypes = statusCodeErrorTypes;
   }
-  public onRejected: (
+  public onRejected(
     reason: any,
     resourcePath?: string,
-  ) => Promise<KubernetesFetchError> = (reason, resourcePath) => {
+  ): Promise<KubernetesFetchError> {
     if (reason.name === 'HttpError' && reason.statusCode) {
       const { body } = reason as HttpError;
       this.logger.warn(
@@ -65,7 +65,7 @@ export class KubernetesErrorIndicator implements KubernetesRejectionHandler {
     }
     this.mark(reason);
     return Promise.reject(reason);
-  };
+  }
   private surface(reason: any): KubernetesFetchError {
     switch (reason.code) {
       case 'ENOTFOUND':

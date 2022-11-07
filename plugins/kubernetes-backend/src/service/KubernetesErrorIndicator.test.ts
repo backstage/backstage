@@ -91,7 +91,7 @@ describe('KubernetesErrorIndicator', () => {
 
       const result = sut
         .onRejected({ code: 'ERRORCODE', message: 'something failed' })
-        .catch(sut.onRejected);
+        .catch(sut.onRejected.bind(sut));
 
       return expect(result).resolves.toStrictEqual({
         errorType: 'UNKNOWN_ERROR',
@@ -106,7 +106,9 @@ describe('KubernetesErrorIndicator', () => {
     };
     const sut = new KubernetesErrorIndicator(logger);
 
-    const result = sut.onRejected(notFoundReason).catch(sut.onRejected);
+    const result = sut
+      .onRejected(notFoundReason)
+      .catch(sut.onRejected.bind(sut));
 
     return expect(result).resolves.toStrictEqual({
       errorType: 'ADDR_NOT_FOUND',
@@ -121,7 +123,9 @@ describe('KubernetesErrorIndicator', () => {
     };
     const sut = new KubernetesErrorIndicator(logger);
 
-    const result = sut.onRejected(timedOutReason).catch(sut.onRejected);
+    const result = sut
+      .onRejected(timedOutReason)
+      .catch(sut.onRejected.bind(sut));
 
     return expect(result).resolves.toStrictEqual({
       errorType: 'TIMED_OUT',
