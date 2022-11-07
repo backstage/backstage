@@ -116,7 +116,31 @@ describe('<CatalogGraphCard/>', () => {
     expect(button).toBeInTheDocument();
     expect(button.closest('a')).toHaveAttribute(
       'href',
-      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc',
+      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=2&unidirectional=true&mergeRelations=true&direction=LR',
+    );
+  });
+
+  test('renders link to standalone viewer with custom config', async () => {
+    const { findByText, getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <CatalogGraphCard maxDepth={2} mergeRelations={false} />
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+          '/catalog-graph': catalogGraphRouteRef,
+        },
+      },
+    );
+
+    expect(await findByText('b:d/c')).toBeInTheDocument();
+    const button = getByText('View graph');
+    expect(button).toBeInTheDocument();
+    expect(button.closest('a')).toHaveAttribute(
+      'href',
+      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=3&unidirectional=true&mergeRelations=false&direction=LR',
     );
   });
 

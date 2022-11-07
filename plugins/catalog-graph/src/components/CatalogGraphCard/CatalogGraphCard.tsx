@@ -106,7 +106,15 @@ export const CatalogGraphCard = (props: {
   );
 
   const catalogGraphParams = qs.stringify(
-    { rootEntityRefs: [stringifyEntityRef(entity)] },
+    {
+      rootEntityRefs: [stringifyEntityRef(entity)],
+      maxDepth: maxDepth + 1,
+      unidirectional,
+      mergeRelations,
+      kinds,
+      relations,
+      direction,
+    },
     { arrayFormat: 'brackets', addQueryPrefix: true },
   );
   const catalogGraphUrl = `${catalogGraphRoute()}${catalogGraphParams}`;
