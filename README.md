@@ -16,6 +16,7 @@
 
 Backstage unifies all your infrastructure tooling, services, and documentation to create a streamlined development environment from end to end.
 
+
 ![software-catalog](https://backstage.io/blog/assets/6/header.png)
 
 Out of the box, Backstage includes:
