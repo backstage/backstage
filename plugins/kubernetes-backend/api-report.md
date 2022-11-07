@@ -323,6 +323,14 @@ export type KubernetesObjectTypes =
   | 'daemonsets';
 
 // @alpha
+export interface KubernetesRejectionHandler {
+  onRejected: (
+    reason: any,
+    resourcePath?: string,
+  ) => Promise<KubernetesFetchError>;
+}
+
+// @alpha
 export interface KubernetesServiceLocator {
   // (undocumented)
   getClustersByEntity(

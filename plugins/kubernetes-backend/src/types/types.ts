@@ -280,3 +280,20 @@ export interface KubernetesObjectsProvider {
     customResourcesByEntity: CustomResourcesByEntity,
   ): Promise<ObjectsByEntityResponse>;
 }
+
+/**
+ * Used to handle promise rejections arising while fetching Kubernetes objects,
+ * converting them to KubernetesFetchErrors to be surfaced by the frontend
+ * @alpha
+ */
+export interface KubernetesRejectionHandler {
+  /**
+   * Handle a rejection. Implementations must resolve any reasons that they
+   * previously rejected; i.e. `onRejected(reason).catch(onRejected)` should
+   * never reject.
+   */
+  onRejected: (
+    reason: any,
+    resourcePath?: string,
+  ) => Promise<KubernetesFetchError>;
+}
