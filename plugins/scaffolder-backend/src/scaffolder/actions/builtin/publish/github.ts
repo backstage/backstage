@@ -29,7 +29,6 @@ import {
 import * as inputProps from '../github/inputProperties';
 import * as outputProps from '../github/outputProperties';
 import { parseRepoUrl } from './util';
-
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
  * and publishes it to GitHub.
