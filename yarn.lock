@@ -27940,11 +27940,11 @@ __metadata:
   linkType: hard
 
 "keyv@npm:^4.0.0, keyv@npm:^4.0.3":
-  version: 4.5.0
-  resolution: "keyv@npm:4.5.0"
+  version: 4.5.1
+  resolution: "keyv@npm:4.5.1"
   dependencies:
     json-buffer: 3.0.1
-  checksum: d294873cf88ec8f691e5edeb7b4b884f886c5f021a01902a0e243c362449db2b55419d7fb7187d059add747b7398321e39e44d391b65f94935174ce13452714d
+  checksum: 90d30683dd6c16afa24274dc21ddcef3c7dc4cf111532a3211847da7011ce4f548f7a13b36296972532d9c0568cb0db16b69fd67ec66a2ab7d0c9fea6f5e65c7
   languageName: node
   linkType: hard
 
