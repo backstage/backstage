@@ -18,10 +18,28 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import {
   ClusterObjects,
+  KubernetesFetchError,
   KubernetesAddrNotFoundError,
   KubernetesTimeoutError,
 } from '@backstage/plugin-kubernetes-common';
 import { WarningPanel } from '@backstage/core-components';
+
+const kubernetesFetchErrorToMessage = (e: KubernetesFetchError): string => {
+  switch (e.errorType) {
+    case 'TIMED_OUT': {
+      const { address, port } = e as KubernetesTimeoutError;
+      return `Timed out attempting to connect to Kubernetes API at address '${address}' on port ${port}`;
+    }
+    case 'ADDR_NOT_FOUND': {
+      const { hostname } = e as KubernetesAddrNotFoundError;
+      return `Could not resolve Kubernetes API hostname: '${hostname}'`;
+    }
+    default:
+      return 'message' in e
+        ? `Error communicating with Kubernetes: ${e.errorType}, message: ${e.message}`
+        : `Error fetching Kubernetes resource: '${e.resourcePath}', error: ${e.errorType}, status code: ${e.statusCode}`;
+  }
+};
 
 const clustersWithErrorsToErrorMessage = (
   clustersWithErrors: ClusterObjects[],
@@ -30,30 +48,10 @@ const clustersWithErrorsToErrorMessage = (
     return (
       <div key={i}>
         <Typography variant="body2">{`Cluster: ${c.cluster.name}`}</Typography>
-        {c.errors.map((kubernetesFetchError, j) => {
-          let message: string;
-          switch (kubernetesFetchError.errorType) {
-            case 'TIMED_OUT': {
-              const { address, port } =
-                kubernetesFetchError as KubernetesTimeoutError;
-              message = `Timed out attempting to connect to Kubernetes API at address '${address}' on port ${port}`;
-              break;
-            }
-            case 'ADDR_NOT_FOUND': {
-              const { hostname } =
-                kubernetesFetchError as KubernetesAddrNotFoundError;
-              message = `Could not resolve Kubernetes API hostname: '${hostname}'`;
-              break;
-            }
-            default:
-              message =
-                'message' in kubernetesFetchError
-                  ? `Error communicating with Kubernetes: ${kubernetesFetchError.errorType}, message: ${kubernetesFetchError.message}`
-                  : `Error fetching Kubernetes resource: '${kubernetesFetchError.resourcePath}', error: ${kubernetesFetchError.errorType}, status code: ${kubernetesFetchError.statusCode}`;
-          }
+        {c.errors.map((e, j) => {
           return (
             <Typography variant="body2" key={j}>
-              {message}
+              {kubernetesFetchErrorToMessage(e)}
             </Typography>
           );
         })}
