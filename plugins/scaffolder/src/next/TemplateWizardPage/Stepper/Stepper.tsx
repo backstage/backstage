@@ -143,6 +143,7 @@ export const Stepper = (props: StepperProps) => {
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
             formData={formState}
+            formContext={{ formData: formState }}
             schema={steps[activeStep].schema}
             uiSchema={steps[activeStep].uiSchema}
             onSubmit={handleNext}
