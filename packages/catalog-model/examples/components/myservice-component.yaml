@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: demo-service
+  description: Artist main website
+  tags:
+    - demo-service
+spec:
+  type: website
+  lifecycle: production
+  owner: sre
+  system: artist-engagement-portal
+  consumesApis: ['component:artist-lookup']
