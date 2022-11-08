@@ -96,7 +96,7 @@ export interface GithubOrgEntityProviderOptions {
   userTransformer?: UserTransformer;
 
   /**
-   * Optionally include a user transformer for transforming from GitHub users to User Entities
+   * Optionally include a team transformer for transforming from GitHub teams to Group Entities
    */
   teamTransformer?: TeamTransformer;
 }
