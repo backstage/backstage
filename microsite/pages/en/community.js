@@ -188,18 +188,23 @@ const Background = props => {
           <Block.TextBox wide>
             <Block.Subtitle>Trainings and Certifications</Block.Subtitle>
           </Block.TextBox>
-
           <Block.Container>
             <Block.TextBox style={{ flexShrink: '1', alignSelf: 'stretch' }}>
               <Block.Container column>
                 <BulletLine />
-                <Block.SmallTitle small>Introduction to Backstage: Developer Portals Made Easy (LFS142x)</Block.SmallTitle>
+                <Block.SmallTitle small>
+                  Introduction to Backstage: Developer Portals Made Easy
+                  (LFS142x)
+                </Block.SmallTitle>
                 <Block.Paragraph>
-                  This is a course produced and curated by the Linux Foundation. This course introduces you to Backstage and how to get started with the project. 
+                  This is a course produced and curated by the Linux Foundation.
+                  This course introduces you to Backstage and how to get started
+                  with the project.
                 </Block.Paragraph>
               </Block.Container>
+
               <Block.LinkButton href="https://training.linuxfoundation.org/training/introduction-to-backstage-developer-portals-made-easy-lfs142x/">
-              Learn more
+                Learn more
               </Block.LinkButton>
             </Block.TextBox>
           </Block.Container>
