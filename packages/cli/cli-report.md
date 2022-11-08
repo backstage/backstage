@@ -400,6 +400,7 @@ Commands:
 Usage: backstage-cli repo build [options]
 
 Options:
+  --config <path>
   --all
   --since <ref>
   -h, --help

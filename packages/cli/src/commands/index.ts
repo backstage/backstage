@@ -35,6 +35,7 @@ export function registerRepoCommand(program: Command) {
     .description(
       'Build packages in the project, excluding bundled app and backend packages.',
     )
+    .option(...configOption)
     .option(
       '--all',
       'Build all packages, including bundled app and backend packages.',
