@@ -20,6 +20,7 @@ import { Logger } from 'winston';
 import express, { Router } from 'express';
 import { VaultClient } from './vaultApi';
 import { TaskRunner, PluginTaskScheduler } from '@backstage/backend-tasks';
+import { errorHandler } from '@backstage/backend-common';
 
 /**
  * Environment values needed by the VaultBuilder
@@ -145,6 +146,7 @@ export class VaultBuilder {
       res.json({ items: secrets });
     });
 
+    router.use(errorHandler());
     return router;
   }
 }
