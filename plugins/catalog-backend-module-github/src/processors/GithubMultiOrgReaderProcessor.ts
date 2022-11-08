@@ -40,6 +40,8 @@ import {
   getOrganizationUsers,
   GithubMultiOrgConfig,
   readGithubMultiOrgConfig,
+  TeamTransformer,
+  UserTransformer,
 } from '../lib';
 
 /**
@@ -60,6 +62,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     options: {
       logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
+      userTransformer?: UserTransformer;
+      teamTransformer?: TeamTransformer;
     },
   ) {
     const c = config.getOptionalConfig('catalog.processors.githubMultiOrg');
@@ -72,12 +76,16 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    logger: Logger;
-    orgs: GithubMultiOrgConfig;
-    githubCredentialsProvider?: GithubCredentialsProvider;
-  }) {
+  constructor(
+    private options: {
+      integrations: ScmIntegrationRegistry;
+      logger: Logger;
+      orgs: GithubMultiOrgConfig;
+      githubCredentialsProvider?: GithubCredentialsProvider;
+      userTransformer?: UserTransformer;
+      teamTransformer?: TeamTransformer;
+    },
+  ) {
     this.integrations = options.integrations;
     this.logger = options.logger;
     this.orgs = options.orgs;
@@ -133,12 +141,15 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           client,
           orgConfig.name,
           tokenType,
+          this.options.userTransformer,
         );
         const { groups } = await getOrganizationTeams(
           client,
           orgConfig.name,
           async (team, ctx): Promise<GroupEntity | undefined> => {
-            const result = await defaultOrganizationTeamTransformer(team, ctx);
+            const result = this.options.teamTransformer
+              ? await this.options.teamTransformer(team, ctx)
+              : await defaultOrganizationTeamTransformer(team, ctx);
 
             if (result) {
               result.metadata.namespace = orgConfig.groupNamespace;

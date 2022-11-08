@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  GroupEntity,
+  UserEntity,
+} from '@backstage/catalog-model';
 
 export function buildOrgHierarchy(groups: GroupEntity[]) {
   const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
@@ -56,9 +60,11 @@ export function assignGroupsToUsers(
 ) {
   const groupMemberUsers = new Map(
     groups.map(group => {
-      const groupKey = group.metadata.namespace
-        ? `${group.metadata.namespace}/${group.metadata.name}`
-        : group.metadata.name;
+      const groupKey =
+        group.metadata.namespace &&
+        group.metadata.namespace !== DEFAULT_NAMESPACE
+          ? `${group.metadata.namespace}/${group.metadata.name}`
+          : group.metadata.name;
       return [groupKey, group.spec.members || []];
     }),
   );

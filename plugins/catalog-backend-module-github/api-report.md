@@ -138,6 +138,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     logger: Logger;
     orgs: GithubMultiOrgConfig;
     githubCredentialsProvider?: GithubCredentialsProvider;
+    userTransformer?: UserTransformer;
+    teamTransformer?: TeamTransformer;
   });
   // (undocumented)
   static fromConfig(
@@ -145,6 +147,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     options: {
       logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
+      userTransformer?: UserTransformer;
+      teamTransformer?: TeamTransformer;
     },
   ): GithubMultiOrgReaderProcessor;
   // (undocumented)
