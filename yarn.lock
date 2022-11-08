@@ -30633,11 +30633,11 @@ __metadata:
   linkType: hard
 
 "octokit-plugin-create-pull-request@npm:^3.10.0":
-  version: 3.12.2
-  resolution: "octokit-plugin-create-pull-request@npm:3.12.2"
+  version: 3.13.1
+  resolution: "octokit-plugin-create-pull-request@npm:3.13.1"
   dependencies:
     "@octokit/types": ^6.8.2
-  checksum: 1f23b6ab62f148795eb7d0109bbfbaf022760ccd17eca2d8d6e0dd860ec76d509fcc0e94841caedaf1e5fe48885cec080fdf8c1cddf0736d0c119070eb7f371f
+  checksum: 169e393046cecc51b9c9be23321086fc60681bfdfe2bcec5477d0916e5b8e3b64b54588f631f61d98677a0561f5d44fa85589abd75ff851122c798795921292b
   languageName: node
   linkType: hard
 
