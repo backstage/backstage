@@ -23,6 +23,8 @@ import {
 } from '../types/types';
 import { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import { KubernetesErrorIndicator } from './KubernetesErrorIndicator';
+import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 
 const fetchObjectsForService = jest.fn();
 const fetchPodMetricsByNamespaces = jest.fn();
@@ -883,5 +885,82 @@ describe('getCustomResourcesByEntity', () => {
     expect(
       fetchObjectsForService.mock.calls[1][0].customResources[0].group,
     ).toBe('parameter-crd.example.com');
+  });
+  it('non-http errors short-circuit requests to a single cluster, recovering across the fleet', async () => {
+    // wiring up components
+    const worksClient = {
+      listClusterCustomObject: jest.fn(),
+      addInterceptor: jest.fn(),
+    };
+    const failsClient = {
+      listClusterCustomObject: jest.fn(),
+      addInterceptor: jest.fn(),
+    };
+    const cluster = {
+      url: '',
+      authProvider: 'serviceAccount',
+      skipMetricsLookup: true,
+    };
+    const fleet: any = {
+      getClustersByEntity: jest.fn().mockResolvedValue({
+        clusters: [
+          { ...cluster, name: 'works' },
+          { ...cluster, name: 'fails' },
+        ],
+      }),
+      getCustomObjectsClient: jest.fn(({ name }) =>
+        name === 'fails' ? failsClient : worksClient,
+      ),
+    };
+    const logger = getVoidLogger();
+    const indicator = new KubernetesErrorIndicator(logger);
+    const sut = new KubernetesFanOutHandler({
+      logger,
+      fetcher: new KubernetesClientBasedFetcher({
+        kubernetesClientProvider: fleet,
+        rejectionHandler: indicator,
+      }),
+      serviceLocator: fleet,
+      customResources: [],
+      rejectionHandler: indicator,
+    });
+
+    // set up stubs
+    const resources = [{ metadata: { name: 'resource-name' } }];
+    worksClient.listClusterCustomObject.mockResolvedValue({
+      body: { items: resources },
+    });
+    failsClient.listClusterCustomObject
+      .mockRejectedValueOnce(new Error('socket error'))
+      .mockResolvedValue({ body: { items: resources } });
+
+    const result = await sut.getCustomResourcesByEntity({
+      entity,
+      auth: {},
+      customResources: [
+        { group: '', apiVersion: 'v1', plural: 'pods' },
+        { group: '', apiVersion: 'v1', plural: 'services' },
+      ],
+    });
+
+    expect(result).toStrictEqual({
+      items: [
+        {
+          cluster: { name: 'works' },
+          resources: [
+            { type: 'customresources', resources },
+            { type: 'customresources', resources },
+          ],
+          podMetrics: [],
+          errors: [],
+        },
+        {
+          cluster: { name: 'fails' },
+          resources: [],
+          podMetrics: [],
+          errors: [{ errorType: 'UNKNOWN_ERROR', message: 'socket error' }],
+        },
+      ],
+    });
   });
 });
