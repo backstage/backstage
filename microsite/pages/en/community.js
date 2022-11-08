@@ -149,7 +149,7 @@ const Background = props => {
         </Block.Container>
       </Block>
 
-      <Block className="stripe-top bg-black">
+      <Block className="stripe-top bg-teal-bottom">
         <Block.Container wrapped style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox wide>
             <Block.Subtitle>Community initiatives</Block.Subtitle>
@@ -180,6 +180,29 @@ const Background = props => {
               Learn more
             </Block.LinkButton>
           </Block.TextBox>
+        </Block.Container>
+      </Block>
+
+      <Block className="stripe-top stripe-bottom">
+        <Block.Container style={{ flexFlow: 'column nowrap' }}>
+          <Block.TextBox wide>
+            <Block.Subtitle>Trainings and Certifications</Block.Subtitle>
+          </Block.TextBox>
+
+          <Block.Container>
+            <Block.TextBox style={{ flexShrink: '1', alignSelf: 'stretch' }}>
+              <Block.Container column>
+                <BulletLine />
+                <Block.SmallTitle small>Introduction to Backstage: Developer Portals Made Easy (LFS142x)</Block.SmallTitle>
+                <Block.Paragraph>
+                  This is a course produced and curated by the Linux Foundation. This course introduces you to Backstage and how to get started with the project. 
+                </Block.Paragraph>
+              </Block.Container>
+              <Block.LinkButton href="https://training.linuxfoundation.org/training/introduction-to-backstage-developer-portals-made-easy-lfs142x/">
+              Learn more
+              </Block.LinkButton>
+            </Block.TextBox>
+          </Block.Container>
         </Block.Container>
       </Block>
 
