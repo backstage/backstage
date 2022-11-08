@@ -267,21 +267,3 @@ export interface ClientPodStatus {
   memory: ClientCurrentResourceUsage;
   containers: ClientContainerStatus[];
 }
-
-/** @public */
-export type KubernetesObjectSearchFilter = {
-  /**
-   * The key to match on.
-   *
-   * Matches are always case insensitive.
-   */
-  key: string;
-
-  /**
-   * Match on plain equality of values.
-   *
-   * Match on values that are equal to any of the given array items. Matches are
-   * always case insensitive.
-   */
-  values?: string[];
-};
