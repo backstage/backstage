@@ -14017,11 +14017,11 @@ __metadata:
   linkType: hard
 
 "@types/inquirer@npm:^8.1.3":
-  version: 8.2.4
-  resolution: "@types/inquirer@npm:8.2.4"
+  version: 8.2.5
+  resolution: "@types/inquirer@npm:8.2.5"
   dependencies:
     "@types/through": "*"
-  checksum: 3a46231faac1e5df4863a2d501617b3f25e9481ea8a966a9b866bafef01fcc151606d9f25cb66f90492dd0d1d7af7c675a2314f50db85a7f2aeed265d93eb412
+  checksum: 932c432e634697bcff5d50fdc9e64f90d2e31c5ebcda909f2e9704d0433b5ec608b6ece985c6e57a283f3b62434f1cd3619b64ca61433d7c3bdb41d3c5f27586
   languageName: node
   linkType: hard
 
