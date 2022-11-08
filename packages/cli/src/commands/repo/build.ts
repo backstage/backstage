@@ -152,14 +152,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           );
           return;
         }
-
-        const configPaths = opts.config?.length
-          ? opts.config
-          : buildOptions.config ?? [];
-
         await buildFrontend({
           targetDir: pkg.dir,
-          configPaths,
+          configPaths: (buildOptions.config as string[]) ?? [],
           writeStats: Boolean(buildOptions.stats),
         });
       },
