@@ -163,6 +163,7 @@ describe('GithubOrgEntityProvider', () => {
                   picture: 'http://example.com/team.jpeg',
                 },
                 type: 'team',
+                members: ['a'],
               },
             },
             locationKey: 'github-org-provider:my-id',

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { GroupEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -32,7 +33,9 @@ import {
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import {
+  assignGroupsToUsers,
   buildOrgHierarchy,
+  defaultOrganizationTeamTransformer,
   getOrganizationTeams,
   getOrganizationUsers,
   GithubMultiOrgConfig,
@@ -130,12 +133,19 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           client,
           orgConfig.name,
           tokenType,
-          orgConfig.userNamespace,
         );
-        const { groups, groupMemberUsers } = await getOrganizationTeams(
+        const { groups } = await getOrganizationTeams(
           client,
           orgConfig.name,
-          orgConfig.groupNamespace,
+          async (team, ctx): Promise<GroupEntity | undefined> => {
+            const result = await defaultOrganizationTeamTransformer(team, ctx);
+
+            if (result) {
+              result.metadata.namespace = orgConfig.groupNamespace;
+            }
+
+            return result;
+          },
         );
 
         const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
@@ -151,15 +161,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
             allUsersMap.set(prefix + u.metadata.name, u);
           }
         });
-
-        for (const [groupName, userNames] of groupMemberUsers.entries()) {
-          for (const userName of userNames) {
-            const user = allUsersMap.get(prefix + userName);
-            if (user && !user.spec.memberOf.includes(groupName)) {
-              user.spec.memberOf.push(groupName);
-            }
-          }
-        }
+        assignGroupsToUsers(users, groups);
         buildOrgHierarchy(groups);
 
         for (const group of groups) {

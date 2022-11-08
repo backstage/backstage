@@ -52,8 +52,17 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
 // Ensure that users have their direct group memberships.
 export function assignGroupsToUsers(
   users: UserEntity[],
-  groupMemberUsers: Map<string, string[]>,
+  groups: GroupEntity[],
 ) {
+  const groupMemberUsers = new Map(
+    groups.map(group => {
+      const groupKey = group.metadata.namespace
+        ? `${group.metadata.namespace}/${group.metadata.name}`
+        : group.metadata.name;
+      return [groupKey, group.spec.members || []];
+    }),
+  );
+
   const usersByName = new Map(users.map(u => [u.metadata.name, u]));
   for (const [groupName, userNames] of groupMemberUsers.entries()) {
     for (const userName of userNames) {
