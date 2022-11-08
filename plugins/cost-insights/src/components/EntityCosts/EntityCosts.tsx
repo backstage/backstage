@@ -37,6 +37,7 @@ import { costInsightsApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Cost, Maybe } from '@backstage/plugin-cost-insights-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export const EntityCostsCard = () => {
   const client = useApi(costInsightsApiRef);
@@ -79,8 +80,8 @@ export const EntityCostsCard = () => {
           lastCompleteBillingDate,
         );
 
-        const fetchedDailyCost = await client.getEntityDailyCost!(
-          entity,
+        const fetchedDailyCost = await client.getCatalogEntityDailyCost!(
+          stringifyEntityRef(entity),
           intervals,
         );
         setDailyCost(fetchedDailyCost);
@@ -129,11 +130,11 @@ export const EntityCostsCard = () => {
 export const EntityCosts = () => {
   const client = useApi(costInsightsApiRef);
 
-  if (!client.getEntityDailyCost) {
+  if (!client.getCatalogEntityDailyCost) {
     return (
       <WarningPanel
         title="Could display costs for entity"
-        message="The getEntityDailyCost() method is not implemented by the costInsightsApi."
+        message="The getCatalogEntityDailyCost() method is not implemented by the costInsightsApi."
       />
     );
   }

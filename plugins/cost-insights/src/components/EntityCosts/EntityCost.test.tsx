@@ -48,7 +48,7 @@ function renderInContext(children: JSX.Element) {
     getLastCompleteBillingDate: jest.fn().mockResolvedValue('2022-10-30'),
     getUserGroups: jest.fn().mockResolvedValue(['team-a']),
     getGroupProjects: jest.fn().mockResolvedValue(['project-a', 'project-b']),
-    getEntityDailyCost: jest.fn().mockResolvedValue(mockGroupDailyCost),
+    getCatalogEntityDailyCost: jest.fn().mockResolvedValue(mockGroupDailyCost),
     getGroupDailyCost: jest.fn().mockResolvedValue({}),
     getProjectDailyCost: jest.fn().mockResolvedValue({}),
     getDailyMetricData: jest.fn().mockResolvedValue({}),

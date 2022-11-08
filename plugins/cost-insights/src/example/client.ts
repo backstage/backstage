@@ -38,7 +38,6 @@ import {
   getGroupedProjects,
   trendlineOf,
 } from '../testUtils';
-import { Entity as CatalogEntity } from '@backstage/catalog-model';
 
 /** @public */
 export class ExampleCostInsightsClient implements CostInsightsApi {
@@ -93,13 +92,13 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     return cost;
   }
 
-  async getEntityDailyCost(
-    entity: CatalogEntity,
+  async getCatalogEntityDailyCost(
+    entityRef: string,
     intervals: string,
   ): Promise<Cost> {
     const aggregation = aggregationFor(intervals, 8_000);
     const groupDailyCost: Cost = await this.request(
-      { entity, intervals },
+      { entityRef, intervals },
       {
         aggregation: aggregation,
         change: changeOf(aggregation),
