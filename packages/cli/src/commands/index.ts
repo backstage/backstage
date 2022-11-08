@@ -18,12 +18,14 @@ import { assertError } from '@backstage/errors';
 import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
 
-const configOption = [
-  '--config <path>',
-  'Config files to load instead of app-config.yaml',
-  (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
-  Array<string>(),
-] as const;
+function configOption(msg = 'Config files to load instead of app-config.yaml') {
+  return [
+    '--config <path>',
+    msg,
+    (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
+    Array<string>(),
+  ] as const;
+}
 
 export function registerRepoCommand(program: Command) {
   const command = program
@@ -35,7 +37,11 @@ export function registerRepoCommand(program: Command) {
     .description(
       'Build packages in the project, excluding bundled app and backend packages.',
     )
-    .option(...configOption)
+    .option(
+      ...configOption(
+        "Config files for app packages that don't already override the config in their build script",
+      ),
+    )
     .option(
       '--all',
       'Build all packages, including bundled app and backend packages.',
@@ -97,7 +103,7 @@ export function registerScriptCommand(program: Command) {
   command
     .command('start')
     .description('Start a package for local development')
-    .option(...configOption)
+    .option(...configOption())
     .option('--role <name>', 'Run the command with an explicit package role')
     .option('--check', 'Enable type checking and linting if available')
     .option('--inspect', 'Enable debugger in Node.js environments')
@@ -319,7 +325,7 @@ export function registerCommands(program: Command) {
       '--format <format>',
       'Format to print the configuration in, either json or yaml [yaml]',
     )
-    .option(...configOption)
+    .option(...configOption())
     .description('Print the app configuration for the current package')
     .action(lazy(() => import('./config/print').then(m => m.default)));
 
@@ -332,7 +338,7 @@ export function registerCommands(program: Command) {
     .option('--lax', 'Do not require environment variables to be set')
     .option('--frontend', 'Only validate the frontend configuration')
     .option('--deprecated', 'Output deprecated configuration settings')
-    .option(...configOption)
+    .option(...configOption())
     .description(
       'Validate that the given configuration loads and matches schema',
     )
