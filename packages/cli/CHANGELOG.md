@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.21.0-next.1
+
+### Minor Changes
+
+- 384eaa2307: Switched `tsconfig.json` to target and support `ES2021`, in line with the bump to Node.js 16 & 18.
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.7-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
 ## 0.21.0-next.0
 
 ### Minor Changes
