@@ -36632,7 +36632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sucrase@npm:^3.18.0, sucrase@npm:^3.20.2":
+"sucrase@npm:^3.18.0":
   version: 3.25.0
   resolution: "sucrase@npm:3.25.0"
   dependencies:
@@ -36646,6 +36646,23 @@ __metadata:
     sucrase: bin/sucrase
     sucrase-node: bin/sucrase-node
   checksum: 4a20a4a821f46e1010da22417e6edafe637bac9a5414e71fc626a569fd3d266a1fcf010073c7627c296223e41fc871fb30678b6238fb95873e49be7973b8743b
+  languageName: node
+  linkType: hard
+
+"sucrase@npm:^3.20.2":
+  version: 3.28.0
+  resolution: "sucrase@npm:3.28.0"
+  dependencies:
+    commander: ^4.0.0
+    glob: 7.1.6
+    lines-and-columns: ^1.1.6
+    mz: ^2.7.0
+    pirates: ^4.0.1
+    ts-interface-checker: ^0.1.9
+  bin:
+    sucrase: bin/sucrase
+    sucrase-node: bin/sucrase-node
+  checksum: 6a2369c140cee674988ebcf83538f38b11270e47ebaffc811baabe1db3fc586f1a357d4bbc66388a6b99054ba06a08f31b44b764e777abbd457b9e29332b12d0
   languageName: node
   linkType: hard
 
