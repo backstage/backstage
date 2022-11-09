@@ -38,6 +38,7 @@ export interface BackstageSignInResult {
  */
 export type IdentityApiGetIdentityRequest = {
   request: Request<unknown>;
+  optional?: boolean;
 };
 
 /**

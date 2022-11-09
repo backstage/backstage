@@ -401,17 +401,29 @@ describe('DefaultIdentityClient', () => {
     it('given a corrupt the identity', async () => {
       await expect(
         client.getIdentity({
-          request: { headers: { authorization: `Bearer bad-token` } },
+          request: { headers: { authorization: 'Bearer bad-token' } },
         } as IdentityApiGetIdentityRequest),
       ).rejects.toThrow('Invalid JWT');
+      await expect(
+        client.getIdentity({
+          request: { headers: { authorization: 'Bearer bad-token' } },
+          optional: true,
+        } as IdentityApiGetIdentityRequest),
+      ).resolves.toEqual(undefined);
     });
 
     it('given no authorization header', async () => {
-      expect(
-        await client.getIdentity({
+      await expect(
+        client.getIdentity({
           request: { headers: {} },
         } as IdentityApiGetIdentityRequest),
-      ).toEqual(undefined);
+      ).rejects.toThrow('Identity was not provided');
+      await expect(
+        client.getIdentity({
+          request: { headers: {} },
+          optional: true,
+        } as IdentityApiGetIdentityRequest),
+      ).resolves.toEqual(undefined);
     });
   });
 });

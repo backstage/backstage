@@ -78,17 +78,34 @@ export class DefaultIdentityClient implements IdentityApi {
       : ['ES256'];
   }
 
-  async getIdentity({ request }: IdentityApiGetIdentityRequest) {
+  async getIdentity({
+    request,
+    optional = false,
+  }: IdentityApiGetIdentityRequest): Promise<
+    BackstageIdentityResponse | undefined
+  > {
+    let id: BackstageIdentityResponse | undefined;
     if (!request.headers.authorization) {
+      console.log(JSON.stringify(request));
+      if (!optional) {
+        throw new AuthenticationError('Identity was not provided');
+      }
       return undefined;
     }
     try {
-      return await this.authenticate(
+      id = await this.authenticate(
         getBearerTokenFromAuthorizationHeader(request.headers.authorization),
       );
     } catch (e) {
-      throw new AuthenticationError(e.message);
+      if (!optional) {
+        throw new AuthenticationError(e.message);
+      }
     }
+    console.log(`in code hello ${JSON.stringify(id)}`);
+    if (!id && !optional) {
+      throw new AuthenticationError('Identity was not found');
+    }
+    return id;
   }
 
   /**
