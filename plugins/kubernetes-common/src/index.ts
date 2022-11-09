@@ -28,6 +28,6 @@ export {
   kubernetesWorkloadResourcesReadPermission,
   kubernetesCustomResourcesReadPermission,
   kubernetesClusterPermissions,
-} from './permissions.js';
+} from './permissions';
 
-export type { KubernetesResourcePermission } from './permissions.js';
+export type { KubernetesResourcePermission } from './permissions';
