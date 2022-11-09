@@ -85,7 +85,7 @@ describe('KubernetesProxy', () => {
     const clusters: ClusterDetails[] = [
       {
         name: 'cluster1',
-        url: 'http://localhost:9999',
+        url: 'https://localhost:9999',
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
         skipTLSVerify: true,
@@ -124,7 +124,7 @@ describe('KubernetesProxy', () => {
     const clusters: ClusterDetails[] = [
       {
         name: 'cluster1',
-        url: 'http://localhost:9999',
+        url: 'https://localhost:9999',
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
         skipTLSVerify: true,
