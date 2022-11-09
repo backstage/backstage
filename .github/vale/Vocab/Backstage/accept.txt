@@ -352,6 +352,7 @@ theia
 thumbsup
 todo
 todos
+togglable
 tolerations
 Tolerations
 toolchain
