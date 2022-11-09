@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@
 export * from './types';
 
 export {
-    RESOURCE_TYPE_KUBERNETES_RESOURCE,
-    kubernetesClusterReadPermission,
-    kubernetesWorkloadResourcesReadPermission,
-    kubernetesCustomResourcesReadPermission,
-    kubernetesClusterPermissions,
-} from './permissions';
+  RESOURCE_TYPE_KUBERNETES_RESOURCE,
+  kubernetesClusterReadPermission,
+  kubernetesWorkloadResourcesReadPermission,
+  kubernetesCustomResourcesReadPermission,
+  kubernetesClusterPermissions,
+} from './permissions.js';
 
-export type { KubernetesResourcePermission } from './permissions';
+export type { KubernetesResourcePermission } from './permissions.js';
