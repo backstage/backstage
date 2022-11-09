@@ -160,17 +160,17 @@ export class KubernetesProxy {
       headers: headers as { [key: string]: string },
     };
 
-    if (!details.skipTLSVerify) {
-      if (details.caData) {
-        const ca = bufferFromFileOrString('', details.caData)?.toString() || '';
-        reqData.agent = new https.Agent({ ca });
-      } else {
-        this.logger.error('could not find CA certificate!');
+    if (details.skipTLSVerify) {
+      reqData.agent = new https.Agent({ rejectUnauthorized: false });
+    } else if (details.caData) {
+      const ca = bufferFromFileOrString('', details.caData)?.toString() || '';
+      reqData.agent = new https.Agent({ ca });
+    } else {
+      this.logger.error('could not find CA certificate!');
 
-        throw new InputError(
-          'Invalid CA certificate configured within Backstage',
-        );
-      }
+      throw new InputError(
+        'Invalid CA certificate configured within Backstage',
+      );
     }
 
     if (body && Object.keys(body).length > 0) {
