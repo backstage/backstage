@@ -44,7 +44,6 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
-    "msw": "^0.47.0",
     "node-fetch": "^2.6.7",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
@@ -54,7 +53,8 @@
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",
     "@types/uuid": "^8.0.0",
-    "luxon": "^3.0.0"
+    "luxon": "^3.0.0",
+    "msw": "^0.48.0"
   },
   "files": [
     "alpha",

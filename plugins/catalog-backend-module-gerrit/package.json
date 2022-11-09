@@ -39,7 +39,6 @@
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "fs-extra": "10.1.0",
-    "msw": "^0.47.0",
     "node-fetch": "^2.6.7",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
@@ -48,7 +47,8 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^9.0.1",
-    "luxon": "^3.0.0"
+    "luxon": "^3.0.0",
+    "msw": "^0.48.0"
   },
   "files": [
     "dist",

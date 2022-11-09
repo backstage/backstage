@@ -58,7 +58,7 @@
     "@types/supertest": "^2.0.8",
     "get-port": "^6.1.2",
     "mock-fs": "^5.1.0",
-    "msw": "^0.47.0",
+    "msw": "^0.48.0",
     "node-fetch": "^2.6.7",
     "supertest": "^6.1.3"
   },

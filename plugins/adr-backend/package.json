@@ -46,7 +46,7 @@
     "@backstage/cli": "workspace:^",
     "@types/marked": "^4.0.0",
     "@types/supertest": "^2.0.8",
-    "msw": "^0.47.0",
+    "msw": "^0.48.0",
     "supertest": "^6.1.3"
   },
   "files": [

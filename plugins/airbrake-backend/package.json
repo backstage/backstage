@@ -35,7 +35,7 @@
     "@backstage/cli": "workspace:^",
     "@types/http-proxy-middleware": "^0.19.3",
     "@types/supertest": "^2.0.8",
-    "msw": "^0.47.0",
+    "msw": "^0.48.0",
     "supertest": "^6.1.6"
   },
   "files": [

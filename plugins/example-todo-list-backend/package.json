@@ -38,7 +38,7 @@
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.0.0",
-    "msw": "^0.47.0",
+    "msw": "^0.48.0",
     "supertest": "^6.1.6"
   },
   "files": [
