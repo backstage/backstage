@@ -36,7 +36,7 @@ const limiter = limiterFactory(10);
 
 type EntityTypeProps = {
   kind: string;
-  type: string;
+  type?: string;
   count: number;
 };
 
