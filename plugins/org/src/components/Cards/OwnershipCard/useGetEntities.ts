@@ -136,7 +136,6 @@ export function useGetEntities(
         counter: number;
         type: string;
         kind: string;
-        name: string;
         queryParams: string;
       }[]
     | undefined;
@@ -174,16 +173,14 @@ export function useGetEntities(
     const counts = ownedEntitiesList.items.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
         const match = acc.find(
-          x =>
-            x.kind === ownedEntity.kind &&
-            x.type === (ownedEntity.spec?.type ?? ownedEntity.kind),
+          x => x.kind === ownedEntity.kind && x.type === ownedEntity.spec?.type,
         );
         if (match) {
           match.count += 1;
         } else {
           acc.push({
             kind: ownedEntity.kind,
-            type: ownedEntity.spec?.type?.toString() ?? ownedEntity.kind,
+            type: ownedEntity.spec?.type?.toString(),
             count: 1,
           });
         }
@@ -199,13 +196,11 @@ export function useGetEntities(
       counter: topOwnedEntity.count,
       type: topOwnedEntity.type,
       kind: topOwnedEntity.kind,
-      name: topOwnedEntity.type.toLocaleUpperCase('en-US'),
       queryParams: getQueryParams(owners, topOwnedEntity),
     })) as Array<{
       counter: number;
       type: string;
       kind: string;
-      name: string;
       queryParams: string;
     }>;
   }, [catalogApi, entity, relationsType]);
