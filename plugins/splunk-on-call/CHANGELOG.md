@@ -1,5 +1,24 @@
 # @backstage/plugin-splunk-on-call
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- 34b772ef31: Use the routing key if it's available instead of team name when triggering incidents.
+
+  BREAKING CHANGE:
+  Before, the team name was used even if the routing key (with or without team) was used.
+  Now, the routing key defined for the component will be used instead of the team name.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.2.1-next.1
+
 ## 0.3.35-next.0
 
 ### Patch Changes

@@ -30,12 +30,15 @@ export type Props = {
   onChange: (value: number) => void;
 };
 
-const useStyles = makeStyles({
-  formControl: {
-    width: '100%',
-    maxWidth: 300,
+const useStyles = makeStyles(
+  {
+    formControl: {
+      width: '100%',
+      maxWidth: 300,
+    },
   },
-});
+  { name: 'PluginCatalogGraphMaxDepthFilter' },
+);
 
 export const MaxDepthFilter = ({ value, onChange }: Props) => {
   const classes = useStyles();

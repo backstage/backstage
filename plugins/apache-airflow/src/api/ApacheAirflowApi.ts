@@ -16,6 +16,7 @@
 
 import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 import { Dag, InstanceStatus, InstanceVersion } from './types';
+import { DagRun } from './types/Dags';
 
 export const apacheAirflowApiRef = createApiRef<ApacheAirflowApi>({
   id: 'plugin.apacheairflow.service',
@@ -27,6 +28,10 @@ export type ApacheAirflowApi = {
   listDags(options?: { objectsPerRequest: number }): Promise<Dag[]>;
   getDags(dagIds: string[]): Promise<{ dags: Dag[]; dagsNotFound: string[] }>;
   updateDag(dagId: string, isPaused: boolean): Promise<any>;
+  getDagRuns(
+    dagId: string,
+    options?: { objectsPerRequest?: number; limit?: number },
+  ): Promise<DagRun[]>;
   getInstanceStatus(): Promise<InstanceStatus>;
   getInstanceVersion(): Promise<InstanceVersion>;
 };

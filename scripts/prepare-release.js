@@ -209,7 +209,11 @@ async function applyPatchVersions(repo, patchVersions) {
       const deps = packageJson[depType];
       for (const depName of Object.keys(deps ?? {})) {
         const currentRange = deps[depName];
-        if (currentRange === '*' || currentRange === '') {
+        if (
+          currentRange === '*' ||
+          currentRange === '' ||
+          currentRange.startsWith('workspace:')
+        ) {
           continue;
         }
 
