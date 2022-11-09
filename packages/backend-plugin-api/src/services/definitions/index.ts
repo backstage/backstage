@@ -31,6 +31,6 @@ export { pluginMetadataServiceRef } from './pluginMetadataServiceRef';
 export { lifecycleServiceRef } from './lifecycleServiceRef';
 export type {
   BackendLifecycle,
-  ShutdownHookOptions,
+  BackendLifecycleShutdownHook,
 } from './lifecycleServiceRef';
 export type { PluginMetadata } from './pluginMetadataServiceRef';

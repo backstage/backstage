@@ -19,7 +19,7 @@ import { createServiceRef } from '../system/types';
 /**
  * @public
  **/
-export type ShutdownHookOptions = {
+export type BackendLifecycleShutdownHook = {
   fn: () => Promise<void>;
 };
 
@@ -30,7 +30,7 @@ export interface BackendLifecycle {
   /**
    * Register a function to be called when the backend is shutting down.
    */
-  addShutdownHook(options: ShutdownHookOptions): void;
+  addShutdownHook(options: BackendLifecycleShutdownHook): void;
 }
 
 /**

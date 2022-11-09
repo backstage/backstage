@@ -20,19 +20,23 @@ import {
   loggerToWinstonLogger,
   pluginMetadataServiceRef,
   rootLoggerServiceRef,
-  ShutdownHookOptions,
+  BackendLifecycleShutdownHook,
 } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 
 class BackendLifecycleImpl {
   constructor(private readonly logger: Logger) {}
-  #shutdownTasks: Array<ShutdownHookOptions & { pluginId: string }> = [];
+  #shutdownTasks: Array<BackendLifecycleShutdownHook & { pluginId: string }> =
+    [];
 
-  addShutdownHook(options: ShutdownHookOptions & { pluginId: string }): void {
+  addShutdownHook(
+    options: BackendLifecycleShutdownHook & { pluginId: string },
+  ): void {
     this.#shutdownTasks.push(options);
   }
 
   async shutdown(): Promise<void> {
+    this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
     await Promise.all(
       this.#shutdownTasks.map(hook =>
         hook
@@ -57,7 +61,7 @@ class PluginScopedLifecycleImpl implements BackendLifecycle {
     private readonly lifecycle: BackendLifecycleImpl,
     private readonly pluginId: string,
   ) {}
-  addShutdownHook(options: ShutdownHookOptions): void {
+  addShutdownHook(options: BackendLifecycleShutdownHook): void {
     this.lifecycle.addShutdownHook({ ...options, pluginId: this.pluginId });
   }
 }
