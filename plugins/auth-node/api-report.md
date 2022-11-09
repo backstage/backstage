@@ -31,6 +31,7 @@ export class DefaultIdentityClient implements IdentityApi {
   // (undocumented)
   getIdentity({
     request,
+    optional,
   }: IdentityApiGetIdentityRequest): Promise<
     BackstageIdentityResponse | undefined
   >;
@@ -51,6 +52,7 @@ export interface IdentityApi {
 // @public
 export type IdentityApiGetIdentityRequest = {
   request: Request_2<unknown>;
+  optional?: boolean;
 };
 
 // @public @deprecated
