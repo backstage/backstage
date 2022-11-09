@@ -47,7 +47,7 @@ import {
 import CachedIcon from '@material-ui/icons/Cached';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
 
@@ -77,6 +77,8 @@ const useStyles = makeStyles({
  * @public
  */
 export interface AboutCardProps {
+  extraActions?: ReactElement<any, any>;
+  extraHeaderIconLinks?: IconLinkVerticalProps[];
   variant?: InfoCardVariants;
 }
 
@@ -119,6 +121,11 @@ export function AboutCard(props: AboutCardProps) {
         name: entity.metadata.name,
       }),
   };
+  const headerIconLinks = [
+    viewInSource,
+    viewInTechDocs,
+    ...(props.extraHeaderIconLinks ?? []),
+  ];
 
   let cardClass = '';
   if (variant === 'gridItem') {
@@ -149,6 +156,7 @@ export function AboutCard(props: AboutCardProps) {
         title="About"
         action={
           <>
+            {props.extraActions}
             {allowRefresh && (
               <IconButton
                 aria-label="Refresh"
@@ -169,7 +177,7 @@ export function AboutCard(props: AboutCardProps) {
             </IconButton>
           </>
         }
-        subheader={<HeaderIconLinkRow links={[viewInSource, viewInTechDocs]} />}
+        subheader={<HeaderIconLinkRow links={headerIconLinks} />}
       />
       <Divider />
       <CardContent className={cardContentClass}>

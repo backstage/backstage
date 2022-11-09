@@ -16,6 +16,7 @@
 
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/core-app-api';
+import { Link } from '@backstage/core-components';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
@@ -27,6 +28,8 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { IconButton } from '@material-ui/core';
+import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { viewTechDocRouteRef } from '../../routes';
@@ -501,5 +504,134 @@ describe('<AboutCard />', () => {
 
     expect(getByText('View TechDocs')).toBeVisible();
     expect(getByText('View TechDocs').closest('a')).toBeNull();
+  });
+
+  it('renders extra link', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/source-location':
+            'url:https://github.com/backstage/backstage/blob/master/software.yaml',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard
+            extraHeaderIconLinks={[
+              {
+                label: 'Create Incident',
+                color: 'secondary',
+                href: 'https://example.org',
+                icon: <AlarmAddIcon />,
+              },
+            ]}
+          />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+    expect(getByText('Create Incident').closest('a')).toHaveAttribute(
+      'href',
+      'https://example.org',
+    );
+  });
+
+  it('renders extra action', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/source-location':
+            'url:https://github.com/backstage/backstage/blob/master/software.yaml',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    const { queryByTitle } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard
+            extraActions={
+              <IconButton
+                component={Link}
+                aria-label="Create Incident"
+                disabled={false}
+                title="Create Incident"
+                color="secondary"
+                to="#"
+              >
+                <AlarmAddIcon color="secondary" />
+              </IconButton>
+            }
+          />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+    expect(queryByTitle('Create Incident')).toHaveAttribute('href', '/');
   });
 });

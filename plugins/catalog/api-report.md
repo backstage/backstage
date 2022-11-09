@@ -11,11 +11,13 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { InfoCardVariants } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -29,6 +31,10 @@ import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public
 export interface AboutCardProps {
+  // (undocumented)
+  extraActions?: ReactElement<any, any>;
+  // (undocumented)
+  extraHeaderIconLinks?: IconLinkVerticalProps[];
   // (undocumented)
   variant?: InfoCardVariants;
 }
