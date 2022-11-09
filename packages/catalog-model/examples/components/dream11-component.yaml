@@ -1,7 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: dream11-service
+  name: dream11-svc
   description: Dream11 Service
   tags:
     - demo
