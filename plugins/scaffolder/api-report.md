@@ -35,7 +35,6 @@ import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
-import { z } from 'zod';
 
 // @alpha
 export function createNextScaffolderFieldExtension<
@@ -91,33 +90,19 @@ export const EntityPickerFieldExtension: FieldExtensionComponent<
 >;
 
 // @public
-export type EntityPickerUiOptions = z.infer<typeof EntityPickerUiOptionsSchema>;
+export type EntityPickerUiOptions =
+  typeof EntityPickerUiOptionsSchema.schemaType;
 
 // @public (undocumented)
-export const EntityPickerUiOptionsSchema: z.ZodObject<
-  {
-    allowedKinds: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-    defaultKind: z.ZodOptional<z.ZodString>;
-    allowArbitraryValues: z.ZodOptional<z.ZodBoolean>;
-    defaultNamespace: z.ZodOptional<
-      z.ZodUnion<[z.ZodString, z.ZodLiteral<false>]>
-    >;
-  },
-  'strip',
-  z.ZodTypeAny,
-  {
+export const EntityPickerUiOptionsSchema: {
+  jsonSchema: JSONSchema7;
+  schemaType: {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
-  },
-  {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
-    allowedKinds?: string[] | undefined;
-    allowArbitraryValues?: boolean | undefined;
-  }
->;
+  };
+};
 
 // @public
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
@@ -130,30 +115,18 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
 >;
 
 // @public
-export type EntityTagsPickerUiOptions = z.infer<
-  typeof EntityTagsPickerUiOptionsSchema
->;
+export type EntityTagsPickerUiOptions =
+  typeof EntityTagsPickerUiOptionsSchema.schemaType;
 
 // @public (undocumented)
-export const EntityTagsPickerUiOptionsSchema: z.ZodObject<
-  {
-    kinds: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-    showCounts: z.ZodOptional<z.ZodBoolean>;
-    helperText: z.ZodOptional<z.ZodString>;
-  },
-  'strip',
-  z.ZodTypeAny,
-  {
+export const EntityTagsPickerUiOptionsSchema: {
+  jsonSchema: JSONSchema7;
+  schemaType: {
     showCounts?: boolean | undefined;
     kinds?: string[] | undefined;
     helperText?: string | undefined;
-  },
-  {
-    showCounts?: boolean | undefined;
-    kinds?: string[] | undefined;
-    helperText?: string | undefined;
-  }
->;
+  };
+};
 
 // @public
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
@@ -288,35 +261,19 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
 >;
 
 // @public
-export type OwnedEntityPickerUiOptions = z.infer<
-  typeof OwnedEntityPickerUiOptionsSchema
->;
+export type OwnedEntityPickerUiOptions =
+  typeof OwnedEntityPickerUiOptionsSchema.schemaType;
 
 // @public (undocumented)
-export const OwnedEntityPickerUiOptionsSchema: z.ZodObject<
-  {
-    allowedKinds: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-    defaultKind: z.ZodOptional<z.ZodString>;
-    allowArbitraryValues: z.ZodOptional<z.ZodBoolean>;
-    defaultNamespace: z.ZodOptional<
-      z.ZodUnion<[z.ZodString, z.ZodLiteral<false>]>
-    >;
-  },
-  'strip',
-  z.ZodTypeAny,
-  {
+export const OwnedEntityPickerUiOptionsSchema: {
+  jsonSchema: JSONSchema7;
+  schemaType: {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
-  },
-  {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
-    allowedKinds?: string[] | undefined;
-    allowArbitraryValues?: boolean | undefined;
-  }
->;
+  };
+};
 
 // @public
 export const OwnerPickerFieldExtension: FieldExtensionComponent<
@@ -329,30 +286,17 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent<
 >;
 
 // @public
-export type OwnerPickerUiOptions = z.infer<typeof OwnerPickerUiOptionsSchema>;
+export type OwnerPickerUiOptions = typeof OwnerPickerUiOptionsSchema.schemaType;
 
 // @public (undocumented)
-export const OwnerPickerUiOptionsSchema: z.ZodObject<
-  {
-    allowedKinds: z.ZodOptional<z.ZodDefault<z.ZodArray<z.ZodString, 'many'>>>;
-    allowArbitraryValues: z.ZodOptional<z.ZodBoolean>;
-    defaultNamespace: z.ZodOptional<
-      z.ZodUnion<[z.ZodString, z.ZodLiteral<false>]>
-    >;
-  },
-  'strip',
-  z.ZodTypeAny,
-  {
+export const OwnerPickerUiOptionsSchema: {
+  jsonSchema: JSONSchema7;
+  schemaType: {
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
-  },
-  {
-    defaultNamespace?: string | false | undefined;
-    allowedKinds?: string[] | undefined;
-    allowArbitraryValues?: boolean | undefined;
-  }
->;
+  };
+};
 
 // @public
 export const repoPickerValidation: (
@@ -389,81 +333,13 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
 >;
 
 // @public
-export type RepoUrlPickerUiOptions = z.infer<
-  typeof RepoUrlPickerUiOptionsSchema
->;
+export type RepoUrlPickerUiOptions =
+  typeof RepoUrlPickerUiOptionsSchema.schemaType;
 
 // @public (undocumented)
-export const RepoUrlPickerUiOptionsSchema: z.ZodObject<
-  {
-    allowedHosts: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-    allowedOrganizations: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-    allowedOwners: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-    allowedRepos: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-    requestUserCredentials: z.ZodOptional<
-      z.ZodObject<
-        {
-          secretsKey: z.ZodString;
-          additionalScopes: z.ZodOptional<
-            z.ZodObject<
-              {
-                gerrit: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-                github: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-                gitlab: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-                bitbucket: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-                azure: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
-              },
-              'strip',
-              z.ZodTypeAny,
-              {
-                azure?: string[] | undefined;
-                github?: string[] | undefined;
-                gitlab?: string[] | undefined;
-                bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
-              },
-              {
-                azure?: string[] | undefined;
-                github?: string[] | undefined;
-                gitlab?: string[] | undefined;
-                bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
-              }
-            >
-          >;
-        },
-        'strip',
-        z.ZodTypeAny,
-        {
-          additionalScopes?:
-            | {
-                azure?: string[] | undefined;
-                github?: string[] | undefined;
-                gitlab?: string[] | undefined;
-                bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
-              }
-            | undefined;
-          secretsKey: string;
-        },
-        {
-          additionalScopes?:
-            | {
-                azure?: string[] | undefined;
-                github?: string[] | undefined;
-                gitlab?: string[] | undefined;
-                bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
-              }
-            | undefined;
-          secretsKey: string;
-        }
-      >
-    >;
-  },
-  'strip',
-  z.ZodTypeAny,
-  {
+export const RepoUrlPickerUiOptionsSchema: {
+  jsonSchema: JSONSchema7;
+  schemaType: {
     allowedOwners?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
     allowedRepos?: string[] | undefined;
@@ -482,28 +358,8 @@ export const RepoUrlPickerUiOptionsSchema: z.ZodObject<
           secretsKey: string;
         }
       | undefined;
-  },
-  {
-    allowedOwners?: string[] | undefined;
-    allowedOrganizations?: string[] | undefined;
-    allowedRepos?: string[] | undefined;
-    allowedHosts?: string[] | undefined;
-    requestUserCredentials?:
-      | {
-          additionalScopes?:
-            | {
-                azure?: string[] | undefined;
-                github?: string[] | undefined;
-                gitlab?: string[] | undefined;
-                bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
-              }
-            | undefined;
-          secretsKey: string;
-        }
-      | undefined;
-  }
->;
+  };
+};
 
 // @public (undocumented)
 export const rootRouteRef: RouteRef<undefined>;

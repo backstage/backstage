@@ -13,37 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JSONSchema7 } from 'json-schema';
 import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
+import { makeJsonSchemaFromZod } from '../utils';
 
 /**
  * @public
  */
-export const EntityPickerUiOptionsSchema = z.object({
-  allowedKinds: z
-    .array(z.string())
-    .optional()
-    .describe('List of kinds of entities to derive options from'),
-  defaultKind: z
-    .string()
-    .optional()
-    .describe(
-      'The default entity kind. Options of this kind will not be prefixed.',
-    ),
-  allowArbitraryValues: z
-    .boolean()
-    .optional()
-    .describe('Whether to allow arbitrary user input. Defaults to true'),
-  defaultNamespace: z
-    .union([z.string(), z.literal(false)])
-    .optional()
-    .describe(
-      'The default namespace. Options with this namespace will not be prefixed.',
-    ),
-});
+export const EntityPickerUiOptionsSchema = makeJsonSchemaFromZod(
+  z.object({
+    allowedKinds: z
+      .array(z.string())
+      .optional()
+      .describe('List of kinds of entities to derive options from'),
+    defaultKind: z
+      .string()
+      .optional()
+      .describe(
+        'The default entity kind. Options of this kind will not be prefixed.',
+      ),
+    allowArbitraryValues: z
+      .boolean()
+      .optional()
+      .describe('Whether to allow arbitrary user input. Defaults to true'),
+    defaultNamespace: z
+      .union([z.string(), z.literal(false)])
+      .optional()
+      .describe(
+        'The default namespace. Options with this namespace will not be prefixed.',
+      ),
+  }),
+);
 
-const EntityPickerReturnValueSchema = z.string();
+const EntityPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
 
 /**
  * The input props that can be specified under `ui:options` for the
@@ -51,13 +52,13 @@ const EntityPickerReturnValueSchema = z.string();
  *
  * @public
  */
-export type EntityPickerUiOptions = z.infer<typeof EntityPickerUiOptionsSchema>;
+export type EntityPickerUiOptions =
+  typeof EntityPickerUiOptionsSchema.schemaType;
 
-export type EntityPickerReturnValue = z.infer<
-  typeof EntityPickerReturnValueSchema
->;
+export type EntityPickerReturnValue =
+  typeof EntityPickerReturnValueSchema.schemaType;
 
 export const EntityPickerSchema = {
-  uiOptions: zodToJsonSchema(EntityPickerUiOptionsSchema) as JSONSchema7,
-  returnValue: zodToJsonSchema(EntityPickerReturnValueSchema) as JSONSchema7,
+  uiOptions: EntityPickerUiOptionsSchema.jsonSchema,
+  returnValue: EntityPickerReturnValueSchema.jsonSchema,
 };

@@ -13,70 +13,71 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JSONSchema7 } from 'json-schema';
 import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
+import { makeJsonSchemaFromZod } from '../utils';
 
 /**
  * @public
  */
-export const RepoUrlPickerUiOptionsSchema = z.object({
-  allowedHosts: z
-    .array(z.string())
-    .optional()
-    .describe('List of allowed SCM platform hosts'),
-  allowedOrganizations: z
-    .array(z.string())
-    .optional()
-    .describe('List of allowed organizations in the given SCM platform'),
-  allowedOwners: z
-    .array(z.string())
-    .optional()
-    .describe('List of allowed owners in the given SCM platform'),
-  allowedRepos: z
-    .array(z.string())
-    .optional()
-    .describe('List of allowed repos in the given SCM platform'),
-  requestUserCredentials: z
-    .object({
-      secretsKey: z
-        .string()
-        .describe(
-          'Key used within the template secrets context to store the credential',
-        ),
-      additionalScopes: z
-        .object({
-          gerrit: z
-            .array(z.string())
-            .optional()
-            .describe('Additional Gerrit scopes to request'),
-          github: z
-            .array(z.string())
-            .optional()
-            .describe('Additional GitHub scopes to request'),
-          gitlab: z
-            .array(z.string())
-            .optional()
-            .describe('Additional GitLab scopes to request'),
-          bitbucket: z
-            .array(z.string())
-            .optional()
-            .describe('Additional BitBucket scopes to request'),
-          azure: z
-            .array(z.string())
-            .optional()
-            .describe('Additional Azure scopes to request'),
-        })
-        .optional()
-        .describe('Additional permission scopes to request'),
-    })
-    .optional()
-    .describe(
-      'If defined will request user credentials to auth against the given SCM platform',
-    ),
-});
+export const RepoUrlPickerUiOptionsSchema = makeJsonSchemaFromZod(
+  z.object({
+    allowedHosts: z
+      .array(z.string())
+      .optional()
+      .describe('List of allowed SCM platform hosts'),
+    allowedOrganizations: z
+      .array(z.string())
+      .optional()
+      .describe('List of allowed organizations in the given SCM platform'),
+    allowedOwners: z
+      .array(z.string())
+      .optional()
+      .describe('List of allowed owners in the given SCM platform'),
+    allowedRepos: z
+      .array(z.string())
+      .optional()
+      .describe('List of allowed repos in the given SCM platform'),
+    requestUserCredentials: z
+      .object({
+        secretsKey: z
+          .string()
+          .describe(
+            'Key used within the template secrets context to store the credential',
+          ),
+        additionalScopes: z
+          .object({
+            gerrit: z
+              .array(z.string())
+              .optional()
+              .describe('Additional Gerrit scopes to request'),
+            github: z
+              .array(z.string())
+              .optional()
+              .describe('Additional GitHub scopes to request'),
+            gitlab: z
+              .array(z.string())
+              .optional()
+              .describe('Additional GitLab scopes to request'),
+            bitbucket: z
+              .array(z.string())
+              .optional()
+              .describe('Additional BitBucket scopes to request'),
+            azure: z
+              .array(z.string())
+              .optional()
+              .describe('Additional Azure scopes to request'),
+          })
+          .optional()
+          .describe('Additional permission scopes to request'),
+      })
+      .optional()
+      .describe(
+        'If defined will request user credentials to auth against the given SCM platform',
+      ),
+  }),
+);
 
-const RepoUrlPickerReturnValueSchema = z.string();
+const RepoUrlPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
 
 /**
  * The input props that can be specified under `ui:options` for the
@@ -84,18 +85,16 @@ const RepoUrlPickerReturnValueSchema = z.string();
  *
  * @public
  */
-export type RepoUrlPickerUiOptions = z.infer<
-  typeof RepoUrlPickerUiOptionsSchema
->;
+export type RepoUrlPickerUiOptions =
+  typeof RepoUrlPickerUiOptionsSchema.schemaType;
 
-export type RepoUrlPickerReturnValue = z.infer<
-  typeof RepoUrlPickerReturnValueSchema
->;
+export type RepoUrlPickerReturnValue =
+  typeof RepoUrlPickerReturnValueSchema.schemaType;
 
 // NOTE: There is a bug with this failing validation in the custom field explorer due
 // to https://github.com/rjsf-team/react-jsonschema-form/issues/675 even if
 // requestUserCredentials is not defined
 export const RepoUrlPickerSchema = {
-  uiOptions: zodToJsonSchema(RepoUrlPickerUiOptionsSchema) as JSONSchema7,
-  returnValue: zodToJsonSchema(RepoUrlPickerReturnValueSchema) as JSONSchema7,
+  uiOptions: RepoUrlPickerUiOptionsSchema.jsonSchema,
+  returnValue: RepoUrlPickerReturnValueSchema.jsonSchema,
 };

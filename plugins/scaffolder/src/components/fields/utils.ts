@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { JSONSchema7 } from 'json-schema';
 import { z } from 'zod';
-import { makeJsonSchemaFromZod } from '../utils';
+import zodToJsonSchema from 'zod-to-json-schema';
 
-const EntityNamePickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
-
-export type EntityNamePickerReturnValue =
-  typeof EntityNamePickerReturnValueSchema.schemaType;
-
-export const EntityNamePickerSchema = {
-  returnValue: EntityNamePickerReturnValueSchema.jsonSchema,
-};
+/**
+ * Utility function to convert zod schemas to JSON schemas with
+ * type inference extraction that abstracts away zod typings
+ */
+export function makeJsonSchemaFromZod<T extends z.ZodType>(
+  schema: T,
+): {
+  jsonSchema: JSONSchema7;
+  schemaType: T extends z.ZodType<any, any, infer I> ? I : never;
+} {
+  return {
+    jsonSchema: zodToJsonSchema(schema) as JSONSchema7,
+    schemaType: null as any,
+  };
+}

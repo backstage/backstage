@@ -13,26 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JSONSchema7 } from 'json-schema';
 import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
+import { makeJsonSchemaFromZod } from '../utils';
 
 /**
  * @public
  */
-export const EntityTagsPickerUiOptionsSchema = z.object({
-  kinds: z
-    .array(z.string())
-    .optional()
-    .describe('List of kinds of entities to derive tags from'),
-  showCounts: z
-    .boolean()
-    .optional()
-    .describe('Whether to show usage counts per tag'),
-  helperText: z.string().optional().describe('Helper text to display'),
-});
+export const EntityTagsPickerUiOptionsSchema = makeJsonSchemaFromZod(
+  z.object({
+    kinds: z
+      .array(z.string())
+      .optional()
+      .describe('List of kinds of entities to derive tags from'),
+    showCounts: z
+      .boolean()
+      .optional()
+      .describe('Whether to show usage counts per tag'),
+    helperText: z.string().optional().describe('Helper text to display'),
+  }),
+);
 
-const EntityTagsPickerReturnValueSchema = z.array(z.string());
+const EntityTagsPickerReturnValueSchema = makeJsonSchemaFromZod(
+  z.array(z.string()),
+);
 
 /**
  * The input props that can be specified under `ui:options` for the
@@ -40,17 +43,13 @@ const EntityTagsPickerReturnValueSchema = z.array(z.string());
  *
  * @public
  */
-export type EntityTagsPickerUiOptions = z.infer<
-  typeof EntityTagsPickerUiOptionsSchema
->;
+export type EntityTagsPickerUiOptions =
+  typeof EntityTagsPickerUiOptionsSchema.schemaType;
 
-export type EntityTagsPickerReturnValue = z.infer<
-  typeof EntityTagsPickerReturnValueSchema
->;
+export type EntityTagsPickerReturnValue =
+  typeof EntityTagsPickerReturnValueSchema.schemaType;
 
 export const EntityTagsPickerSchema = {
-  uiOptions: zodToJsonSchema(EntityTagsPickerUiOptionsSchema) as JSONSchema7,
-  returnValue: zodToJsonSchema(
-    EntityTagsPickerReturnValueSchema,
-  ) as JSONSchema7,
+  uiOptions: EntityTagsPickerUiOptionsSchema.jsonSchema,
+  returnValue: EntityTagsPickerReturnValueSchema.jsonSchema,
 };
