@@ -1,5 +1,5 @@
 ---
-'@backstage/version-bridge': minor
+'@backstage/version-bridge': patch
 ---
 
 Debuggable/inspectable versioned values
