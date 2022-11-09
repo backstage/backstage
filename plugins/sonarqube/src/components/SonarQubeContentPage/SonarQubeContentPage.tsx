@@ -32,19 +32,16 @@ import { SonarQubeCard } from '../SonarQubeCard';
 export type SonarQubeContentPageProps = {
   title?: string;
   supportTitle?: string;
-} & React.ComponentPropsWithoutRef<'div'>;
+};
 
 /** @public */
-export const SonarQubeContentPage = ({
-  title = 'SonarQube Dashboard',
-  supportTitle,
-  ...otherProps
-}: SonarQubeContentPageProps) => {
+export const SonarQubeContentPage = (props: SonarQubeContentPageProps) => {
   const { entity } = useEntity();
+  const { title, supportTitle } = props;
 
   return isSonarQubeAvailable(entity) ? (
-    <Content {...otherProps}>
-      <ContentHeader title={title}>
+    <Content>
+      <ContentHeader title={title ?? 'SonarQube Dashboard'}>
         {supportTitle && <SupportButton>{supportTitle}</SupportButton>}
       </ContentHeader>
       <SonarQubeCard />

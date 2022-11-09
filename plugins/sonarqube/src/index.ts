@@ -21,7 +21,13 @@
  * @packageDocumentation
  */
 
-export * from './components';
+export type {
+  DuplicationRating,
+  SonarQubeContentPageProps,
+  SONARQUBE_PROJECT_KEY_ANNOTATION,
+  isSonarQubeAvailable,
+} from './components';
+
 export {
   sonarQubePlugin,
   sonarQubePlugin as plugin,
