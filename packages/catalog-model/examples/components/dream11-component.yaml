@@ -1,13 +1,13 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: myservice
-  description: Artist main website
+  name: dream11-service
+  description: Dream11 Service
   tags:
     - demo
 spec:
   type: website
-  lifecycle: production
   owner: sre
-  system: artist-engagement-portal
+  system: sre
+  lifecycle: production
   consumesApis: ['component:artist-lookup']
