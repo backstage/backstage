@@ -18,3 +18,5 @@ spec:
     - ./components/wayback-archive-ingestion-component.yaml
     - ./components/wayback-archive-storage-component.yaml
     - ./components/wayback-search-component.yaml
+    - ./components/myservice-component.yaml
+    - ./components/dream11-component.yaml
