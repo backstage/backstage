@@ -9281,15 +9281,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:8.3.10":
-  version: 8.3.10
-  resolution: "@graphql-tools/merge@npm:8.3.10"
+"@graphql-tools/merge@npm:8.3.11":
+  version: 8.3.11
+  resolution: "@graphql-tools/merge@npm:8.3.11"
   dependencies:
-    "@graphql-tools/utils": 9.0.1
+    "@graphql-tools/utils": 9.1.0
     tslib: ^2.4.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: dbe2c6faee8034339c5708a43157b185b8523c131dde1b37bb511d96ac527da51f5be9501d9ffe0a8c424e419d64bb8415ec96e8443d3d0a5a6582a37b0aafa2
+  checksum: 3cd16577f1ea1bcc389d232fa620adc0fefc91a6b42b48e7bb5e7bb67b67d206d409a9a8d60cac4d8cd5f0f1c5353369f7c5eb4054b44ce2277545e1fd1de17f
   languageName: node
   linkType: hard
 
@@ -9429,16 +9429,16 @@ __metadata:
   linkType: hard
 
 "@graphql-tools/schema@npm:^9.0.0":
-  version: 9.0.8
-  resolution: "@graphql-tools/schema@npm:9.0.8"
+  version: 9.0.9
+  resolution: "@graphql-tools/schema@npm:9.0.9"
   dependencies:
-    "@graphql-tools/merge": 8.3.10
-    "@graphql-tools/utils": 9.0.1
+    "@graphql-tools/merge": 8.3.11
+    "@graphql-tools/utils": 9.1.0
     tslib: ^2.4.0
     value-or-promise: 1.0.11
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: fb29c29269622f2636ecccac868fa44a585622e16be74286a4cd97b259ba2d2dad5ec67e77b00117f70e500a9262e0edc58a35a83cea0618618993e5e1d809fb
+  checksum: 23620a993eff57723302315100d947b81664d6a1e00010ff293b3649f51ab423946d73920cce0ce822b7f7f42b99ea23240902ff47df3d252639613c0df7b971
   languageName: node
   linkType: hard
 
@@ -9547,14 +9547,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:9.0.1":
-  version: 9.0.1
-  resolution: "@graphql-tools/utils@npm:9.0.1"
+"@graphql-tools/utils@npm:9.1.0":
+  version: 9.1.0
+  resolution: "@graphql-tools/utils@npm:9.1.0"
   dependencies:
     tslib: ^2.4.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: a41221d8568bfaafa76526eaa89550d67965c43e0cd1ff94979f61c117d0caf880938799b351c4b637ce26309ba5d2ef8c4a657298f5d46702f43759b89bfa05
+  checksum: dcf08df3bd1715e25e3b80bf2dd332376239ebcd2a9b93f4d6b72a7bd3feffe2207b9683bb8fcaed9d0d1286f701d0686fe99ac803b91c0df54509b869c0554d
   languageName: node
   linkType: hard
 
