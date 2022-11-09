@@ -37,7 +37,14 @@ export interface BackstageSignInResult {
  * @public
  */
 export type IdentityApiGetIdentityRequest = {
+  /**
+   * Request object sent by an express router to authenticate.
+   */
   request: Request<unknown>;
+  /**
+   * This parameter allows the IdentityApi to decide whether it should fail if the
+   * request cannot be authenticated.
+   */
   optional?: boolean;
 };
 

@@ -86,7 +86,6 @@ export class DefaultIdentityClient implements IdentityApi {
   > {
     let id: BackstageIdentityResponse | undefined;
     if (!request.headers.authorization) {
-      console.log(JSON.stringify(request));
       if (!optional) {
         throw new AuthenticationError('Identity was not provided');
       }
@@ -101,7 +100,6 @@ export class DefaultIdentityClient implements IdentityApi {
         throw new AuthenticationError(e.message);
       }
     }
-    console.log(`in code hello ${JSON.stringify(id)}`);
     if (!id && !optional) {
       throw new AuthenticationError('Identity was not found');
     }
