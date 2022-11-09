@@ -6369,6 +6369,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-events-backend-module-gerrit@workspace:plugins/events-backend-module-gerrit":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-events-backend-module-gerrit@workspace:plugins/events-backend-module-gerrit"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-events-backend-test-utils": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    supertest: ^6.1.3
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-events-backend-module-github@workspace:plugins/events-backend-module-github":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-module-github@workspace:plugins/events-backend-module-github"
