@@ -3700,7 +3700,7 @@ __metadata:
     pluralize: ^8.0.0
     prop-types: ^15.7.2
     qs: ^6.9.4
-    rc-progress: 3.4.0
+    rc-progress: 3.4.1
     react-helmet: 6.1.0
     react-hook-form: ^7.12.2
     react-markdown: ^8.0.0
@@ -5412,7 +5412,7 @@ __metadata:
     "@types/node": "*"
     cross-fetch: ^3.1.5
     msw: ^0.48.0
-    rc-progress: 3.4.0
+    rc-progress: 3.4.1
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -7292,7 +7292,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.48.0
-    rc-progress: 3.4.0
+    rc-progress: 3.4.1
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -33161,6 +33161,20 @@ __metadata:
     react: ">=16.9.0"
     react-dom: ">=16.9.0"
   checksum: a4b243ee89ecbf1a6ca9b805337c7505f5020f549b43af90c691273a55e4a6ef5952e02b88391b1b08dfb39dcbe41751a31a5195582b6dda267afdce8cf9e22b
+  languageName: node
+  linkType: hard
+
+"rc-progress@npm:3.4.1":
+  version: 3.4.1
+  resolution: "rc-progress@npm:3.4.1"
+  dependencies:
+    "@babel/runtime": ^7.10.1
+    classnames: ^2.2.6
+    rc-util: ^5.16.1
+  peerDependencies:
+    react: ">=16.9.0"
+    react-dom: ">=16.9.0"
+  checksum: d4dce5231ea29bfa866935a59f05473711f9dfc944f95cc78b0fdcd1508a063983cc58973f54c2b20797f0b0f480c4a2b84aaa2ca185158c14800ec659163880
   languageName: node
   linkType: hard
 
