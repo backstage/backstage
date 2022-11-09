@@ -31,6 +31,11 @@ export type StepActions = {
   canRestart?: () => boolean;
   onRestart?: () => void;
   restartText?: string;
+
+  showSkip?: boolean;
+  canSkip?: () => boolean;
+  onSkip?: () => void;
+  skipText?: string;
 };
 
 export type StepProps = {
