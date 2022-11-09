@@ -28,7 +28,7 @@ export type ShutdownHookOptions = {
  **/
 export interface BackendLifecycle {
   /**
-   * Register a function to be called and when the backend is shutting down.
+   * Register a function to be called when the backend is shutting down.
    */
   addShutdownHook(options: ShutdownHookOptions): void;
 }
