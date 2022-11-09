@@ -1,5 +1,18 @@
 # @backstage/plugin-explore
 
+## 0.3.42-next.1
+
+### Patch Changes
+
+- 5c25ce6d9e: Added a section to explore plugin README that describes the customization of explore tools content.
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.2.1-next.1
+  - @backstage/plugin-explore-react@0.0.23-next.0
+
 ## 0.3.42-next.0
 
 ### Patch Changes

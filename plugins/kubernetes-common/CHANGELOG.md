@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.4.4-next.1
+
+### Patch Changes
+
+- cfb30b700c: Pin `@kubernetes/client-node` version to `0.17.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.3-next.0
+
 ## 0.4.4-next.0
 
 ### Patch Changes

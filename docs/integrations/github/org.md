@@ -38,7 +38,7 @@ schedule it:
 
 ```diff
  // packages/backend/src/plugins/catalog.ts
-+import { GitHubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
++import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
 
  export default async function createPlugin(
    env: PluginEnvironment,
@@ -48,7 +48,7 @@ schedule it:
 +  // The org URL below needs to match a configured integrations.github entry
 +  // specified in your app-config.
 +  builder.addEntityProvider(
-+    GitHubOrgEntityProvider.fromConfig(env.config, {
++    GithubOrgEntityProvider.fromConfig(env.config, {
 +      id: 'production',
 +      orgUrl: 'https://github.com/backstage',
 +      logger: env.logger,

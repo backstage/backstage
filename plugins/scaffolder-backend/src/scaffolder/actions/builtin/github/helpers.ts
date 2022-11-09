@@ -247,6 +247,13 @@ export async function initRepoPushAndProtect(
   client: Octokit,
   repo: string,
   requireCodeOwnerReviews: boolean,
+  bypassPullRequestAllowances:
+    | {
+        users?: string[];
+        teams?: string[];
+        apps?: string[];
+      }
+    | undefined,
   requiredStatusCheckContexts: string[],
   requireBranchesToBeUpToDate: boolean,
   config: Config,
@@ -289,6 +296,7 @@ export async function initRepoPushAndProtect(
         repoName: repo,
         logger,
         defaultBranch,
+        bypassPullRequestAllowances,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
