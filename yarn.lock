@@ -6968,11 +6968,11 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.57
     "@react-hookz/web": ^15.0.0
     "@rjsf/core": ^3.2.1
-    "@rjsf/core-v5": "npm:@rjsf/core@^5.0.0-beta.10"
+    "@rjsf/core-v5": "npm:@rjsf/core@^5.0.0-beta.12"
     "@rjsf/material-ui": ^3.2.1
-    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@^5.0.0-beta.10"
-    "@rjsf/utils": ^5.0.0-beta.10
-    "@rjsf/validator-ajv8": ^5.0.0-beta.10
+    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@^5.0.0-beta.12"
+    "@rjsf/utils": ^5.0.0-beta.12
+    "@rjsf/validator-ajv8": ^5.0.0-beta.12
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
@@ -12286,9 +12286,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/core-v5@npm:@rjsf/core@^5.0.0-beta.10":
-  version: 5.0.0-beta.10
-  resolution: "@rjsf/core@npm:5.0.0-beta.10"
+"@rjsf/core-v5@npm:@rjsf/core@^5.0.0-beta.12":
+  version: 5.0.0-beta.12
+  resolution: "@rjsf/core@npm:5.0.0-beta.12"
   dependencies:
     lodash: ^4.17.15
     lodash-es: ^4.17.15
@@ -12297,7 +12297,7 @@ __metadata:
   peerDependencies:
     "@rjsf/utils": ^5.0.0-beta.1
     react: ^16.14.0 || >=17
-  checksum: c3e8852c8fedc6ae23da610033e0bded1bd198cebf7f54a5cdcf3b42d22a3b3864da9c735300cadc7d756f26055a7e62408d51a5ebdb906be9b1bf85bf3712ed
+  checksum: 6c3fe058a29716cb8d31d436e284aa7ab51ec3c272dc34d49275ea0033c3350a2486249767d454bca20a4ccd00ed910f7ed518d2ebe30693b0218db1b3c990ac
   languageName: node
   linkType: hard
 
@@ -12320,16 +12320,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/material-ui-v5@npm:@rjsf/material-ui@^5.0.0-beta.10":
-  version: 5.0.0-beta.10
-  resolution: "@rjsf/material-ui@npm:5.0.0-beta.10"
+"@rjsf/material-ui-v5@npm:@rjsf/material-ui@^5.0.0-beta.12":
+  version: 5.0.0-beta.12
+  resolution: "@rjsf/material-ui@npm:5.0.0-beta.12"
   peerDependencies:
     "@material-ui/core": ^4.12.3
     "@material-ui/icons": ^4.11.2
     "@rjsf/core": ^5.0.0-beta.1
     "@rjsf/utils": ^5.0.0-beta.1
     react: ^16.14.0 || >=17
-  checksum: c6e602fc331ec37524837123f42e605389c8ea1a9207ed3e9052de380b91fb90365aa962b0020197f0fb2bcbd87baac34bef7dbbb31ea4b57b6587d0fcd81a09
+  checksum: 9b67c64956e74af6230d722fe9510fc50e6133c6913642f5bcbcb8da38b7ff5d912bc90a6b6692eb3df315ba9b330136556fb41854fb351e432433d584c1a969
   languageName: node
   linkType: hard
 
@@ -12345,7 +12345,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/utils@npm:^5.0.0-beta.10":
+"@rjsf/utils@npm:^5.0.0-beta.12":
   version: 5.0.0-beta.12
   resolution: "@rjsf/utils@npm:5.0.0-beta.12"
   dependencies:
@@ -12360,7 +12360,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/validator-ajv8@npm:^5.0.0-beta.10":
+"@rjsf/validator-ajv8@npm:^5.0.0-beta.12":
   version: 5.0.0-beta.12
   resolution: "@rjsf/validator-ajv8@npm:5.0.0-beta.12"
   dependencies:
