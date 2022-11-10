@@ -26,8 +26,13 @@ export interface BackendFeature {
 
 // @public (undocumented)
 export interface BackendLifecycle {
-  addShutdownHook(options: ShutdownHookOptions): void;
+  addShutdownHook(options: BackendLifecycleShutdownHook): void;
 }
+
+// @public (undocumented)
+export type BackendLifecycleShutdownHook = {
+  fn: () => void | Promise<void>;
+};
 
 // @public (undocumented)
 export interface BackendModuleConfig<TOptions> {
@@ -241,11 +246,6 @@ export type ServiceRef<
   T: TService;
   toString(): string;
   $$ref: 'service';
-};
-
-// @public (undocumented)
-export type ShutdownHookOptions = {
-  fn: () => Promise<void>;
 };
 
 // @public (undocumented)
