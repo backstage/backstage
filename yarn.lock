@@ -8386,13 +8386,13 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0":
-  version: 6.4.1
-  resolution: "@codemirror/view@npm:6.4.1"
+  version: 6.4.2
+  resolution: "@codemirror/view@npm:6.4.2"
   dependencies:
     "@codemirror/state": ^6.0.0
     style-mod: ^4.0.0
     w3c-keyname: ^2.2.4
-  checksum: 51f8e9bf1701cd490708784fd42a90dd9b2ad84aaebfacdbcfa9093e7f99ded38093ac49bc9eb037924b7734a58ed854a19621d931cce3f7962c2a0b30fecc23
+  checksum: c79982563ad90adf1d7504b28bb1304a73f669c69634a1630b51521e4023b3630c15601daf2857683b34a86cac4ca24dc5b538a9d944616617f99c1a7da7faa6
   languageName: node
   linkType: hard
 
