@@ -28,7 +28,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 /** @public */
-export type SubRoute = {
+export type SettingsLayoutRouteProps = {
   path: string;
   title: string;
   children: JSX.Element;
@@ -37,7 +37,7 @@ export type SubRoute = {
 
 const dataKey = 'plugin.user-settings.settingsLayoutRoute';
 
-const Route: (props: SubRoute) => null = () => null;
+const Route: (props: SettingsLayoutRouteProps) => null = () => null;
 attachComponentData(Route, dataKey, true);
 
 // This causes all mount points that are discovered within this route to use the path of the route itself
@@ -64,7 +64,7 @@ export const SettingsLayout = (props: SettingsLayoutProps) => {
         withStrictError:
           'Child of SettingsLayout must be an SettingsLayout.Route',
       })
-      .getElements<SubRoute>()
+      .getElements<SettingsLayoutRouteProps>()
       .map(child => child.props),
   );
 

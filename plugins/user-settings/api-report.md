@@ -47,7 +47,7 @@ export const Settings: (props: { icon?: IconComponent }) => JSX.Element;
 // @public (undocumented)
 export const SettingsLayout: {
   (props: SettingsLayoutProps): JSX.Element;
-  Route: (props: SubRoute) => null;
+  Route: (props: SettingsLayoutRouteProps) => null;
 };
 
 // @public (undocumented)
@@ -58,7 +58,7 @@ export type SettingsLayoutProps = {
 };
 
 // @public (undocumented)
-export type SubRoute = {
+export type SettingsLayoutRouteProps = {
   path: string;
   title: string;
   children: JSX.Element;

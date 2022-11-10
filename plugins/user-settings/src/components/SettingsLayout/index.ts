@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export type { SettingsLayoutProps, SubRoute } from './SettingsLayout';
+export type {
+  SettingsLayoutProps,
+  SettingsLayoutRouteProps,
+} from './SettingsLayout';
 export { SettingsLayout } from './SettingsLayout';
