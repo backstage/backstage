@@ -33,13 +33,22 @@ export const isSonarQubeAvailable: (entity: Entity) => boolean;
 export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 
 // @public (undocumented)
+export const SonarQubeCard: (props: {
+  variant?: InfoCardVariants;
+  duplicationRatings?: DuplicationRating[];
+}) => JSX.Element;
+
+// @public (undocumented)
+export const SonarQubeContentPage: (
+  props: SonarQubeContentPageProps,
+) => JSX.Element;
+
+// @public (undocumented)
 export type SonarQubeContentPageProps = {
   title?: string;
   supportTitle?: string;
 };
 
 // @public (undocumented)
-const sonarQubePlugin: BackstagePlugin<{}, {}, {}>;
-export { sonarQubePlugin as plugin };
-export { sonarQubePlugin };
+export const sonarQubePlugin: BackstagePlugin<{}, {}, {}>;
 ```

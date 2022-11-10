@@ -21,16 +21,5 @@
  * @packageDocumentation
  */
 
-export type {
-  DuplicationRating,
-  SonarQubeContentPageProps,
-  SONARQUBE_PROJECT_KEY_ANNOTATION,
-  isSonarQubeAvailable,
-} from './components';
-
-export {
-  sonarQubePlugin,
-  sonarQubePlugin as plugin,
-  EntitySonarQubeCard,
-  EntitySonarQubeContentPage,
-} from './plugin';
+export * from './components';
+export * from './plugin';

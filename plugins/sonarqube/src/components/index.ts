@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-export * from './SonarQubeCard';
-export * from './SonarQubeContentPage';
+export { SonarQubeCard } from './SonarQubeCard';
+export type { DuplicationRating } from './SonarQubeCard';
+export { SonarQubeContentPage } from './SonarQubeContentPage';
+export type { SonarQubeContentPageProps } from './SonarQubeContentPage';
 export {
   isSonarQubeAvailable,
   SONARQUBE_PROJECT_KEY_ANNOTATION,
