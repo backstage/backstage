@@ -536,6 +536,16 @@ export interface IntegrationsByType {
 }
 
 // @public
+export function parseAwsS3Url(
+  url: string,
+  config: AwsS3IntegrationConfig,
+): {
+  path: string;
+  bucket: string;
+  region: string;
+};
+
+// @public
 export function parseGerritGitilesUrl(
   config: GerritIntegrationConfig,
   url: string,

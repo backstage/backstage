@@ -19,3 +19,4 @@ export {
   readAwsS3IntegrationConfigs,
 } from './config';
 export type { AwsS3IntegrationConfig } from './config';
+export { parseAwsS3Url } from './helpers';
