@@ -31,7 +31,6 @@ import {
   EntitySearchBar,
   EntityTagPicker,
   UserListPicker,
-  EntityGenericPicker,
 } from '@backstage/plugin-catalog-react';
 import React, { ComponentType } from 'react';
 import { TemplateList } from '../TemplateList';
