@@ -12399,8 +12399,8 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-github-insights@npm:^2.0.5":
-  version: 2.1.0
-  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.1.0"
+  version: 2.1.1
+  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.1.1"
   dependencies:
     "@backstage/catalog-model": ^1.1.2
     "@backstage/core-components": ^0.11.2
@@ -12422,7 +12422,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
-  checksum: 33ba1f1cf2370bd0af8cd3b9ed117f432de13be7b7a17dc23d427195826a66f696d0dcf916e6105c02b595d6c1eb151e4d280c8f248f75e8cfff05e8480c7cd8
+  checksum: 95f02d4e51e88c7e3acf04b4fa54e68bf20800f0c21a22c4231bc6400cfae0cc11e7f0779f6d82e4d76eb6e97c25e7bd4ca869ada14e668d42741fd9b89f7351
   languageName: node
   linkType: hard
 
