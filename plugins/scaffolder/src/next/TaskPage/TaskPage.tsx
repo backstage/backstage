@@ -34,6 +34,16 @@ export const TaskPage = () => {
     [taskStream],
   );
 
+  const activeStep = React.useMemo(() => {
+    for (let i = steps.length - 1; i >= 0; i--) {
+      if (steps[i].status !== 'open') {
+        return i;
+      }
+    }
+
+    return 0;
+  }, [steps]);
+
   return (
     <Page themeId="website">
       <Header
@@ -44,7 +54,7 @@ export const TaskPage = () => {
       <Content>
         <Paper>
           <Box padding={2}>
-            <Stepper steps={steps} />
+            <Stepper steps={steps} activeStep={activeStep} />
           </Box>
         </Paper>
       </Content>

@@ -17,22 +17,47 @@ import React from 'react';
 import {
   Stepper as MuiStepper,
   Step as MuiStep,
+  StepButton as MuiStepButton,
   StepLabel as MuiStepLabel,
 } from '@material-ui/core';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
+import { Step } from '../../../components/hooks/useEventStream';
 
 interface StepperProps {
-  steps: TaskStep[];
+  steps: (TaskStep & Step)[];
+  activeStep?: number;
+  setActiveStep?: (step: number) => void;
 }
 
 export const Stepper = (props: StepperProps) => {
   return (
-    <MuiStepper activeStep={0} alternativeLabel variant="elevation">
-      {props.steps.map((step, index) => (
-        <MuiStep key={index}>
-          <MuiStepLabel>{step.name}</MuiStepLabel>
-        </MuiStep>
-      ))}
+    <MuiStepper
+      activeStep={props.activeStep}
+      alternativeLabel
+      variant="elevation"
+    >
+      {props.steps.map((step, index) => {
+        const isCompleted = step.status === 'completed';
+        const isFailed = step.status === 'failed';
+        const isActive = step.status === 'processing';
+        const isSkipped = step.status === 'skipped';
+
+        return (
+          <MuiStep key={index}>
+            <MuiStepButton>
+              <MuiStepLabel
+                StepIconProps={{
+                  completed: isCompleted,
+                  error: isFailed,
+                  active: isActive,
+                }}
+              >
+                {step.name}
+              </MuiStepLabel>
+            </MuiStepButton>
+          </MuiStep>
+        );
+      })}
     </MuiStepper>
   );
 };
