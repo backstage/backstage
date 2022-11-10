@@ -18,7 +18,7 @@ import React, { useMemo } from 'react';
 import { Page, Header, Content } from '@backstage/core-components';
 import { useTaskEventStream } from '../../components/hooks/useEventStream';
 import { useParams } from 'react-router';
-import { Box, Paper } from '@material-ui/core';
+import { Box, LinearProgress, Paper } from '@material-ui/core';
 import { Stepper } from './Stepper';
 
 export const TaskPage = () => {
@@ -52,7 +52,8 @@ export const TaskPage = () => {
         subtitle="View the status of a task"
       />
       <Content>
-        <Paper>
+        <Paper style={{ position: 'relative', overflow: 'hidden' }}>
+          <LinearProgress variant="indeterminate" value={100} />
           <Box padding={2}>
             <Stepper steps={steps} activeStep={activeStep} />
           </Box>
