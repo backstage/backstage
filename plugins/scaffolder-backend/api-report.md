@@ -799,6 +799,8 @@ export class TaskWorker {
   // (undocumented)
   static create(options: CreateWorkerOptions): Promise<TaskWorker>;
   // (undocumented)
+  protected onReadyToClaimTask(): Promise<void>;
+  // (undocumented)
   runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)
   start(): void;

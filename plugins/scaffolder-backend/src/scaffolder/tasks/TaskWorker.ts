@@ -117,7 +117,7 @@ export class TaskWorker {
     })();
   }
 
-  onReadyToClaimTask(): Promise<void> {
+  protected onReadyToClaimTask(): Promise<void> {
     if (this.taskQueue.pending < this.options.concurrentTasksLimit) {
       return Promise.resolve();
     }
