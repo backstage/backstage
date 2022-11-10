@@ -27,6 +27,7 @@ import { performance } from 'perf_hooks';
 import { Duration, DurationObjectUnits } from 'luxon';
 import { v4 } from 'uuid';
 
+/** @public */
 export class IncrementalIngestionEngine implements IterationEngine {
   restLength: Duration;
   backoff: DurationObjectUnits[];
@@ -193,7 +194,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
   async ingestOneBurst(id: string, signal: AbortSignal) {
     const lastMark = await this.manager.getLastMark(id);
 
-    const cursor = lastMark ? lastMark.cursor : void 0;
+    const cursor = lastMark ? lastMark.cursor : undefined;
     let sequence = lastMark ? lastMark.sequence + 1 : 0;
 
     const start = performance.now();
@@ -206,10 +207,15 @@ export class IncrementalIngestionEngine implements IterationEngine {
     await this.options.provider.around(async (context: unknown) => {
       let next = await this.options.provider.next(context, cursor);
       count++;
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
+      for (;;) {
         done = next.done;
-        await this.mark(id, sequence, next.entities, next.done, next.cursor);
+        await this.mark({
+          id,
+          sequence,
+          entities: next?.entities,
+          done: next.done,
+          cursor: next?.cursor,
+        });
         if (signal.aborted || next.done) {
           break;
         } else {
@@ -228,17 +234,20 @@ export class IncrementalIngestionEngine implements IterationEngine {
     return done;
   }
 
-  async mark(
-    id: string,
-    sequence: number,
-    entities: DeferredEntity[],
-    done: boolean,
-    cursor?: unknown,
-  ) {
+  async mark(options: {
+    id: string;
+    sequence: number;
+    entities?: DeferredEntity[];
+    done: boolean;
+    cursor?: unknown;
+  }) {
+    const { id, sequence, entities, done, cursor } = options;
     this.options.logger.debug(
       `incremental-engine: Ingestion '${id}': MARK ${
-        entities.length
-      } entities, cursor: ${JSON.stringify(cursor)}, done: ${done}`,
+        entities ? entities.length : 0
+      } entities, cursor: ${
+        cursor ? JSON.stringify(cursor) : 'none'
+      }, done: ${done}`,
     );
     const markId = v4();
 
@@ -251,24 +260,25 @@ export class IncrementalIngestionEngine implements IterationEngine {
       },
     });
 
-    if (entities.length > 0) {
+    if (entities && entities.length > 0) {
       await this.manager.createMarkEntities(markId, entities);
     }
 
-    const added = entities.map(deferred => ({
-      ...deferred,
-      entity: {
-        ...deferred.entity,
-        metadata: {
-          ...deferred.entity.metadata,
-          annotations: {
-            ...deferred.entity.metadata.annotations,
-            [INCREMENTAL_ENTITY_PROVIDER_ANNOTATION]:
-              this.options.provider.getProviderName(),
+    const added =
+      entities?.map(deferred => ({
+        ...deferred,
+        entity: {
+          ...deferred.entity,
+          metadata: {
+            ...deferred.entity.metadata,
+            annotations: {
+              ...deferred.entity.metadata.annotations,
+              [INCREMENTAL_ENTITY_PROVIDER_ANNOTATION]:
+                this.options.provider.getProviderName(),
+            },
           },
         },
-      },
-    }));
+      })) ?? [];
 
     const removed: DeferredEntity[] = done
       ? []

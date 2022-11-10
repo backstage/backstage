@@ -13,6 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './service/IncrementalCatalogBuilder';
-export * from './types';
-export * from './database/IncrementalIngestionDatabaseManager';
+export { IncrementalCatalogBuilder } from './service/IncrementalCatalogBuilder';
+export type { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
+export type {
+  EntityIteratorResult,
+  IncrementalEntityProvider,
+  IncrementalEntityProviderOptions,
+  IngestionRecord,
+  IngestionRecordUpdate,
+  IngestionUpsertIFace,
+  MarkRecord,
+  MarkRecordInsert,
+  INCREMENTAL_ENTITY_PROVIDER_ANNOTATION,
+  PluginEnvironment,
+} from './types';

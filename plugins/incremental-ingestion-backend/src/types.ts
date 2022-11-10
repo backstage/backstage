@@ -29,7 +29,7 @@ import type {
 import type { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
-import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
+import { IncrementalIngestionDatabaseManager } from './';
 /**
  * Entity annotation containing the incremental entity provider.
  *
@@ -100,12 +100,12 @@ export interface EntityIteratorResult<T> {
    * A value that marks the page of entities after this one. It will
    * be used to pass into the following invocation of `next()`
    */
-  cursor: T;
+  cursor?: T;
 
   /**
    * The entities to ingest.
    */
-  entities: DeferredEntity[];
+  entities?: DeferredEntity[];
 }
 
 /** @public */
@@ -225,7 +225,7 @@ export interface IngestionUpsertIFace {
 
 /**
  * This interface is for updating an existing ingestion record.
- *
+ * 
  * @public
  */
 export interface IngestionRecordUpdate {
@@ -235,7 +235,7 @@ export interface IngestionRecordUpdate {
 
 /**
  * The expected response from the `ingestion.ingestion_marks` table.
- *
+ * 
  * @public
  */
 export interface MarkRecord {
@@ -248,7 +248,7 @@ export interface MarkRecord {
 
 /**
  * The expected response from the `ingestion.ingestions` table.
- *
+ * 
  * @public
  */
 export interface IngestionRecord extends IngestionUpsertIFace {
@@ -262,7 +262,7 @@ export interface IngestionRecord extends IngestionUpsertIFace {
 
 /**
  * This interface supplies all the values for adding an ingestion mark.
- *
+ * 
  * @public
  */
 export interface MarkRecordInsert {

@@ -17,7 +17,7 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
+import { IncrementalIngestionDatabaseManager } from './';
 
 /** @public */
 export const createIncrementalProviderRouter = async (

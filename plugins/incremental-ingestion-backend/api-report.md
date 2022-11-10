@@ -10,21 +10,19 @@ import type { Config } from '@backstage/config';
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
 import { Duration } from 'luxon';
 import type { DurationObjectUnits } from 'luxon';
-import type { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { Knex } from 'knex';
 import type { Logger } from 'winston';
 import type { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import type { PluginDatabaseManager } from '@backstage/backend-common';
 import type { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Router } from 'express';
-import type { TaskFunction } from '@backstage/backend-tasks';
 import type { UrlReader } from '@backstage/backend-common';
 
 // @public
 export interface EntityIteratorResult<T> {
-  cursor: T;
+  cursor?: T;
   done: boolean;
-  entities: DeferredEntity[];
+  entities?: DeferredEntity[];
 }
 
 // @public
@@ -196,30 +194,6 @@ export interface IngestionUpsertIFace {
     | 'canceling'
     | 'interstitial'
     | 'backing off';
-}
-
-// @public (undocumented)
-export interface IterationEngine {
-  // (undocumented)
-  taskFn: TaskFunction;
-}
-
-// @public (undocumented)
-export interface IterationEngineOptions {
-  // (undocumented)
-  backoff?: IncrementalEntityProviderOptions['backoff'];
-  // (undocumented)
-  connection: EntityProviderConnection;
-  // (undocumented)
-  logger: Logger;
-  // (undocumented)
-  manager: IncrementalIngestionDatabaseManager;
-  // (undocumented)
-  provider: IncrementalEntityProvider<unknown, unknown>;
-  // (undocumented)
-  ready: Promise<void>;
-  // (undocumented)
-  restLength: DurationObjectUnits;
 }
 
 // @public

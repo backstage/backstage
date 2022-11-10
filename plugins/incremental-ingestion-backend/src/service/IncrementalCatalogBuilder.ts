@@ -27,12 +27,11 @@ import { IncrementalIngestionDatabaseManager } from '../database/IncrementalInge
 import { createIncrementalProviderRouter } from '../routes';
 
 class Deferred<T> implements Promise<T> {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  resolve: (value: T) => void;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  reject: (error: Error) => void;
+  #resolve?: (value: T) => void;
+  #reject?: (error: Error) => void;
+
+  get resolve() { return this.#resolve!; }
+  get reject() { return this.#reject!; }
 
   then: Promise<T>['then'];
   catch: Promise<T>['catch'];
@@ -40,8 +39,8 @@ class Deferred<T> implements Promise<T> {
 
   constructor() {
     const promise = new Promise<T>((resolve, reject) => {
-      this.resolve = resolve;
-      this.reject = reject;
+      this.#resolve = resolve;
+      this.#reject = reject;
     });
 
     this.then = promise.then.bind(promise);
@@ -98,8 +97,10 @@ export class IncrementalCatalogBuilder {
     options: IncrementalEntityProviderOptions,
   ) {
     const { burstInterval, burstLength, restLength } = options;
-    const { logger: catalogLogger, database, scheduler } = this.env;
+    const { logger: catalogLogger, scheduler } = this.env;
     const ready = this.ready;
+
+    const manager = this.manager;
 
     this.builder.addEntityProvider({
       getProviderName: provider.getProviderName.bind(provider),
@@ -109,10 +110,6 @@ export class IncrementalCatalogBuilder {
         });
 
         logger.info(`Connecting`);
-
-        const client = await database.getClient();
-
-        const manager = new IncrementalIngestionDatabaseManager({ client });
 
         const engine = new IncrementalIngestionEngine({
           ...options,
