@@ -20,7 +20,7 @@ import { createServiceRef } from '../system/types';
  * @public
  **/
 export type BackendLifecycleShutdownHook = {
-  fn: () => Promise<void>;
+  fn: () => void | Promise<void>;
 };
 
 /**

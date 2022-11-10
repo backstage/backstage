@@ -39,8 +39,8 @@ class BackendLifecycleImpl {
     this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
     await Promise.all(
       this.#shutdownTasks.map(hook =>
-        hook
-          .fn()
+        Promise.resolve()
+          .then(() => hook.fn())
           .catch(e => {
             this.logger.error(
               `Shutdown hook registered by plugin '${hook.pluginId}' failed with: ${e}`,
