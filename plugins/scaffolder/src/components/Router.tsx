@@ -75,12 +75,9 @@ export type RouterProps = {
     actions?: boolean;
   };
   /**
-   * Options for the custom filter on the scaffolder page
+   * Options for any filter on the scaffolder page
    */
-  customFilters?: Array<{
-    name: string;
-    filterValue: string;
-  }>;
+  customFilters?: Array<React.ReactElement>;
 };
 
 /**

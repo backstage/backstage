@@ -60,10 +60,7 @@ export type ScaffolderPageProps = {
     title?: string;
     subtitle?: string;
   };
-  customFilters?: Array<{
-    name: string;
-    filterValue: string;
-  }>;
+  customFilters?: Array<React.ReactElement>;
 };
 
 export const ScaffolderPageContents = ({
@@ -122,14 +119,11 @@ export const ScaffolderPageContents = ({
             />
             <TemplateTypePicker />
             <EntityTagPicker />
-            {customFilters &&
-              customFilters.map((filter, index) => (
-                <EntityGenericPicker
-                  key={index}
-                  name={filter.name}
-                  filterValue={filter.filterValue}
-                />
-              ))}
+            {customFilters && customFilters.map((component, index) => (
+                  <React.Fragment key={index}>
+                    {component}
+                  </React.Fragment>
+            ))} 
           </CatalogFilterLayout.Filters>
           <CatalogFilterLayout.Content>
             {groups &&

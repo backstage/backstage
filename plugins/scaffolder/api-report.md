@@ -399,10 +399,7 @@ export type RouterProps = {
     editor?: boolean;
     actions?: boolean;
   };
-  customFilters?: Array<{
-    name: string;
-    filterValue: string;
-  }>;
+  customFilters?: Array<React.ReactElement>;
 };
 
 // @public @deprecated (undocumented)
