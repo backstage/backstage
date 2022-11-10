@@ -104,20 +104,16 @@ import {
 } from '@backstage/plugin-user-settings';
 import { AdvancedSettings } from './advancedSettings';
 
-export const SettingsPage = () => {
-  return (
-    <SettingsLayout>
-      <SettingsLayout.Route path="general" title="General">
-        <UserSettingsGeneral />
-      </SettingsLayout.Route>
-      <SettingsLayout.Route path="advanced" title="Advanced">
-        <AdvancedSettings />
-      </SettingsLayout.Route>
-    </SettingsLayout>
-  );
-};
-
-export const settingsPage = <SettingsPage />;
+export const settingsPage = () => (
+  <SettingsLayout>
+    <SettingsLayout.Route path="general" title="General">
+      <UserSettingsGeneral />
+    </SettingsLayout.Route>
+    <SettingsLayout.Route path="advanced" title="Advanced">
+      <AdvancedSettings />
+    </SettingsLayout.Route>
+  </SettingsLayout>
+);
 ```
 
 Now register the new settings page in `packages/app/src/App.tsx`:
