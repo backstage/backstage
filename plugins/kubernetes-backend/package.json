@@ -43,6 +43,8 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
     "@google-cloud/container": "^4.0.0",
     "@jest-mock/express": "^2.0.1",
     "@kubernetes/client-node": "0.18.0",
@@ -63,7 +65,8 @@
     "node-fetch": "^2.6.7",
     "stream-buffers": "^3.0.2",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^4.0.0",
+    "zod": "^3.11.6"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

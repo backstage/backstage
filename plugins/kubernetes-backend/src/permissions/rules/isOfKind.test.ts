@@ -18,7 +18,7 @@ import { isOfKind } from './isOfKind';
 
 describe('isOfKind', () => {
   describe('toQuery', () => {
-    it('infers apigroup and version given pods ', () => {
+    it('infers apigroup and version given pods', () => {
       expect(
         isOfKind.toQuery({
           kind: 'pods',
@@ -30,7 +30,7 @@ describe('isOfKind', () => {
         plural: 'pods',
       });
     });
-    it('infers apigroup and version given deployments ', () => {
+    it('infers apigroup and version given deployments', () => {
       expect(
         isOfKind.toQuery({
           kind: 'deployments',
@@ -42,7 +42,7 @@ describe('isOfKind', () => {
         plural: 'deployments',
       });
     });
-    it('throws error when provided an invalid kind ', () => {
+    it('throws error when provided an invalid kind', () => {
       expect(() => {
         isOfKind.toQuery({ kind: 'lobsters' });
       }).toThrow("Invalid Kind 'lobsters'");

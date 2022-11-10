@@ -28,7 +28,7 @@ import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { CatalogClient } from '@backstage/catalog-client';
-import { PermissionEvaluator } from '../../../permission-common/src';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 export interface ApplicationOptions {
   enableCors: boolean;
@@ -48,7 +48,7 @@ export async function createStandaloneApplication(
     discoveryApi: SingleHostDiscovery.fromConfig(config),
   });
 
-  const permissions: PermissionEvaluator = <PermissionEvaluator>{};
+  const permissions = {} as PermissionEvaluator;
 
   app.use(helmet());
   if (enableCors) {

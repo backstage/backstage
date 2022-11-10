@@ -21,7 +21,7 @@ import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { PermissionEvaluator } from '../../../permission-common/src';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 /**
  *

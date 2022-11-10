@@ -31,11 +31,10 @@ import {
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { CatalogApi } from '@backstage/catalog-client';
-import { 
+import {
   PermissionEvaluator,
-  AuthorizeResult
-
- } from '@backstage/plugin-permission-common';
+  AuthorizeResult,
+} from '@backstage/plugin-permission-common';
 
 describe('KubernetesBuilder', () => {
   let app: express.Express;
@@ -79,13 +78,13 @@ describe('KubernetesBuilder', () => {
     permissions = {
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
-    }
+    };
 
     const { router } = await KubernetesBuilder.createBuilder({
       config,
       logger,
       catalogApi,
-      permissions
+      permissions,
     })
       .setObjectsProvider(kubernetesFanOutHandler)
       .setClusterSupplier(clusterSupplier)
@@ -100,7 +99,9 @@ describe('KubernetesBuilder', () => {
 
   describe('get /clusters', () => {
     it('happy path: lists clusters', async () => {
-      permissions.authorize.mockReturnValue(Promise.resolve([{result: AuthorizeResult.ALLOW}]))
+      permissions.authorize.mockReturnValue(
+        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+      );
 
       const response = await request(app).get('/clusters');
 
@@ -120,14 +121,13 @@ describe('KubernetesBuilder', () => {
     });
 
     it('not allowed error: Get a 403 response if Permission Policy is in place that blocks endpoint', async () => {
-      permissions.authorize.mockReturnValue(Promise.resolve([{result: AuthorizeResult.DENY}]))
+      permissions.authorize.mockReturnValue(
+        Promise.resolve([{ result: AuthorizeResult.DENY }]),
+      );
       const response = await request(app).get('/clusters');
 
       expect(response.status).toEqual(403);
-      
     });
-
-
   });
   describe('post /services/:serviceId', () => {
     it('happy path: lists kubernetes objects without auth in request body', async () => {
@@ -270,7 +270,7 @@ describe('KubernetesBuilder', () => {
         logger,
         config,
         catalogApi,
-        permissions
+        permissions,
       })
         .setClusterSupplier(clusterSupplier)
         .setServiceLocator(serviceLocator)

@@ -348,6 +348,7 @@ describe('resourcesRoutes', () => {
     });
 
     describe('permissions framework is enabled', () => {
+      // eslint-disable-next-line jest/expect-expect
       it('returns a 403 response if Permission Policy is in place that blocks endpoint', async () => {
         permissions.authorizeConditional.mockReturnValue(
           Promise.resolve([{ result: AuthorizeResult.DENY }]),

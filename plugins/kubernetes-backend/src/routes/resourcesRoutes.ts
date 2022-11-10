@@ -31,7 +31,7 @@ import {
 import {
   kubernetesWorkloadResourcesReadPermission,
   kubernetesCustomResourcesReadPermission,
-} from '../../../kubernetes-common/src/permissions';
+} from '@backstage/plugin-kubernetes-common';
 import { NotAllowedError } from '@backstage/errors';
 
 export const addResourceRoutesToRouter = (
@@ -102,10 +102,10 @@ export const addResourceRoutesToRouter = (
       entity,
       auth: req.body.auth,
     });
-    var editedResponse = response;
+    let editedResponse = response;
 
     if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
-      var permissionCondition =
+      const permissionCondition =
         authorizeResponse.conditions as PermissionCondition;
 
       if (
@@ -113,8 +113,8 @@ export const addResourceRoutesToRouter = (
         permissionCondition.params.kind !== null &&
         permissionCondition.params.kind !== undefined
       ) {
-        let paramString = permissionCondition.params.kind as string;
-        var filteredResponse = {
+        const paramString = permissionCondition.params.kind as string;
+        const filteredResponse = {
           items: response.items.map(clusterObjects => ({
             ...clusterObjects,
             resources: clusterObjects.resources.filter(fetchResponse => {

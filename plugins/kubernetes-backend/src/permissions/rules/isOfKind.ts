@@ -36,7 +36,7 @@ export const isOfKind = createKubernetesPermissionRule({
   }),
   apply: (resource, { kind }) => kind === resource.type,
   toQuery({ kind }): PermissionCriteria<ObjectToFetch> {
-    var defaultObject = DEFAULT_OBJECTS.find(
+    const defaultObject = DEFAULT_OBJECTS.find(
       ({ objectType }) => objectType === kind,
     );
     if (defaultObject === undefined) {
