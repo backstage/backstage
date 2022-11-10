@@ -24,8 +24,13 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 
+const CALLBACKS = ['SIGTERM', 'SIGINT', 'beforeExit'];
 class BackendLifecycleImpl {
-  constructor(private readonly logger: Logger) {}
+  constructor(private readonly logger: Logger) {
+    CALLBACKS.map(signal => process.on(signal, () => this.shutdown()));
+  }
+
+  #isCalled = false;
   #shutdownTasks: Array<BackendLifecycleShutdownHook & { pluginId: string }> =
     [];
 
@@ -36,6 +41,11 @@ class BackendLifecycleImpl {
   }
 
   async shutdown(): Promise<void> {
+    if (this.#isCalled) {
+      return;
+    }
+    this.#isCalled = true;
+
     this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
     await Promise.all(
       this.#shutdownTasks.map(hook =>
@@ -47,8 +57,8 @@ class BackendLifecycleImpl {
             );
           })
           .then(() =>
-            this.logger.debug(
-              `Successfully ran hook registered by plugin ${hook.pluginId}`,
+            this.logger.info(
+              `Successfully ran shutdown hook registered by plugin ${hook.pluginId}`,
             ),
           ),
       ),
@@ -77,7 +87,6 @@ export const lifecycleFactory = createServiceFactory({
     const rootLifecycle = new BackendLifecycleImpl(
       loggerToWinstonLogger(logger),
     );
-    process.on('SIGTERM', async () => await rootLifecycle.shutdown());
     return async ({ plugin }) => {
       return new PluginScopedLifecycleImpl(rootLifecycle, plugin.getId());
     };
