@@ -3,4 +3,4 @@
 '@backstage/backend-common': patch
 ---
 
-Expose useful AWS S3 URL parsing functionality for URL integration.  
+Expose useful AWS S3 URL parsing functionality for URL integration.
