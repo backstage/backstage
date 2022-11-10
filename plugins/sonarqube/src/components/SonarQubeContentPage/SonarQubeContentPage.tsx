@@ -34,7 +34,6 @@ export type SonarQubeContentPageProps = {
   supportTitle?: string;
 };
 
-/** @public */
 export const SonarQubeContentPage = (props: SonarQubeContentPageProps) => {
   const { entity } = useEntity();
   const { title, supportTitle } = props;

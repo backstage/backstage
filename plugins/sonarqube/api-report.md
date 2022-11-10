@@ -39,11 +39,6 @@ export const SonarQubeCard: (props: {
 }) => JSX.Element;
 
 // @public (undocumented)
-export const SonarQubeContentPage: (
-  props: SonarQubeContentPageProps,
-) => JSX.Element;
-
-// @public (undocumented)
 export type SonarQubeContentPageProps = {
   title?: string;
   supportTitle?: string;

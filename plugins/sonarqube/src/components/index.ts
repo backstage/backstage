@@ -16,7 +16,6 @@
 
 export { SonarQubeCard } from './SonarQubeCard';
 export type { DuplicationRating } from './SonarQubeCard';
-export { SonarQubeContentPage } from './SonarQubeContentPage';
 export type { SonarQubeContentPageProps } from './SonarQubeContentPage';
 export {
   isSonarQubeAvailable,
