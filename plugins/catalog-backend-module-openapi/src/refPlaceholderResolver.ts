@@ -16,10 +16,10 @@
 import { PlaceholderResolverParams } from '@backstage/plugin-catalog-backend';
 import { JsonValue } from '@backstage/types';
 import { processingResult } from '@backstage/plugin-catalog-node';
-import { bundleOpenApiSpecification } from './lib';
+import { bundleFileWithRefs } from './lib';
 
 /** @public */
-export async function openApiPlaceholderResolver(
+export async function refPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
   const { content, url } = await readTextLocation(params);
@@ -27,7 +27,7 @@ export async function openApiPlaceholderResolver(
   params.emit(processingResult.refresh(`url:${url}`));
 
   try {
-    return await bundleOpenApiSpecification(
+    return await bundleFileWithRefs(
       content,
       url,
       params.read,

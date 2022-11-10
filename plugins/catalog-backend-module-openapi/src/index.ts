@@ -13,5 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { refPlaceholderResolver } from './refPlaceholderResolver';
+
 export { OpenApiRefProcessor } from './OpenApiRefProcessor';
-export { openApiPlaceholderResolver } from './openApiPlaceholderResolver';
+export { refPlaceholderResolver } from './refPlaceholderResolver';
+/**
+ * @public
+ * @deprecated replaced by refPlaceholderResolver
+ */
+export const openApiPlaceholderResolver = refPlaceholderResolver;
