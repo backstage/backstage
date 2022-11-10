@@ -85,16 +85,15 @@ const RepoUrlPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
  *
  * @public
  */
-export type RepoUrlPickerUiOptions =
-  typeof RepoUrlPickerUiOptionsSchema.schemaType;
+export type RepoUrlPickerUiOptions = typeof RepoUrlPickerUiOptionsSchema.type;
 
 export type RepoUrlPickerReturnValue =
-  typeof RepoUrlPickerReturnValueSchema.schemaType;
+  typeof RepoUrlPickerReturnValueSchema.type;
 
 // NOTE: There is a bug with this failing validation in the custom field explorer due
 // to https://github.com/rjsf-team/react-jsonschema-form/issues/675 even if
 // requestUserCredentials is not defined
 export const RepoUrlPickerSchema = {
-  uiOptions: RepoUrlPickerUiOptionsSchema.jsonSchema,
-  returnValue: RepoUrlPickerReturnValueSchema.jsonSchema,
+  uiOptions: RepoUrlPickerUiOptionsSchema.schema,
+  returnValue: RepoUrlPickerReturnValueSchema.schema,
 };

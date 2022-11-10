@@ -19,8 +19,8 @@ import { makeJsonSchemaFromZod } from '../utils';
 const EntityNamePickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
 
 export type EntityNamePickerReturnValue =
-  typeof EntityNamePickerReturnValueSchema.schemaType;
+  typeof EntityNamePickerReturnValueSchema.type;
 
 export const EntityNamePickerSchema = {
-  returnValue: EntityNamePickerReturnValueSchema.jsonSchema,
+  returnValue: EntityNamePickerReturnValueSchema.schema,
 };

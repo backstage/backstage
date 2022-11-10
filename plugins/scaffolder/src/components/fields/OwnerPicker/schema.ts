@@ -49,12 +49,11 @@ const OwnerPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
  *
  * @public
  */
-export type OwnerPickerUiOptions = typeof OwnerPickerUiOptionsSchema.schemaType;
+export type OwnerPickerUiOptions = typeof OwnerPickerUiOptionsSchema.type;
 
-export type OwnerPickerReturnValue =
-  typeof OwnerPickerReturnValueSchema.schemaType;
+export type OwnerPickerReturnValue = typeof OwnerPickerReturnValueSchema.type;
 
 export const OwnerPickerSchema = {
-  uiOptions: OwnerPickerUiOptionsSchema.jsonSchema,
-  returnValue: OwnerPickerReturnValueSchema.jsonSchema,
+  uiOptions: OwnerPickerUiOptionsSchema.schema,
+  returnValue: OwnerPickerReturnValueSchema.schema,
 };

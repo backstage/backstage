@@ -44,12 +44,12 @@ const EntityTagsPickerReturnValueSchema = makeJsonSchemaFromZod(
  * @public
  */
 export type EntityTagsPickerUiOptions =
-  typeof EntityTagsPickerUiOptionsSchema.schemaType;
+  typeof EntityTagsPickerUiOptionsSchema.type;
 
 export type EntityTagsPickerReturnValue =
-  typeof EntityTagsPickerReturnValueSchema.schemaType;
+  typeof EntityTagsPickerReturnValueSchema.type;
 
 export const EntityTagsPickerSchema = {
-  uiOptions: EntityTagsPickerUiOptionsSchema.jsonSchema,
-  returnValue: EntityTagsPickerReturnValueSchema.jsonSchema,
+  uiOptions: EntityTagsPickerUiOptionsSchema.schema,
+  returnValue: EntityTagsPickerReturnValueSchema.schema,
 };

@@ -18,17 +18,18 @@ import { z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 
 /**
+ * @public
  * Utility function to convert zod schemas to JSON schemas with
  * type inference extraction that abstracts away zod typings
  */
 export function makeJsonSchemaFromZod<T extends z.ZodType>(
   schema: T,
 ): {
-  jsonSchema: JSONSchema7;
-  schemaType: T extends z.ZodType<any, any, infer I> ? I : never;
+  schema: JSONSchema7;
+  type: T extends z.ZodType<any, any, infer I> ? I : never;
 } {
   return {
-    jsonSchema: zodToJsonSchema(schema) as JSONSchema7,
-    schemaType: null as any,
+    schema: zodToJsonSchema(schema) as JSONSchema7,
+    type: null as any,
   };
 }

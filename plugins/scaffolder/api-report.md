@@ -35,6 +35,7 @@ import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
+import { z } from 'zod';
 
 // @alpha
 export function createNextScaffolderFieldExtension<
@@ -90,13 +91,12 @@ export const EntityPickerFieldExtension: FieldExtensionComponent<
 >;
 
 // @public
-export type EntityPickerUiOptions =
-  typeof EntityPickerUiOptionsSchema.schemaType;
+export type EntityPickerUiOptions = typeof EntityPickerUiOptionsSchema.type;
 
 // @public (undocumented)
 export const EntityPickerUiOptionsSchema: {
-  jsonSchema: JSONSchema7;
-  schemaType: {
+  schema: JSONSchema7;
+  type: {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
@@ -116,12 +116,12 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
 
 // @public
 export type EntityTagsPickerUiOptions =
-  typeof EntityTagsPickerUiOptionsSchema.schemaType;
+  typeof EntityTagsPickerUiOptionsSchema.type;
 
 // @public (undocumented)
 export const EntityTagsPickerUiOptionsSchema: {
-  jsonSchema: JSONSchema7;
-  schemaType: {
+  schema: JSONSchema7;
+  type: {
     showCounts?: boolean | undefined;
     kinds?: string[] | undefined;
     helperText?: string | undefined;
@@ -190,6 +190,14 @@ export type LogEvent = {
   createdAt: string;
   id: string;
   taskId: string;
+};
+
+// @public
+export function makeJsonSchemaFromZod<T extends z.ZodType>(
+  schema: T,
+): {
+  schema: JSONSchema7;
+  type: T extends z.ZodType<any, any, infer I> ? I : never;
 };
 
 // @alpha
@@ -262,12 +270,12 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
 
 // @public
 export type OwnedEntityPickerUiOptions =
-  typeof OwnedEntityPickerUiOptionsSchema.schemaType;
+  typeof OwnedEntityPickerUiOptionsSchema.type;
 
 // @public (undocumented)
 export const OwnedEntityPickerUiOptionsSchema: {
-  jsonSchema: JSONSchema7;
-  schemaType: {
+  schema: JSONSchema7;
+  type: {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
@@ -286,12 +294,12 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent<
 >;
 
 // @public
-export type OwnerPickerUiOptions = typeof OwnerPickerUiOptionsSchema.schemaType;
+export type OwnerPickerUiOptions = typeof OwnerPickerUiOptionsSchema.type;
 
 // @public (undocumented)
 export const OwnerPickerUiOptionsSchema: {
-  jsonSchema: JSONSchema7;
-  schemaType: {
+  schema: JSONSchema7;
+  type: {
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
@@ -333,13 +341,12 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
 >;
 
 // @public
-export type RepoUrlPickerUiOptions =
-  typeof RepoUrlPickerUiOptionsSchema.schemaType;
+export type RepoUrlPickerUiOptions = typeof RepoUrlPickerUiOptionsSchema.type;
 
 // @public (undocumented)
 export const RepoUrlPickerUiOptionsSchema: {
-  jsonSchema: JSONSchema7;
-  schemaType: {
+  schema: JSONSchema7;
+  type: {
     allowedOwners?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
     allowedRepos?: string[] | undefined;

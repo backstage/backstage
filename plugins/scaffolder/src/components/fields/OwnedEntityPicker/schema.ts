@@ -53,12 +53,12 @@ const OwnedEntityPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
  * @public
  */
 export type OwnedEntityPickerUiOptions =
-  typeof OwnedEntityPickerUiOptionsSchema.schemaType;
+  typeof OwnedEntityPickerUiOptionsSchema.type;
 
 export type OwnedEntityPickerReturnValue =
-  typeof OwnedEntityPickerReturnValueSchema.schemaType;
+  typeof OwnedEntityPickerReturnValueSchema.type;
 
 export const OwnedEntityPickerSchema = {
-  uiOptions: OwnedEntityPickerUiOptionsSchema.jsonSchema,
-  returnValue: OwnedEntityPickerReturnValueSchema.jsonSchema,
+  uiOptions: OwnedEntityPickerUiOptionsSchema.schema,
+  returnValue: OwnedEntityPickerReturnValueSchema.schema,
 };
