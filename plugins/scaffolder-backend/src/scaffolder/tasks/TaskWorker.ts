@@ -110,11 +110,24 @@ export class TaskWorker {
   start() {
     (async () => {
       for (;;) {
-        await this.taskQueue.onEmpty();
+        await this.onReadyToClaimTask();
         const task = await this.options.taskBroker.claim();
         this.taskQueue.add(() => this.runOneTask(task));
       }
     })();
+  }
+
+  onReadyToClaimTask(): Promise<void> {
+    if (this.taskQueue.pending < this.options.concurrentTasksLimit) {
+      return Promise.resolve();
+    }
+    return new Promise(resolve => {
+      // "next" event emits when a task completes
+      // https://github.com/sindresorhus/p-queue#next
+      this.taskQueue.on('next', () => {
+        resolve();
+      });
+    });
   }
 
   async runOneTask(task: TaskContext) {
