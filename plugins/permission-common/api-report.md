@@ -4,6 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { JsonPrimitive } from '@backstage/types';
 
 // @public
 export type AllOfCriteria<TQuery> = {
@@ -172,11 +173,11 @@ export class PermissionClient implements PermissionEvaluator {
 // @public
 export type PermissionCondition<
   TResourceType extends string = string,
-  TParams extends unknown[] = unknown[],
+  TParams extends PermissionRuleParams = PermissionRuleParams,
 > = {
   resourceType: TResourceType;
   rule: string;
-  params: TParams;
+  params?: TParams;
 };
 
 // @public
@@ -202,6 +203,14 @@ export interface PermissionEvaluator {
 export type PermissionMessageBatch<T> = {
   items: IdentifiedPermissionMessage<T>[];
 };
+
+// @public
+export type PermissionRuleParam = undefined | JsonPrimitive | JsonPrimitive[];
+
+// @public
+export type PermissionRuleParams =
+  | undefined
+  | Record<string, PermissionRuleParam>;
 
 // @public
 export type PolicyDecision =

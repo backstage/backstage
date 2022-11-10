@@ -198,7 +198,15 @@ export function createGithubRepoCreateAction(options: {
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  bypassPullRequestAllowances?:
+    | {
+        users?: string[] | undefined;
+        teams?: string[] | undefined;
+        apps?: string[] | undefined;
+      }
+    | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
+  requireBranchesToBeUpToDate?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
@@ -235,7 +243,15 @@ export function createGithubRepoPushAction(options: {
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  bypassPullRequestAllowances?:
+    | {
+        users?: string[];
+        teams?: string[];
+        apps?: string[];
+      }
+    | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
+  requireBranchesToBeUpToDate?: boolean | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
 }>;
@@ -364,8 +380,16 @@ export function createPublishGithubAction(options: {
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   sourcePath?: string | undefined;
+  bypassPullRequestAllowances?:
+    | {
+        users?: string[];
+        teams?: string[];
+        apps?: string[];
+      }
+    | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
+  requireBranchesToBeUpToDate?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
@@ -419,6 +443,7 @@ export function createPublishGitlabAction(options: {
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
   setUserAsOwner?: boolean | undefined;
+  topics?: string[] | undefined;
 }>;
 
 // @public
@@ -429,7 +454,8 @@ export const createPublishGitlabMergeRequestAction: (options: {
   title: string;
   description: string;
   branchName: string;
-  targetPath: string;
+  sourcePath?: string | undefined;
+  targetPath?: string | undefined;
   token?: string | undefined;
   commitAction?: 'update' | 'create' | 'delete' | undefined;
   projectid?: string | undefined;

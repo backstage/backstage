@@ -196,14 +196,14 @@ const App = () => (
 There are a couple of naming patterns to adhere to as you build plugins, which
 helps clarify the intent and usage of the exports.
 
-| Description           | Pattern         | Examples                                       |
-| --------------------- | --------------- | ---------------------------------------------- |
-| Top-level Pages       | \*Page          | CatalogIndexPage, SettingsPage, LighthousePage |
-| Entity Tab Content    | Entity\*Content | EntityJenkinsContent, EntityKubernetesContent  |
-| Entity Overview Card  | Entity\*Card    | EntitySentryCard, EntityPagerDutyCard          |
-| Entity Conditional    | is\*Available   | isPagerDutyAvailable, isJenkinsAvailable       |
-| Plugin Instance       | \*Plugin        | jenkinsPlugin, catalogPlugin                   |
-| Utility API Reference | \*ApiRef        | configApiRef, catalogApiRef                    |
+| Description           | Pattern           | Examples                                             |
+| --------------------- | ----------------- | ---------------------------------------------------- |
+| Top-level Pages       | `\*Page`          | `CatalogIndexPage`, `SettingsPage`, `LighthousePage` |
+| Entity Tab Content    | `Entity\*Content` | `EntityJenkinsContent`, `EntityKubernetesContent`    |
+| Entity Overview Card  | `Entity\*Card`    | `EntitySentryCard`, `EntityPagerDutyCard`            |
+| Entity Conditional    | `is\*Available`   | `isPagerDutyAvailable`, `isJenkinsAvailable`         |
+| Plugin Instance       | `\*Plugin`        | `jenkinsPlugin`, `catalogPlugin`                     |
+| Utility API Reference | `\*ApiRef`        | `configApiRef`, `catalogApiRef`                      |
 
 ### Routing System
 
@@ -515,10 +515,10 @@ deprecated while making the new additions, to then be removed at a later point.
 Many export naming patterns have been changed to avoid import aliases and to
 clarify intent. Refer to the following table to formulate the new name:
 
-| Description          | Existing Pattern           | New Pattern     | Examples                                       |
-| -------------------- | -------------------------- | --------------- | ---------------------------------------------- |
-| Top-level Pages      | Router                     | \*Page          | CatalogIndexPage, SettingsPage, LighthousePage |
-| Entity Tab Content   | Router                     | Entity\*Content | EntityJenkinsContent, EntityKubernetesContent  |
-| Entity Overview Card | \*Card                     | Entity\*Card    | EntitySentryCard, EntityPagerDutyCard          |
-| Entity Conditional   | isPluginApplicableToEntity | is\*Available   | isPagerDutyAvailable, isJenkinsAvailable       |
-| Plugin Instance      | plugin                     | \*Plugin        | jenkinsPlugin, catalogPlugin                   |
+| Description          | Existing Pattern             | New Pattern       | Examples                                             |
+| -------------------- | ---------------------------- | ----------------- | ---------------------------------------------------- |
+| Top-level Pages      | `Router`                     | `\*Page`          | `CatalogIndexPage`, `SettingsPage`, `LighthousePage` |
+| Entity Tab Content   | `Router`                     | `Entity\*Content` | `EntityJenkinsContent`, `EntityKubernetesContent`    |
+| Entity Overview Card | `\*Card`                     | `Entity\*Card`    | `EntitySentryCard`, `EntityPagerDutyCard`            |
+| Entity Conditional   | `isPluginApplicableToEntity` | `is\*Available`   | `isPagerDutyAvailable`, `isJenkinsAvailable`         |
+| Plugin Instance      | `plugin`                     | `\*Plugin`        | `jenkinsPlugin`, `catalogPlugin`                     |

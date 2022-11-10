@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { Duration } from 'luxon';
 import { readAzureDevOpsConfigs } from './config';
 
 describe('readAzureDevOpsConfigs', () => {
@@ -33,17 +34,27 @@ describe('readAzureDevOpsConfigs', () => {
       project: 'myproject',
       repository: 'service-*',
     };
+    const provider4 = {
+      organization: 'mycompany',
+      project: 'myproject',
+      schedule: {
+        frequency: 'PT30M',
+        timeout: {
+          minutes: 3,
+        },
+      },
+    };
     const config = {
       catalog: {
         providers: {
-          azureDevOps: { provider1, provider2, provider3 },
+          azureDevOps: { provider1, provider2, provider3, provider4 },
         },
       },
     };
 
     const actual = readAzureDevOpsConfigs(new ConfigReader(config));
 
-    expect(actual).toHaveLength(3);
+    expect(actual).toHaveLength(4);
     expect(actual[0]).toEqual({
       ...provider1,
       path: '/catalog-info.yaml',
@@ -62,6 +73,17 @@ describe('readAzureDevOpsConfigs', () => {
       host: 'dev.azure.com',
       path: '/catalog-info.yaml',
       id: 'provider3',
+    });
+    expect(actual[3]).toEqual({
+      ...provider4,
+      host: 'dev.azure.com',
+      path: '/catalog-info.yaml',
+      repository: '*',
+      id: 'provider4',
+      schedule: {
+        ...provider4.schedule,
+        frequency: Duration.fromISO(provider4.schedule.frequency),
+      },
     });
   });
 });

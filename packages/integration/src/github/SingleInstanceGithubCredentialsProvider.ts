@@ -15,7 +15,7 @@
  */
 
 import parseGitUrl from 'git-url-parse';
-import { GithubAppConfig, GitHubIntegrationConfig } from './config';
+import { GithubAppConfig, GithubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
@@ -199,7 +199,7 @@ class GithubAppManager {
 export class GithubAppCredentialsMux {
   private readonly apps: GithubAppManager[];
 
-  constructor(config: GitHubIntegrationConfig) {
+  constructor(config: GithubIntegrationConfig) {
     this.apps =
       config.apps?.map(ac => new GithubAppManager(ac, config.apiBaseUrl)) ?? [];
   }
@@ -259,7 +259,7 @@ export class SingleInstanceGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
   static create: (
-    config: GitHubIntegrationConfig,
+    config: GithubIntegrationConfig,
   ) => GithubCredentialsProvider = config => {
     return new SingleInstanceGithubCredentialsProvider(
       new GithubAppCredentialsMux(config),

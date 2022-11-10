@@ -1,5 +1,61 @@
 # @backstage/core-components
 
+## 0.12.0-next.1
+
+### Patch Changes
+
+- b4fb5c8ecc: MissingAnnotationEmptyState now accepts either a string or an array of strings to support multiple missing annotations.
+- Updated dependencies
+  - @backstage/config@1.0.4-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
+## 0.12.0-next.0
+
+### Minor Changes
+
+- fb3733e446: **BREAKING**: Removed the `HomepageTimer` as it has been replaced by the `HeaderWorldClock` in the Home plugin and was deprecated over a year ago.
+
+### Patch Changes
+
+- 5f695c219a: Set the `searchTooltip` to "Filter" to follow how the `searchPlaceholder` is set making this more consistent
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- 858986f6b6: Disable base path workaround in `Link` component when React Router v6 stable is used.
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
+## 0.11.2
+
+### Patch Changes
+
+- bde1e8c8e2: Added `curve` prop to the `DependencyGraph` component to select the type of layout
+- 882101cd9b: Deep-import LightAsync component to improve module-import speed
+- 0d0f30d87e: Fixed layout for core-components docs where table was broken by splitting with code sample
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
+## 0.11.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
 ## 0.11.2-next.1
 
 ### Patch Changes

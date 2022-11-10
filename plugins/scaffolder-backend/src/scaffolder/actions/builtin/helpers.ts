@@ -185,6 +185,12 @@ type BranchProtectionOptions = {
   logger: Logger;
   requireCodeOwnerReviews: boolean;
   requiredStatusCheckContexts?: string[];
+  bypassPullRequestAllowances?: {
+    users?: string[];
+    teams?: string[];
+    apps?: string[];
+  };
+  requireBranchesToBeUpToDate?: boolean;
   defaultBranch?: string;
   enforceAdmins?: boolean;
 };
@@ -195,7 +201,9 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   owner,
   logger,
   requireCodeOwnerReviews,
+  bypassPullRequestAllowances,
   requiredStatusCheckContexts = [],
+  requireBranchesToBeUpToDate = true,
   defaultBranch = 'master',
   enforceAdmins = true,
 }: BranchProtectionOptions): Promise<void> => {
@@ -216,7 +224,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
         repo: repoName,
         branch: defaultBranch,
         required_status_checks: {
-          strict: true,
+          strict: requireBranchesToBeUpToDate,
           contexts: requiredStatusCheckContexts,
         },
         restrictions: null,
@@ -224,6 +232,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
         required_pull_request_reviews: {
           required_approving_review_count: 1,
           require_code_owner_reviews: requireCodeOwnerReviews,
+          bypass_pull_request_allowances: bypassPullRequestAllowances,
         },
       });
     } catch (e) {

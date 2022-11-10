@@ -62,7 +62,7 @@ This is an array used to determine where to retrieve cluster configuration from.
 Valid cluster locator methods are:
 
 - [`catalog`](#catalog)
-- [`localKubectlProxy`](#localKubectlProxy)
+- [`localKubectlProxy`](#localkubectlproxy)
 - [`config`](#config)
 - [`gke`](#gke)
 - [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)
@@ -217,11 +217,11 @@ for some dashboards, such as GKE.
 
 ###### required parameters for GKE
 
-| Name        | Description                                                              |
-| ----------- | ------------------------------------------------------------------------ |
-| projectId   | the ID of the GCP project containing your Kubernetes clusters            |
-| region      | the region of GCP containing your Kubernetes clusters                    |
-| clusterName | the name of your kubernetes cluster, within your `projectId` GCP project |
+| Name          | Description                                                              |
+| ------------- | ------------------------------------------------------------------------ |
+| `projectId`   | the ID of the GCP project containing your Kubernetes clusters            |
+| `region`      | the region of GCP containing your Kubernetes clusters                    |
+| `clusterName` | the name of your kubernetes cluster, within your `projectId` GCP project |
 
 Note that the GKE cluster locator can automatically provide the values for the
 `dashboardApp` and `dashboardParameters` options if you set the

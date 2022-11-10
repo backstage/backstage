@@ -1,5 +1,63 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.23-next.1
+
+### Patch Changes
+
+- da0bf25d1a: Preserve graph options and increment `maxDepth` by 1.
+
+  The change will preserve options used at the `CatalogGraphCard`
+  (displayed at the entity page) and additionally, increments the
+  `maxDepth` option by 1 to increase the scope slightly compared to
+  the graph already seen by the users.
+
+  The default for `maxDepth` at `CatalogGraphCard` is 1.
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.2.1-next.1
+
+## 0.2.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1-next.0
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/theme@0.2.16
+
+## 0.2.22
+
+### Patch Changes
+
+- bde1e8c8e2: Added `curve` prop to the `DependencyGraph` component to select the type of layout
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-catalog-react@1.2.0
+  - @backstage/core-components@0.11.2
+  - @backstage/catalog-client@1.1.1
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/theme@0.2.16
+
+## 0.2.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.0-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/core-components@0.11.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/theme@0.2.16
+
 ## 0.2.22-next.1
 
 ### Patch Changes

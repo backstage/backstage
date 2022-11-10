@@ -29,6 +29,7 @@ import {
 import * as inputProps from '../github/inputProperties';
 import * as outputProps from '../github/outputProperties';
 import { parseRepoUrl } from './util';
+
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
  * and publishes it to GitHub.
@@ -59,8 +60,16 @@ export function createPublishGithubAction(options: {
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
     sourcePath?: string;
+    bypassPullRequestAllowances?:
+      | {
+          users?: string[];
+          teams?: string[];
+          apps?: string[];
+        }
+      | undefined;
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
+    requireBranchesToBeUpToDate?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -92,8 +101,10 @@ export function createPublishGithubAction(options: {
           description: inputProps.description,
           homepage: inputProps.homepage,
           access: inputProps.access,
+          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           repoVisibility: inputProps.repoVisibility,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
@@ -127,7 +138,9 @@ export function createPublishGithubAction(options: {
         homepage,
         access,
         requireCodeOwnerReviews = false,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts = [],
+        requireBranchesToBeUpToDate = true,
         repoVisibility = 'private',
         defaultBranch = 'master',
         protectDefaultBranch = true,
@@ -192,7 +205,9 @@ export function createPublishGithubAction(options: {
         client,
         repo,
         requireCodeOwnerReviews,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate,
         config,
         ctx.logger,
         gitCommitMessage,

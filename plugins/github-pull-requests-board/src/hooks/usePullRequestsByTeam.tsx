@@ -13,48 +13,93 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import pLimit from 'p-limit';
 import { useCallback, useEffect, useState } from 'react';
 import { formatPRsByReviewDecision } from '../utils/functions';
 import { PullRequests, PullRequestsColumn } from '../utils/types';
 import { useGetPullRequestsFromRepository } from '../api/useGetPullRequestsFromRepository';
+import { useGetPullRequestsFromUser } from '../api/useGetPullRequestsFromUser';
 import { useGetPullRequestDetails } from '../api/useGetPullRequestDetails';
 
 export function usePullRequestsByTeam(
   repositories: string[],
+  members: string[],
+  organization?: string,
   pullRequestLimit?: number,
 ) {
   const [pullRequests, setPullRequests] = useState<PullRequestsColumn[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const getPullRequests = useGetPullRequestsFromRepository();
+  const getPullRequestsFromRepository = useGetPullRequestsFromRepository();
+  const getPullRequestsFromUser = useGetPullRequestsFromUser();
   const getPullRequestDetails = useGetPullRequestDetails();
 
   const getPRsPerRepository = useCallback(
     async (repository: string): Promise<PullRequests> => {
-      const pullRequestsNumbers = await getPullRequests(
+      const concurrencyLimit = pLimit(5);
+      const pullRequestsNumbers = await getPullRequestsFromRepository(
         repository,
         pullRequestLimit,
       );
 
       const pullRequestsWithDetails = await Promise.all(
-        pullRequestsNumbers.map(({ node }) =>
-          getPullRequestDetails(repository, node.number),
+        pullRequestsNumbers.map(node =>
+          concurrencyLimit(() =>
+            getPullRequestDetails(repository, node.number),
+          ),
         ),
       );
 
       return pullRequestsWithDetails;
     },
-    [getPullRequests, getPullRequestDetails, pullRequestLimit],
+    [getPullRequestsFromRepository, getPullRequestDetails, pullRequestLimit],
+  );
+
+  const getPRsPerTeamMember = useCallback(
+    async (
+      teamMember: string,
+      teamOrganization?: string,
+    ): Promise<PullRequests> => {
+      const concurrencyLimit = pLimit(3);
+      const pullRequestsNumbers = await getPullRequestsFromUser(
+        teamMember,
+        teamOrganization,
+        pullRequestLimit,
+      );
+
+      const pullRequestsWithDetails = await Promise.all(
+        pullRequestsNumbers.map(node =>
+          concurrencyLimit(() =>
+            getPullRequestDetails(
+              `${node.repository.owner.login}/${node.repository.name}`,
+              node.number,
+            ),
+          ),
+        ),
+      );
+
+      return pullRequestsWithDetails;
+    },
+    [getPullRequestsFromUser, getPullRequestDetails, pullRequestLimit],
   );
 
   const getPRsFromTeam = useCallback(
-    async (teamRepositories: string[]): Promise<PullRequests> => {
+    async (
+      teamRepositories: string[],
+      teamMembers: string[],
+      teamOrganization?: string,
+    ): Promise<PullRequests> => {
       const teamRepositoriesPromises = teamRepositories.map(repository =>
         getPRsPerRepository(repository),
       );
 
-      const teamPullRequests = await Promise.allSettled(
-        teamRepositoriesPromises,
-      ).then(promises =>
+      const teamMembersPromises = teamMembers.map(teamMember =>
+        getPRsPerTeamMember(teamMember, teamOrganization),
+      );
+
+      const teamPullRequests = await Promise.allSettled([
+        ...teamRepositoriesPromises,
+        ...teamMembersPromises,
+      ]).then(promises =>
         promises.reduce((acc, curr) => {
           if (curr.status === 'fulfilled') {
             return [...acc, ...curr.value];
@@ -63,18 +108,26 @@ export function usePullRequestsByTeam(
         }, [] as PullRequests),
       );
 
-      return teamPullRequests;
+      const uniqueTeamPullRequests = teamPullRequests.filter(
+        (lhs, i) => teamPullRequests.findIndex(rhs => lhs.id === rhs.id) === i,
+      );
+
+      return uniqueTeamPullRequests;
     },
-    [getPRsPerRepository],
+    [getPRsPerRepository, getPRsPerTeamMember],
   );
 
   const getAllPullRequests = useCallback(async () => {
     setLoading(true);
 
-    const teamPullRequests = await getPRsFromTeam(repositories);
+    const teamPullRequests = await getPRsFromTeam(
+      repositories,
+      members,
+      organization,
+    );
     setPullRequests(formatPRsByReviewDecision(teamPullRequests));
     setLoading(false);
-  }, [getPRsFromTeam, repositories]);
+  }, [getPRsFromTeam, repositories, members, organization]);
 
   useEffect(() => {
     getAllPullRequests();

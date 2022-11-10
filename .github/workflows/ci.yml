@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     env:
       CI: true
@@ -33,7 +33,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.6
+        uses: backstage/actions/yarn-install@v0.5.7
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     env:
       CI: true
@@ -63,7 +63,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.6
+        uses: backstage/actions/yarn-install@v0.5.7
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -121,7 +121,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     services:
       postgres13:
@@ -178,7 +178,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.6
+        uses: backstage/actions/yarn-install@v0.5.7
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -208,7 +208,7 @@ jobs:
       - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: |
-          yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --coverage
+          yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=800M --coverage
           bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
         env:
           BACKSTAGE_NEXT_TESTS: 1

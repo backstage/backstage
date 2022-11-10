@@ -17,19 +17,30 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { GithubCredentialType } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
+import {
+  defaultOrganizationTeamTransformer,
+  defaultUserTransformer,
+  TeamTransformer,
+  TransformerContext,
+  UserTransformer,
+} from './defaultTransformers';
 
 // Graphql types
 
 export type QueryResponse = {
-  organization?: Organization;
-  repositoryOwner?: Organization | User;
+  organization?: OrganizationResponse;
+  repositoryOwner?: RepositoryOwnerResponse;
 };
 
-export type Organization = {
-  membersWithRole?: Connection<User>;
-  team?: Team;
-  teams?: Connection<Team>;
-  repositories?: Connection<Repository>;
+type RepositoryOwnerResponse = {
+  repositories?: Connection<RepositoryResponse>;
+};
+
+export type OrganizationResponse = {
+  membersWithRole?: Connection<GithubUser>;
+  team?: GithubTeamResponse;
+  teams?: Connection<GithubTeamResponse>;
+  repositories?: Connection<RepositoryResponse>;
 };
 
 export type PageInfo = {
@@ -37,33 +48,52 @@ export type PageInfo = {
   endCursor?: string;
 };
 
-export type User = {
+/**
+ * Github User
+ *
+ * @public
+ */
+export type GithubUser = {
   login: string;
   bio?: string;
   avatarUrl?: string;
   email?: string;
   name?: string;
-  repositories?: Connection<Repository>;
+  organizationVerifiedDomainEmails?: string[];
 };
 
-export type Team = {
+/**
+ * Github Team
+ *
+ * @public
+ */
+export type GithubTeam = {
   slug: string;
   combinedSlug: string;
   name?: string;
   description?: string;
   avatarUrl?: string;
   editTeamUrl?: string;
-  parentTeam?: Team;
-  members: Connection<User>;
+  parentTeam?: GithubTeam;
+  members: GithubUser[];
 };
 
-export type Repository = {
+export type GithubTeamResponse = Omit<GithubTeam, 'members'> & {
+  members: Connection<GithubUser>;
+};
+
+export type RepositoryResponse = {
   name: string;
   url: string;
   isArchived: boolean;
   repositoryTopics: RepositoryTopics;
   defaultBranchRef: {
     name: string;
+  } | null;
+  catalogInfoFile: {
+    __typename: string;
+    id: string;
+    text: string;
   } | null;
 };
 
@@ -83,7 +113,7 @@ export type Connection<T> = {
 };
 
 /**
- * Gets all the users out of a GitHub organization.
+ * Gets all the users out of a Github organization.
  *
  * Note that the users will not have their memberships filled in.
  *
@@ -94,7 +124,7 @@ export async function getOrganizationUsers(
   client: typeof graphql,
   org: string,
   tokenType: GithubCredentialType,
-  userNamespace?: string,
+  userTransformer: UserTransformer = defaultUserTransformer,
 ): Promise<{ users: UserEntity[] }> {
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String) {
@@ -106,7 +136,8 @@ export async function getOrganizationUsers(
             bio,
             email @include(if: $email),
             login,
-            name
+            name,
+            organizationVerifiedDomainEmails(login: $org)
           }
         }
       }
@@ -114,44 +145,24 @@ export async function getOrganizationUsers(
 
   // There is no user -> teams edge, so we leave the memberships empty for
   // now and let the team iteration handle it instead
-  const mapper = (user: User) => {
-    const entity: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: {
-        name: user.login,
-        annotations: {
-          'github.com/user-login': user.login,
-        },
-      },
-      spec: {
-        profile: {},
-        memberOf: [],
-      },
-    };
-
-    if (userNamespace) entity.metadata.namespace = userNamespace;
-    if (user.bio) entity.metadata.description = user.bio;
-    if (user.name) entity.spec.profile!.displayName = user.name;
-    if (user.email) entity.spec.profile!.email = user.email;
-    if (user.avatarUrl) entity.spec.profile!.picture = user.avatarUrl;
-
-    return entity;
-  };
 
   const users = await queryWithPaging(
     client,
     query,
+    org,
     r => r.organization?.membersWithRole,
-    mapper,
-    { org, email: tokenType === 'token' },
+    userTransformer,
+    {
+      org,
+      email: tokenType === 'token',
+    },
   );
 
   return { users };
 }
 
 /**
- * Gets all the teams out of a GitHub organization.
+ * Gets all the teams out of a Github organization.
  *
  * Note that the teams will not have any relations apart from parent filled in.
  *
@@ -161,10 +172,9 @@ export async function getOrganizationUsers(
 export async function getOrganizationTeams(
   client: typeof graphql,
   org: string,
-  orgNamespace?: string,
+  teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
 ): Promise<{
   groups: GroupEntity[];
-  groupMemberUsers: Map<string, string[]>;
 }> {
   const query = `
     query teams($org: String!, $cursor: String) {
@@ -188,92 +198,73 @@ export async function getOrganizationTeams(
       }
     }`;
 
-  // Gets populated inside the mapper below
-  const groupMemberUsers = new Map<string, string[]>();
+  const materialisedTeams = async (
+    item: GithubTeamResponse,
+    ctx: TransformerContext,
+  ): Promise<GroupEntity | undefined> => {
+    const memberNames: GithubUser[] = [];
 
-  const mapper = async (team: Team) => {
-    const annotations: { [annotationName: string]: string } = {
-      'github.com/team-slug': team.combinedSlug,
-    };
-
-    if (team.editTeamUrl) {
-      annotations['backstage.io/edit-url'] = team.editTeamUrl;
-    }
-
-    const entity: GroupEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Group',
-      metadata: {
-        name: team.slug,
-        annotations,
-      },
-      spec: {
-        type: 'team',
-        profile: {},
-        children: [],
-      },
-    };
-
-    if (orgNamespace) {
-      entity.metadata.namespace = orgNamespace;
-    }
-
-    if (team.description) {
-      entity.metadata.description = team.description;
-    }
-    if (team.name) {
-      entity.spec.profile!.displayName = team.name;
-    }
-    if (team.avatarUrl) {
-      entity.spec.profile!.picture = team.avatarUrl;
-    }
-    if (team.parentTeam) {
-      entity.spec.parent = team.parentTeam.slug;
-    }
-
-    const memberNames: string[] = [];
-    const groupKey = orgNamespace ? `${orgNamespace}/${team.slug}` : team.slug;
-    groupMemberUsers.set(groupKey, memberNames);
-
-    if (!team.members.pageInfo.hasNextPage) {
+    if (!item.members.pageInfo.hasNextPage) {
       // We got all the members in one go, run the fast path
-      for (const user of team.members.nodes) {
-        memberNames.push(user.login);
+      for (const user of item.members.nodes) {
+        memberNames.push(user);
       }
     } else {
       // There were more than a hundred immediate members - run the slow
       // path of fetching them explicitly
-      const { members } = await getTeamMembers(client, org, team.slug);
+      const { members } = await getTeamMembers(ctx.client, ctx.org, item.slug);
       for (const userLogin of members) {
         memberNames.push(userLogin);
       }
     }
 
-    return entity;
+    const team: GithubTeam = {
+      ...item,
+      members: memberNames,
+    };
+
+    return await teamTransformer(team, ctx);
   };
 
   const groups = await queryWithPaging(
     client,
     query,
+    org,
     r => r.organization?.teams,
-    mapper,
+    materialisedTeams,
     { org },
   );
 
-  return { groups, groupMemberUsers };
+  return { groups };
 }
 
 export async function getOrganizationRepositories(
   client: typeof graphql,
   org: string,
-): Promise<{ repositories: Repository[] }> {
+  catalogPath: string,
+): Promise<{ repositories: RepositoryResponse[] }> {
+  let relativeCatalogPathRef: string;
+  // We must strip the leading slash or the query for objects does not work
+  if (catalogPath.startsWith('/')) {
+    relativeCatalogPathRef = catalogPath.substring(1);
+  } else {
+    relativeCatalogPathRef = catalogPath;
+  }
+  const catalogPathRef = `HEAD:${relativeCatalogPathRef}`;
   const query = `
-    query repositories($org: String!, $cursor: String) {
+    query repositories($org: String!, $catalogPathRef: String!, $cursor: String) {
       repositoryOwner(login: $org) {
         login
         repositories(first: 100, after: $cursor) {
           nodes {
             name
+            catalogInfoFile: object(expression: $catalogPathRef) {
+              __typename
+              ... on Blob {
+                id
+                text
+              }
+            }
             url
             isArchived
             repositoryTopics(first: 100) {
@@ -300,16 +291,17 @@ export async function getOrganizationRepositories(
   const repositories = await queryWithPaging(
     client,
     query,
+    org,
     r => r.repositoryOwner?.repositories,
-    x => x,
-    { org },
+    async x => x,
+    { org, catalogPathRef },
   );
 
   return { repositories };
 }
 
 /**
- * Gets all the users out of a GitHub organization.
+ * Gets all the users out of a Github organization.
  *
  * Note that the users will not have their memberships filled in.
  *
@@ -321,7 +313,7 @@ export async function getTeamMembers(
   client: typeof graphql,
   org: string,
   teamSlug: string,
-): Promise<{ members: string[] }> {
+): Promise<{ members: GithubUser[] }> {
   const query = `
     query members($org: String!, $teamSlug: String!, $cursor: String) {
       organization(login: $org) {
@@ -337,8 +329,9 @@ export async function getTeamMembers(
   const members = await queryWithPaging(
     client,
     query,
+    org,
     r => r.organization?.team?.members,
-    user => user.login,
+    async user => user,
     { org, teamSlug },
   );
 
@@ -358,7 +351,7 @@ export async function getTeamMembers(
  * @param query - The query to execute
  * @param connection - A function that, given the response, picks out the actual
  *                   Connection object that's being iterated
- * @param mapper - A function that, given one of the nodes in the Connection,
+ * @param transformer - A function that, given one of the nodes in the Connection,
  *               returns the model mapped form of it
  * @param variables - The variable values that the query needs, minus the cursor
  */
@@ -370,8 +363,12 @@ export async function queryWithPaging<
 >(
   client: typeof graphql,
   query: string,
+  org: string,
   connection: (response: Response) => Connection<GraphqlType> | undefined,
-  mapper: (item: GraphqlType) => Promise<OutputType> | OutputType,
+  transformer: (
+    item: GraphqlType,
+    ctx: TransformerContext,
+  ) => Promise<OutputType | undefined>,
   variables: Variables,
 ): Promise<OutputType[]> {
   const result: OutputType[] = [];
@@ -389,7 +386,15 @@ export async function queryWithPaging<
     }
 
     for (const node of conn.nodes) {
-      result.push(await mapper(node));
+      const transformedNode = await transformer(node, {
+        client,
+        query,
+        org,
+      });
+
+      if (transformedNode) {
+        result.push(transformedNode);
+      }
     }
 
     if (!conn.pageInfo.hasNextPage) {

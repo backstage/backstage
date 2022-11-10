@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { AnalyticsContext } from '@backstage/core-plugin-api';
 import {
   createVersionedContext,
   createVersionedValueMap,
@@ -66,7 +67,13 @@ export const AsyncEntityProvider = ({
   // consumers might be doing things like `useContext(EntityContext)`
   return (
     <NewEntityContext.Provider value={createVersionedValueMap({ 1: value })}>
-      {children}
+      <AnalyticsContext
+        attributes={{
+          ...(entity ? { entityRef: stringifyEntityRef(entity) } : undefined),
+        }}
+      >
+        {children}
+      </AnalyticsContext>
     </NewEntityContext.Provider>
   );
 };

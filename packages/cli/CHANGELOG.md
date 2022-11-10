@@ -1,5 +1,120 @@
 # @backstage/cli
 
+## 0.21.0-next.1
+
+### Minor Changes
+
+- 384eaa2307: Switched `tsconfig.json` to target and support `ES2021`, in line with the bump to Node.js 16 & 18.
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.7-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
+## 0.21.0-next.0
+
+### Minor Changes
+
+- 7539b36748: Added a new ESLint rule that restricts imports of Link from @material-ui
+
+  The rule can be can be overridden in the following way:
+
+  ```diff
+  module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
+  +  restrictedImports: [
+  +    { name: '@material-ui/core', importNames: [] },
+  +    { name: '@material-ui/core/Link', importNames: [] },
+  +  ],
+  });
+  ```
+
+### Patch Changes
+
+- 4091c73e68: Updated `@swc/core` to version 1.3.9 which fixes a `.tsx` parser bug
+- 9c767e8f45: Updated dependency `@svgr/plugin-jsx` to `6.5.x`.
+  Updated dependency `@svgr/plugin-svgo` to `6.5.x`.
+  Updated dependency `@svgr/rollup` to `6.5.x`.
+  Updated dependency `@svgr/webpack` to `6.5.x`.
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/release-manifests@0.0.6
+
+## 0.20.0
+
+### Minor Changes
+
+- f368ad7279: **BREAKING**: Bumped `jest`, `jest-runtime`, and `jest-environment-jsdom` to v29. This is up from v27, so check out both the [v28](https://jestjs.io/docs/28.x/upgrading-to-jest28) and [v29](https://jestjs.io/docs/upgrading-to-jest29) (later [here](https://jestjs.io/docs/29.x/upgrading-to-jest29)) migration guides.
+
+  Particular changes that where encountered in the main Backstage repo are:
+
+  - The updated snapshot format.
+  - `jest.useFakeTimers('legacy')` is now `jest.useFakeTimers({ legacyFakeTimers: true })`.
+  - Error objects collected by `withLogCollector` from `@backstage/test-utils` are now objects with a `detail` property rather than a string.
+
+### Patch Changes
+
+- 78d5eb299e: Tweak the Jest Caching loader to only operate when in `watch` mode
+- 9c595302cb: Normalize on winston version ^3.2.1
+- 24b40140c4: Treat files in `__testUtils__` and `__mocks__` directories as test files for linting
+  purposes.
+
+  Updates the parts of the eslint configuration generator that specify which files
+  should be treated as test code to include any files under two additional
+  directories:
+
+  - `__mocks__`: this is the directory used by Jest[0] for mock code.
+  - `__testUtils__`: a suggested location for utility code executed only when
+    running tests.
+
+  [0]: https://jestjs.io/docs/manual-mocks#mocking-user-modules
+
+- 3e309107ca: Updated fallback versions of dependencies in all templates.
+- 292a088807: Added a new `repo test` command.
+- ba63cae41c: Updated lockfile parsing to have better support for Yarn 3.
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- 2dddb32fea: Switched the Jest transform for YAML files to use a custom one available at `@backstage/cli/config/jestYamlTransform.js`.
+- a541a3a78a: Switch to upfront resolution of `swc-loader` in Webpack config.
+- cfb3598410: Removed `tsx` and `jsx` as supported extensions in backend packages. For most
+  repos, this will not have any effect. But if you inadvertently had added some
+  `tsx`/`jsx` files to your backend package, you may now start to see `code: 'MODULE_NOT_FOUND'` errors when launching the backend locally. The reason for
+  this is that the offending files get ignored during transpilation. Hence, the
+  importing file can no longer find anything to import.
+
+  The fix is to rename any `.tsx` files in your backend packages to `.ts` instead,
+  or `.jsx` to `.js`.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+  - @backstage/config-loader@1.1.5
+  - @backstage/errors@1.1.2
+  - @backstage/release-manifests@0.0.6
+  - @backstage/types@1.0.0
+
+## 0.20.0-next.2
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.2
+  - @backstage/config-loader@1.1.5-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/release-manifests@0.0.6
+  - @backstage/types@1.0.0
+
 ## 0.20.0-next.1
 
 ### Patch Changes

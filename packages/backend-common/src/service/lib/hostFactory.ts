@@ -21,8 +21,9 @@ import * as http from 'http';
 import * as https from 'https';
 import { Logger } from 'winston';
 import { HttpsSettings } from './config';
+import forge from 'node-forge';
 
-const ALMOST_MONTH_IN_MS = 25 * 24 * 60 * 60 * 1000;
+const FIVE_DAYS_IN_MS = 5 * 24 * 60 * 60 * 1000;
 
 const IP_HOSTNAME_REGEX = /:|^\d+\.\d+\.\d+\.\d+$/;
 
@@ -82,6 +83,16 @@ export async function createHttpsServer(
   return https.createServer(credentials, app) as http.Server;
 }
 
+function getCertificateExpiration(cert: string, logger?: Logger) {
+  try {
+    const crt = forge.pki.certificateFromPem(cert);
+    return crt.validity.notAfter.getTime() - Date.now();
+  } catch (error) {
+    logger?.warn(`Unable to parse self-signed certificate. ${error}`);
+    return 0;
+  }
+}
+
 async function getGeneratedCertificate(hostname: string, logger?: Logger) {
   const hasModules = await fs.pathExists('node_modules');
   let certPath;
@@ -94,21 +105,16 @@ async function getGeneratedCertificate(hostname: string, logger?: Logger) {
     certPath = resolvePath('.dev-cert.pem');
   }
 
-  let cert = undefined;
   if (await fs.pathExists(certPath)) {
-    const stat = await fs.stat(certPath);
-    const ageMs = Date.now() - stat.ctimeMs;
-    if (stat.isFile() && ageMs < ALMOST_MONTH_IN_MS) {
-      cert = await fs.readFile(certPath);
+    const cert = await fs.readFile(certPath);
+    const remainingMs = getCertificateExpiration(cert.toString(), logger);
+    if (remainingMs > FIVE_DAYS_IN_MS) {
+      logger?.info('Using existing self-signed certificate');
+      return {
+        key: cert,
+        cert,
+      };
     }
-  }
-
-  if (cert) {
-    logger?.info('Using existing self-signed certificate');
-    return {
-      key: cert,
-      cert: cert,
-    };
   }
 
   logger?.info('Generating new self-signed certificate');

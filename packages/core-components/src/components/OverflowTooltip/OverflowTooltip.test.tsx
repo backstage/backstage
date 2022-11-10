@@ -16,8 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-
-import { OverflowTooltip } from '.';
+import { OverflowTooltip } from './OverflowTooltip';
 
 describe('<OverflowTooltip />', () => {
   it('renders without exploding', async () => {

@@ -15,17 +15,31 @@
  */
 
 /**
- * A Backstage catalog backend module that helps integrate towards GitHub
+ * A Backstage catalog backend module that helps integrate towards Github
  *
  * @packageDocumentation
  */
 
+export { GithubLocationAnalyzer } from './analyzers/GithubLocationAnalyzer';
+export type { GithubLocationAnalyzerOptions } from './analyzers/GithubLocationAnalyzer';
 export { GithubDiscoveryProcessor } from './processors/GithubDiscoveryProcessor';
 export { GithubMultiOrgReaderProcessor } from './processors/GithubMultiOrgReaderProcessor';
 export { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
-export { GitHubEntityProvider } from './providers/GitHubEntityProvider';
-export { GitHubOrgEntityProvider } from './providers/GitHubOrgEntityProvider';
-export type { GitHubOrgEntityProviderOptions } from './providers/GitHubOrgEntityProvider';
-export type { GithubMultiOrgConfig } from './lib';
-export { githubEntityProviderCatalogModule } from './module';
-export type { GithubEntityProviderCatalogModuleOptions } from './module';
+export { GithubEntityProvider } from './providers/GithubEntityProvider';
+export type {
+  GithubOrgEntityProvider,
+  GithubOrgEntityProviderOptions,
+} from './providers/GithubOrgEntityProvider';
+export { githubEntityProviderCatalogModule } from './service/GithubEntityProviderCatalogModule';
+export {
+  type GithubMultiOrgConfig,
+  type GithubTeam,
+  type GithubUser,
+  type UserTransformer,
+  defaultUserTransformer,
+  type TeamTransformer,
+  defaultOrganizationTeamTransformer,
+  type TransformerContext,
+} from './lib';
+
+export * from './deprecated';

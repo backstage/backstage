@@ -1,5 +1,112 @@
 # @backstage/create-app
 
+## 0.4.34-next.2
+
+### Patch Changes
+
+- 384eaa2307: Switched Node.js version to support version 16 & 18, rather than 14 & 16. To switch the Node.js version in your own project, apply the following change to the root `package.json`:
+
+  ```diff
+     "engines": {
+  -    "node": "14 || 16"
+  +    "node": "16 || 18"
+     },
+  ```
+
+  As well as the following change to `packages/app/package.json`:
+
+  ```diff
+  -    "@types/node": "^14.14.32",
+  +    "@types/node": "^16.11.26",
+  ```
+
+- 864c876e57: Fixed incorrect comments in the templated `app-config.yaml` and `app-config.production.yaml`. The `backend.listen` directive is not in fact needed to override the `backend.baseUrl`, the backend listens to all interfaces by default. The configuration has also been updated to listen to all interfaces, rather than just IPv4 ones, as this is required for Node.js v18. The production configuration now also shows the option to specify `backend.listen` as a single string.
+
+  To apply this changes to an existing app, make the following change to `app-config.yaml`:
+
+  ```diff
+  -    # Uncomment the following host directive to bind to all IPv4 interfaces and
+  -    # not just the baseUrl hostname.
+  -    # host: 0.0.0.0
+  +    # Uncomment the following host directive to bind to specific interfaces
+  +    # host: 127.0.0.1
+  ```
+
+  And the following change to `app-config.production.yaml`:
+
+  ```diff
+  -  listen:
+  -    port: 7007
+  -    # The following host directive binds to all IPv4 interfaces when its value
+  -    # is "0.0.0.0". This is the most permissive setting. The right value depends
+  -    # on your specific deployment. If you remove the host line entirely, the
+  -    # backend will bind on the interface that corresponds to the backend.baseUrl
+  -    # hostname.
+  -    host: 0.0.0.0
+  +  # The listener can also be expressed as a single <host>:<port> string. In this case we bind to
+  +  # all interfaces, the most permissive setting. The right value depends on your specific deployment.
+  +  listen: ':7007'
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.33-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.33-next.0
+
+### Patch Changes
+
+- 4091c73e68: Updated `@swc/core` to `v1.3.9` which fixes a `.tsx` parser bug. You may want to run `yarn backstage-cli versions:bump` to get on latest version including the CLI itself.
+- 80bfac5266: Updated the create-app command to no longer require Git to be installed and configured. A git repository will only be initialized if possible and if not already in an git repository.
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.32
+
+### Patch Changes
+
+- 58c2264325: Newly created Backstage repositories now use the stable version 6 of
+  `react-router`, just like the main repo does. Please let us know if you find any
+  issues with this.
+
+  Migrating to the stable version of `react-router` is optional for the time
+  being. But if you want to do the same for your existing repository, please
+  follow [this
+  guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+
+- e05e0f021b: Update versions of packages used in the create-app template, to match those in the main repo
+- 01dff06be4: Leverage cache mounts in Dockerfile during `yarn install ...` and `apt-get ...` commands to speed up repeated builds.
+- 90616bcaa6: Add the new search pagination component to the search page template.
+- 7c6306fc8a: Initializes a git repository when creating an app using @packages/create-app
+- 52f25858a8: Added `*.session.sql` Visual Studio Code database functionality files to `.gitignore` in the default template. This is optional but potentially helpful if your developers use Visual Studio Code; you can add a line with that exact value to your own root `.gitignore` if you want the same.
+- 6d00e80146: Updated the root `test` scripts to use `backstage-cli repo test`.
+
+  To apply this change to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+  -    "test": "backstage-cli test",
+  -    "test:all": "lerna run test -- --coverage",
+  +    "test": "backstage-cli repo test",
+  +    "test:all": "backstage-cli repo test --coverage",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.32-next.2
+
+### Patch Changes
+
+- 01dff06be4: Leverage cache mounts in Dockerfile during `yarn install ...` and `apt-get ...` commands to speed up repeated builds.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
 ## 0.4.32-next.1
 
 ### Patch Changes

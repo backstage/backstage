@@ -507,6 +507,7 @@ async function testBackendStart(appDir: string, ...args: string[]) {
       // Skipping the whole block
       throw new Error(stderr);
     }
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     print('Try to fetch entities from the backend');
     // Try fetch entities, should be ok

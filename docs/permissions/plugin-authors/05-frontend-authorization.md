@@ -118,7 +118,7 @@ Providing a disabled state can be a helpful signal to users, but there may be ca
 -           <Grid item>
 -             <AddTodo onAdd={handleAdd} />
 -           </Grid>
-+           <RequirePermission permission={todoListCreatePermission}>
++           <RequirePermission permission={todoListCreatePermission} errorPage={<></>}>
 +             <Grid item>
 +               <AddTodo onAdd={handleAdd} />
 +             </Grid>
@@ -165,3 +165,25 @@ Providing a disabled state can be a helpful signal to users, but there may be ca
 ```
 
 Now you should find that the component for adding a todo list item does not render at all. Success!
+
+You can also use `RequirePermission` to prevent access to routes as well. Here's how that would look in your `packages/app/src/App.tsx`:
+
+```diff
++ import { RequirePermission } from '@backstage/plugin-permission-react';
++ import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
+
+...
+
+    <Route path="/search" element={<SearchPage />}>
+      {searchPage}
+    </Route>
+    <Route path="/settings" element={<UserSettingsPage />} />
++   <Route path="/todo-list" element={
+       // You might want to create a "read" permission for this, we are just using this one as an example
++      <RequirePermission permission={todoListCreatePermission}>
++        <TodoListPage />
++      </RequirePermission>
+  </FlatRoutes>
+```
+
+Now if you try to navigate to `https://localhost:3000/todo-list` you'll get and error page if you do not have permission.

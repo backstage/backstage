@@ -9,14 +9,9 @@ backend:
   # callers. When its value is "http://localhost:7007", it's strictly private
   # and can't be reached by others.
   baseUrl: http://localhost:7007
-  listen:
-    port: 7007
-    # The following host directive binds to all IPv4 interfaces when its value
-    # is "0.0.0.0". This is the most permissive setting. The right value depends
-    # on your specific deployment. If you remove the host line entirely, the
-    # backend will bind on the interface that corresponds to the backend.baseUrl
-    # hostname.
-    host: 0.0.0.0
+  # The listener can also be expressed as a single <host>:<port> string. In this case we bind to
+  # all interfaces, the most permissive setting. The right value depends on your specific deployment.
+  listen: ':7007'
 
   # config options: https://node-postgres.com/api/client
   database:

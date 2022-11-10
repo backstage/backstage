@@ -22,37 +22,40 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import { EntityKindIcon } from './EntityKindIcon';
 import { EntityNodeData } from './types';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
-  node: {
-    fill: theme.palette.grey[300],
-    stroke: theme.palette.grey[300],
+const useStyles = makeStyles(
+  (theme: BackstageTheme) => ({
+    node: {
+      fill: theme.palette.grey[300],
+      stroke: theme.palette.grey[300],
 
-    '&.primary': {
-      fill: theme.palette.primary.light,
-      stroke: theme.palette.primary.light,
+      '&.primary': {
+        fill: theme.palette.primary.light,
+        stroke: theme.palette.primary.light,
+      },
+      '&.secondary': {
+        fill: theme.palette.secondary.light,
+        stroke: theme.palette.secondary.light,
+      },
     },
-    '&.secondary': {
-      fill: theme.palette.secondary.light,
-      stroke: theme.palette.secondary.light,
-    },
-  },
-  text: {
-    fill: theme.palette.getContrastText(theme.palette.grey[300]),
+    text: {
+      fill: theme.palette.getContrastText(theme.palette.grey[300]),
 
-    '&.primary': {
-      fill: theme.palette.primary.contrastText,
+      '&.primary': {
+        fill: theme.palette.primary.contrastText,
+      },
+      '&.secondary': {
+        fill: theme.palette.secondary.contrastText,
+      },
+      '&.focused': {
+        fontWeight: 'bold',
+      },
     },
-    '&.secondary': {
-      fill: theme.palette.secondary.contrastText,
+    clickable: {
+      cursor: 'pointer',
     },
-    '&.focused': {
-      fontWeight: 'bold',
-    },
-  },
-  clickable: {
-    cursor: 'pointer',
-  },
-}));
+  }),
+  { name: 'PluginCatalogGraphCustomNode' },
+);
 
 export function CustomNode({
   node: {

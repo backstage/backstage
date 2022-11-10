@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { Duration } from 'luxon';
 import { readGitlabConfigs } from './config';
 
 describe('config', () => {
@@ -53,6 +54,7 @@ describe('config', () => {
         host: 'host',
         catalogFile: 'catalog-info.yaml',
         projectPattern: /[\s\S]*/,
+        schedule: undefined,
       }),
     );
   });
@@ -83,6 +85,49 @@ describe('config', () => {
         host: 'host',
         catalogFile: 'custom-file.yaml',
         projectPattern: /[\s\S]*/,
+        schedule: undefined,
+      }),
+    );
+  });
+
+  it('valid config with schedule', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'master',
+        host: 'host',
+        catalogFile: 'catalog-info.yaml',
+        projectPattern: /[\s\S]*/,
+        schedule: {
+          frequency: Duration.fromISO('PT30M'),
+          timeout: {
+            minutes: 3,
+          },
+          initialDelay: undefined,
+          scope: undefined,
+        },
       }),
     );
   });

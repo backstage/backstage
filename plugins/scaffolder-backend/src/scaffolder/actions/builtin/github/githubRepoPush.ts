@@ -49,7 +49,15 @@ export function createGithubRepoPushAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     requireCodeOwnerReviews?: boolean;
+    bypassPullRequestAllowances?:
+      | {
+          users?: string[];
+          teams?: string[];
+          apps?: string[];
+        }
+      | undefined;
     requiredStatusCheckContexts?: string[];
+    requireBranchesToBeUpToDate?: boolean;
     sourcePath?: string;
     token?: string;
   }>({
@@ -64,6 +72,8 @@ export function createGithubRepoPushAction(options: {
           repoUrl: inputProps.repoUrl,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
           protectEnforceAdmins: inputProps.protectEnforceAdmins,
@@ -92,7 +102,9 @@ export function createGithubRepoPushAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         requireCodeOwnerReviews = false,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts = [],
+        requireBranchesToBeUpToDate = true,
         token: providedToken,
       } = ctx.input;
 
@@ -128,7 +140,9 @@ export function createGithubRepoPushAction(options: {
         client,
         repo,
         requireCodeOwnerReviews,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate,
         config,
         ctx.logger,
         gitCommitMessage,

@@ -52,7 +52,13 @@ export function createGithubRepoCreateAction(options: {
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
     requireCodeOwnerReviews?: boolean;
+    bypassPullRequestAllowances?: {
+      users?: string[];
+      teams?: string[];
+      apps?: string[];
+    };
     requiredStatusCheckContexts?: string[];
+    requireBranchesToBeUpToDate?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -84,7 +90,9 @@ export function createGithubRepoCreateAction(options: {
           homepage: inputProps.homepage,
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           repoVisibility: inputProps.repoVisibility,
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           allowMergeCommit: inputProps.allowMergeCommit,

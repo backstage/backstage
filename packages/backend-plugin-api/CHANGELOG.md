@@ -1,5 +1,47 @@
 # @backstage/backend-plugin-api
 
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/backend-tasks@0.3.7-next.1
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/config@1.0.4-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- 28377dc89f: Allow interfaces to be used for inferred option types.
+- a35a27df70: Added documentation for `createBackendModule`, with guidelines for choosing a module ID.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/config@1.0.3
+
+## 0.1.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/config@1.0.3-next.2
+
 ## 0.1.3-next.1
 
 ### Patch Changes

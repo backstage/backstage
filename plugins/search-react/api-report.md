@@ -212,6 +212,52 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 };
 
 // @public
+export const SearchPagination: (props: SearchPaginationProps) => JSX.Element;
+
+// @public
+export const SearchPaginationBase: (
+  props: SearchPaginationBaseProps,
+) => JSX.Element;
+
+// @public
+export type SearchPaginationBaseProps = {
+  className?: string;
+  total?: number;
+  cursor?: string;
+  onCursorChange?: (pageCursor: string) => void;
+  limit?: number;
+  limitLabel?: ReactNode;
+  limitText?: SearchPaginationLimitText;
+  limitOptions?: SearchPaginationLimitOption[];
+  onLimitChange?: (value: number) => void;
+};
+
+// @public
+export type SearchPaginationLimitOption<
+  Current extends number = 101,
+  Accumulator extends number[] = [],
+> = Accumulator['length'] extends Current
+  ? Accumulator[number]
+  : SearchPaginationLimitOption<
+      Current,
+      [...Accumulator, Accumulator['length']]
+    >;
+
+// @public
+export type SearchPaginationLimitText = (params: {
+  from: number;
+  to: number;
+  page: number;
+  count: number;
+}) => ReactNode;
+
+// @public
+export type SearchPaginationProps = Omit<
+  SearchPaginationBaseProps,
+  'pageLimit' | 'onPageLimitChange' | 'pageCursor' | 'onPageCursorChange'
+>;
+
+// @public
 export const SearchResult: (props: SearchResultProps) => JSX.Element;
 
 // @public

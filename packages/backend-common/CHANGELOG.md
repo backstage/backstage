@@ -1,5 +1,70 @@
 # @backstage/backend-common
 
+## 0.16.0-next.1
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- cfb30b700c: Pin `@kubernetes/client-node` version to `0.17.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+
+## 0.16.0-next.0
+
+### Minor Changes
+
+- a7607b5413: **BREAKING CHANGE**: The `UrlReader` interface has been updated to require that `readUrl` is implemented. `readUrl` has previously been optional to implement but a warning has been logged when calling its predecessor `read`.
+  The `read` method is now deprecated and will be removed in a future release.
+
+### Patch Changes
+
+- 55227712dd: Generated development HTTPS backend certificate is now checked for expiration date instead of file age.
+- d05e1841ce: This patch adds GiteaURLReader to the available classes. It currently only reads single files via gitea's public repos api
+- 210a3b5668: Small update to fix compatibility with newer versions of the `keyv` library
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 0.15.2
+
+### Patch Changes
+
+- e8d7976413: Added back support for when no branch is provided for the Bitbucket Server `UrlReader`
+- c44cf412de: Fix BitBucket server integration
+- c31f7cdfbc: Fixed an issue where `getClient()` for a `pluginId` would return different clients and not share them
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+  - @backstage/config-loader@1.1.5
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
+## 0.15.2-next.2
+
+### Patch Changes
+
+- c44cf412de: Fix BitBucket server integration
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.2
+  - @backstage/config-loader@1.1.5-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/types@1.0.0
+
 ## 0.15.2-next.1
 
 ### Patch Changes

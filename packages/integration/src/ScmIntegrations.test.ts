@@ -29,12 +29,13 @@ import {
 } from './bitbucketServer';
 import { GerritIntegrationConfig } from './gerrit';
 import { GerritIntegration } from './gerrit/GerritIntegration';
-import { GitHubIntegrationConfig } from './github';
-import { GitHubIntegration } from './github/GitHubIntegration';
+import { GithubIntegrationConfig } from './github';
+import { GithubIntegration } from './github/GithubIntegration';
 import { GitLabIntegrationConfig } from './gitlab';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
 import { basicIntegrations } from './helpers';
 import { ScmIntegrations } from './ScmIntegrations';
+import { GiteaIntegration, GiteaIntegrationConfig } from './gitea';
 
 describe('ScmIntegrations', () => {
   const awsS3 = new AwsS3Integration({
@@ -61,13 +62,17 @@ describe('ScmIntegrations', () => {
     host: 'gerrit.local',
   } as GerritIntegrationConfig);
 
-  const github = new GitHubIntegration({
+  const github = new GithubIntegration({
     host: 'github.local',
-  } as GitHubIntegrationConfig);
+  } as GithubIntegrationConfig);
 
   const gitlab = new GitLabIntegration({
     host: 'gitlab.local',
   } as GitLabIntegrationConfig);
+
+  const gitea = new GiteaIntegration({
+    host: 'gitea.local',
+  } as GiteaIntegrationConfig);
 
   const i = new ScmIntegrations({
     awsS3: basicIntegrations([awsS3], item => item.config.host),
@@ -81,6 +86,7 @@ describe('ScmIntegrations', () => {
     gerrit: basicIntegrations([gerrit], item => item.config.host),
     github: basicIntegrations([github], item => item.config.host),
     gitlab: basicIntegrations([gitlab], item => item.config.host),
+    gitea: basicIntegrations([gitea], item => item.config.host),
   });
 
   it('can get the specifics', () => {
@@ -96,6 +102,7 @@ describe('ScmIntegrations', () => {
     expect(i.gerrit.byUrl('https://gerrit.local')).toBe(gerrit);
     expect(i.github.byUrl('https://github.local')).toBe(github);
     expect(i.gitlab.byUrl('https://gitlab.local')).toBe(gitlab);
+    expect(i.gitea.byUrl('https://gitea.local')).toBe(gitea);
   });
 
   it('can list', () => {
@@ -109,6 +116,7 @@ describe('ScmIntegrations', () => {
         gerrit,
         github,
         gitlab,
+        gitea,
       ]),
     );
   });
@@ -122,6 +130,7 @@ describe('ScmIntegrations', () => {
     expect(i.byUrl('https://gerrit.local')).toBe(gerrit);
     expect(i.byUrl('https://github.local')).toBe(github);
     expect(i.byUrl('https://gitlab.local')).toBe(gitlab);
+    expect(i.byUrl('https://gitea.local')).toBe(gitea);
 
     expect(i.byHost('awss3.local')).toBe(awsS3);
     expect(i.byHost('azure.local')).toBe(azure);
@@ -131,6 +140,7 @@ describe('ScmIntegrations', () => {
     expect(i.byHost('gerrit.local')).toBe(gerrit);
     expect(i.byHost('github.local')).toBe(github);
     expect(i.byHost('gitlab.local')).toBe(gitlab);
+    expect(i.byHost('gitea.local')).toBe(gitea);
   });
 
   it('can resolveUrl using fallback', () => {

@@ -48,6 +48,7 @@ describe('OpenApiRefProcessor', () => {
       const config = new ConfigReader({});
       const reader = {
         read: jest.fn(),
+        readUrl: jest.fn(),
         readTree: jest.fn(),
         search: jest.fn(),
       };

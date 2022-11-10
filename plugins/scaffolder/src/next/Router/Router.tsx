@@ -22,6 +22,7 @@ import {
   FIELD_EXTENSION_KEY,
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
   NextFieldExtensionOptions,
+  FieldExtensionOptions,
 } from '../../extensions';
 
 import { useElementFilter } from '@backstage/core-plugin-api';
@@ -65,7 +66,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
       })
-      .findComponentData<NextFieldExtensionOptions>({
+      .findComponentData<FieldExtensionOptions | NextFieldExtensionOptions>({
         key: FIELD_EXTENSION_KEY,
       }),
   );

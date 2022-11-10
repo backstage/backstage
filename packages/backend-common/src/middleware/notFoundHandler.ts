@@ -28,6 +28,6 @@ import { NextFunction, Request, RequestHandler, Response } from 'express';
 export function notFoundHandler(): RequestHandler {
   /* eslint-disable @typescript-eslint/no-unused-vars */
   return (_request: Request, response: Response, _next: NextFunction) => {
-    response.status(404).send();
+    response.status(404).end();
   };
 }

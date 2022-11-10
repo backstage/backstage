@@ -21,8 +21,9 @@ import { BitbucketCloudIntegration } from './bitbucketCloud/BitbucketCloudIntegr
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { BitbucketServerIntegration } from './bitbucketServer/BitbucketServerIntegration';
 import { GerritIntegration } from './gerrit/GerritIntegration';
-import { GitHubIntegration } from './github/GitHubIntegration';
+import { GithubIntegration } from './github/GithubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
+import { GiteaIntegration } from './gitea/GiteaIntegration';
 
 /**
  * Holds all registered SCM integrations, of all types.
@@ -40,9 +41,9 @@ export interface ScmIntegrationRegistry
   bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
   bitbucketServer: ScmIntegrationsGroup<BitbucketServerIntegration>;
   gerrit: ScmIntegrationsGroup<GerritIntegration>;
-  github: ScmIntegrationsGroup<GitHubIntegration>;
+  github: ScmIntegrationsGroup<GithubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
-
+  gitea: ScmIntegrationsGroup<GiteaIntegration>;
   /**
    * Resolves an absolute or relative URL in relation to a base URL.
    *

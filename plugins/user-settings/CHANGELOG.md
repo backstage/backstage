@@ -1,5 +1,66 @@
 # @backstage/plugin-user-settings
 
+## 0.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/core-app-api@1.2.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.1-next.0
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-app-api@1.2.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+
+## 0.5.0
+
+### Minor Changes
+
+- 5543e86660: **BREAKING**: The `apiRef` passed to `ProviderSettingsItem` now needs to
+  implement `ProfileInfoApi & SessionApi`, rather than just the latter. This is
+  unlikely to have an effect on most users though, since the builtin auth
+  providers generally implement both.
+
+  Fixed settings page showing providers as logged out when the user is using more
+  than one provider, and displayed some additional login information.
+
+### Patch Changes
+
+- 06d61d1266: Handle errors that may occur when the user logs out
+- 44c9a95dcf: Prevent `.set()` to execute a request to the StorageClient if the user is `guest`
+- 174f02a00a: Update installation instructions
+- Updated dependencies
+  - @backstage/core-components@0.11.2
+  - @backstage/core-app-api@1.1.1
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/errors@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+
+## 0.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.1.1-next.2
+  - @backstage/core-components@0.11.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+
 ## 0.5.0-next.1
 
 ### Patch Changes

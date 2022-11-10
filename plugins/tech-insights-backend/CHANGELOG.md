@@ -1,5 +1,70 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.4-next.1
+
+### Patch Changes
+
+- f12e9e5b8c: Add Documentation on 404 Errors
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/backend-tasks@0.3.7-next.1
+  - @backstage/plugin-tech-insights-node@0.3.6-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-tech-insights-common@0.2.8-next.0
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- 06cf8f1cf2: Add a default delay to the fact retrievers to prevent cold-start errors
+- 30e43717c7: Use `HumanDuration` from `@backstage/types`
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-tech-insights-node@0.3.6-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/plugin-tech-insights-common@0.2.8-next.0
+
+## 0.5.3
+
+### Patch Changes
+
+- 296aea34da: The Tech Insights plugin supports running fact retrievers across multiple instances. Update the README to remove the stale instructions.
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- f7cbfb97ed: Modify router endpoint to handle singular and collections of request parameters similarly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-tech-insights-node@0.3.5
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/plugin-tech-insights-common@0.2.7
+
+## 0.5.3-next.2
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-tech-insights-node@0.3.5-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/plugin-tech-insights-common@0.2.7-next.2
+
 ## 0.5.3-next.1
 
 ### Patch Changes

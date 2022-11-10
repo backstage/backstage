@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { gitHubIssuesPlugin } from './plugin';
+
+import { githubIssuesPlugin } from './plugin';
 
 describe('github-issues', () => {
   it('should export plugin', () => {
-    expect(gitHubIssuesPlugin).toBeDefined();
+    expect(githubIssuesPlugin).toBeDefined();
   });
 });

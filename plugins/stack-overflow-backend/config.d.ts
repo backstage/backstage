@@ -21,7 +21,6 @@ export interface Config {
   stackoverflow?: {
     /**
      * The base url of the Stack Overflow API used for the plugin
-     * @visibility backend
      */
     baseUrl?: string;
 

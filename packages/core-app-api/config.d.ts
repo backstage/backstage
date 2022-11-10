@@ -89,6 +89,11 @@ export interface Config {
     name?: string;
   };
 
+  /**
+   * This config was used by the HomepageTimer but has been replaced  by the HeaderWorldClock in the home plugin
+   *
+   * @deprecated in favor of the HeaderWorldClock which is found in the home plugin
+   */
   homepage?: {
     clocks?: Array<{
       /** @visibility frontend */

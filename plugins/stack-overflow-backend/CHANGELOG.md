@@ -1,5 +1,51 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.21.0-next.1
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- cbe11d1e23: Tweak README
+- a6d779d58a: Remove explicit default visibility at `config.d.ts` files.
+
+  ```ts
+  /**
+   * @visibility backend
+   */
+  ```
+
+- Updated dependencies
+  - @backstage/cli@0.21.0-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- 8006f8a602: In order to improve the debuggability of the search indexing process, messages logged during indexing are now tagged with a `documentType` whose value corresponds to the `type` being indexed.
+- Updated dependencies
+  - @backstage/cli@0.20.0
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/config@1.0.3
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.20.0-next.2
+  - @backstage/plugin-search-common@1.1.0-next.2
+  - @backstage/config@1.0.3-next.2
+
 ## 0.1.6-next.1
 
 ### Patch Changes
