@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { makeJsonSchemaFromZod } from '../utils';
+import { makeFieldSchemaFromZod } from '../utils';
 
 /**
  * @public
  */
-export const OwnerPickerUiOptionsSchema = makeJsonSchemaFromZod(
+export const OwnerPickerFieldSchema = makeFieldSchemaFromZod(
+  z.string(),
   z.object({
     allowedKinds: z
       .array(z.string())
@@ -41,19 +42,14 @@ export const OwnerPickerUiOptionsSchema = makeJsonSchemaFromZod(
   }),
 );
 
-const OwnerPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
-
 /**
  * The input props that can be specified under `ui:options` for the
  * `OwnerPicker` field extension.
  *
  * @public
  */
-export type OwnerPickerUiOptions = typeof OwnerPickerUiOptionsSchema.type;
+export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
 
-export type OwnerPickerReturnValue = typeof OwnerPickerReturnValueSchema.type;
+export type OwnerPickerProps = typeof OwnerPickerFieldSchema.type;
 
-export const OwnerPickerSchema = {
-  uiOptions: OwnerPickerUiOptionsSchema.schema,
-  returnValue: OwnerPickerReturnValueSchema.schema,
-};
+export const OwnerPickerSchema = OwnerPickerFieldSchema.schema;

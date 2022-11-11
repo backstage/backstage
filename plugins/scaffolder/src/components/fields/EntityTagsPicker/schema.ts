@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { makeJsonSchemaFromZod } from '../utils';
+import { makeFieldSchemaFromZod } from '../utils';
 
 /**
  * @public
  */
-export const EntityTagsPickerUiOptionsSchema = makeJsonSchemaFromZod(
+export const EntityTagsPickerFieldSchema = makeFieldSchemaFromZod(
+  z.array(z.string()),
   z.object({
     kinds: z
       .array(z.string())
@@ -33,9 +34,9 @@ export const EntityTagsPickerUiOptionsSchema = makeJsonSchemaFromZod(
   }),
 );
 
-const EntityTagsPickerReturnValueSchema = makeJsonSchemaFromZod(
-  z.array(z.string()),
-);
+export const EntityTagsPickerSchema = EntityTagsPickerFieldSchema.schema;
+
+export type EntityTagsPickerProps = typeof EntityTagsPickerFieldSchema.type;
 
 /**
  * The input props that can be specified under `ui:options` for the
@@ -44,12 +45,4 @@ const EntityTagsPickerReturnValueSchema = makeJsonSchemaFromZod(
  * @public
  */
 export type EntityTagsPickerUiOptions =
-  typeof EntityTagsPickerUiOptionsSchema.type;
-
-export type EntityTagsPickerReturnValue =
-  typeof EntityTagsPickerReturnValueSchema.type;
-
-export const EntityTagsPickerSchema = {
-  uiOptions: EntityTagsPickerUiOptionsSchema.schema,
-  returnValue: EntityTagsPickerReturnValueSchema.schema,
-};
+  typeof EntityTagsPickerFieldSchema.uiOptionsType;

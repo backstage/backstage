@@ -41,8 +41,8 @@ export type CustomFieldValidator<TFieldReturnValue> = (
  * @public
  */
 export type CustomFieldExtensionSchema = {
+  returnValue: JSONSchema7;
   uiOptions?: JSONSchema7;
-  returnValue?: JSONSchema7;
 };
 
 /**

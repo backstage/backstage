@@ -212,7 +212,7 @@ export const MyCustomExtensionWithOptions = ({
   rawErrors,
   required,
   formData,
-}: FieldProps<string, { focused?: boolean }>) => {
+}: FieldExtensionComponentProps<string, { focused?: boolean }>) => {
   return (
     <FormControl
       margin="normal"
@@ -240,16 +240,17 @@ export const MyCustomFieldWithOptionsExtension = scaffolderPlugin.provide(
 ```
 
 We recommend using a library like [zod](https://github.com/colinhacks/zod) to define your schema
-and the provided `makeJsonSchemaFromZod` helper utility function to generate both the JSON schema
-and types for your field input/output to preventing having to duplicate the definitions:
+and the provided `makeFieldSchemaFromZod` helper utility function to generate both the JSON schema
+and type for your field props to preventing having to duplicate the definitions:
 
 ```tsx
 //packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
 ...
 import { z } from 'zod';
-import { makeJsonSchemaFromZod } from '@backstage/plugin-scaffolder';
+import { makeFieldSchemaFromZod } from '@backstage/plugin-scaffolder';
 
-const MyCustomExtensionWithOptionsUiOptionsSchema = makeJsonSchemaFromZod(
+const MyCustomExtensionWithOptionsFieldSchema = makeFieldSchemaFromZod(
+  z.string(),
   z.object({
     focused: z
       .boolean()
@@ -258,24 +259,16 @@ const MyCustomExtensionWithOptionsUiOptionsSchema = makeJsonSchemaFromZod(
   }),
 );
 
-const MyCustomExtensionWithOptionsReturnValueSchema = makeJsonSchemaFromZod(
-  z.string(),
-);
+export const MyCustomExtensionWithOptionsSchema = MyCustomExtensionWithOptionsFieldSchema.schema;
 
-export const MyCustomExtensionWithOptionsSchema = {
-  uiOptions: MyCustomExtensionWithOptionsUiOptionsSchema.schema,
-  returnValue: MyCustomExtensionWithOptionsReturnValueSchema.schema,
-};
+type MyCustomExtensionWithOptionsProps = typeof MyCustomExtensionWithOptionsFieldSchema.type;
 
 export const MyCustomExtensionWithOptions = ({
   onChange,
   rawErrors,
   required,
   formData,
-}: FieldProps<
-  typeof MyCustomExtensionWithOptionsReturnValueSchema.type,
-  typeof MyCustomExtensionWithOptionsUiOptionsSchema.type
->) => {
+}: MyCustomExtensionWithOptionsProps) => {
   return (
     <FormControl
       margin="normal"

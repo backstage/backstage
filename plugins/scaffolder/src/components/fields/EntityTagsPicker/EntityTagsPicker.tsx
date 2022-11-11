@@ -22,11 +22,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { FormControl, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import { FieldExtensionComponentProps } from '../../../extensions';
-import {
-  EntityTagsPickerReturnValue,
-  EntityTagsPickerUiOptions,
-} from './schema';
+import { EntityTagsPickerProps } from './schema';
 
 export { EntityTagsPickerSchema } from './schema';
 
@@ -36,12 +32,7 @@ export { EntityTagsPickerSchema } from './schema';
  *
  * @public
  */
-export const EntityTagsPicker = (
-  props: FieldExtensionComponentProps<
-    EntityTagsPickerReturnValue,
-    EntityTagsPickerUiOptions
-  >,
-) => {
+export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
   const { formData, onChange, uiSchema } = props;
   const catalogApi = useApi(catalogApiRef);
   const [tagOptions, setTagOptions] = useState<string[]>([]);

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { makeJsonSchemaFromZod } from '../utils';
+import { makeFieldSchemaFromZod } from '../utils';
 
 /**
  * @public
  */
-export const EntityPickerUiOptionsSchema = makeJsonSchemaFromZod(
+export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
+  z.string(),
   z.object({
     allowedKinds: z
       .array(z.string())
@@ -44,19 +45,15 @@ export const EntityPickerUiOptionsSchema = makeJsonSchemaFromZod(
   }),
 );
 
-const EntityPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
-
 /**
  * The input props that can be specified under `ui:options` for the
  * `EntityPicker` field extension.
  *
  * @public
  */
-export type EntityPickerUiOptions = typeof EntityPickerUiOptionsSchema.type;
+export type EntityPickerUiOptions =
+  typeof EntityPickerFieldSchema.uiOptionsType;
 
-export type EntityPickerReturnValue = typeof EntityPickerReturnValueSchema.type;
+export type EntityPickerProps = typeof EntityPickerFieldSchema.type;
 
-export const EntityPickerSchema = {
-  uiOptions: EntityPickerUiOptionsSchema.schema,
-  returnValue: EntityPickerReturnValueSchema.schema,
-};
+export const EntityPickerSchema = EntityPickerFieldSchema.schema;

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { makeJsonSchemaFromZod } from '../utils';
+import { makeFieldSchemaFromZod } from '../utils';
 
 /**
  * @public
  */
-export const OwnedEntityPickerUiOptionsSchema = makeJsonSchemaFromZod(
+export const OwnedEntityPickerFieldSchema = makeFieldSchemaFromZod(
+  z.string(),
   z.object({
     allowedKinds: z
       .array(z.string())
@@ -44,8 +45,6 @@ export const OwnedEntityPickerUiOptionsSchema = makeJsonSchemaFromZod(
   }),
 );
 
-const OwnedEntityPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
-
 /**
  * The input props that can be specified under `ui:options` for the
  * `OwnedEntityPicker` field extension.
@@ -53,12 +52,8 @@ const OwnedEntityPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
  * @public
  */
 export type OwnedEntityPickerUiOptions =
-  typeof OwnedEntityPickerUiOptionsSchema.type;
+  typeof OwnedEntityPickerFieldSchema.uiOptionsType;
 
-export type OwnedEntityPickerReturnValue =
-  typeof OwnedEntityPickerReturnValueSchema.type;
+export type OwnedEntityPickerProps = typeof OwnedEntityPickerFieldSchema.type;
 
-export const OwnedEntityPickerSchema = {
-  uiOptions: OwnedEntityPickerUiOptionsSchema.schema,
-  returnValue: OwnedEntityPickerReturnValueSchema.schema,
-};
+export const OwnedEntityPickerSchema = OwnedEntityPickerFieldSchema.schema;

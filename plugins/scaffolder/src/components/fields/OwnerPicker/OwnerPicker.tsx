@@ -15,8 +15,7 @@
  */
 import React from 'react';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
-import { FieldExtensionComponentProps } from '../../../extensions';
-import { OwnerPickerReturnValue, OwnerPickerUiOptions } from './schema';
+import { OwnerPickerProps } from './schema';
 
 export { OwnerPickerSchema } from './schema';
 
@@ -26,12 +25,7 @@ export { OwnerPickerSchema } from './schema';
  *
  * @public
  */
-export const OwnerPicker = (
-  props: FieldExtensionComponentProps<
-    OwnerPickerReturnValue,
-    OwnerPickerUiOptions
-  >,
-) => {
+export const OwnerPicker = (props: OwnerPickerProps) => {
   const {
     schema: { title = 'Owner', description = 'The owner of the component' },
     uiSchema,

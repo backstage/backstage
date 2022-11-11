@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export {
+  RepoUrlPickerFieldSchema,
   type RepoUrlPickerUiOptions,
-  RepoUrlPickerUiOptionsSchema,
 } from './schema';
 export { repoPickerValidation } from './validation';

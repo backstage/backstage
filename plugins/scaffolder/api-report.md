@@ -60,8 +60,8 @@ export function createScaffolderLayout<TInputProps = unknown>(
 
 // @public
 export type CustomFieldExtensionSchema = {
+  returnValue: JSONSchema7;
   uiOptions?: JSONSchema7;
-  returnValue?: JSONSchema7;
 };
 
 // @public
@@ -90,19 +90,20 @@ export const EntityPickerFieldExtension: FieldExtensionComponent<
   }
 >;
 
-// @public
-export type EntityPickerUiOptions = typeof EntityPickerUiOptionsSchema.type;
-
 // @public (undocumented)
-export const EntityPickerUiOptionsSchema: {
-  schema: JSONSchema7;
-  type: {
+export const EntityPickerFieldSchema: FieldSchema<
+  string,
+  {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
-  };
-};
+  }
+>;
+
+// @public
+export type EntityPickerUiOptions =
+  typeof EntityPickerFieldSchema.uiOptionsType;
 
 // @public
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
@@ -114,19 +115,19 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
   }
 >;
 
-// @public
-export type EntityTagsPickerUiOptions =
-  typeof EntityTagsPickerUiOptionsSchema.type;
-
 // @public (undocumented)
-export const EntityTagsPickerUiOptionsSchema: {
-  schema: JSONSchema7;
-  type: {
+export const EntityTagsPickerFieldSchema: FieldSchema<
+  string[],
+  {
     showCounts?: boolean | undefined;
     kinds?: string[] | undefined;
     helperText?: string | undefined;
-  };
-};
+  }
+>;
+
+// @public
+export type EntityTagsPickerUiOptions =
+  typeof EntityTagsPickerFieldSchema.uiOptionsType;
 
 // @public
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
@@ -154,6 +155,16 @@ export type FieldExtensionOptions<
   validation?: CustomFieldValidator<TFieldReturnValue>;
   schema?: CustomFieldExtensionSchema;
 };
+
+// @public
+export interface FieldSchema<TReturn, TUiOptions> {
+  // (undocumented)
+  readonly schema: CustomFieldExtensionSchema;
+  // (undocumented)
+  readonly type: FieldExtensionComponentProps<TReturn, TUiOptions>;
+  // (undocumented)
+  readonly uiOptionsType: TUiOptions;
+}
 
 // @public
 export type LayoutComponent<_TInputProps> = () => null;
@@ -193,12 +204,18 @@ export type LogEvent = {
 };
 
 // @public
-export function makeJsonSchemaFromZod<T extends z.ZodType>(
-  schema: T,
-): {
-  schema: JSONSchema7;
-  type: T extends z.ZodType<any, any, infer I> ? I : never;
-};
+export function makeFieldSchemaFromZod<
+  TReturnSchema extends z.ZodType,
+  TUiOptionsSchema extends z.ZodType = z.ZodType<any, any, {}>,
+>(
+  returnSchema: TReturnSchema,
+  uiOptionsSchema?: TUiOptionsSchema,
+): FieldSchema<
+  TReturnSchema extends z.ZodType<any, any, infer IReturn> ? IReturn : never,
+  TUiOptionsSchema extends z.ZodType<any, any, infer IUiOptions>
+    ? IUiOptions
+    : never
+>;
 
 // @alpha
 export type NextCustomFieldValidator<TFieldReturnValue> = (
@@ -268,20 +285,20 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
   }
 >;
 
-// @public
-export type OwnedEntityPickerUiOptions =
-  typeof OwnedEntityPickerUiOptionsSchema.type;
-
 // @public (undocumented)
-export const OwnedEntityPickerUiOptionsSchema: {
-  schema: JSONSchema7;
-  type: {
+export const OwnedEntityPickerFieldSchema: FieldSchema<
+  string,
+  {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
-  };
-};
+  }
+>;
+
+// @public
+export type OwnedEntityPickerUiOptions =
+  typeof OwnedEntityPickerFieldSchema.uiOptionsType;
 
 // @public
 export const OwnerPickerFieldExtension: FieldExtensionComponent<
@@ -293,18 +310,18 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent<
   }
 >;
 
-// @public
-export type OwnerPickerUiOptions = typeof OwnerPickerUiOptionsSchema.type;
-
 // @public (undocumented)
-export const OwnerPickerUiOptionsSchema: {
-  schema: JSONSchema7;
-  type: {
+export const OwnerPickerFieldSchema: FieldSchema<
+  string,
+  {
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
-  };
-};
+  }
+>;
+
+// @public
+export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
 
 // @public
 export const repoPickerValidation: (
@@ -340,13 +357,10 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
   }
 >;
 
-// @public
-export type RepoUrlPickerUiOptions = typeof RepoUrlPickerUiOptionsSchema.type;
-
 // @public (undocumented)
-export const RepoUrlPickerUiOptionsSchema: {
-  schema: JSONSchema7;
-  type: {
+export const RepoUrlPickerFieldSchema: FieldSchema<
+  string,
+  {
     allowedOwners?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
     allowedRepos?: string[] | undefined;
@@ -365,8 +379,12 @@ export const RepoUrlPickerUiOptionsSchema: {
           secretsKey: string;
         }
       | undefined;
-  };
-};
+  }
+>;
+
+// @public
+export type RepoUrlPickerUiOptions =
+  typeof RepoUrlPickerFieldSchema.uiOptionsType;
 
 // @public (undocumented)
 export const rootRouteRef: RouteRef<undefined>;

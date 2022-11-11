@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  type OwnerPickerUiOptions,
-  OwnerPickerUiOptionsSchema,
-} from './schema';
+export { OwnerPickerFieldSchema, type OwnerPickerUiOptions } from './schema';

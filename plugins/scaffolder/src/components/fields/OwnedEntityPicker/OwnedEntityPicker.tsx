@@ -26,25 +26,17 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
-import { FieldExtensionComponentProps } from '../../../extensions';
-import {
-  OwnedEntityPickerReturnValue,
-  OwnedEntityPickerUiOptions,
-} from './schema';
+import { OwnedEntityPickerProps } from './schema';
 
 export { OwnedEntityPickerSchema } from './schema';
+
 /**
  * The underlying component that is rendered in the form for the `OwnedEntityPicker`
  * field extension.
  *
  * @public
  */
-export const OwnedEntityPicker = (
-  props: FieldExtensionComponentProps<
-    OwnedEntityPickerReturnValue,
-    OwnedEntityPickerUiOptions
-  >,
-) => {
+export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
   const {
     onChange,
     schema: { title = 'Entity', description = 'An entity from the catalog' },

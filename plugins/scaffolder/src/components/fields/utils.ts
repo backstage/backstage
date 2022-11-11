@@ -16,20 +16,47 @@
 import { JSONSchema7 } from 'json-schema';
 import { z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
+import {
+  CustomFieldExtensionSchema,
+  FieldExtensionComponentProps,
+} from '../../extensions';
 
 /**
  * @public
- * Utility function to convert zod schemas to JSON schemas with
- * type inference extraction that abstracts away zod typings
+ * FieldSchema encapsulates a JSONSchema7 along with the
+ * matching FieldExtensionComponentProps type for a field extension.
  */
-export function makeJsonSchemaFromZod<T extends z.ZodType>(
-  schema: T,
-): {
-  schema: JSONSchema7;
-  type: T extends z.ZodType<any, any, infer I> ? I : never;
-} {
+export interface FieldSchema<TReturn, TUiOptions> {
+  readonly schema: CustomFieldExtensionSchema;
+  readonly type: FieldExtensionComponentProps<TReturn, TUiOptions>;
+  readonly uiOptionsType: TUiOptions;
+}
+
+/**
+ * @public
+ * Utility function to convert zod return and UI options schemas to a
+ * CustomFieldExtensionSchema with FieldExtensionComponentProps type inference
+ */
+export function makeFieldSchemaFromZod<
+  TReturnSchema extends z.ZodType,
+  TUiOptionsSchema extends z.ZodType = z.ZodType<any, any, {}>,
+>(
+  returnSchema: TReturnSchema,
+  uiOptionsSchema?: TUiOptionsSchema,
+): FieldSchema<
+  TReturnSchema extends z.ZodType<any, any, infer IReturn> ? IReturn : never,
+  TUiOptionsSchema extends z.ZodType<any, any, infer IUiOptions>
+    ? IUiOptions
+    : never
+> {
   return {
-    schema: zodToJsonSchema(schema) as JSONSchema7,
+    schema: {
+      returnValue: zodToJsonSchema(returnSchema) as JSONSchema7,
+      uiOptions: uiOptionsSchema
+        ? (zodToJsonSchema(uiOptionsSchema) as JSONSchema7)
+        : undefined,
+    },
     type: null as any,
+    uiOptionsType: null as any,
   };
 }

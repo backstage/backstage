@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { makeJsonSchemaFromZod } from '../utils';
+import { makeFieldSchemaFromZod } from '../utils';
 
-const EntityNamePickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
+const EntityNamePickerFieldSchema = makeFieldSchemaFromZod(z.string());
 
-export type EntityNamePickerReturnValue =
-  typeof EntityNamePickerReturnValueSchema.type;
+export const EntityNamePickerSchema = EntityNamePickerFieldSchema.schema;
 
-export const EntityNamePickerSchema = {
-  returnValue: EntityNamePickerReturnValueSchema.schema,
-};
+export type EntityNamePickerProps = typeof EntityNamePickerFieldSchema.type;

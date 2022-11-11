@@ -24,11 +24,10 @@ import { GitlabRepoPicker } from './GitlabRepoPicker';
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 import { GerritRepoPicker } from './GerritRepoPicker';
-import { FieldExtensionComponentProps } from '../../../extensions';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
-import { RepoUrlPickerReturnValue, RepoUrlPickerUiOptions } from './schema';
+import { RepoUrlPickerProps } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTemplateSecrets } from '../../secrets';
@@ -41,12 +40,7 @@ export { RepoUrlPickerSchema } from './schema';
  *
  * @public
  */
-export const RepoUrlPicker = (
-  props: FieldExtensionComponentProps<
-    RepoUrlPickerReturnValue,
-    RepoUrlPickerUiOptions
-  >,
-) => {
+export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
   const { uiSchema, onChange, rawErrors, formData } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),

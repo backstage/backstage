@@ -23,8 +23,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { FieldExtensionComponentProps } from '../../../extensions';
-import { EntityPickerReturnValue, EntityPickerUiOptions } from './schema';
+import { EntityPickerProps } from './schema';
 
 export { EntityPickerSchema } from './schema';
 
@@ -34,12 +33,7 @@ export { EntityPickerSchema } from './schema';
  *
  * @public
  */
-export const EntityPicker = (
-  props: FieldExtensionComponentProps<
-    EntityPickerReturnValue,
-    EntityPickerUiOptions
-  >,
-) => {
+export const EntityPicker = (props: EntityPickerProps) => {
   const {
     onChange,
     schema: { title = 'Entity', description = 'An entity from the catalog' },

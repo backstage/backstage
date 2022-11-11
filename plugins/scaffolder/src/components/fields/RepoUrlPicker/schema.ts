@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { makeJsonSchemaFromZod } from '../utils';
+import { makeFieldSchemaFromZod } from '../utils';
 
 /**
  * @public
  */
-export const RepoUrlPickerUiOptionsSchema = makeJsonSchemaFromZod(
+export const RepoUrlPickerFieldSchema = makeFieldSchemaFromZod(
+  z.string(),
   z.object({
     allowedHosts: z
       .array(z.string())
@@ -77,23 +78,18 @@ export const RepoUrlPickerUiOptionsSchema = makeJsonSchemaFromZod(
   }),
 );
 
-const RepoUrlPickerReturnValueSchema = makeJsonSchemaFromZod(z.string());
-
 /**
  * The input props that can be specified under `ui:options` for the
  * `RepoUrlPicker` field extension.
  *
  * @public
  */
-export type RepoUrlPickerUiOptions = typeof RepoUrlPickerUiOptionsSchema.type;
+export type RepoUrlPickerUiOptions =
+  typeof RepoUrlPickerFieldSchema.uiOptionsType;
 
-export type RepoUrlPickerReturnValue =
-  typeof RepoUrlPickerReturnValueSchema.type;
+export type RepoUrlPickerProps = typeof RepoUrlPickerFieldSchema.type;
 
 // NOTE: There is a bug with this failing validation in the custom field explorer due
 // to https://github.com/rjsf-team/react-jsonschema-form/issues/675 even if
 // requestUserCredentials is not defined
-export const RepoUrlPickerSchema = {
-  uiOptions: RepoUrlPickerUiOptionsSchema.schema,
-  returnValue: RepoUrlPickerReturnValueSchema.schema,
-};
+export const RepoUrlPickerSchema = RepoUrlPickerFieldSchema.schema;

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 export {
+  EntityTagsPickerFieldSchema,
   type EntityTagsPickerUiOptions,
-  EntityTagsPickerUiOptionsSchema,
 } from './schema';

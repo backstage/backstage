@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 export {
+  OwnedEntityPickerFieldSchema,
   type OwnedEntityPickerUiOptions,
-  OwnedEntityPickerUiOptionsSchema,
 } from './schema';
