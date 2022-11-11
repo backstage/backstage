@@ -19,10 +19,11 @@ import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
-import { TaskWorker } from './TaskWorker';
+import { TaskWorker, TaskWorkerOptions } from './TaskWorker';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
+import { TaskBroker, TaskContext, WorkflowRunner } from './types';
 
 jest.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner =
@@ -194,5 +195,64 @@ describe('Concurrent TaskWorker', () => {
     await dispatchANewTask();
 
     expect(asyncTasksCount).toEqual(expectedConcurrentTasks);
+  });
+});
+
+describe('TaskWorker internals', () => {
+  const TaskWorkerConstructor = TaskWorker as unknown as {
+    new (options: TaskWorkerOptions): TaskWorker;
+  };
+
+  it('should not pick up tasks before it is ready to execute more work', async () => {
+    const inflightTasks = new Array<{
+      task: TaskContext;
+      resolve: () => void;
+    }>();
+    const workflowRunner: WorkflowRunner = {
+      async execute(task) {
+        await new Promise<void>(resolve => {
+          inflightTasks.push({ task, resolve });
+        });
+        return {
+          output: {},
+        };
+      },
+    };
+
+    let claimedTaskCount = 0;
+    const taskWorker = new TaskWorkerConstructor({
+      runners: { workflowRunner },
+      taskBroker: {
+        async claim() {
+          claimedTaskCount++;
+          return {
+            spec: {
+              apiVersion: 'scaffolder.backstage.io/v1beta3',
+            },
+            createdBy: `test-${claimedTaskCount}`,
+            async complete(_result, _metadata) {},
+          } as TaskContext;
+        },
+      } as TaskBroker,
+      concurrentTasksLimit: 2,
+    });
+
+    expect(claimedTaskCount).toBe(0);
+    taskWorker.start();
+
+    // This will wait for all higher priority promise ticks to complete
+    await new Promise(resolve => setTimeout(resolve));
+
+    // Once we start the worker it should pick up 2 tasks, since that's our limit
+    expect(claimedTaskCount).toBe(2);
+    expect(inflightTasks.length).toBe(2);
+
+    // This completes the first task, making space for one more
+    inflightTasks.shift()?.resolve();
+    await new Promise(resolve => setTimeout(resolve));
+
+    // We now expect one more task to have been claimed, and two tasks in the queue again
+    expect(claimedTaskCount).toBe(3);
+    expect(inflightTasks.length).toBe(2);
   });
 });
