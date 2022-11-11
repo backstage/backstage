@@ -22,8 +22,9 @@
 
 export * from './search';
 export * from './service';
+export * from './tools';
 
 /**
  * @internal Example only - do not use in production
  */
-export { getExampleTools } from './example/getExampleTools';
+export { exampleTools } from './example/exampleTools';

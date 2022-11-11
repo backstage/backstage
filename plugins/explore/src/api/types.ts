@@ -34,6 +34,9 @@ export interface ExploreApi {
   getTools(request?: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
 }
 
+/**
+ * @public
+ */
 export const exploreApiRef = createApiRef<ExploreApi>({
   id: 'plugin.explore.service',
 });

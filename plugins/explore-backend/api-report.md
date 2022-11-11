@@ -33,6 +33,14 @@ export interface RouterOptions {
 }
 
 // @public
+export class StaticExploreToolProvider implements ExploreToolProvider {
+  // (undocumented)
+  static fromData(tools: ExploreTool[]): StaticExploreToolProvider;
+  // (undocumented)
+  getTools(request: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
+}
+
+// @public
 export interface ToolDocument extends IndexableDocument, ExploreTool {}
 
 // @public

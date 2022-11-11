@@ -19,7 +19,7 @@ import { GetExploreToolsRequest } from '@backstage/plugin-explore-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { ExploreToolProvider } from './types';
+import { ExploreToolProvider } from '../tools';
 
 /**
  * @public

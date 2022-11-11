@@ -21,9 +21,8 @@ import {
 } from '@backstage/plugin-explore-common';
 import express from 'express';
 import request from 'supertest';
-
+import { ExploreToolProvider } from '../tools';
 import { createRouter } from './router';
-import { ExploreToolProvider } from './types';
 
 const mockTools: ExploreTool[] = [
   { title: 'Tool 1', url: 'https://example.com/tool1', image: '' },

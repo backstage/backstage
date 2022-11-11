@@ -28,15 +28,20 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+// import { exploreApiRef } from '../../api';
 
 const Body = () => {
   const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
+  // const exploreApi = useApi(exploreApiRef);
+
   const {
     value: tools,
     loading,
     error,
   } = useAsync(async () => {
     return await exploreToolsConfigApi.getTools();
+    // TODO: Enable the backend ExploreClient
+    // return (await exploreApi.getTools())?.tools;
   }, [exploreToolsConfigApi]);
 
   if (loading) {
