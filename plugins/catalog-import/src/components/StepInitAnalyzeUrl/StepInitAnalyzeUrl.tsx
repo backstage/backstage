@@ -42,6 +42,7 @@ export interface StepInitAnalyzeUrlProps {
   disablePullRequest?: boolean;
   analysisUrl?: string;
   exampleLocationUrl?: string;
+  filters?: Array<string>,
 }
 
 /**
@@ -58,6 +59,7 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
     analysisUrl = '',
     disablePullRequest = false,
     exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+    filters = [],
   } = props;
 
   const errorApi = useApi(errorApiRef);
@@ -77,6 +79,8 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+
+  const filteredRegex = new RegExp(`^http[s]?://${filters ? `[${filters.map((filter, i) => i === 0 ? filter : `|${filter}`)}]` : ''}`)
 
   const handleResult = useCallback(
     async ({ url }: FormData) => {
@@ -113,9 +117,8 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
           }
 
           default: {
-            const err = `Received unknown analysis result of type ${
-              (analysisResult as any).type
-            }. Please contact the support team.`;
+            const err = `Received unknown analysis result of type ${(analysisResult as any).type
+              }. Please contact the support team.`;
             setError(err);
             setSubmitted(false);
 
@@ -140,7 +143,7 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
             validate: {
               httpsValidator: (value: any) =>
                 (typeof value === 'string' &&
-                  value.match(/^http[s]?:\/\//) !== null) ||
+                  value.match(filteredRegex) !== null) ||
                 'Must start with http:// or https://.',
             },
           }),

@@ -51,6 +51,7 @@ export interface StepperProvider {
   analyze: (
     s: Extract<ImportState, { activeState: 'analyze' }>,
     opts: { apis: StepperApis },
+    filters?: String[],
   ) => StepConfiguration;
   prepare: (
     s: Extract<ImportState, { activeState: 'prepare' }>,
@@ -263,7 +264,7 @@ export function defaultGenerateStepper(
 }
 
 export const defaultStepper: StepperProvider = {
-  analyze: (state, { apis }) => ({
+  analyze: (state, { apis }, filters=[]) => ({
     stepLabel: <StepLabel>Select URL</StepLabel>,
     content: (
       <StepInitAnalyzeUrl
@@ -271,6 +272,7 @@ export const defaultStepper: StepperProvider = {
         analysisUrl={state.analysisUrl}
         onAnalysis={state.onAnalysis}
         disablePullRequest={!apis.catalogImportApi.preparePullRequest}
+        filters={filters}
       />
     ),
   }),

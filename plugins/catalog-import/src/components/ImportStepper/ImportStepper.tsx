@@ -46,6 +46,7 @@ export interface ImportStepperProps {
     defaults: StepperProvider,
   ) => StepperProvider;
   variant?: InfoCardVariants;
+  filters?: Array<String>;
 }
 
 /**
@@ -58,6 +59,7 @@ export const ImportStepper = (props: ImportStepperProps) => {
     initialUrl,
     generateStepper = defaultGenerateStepper,
     variant,
+    filters = [],
   } = props;
 
   const catalogImportApi = useApi(catalogImportApiRef);
@@ -88,7 +90,8 @@ export const ImportStepper = (props: ImportStepperProps) => {
         {render(
           states.analyze(
             state as Extract<ImportState, { activeState: 'analyze' }>,
-            { apis: { catalogImportApi } },
+            { apis: { catalogImportApi } }, 
+            filters,
           ),
         )}
         {render(
