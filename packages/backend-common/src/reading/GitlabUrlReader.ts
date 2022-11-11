@@ -73,7 +73,7 @@ export class GitlabUrlReader implements UrlReader {
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
     const { etag, signal } = options ?? {};
-    const builtUrl = await getGitLabFileFetchUrl(url, this.integration.config);
+    const builtUrl = await this.getGitlabFetchUrl(url);
 
     let response: Response;
     try {
@@ -255,5 +255,70 @@ export class GitlabUrlReader implements UrlReader {
   toString() {
     const { host, token } = this.integration.config;
     return `gitlab{host=${host},authed=${Boolean(token)}}`;
+  }
+
+  async getGitlabFetchUrl(target: string): Promise<string> {
+    // If the target is a raw API url then trust that no parsing is needed
+    if (target.includes('/api/v4/')) {
+      return target;
+    }
+    // If the target is for a job artifact then go down that path
+    if (target.includes('/-/jobs/artifacts/')) {
+      return this.getGitlabArtifactFetchUrl(target).then(value =>
+        value.toString(),
+      );
+    }
+    // Default to the old behavior of assuming the url is for a file
+    return getGitLabFileFetchUrl(target, this.integration.config);
+  }
+
+  // convert urls of the form:
+  //    https://example.com/<namespace>/<project>/-/jobs/artifacts/<ref>/raw/<path_to_file>?job=<job_name>
+  // to urls of the form:
+  //    https://example.com/api/v4/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path?job=<job_name>
+  async getGitlabArtifactFetchUrl(target: string): Promise<URL> {
+    const url = new URL(target);
+    if (!url.pathname.includes('/-/jobs/artifacts/')) {
+      throw new Error('Unable to process url as an GitLab artifact');
+    }
+    try {
+      const [namespaceAndProject, ref] =
+        url.pathname.split('/-/jobs/artifacts/');
+      const projectPath = new URL(url);
+      projectPath.pathname = namespaceAndProject;
+      const projectId = await this.resolveProjectToId(projectPath);
+      const relativePath = getGitLabIntegrationRelativePath(
+        this.integration.config,
+      );
+      url.pathname = `${relativePath}/api/v4/projects/${projectId}/jobs/artifacts/${ref}`;
+      return url;
+    } catch (e) {
+      throw new Error(
+        `Unable to translate GitLab artifact URL: ${target}, ${e}`,
+      );
+    }
+  }
+
+  private async resolveProjectToId(pathToProject: URL): Promise<number> {
+    let project = pathToProject.pathname;
+    // Check relative path exist and remove it if so
+    const relativePath = getGitLabIntegrationRelativePath(
+      this.integration.config,
+    );
+    if (relativePath) {
+      project = project.replace(relativePath, '');
+    }
+    // Trim an initial / if it exists
+    project = project.replace(/^\//, '');
+    const result = await fetch(
+      `${
+        pathToProject.origin
+      }${relativePath}/api/v4/projects/${encodeURIComponent(project)}`,
+    );
+    const data = await result.json();
+    if (!result.ok) {
+      throw new Error(`Gitlab error: ${data.error}, ${data.error_description}`);
+    }
+    return Number(data.id);
   }
 }
