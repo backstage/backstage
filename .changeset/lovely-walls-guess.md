@@ -44,45 +44,39 @@ To add this to an existing Backstage instance you will need to make the followin
      <SidebarSubmenu title="Catalog">
        <SidebarSubmenuItem
          title="Domains"
-         to="catalog?filters%5Bkind%5D=domain"
+         to="catalog?filters[kind]=domain"
          icon={DomainIcon}
        />
        <SidebarSubmenuItem
          title="Systems"
-         to="catalog?filters%5Bkind%5D=system"
+         to="catalog?filters[kind]=system"
          icon={SystemIcon}
        />
        <SidebarSubmenuItem
          title="Components"
-         to="catalog?filters%5Bkind%5D=component"
+         to="catalog?filters[kind]=component"
          icon={ComponentIcon}
        />
        <SidebarSubmenuItem
          title="APIs"
-         to="catalog?filters%5Bkind%5D=api"
+         to="catalog?filters[kind]=api"
          icon={ApiIcon}
        />
        <SidebarDivider />
        <SidebarSubmenuItem
          title="Resources"
-         to="catalog?filters%5Bkind%5D=resource"
+         to="catalog?filters[kind]=resource"
          icon={ResourceIcon}
        />
        <SidebarDivider />
        <SidebarSubmenuItem
-         title="Templates"
-         to="catalog?filters%5Bkind%5D=template"
-         icon={CreateComponentIcon}
-       />
-       <SidebarDivider />
-       <SidebarSubmenuItem
          title="Groups"
-         to="catalog?filters%5Bkind%5D=group"
+         to="catalog?filters[kind]=group"
          icon={GroupIcon}
        />
        <SidebarSubmenuItem
          title="Users"
-         to="catalog?filters%5Bkind%5D=user"
+         to="catalog?filters[kind]=user"
          icon={UserIcon}
        />
      </SidebarSubmenu>
