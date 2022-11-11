@@ -30808,7 +30808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^5.1.6, openid-client@npm:^5.2.1":
+"openid-client@npm:^5.1.6":
   version: 5.2.1
   resolution: "openid-client@npm:5.2.1"
   dependencies:
@@ -30817,6 +30817,18 @@ __metadata:
     object-hash: ^2.0.1
     oidc-token-hash: ^5.0.1
   checksum: b2e9ee8bafb30981fe8eb4446d86578649f05e61d6289abfe79c863578ef8ab24eb4430461c2b8dbb50cbaff89af01e77439df5ebb87c391ed1e336a0e69e590
+  languageName: node
+  linkType: hard
+
+"openid-client@npm:^5.2.1":
+  version: 5.3.0
+  resolution: "openid-client@npm:5.3.0"
+  dependencies:
+    jose: ^4.10.0
+    lru-cache: ^6.0.0
+    object-hash: ^2.0.1
+    oidc-token-hash: ^5.0.1
+  checksum: 27faa298e083daae2a2a99629b25cc89f648302f4845dd1acd04ec6e7105a6edf13a5c38ab1159bcb7b88c5bc54be08e021c911e22f0b8bfcca1b2d686ae3d95
   languageName: node
   linkType: hard
 
