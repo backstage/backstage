@@ -2,6 +2,9 @@ name: CI
 on:
   pull_request:
     paths-ignore:
+      - '.changeset/**'
+      - 'contrib/**'
+      - 'docs/**'
       - 'microsite/**'
 
 concurrency:
