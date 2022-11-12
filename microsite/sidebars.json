@@ -316,6 +316,7 @@
     ],
     "Designing for Backstage": [
       "dls/design",
+      "dls/component-design-guidelines",
       "dls/contributing-to-storybook",
       "dls/figma"
     ],
