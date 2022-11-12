@@ -178,11 +178,11 @@ class AppContextImpl implements AppContext {
 export class AppManager implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
-  private pluginMetadataExtender: PluginMetadataExtender;
 
   private readonly apis: Iterable<AnyApiFactory>;
   private readonly icons: NonNullable<AppOptions['icons']>;
   private readonly plugins: Set<CompatiblePlugin>;
+  private readonly pluginMetadataExtender: PluginMetadataExtender;
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
@@ -198,7 +198,9 @@ export class AppManager implements BackstageApp {
     this.icons = options.icons;
     this.plugins = new Set(
       ((options.plugins as CompatiblePlugin[]) ?? []).map(plugin => {
-        plugin.setMetadataExtender?.(this.pluginMetadataExtender.extend);
+        plugin.__internalSetMetadataExtender?.(
+          this.pluginMetadataExtender.extend,
+        );
         return plugin;
       }),
     );
@@ -257,7 +259,9 @@ export class AppManager implements BackstageApp {
         //               For now we need to push the additional plugins we find during
         //               collection and then make sure we initialize things afterwards.
         result.collectedPlugins.forEach(plugin => {
-          plugin.setMetadataExtender?.(this.pluginMetadataExtender.extend);
+          plugin.__internalSetMetadataExtender?.(
+            this.pluginMetadataExtender.extend,
+          );
           this.plugins.add(plugin);
         });
         this.verifyPlugins(this.plugins);

@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-import { Minimatch } from 'minimatch';
-
 import { ExtendMetadata } from '@backstage/core-plugin-api';
 
 import { AppOptions } from './types';
 
-export type PluginDecorationOptions = Pick<
-  AppOptions,
-  'pluginOwners' | 'pluginInfoDecorator'
->;
+export type PluginDecorationOptions = Pick<AppOptions, 'pluginInfo'>;
 
 /**
  * Extends plugin metadata with app-level configurations for setting owners
  * (based on package name), and custom decorators to set/change metadata fields
  */
 export class PluginMetadataExtender {
-  private readonly matchers: ReadonlyArray<readonly [Minimatch, string]>;
+  private readonly matchers: ReadonlyArray<readonly [RegExp, string]>;
 
   constructor(private options: PluginDecorationOptions) {
-    const { pluginOwners = [] } = this.options;
+    const { pluginInfo } = this.options;
+    const { pluginOwners = [] } = pluginInfo ?? {};
 
     this.matchers = pluginOwners.flatMap(rec =>
       Object.entries(rec).map(
         ([pkgNamePattern, owner]) =>
-          [new Minimatch(pkgNamePattern), owner] as const,
+          [new RegExp(pkgNamePattern), owner] as const,
       ),
     );
   }
@@ -48,16 +44,16 @@ export class PluginMetadataExtender {
 
     const pkgName = pkgJson?.name ? `${pkgJson.name}` : undefined;
 
-    if (pkgName && !info.ownerEntityRef) {
-      info.ownerEntityRef =
+    if (pkgName && !info.ownerEntityRefs) {
+      info.ownerEntityRefs =
         this.matchOwner(pkgName) ?? pkgJson.backstage?.owner;
     }
 
-    this.options.pluginInfoDecorator?.(info, pluginId);
+    this.options.pluginInfo?.pluginInfoDecorator?.(info, pluginId);
   };
 
   private matchOwner(pkgName: string): string | undefined {
-    const match = this.matchers.find(([matcher]) => matcher.match(pkgName));
+    const match = this.matchers.find(([matcher]) => pkgName.match(matcher));
     return match?.[1];
   }
 }

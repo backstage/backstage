@@ -62,14 +62,14 @@ export class PluginImpl<
 
   getInfo(): Promise<PluginInfo> {
     this.deferredInfo ??= getPluginMetadata(
-      this.config.info,
+      this.config.__experimentalInfo,
       this.config.id,
       this.metadataExtender,
     );
     return this.deferredInfo;
   }
 
-  setMetadataExtender(extender: ExtendMetadata) {
+  __internalSetMetadataExtender(extender: ExtendMetadata) {
     this.metadataExtender = extender;
   }
 

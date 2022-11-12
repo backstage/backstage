@@ -47,7 +47,7 @@ export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
 /**
  * Extend metadata for a plugin
  *
- * @public
+ * @private
  */
 export type ExtendMetadata = (
   info: PluginInfo,
@@ -71,7 +71,7 @@ export type BackstagePlugin<
    */
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   getInfo(): Promise<PluginInfo>;
-  setMetadataExtender(extender: ExtendMetadata): void;
+  __internalSetMetadataExtender(extender: ExtendMetadata): void;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
@@ -131,7 +131,7 @@ export type PluginInfo = {
    * Owner of the plugin. It's a catalog entity ref, defaulting the kind to
    * Group, so it's either a full entity ref, or just a group name
    */
-  ownerEntityRef?: string;
+  ownerEntityRefs?: string[];
 
   /**
    * A set of links. Will by default include the `homepage` and `repository`
@@ -157,9 +157,12 @@ export type LazyLoadedPackageJson = () => Promise<{
  * @public (undocumented)
  */
 export type PluginConfigInfo =
-  | Partial<PluginInfo>
-  | (Omit<Partial<PluginInfo>, 'packageJson'> & {
+  | (Omit<Partial<PluginInfo>, 'ownerEntityRefs'> & {
+      ownerEntityRefs?: string | string[];
+    })
+  | (Omit<Partial<PluginInfo>, 'packageJson' | 'ownerEntityRefs'> & {
       packageJson: LazyLoadedPackageJson;
+      ownerEntityRefs?: string | string[];
     })
   | LazyLoadedPackageJson;
 
@@ -178,7 +181,7 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
-  info?: PluginConfigInfo;
+  __experimentalInfo?: PluginConfigInfo;
   __experimentalConfigure?(options?: PluginInputOptions): {};
 };
 

@@ -56,6 +56,14 @@ async function getInitialInfo(
       .then(m => m.default);
   }
 
+  if (infoConfig.ownerEntityRefs) {
+    infoConfig.ownerEntityRefs = Array.isArray(infoConfig.ownerEntityRefs)
+      ? infoConfig.ownerEntityRefs
+      : [infoConfig.ownerEntityRefs];
+  } else {
+    infoConfig.ownerEntityRefs = [];
+  }
+
   return infoConfig as PluginInfo;
 }
 
@@ -82,20 +90,6 @@ function parseMetadata(info: PluginInfo): void {
       title: 'Package homepage',
       url: pkgJson.homepage,
     });
-  }
-  if (typeof pkgJson.repository === 'string') {
-    try {
-      const url = new URL(pkgJson.repository);
-      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-        url.protocol = 'https:';
-      }
-      info.links.push({
-        title: 'Package repository',
-        url: url.toString(),
-      });
-    } catch (_err) {
-      // not critical
-    }
   }
   if (typeof pkgJson.repository?.url === 'string') {
     try {

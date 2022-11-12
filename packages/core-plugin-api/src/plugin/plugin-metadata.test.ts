@@ -21,7 +21,7 @@ describe('getPluginMetadata', () => {
     const metadata = await getPluginMetadata(undefined, 'foo', undefined);
     expect(metadata.description).toBeUndefined();
     expect(metadata.links).toHaveLength(0);
-    expect(metadata.ownerEntityRef).toBeUndefined();
+    expect(metadata.ownerEntityRefs).toBeUndefined();
     expect(metadata.packageJson).toBeUndefined();
     expect(metadata.role).toBeUndefined();
     expect(metadata.version).toBeUndefined();
@@ -33,12 +33,12 @@ describe('getPluginMetadata', () => {
       'foo',
       async (info, pluginId) => {
         info.description = `${pluginId} thing`;
-        info.ownerEntityRef = 'group:default/the-group';
+        info.ownerEntityRefs = ['group:default/the-group'];
       },
     );
     expect(metadata.description).toBe('foo thing');
     expect(metadata.links).toHaveLength(0);
-    expect(metadata.ownerEntityRef).toBe('group:default/the-group');
+    expect(metadata.ownerEntityRefs).toBe('group:default/the-group');
     expect(metadata.packageJson).toBeUndefined();
     expect(metadata.role).toBeUndefined();
     expect(metadata.version).toBeUndefined();
@@ -48,7 +48,7 @@ describe('getPluginMetadata', () => {
     const metadata = await getPluginMetadata({}, 'foo', undefined);
     expect(metadata.description).toBeUndefined();
     expect(metadata.links).toHaveLength(0);
-    expect(metadata.ownerEntityRef).toBeUndefined();
+    expect(metadata.ownerEntityRefs).toBeUndefined();
     expect(metadata.packageJson).toBeUndefined();
     expect(metadata.role).toBeUndefined();
     expect(metadata.version).toBeUndefined();
@@ -60,12 +60,12 @@ describe('getPluginMetadata', () => {
       'foo',
       async (info, pluginId) => {
         info.description = `${pluginId} thing`;
-        info.ownerEntityRef = 'group:default/the-group';
+        info.ownerEntityRefs = ['group:default/the-group'];
       },
     );
     expect(metadata.description).toBe('foo thing');
     expect(metadata.links).toHaveLength(0);
-    expect(metadata.ownerEntityRef).toBe('group:default/the-group');
+    expect(metadata.ownerEntityRefs).toBe('group:default/the-group');
     expect(metadata.packageJson).toBeUndefined();
     expect(metadata.role).toBeUndefined();
     expect(metadata.version).toBeUndefined();
@@ -79,7 +79,7 @@ describe('getPluginMetadata', () => {
     );
     expect(metadata.description).toBe('desc');
     expect(metadata.links).toHaveLength(0);
-    expect(metadata.ownerEntityRef).toBeUndefined();
+    expect(metadata.ownerEntityRefs).toBeUndefined();
     expect(metadata.packageJson).toBeUndefined();
     expect(metadata.role).toBe('cli');
     expect(metadata.version).toBeUndefined();
@@ -91,12 +91,12 @@ describe('getPluginMetadata', () => {
       'foo',
       async (info, pluginId) => {
         info.description = `${pluginId} thing`;
-        info.ownerEntityRef = 'group:default/the-group';
+        info.ownerEntityRefs = ['group:default/the-group'];
       },
     );
     expect(metadata.description).toBe('foo thing');
     expect(metadata.links).toHaveLength(0);
-    expect(metadata.ownerEntityRef).toBe('group:default/the-group');
+    expect(metadata.ownerEntityRefs).toBe('group:default/the-group');
     expect(metadata.packageJson).toBeUndefined();
     expect(metadata.role).toBe('cli');
     expect(metadata.version).toBeUndefined();
@@ -117,7 +117,7 @@ describe('getPluginMetadata', () => {
     );
     expect(metadata.description).toBe('desc');
     expect(metadata.links).toHaveLength(0);
-    expect(metadata.ownerEntityRef).toBeUndefined();
+    expect(metadata.ownerEntityRefs).toBeUndefined();
     expect(metadata.packageJson).toStrictEqual(packageJson);
     expect(metadata.role).toBe('cli');
     expect(metadata.version).toBeUndefined();
@@ -136,12 +136,12 @@ describe('getPluginMetadata', () => {
       'foo',
       async (info, pluginId) => {
         info.description = `${pluginId} thing`;
-        info.ownerEntityRef = 'group:default/the-group';
+        info.ownerEntityRefs = ['group:default/the-group'];
       },
     );
     expect(metadata.description).toBe('foo thing');
     expect(metadata.links).toHaveLength(0);
-    expect(metadata.ownerEntityRef).toBe('group:default/the-group');
+    expect(metadata.ownerEntityRefs).toBe('group:default/the-group');
     expect(metadata.packageJson).toStrictEqual(packageJson);
     expect(metadata.role).toBe('cli');
     expect(metadata.version).toBeUndefined();
