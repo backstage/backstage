@@ -35,7 +35,8 @@ import React, { useEffect, useState } from 'react';
  * @param transientTimeoutMs - Number of milliseconds a transient alert will stay open for. Default value is 5000
  *
  * @example
- *
+ * Here's some examples:
+ * ```
  * // This example shows the default usage, the SnackBar will show up at the top in the center and any transient messages will stay open for 5000ms
  * <AlertDisplay />
  *
@@ -44,6 +45,7 @@ import React, { useEffect, useState } from 'react';
  *
  * // If you want to just set the time a transientTimeoutMs, you can do that like this:
  * <AlertDisplay transientTimeoutMs={10000} />
+ * ```
  */
 
 // TODO: improve on this and promote to a shared component for use by all apps.

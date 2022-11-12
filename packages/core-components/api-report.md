@@ -55,7 +55,10 @@ import { WithStyles } from '@material-ui/core/styles';
 // @public
 export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
 
-// @public (undocumented)
+// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+//
+// @public
 export type AlertDisplayProps = {
   anchorOrigin?: {
     vertical: 'top' | 'bottom';
