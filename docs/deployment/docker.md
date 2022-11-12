@@ -108,8 +108,6 @@ root of the repo to speed up the build by reducing build context size:
 
 ```text
 .git
-.yarn/cache
-.yarn/install-state.gz
 node_modules
 packages/*/src
 packages/*/node_modules
