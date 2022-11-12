@@ -187,7 +187,7 @@ export type ComponentAdaptationOptions = {
   /**
    * Exclude these specific adaptations
    */
-  exclude?: ComponentAdaptation[];
+  exclude?: ComponentAdaptation<any, any>[];
 
   /**
    * Include these adaptations apart from those in plugins.
@@ -195,7 +195,7 @@ export type ComponentAdaptationOptions = {
    * An adaptation here will be used even if excluded or if the whole plugin is
    * excluded.
    */
-  include?: ComponentAdaptation[];
+  include?: ComponentAdaptation<any, any>[];
 };
 
 /**
@@ -248,7 +248,7 @@ export type AppOptions = {
    * Oherwise provided as a {@link ComponentAdaptationOptions} object, in which
    * case all the adaptations form plugins are included by default.
    */
-  adaptations?: ComponentAdaptation[] | ComponentAdaptationOptions;
+  adaptations?: ComponentAdaptation<any, any>[] | ComponentAdaptationOptions;
 
   /**
    * Themes provided as a part of the app. By default two themes are included, one

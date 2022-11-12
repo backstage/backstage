@@ -26,7 +26,7 @@ import MaterialLink, {
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ElementType } from 'react';
+import React, { ElementType, Ref } from 'react';
 import {
   Link as RouterLink,
   LinkProps as RouterLinkProps,
@@ -59,11 +59,12 @@ const useStyles = makeStyles(
 
 export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 
-export type LinkProps = Omit<MaterialLinkProps, 'to'> &
+export type LinkProps = Omit<MaterialLinkProps, 'to' | 'ref'> &
   Omit<RouterLinkProps, 'to'> & {
     to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
+    ref?: Ref<any>;
   };
 
 /**

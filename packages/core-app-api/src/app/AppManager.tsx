@@ -184,7 +184,7 @@ class AppContextImpl implements AppContext {
 function filterAdaptations(
   config: AppOptions['adaptations'],
   plugins: Set<BackstagePlugin<any, any>>,
-): ComponentAdaptation[] {
+): ComponentAdaptation<any, any>[] {
   if (!config) return [];
 
   // Only use the exact list of adaptations provided
@@ -201,7 +201,8 @@ function filterAdaptations(
   const pluginAdaptations = [...plugins]
     .flatMap(plugin =>
       Object.values(
-        (plugin.adaptations as Record<string, ComponentAdaptation>) ?? {},
+        (plugin.adaptations as Record<string, ComponentAdaptation<any, any>>) ??
+          {},
       ).map(adaptation => ({
         plugin,
         adaptation,
@@ -226,7 +227,7 @@ export class AppManager implements BackstageApp {
   private readonly plugins: Set<CompatiblePlugin>;
   private readonly components: AppComponents;
   private readonly adaptationOptions: AppOptions['adaptations'];
-  private adaptations: ComponentAdaptation[] = []; // deferred
+  private adaptations: ComponentAdaptation<any, any>[] = []; // deferred
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;

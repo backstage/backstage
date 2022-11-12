@@ -15,4 +15,4 @@
  */
 
 export { Link, linkComponentRef } from './Link';
-export type { LinkProps, LinkContext } from './Link';
+export type { LinkProps } from './Link';

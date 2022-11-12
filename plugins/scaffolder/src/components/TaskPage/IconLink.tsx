@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { Grid, LinkProps, makeStyles, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Typography } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
 
 import { IconComponent } from '@backstage/core-plugin-api';
-import { Link } from '@backstage/core-components';
+import { Link, LinkProps } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   svgIcon: {
@@ -37,7 +37,7 @@ export const IconLink = (
     href: string;
     text?: string;
     Icon?: IconComponent;
-  } & LinkProps,
+  } & Omit<LinkProps, 'to'>,
 ) => {
   const { href, text, Icon, ...linkProps } = props;
 

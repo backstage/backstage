@@ -42,7 +42,7 @@ export class PluginImpl<
   PluginInputOptions extends {},
   ComponentAdaptations extends Record<
     string,
-    Extension<ComponentAdaptation>
+    Extension<ComponentAdaptation<any, any>>
   > = {},
 > implements
     BackstagePlugin<

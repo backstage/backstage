@@ -54,7 +54,10 @@ export type BackstagePlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
   PluginInputOptions extends {} = {},
-  ComponentAdaptations extends Record<string, ComponentAdaptation> = {},
+  ComponentAdaptations extends Record<
+    string,
+    ComponentAdaptation<any, any>
+  > = {},
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -90,7 +93,7 @@ export type PluginConfig<
   PluginInputOptions extends {},
   ComponentAdaptations extends Record<
     string,
-    Extension<ComponentAdaptation>
+    Extension<ComponentAdaptation<any, any>>
   > = {},
 > = {
   id: string;
