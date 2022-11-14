@@ -41,7 +41,7 @@ describe('UrlReaderPredicateMux', () => {
       reader: barReader,
     });
 
-    await mux.read('http://foo/1');
+    await mux.readUrl('http://foo/1');
     expect(fooReader.read).toHaveBeenCalledWith('http://foo/1');
     await mux.readUrl('http://foo/2');
     expect(fooReader.readUrl).toHaveBeenCalledWith('http://foo/2', undefined);
@@ -50,7 +50,7 @@ describe('UrlReaderPredicateMux', () => {
     await mux.search('http://foo/4');
     expect(fooReader.search).toHaveBeenCalledWith('http://foo/4', undefined);
 
-    await mux.read('http://bar/1');
+    await mux.readUrl('http://bar/1');
     expect(barReader.read).toHaveBeenCalledWith('http://bar/1');
     await mux.readUrl('http://bar/2');
     expect(barReader.readUrl).toHaveBeenCalledWith('http://bar/2', undefined);

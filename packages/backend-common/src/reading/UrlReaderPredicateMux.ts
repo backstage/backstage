@@ -50,7 +50,7 @@ export class UrlReaderPredicateMux implements UrlReader {
 
     for (const { predicate, reader } of this.readers) {
       if (predicate(parsed)) {
-        return reader.read(url);
+        return reader.readUrl(url);
       }
     }
 

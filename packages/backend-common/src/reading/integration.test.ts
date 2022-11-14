@@ -89,7 +89,7 @@ describe.skip('UrlReaders', () => {
   it(
     'should read data from azure',
     withRetries(3, async () => {
-      const data = await reader.read(
+      const data = await reader.readUrl(
         'https://dev.azure.com/backstage-verification/test-templates/_git/test-templates?path=%2Ftemplate.yaml',
       );
       expect(data.toString()).toContain('test-template-azure');
@@ -110,7 +110,7 @@ describe.skip('UrlReaders', () => {
   it(
     'should read data from gitlab',
     withRetries(3, async () => {
-      const data = await reader.read(
+      const data = await reader.readUrl(
         'https://gitlab.com/backstage-verification/test-templates/-/blob/master/template.yaml',
       );
       expect(data.toString()).toContain('test-template-gitlab');
@@ -131,7 +131,7 @@ describe.skip('UrlReaders', () => {
   it(
     'should read data from bitbucket',
     withRetries(3, async () => {
-      const data = await reader.read(
+      const data = await reader.readUrl(
         'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
       );
       expect(data.toString()).toContain('test-template-bitbucket');
@@ -152,7 +152,7 @@ describe.skip('UrlReaders', () => {
   it(
     'should read data from github',
     withRetries(3, async () => {
-      const data = await reader.read(
+      const data = await reader.readUrl(
         'https://github.com/backstage-verification/test-templates/blob/master/template.yaml',
       );
       expect(data.toString()).toContain('test-template-github');

@@ -150,7 +150,7 @@ describe('GitlabUrlReader', () => {
         treeResponseFactory,
       });
 
-      const data = await reader.read(url);
+      const data = await reader.readUrl(url);
       const res = await JSON.parse(data.toString('utf-8'));
       expect(res).toEqual(response);
     });
@@ -169,7 +169,7 @@ describe('GitlabUrlReader', () => {
           logger,
           treeResponseFactory,
         });
-        await reader.read(url);
+        await reader.readUrl(url);
       }).rejects.toThrow(error);
     });
   });
