@@ -458,6 +458,10 @@ export class GitlabUrlReader implements UrlReader {
   // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
+  getGitlabArtifactFetchUrl(target: string): Promise<URL>;
+  // (undocumented)
+  getGitlabFetchUrl(target: string): Promise<string>;
+  // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
