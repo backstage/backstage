@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
@@ -36,10 +36,24 @@ import { CatalogGraphCard } from './CatalogGraphCard';
 describe('<CatalogGraphCard/>', () => {
   let entity: Entity;
   let wrapper: JSX.Element;
-  let catalog: jest.Mocked<CatalogApi>;
+  const catalog = {
+    getEntities: jest.fn(),
+    getEntityByRef: jest.fn(),
+    removeEntityByUid: jest.fn(),
+    getLocationById: jest.fn(),
+    getLocationByRef: jest.fn(),
+    addLocation: jest.fn(),
+    removeLocationById: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
+  };
   let apis: TestApiRegistry;
 
   beforeEach(() => {
+    jest.clearAllMocks();
+
     entity = {
       apiVersion: 'a',
       kind: 'b',
@@ -47,19 +61,6 @@ describe('<CatalogGraphCard/>', () => {
         name: 'c',
         namespace: 'd',
       },
-    };
-    catalog = {
-      getEntities: jest.fn(),
-      getEntityByRef: jest.fn(async _ => ({ ...entity, relations: [] })),
-      removeEntityByUid: jest.fn(),
-      getLocationById: jest.fn(),
-      getLocationByRef: jest.fn(),
-      addLocation: jest.fn(),
-      removeLocationById: jest.fn(),
-      refreshEntity: jest.fn(),
-      getEntityAncestors: jest.fn(),
-      getEntityFacets: jest.fn(),
-      validateEntity: jest.fn(),
     };
     apis = TestApiRegistry.from([catalogApiRef, catalog]);
 
@@ -73,6 +74,11 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('renders without exploding', async () => {
+    catalog.getEntityByRef.mockImplementation(async _ => ({
+      ...entity,
+      relations: [],
+    }));
+
     const { findByText, findAllByTestId } = await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
@@ -86,6 +92,11 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('renders with custom title', async () => {
+    catalog.getEntityByRef.mockImplementation(async _ => ({
+      ...entity,
+      relations: [],
+    }));
+
     const { findByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
@@ -104,6 +115,11 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('renders link to standalone viewer', async () => {
+    catalog.getEntityByRef.mockImplementation(async _ => ({
+      ...entity,
+      relations: [],
+    }));
+
     const { findByText, getByText } = await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
@@ -145,6 +161,11 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('captures analytics event on click', async () => {
+    catalog.getEntityByRef.mockImplementation(async _ => ({
+      ...entity,
+      relations: [],
+    }));
+
     const analyticsSpy = new MockAnalyticsApi();
     const { findByText } = await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>

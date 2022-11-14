@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { useApi as useApiMocked } from '@backstage/core-plugin-api';
-import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useEntityStore } from './useEntityStore';
 
@@ -24,23 +24,21 @@ jest.mock('@backstage/core-plugin-api');
 const useApi = useApiMocked as jest.Mocked<any>;
 
 describe('useEntityStore', () => {
-  let catalogApi: jest.Mocked<CatalogApi>;
+  const catalogApi = {
+    getEntities: jest.fn(),
+    getEntityByRef: jest.fn(),
+    removeEntityByUid: jest.fn(),
+    getLocationById: jest.fn(),
+    getLocationByRef: jest.fn(),
+    addLocation: jest.fn(),
+    removeLocationById: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
+  };
 
   beforeEach(() => {
-    catalogApi = {
-      getEntities: jest.fn(),
-      getEntityByRef: jest.fn(),
-      removeEntityByUid: jest.fn(),
-      getLocationById: jest.fn(),
-      getLocationByRef: jest.fn(),
-      addLocation: jest.fn(),
-      removeLocationById: jest.fn(),
-      refreshEntity: jest.fn(),
-      getEntityAncestors: jest.fn(),
-      getEntityFacets: jest.fn(),
-      validateEntity: jest.fn(),
-    };
-
     useApi.mockReturnValue(catalogApi);
   });
 
