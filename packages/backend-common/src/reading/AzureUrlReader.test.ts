@@ -30,6 +30,8 @@ import { NotModifiedError } from '@backstage/errors';
 import { getVoidLogger } from '../logging';
 import { AzureUrlReader } from './AzureUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
+import getRawBody from 'raw-body';
+
 
 const logger = getVoidLogger();
 
@@ -117,7 +119,8 @@ describe('AzureUrlReader', () => {
       });
 
       const data = await reader.readUrl(url);
-      const res = await JSON.parse(data.toString('utf-8'));
+      const fromStream = await getRawBody(data.stream!());
+      const res = await JSON.parse(fromStream.toString());
       expect(res).toEqual(response);
     });
 

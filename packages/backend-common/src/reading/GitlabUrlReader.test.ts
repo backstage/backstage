@@ -151,7 +151,7 @@ describe('GitlabUrlReader', () => {
       });
 
       const data = await reader.readUrl(url);
-      const res = await JSON.parse(data.toString('utf-8'));
+      const res = await JSON.parse(data.toString());
       expect(res).toEqual(response);
     });
 

@@ -22,6 +22,8 @@ import { setupServer } from 'msw/node';
 import { getVoidLogger } from '../logging';
 import { FetchUrlReader } from './FetchUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
+import getRawBody from 'raw-body';
+
 
 const fetchUrlReader = new FetchUrlReader();
 
@@ -174,7 +176,8 @@ describe('FetchUrlReader', () => {
       const buffer = await fetchUrlReader.readUrl(
         'https://backstage.io/some-resource',
       );
-      expect(buffer.toString()).toBe('content foo');
+      const fromStream = await getRawBody(buffer.stream!());
+      expect(fromStream.toString()).toBe('content foo');
     });
 
     it('should throw NotFound if server responds with 404', async () => {
