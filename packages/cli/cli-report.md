@@ -406,8 +406,6 @@ Usage: backstage-cli repo build [options]
 
 Options:
   --all
-  --public-path <path>
-  --backend-url <url>
   --since <ref>
   -h, --help
 ```
