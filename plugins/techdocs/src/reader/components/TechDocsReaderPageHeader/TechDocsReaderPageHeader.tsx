@@ -81,7 +81,7 @@ export const TechDocsReaderPageHeader = (
     setSubtitle(() => {
       let { site_description } = metadata;
       if (!site_description || site_description === 'None') {
-        site_description = 'Home';
+        site_description = '';
       }
       return site_description;
     });
@@ -155,7 +155,7 @@ export const TechDocsReaderPageHeader = (
       type="Documentation"
       typeLink={docsRootLink}
       title={title || skeleton}
-      subtitle={subtitle || skeleton}
+      subtitle={subtitle === '' ? undefined : subtitle || skeleton}
     >
       <Helmet titleTemplate="%s">
         <title>{tabTitle}</title>

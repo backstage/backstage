@@ -91,3 +91,23 @@ export const CompletionStep = (args: StepperProps) => {
 };
 
 CompletionStep.args = defaultArgs;
+
+export const OptionalStep = (args: StepperProps) => {
+  return (
+    <SimpleStepper {...args}>
+      <SimpleStepperStep
+        title="Step 1 (Optional)"
+        actions={{
+          showSkip: true,
+        }}
+      >
+        <div>This is the content for step 1</div>
+      </SimpleStepperStep>
+      <SimpleStepperStep title="Step 2">
+        <div>This is the content for step 2</div>
+      </SimpleStepperStep>
+    </SimpleStepper>
+  );
+};
+
+ConditionalButtons.args = defaultArgs;

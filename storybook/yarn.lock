@@ -3107,90 +3107,90 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-darwin-arm64@npm:1.3.14"
+"@swc/core-darwin-arm64@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-darwin-arm64@npm:1.3.16"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-darwin-x64@npm:1.3.14"
+"@swc/core-darwin-x64@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-darwin-x64@npm:1.3.16"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.14"
+"@swc/core-linux-arm-gnueabihf@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.16"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.14"
+"@swc/core-linux-arm64-gnu@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.16"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-linux-arm64-musl@npm:1.3.14"
+"@swc/core-linux-arm64-musl@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-linux-arm64-musl@npm:1.3.16"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-linux-x64-gnu@npm:1.3.14"
+"@swc/core-linux-x64-gnu@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-linux-x64-gnu@npm:1.3.16"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-linux-x64-musl@npm:1.3.14"
+"@swc/core-linux-x64-musl@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-linux-x64-musl@npm:1.3.16"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.14"
+"@swc/core-win32-arm64-msvc@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.16"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.14"
+"@swc/core-win32-ia32-msvc@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.16"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.3.14":
-  version: 1.3.14
-  resolution: "@swc/core-win32-x64-msvc@npm:1.3.14"
+"@swc/core-win32-x64-msvc@npm:1.3.16":
+  version: 1.3.16
+  resolution: "@swc/core-win32-x64-msvc@npm:1.3.16"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
 "@swc/core@npm:^1.3.9":
-  version: 1.3.14
-  resolution: "@swc/core@npm:1.3.14"
+  version: 1.3.16
+  resolution: "@swc/core@npm:1.3.16"
   dependencies:
-    "@swc/core-darwin-arm64": 1.3.14
-    "@swc/core-darwin-x64": 1.3.14
-    "@swc/core-linux-arm-gnueabihf": 1.3.14
-    "@swc/core-linux-arm64-gnu": 1.3.14
-    "@swc/core-linux-arm64-musl": 1.3.14
-    "@swc/core-linux-x64-gnu": 1.3.14
-    "@swc/core-linux-x64-musl": 1.3.14
-    "@swc/core-win32-arm64-msvc": 1.3.14
-    "@swc/core-win32-ia32-msvc": 1.3.14
-    "@swc/core-win32-x64-msvc": 1.3.14
+    "@swc/core-darwin-arm64": 1.3.16
+    "@swc/core-darwin-x64": 1.3.16
+    "@swc/core-linux-arm-gnueabihf": 1.3.16
+    "@swc/core-linux-arm64-gnu": 1.3.16
+    "@swc/core-linux-arm64-musl": 1.3.16
+    "@swc/core-linux-x64-gnu": 1.3.16
+    "@swc/core-linux-x64-musl": 1.3.16
+    "@swc/core-win32-arm64-msvc": 1.3.16
+    "@swc/core-win32-ia32-msvc": 1.3.16
+    "@swc/core-win32-x64-msvc": 1.3.16
   dependenciesMeta:
     "@swc/core-darwin-arm64":
       optional: true
@@ -3214,7 +3214,7 @@ __metadata:
       optional: true
   bin:
     swcx: run_swcx.js
-  checksum: 79e9857ee3d5af22d9a6e644d7608594fa8ccd9102dbc088addc0f6ee9e1e8e3fc8835545730707395aa47197ab119fa323aedf4184cf51892379b307aedddc0
+  checksum: 4361252c928c487a02f526aecd8f3072b923244234c2701916944cf13c252b6d5ce2466caf3e0797d3e92e71a89d4a044f8577e51e8f7fe3af0fe30d94e94b13
   languageName: node
   linkType: hard
 
@@ -7874,14 +7874,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loader-utils@npm:^1.1.0, loader-utils@npm:^1.2.3":
-  version: 1.4.0
-  resolution: "loader-utils@npm:1.4.0"
+"loader-utils@npm:^1.2.3":
+  version: 1.4.1
+  resolution: "loader-utils@npm:1.4.1"
   dependencies:
     big.js: ^5.2.2
     emojis-list: ^3.0.0
     json5: ^1.0.1
-  checksum: d150b15e7a42ac47d935c8b484b79e44ff6ab4c75df7cc4cb9093350cf014ec0b17bdb60c5d6f91a37b8b218bd63b973e263c65944f58ca2573e402b9a27e717
+  checksum: ea0b648cba0194e04a90aab6270619f0e35be009e33a443d9e642e93056cd49e6ca4c9678bd1c777a2392551bc5f4d0f24a87f5040608da1274aa84c6eebb502
   languageName: node
   linkType: hard
 
@@ -7893,6 +7893,17 @@ __metadata:
     emojis-list: ^3.0.0
     json5: ^2.1.2
   checksum: 9078d1ed47cadc57f4c6ddbdb2add324ee7da544cea41de3b7f1128e8108fcd41cd3443a85b7ee8d7d8ac439148aa221922774efe4cf87506d4fb054d5889303
+  languageName: node
+  linkType: hard
+
+"loader-utils@npm:^2.0.3":
+  version: 2.0.4
+  resolution: "loader-utils@npm:2.0.4"
+  dependencies:
+    big.js: ^5.2.2
+    emojis-list: ^3.0.0
+    json5: ^2.1.2
+  checksum: a5281f5fff1eaa310ad5e1164095689443630f3411e927f95031ab4fb83b4a98f388185bb1fe949e8ab8d4247004336a625e9255c22122b815bb9a4c5d8fc3b7
   languageName: node
   linkType: hard
 
@@ -9756,25 +9767,25 @@ __metadata:
   linkType: hard
 
 "react-hot-loader@npm:^4.13.0":
-  version: 4.13.0
-  resolution: "react-hot-loader@npm:4.13.0"
+  version: 4.13.1
+  resolution: "react-hot-loader@npm:4.13.1"
   dependencies:
     fast-levenshtein: ^2.0.6
     global: ^4.3.0
     hoist-non-react-statics: ^3.3.0
-    loader-utils: ^1.1.0
+    loader-utils: ^2.0.3
     prop-types: ^15.6.1
     react-lifecycles-compat: ^3.0.4
     shallowequal: ^1.1.0
     source-map: ^0.7.3
   peerDependencies:
-    "@types/react": "^15.0.0 || ^16.0.0 || ^17.0.0 "
-    react: "^15.0.0 || ^16.0.0 || ^17.0.0 "
-    react-dom: "^15.0.0 || ^16.0.0 || ^17.0.0 "
+    "@types/react": ^15.0.0 || ^16.0.0 || ^17.0.0
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0
+    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: effdbf4644ce912ae20ad94be62083970c74b26a59fe24ed0024cf73190a5b3edf59650cb693bdd7b70791df8ab8530de273d73b895c4831a91da8a76683e3a3
+  checksum: f90890d5160dcb2bfae4022cba065d8e5c26b86f34c4604cbbdd39f5e4dfd82c05c317bb05ef3d4da2aa0be7e8e205c905daea1af40d3a7ef0d07c3d289da11c
   languageName: node
   linkType: hard
 

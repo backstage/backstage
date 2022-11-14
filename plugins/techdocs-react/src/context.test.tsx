@@ -19,9 +19,13 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { ThemeProvider } from '@material-ui/core';
 
 import { lightTheme } from '@backstage/theme';
-import { TestApiProvider } from '@backstage/test-utils';
+import { MockAnalyticsApi, TestApiProvider } from '@backstage/test-utils';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import { configApiRef } from '@backstage/core-plugin-api';
+import {
+  analyticsApiRef,
+  configApiRef,
+  useAnalytics,
+} from '@backstage/core-plugin-api';
 
 import { techdocsApiRef } from './api';
 import { useTechDocsReaderPage, TechDocsReaderPageProvider } from './context';
@@ -60,6 +64,8 @@ const configApiMock = {
   getOptionalBoolean: jest.fn().mockReturnValue(undefined),
 };
 
+const analyticsApiMock = new MockAnalyticsApi();
+
 const wrapper = ({
   entityRef = {
     kind: mockEntityMetadata.kind,
@@ -74,6 +80,7 @@ const wrapper = ({
   <ThemeProvider theme={lightTheme}>
     <TestApiProvider
       apis={[
+        [analyticsApiRef, analyticsApiMock],
         [configApiRef, configApiMock],
         [techdocsApiRef, techdocsApiMock],
       ]}
@@ -86,6 +93,10 @@ const wrapper = ({
 );
 
 describe('useTechDocsReaderPage', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should set title', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useTechDocsReaderPage(),
@@ -156,5 +167,22 @@ describe('useTechDocsReaderPage', () => {
     const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
 
     expect(result.current.entityRef).toStrictEqual(caseSensitiveEntityRef);
+  });
+
+  it('entityRef provided as analytics context', async () => {
+    const { waitForNextUpdate } = renderHook(
+      () => useAnalytics().captureEvent('action', 'subject'),
+      { wrapper },
+    );
+
+    await waitForNextUpdate();
+
+    expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+      action: 'action',
+      subject: 'subject',
+      context: {
+        entityRef: 'component:default/test',
+      },
+    });
   });
 });

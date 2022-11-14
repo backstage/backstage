@@ -45,6 +45,10 @@ interface NextBtnProps extends CommonBtnProps {
   last?: boolean;
   stepIndex: number;
 }
+interface SkipBtnProps extends CommonBtnProps {
+  disabled?: boolean;
+  stepIndex: number;
+}
 interface BackBtnProps extends CommonBtnProps {
   disabled?: boolean;
   stepIndex: number;
@@ -68,6 +72,18 @@ const NextBtn = ({
     onClick={handleClick}
   >
     {text || (last ? 'Finish' : 'Next')}
+  </Button>
+);
+
+const SkipBtn = ({ text, handleClick, disabled, stepIndex }: SkipBtnProps) => (
+  <Button
+    variant="outlined"
+    color="primary"
+    disabled={disabled}
+    data-testid={`skipButton-${stepIndex}`}
+    onClick={handleClick}
+  >
+    {text || 'Skip'}
   </Button>
 );
 
@@ -135,6 +151,17 @@ export const SimpleStepperFooter = ({
           text={actions.backText}
           handleClick={handleBack}
           disabled={stepIndex === 0}
+          stepIndex={stepIndex}
+        />
+      )}
+      {actions.showSkip && (
+        <SkipBtn
+          text={actions.skipText}
+          handleClick={handleNext}
+          disabled={
+            (!!stepperLength && stepIndex >= stepperLength) ||
+            (!!actions.canSkip && !actions.canSkip())
+          }
           stepIndex={stepIndex}
         />
       )}

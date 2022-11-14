@@ -25,6 +25,57 @@ export class BitbucketCloudClient {
 }
 
 // @public (undocumented)
+export namespace Events {
+  // (undocumented)
+  export interface Change {
+    // (undocumented)
+    closed: boolean;
+    // (undocumented)
+    commits: Models.Commit[];
+    // (undocumented)
+    created: boolean;
+    // (undocumented)
+    forced: boolean;
+    // (undocumented)
+    links: ChangeLinks;
+    // (undocumented)
+    new: Models.Branch;
+    // (undocumented)
+    old: Models.Branch;
+    // (undocumented)
+    truncated: boolean;
+  }
+  // (undocumented)
+  export interface ChangeLinks {
+    // (undocumented)
+    commits: Models.Link;
+    // (undocumented)
+    diff: Models.Link;
+    // (undocumented)
+    html: Models.Link;
+  }
+  // (undocumented)
+  export interface RepoEvent {
+    // (undocumented)
+    actor: Models.Account;
+    // (undocumented)
+    repository: Models.Repository & {
+      workspace: Models.Workspace;
+    };
+  }
+  // (undocumented)
+  export interface RepoPush {
+    // (undocumented)
+    changes: Change[];
+  }
+  // (undocumented)
+  export interface RepoPushEvent extends RepoEvent {
+    // (undocumented)
+    push: RepoPush;
+  }
+}
+
+// @public (undocumented)
 export type FilterAndSortOptions = {
   q?: string;
   sort?: string;
@@ -339,6 +390,37 @@ export namespace Models {
     repositories?: Link;
     // (undocumented)
     self?: Link;
+  }
+  export interface Workspace extends ModelObject {
+    // (undocumented)
+    created_on?: string;
+    is_private?: boolean;
+    // (undocumented)
+    links?: WorkspaceLinks;
+    name?: string;
+    slug?: string;
+    // (undocumented)
+    updated_on?: string;
+    uuid?: string;
+  }
+  // (undocumented)
+  export interface WorkspaceLinks {
+    // (undocumented)
+    avatar?: Link;
+    // (undocumented)
+    html?: Link;
+    // (undocumented)
+    members?: Link;
+    // (undocumented)
+    owners?: Link;
+    // (undocumented)
+    projects?: Link;
+    // (undocumented)
+    repositories?: Link;
+    // (undocumented)
+    self?: Link;
+    // (undocumented)
+    snippets?: Link;
   }
 }
 
