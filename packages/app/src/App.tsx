@@ -108,6 +108,8 @@ import { PlaylistIndexPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
+import { DevToolsPage } from '@backstage/plugin-devtools';
+import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 
 const app = createApp({
   apis,
@@ -289,6 +291,9 @@ const routes = (
     <Route path="/playlist" element={<PlaylistIndexPage />} />
     <Route path="/score-board" element={<ScoreBoardPage />} />
     <Route path="/stackstorm" element={<StackstormPage />} />
+    <Route path="/devtools" element={<DevToolsPage />}>
+      {customDevToolsPage}
+    </Route>
   </FlatRoutes>
 );
 

@@ -64,6 +64,7 @@ import playlist from './plugins/playlist';
 import adr from './plugins/adr';
 import lighthouse from './plugins/lighthouse';
 import linguist from './plugins/linguist';
+import devTools from './plugins/devtools';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -160,6 +161,7 @@ async function main() {
   const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
 
   const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
+  const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -185,6 +187,7 @@ async function main() {
   apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
   apiRouter.use('/adr', await adr(adrEnv));
   apiRouter.use('/linguist', await linguist(linguistEnv));
+  apiRouter.use('/devtools', await devTools(devToolsEnv));
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);

@@ -54,6 +54,7 @@ import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
 import { SearchModal } from '../search/SearchModal';
 import Score from '@material-ui/icons/Score';
+import BuildIcon from '@material-ui/icons/Build';
 
 import ApiIcon from '@material-ui/icons/Extension';
 import ComponentIcon from '@material-ui/icons/Memory';
@@ -177,6 +178,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         to="/settings"
       >
         <SidebarSettings />
+        <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
       </SidebarGroup>
     </Sidebar>
     {children}
