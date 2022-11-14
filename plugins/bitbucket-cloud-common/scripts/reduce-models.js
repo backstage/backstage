@@ -30,6 +30,14 @@ const modelsModule = modelsFile.getModuleOrThrow('Models');
 const clientFile = project.getSourceFile('src/BitbucketCloudClient.ts');
 const clientClass = clientFile.getClassOrThrow('BitbucketCloudClient');
 
+const eventsFile = project.getSourceFile('src/events/index.ts');
+const eventsModule = eventsFile.getModuleOrThrow('Events');
+const eventsStmts = [
+  ...eventsModule.getClasses(),
+  ...eventsModule.getInterfaces(),
+  ...eventsModule.getTypeAliases(),
+];
+
 /**
  * Returns an array of the unique items of the provided array.
  *
@@ -79,7 +87,11 @@ function referencedModelsIdentifiers(stmt, processed) {
 }
 
 // all directly or transitively referenced/used `Models.[...]` are allowed to stay
-const allowed = referencedModelsIdentifiers(clientClass);
+const processed = [];
+const allowed = referencedModelsIdentifiers(clientClass, processed);
+allowed.push(
+  ...eventsStmts.flatMap(stmt => referencedModelsIdentifiers(stmt, processed)),
+);
 
 // remove everything not part of the "allow list"
 modelsModule

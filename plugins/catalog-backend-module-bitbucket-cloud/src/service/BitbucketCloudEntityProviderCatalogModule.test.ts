@@ -15,11 +15,17 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
+import {
+  getVoidLogger,
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import {
   configServiceRef,
+  discoveryServiceRef,
   loggerServiceRef,
   schedulerServiceRef,
+  tokenManagerServiceRef,
 } from '@backstage/backend-plugin-api';
 import {
   PluginTaskScheduler,
@@ -27,18 +33,25 @@ import {
 } from '@backstage/backend-tasks';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
-import { bitbucketCloudEntityProviderCatalogModule } from './BitbucketCloudEntityProviderCatalogModule';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node';
 import { Duration } from 'luxon';
+import { bitbucketCloudEntityProviderCatalogModule } from './BitbucketCloudEntityProviderCatalogModule';
 import { BitbucketCloudEntityProvider } from '../BitbucketCloudEntityProvider';
 
 describe('bitbucketCloudEntityProviderCatalogModule', () => {
   it('should register provider at the catalog extension point', async () => {
     let addedProviders: Array<BitbucketCloudEntityProvider> | undefined;
+    let addedSubscribers: Array<BitbucketCloudEntityProvider> | undefined;
     let usedSchedule: TaskScheduleDefinition | undefined;
 
-    const extensionPoint = {
+    const catalogExtensionPointImpl = {
       addEntityProvider: (providers: any) => {
         addedProviders = providers;
+      },
+    };
+    const eventsExtensionPointImpl = {
+      addSubscribers: (subscribers: any) => {
+        addedSubscribers = subscribers;
       },
     };
     const runner = jest.fn();
@@ -48,6 +61,8 @@ describe('bitbucketCloudEntityProviderCatalogModule', () => {
         return runner;
       },
     } as unknown as PluginTaskScheduler;
+    const discovery = jest.fn() as any as PluginEndpointDiscovery;
+    const tokenManager = jest.fn() as any as TokenManager;
 
     const config = new ConfigReader({
       catalog: {
@@ -64,11 +79,16 @@ describe('bitbucketCloudEntityProviderCatalogModule', () => {
     });
 
     await startTestBackend({
-      extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
+      extensionPoints: [
+        [catalogProcessingExtensionPoint, catalogExtensionPointImpl],
+        [eventsExtensionPoint, eventsExtensionPointImpl],
+      ],
       services: [
         [configServiceRef, config],
+        [discoveryServiceRef, discovery],
         [loggerServiceRef, getVoidLogger()],
         [schedulerServiceRef, scheduler],
+        [tokenManagerServiceRef, tokenManager],
       ],
       features: [bitbucketCloudEntityProviderCatalogModule()],
     });
@@ -79,6 +99,7 @@ describe('bitbucketCloudEntityProviderCatalogModule', () => {
     expect(addedProviders?.pop()?.getProviderName()).toEqual(
       'bitbucketCloud-provider:default',
     );
+    expect(addedSubscribers).toEqual(addedProviders);
     expect(runner).not.toHaveBeenCalled();
   });
 });
