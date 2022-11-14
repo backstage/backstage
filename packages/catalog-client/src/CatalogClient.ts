@@ -37,6 +37,8 @@ import {
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
   ValidateEntityResponse,
+  GetEntitiesByRefsRequest,
+  GetEntitiesByRefsResponse,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { FetchApi } from './types/fetch';
@@ -167,6 +169,40 @@ export class CatalogClient implements CatalogApi {
     };
 
     return { items: entities.sort(refCompare) };
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.getEntitiesByRefs}
+   */
+  async getEntitiesByRefs(
+    request: GetEntitiesByRefsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntitiesByRefsResponse> {
+    const params: string[] = [];
+    if (request.fields?.length) {
+      params.push(`fields=${request.fields.map(encodeURIComponent).join(',')}`);
+    }
+
+    const baseUrl = await this.discoveryApi.getBaseUrl('catalog');
+    const query = params.length ? `?${params.join('&')}` : '';
+    const url = `${baseUrl}/entities/by-refs${query}`;
+
+    const response = await this.fetchApi.fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify({ entityRefs: request.entityRefs }),
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    const { items } = await response.json();
+
+    return { items };
   }
 
   /**
