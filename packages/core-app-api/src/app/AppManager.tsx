@@ -179,9 +179,12 @@ function useConfigLoader(
     context: 'relative-override',
   };
 
-  configReader = ConfigReader.fromConfigs(
-    config.value ? [...config.value, relativeBackendConfig] : [],
-  );
+  // Config reader may not have backend.baseUrl set. config.value may be undefined.
+  if (configReader.getOptionalString('backend.baseUrl')?.startsWith('/')) {
+    config.value?.push(relativeBackendConfig);
+  }
+
+  configReader = ConfigReader.fromConfigs(config.value ?? []);
 
   return { api: configReader };
 }

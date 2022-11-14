@@ -52,16 +52,23 @@ export function readCliConfig(opts?: CliConfigOptions): AppConfig[] {
   if (!opts || Object.keys(opts).length === 0) return [];
   const data: JsonObject = {};
 
-  if (opts.publicPath) {
+  if (opts.publicPath?.startsWith('/')) {
     data.app = {
       baseUrl: opts.publicPath,
     };
+  } else if (opts.publicPath) {
+    throw new Error(
+      'Public path must be relative and start with "/" when specified through CLI options. Path traversals like "./" and assumed relative endpoints like "backstage" are not supported.',
+    );
   }
-
-  if (opts.backendUrl) {
+  if (opts.backendUrl?.startsWith('/')) {
     data.backend = {
       baseUrl: opts.backendUrl,
     };
+  } else if (opts.backendUrl) {
+    throw new Error(
+      'Backend URL must be relative and start with "/" when specified through CLI options. Path traversals like "./" and assumed relative endpoint like "api" are not supported.',
+    );
   }
 
   if (Object.keys(data).length === 0) return [];

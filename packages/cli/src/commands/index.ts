@@ -40,14 +40,6 @@ export function registerRepoCommand(program: Command) {
       'Build all packages, including bundled app and backend packages.',
     )
     .option(
-      '--public-path <path>',
-      'Public path for hosting the website on, can be relative.',
-    )
-    .option(
-      '--backend-url <url>',
-      'Backend url, expects just the origin or sub-route. Do not include /api. Can be relative.',
-    )
-    .option(
       '--since <ref>',
       'Only build packages and their dev dependents that changed since the specified ref',
     )

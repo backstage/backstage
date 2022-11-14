@@ -32,13 +32,13 @@ describe('readCliConfig', () => {
   it('should return backend.baseUrl when backendUrl present in cli options', () => {
     expect(
       readCliConfig({
-        backendUrl: 'http://localhost:3000',
+        backendUrl: '/',
       }),
     ).toEqual([
       {
         data: {
           backend: {
-            baseUrl: 'http://localhost:3000',
+            baseUrl: '/',
           },
         },
         context: 'cli',
@@ -49,13 +49,13 @@ describe('readCliConfig', () => {
   it('should return app.baseUrl when publicPath present in cli options', () => {
     expect(
       readCliConfig({
-        publicPath: 'http://localhost:3000',
+        publicPath: '/',
       }),
     ).toEqual([
       {
         data: {
           app: {
-            baseUrl: 'http://localhost:3000',
+            baseUrl: '/',
           },
         },
         context: 'cli',
@@ -66,21 +66,41 @@ describe('readCliConfig', () => {
   it('should return app.baseUrl and backend.baseUrl when publicPath and backendUrl present in cli options', () => {
     expect(
       readCliConfig({
-        publicPath: 'http://localhost:3000',
-        backendUrl: 'http://localhost:3000/api',
+        publicPath: '/',
+        backendUrl: '/api',
       }),
     ).toEqual([
       {
         data: {
           app: {
-            baseUrl: 'http://localhost:3000',
+            baseUrl: '/',
           },
           backend: {
-            baseUrl: 'http://localhost:3000/api',
+            baseUrl: '/api',
           },
         },
         context: 'cli',
       },
     ]);
+  });
+
+  it('should throw for public paths that do NOT start with /', () => {
+    ['http://localhost:3000', './', '../..'].forEach(publicPath =>
+      expect(() => {
+        readCliConfig({
+          publicPath,
+        });
+      }).toThrow('Public path must be relative'),
+    );
+  });
+
+  it('should throw for backend urls that do NOT start with /', () => {
+    ['http://localhost:3000', './', '../..'].forEach(backendUrl =>
+      expect(() => {
+        readCliConfig({
+          backendUrl,
+        });
+      }).toThrow('Backend URL must be relative'),
+    );
   });
 });

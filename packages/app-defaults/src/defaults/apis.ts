@@ -64,11 +64,10 @@ export const apis = [
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
-    factory: ({ configApi }) => {
-      return UrlPatternDiscovery.compile(
+    factory: ({ configApi }) =>
+      UrlPatternDiscovery.compile(
         `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
-      );
-    },
+      ),
   }),
   createApiFactory({
     api: alertApiRef,
