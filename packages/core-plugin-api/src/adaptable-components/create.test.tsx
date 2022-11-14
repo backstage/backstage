@@ -59,7 +59,6 @@ function makeInterceptPropsAdaptation(
   return adaptComponent(componentRef, {
     id: 'adaptation',
     interceptProps: props => ({
-      ...props,
       foo: `${props.foo ?? ''}intercepted`,
     }),
   });

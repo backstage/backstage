@@ -46,8 +46,11 @@ export type AdaptationProviderProps = {
 
 type WrapAdaptation<T> = T & { adaptation: ComponentAdaptation<any, any> };
 
-type PropsInterceptor<Props extends {}> = WrapAdaptation<{
-  propsInterceptor: AdaptableComponentPropsInterceptor<Props>;
+type PropsInterceptor<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+> = WrapAdaptation<{
+  propsInterceptor: AdaptableComponentPropsInterceptor<TProps, TAdaptableKeys>;
 }>;
 
 type Adaptation<
@@ -67,7 +70,7 @@ type AdaptationMapValue<
   TProps extends {},
   TAdaptableKeys extends keyof TProps,
 > = {
-  propsInterceptors: PropsInterceptor<TProps>[];
+  propsInterceptors: PropsInterceptor<TProps, TAdaptableKeys>[];
   components: Adaptation<TProps, TAdaptableKeys>[];
 };
 

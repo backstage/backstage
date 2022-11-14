@@ -287,9 +287,12 @@ export type UnimplementedAdaptableComponentRefConfig = Pick<
  *
  * @public
  */
-export type AdaptableComponentPropsInterceptor<Props extends {}> = (
-  props: Props,
-) => Props;
+export type AdaptableComponentPropsInterceptor<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+> = (props: TProps) => Pick<TProps, TAdaptableKeys> & {
+  [P in Exclude<keyof TProps, TAdaptableKeys>]?: never;
+};
 
 /**
  * An adaptation component.
@@ -314,9 +317,7 @@ export type ComponentAdaptationSpec<
   /**
    * Intercept the props, to e.g. rewrite some of them
    */
-  interceptProps?: AdaptableComponentPropsInterceptor<
-    Pick<TProps, TAdaptableKeys>
-  >;
+  interceptProps?: AdaptableComponentPropsInterceptor<TProps, TAdaptableKeys>;
 
   /**
    * A context provider component to intercept the adaptable component context

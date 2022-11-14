@@ -325,7 +325,7 @@ export function implementAdaptableComponent<
       () => ({
         props: ((p: TProps) =>
           propsInterceptors.reduce(
-            (prev, cur) => cur.propsInterceptor(prev),
+            (prev, cur) => ({ ...prev, ...cur.propsInterceptor(prev) }),
             p,
           ))(props),
       }),
