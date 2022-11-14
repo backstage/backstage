@@ -57,7 +57,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/node": "^16.11.26",
-    "msw": "^0.47.0"
+    "msw": "^0.48.0"
   },
   "files": [
     "dist"

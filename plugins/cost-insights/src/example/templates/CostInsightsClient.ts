@@ -87,6 +87,17 @@ export class CostInsightsClient implements CostInsightsApi {
     }
   }
 
+  async getCatalogEntityDailyCost(catalogEntityRef: string, intervals: string): Promise<Cost> {
+    return {
+      id: 'remove-me',
+      aggregation: [],
+      change: {
+        ratio: 0,
+        amount: 0
+      }
+    }
+  }
+
   async getProductInsights(options: ProductInsightsOptions): Promise<Entity> {
     return {
       id: 'remove-me',

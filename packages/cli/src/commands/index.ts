@@ -66,8 +66,8 @@ export function registerRepoCommand(program: Command) {
     .action(lazy(() => import('./repo/clean').then(m => m.command)));
 
   command
-    .command('list-deprecations', { hidden: true })
-    .description('List deprecations. [EXPERIMENTAL]')
+    .command('list-deprecations')
+    .description('List deprecations')
     .option('--json', 'Output as JSON')
     .action(
       lazy(() => import('./repo/list-deprecations').then(m => m.command)),

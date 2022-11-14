@@ -97,6 +97,66 @@ that must be approved first before the changes are applied.**
 
 ![email](../../assets/integrations/github/email.png)
 
+### Custom Transformers
+
+You can inject your own transformation logic to help map from GH API responses
+into backstage entities. You can do this on the user and team requests to
+enable you to do further processing or updates to the entities.
+
+To enable this you pass a function into the `GitHubOrgEntityProvider`. You can
+pass a `UserTransformer`, `TeamTransformer` or both. The function is invoked
+for each item (user or team) that is returned from the API. You can either
+return an Entity (User or Group) or `undefined` if you do not want to import
+that item.
+
+There is also a `defaultUserTransformer` and `defaultOrganizationTeamTransformer`.
+You could use these and simply decorate the response from the default
+transformation if you only need to change a few properties.
+
+### Resolving GitHub users via organization email
+
+When you authenticate users you should resolve them to an entity within the
+catalog. Often the authentication you use could be a corporate SSO system that
+provides you with email as a key. To enable you to find and resolve GitHub users
+it's useful to also import the private domain verified emails into the User
+entity in backstage.
+
+The integration attempts to return `organizationVerifiedDomainEmails` from the
+GitHub API and makes this available as part of the object passed to
+`UserTransformer`. The GitHub API will only return emails that use a domain
+that's a verified domain for your GitHub Org. It also relies on the user having
+configured such an email in their own account. The API will only return these
+values when using GitHub App authentication and with the correct app permission
+allowing access to emails.
+
+You can decorate the `defaultUserTransformer` to replace the org email in the
+returned identity.
+
+```typescript
+async (user, ctx): Promise<UserEntity | undefined> => {
+  const entity = await defaultUserTransformer(user, ctx);
+
+  if (entity && user.organizationVerifiedDomainEmails) {
+    entity.spec.profile!.email = user.organizationVerifiedDomainEmails[0] || '';
+  }
+
+  return entity;
+},
+```
+
+Once you have imported the emails you can resolve users in your sign-in in
+resolver using the catalog entity search via email
+
+```typescript
+// packages/backend/src/plugins/auth.ts
+ctx.signInWithCatalogUser({
+  filter: {
+    kind: ['User'],
+    'spec.profile.email': email as string,
+  },
+});
+```
+
 ## Using a Processor instead of a Provider
 
 An alternative to using the Provider for ingesting organizational entities is to

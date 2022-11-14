@@ -178,6 +178,7 @@ nav:
       - Heroku: 'deployment/heroku.md'
   - Designing for Backstage:
       - Design: 'dls/design.md'
+      - Component Design Guidelines: 'dls/component-design-guidelines.md'
       - Contributing to Storybook: 'dls/contributing-to-storybook.md'
       - Figma: 'dls/figma.md'
   - API Reference:

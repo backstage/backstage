@@ -234,6 +234,8 @@ onboarding
 Onboarding
 OpenShift
 orgs
+padding
+paddings
 pagerduty
 pageview
 parallelization
@@ -352,6 +354,7 @@ theia
 thumbsup
 todo
 todos
+togglable
 tolerations
 Tolerations
 toolchain

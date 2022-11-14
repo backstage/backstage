@@ -53,6 +53,20 @@ export const CostInsightsPage = costInsightsPlugin.provide(
   }),
 );
 
+/**
+ * An extension for displaying costs on an entity page.
+ *
+ * @public
+ */
+export const EntityCostInsightsContent = costInsightsPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityCostInsightsContent',
+    component: () =>
+      import('./components/EntityCosts').then(m => m.EntityCosts),
+    mountPoint: rootRouteRef,
+  }),
+);
+
 /** @public */
 export const CostInsightsProjectGrowthInstructionsPage =
   costInsightsPlugin.provide(

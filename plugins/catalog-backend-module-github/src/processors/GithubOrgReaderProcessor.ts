@@ -101,17 +101,14 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     this.logger.info('Reading GitHub users and groups');
 
     const { users } = await getOrganizationUsers(client, org, tokenType);
-    const { groups, groupMemberUsers } = await getOrganizationTeams(
-      client,
-      org,
-    );
+    const { groups } = await getOrganizationTeams(client, org);
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
       `Read ${users.length} GitHub users and ${groups.length} GitHub groups in ${duration} seconds`,
     );
 
-    assignGroupsToUsers(users, groupMemberUsers);
+    assignGroupsToUsers(users, groups);
     buildOrgHierarchy(groups);
 
     // Done!
