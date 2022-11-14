@@ -1,5 +1,5 @@
 ---
-'@backstage/core-components': minor
+'@backstage/core-components': patch
 ---
 
 Add optional step to SimpleStepper
