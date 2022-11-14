@@ -394,7 +394,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     <svg
       ref={containerRef}
       {...svgProps}
-      width='100%'
+      width="100%"
       height={minHeight}
       viewBox={`0 0 ${maxWidth} ${maxHeight}`}
     >
