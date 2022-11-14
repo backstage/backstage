@@ -71,7 +71,7 @@ export function CatalogSearchResultListItem(
   };
 
   return (
-    <Link noTrack to={result.location} onClick={handleClick}>
+    <>
       <ListItem alignItems="flex-start">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <div className={classes.flexContainer}>
@@ -80,13 +80,17 @@ export function CatalogSearchResultListItem(
             primaryTypographyProps={{ variant: 'h6' }}
             primary={
               props.highlight?.fields.title ? (
-                <HighlightedSearchResultText
-                  text={props.highlight.fields.title}
-                  preTag={props.highlight.preTag}
-                  postTag={props.highlight.postTag}
-                />
+                <Link noTrack to={result.location} onClick={handleClick}>
+                  <HighlightedSearchResultText
+                    text={props.highlight.fields.title}
+                    preTag={props.highlight.preTag}
+                    postTag={props.highlight.postTag}
+                  />
+                </Link>
               ) : (
-                result.title
+                <Link noTrack to={result.location} onClick={handleClick}>
+                  {result.title}
+                </Link>
               )
             }
             secondary={
@@ -112,6 +116,6 @@ export function CatalogSearchResultListItem(
         </div>
       </ListItem>
       <Divider component="li" />
-    </Link>
+    </>
   );
 }

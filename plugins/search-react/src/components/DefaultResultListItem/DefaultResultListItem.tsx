@@ -66,20 +66,24 @@ export const DefaultResultListItemComponent = ({
   };
 
   return (
-    <Link noTrack to={result.location} onClick={handleClick}>
+    <>
       <ListItem alignItems="center">
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText
           primaryTypographyProps={{ variant: 'h6' }}
           primary={
             highlight?.fields.title ? (
-              <HighlightedSearchResultText
-                text={highlight.fields.title}
-                preTag={highlight.preTag}
-                postTag={highlight.postTag}
-              />
+              <Link noTrack to={result.location} onClick={handleClick}>
+                <HighlightedSearchResultText
+                  text={highlight.fields.title}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              </Link>
             ) : (
-              result.title
+              <Link noTrack to={result.location} onClick={handleClick}>
+                {result.title}
+              </Link>
             )
           }
           secondary={
@@ -106,7 +110,7 @@ export const DefaultResultListItemComponent = ({
         {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}
       </ListItem>
       <Divider />
-    </Link>
+    </>
   );
 };
 

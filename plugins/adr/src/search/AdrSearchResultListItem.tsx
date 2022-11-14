@@ -64,20 +64,24 @@ export function AdrSearchResultListItem(props: {
   };
 
   return (
-    <Link noTrack to={result.location} onClick={handleClick}>
+    <>
       <ListItem alignItems="flex-start" className={classes.flexContainer}>
         <ListItemText
           className={classes.itemText}
           primaryTypographyProps={{ variant: 'h6' }}
           primary={
             highlight?.fields.title ? (
-              <HighlightedSearchResultText
-                text={highlight.fields.title}
-                preTag={highlight.preTag}
-                postTag={highlight.postTag}
-              />
+              <Link noTrack to={result.location} onClick={handleClick}>
+                <HighlightedSearchResultText
+                  text={highlight.fields.title}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              </Link>
             ) : (
-              result.title
+              <Link noTrack to={result.location} onClick={handleClick}>
+                {result.title}
+              </Link>
             )
           }
           secondary={
@@ -116,6 +120,6 @@ export function AdrSearchResultListItem(props: {
         </Box>
       </ListItem>
       <Divider component="li" />
-    </Link>
+    </>
   );
 }
