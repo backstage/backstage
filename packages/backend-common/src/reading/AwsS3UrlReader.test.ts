@@ -247,7 +247,7 @@ describe('AwsS3UrlReader', () => {
     });
 
     it('returns contents of an object in a bucket', async () => {
-      const response = await reader.read(
+      const response = await reader.readUrl(
         'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
       );
       expect(response.toString().trim()).toBe('site_name: Test');
@@ -255,7 +255,7 @@ describe('AwsS3UrlReader', () => {
 
     it('rejects unknown targets', async () => {
       await expect(
-        reader.read(
+        reader.readUrl(
           'https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml',
         ),
       ).rejects.toThrow(
