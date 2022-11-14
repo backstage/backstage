@@ -7653,6 +7653,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/repo-tools@workspace:*, @backstage/repo-tools@workspace:packages/repo-tools":
+  version: 0.0.0-use.local
+  resolution: "@backstage/repo-tools@workspace:packages/repo-tools"
+  dependencies:
+    "@backstage/errors": "workspace:^"
+    chalk: ^4.0.0
+    commander: ^9.1.0
+    fs-extra: 10.1.0
+    ts-node: ^10.0.0
+  bin:
+    backstage-repo-tools: bin/backstage-repo-tools
+  languageName: unknown
+  linkType: soft
+
 "@backstage/test-utils@workspace:^, @backstage/test-utils@workspace:packages/test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/test-utils@workspace:packages/test-utils"
@@ -33054,6 +33068,7 @@ __metadata:
     "@backstage/codemods": "workspace:*"
     "@backstage/create-app": "workspace:*"
     "@backstage/errors": "workspace:^"
+    "@backstage/repo-tools": "workspace:*"
     "@changesets/cli": ^2.14.0
     "@manypkg/get-packages": ^1.1.3
     "@microsoft/api-documenter": ^7.17.11
