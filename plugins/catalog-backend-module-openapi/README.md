@@ -1,6 +1,6 @@
 # Catalog Backend Module to resolve $refs in yaml documents
 
-This is an extension module to the plugin-catalog-backend plugin, providing an extensions to resolve $refs in yamls documents.
+This is an extension module to the Catalog backend, providing extensions to resolve $refs in yaml documents.
 
 With this you can split your yaml documents into multiple files and reference them. They will be bundled, using an UrlReader, during processing and stored as a single specification.
 
