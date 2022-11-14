@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
@@ -36,6 +37,14 @@ import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 
 // @public
+export type AbortContext = {
+  abort(): void;
+  abortListener: () => void;
+  setAbortListener(listener: () => void): void;
+  signal: AbortSignal_2;
+};
+
+// @public
 export type ActionContext<Input extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
@@ -50,6 +59,7 @@ export type ActionContext<Input extends JsonObject> = {
     entity?: UserEntity;
     ref?: string;
   };
+  signal?: AbortSignal_2;
 };
 
 // @public
@@ -692,6 +702,8 @@ export type TaskCompletionState = 'failed' | 'completed';
 // @public
 export interface TaskContext {
   // (undocumented)
+  abortContext?: AbortContext;
+  // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   createdBy?: string;
@@ -714,6 +726,13 @@ export type TaskEventType = 'completion' | 'log';
 
 // @public
 export class TaskManager implements TaskContext {
+  // (undocumented)
+  get abortContext(): {
+    abort: () => Promise<void>;
+    abortListener: () => void;
+    setAbortListener: (listener: () => void) => void;
+    signal: AbortSignal_2;
+  };
   // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)

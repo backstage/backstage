@@ -20,10 +20,8 @@ import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
-import {
-  TemplateFilter,
-  TemplateGlobal,
-} from '../../lib/templating/SecureTemplater';
+import { TemplateFilter, TemplateGlobal } from '../../lib';
+import { TaskManager } from './StorageTaskBroker';
 
 /**
  * TaskWorkerOptions
@@ -86,10 +84,39 @@ export class TaskWorker {
     });
   }
 
+  private async registerAbortable(task: TaskManager) {
+    const taskId = await task.getWorkspaceName();
+    let shouldUnsubscribe = false;
+
+    const subscription = this.options.taskBroker
+      .event$({ taskId, after: undefined })
+      .subscribe({
+        error: _ => {
+          shouldUnsubscribe = true;
+        },
+        next: ({ events }) => {
+          for (const event of events) {
+            if (event.type === 'log' && event.body.status === 'aborted') {
+              task.abortContext.abort();
+              shouldUnsubscribe = true;
+            }
+
+            if (event.type === 'completion') {
+              shouldUnsubscribe = true;
+            }
+          }
+          if (shouldUnsubscribe) {
+            subscription.unsubscribe();
+          }
+        },
+      });
+  }
+
   start() {
     (async () => {
       for (;;) {
         const task = await this.options.taskBroker.claim();
+        await this.registerAbortable(task as unknown as TaskManager);
         await this.runOneTask(task);
       }
     })();

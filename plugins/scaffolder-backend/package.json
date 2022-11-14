@@ -67,6 +67,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "morgan": "^1.10.0",
+    "node-abort-controller": "^3.0.1",
     "node-fetch": "^2.6.7",
     "nunjucks": "^3.2.3",
     "octokit": "^2.0.0",

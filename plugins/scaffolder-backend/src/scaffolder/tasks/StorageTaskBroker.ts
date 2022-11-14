@@ -15,6 +15,7 @@
  */
 
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { AbortController } from 'node-abort-controller';
 import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
@@ -36,6 +37,7 @@ import {
  */
 export class TaskManager implements TaskContext {
   private isDone = false;
+  private ac = new AbortController();
 
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
@@ -58,6 +60,38 @@ export class TaskManager implements TaskContext {
 
   get secrets() {
     return this.task.secrets;
+  }
+
+  get abortContext() {
+    const context = {
+      abort: async () => {
+        this.ac.abort();
+        this.ac.signal.removeEventListener('abort', context.abortListener);
+
+        await this.storage.completeTask({
+          taskId: this.task.taskId,
+          status: 'aborted',
+          eventBody: {
+            message: `Run completed with status: aborted`,
+            error: {
+              name: 'TaskAborted',
+              message: 'The task has been aborted',
+            },
+          },
+        });
+        this.isDone = true;
+        if (this.heartbeatTimeoutId) {
+          clearTimeout(this.heartbeatTimeoutId);
+        }
+      },
+      abortListener: () => {},
+      setAbortListener: (listener: () => void) => {
+        context.abortListener = listener;
+        context.signal.addEventListener('abort', listener, { once: true });
+      },
+      signal: this.ac.signal,
+    };
+    return context;
   }
 
   get createdBy() {

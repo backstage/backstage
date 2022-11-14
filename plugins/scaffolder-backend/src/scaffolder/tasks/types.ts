@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { AbortSignal } from 'node-abort-controller';
 import { JsonValue, JsonObject, Observable } from '@backstage/types';
-import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
+import { TemplateAction } from '../actions';
 
 /**
  * The status of each step of the Task
@@ -103,11 +105,24 @@ export type TaskBrokerDispatchOptions = {
 };
 
 /**
+ * It used to abort a running task.
+ *
+ * @public
+ */
+export type AbortContext = {
+  abort(): void;
+  abortListener: () => void;
+  setAbortListener(listener: () => void): void;
+  signal: AbortSignal;
+};
+
+/**
  * Task
  *
  * @public
  */
 export interface TaskContext {
+  abortContext?: AbortContext;
   spec: TaskSpec;
   secrets?: TaskSecrets;
   createdBy?: string;
@@ -219,3 +234,13 @@ export type WorkflowResponse = { output: { [key: string]: JsonValue } };
 export interface WorkflowRunner {
   execute(task: TaskContext): Promise<WorkflowResponse>;
 }
+
+export type TaskTrackType = {
+  markAborted: (step: TaskStep) => Promise<void>;
+  markFailed: (step: TaskStep, err: Error) => Promise<void>;
+  markSuccessful: () => Promise<void>;
+  skipDryRun: (
+    step: TaskStep,
+    action: TemplateAction<JsonObject>,
+  ) => Promise<void>;
+};
