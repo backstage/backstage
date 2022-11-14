@@ -16,8 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import Keyv from 'keyv';
-/* @ts-expect-error */
-import KeyvMemcache from 'keyv-memcache';
+import KeyvMemcache from '@keyv/memcache';
 import KeyvRedis from '@keyv/redis';
 import { DefaultCacheClient } from './CacheClient';
 import { CacheManager } from './CacheManager';
@@ -25,8 +24,8 @@ import { NoStore } from './NoStore';
 
 jest.createMockFromModule('keyv');
 jest.mock('keyv');
-jest.createMockFromModule('keyv-memcache');
-jest.mock('keyv-memcache');
+jest.createMockFromModule('@keyv/memcache');
+jest.mock('@keyv/memcache');
 jest.createMockFromModule('@keyv/redis');
 jest.mock('@keyv/redis');
 jest.mock('./CacheClient', () => {
@@ -187,7 +186,7 @@ describe('CacheManager', () => {
         ttl: expectedTtl,
       });
       expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvMemcache);
-      const memcache = KeyvMemcache as jest.Mock;
+      const memcache = KeyvMemcache as unknown as jest.Mock;
       const mockMemcacheCalls = memcache.mock.calls.splice(-1);
       expect(mockMemcacheCalls[0][0]).toEqual(expectedHost);
     });
