@@ -20,7 +20,7 @@ import { AuthResponse } from '../types';
 /**
  * The header name used by the IAP.
  */
-export const IAP_JWT_HEADER = 'x-goog-iap-jwt-assertion';
+export const DEFAULT_IAP_JWT_HEADER = 'x-goog-iap-jwt-assertion';
 
 /**
  * The data extracted from an IAP token.
