@@ -44,7 +44,7 @@ import useAsync from 'react-use/lib/useAsync';
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   graph: {
     flex: 1,
-    minHeight: 0,
+    minHeight: '100%',
   },
   graphWrapper: {
     position: 'relative',

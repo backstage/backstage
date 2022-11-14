@@ -223,6 +223,7 @@ export function DependencyGraph<NodeData, EdgeData>(
 
   const maxWidth = Math.max(graphWidth, containerWidth);
   const maxHeight = Math.max(graphHeight, containerHeight);
+  const minHeight = Math.min(graphHeight, containerHeight);
 
   const containerRef = React.useMemo(
     () =>
@@ -393,7 +394,8 @@ export function DependencyGraph<NodeData, EdgeData>(
     <svg
       ref={containerRef}
       {...svgProps}
-      width="100%"
+      width='100%'
+      height={minHeight}
       viewBox={`0 0 ${maxWidth} ${maxHeight}`}
     >
       <defs>
