@@ -27,17 +27,13 @@ import React from 'react';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';
 
-interface DefaultImportPageProps {
-  filters?: Array<string>;
-}
 
 /**
  * The default catalog import page.
  *
  * @public
  */
-export const DefaultImportPage = (props: DefaultImportPageProps = { filters: [] }) => {
-  const { filters } = props;
+export const DefaultImportPage = () => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
 
@@ -58,7 +54,7 @@ export const DefaultImportPage = (props: DefaultImportPageProps = { filters: [] 
           </Grid>
 
           <Grid item xs={12} md={8} lg={6} xl={4}>
-            <ImportStepper filters={filters} />
+            <ImportStepper />
           </Grid>
         </Grid>
       </Content>

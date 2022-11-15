@@ -218,6 +218,8 @@ catalog:
         - System
         - Domain
         - Location
+      sources:
+        - github.com/backstage
 
   processors:
     ldapOrg:

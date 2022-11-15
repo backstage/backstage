@@ -51,7 +51,6 @@ export interface StepperProvider {
   analyze: (
     s: Extract<ImportState, { activeState: 'analyze' }>,
     opts: { apis: StepperApis },
-    filters?: String[],
   ) => StepConfiguration;
   prepare: (
     s: Extract<ImportState, { activeState: 'prepare' }>,

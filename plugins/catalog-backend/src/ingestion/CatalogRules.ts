@@ -98,7 +98,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     if (config.has('catalog.rules')) {
       const globalRules = config.getConfigArray('catalog.rules').map(sub => ({
         allow: sub.getStringArray('allow').map(kind => ({ kind })),
-        sources: sub.getStringArray('sources').map(source => ({ source })),
+        sources: (sub.getOptionalStringArray('sources') || []).map(source => ({ source })),
       }));
       rules.push(...globalRules);
     } else {
@@ -143,9 +143,9 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
         return false;
       }
 
-        if (this.matchEntity(entity, rule.allow)) {
-          return true;
-        }
+      if (this.matchEntity(entity, rule.allow)) {
+        return true;
+      }
     }
 
     return false;
