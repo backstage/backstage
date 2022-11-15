@@ -180,7 +180,7 @@ costInsights:
 
 ### Base Currency (Optional)
 
-In the case you would like to show your baseline costs on the graph on other currency than US dollars.  
+In the case you would like to show your baseline costs on the graph on other currency than US dollars.
 
 ```yaml
 ## ./app-config.yaml
