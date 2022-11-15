@@ -63,13 +63,9 @@ export class KubernetesProxy {
 
     const response = await this.makeRequestToCluster(clusterDetails, req);
 
-    const contentType = req.header(HEADER_CONTENT_TYPE) || APPLICATION_JSON;
+    const data = await response.text();
 
-    const data = contentType.includes(APPLICATION_JSON)
-      ? await response.json()
-      : await response.text();
-
-    res.status(response.status).json(data);
+    res.status(response.status).send(data);
   };
 
   public get clustersSupplier(): KubernetesClustersSupplier {
