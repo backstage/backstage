@@ -22,12 +22,14 @@ import {
 
 /**
  * Permission resource type which corresponds to cluster entities.
+ * @alpha
  */
 export const RESOURCE_TYPE_KUBERNETES_RESOURCE = 'kubernetes-resource';
 
 /**
  * Convenience type for kubernetes resource
  * {@link @backstage/plugin-permission-common#ResourcePermission}s.
+ * @alpha
  */
 export type KubernetesResourcePermission = ResourcePermission<
   typeof RESOURCE_TYPE_KUBERNETES_RESOURCE
@@ -35,7 +37,7 @@ export type KubernetesResourcePermission = ResourcePermission<
 
 /** This permission is used to authorize actions that involve one or more
  * kubernetes resources.
- *
+ * @alpha
  */
 export const kubernetesClusterReadPermission: BasicPermission =
   createPermission({
@@ -48,6 +50,7 @@ export const kubernetesClusterReadPermission: BasicPermission =
 /**
  * This permission is used to authorize actions that involve reading one or more
  * workload resources from a kubernetes cluster.
+ * @alpha
  */
 export const kubernetesWorkloadResourcesReadPermission = createPermission({
   name: 'kubernetes.workload.read',
@@ -58,6 +61,7 @@ export const kubernetesWorkloadResourcesReadPermission = createPermission({
 /**
  * This permission is used to authorize actions that involve reading one or more
  * custom resources from a kubernetes cluster.
+ * @alpha
  */
 export const kubernetesCustomResourcesReadPermission = createPermission({
   name: 'kubernetes.custom.read',
@@ -67,6 +71,7 @@ export const kubernetesCustomResourcesReadPermission = createPermission({
 
 /**
  * List of all cluster permissions.
+ * @alpha
  */
 export const kubernetesClusterPermissions = [
   kubernetesClusterReadPermission,
