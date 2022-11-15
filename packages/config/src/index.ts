@@ -25,6 +25,6 @@ export type {
   JsonObject,
   JsonPrimitive,
   JsonValue,
-} from './deprecatedTypes';
+} from '@backstage/types';
 export { ConfigReader } from './reader';
 export type { AppConfig, Config } from './types';
