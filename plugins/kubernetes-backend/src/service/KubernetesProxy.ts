@@ -145,14 +145,6 @@ export class KubernetesProxy {
     uri: string,
     req: ExpressRequest,
   ): Promise<Response> {
-    const bearerToken = details.serviceAccountToken;
-
-    if (!bearerToken) {
-      this.logger.error('Invalid service account token');
-
-      throw new AuthenticationError('Invalid service account token');
-    }
-
     const { method, headers, body } = req;
 
     const reqData: RequestInit = {
