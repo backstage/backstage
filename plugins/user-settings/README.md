@@ -104,7 +104,7 @@ import {
 } from '@backstage/plugin-user-settings';
 import { AdvancedSettings } from './advancedSettings';
 
-export const settingsPage = () => (
+export const settingsPage = (
   <SettingsLayout>
     <SettingsLayout.Route path="general" title="General">
       <UserSettingsGeneral />
