@@ -32,6 +32,9 @@ export type CatalogRule = {
     target?: string;
     type: string;
   }>;
+  owners?: Array<{
+    owner: string
+  }>;
 };
 
 /**
@@ -94,6 +97,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     if (config.has('catalog.rules')) {
       const globalRules = config.getConfigArray('catalog.rules').map(sub => ({
         allow: sub.getStringArray('allow').map(kind => ({ kind })),
+        owners: sub.getStringArray('owners').map(kind => ({ kind })),
       }));
       rules.push(...globalRules);
     } else {
@@ -122,7 +126,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     return new DefaultCatalogRulesEnforcer(rules);
   }
 
-  constructor(private readonly rules: CatalogRule[]) {}
+  constructor(private readonly rules: CatalogRule[]) { }
 
   /**
    * Checks whether a specific entity/location combination is allowed
@@ -134,9 +138,13 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
         continue;
       }
 
-      if (this.matchEntity(entity, rule.allow)) {
-        return true;
+      if (!this.matchOwners(entity, rule.owners)) {
+        return false;
       }
+
+        if (this.matchEntity(entity, rule.allow)) {
+          return true;
+        }
     }
 
     return false;
@@ -176,6 +184,19 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       return true;
     }
 
+    return false;
+  }
+
+  private matchOwners(entity: Entity, matchers?: { owner: string }[]): boolean {
+    if (!matchers) {
+      return true;
+    }
+
+    const filteredRegex = new RegExp(`^http[s]?://${`(?:${matchers.map((filter, i) => i === 0 ? filter.owner : `|${filter.owner}`)})`}`);
+
+    if ( entity?.metadata.links && entity?.metadata?.links?.length > 0) {
+      return filteredRegex.test(entity?.metadata?.links[0].url);
+    } 
     return false;
   }
 }
