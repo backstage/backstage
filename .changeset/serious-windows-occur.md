@@ -1,5 +1,7 @@
 ---
-'@backstage/backend-common': minor
+'@backstage/backend-common': patch
+'@backstage/config': patch
+'@backstage/core-components': patch
 ---
 
-Migrated deprecations in database/conntectors and reading
+Internal refactor to avoid usage of deprecated symbols
