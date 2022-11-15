@@ -58,7 +58,7 @@ function mockCatalogClient(entity?: Entity): jest.Mocked<CatalogApi> {
   if (entity) {
     mock.getEntityByRef.mockReturnValue(entity);
   }
-  return mock;
+  return mock as Partial<jest.Mocked<CatalogApi>> as jest.Mocked<CatalogApi>;
 }
 
 function mockTodoReader(items?: TodoItem[]): jest.Mocked<TodoReader> {
