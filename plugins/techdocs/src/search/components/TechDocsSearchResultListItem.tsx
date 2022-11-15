@@ -126,13 +126,15 @@ export const TechDocsSearchResultListItem = (
         className={classes.itemText}
         primaryTypographyProps={{ variant: 'h6' }}
         primary={
-          title ? (
-            <LinkWrapper>{title}</LinkWrapper>
-          ) : (
-            <LinkWrapper>
-              {resultTitle} | {entityTitle ?? resultName} docs
-            </LinkWrapper>
-          )
+          <LinkWrapper>
+            {title ? (
+              title
+            ) : (
+              <>
+                {resultTitle} | {entityTitle ?? resultName} docs
+              </>
+            )}
+          </LinkWrapper>
         }
         secondary={
           <span

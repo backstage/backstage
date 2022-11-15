@@ -72,19 +72,17 @@ export const DefaultResultListItemComponent = ({
         <ListItemText
           primaryTypographyProps={{ variant: 'h6' }}
           primary={
-            highlight?.fields.title ? (
-              <Link noTrack to={result.location} onClick={handleClick}>
+            <Link noTrack to={result.location} onClick={handleClick}>
+              {highlight?.fields.title ? (
                 <HighlightedSearchResultText
-                  text={highlight.fields.title}
-                  preTag={highlight.preTag}
-                  postTag={highlight.postTag}
+                  text={highlight?.fields.title || ''}
+                  preTag={highlight?.preTag || ''}
+                  postTag={highlight?.postTag || ''}
                 />
-              </Link>
-            ) : (
-              <Link noTrack to={result.location} onClick={handleClick}>
-                {result.title}
-              </Link>
-            )
+              ) : (
+                result.title
+              )}
+            </Link>
           }
           secondary={
             <span
