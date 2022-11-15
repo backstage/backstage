@@ -42,7 +42,6 @@ export interface StepInitAnalyzeUrlProps {
   disablePullRequest?: boolean;
   analysisUrl?: string;
   exampleLocationUrl?: string;
-  filters?: Array<string>,
 }
 
 /**
