@@ -46,7 +46,6 @@ export interface ImportStepperProps {
     defaults: StepperProvider,
   ) => StepperProvider;
   variant?: InfoCardVariants;
-  filters?: Array<String>;
 }
 
 /**
