@@ -109,7 +109,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     if (filteredStep.schema.properties) {
       filteredStep.schema.properties = Object.fromEntries(
         Object.entries(filteredStep.schema.properties).filter(
-          ([key, value]: [string, any]) => {
+          ([key, value]) => {
             if (value[featureFlagKey]) {
               if (featureFlagApi.isActive(value[featureFlagKey])) {
                 return true;
