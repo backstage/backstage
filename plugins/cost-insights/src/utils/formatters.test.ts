@@ -49,6 +49,22 @@ describe('date formatters', () => {
       '$0.0000023',
     ]);
   });
+
+  it('Correctly formats values in euros to two significant digits', () => {
+    const values = [
+      0.00000040925, 0.21, 0.0000004, 0.4139877878, 0.00000234566,
+    ];
+    const formattedValues = values.map(val =>
+      lengthyCurrencyFormatter('EUR').format(val),
+    );
+    expect(formattedValues).toEqual([
+      '€0.00000041',
+      '€0.21',
+      '€0.00000040',
+      '€0.41',
+      '€0.0000023',
+    ]);
+  });
 });
 
 describe.each`

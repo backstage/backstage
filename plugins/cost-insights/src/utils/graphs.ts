@@ -45,8 +45,8 @@ export const tooltipItemOf = (
   payload: Payload<string, string>,
 ) => {
   const value =
-    typeof payload.value === 'number'
-      ? currencyFormatter(baseCurrency).format(payload.value)
+    payload.value && !isNaN(Number(payload.value))
+      ? currencyFormatter(baseCurrency).format(Number(payload.value))
       : payload.value;
   const fill = payload.color as string;
 
