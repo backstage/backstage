@@ -89,7 +89,7 @@ export const ImportStepper = (props: ImportStepperProps) => {
         {render(
           states.analyze(
             state as Extract<ImportState, { activeState: 'analyze' }>,
-            { apis: { catalogImportApi } }, 
+            { apis: { catalogImportApi } },
           ),
         )}
         {render(
