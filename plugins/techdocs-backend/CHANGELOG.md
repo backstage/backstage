@@ -1,5 +1,30 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.4.1
+
+### Patch Changes
+
+- a7607b5413: Replace usage of deprecataed `UrlReader.read` with `UrlReader.readUrl`.
+- a6d779d58a: Remove explicit default visibility at `config.d.ts` files.
+
+  ```ts
+  /**
+   * @visibility backend
+   */
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-techdocs-node@1.4.2
+  - @backstage/integration@1.4.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-permission-common@0.7.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/plugin-catalog-common@1.0.8
+  - @backstage/plugin-search-common@1.1.1
+
 ## 1.4.1-next.1
 
 ### Patch Changes

@@ -1,5 +1,68 @@
 # example-app
 
+## 0.2.77
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder@1.8.0
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/plugin-techdocs@1.4.0
+  - @backstage/core-components@0.12.0
+  - @backstage/plugin-cost-insights@0.12.0
+  - @backstage/plugin-apache-airflow@0.2.4
+  - @backstage/core-app-api@1.2.0
+  - @backstage/plugin-explore@0.3.42
+  - @backstage/plugin-tech-insights@0.3.3
+  - @backstage/plugin-github-actions@0.5.11
+  - @backstage/cli@0.21.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/plugin-dynatrace@1.0.1
+  - @backstage/plugin-catalog-import@0.9.1
+  - @backstage/plugin-catalog-graph@0.2.23
+  - @backstage/plugin-tech-radar@0.5.18
+  - @backstage/plugin-playlist@0.1.2
+  - @backstage/plugin-stack-overflow@0.1.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-gcalendar@0.3.7
+  - @backstage/plugin-code-coverage@0.2.4
+  - @backstage/plugin-org@0.6.0
+  - @backstage/plugin-api-docs@0.8.11
+  - @backstage/plugin-kubernetes@0.7.4
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.6
+  - @backstage/plugin-circleci@0.3.11
+  - @backstage/plugin-azure-sites@0.1.0
+  - @backstage/plugin-techdocs-react@1.0.6
+  - @backstage/plugin-cloudbuild@0.3.11
+  - @backstage/plugin-jenkins@0.7.10
+  - @backstage/plugin-kafka@0.3.11
+  - @backstage/plugin-pagerduty@0.5.4
+  - @backstage/plugin-rollbar@0.4.11
+  - @backstage/plugin-airbrake@0.3.11
+  - @backstage/plugin-azure-devops@0.2.2
+  - @backstage/plugin-badges@0.2.35
+  - @internal/plugin-catalog-customized@0.0.4
+  - @backstage/plugin-gocd@0.1.17
+  - @backstage/plugin-home@0.4.27
+  - @backstage/plugin-lighthouse@0.3.11
+  - @backstage/plugin-newrelic-dashboard@0.2.4
+  - @backstage/plugin-search@1.0.4
+  - @backstage/plugin-sentry@0.4.4
+  - @backstage/plugin-todo@0.2.13
+  - @backstage/app-defaults@1.0.8
+  - @backstage/integration-react@1.1.6
+  - @backstage/plugin-gcp-projects@0.3.30
+  - @backstage/plugin-graphiql@0.2.43
+  - @backstage/plugin-newrelic@0.3.29
+  - @backstage/plugin-search-react@1.2.1
+  - @backstage/plugin-shortcuts@0.3.3
+  - @backstage/plugin-user-settings@0.5.1
+  - @backstage/config@1.0.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.8
+  - @backstage/plugin-permission-react@0.4.7
+  - @backstage/plugin-search-common@1.1.1
+
 ## 0.2.77-next.2
 
 ### Patch Changes

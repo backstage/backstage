@@ -1,5 +1,41 @@
 # @backstage/plugin-scaffolder
 
+## 1.8.0
+
+### Minor Changes
+
+- edae17309e: Added props to override default Scaffolder page title, subtitle and pageTitleOverride.
+  Routes like `rootRouteRef`, `selectedTemplateRouteRef`, `nextRouteRef`, `nextSelectedTemplateRouteRef` were made public and can be used in your app (e.g. in custom TemplateCard component).
+
+### Patch Changes
+
+- 580285787d: The `create` and `click` analytics events are now also captured on the "next" version of the component creation page.
+- 4830a3569f: Basic analytics instrumentation is now in place:
+
+  - As users make their way through template steps, a `click` event is fired, including the step number.
+  - After a user clicks "Create" a `create` event is fired, including the name of the software that was just created. The template used at creation is set on the `entityRef` context key.
+
+- 94b7ca9c6d: Updated to use `@rjsf` packages of version `^5.0.0-beta.12`
+- 87840c8c6c: Fixed tiny grammar error in EntityNamePicker. The first letter of the description is now capitalized.
+- 3b3fc3cc3c: Fix `formData` not being present in the `next` version
+- b2bb48a6f4: Fix the return type for the `createNextScaffodlerFieldExtension` type as before it wasn't a component type for the extension
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/integration@1.4.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/types@1.0.1
+  - @backstage/integration-react@1.1.6
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.8
+  - @backstage/plugin-permission-react@0.4.7
+  - @backstage/plugin-scaffolder-common@1.2.2
+
 ## 1.8.0-next.1
 
 ### Patch Changes

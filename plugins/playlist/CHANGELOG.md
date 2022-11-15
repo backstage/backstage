@@ -1,5 +1,27 @@
 # @backstage/plugin-playlist
 
+## 0.1.2
+
+### Patch Changes
+
+- 605f269f0d: Updated Playlist plugin docs:
+
+  - Updated `playlist` plugin README to include note about installing backend plugin and added images for the various features
+  - Updated `playlist-backend` plugin README to remove `IdentityClient` import in example as it is not used and made minor change to headings
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-permission-common@0.7.1
+  - @backstage/plugin-search-react@1.2.1
+  - @backstage/errors@1.1.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.8
+  - @backstage/plugin-permission-react@0.4.7
+  - @backstage/plugin-playlist-common@0.1.2
+
 ## 0.1.2-next.2
 
 ### Patch Changes

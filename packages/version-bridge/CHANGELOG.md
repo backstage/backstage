@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.2
+
+### Patch Changes
+
+- e70984325d: Updated the value created by `createVersionedValueMap` to give it an extra hidden property that makes it easier to inspect during debugging.
+
 ## 1.0.1
 
 ### Patch Changes

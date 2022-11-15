@@ -1,5 +1,67 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.8.0
+
+### Minor Changes
+
+- ea14eb62a2: Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
+
+  - `scaffolder_task_count`: Tracks successful task runs.
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `user`: The entity ref of the user that invoked the template run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_task_duration`: a histogram which tracks the duration of a task run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `result`: A boolean describing whether the task ran successfully
+
+  - `scaffolder_step_count`: a count that tracks each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_step_duration`: a histogram which tracks the duration of each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+
+- 5921b5ce49: - The GitLab Project ID for the `publish:gitlab:merge-request` action is now passed through the query parameter `project` in the `repoUrl`. It still allows people to not use the `projectid` and use the `repoUrl` with the `owner` and `repo` query parameters instead. This makes it easier to publish to repositories instead of writing the full path to the project.
+- 5025d2e8b6: Adds the ability to pass (an optional) array of strings that will be applied to the newly scaffolded repository as topic labels.
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- 9ff4ff3745: Implement "Branch protection rules" support for "publish:github" action
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-catalog-backend@1.5.1
+  - @backstage/integration@1.4.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-auth-node@0.2.7
+  - @backstage/types@1.0.1
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/plugin-scaffolder-common@1.2.2
+
 ## 1.8.0-next.2
 
 ### Minor Changes
