@@ -24,9 +24,9 @@ import {
 import { SupportButton } from './SupportButton';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-const configApi = {
-  getOptionalConfig: () =>
-    new MockConfigApi({
+const configApi = new MockConfigApi({
+  app: {
+    support: {
       url: 'https://github.com',
       items: [
         {
@@ -35,8 +35,9 @@ const configApi = {
           links: [{ title: 'Github Issues', url: '/issues' }],
         },
       ],
-    }),
-};
+    },
+  },
+});
 
 const SUPPORT_BUTTON_ID = 'support-button';
 const POPOVER_ID = 'support-button-popover';
