@@ -46,6 +46,7 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
  *       default: true
  *     metricB:
  *       name: Metric B
+ *   baseCurrency: 'EUR'
  *   currencies:
  *     currencyA:
  *       label: Currency A
@@ -60,6 +61,7 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 /** @public */
 export type ConfigContextProps = {
+  baseCurrency: string;
   metrics: Metric[];
   products: Product[];
   icons: Icon[];
@@ -72,6 +74,7 @@ export const ConfigContext = createContext<ConfigContextProps | undefined>(
 );
 
 const defaultState: ConfigContextProps = {
+  baseCurrency: 'USD',
   metrics: [],
   products: [],
   icons: [],
@@ -110,6 +113,15 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       return [];
     }
 
+    function getBaseCurrency(): string {
+      const baseCurrency = c.getOptionalString('costInsights.baseCurrency');
+      if (baseCurrency) {
+        return baseCurrency;
+      }
+
+      return defaultState.baseCurrency;
+    }
+
     function getCurrencies(): Currency[] {
       const currencies = c.getOptionalConfig('costInsights.currencies');
       if (currencies) {
@@ -141,6 +153,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
     }
 
     function getConfig() {
+      const baseCurrency = getBaseCurrency();
       const products = getProducts();
       const metrics = getMetrics();
       const engineerCost = getEngineerCost();
@@ -152,6 +165,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
 
       setConfig(prevState => ({
         ...prevState,
+        baseCurrency,
         metrics,
         products,
         engineerCost,

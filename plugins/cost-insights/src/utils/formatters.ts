@@ -17,7 +17,7 @@
 import { DateTime, Duration as LuxonDuration } from 'luxon';
 import pluralize from 'pluralize';
 import { ChangeStatistic, Duration } from '../types';
-import { inclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
+import { inclusiveEndDateOf, inclusiveStartDateOf } from './duration';
 import { notEmpty } from './assert';
 
 export type Period = {
@@ -25,25 +25,28 @@ export type Period = {
   periodEnd: string;
 };
 
-export const costFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
+export const costFormatter = (currency: string) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+  });
 
-export const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
+export const currencyFormatter = (currency: string) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
 
-export const lengthyCurrencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 0,
-  minimumSignificantDigits: 2,
-  maximumSignificantDigits: 2,
-});
+export const lengthyCurrencyFormatter = (currency: string) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 0,
+    minimumSignificantDigits: 2,
+    maximumSignificantDigits: 2,
+  });
 
 export const numberFormatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 0,

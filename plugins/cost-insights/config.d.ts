@@ -21,6 +21,11 @@ export interface Config {
      */
     engineerCost: number;
 
+    /**
+     * @visibility frontend
+     */
+    baseCurrency?: string;
+
     products?: {
       [kind: string]: {
         /**

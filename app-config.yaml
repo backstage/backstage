@@ -372,6 +372,7 @@ auth:
     myproxy:
       development: {}
 costInsights:
+  baseCurrency: 'EUR'
   engineerCost: 200000
   products:
     computeEngine:

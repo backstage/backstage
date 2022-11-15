@@ -23,29 +23,30 @@ import {
   lengthyCurrencyFormatter,
 } from './formatters';
 
-export function formatGraphValue(
-  value: number,
-  _index: number,
-  format?: string,
-) {
-  if (format === 'number') {
-    return value.toLocaleString();
-  }
+export const formatGraphValue =
+  (baseCurrency: string) =>
+  (value: number, _index: number, format?: string) => {
+    if (format === 'number') {
+      return value.toLocaleString();
+    }
 
-  if (value < 1) {
-    return lengthyCurrencyFormatter.format(value);
-  }
+    if (value < 1) {
+      return lengthyCurrencyFormatter(baseCurrency).format(value);
+    }
 
-  return currencyFormatter.format(value);
-}
+    return currencyFormatter(baseCurrency).format(value);
+  };
 
 export const overviewGraphTickFormatter = (millis: string | number) =>
   typeof millis === 'number' ? dateFormatter.format(millis) : millis;
 
-export const tooltipItemOf = (payload: Payload<string, string>) => {
+export const tooltipItemOf = (
+  baseCurrency: string,
+  payload: Payload<string, string>,
+) => {
   const value =
     typeof payload.value === 'number'
-      ? currencyFormatter.format(payload.value)
+      ? currencyFormatter(baseCurrency).format(payload.value)
       : payload.value;
   const fill = payload.color as string;
 
