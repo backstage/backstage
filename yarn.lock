@@ -22730,8 +22730,8 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-deprecation@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "eslint-plugin-deprecation@npm:1.3.2"
+  version: 1.3.3
+  resolution: "eslint-plugin-deprecation@npm:1.3.3"
   dependencies:
     "@typescript-eslint/experimental-utils": ^5.0.0
     tslib: ^2.3.1
@@ -22739,7 +22739,7 @@ __metadata:
   peerDependencies:
     eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     typescript: ^3.7.5 || ^4.0.0
-  checksum: 763776eec6af02ad442bf9ed7e73da198da6969b51418b43f79b3f0a27395e85e9988a3b182e61fab7812a35e17539ba72464d1123a87cc25b195288cbd0c31d
+  checksum: 5e14d7bc8245a14784623632d43a6210880a4aad4c029fd44686a5516c248287f32406ff230f6e9d238784854b24cd09da953ec8f73d9d19a7c4b3905884e432
   languageName: node
   linkType: hard
 
