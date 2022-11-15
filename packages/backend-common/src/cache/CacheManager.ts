@@ -16,8 +16,7 @@
 
 import { Config } from '@backstage/config';
 import Keyv from 'keyv';
-// @ts-expect-error
-import KeyvMemcache from 'keyv-memcache';
+import KeyvMemcache from '@keyv/memcache';
 import KeyvRedis from '@keyv/redis';
 import { Logger } from 'winston';
 import { getRootLogger } from '../logging';

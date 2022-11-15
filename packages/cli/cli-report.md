@@ -390,6 +390,7 @@ Commands:
   build [options]
   lint [options]
   clean
+  list-deprecations [options]
   test [options]
   help [command]
 ```
@@ -423,6 +424,16 @@ Options:
   --format <format>
   --since <ref>
   --fix
+  -h, --help
+```
+
+### `backstage-cli repo list-deprecations`
+
+```
+Usage: backstage-cli repo list-deprecations [options]
+
+Options:
+  --json
   -h, --help
 ```
 

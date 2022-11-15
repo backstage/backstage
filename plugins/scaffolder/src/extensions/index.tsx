@@ -72,7 +72,7 @@ export function createNextScaffolderFieldExtension<
   TInputProps extends UIOptionsType = {},
 >(
   options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
-): Extension<NextFieldExtensionComponentProps<TReturnValue, TInputProps>> {
+): Extension<FieldExtensionComponent<TReturnValue, TInputProps>> {
   return {
     expose() {
       const FieldExtensionDataHolder: any = () => null;

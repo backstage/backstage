@@ -28,11 +28,14 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useCallback, useMemo } from 'react';
 import { RelationPairs } from '../EntityRelationsGraph';
 
-const useStyles = makeStyles({
-  formControl: {
-    maxWidth: 300,
+const useStyles = makeStyles(
+  {
+    formControl: {
+      maxWidth: 300,
+    },
   },
-});
+  { name: 'PluginCatalogGraphSelectedRelationsFilter' },
+);
 
 export type Props = {
   relationPairs: RelationPairs;

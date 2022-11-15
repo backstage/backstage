@@ -25,7 +25,7 @@ export interface Config {
      * An undefined list of matchers means match all, an empty list of
      * matchers means match none.
      *
-     * This is commonly used to put in what amounts to a whitelist of kinds
+     * This is commonly used to put in what amounts to an allowlist of kinds
      * that regular users of Backstage are permitted to register locations
      * for. This can be used to stop them from registering yaml files
      * describing for example a Group entity called "admin" that they make

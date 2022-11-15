@@ -267,6 +267,10 @@ export type CostInsightsApi = {
   getLastCompleteBillingDate(): Promise<string>;
   getUserGroups(userId: string): Promise<Group[]>;
   getGroupProjects(group: string): Promise<Project[]>;
+  getCatalogEntityDailyCost?(
+    catalogEntityRef: string,
+    intervals: string,
+  ): Promise<Cost>;
   getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
   getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
   getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
@@ -404,10 +408,18 @@ export const EngineerThreshold = 0.5;
 // @public @deprecated (undocumented)
 export type Entity = common.Entity;
 
+// @public
+export const EntityCostInsightsContent: () => JSX.Element;
+
 // @public (undocumented)
 export class ExampleCostInsightsClient implements CostInsightsApi {
   // (undocumented)
   getAlerts(group: string): Promise<Alert[]>;
+  // (undocumented)
+  getCatalogEntityDailyCost(
+    entityRef: string,
+    intervals: string,
+  ): Promise<Cost>;
   // (undocumented)
   getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
   // (undocumented)

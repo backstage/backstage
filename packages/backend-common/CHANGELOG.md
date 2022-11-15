@@ -1,5 +1,19 @@
 # @backstage/backend-common
 
+## 0.16.0-next.1
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- cfb30b700c: Pin `@kubernetes/client-node` version to `0.17.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+
 ## 0.16.0-next.0
 
 ### Minor Changes

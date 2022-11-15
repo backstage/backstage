@@ -1,5 +1,36 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.8.0-next.2
+
+### Minor Changes
+
+- 5025d2e8b6: Adds the ability to pass (an optional) array of strings that will be applied to the newly scaffolded repository as topic labels.
+
+### Patch Changes
+
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- 9ff4ff3745: Implement "Branch protection rules" support for "publish:github" action
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/backend-plugin-api@0.1.4-next.1
+  - @backstage/backend-tasks@0.3.7-next.1
+  - @backstage/plugin-auth-node@0.2.7-next.1
+  - @backstage/plugin-catalog-backend@1.5.1-next.1
+  - @backstage/plugin-catalog-node@1.2.1-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.2-next.0
+
+## 1.8.0-next.1
+
+### Minor Changes
+
+- 5921b5ce49: - The GitLab Project ID for the `publish:gitlab:merge-request` action is now passed through the query parameter `project` in the `repoUrl`. It still allows people to not use the `projectid` and use the `repoUrl` with the `owner` and `repo` query parameters instead. This makes it easier to publish to repositories instead of writing the full path to the project.
+
 ## 1.8.0-next.0
 
 ### Minor Changes

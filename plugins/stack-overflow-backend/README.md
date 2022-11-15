@@ -41,7 +41,7 @@ When you have your `packages/backend/src/plugins/search.ts` file ready to make m
 
 ```ts
 indexBuilder.addCollator({
-  defaultRefreshIntervalSeconds: 600,
+  schedule,
   factory: StackOverflowQuestionsCollatorFactory.fromConfig(env.config, {
     logger: env.logger,
     requestParams: {

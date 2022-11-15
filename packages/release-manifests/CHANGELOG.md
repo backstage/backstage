@@ -1,5 +1,11 @@
 # @backstage/release-manifests
 
+## 0.0.7-next.0
+
+### Patch Changes
+
+- a4496131fa: Added a fallback that fetches manifests from `https://raw.githubusercontent.com` if `https://versions.backstage.io` is unavailable.
+
 ## 0.0.6
 
 ### Patch Changes

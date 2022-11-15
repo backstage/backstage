@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-backend
 
+## 0.17.1-next.1
+
+### Patch Changes
+
+- 0d6837ca4e: Fix wrong GitHub callback URL documentation
+- abaed9770e: Improve logging
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/plugin-auth-node@0.2.7-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
 ## 0.17.1-next.0
 
 ### Patch Changes
