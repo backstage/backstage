@@ -2,4 +2,5 @@
 '@backstage/config': minor
 ---
 
-Replaced deprications
+Migrated deprecation by changing ./deprecatedTypes to @backstage/types
+

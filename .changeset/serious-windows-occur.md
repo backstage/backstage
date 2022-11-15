@@ -2,4 +2,4 @@
 '@backstage/backend-common': minor
 ---
 
-Cleaned up deprecations by replacing depricated functions with the prefferable new
+Migrated deprecations in database/conntectors and reading

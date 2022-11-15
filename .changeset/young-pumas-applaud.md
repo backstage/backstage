@@ -2,4 +2,4 @@
 '@backstage/core-components': minor
 ---
 
-Replaced depricated code with new prefferable code
+Migrated deprecations in core-components
