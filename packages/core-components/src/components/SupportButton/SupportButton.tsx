@@ -35,6 +35,7 @@ import { Link } from '../Link';
 
 type SupportButtonProps = {
   title?: string;
+  items?: SupportItem[];
   children?: React.ReactNode;
 };
 
@@ -82,8 +83,8 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
 };
 
 export function SupportButton(props: SupportButtonProps) {
-  const { title, children } = props;
-  const { items } = useSupportConfig();
+  const { title, items, children } = props;
+  const { items: configItems } = useSupportConfig();
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -150,10 +151,9 @@ export function SupportButton(props: SupportButtonProps) {
               {child}
             </ListItem>
           ))}
-          {items &&
-            items.map((item, i) => (
-              <SupportListItem item={item} key={`item-${i}`} />
-            ))}
+          {(items ?? configItems).map((item, i) => (
+            <SupportListItem item={item} key={`item-${i}`} />
+          ))}
         </List>
         <DialogActions>
           <Button color="primary" onClick={popoverCloseHandler}>
