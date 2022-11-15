@@ -264,12 +264,12 @@ To set up a custom `ScmAuthApi` implementation, you'll will need to complete the
 
 1.  Create an additional `xxxAuthApiRef` which can be defined either inside the app itself if it's only used for this purpose, or inside an internal common package for APIs, such as `@internal/apis`:
 
-  ```ts
-  const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
-    createApiRef({
-      id: 'internal.auth.ghe',
-    });
-  ```
+```ts
+const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
+  createApiRef({
+    id: 'internal.auth.ghe',
+  });
+```
 
 2.  Add an API factory entry to `packages/app/src/apis.ts`. The following example shows an implementation that supports both public GitHub via `githubAuthApi` as well as a GitHub Enterprise installation hosted at `ghe.example.com` via `gheAuthApi`:
 
@@ -289,16 +289,16 @@ createApiFactory({
     ),
 });
 ```
-_**Warning:** You will need to remove the default `ScmAuth.createDefaultApiFactory();` with this approach.
 
-3.   Finally you also need to add and configure another GitHub provider to the `auth-backend` using the provider ID, which in this example is `ghe`:
+\_**Warning:** You will need to remove the default `ScmAuth.createDefaultApiFactory();` with this approach.
 
+3.  Finally you also need to add and configure another GitHub provider to the `auth-backend` using the provider ID, which in this example is `ghe`:
 
-  ```ts
-  import { providers } from '@backstage/plugin-auth-backend';
-  
-  // Add the following options to `createRouter` in packages/backend/src/plugins/auth.ts
-  providerFactories: {
-    ghe: providers.github.create(),
-  },
-  ```
+```ts
+import { providers } from '@backstage/plugin-auth-backend';
+
+// Add the following options to `createRouter` in packages/backend/src/plugins/auth.ts
+providerFactories: {
+  ghe: providers.github.create(),
+},
+```
