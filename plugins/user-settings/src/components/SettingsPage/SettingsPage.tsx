@@ -18,25 +18,36 @@ import React from 'react';
 import { DefaultSettingsPage } from '../DefaultSettingsPage';
 import { useElementFilter } from '@backstage/core-plugin-api';
 import {
-  USER_SETTINGS_TAB_KEY,
-  UserSettingsTabProps,
-} from '../UserSettingsTab';
+  SettingsLayoutProps,
+  SettingsLayoutRouteProps,
+} from '../SettingsLayout';
+import {
+  LAYOUT_DATA_KEY,
+  LAYOUT_ROUTE_DATA_KEY,
+} from '../SettingsLayout/SettingsLayout';
 
 /** @public */
 export const SettingsPage = (props: { providerSettings?: JSX.Element }) => {
   const { providerSettings } = props;
   const outlet = useOutlet();
+  const layout = useElementFilter(outlet, elements =>
+    elements
+      .selectByComponentData({
+        key: LAYOUT_DATA_KEY,
+      })
+      .getElements<SettingsLayoutProps>(),
+  );
   const tabs = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({
-        key: USER_SETTINGS_TAB_KEY,
+        key: LAYOUT_ROUTE_DATA_KEY,
       })
-      .getElements<UserSettingsTabProps>(),
+      .getElements<SettingsLayoutRouteProps>(),
   );
 
   return (
     <>
-      {(tabs.length === 0 && outlet) || (
+      {(layout.length !== 0 && layout) || (
         <DefaultSettingsPage tabs={tabs} providerSettings={providerSettings} />
       )}
     </>

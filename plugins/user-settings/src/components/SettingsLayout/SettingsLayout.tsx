@@ -35,10 +35,11 @@ export type SettingsLayoutRouteProps = {
   tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
 
-const dataKey = 'plugin.user-settings.settingsLayoutRoute';
+export const LAYOUT_ROUTE_DATA_KEY = 'plugin.user-settings.settingsLayoutRoute';
+export const LAYOUT_DATA_KEY = 'plugin.user-settings.settingsLayout';
 
 const Route: (props: SettingsLayoutRouteProps) => null = () => null;
-attachComponentData(Route, dataKey, true);
+attachComponentData(Route, LAYOUT_ROUTE_DATA_KEY, true);
 
 // This causes all mount points that are discovered within this route to use the path of the route itself
 attachComponentData(Route, 'core.gatherMountPoints', true);
@@ -60,7 +61,7 @@ export const SettingsLayout = (props: SettingsLayoutProps) => {
   const routes = useElementFilter(children, elements =>
     elements
       .selectByComponentData({
-        key: dataKey,
+        key: LAYOUT_ROUTE_DATA_KEY,
         withStrictError:
           'Child of SettingsLayout must be an SettingsLayout.Route',
       })
@@ -75,5 +76,7 @@ export const SettingsLayout = (props: SettingsLayoutProps) => {
     </Page>
   );
 };
+
+attachComponentData(SettingsLayout, LAYOUT_DATA_KEY, true);
 
 SettingsLayout.Route = Route;

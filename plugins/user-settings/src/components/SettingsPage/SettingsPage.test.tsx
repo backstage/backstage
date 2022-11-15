@@ -17,7 +17,6 @@
 import React from 'react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { SettingsPage } from './SettingsPage';
-import { UserSettingsTab } from '../UserSettingsTab';
 import { useOutlet } from 'react-router';
 import { SettingsLayout } from '../SettingsLayout';
 
@@ -42,9 +41,9 @@ describe('<SettingsPage />', () => {
 
   it('should render the default settings page with 4 tabs when extra tabs are provided', async () => {
     const advancedTabRoute = (
-      <UserSettingsTab path="/advanced" title="Advanced">
+      <SettingsLayout.Route path="/advanced" title="Advanced">
         <div>Advanced settings</div>
-      </UserSettingsTab>
+      </SettingsLayout.Route>
     );
     (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderWithEffects(
