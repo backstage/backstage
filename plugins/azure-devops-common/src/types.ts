@@ -293,6 +293,10 @@ export enum PolicyTypeId {
    * This policy ensures that pull requests use a consistent merge strategy.
    */
   MergeStrategy = 'fa4e907d-c16b-4a4c-9dfa-4916e5d171ab',
+  /**
+   * This policy ensures that pull requests have work items linked to it.
+   */
+  WorkItem = '40e92b44-2fe1-4dd6-b3d8-74a9c21d0c6e',
 }
 
 /** @public */
