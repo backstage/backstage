@@ -157,12 +157,6 @@ export class KubernetesProxy {
     } else if (details.caData) {
       const ca = bufferFromFileOrString('', details.caData)?.toString() || '';
       reqData.agent = new https.Agent({ ca });
-    } else {
-      this.logger.error('could not find CA certificate!');
-
-      throw new InputError(
-        'Invalid CA certificate configured within Backstage',
-      );
     }
 
     if (body && Object.keys(body).length > 0) {
