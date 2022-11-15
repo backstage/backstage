@@ -178,6 +178,17 @@ costInsights:
       name: Metric C
 ```
 
+### Base Currency (Optional)
+
+In the case you would like to show your baseline costs on the graph on other currency than US dollars.  
+
+```yaml
+## ./app-config.yaml
+costInsights:
+  engineerCost: 200000
+  baseCurrency: EUR
+```
+
 ### Currencies (Optional)
 
 In the `Cost Overview` panel, users can choose from a dropdown of currencies to see costs in, such as Engineers or USD. Currencies must be defined as keys on the `currencies` field. A user-friendly label and unit are **required**. If not set, the `defaultCurrencies` in `currency.ts` will be used.
