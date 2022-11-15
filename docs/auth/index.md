@@ -260,7 +260,18 @@ Passport-supported authentication method.
 
 If you are using any custom authentication providers, like for example one for GitHub Enterprise, then you are likely to need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed, and is used for example by the Scaffolder (Software Templates) and Catalog Import plugins.
 
-To set up a custom `ScmAuthApi` implementation, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The following example shows an implementation that supports both public GitHub via `githubAuthApi` as well as a GitHub Enterprise installation hosted at `ghe.example.com` via `gheAuthApi`:
+To set up a custom `ScmAuthApi` implementation, you'll will need to complete the following steps which creates an example entry for a github enterprise installation:
+
+1.  Create an additional `xxxAuthApiRef` which can be defined either inside the app itself if it's only used for this purpose, or inside an internal common package for APIs, such as `@internal/apis`:
+
+  ```ts
+  const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
+    createApiRef({
+      id: 'internal.auth.ghe',
+    });
+  ```
+
+2.  Add an API factory entry to `packages/app/src/apis.ts`. The following example shows an implementation that supports both public GitHub via `githubAuthApi` as well as a GitHub Enterprise installation hosted at `ghe.example.com` via `gheAuthApi`:
 
 ```ts
 createApiFactory({
@@ -278,3 +289,16 @@ createApiFactory({
     ),
 });
 ```
+_**Warning:** You will need to remove the default `ScmAuth.createDefaultApiFactory();` with this approach.
+
+3.   Finally you also need to add and configure another GitHub provider to the `auth-backend` using the provider ID, which in this example is `ghe`:
+
+
+  ```ts
+  import { providers } from '@backstage/plugin-auth-backend';
+  
+  // Add the following options to `createRouter` in packages/backend/src/plugins/auth.ts
+  providerFactories: {
+    ghe: providers.github.create(),
+  },
+  ```
