@@ -116,23 +116,11 @@ export class KubernetesProxy {
     return clusterDetail as ClusterDetails;
   }
 
-  private getClusterURI(details: ClusterDetails): string {
-    const serverURI = this.getKubeConfig(details)?.getCurrentCluster()?.server;
-
-    if (!serverURI) {
-      this.logger.error(`Cluster ${details.name} details IP error`);
-
-      throw new ConflictError('Cluster detail error');
-    }
-
-    return serverURI;
-  }
-
   private async makeRequestToCluster(
     details: ClusterDetails,
     req: ExpressRequest,
   ): Promise<Response> {
-    const serverURI = this.getClusterURI(details);
+    const serverURI = details.url;
 
     const path = decodeURIComponent(req.params.path) || '';
     const uri = `${serverURI}/${path}`;
