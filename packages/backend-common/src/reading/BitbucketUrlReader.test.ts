@@ -16,8 +16,8 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
-  BitbucketCloudIntegration,
-  readBitbucketCloudIntegrationConfig
+  BitbucketIntegration,
+  readBitbucketIntegrationConfig,
 } from '@backstage/integration';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -27,14 +27,14 @@ import { setupServer } from 'msw/node';
 import os from 'os';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
-import { BitbucketCloudUrlReader } from './BitbucketCloudUrlReader';
+import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { getVoidLogger } from '../logging';
 import getRawBody from 'raw-body';
 
 const logger = getVoidLogger();
 
-describe('BitbucketCloudUrlReader.factory', () => {
+describe('BitbucketUrlReader.factory', () => {
   it('only apply integration configs not inherited from bitbucketCloud or bitbucketServer', () => {
     const config = new ConfigReader({
       integrations: {
@@ -57,7 +57,7 @@ describe('BitbucketCloudUrlReader.factory', () => {
       config: config,
     });
 
-    const tuples = BitbucketCloudUrlReader.factory({
+    const tuples = BitbucketUrlReader.factory({
       config,
       logger,
       treeResponseFactory,
@@ -67,32 +67,34 @@ describe('BitbucketCloudUrlReader.factory', () => {
   });
 });
 
-describe('BitbucketCloudUrlReader', () => {
+describe('BitbucketUrlReader', () => {
   const treeResponseFactory = DefaultReadTreeResponseFactory.create({
     config: new ConfigReader({}),
   });
 
-  const bitbucketProcessor = new BitbucketCloudUrlReader(
-    new BitbucketCloudIntegration(
-      readBitbucketCloudIntegrationConfig(
+  const bitbucketProcessor = new BitbucketUrlReader(
+    new BitbucketIntegration(
+      readBitbucketIntegrationConfig(
         new ConfigReader({
           host: 'bitbucket.org',
           apiBaseUrl: 'https://api.bitbucket.org/2.0',
         }),
       ),
     ),
+    logger,
     { treeResponseFactory },
   );
 
-  const hostedBitbucketProcessor = new BitbucketCloudUrlReader(
-    new BitbucketCloudIntegration(
-      readBitbucketCloudIntegrationConfig(
+  const hostedBitbucketProcessor = new BitbucketUrlReader(
+    new BitbucketIntegration(
+      readBitbucketIntegrationConfig(
         new ConfigReader({
           host: 'bitbucket.mycompany.net',
           apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
         }),
       ),
     ),
+    logger,
     { treeResponseFactory },
   );
 
@@ -207,7 +209,7 @@ describe('BitbucketCloudUrlReader', () => {
   describe('read', () => {
     it('rejects unknown targets', async () => {
       await expect(
-        bitbucketProcessor.readUrl('https://not.bitbucket.com/apa'),
+        bitbucketProcessor.read('https://not.bitbucket.com/apa'),
       ).rejects.toThrow(
         'Incorrect URL: https://not.bitbucket.com/apa, Error: Invalid Bitbucket URL or file path',
       );

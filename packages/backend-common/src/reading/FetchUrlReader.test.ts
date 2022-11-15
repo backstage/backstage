@@ -24,7 +24,6 @@ import { FetchUrlReader } from './FetchUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import getRawBody from 'raw-body';
 
-
 const fetchUrlReader = new FetchUrlReader();
 
 describe('FetchUrlReader', () => {
