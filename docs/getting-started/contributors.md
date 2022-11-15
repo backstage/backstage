@@ -101,7 +101,8 @@ yarn workspace @backstage/plugin-api-docs start # Serve api-docs plugin only, al
 yarn tsc # Run typecheck, use --watch for watch mode
 yarn tsc:full # Run full type checking, for example without skipLibCheck, use in CI
 
-yarn build # Build published versions of packages, depends on tsc
+yarn build:backend # Build the backend package, depends on tsc
+yarn build:all # Build published versions of packages, depends on tsc
 
 yarn lint # lint packages that have changed since later commit on origin/master
 yarn lint:all # lint all packages
