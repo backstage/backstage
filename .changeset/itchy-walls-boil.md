@@ -2,4 +2,4 @@
 '@backstage/plugin-user-settings': minor
 ---
 
-Deprecated UserSettingsTab in favour of SettingsLayout.Route
+Added the ability to fully customize settings page. Deprecated UserSettingsTab in favour of SettingsLayout.Route
