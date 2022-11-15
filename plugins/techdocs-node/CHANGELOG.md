@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-node
 
+## 1.4.2
+
+### Patch Changes
+
+- a7607b5413: Replace usage of deprecataed `UrlReader.read` with `UrlReader.readUrl`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/integration@1.4.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/plugin-search-common@1.1.1
+
 ## 1.4.2-next.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-vault-backend
 
+## 0.2.4
+
+### Patch Changes
+
+- 687237da4c: Added `errorHandler()` middleware to `router` to prevent crashes caused by fatal errors in plugin backend
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/backend-test-utils@0.1.30
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
 ## 0.2.4-next.1
 
 ### Patch Changes

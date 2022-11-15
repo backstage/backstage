@@ -1,5 +1,45 @@
 # @backstage/cli
 
+## 0.21.0
+
+### Minor Changes
+
+- 7539b36748: Added a new ESLint rule that restricts imports of Link from @material-ui
+
+  The rule can be can be overridden in the following way:
+
+  ```diff
+  module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
+  +  restrictedImports: [
+  +    { name: '@material-ui/core', importNames: [] },
+  +    { name: '@material-ui/core/Link', importNames: [] },
+  +  ],
+  });
+  ```
+
+- 384eaa2307: Switched `tsconfig.json` to target and support `ES2021`, in line with the bump to Node.js 16 & 18.
+
+### Patch Changes
+
+- e52d6ad861: Updated the `backstage-cli` so that the `list-deprecations` command is visible and also removed the "[EXPERIMENTAL]" tag.
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- df21bbd4ad: Removed googleAnalyticsTrackingId configSchema.
+- 286d474675: Minor update to the `index.html` template that updates the comment at the end to be more accurate.
+- 4c16213e7d: The built-in Jest configuration now always uses the Jest environments that are bundled with the CLI by default. This avoids a situation where Jest potentially picks up an incompatible version of the environment package from a different dependency in the project.
+- 4091c73e68: Updated `@swc/core` to version 1.3.9 which fixes a `.tsx` parser bug
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- 9c767e8f45: Updated dependency `@svgr/plugin-jsx` to `6.5.x`.
+  Updated dependency `@svgr/plugin-svgo` to `6.5.x`.
+  Updated dependency `@svgr/rollup` to `6.5.x`.
+  Updated dependency `@svgr/webpack` to `6.5.x`.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.7
+  - @backstage/types@1.0.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4
+  - @backstage/config-loader@1.1.6
+  - @backstage/errors@1.1.3
+
 ## 0.21.0-next.1
 
 ### Minor Changes

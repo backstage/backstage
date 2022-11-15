@@ -1,5 +1,19 @@
 # @backstage/plugin-jenkins
 
+## 0.7.10
+
+### Patch Changes
+
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/errors@1.1.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-jenkins-common@0.1.10
+
 ## 0.7.10-next.1
 
 ### Patch Changes

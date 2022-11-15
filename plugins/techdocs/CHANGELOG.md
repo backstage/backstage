@@ -1,5 +1,57 @@
 # @backstage/plugin-techdocs
 
+## 1.4.0
+
+### Minor Changes
+
+- 5691baea69: Add ability to configure filters when using EntityListDocsGrid
+
+  The following example will render two sections of cards grid:
+
+  - One section for documentations tagged as `recommended`
+  - One section for documentations tagged as `runbook`
+
+  ```js
+  <EntityListDocsGrid groups={{[
+    {
+      title: "Recommended Documentation",
+      filterPredicate: entity =>
+        entity?.metadata?.tags?.includes('recommended') ?? false,
+    },
+    {
+      title: "RunBooks Documentation",
+      filterPredicate: entity =>
+        entity?.metadata?.tags?.includes('runbook') ?? false,
+    }
+  ]}} />
+  ```
+
+- 63705e73d9: Hide document description if not provided
+- 847fc588a6: Updated TechDocs header to include label for source code icon and updated label to reflect Kind name
+
+### Patch Changes
+
+- 9e4d8e6198: Fix logic bug that broke techdocs-cli-embedded-app
+- e92aa15f01: Bumped `canvas` dependency to the latest version, which has better Node.js v18 support.
+- cbe11d1e23: Tweak README
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- 3a1a999b7b: Include query parameters when navigating to relative links in documents
+- bd2aab4726: An analytics event matching the semantics of the `click` action is now captured when users click links within a TechDocs document.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/integration@1.4.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-techdocs-react@1.0.6
+  - @backstage/integration-react@1.1.6
+  - @backstage/plugin-search-react@1.2.1
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.1.1
+
 ## 1.4.0-next.2
 
 ### Patch Changes
