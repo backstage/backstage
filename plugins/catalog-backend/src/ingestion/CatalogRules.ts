@@ -33,7 +33,7 @@ export type CatalogRule = {
     type: string;
   }>;
   sources?: Array<{
-    source: string
+    source: string;
   }>;
 };
 
