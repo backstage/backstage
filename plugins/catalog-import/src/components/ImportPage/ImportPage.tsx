@@ -23,8 +23,8 @@ import { DefaultImportPage } from '../DefaultImportPage';
  *
  * @public
  */
-export const ImportPage = ({ filters=[] }) => {
+export const ImportPage = () => {
   const outlet = useOutlet();
 
-  return outlet || <DefaultImportPage filters={filters} />;
+  return outlet || <DefaultImportPage />;
 };

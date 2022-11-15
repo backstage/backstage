@@ -27,7 +27,6 @@ import React from 'react';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';
 
-
 /**
  * The default catalog import page.
  *
