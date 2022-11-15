@@ -7830,6 +7830,7 @@ __metadata:
     mock-fs: ^5.1.0
     morgan: ^1.10.0
     msw: ^0.48.0
+    node-abort-controller: ^3.0.1
     node-fetch: ^2.6.7
     nunjucks: ^3.2.3
     octokit: ^2.0.0
