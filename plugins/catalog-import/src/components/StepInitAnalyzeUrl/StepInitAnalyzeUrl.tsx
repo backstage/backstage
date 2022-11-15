@@ -114,8 +114,8 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
 
           default: {
             const err = `Received unknown analysis result of type ${
-               (analysisResult as any).type
-            }. Please contact the support team.`
+              (analysisResult as any).type
+            }. Please contact the support team.`;
             setError(err);
             setSubmitted(false);
 
