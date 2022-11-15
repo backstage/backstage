@@ -17,8 +17,11 @@
 import React from 'react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { SettingsPage } from './SettingsPage';
+import { UserSettingsTab } from '../UserSettingsTab';
 import { useOutlet } from 'react-router';
 import { SettingsLayout } from '../SettingsLayout';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
@@ -39,7 +42,23 @@ describe('<SettingsPage />', () => {
     expect(tabs).toHaveLength(3);
   });
 
-  it('should render the default settings page with 4 tabs when extra tabs are provided', async () => {
+  it('should render the default settings page with 4 tabs when extra tabs are provided via UserSettingsTab', async () => {
+    const advancedTabRoute = (
+      <UserSettingsTab path="/advanced" title="Advanced">
+        <div>Advanced settings</div>
+      </UserSettingsTab>
+    );
+    (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
+    const { container } = await renderWithEffects(
+      wrapInTestApp(<SettingsPage />),
+    );
+
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    expect(tabs).toHaveLength(4);
+    expect(tabs[3].textContent).toEqual('Advanced');
+  });
+
+  it('should render the default settings page with 4 tabs when extra tabs are provided via SettingsLayout.Route', async () => {
     const advancedTabRoute = (
       <SettingsLayout.Route path="/advanced" title="Advanced">
         <div>Advanced settings</div>
@@ -53,6 +72,10 @@ describe('<SettingsPage />', () => {
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
+    const user = userEvent.setup();
+    await user.click(screen.getByText(/Advanced/i));
+    const content = container.querySelectorAll('article');
+    expect(content[0].textContent).toEqual('Advanced settings');
   });
 
   it('should render the custom settings page when custom layout is provided', async () => {
@@ -75,5 +98,9 @@ describe('<SettingsPage />', () => {
     expect(tabs).toHaveLength(2);
     expect(tabs[0].textContent).toEqual('General');
     expect(tabs[1].textContent).toEqual('Advanced');
+    const user = userEvent.setup();
+    await user.click(screen.getByText(/Advanced/i));
+    const content = container.querySelectorAll('article');
+    expect(content[0].textContent).toEqual('Advanced settings');
   });
 });

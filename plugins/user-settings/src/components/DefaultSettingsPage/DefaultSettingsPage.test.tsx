@@ -17,6 +17,7 @@
 import React from 'react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { DefaultSettingsPage } from './DefaultSettingsPage';
+import { UserSettingsTab } from '../UserSettingsTab';
 import { useOutlet } from 'react-router';
 import { SettingsLayout } from '../SettingsLayout';
 
@@ -39,7 +40,22 @@ describe('<DefaultSettingsPage />', () => {
     expect(tabs).toHaveLength(3);
   });
 
-  it('should render the settings page with 4 tabs when extra tabs are provided', async () => {
+  it('should render the settings page with 4 tabs when extra tabs are provided via UserSettingsTab', async () => {
+    const advancedTabRoute = (
+      <UserSettingsTab path="/advanced" title="Advanced">
+        <div>Advanced settings</div>
+      </UserSettingsTab>
+    );
+    const { container } = await renderWithEffects(
+      wrapInTestApp(<DefaultSettingsPage tabs={[advancedTabRoute]} />),
+    );
+
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    expect(tabs).toHaveLength(4);
+    expect(tabs[3].textContent).toEqual('Advanced');
+  });
+
+  it('should render the settings page with 4 tabs when extra tabs are provided via SettingsLayout.Route', async () => {
     const advancedTabRoute = (
       <SettingsLayout.Route path="/advanced" title="Advanced">
         <div>Advanced settings</div>

@@ -35,8 +35,8 @@ export type SettingsLayoutRouteProps = {
   tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
 
-export const LAYOUT_ROUTE_DATA_KEY = 'plugin.user-settings.settingsLayoutRoute';
 export const LAYOUT_DATA_KEY = 'plugin.user-settings.settingsLayout';
+export const LAYOUT_ROUTE_DATA_KEY = 'plugin.user-settings.settingsLayoutRoute';
 
 const Route: (props: SettingsLayoutRouteProps) => null = () => null;
 attachComponentData(Route, LAYOUT_ROUTE_DATA_KEY, true);

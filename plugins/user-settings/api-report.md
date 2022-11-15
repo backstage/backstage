@@ -17,6 +17,7 @@ import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -68,6 +69,9 @@ export type SettingsLayoutRouteProps = {
     }
   >;
 };
+
+// @public @deprecated (undocumented)
+export const USER_SETTINGS_TAB_KEY = 'plugin.user-settings.settingsLayoutRoute';
 
 // @public (undocumented)
 export const UserSettingsAppearanceCard: () => JSX.Element;
@@ -139,6 +143,15 @@ export class UserSettingsStorage implements StorageApi {
   // (undocumented)
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
+
+// @public @deprecated
+export const UserSettingsTab: (props: UserSettingsTabProps) => JSX.Element;
+
+// @public @deprecated (undocumented)
+export type UserSettingsTabProps = PropsWithChildren<{
+  path: string;
+  title: string;
+}>;
 
 // @public (undocumented)
 export const UserSettingsThemeToggle: () => JSX.Element;
