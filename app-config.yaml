@@ -218,9 +218,6 @@ catalog:
         - System
         - Domain
         - Location
-    - owners:
-        - Spotify
-        - Backstage
 
   processors:
     ldapOrg:

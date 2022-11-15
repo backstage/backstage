@@ -32,8 +32,8 @@ export type CatalogRule = {
     target?: string;
     type: string;
   }>;
-  owners?: Array<{
-    owner: string
+  sources?: Array<{
+    source: string
   }>;
 };
 
@@ -58,6 +58,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
   static readonly defaultRules: CatalogRule[] = [
     {
       allow: ['Component', 'API', 'Location'].map(kind => ({ kind })),
+      sources: [],
     },
   ];
 
@@ -97,7 +98,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     if (config.has('catalog.rules')) {
       const globalRules = config.getConfigArray('catalog.rules').map(sub => ({
         allow: sub.getStringArray('allow').map(kind => ({ kind })),
-        owners: sub.getStringArray('owners').map(kind => ({ kind })),
+        sources: sub.getStringArray('sources').map(source => ({ source })),
       }));
       rules.push(...globalRules);
     } else {
@@ -138,7 +139,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
         continue;
       }
 
-      if (!this.matchOwners(entity, rule.owners)) {
+      if (!this.matchSources(location, rule.sources)) {
         return false;
       }
 
@@ -187,15 +188,15 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     return false;
   }
 
-  private matchOwners(entity: Entity, matchers?: { owner: string }[]): boolean {
-    if (!matchers) {
+  private matchSources(location: LocationSpec, matchers?: { source: string }[]): boolean {
+    if (!matchers || matchers.length === 0) {
       return true;
     }
 
-    const filteredRegex = new RegExp(`^http[s]?://${`(?:${matchers.map((filter, i) => i === 0 ? filter.owner : `|${filter.owner}`)})`}`);
+    const filteredRegex = new RegExp(`^http[s]?://${`(?:${matchers.map((filter, i) => i === 0 ? filter.source : `|${filter.source}`)})`}`);
 
-    if ( entity?.metadata.links && entity?.metadata?.links?.length > 0) {
-      return filteredRegex.test(entity?.metadata?.links[0].url);
+    if ( location.target && location.target.length > 0) {
+      return filteredRegex.test(location.target);
     } 
     return false;
   }

@@ -264,7 +264,7 @@ export function defaultGenerateStepper(
 }
 
 export const defaultStepper: StepperProvider = {
-  analyze: (state, { apis }, filters=[]) => ({
+  analyze: (state, { apis }) => ({
     stepLabel: <StepLabel>Select URL</StepLabel>,
     content: (
       <StepInitAnalyzeUrl
@@ -272,7 +272,6 @@ export const defaultStepper: StepperProvider = {
         analysisUrl={state.analysisUrl}
         onAnalysis={state.onAnalysis}
         disablePullRequest={!apis.catalogImportApi.preparePullRequest}
-        filters={filters}
       />
     ),
   }),

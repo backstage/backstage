@@ -59,7 +59,6 @@ export const ImportStepper = (props: ImportStepperProps) => {
     initialUrl,
     generateStepper = defaultGenerateStepper,
     variant,
-    filters = [],
   } = props;
 
   const catalogImportApi = useApi(catalogImportApiRef);
@@ -91,7 +90,6 @@ export const ImportStepper = (props: ImportStepperProps) => {
           states.analyze(
             state as Extract<ImportState, { activeState: 'analyze' }>,
             { apis: { catalogImportApi } }, 
-            filters,
           ),
         )}
         {render(

@@ -59,7 +59,6 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
     analysisUrl = '',
     disablePullRequest = false,
     exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
-    filters = [],
   } = props;
 
   const errorApi = useApi(errorApiRef);
@@ -79,8 +78,6 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
-
-  const filteredRegex = new RegExp(`^http[s]?://${filters ? `[${filters.map((filter, i) => i === 0 ? filter : `|${filter}`)}]` : ''}`)
 
   const handleResult = useCallback(
     async ({ url }: FormData) => {
@@ -143,7 +140,7 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
             validate: {
               httpsValidator: (value: any) =>
                 (typeof value === 'string' &&
-                  value.match(filteredRegex) !== null) ||
+                  value.match(/^http[s]?:\/\//) !== null) ||
                 'Must start with http:// or https://.',
             },
           }),
