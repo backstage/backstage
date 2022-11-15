@@ -158,38 +158,3 @@ export class KubernetesProxy {
     }
   }
 
-  private getKubeConfig(clusterDetails: ClusterDetails): KubeConfig {
-    const cluster = {
-      name: clusterDetails.name,
-      server: clusterDetails.url,
-      skipTLSVerify: clusterDetails.skipTLSVerify,
-      caData: clusterDetails.caData,
-    };
-
-    const user = {
-      name: CLUSTER_USER_NAME,
-      token: clusterDetails.serviceAccountToken,
-    };
-
-    const context = {
-      name: clusterDetails.name,
-      user: user.name,
-      cluster: cluster.name,
-    };
-
-    const kubeConfig = new KubeConfig();
-
-    if (clusterDetails.serviceAccountToken) {
-      kubeConfig.loadFromOptions({
-        clusters: [cluster],
-        users: [user],
-        contexts: [context],
-        currentContext: context.name,
-      });
-    } else {
-      kubeConfig.loadFromDefault();
-    }
-
-    return kubeConfig;
-  }
-}
