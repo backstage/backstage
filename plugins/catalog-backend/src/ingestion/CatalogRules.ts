@@ -127,7 +127,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     return new DefaultCatalogRulesEnforcer(rules);
   }
 
-  constructor(private readonly rules: CatalogRule[]) { }
+  constructor(private readonly rules: CatalogRule[]) {}
 
   /**
    * Checks whether a specific entity/location combination is allowed
