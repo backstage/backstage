@@ -265,6 +265,7 @@ export enum PolicyType {
   Comments = 'Comments',
   RequiredReviewers = 'RequiredReviewers',
   MergeStrategy = 'MergeStrategy',
+  WorkItem = 'WorkItem',
 }
 
 /** @public */
