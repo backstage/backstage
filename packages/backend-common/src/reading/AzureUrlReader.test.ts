@@ -32,7 +32,6 @@ import { AzureUrlReader } from './AzureUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import getRawBody from 'raw-body';
 
-
 const logger = getVoidLogger();
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
