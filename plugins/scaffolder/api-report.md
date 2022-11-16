@@ -11,6 +11,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import type { ErrorTransformer } from '@rjsf/utils';
 import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
@@ -213,6 +214,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React_2.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
+  transformErrors?: ErrorTransformer;
 };
 
 // @alpha
