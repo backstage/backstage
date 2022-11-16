@@ -1,5 +1,17 @@
 # @backstage/plugin-bitrise
 
+## 0.1.38
+
+### Patch Changes
+
+- 43afded227: Updated recharts to v2.0.0 and fixed typing issues
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/theme@0.2.16
+
 ## 0.1.38-next.1
 
 ### Patch Changes

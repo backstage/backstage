@@ -48,7 +48,7 @@ of GitHub and run an initial install.
 
 ```bash
 # Start from your local development folder
-git clone --depth 1 git@github.com:backstage/backstage.git
+git clone --depth 1 https://github.com/backstage/backstage.git
 cd backstage
 
 # Install our dependencies

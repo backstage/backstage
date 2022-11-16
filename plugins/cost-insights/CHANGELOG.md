@@ -1,5 +1,25 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.0
+
+### Minor Changes
+
+- 43afded227: Updated recharts to v2.0.0 and fixed typing issues
+
+### Patch Changes
+
+- e92aa15f01: Bumped `canvas` dependency to the latest version, which has better Node.js v18 support.
+- cbe11d1e23: Tweak README
+- 745e0e2228: Added support for displaying entity cost insights by implementing the new `getCatalogEntityDailyCost` that's part of the `CostInsightsApi`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/config@1.0.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.12.0-next.1
 
 ### Patch Changes

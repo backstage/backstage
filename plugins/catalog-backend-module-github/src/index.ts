@@ -26,10 +26,8 @@ export { GithubDiscoveryProcessor } from './processors/GithubDiscoveryProcessor'
 export { GithubMultiOrgReaderProcessor } from './processors/GithubMultiOrgReaderProcessor';
 export { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
 export { GithubEntityProvider } from './providers/GithubEntityProvider';
-export type {
-  GithubOrgEntityProvider,
-  GithubOrgEntityProviderOptions,
-} from './providers/GithubOrgEntityProvider';
+export { GithubOrgEntityProvider } from './providers/GithubOrgEntityProvider';
+export type { GithubOrgEntityProviderOptions } from './providers/GithubOrgEntityProvider';
 export { githubEntityProviderCatalogModule } from './service/GithubEntityProviderCatalogModule';
 export {
   type GithubMultiOrgConfig,

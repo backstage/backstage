@@ -1,5 +1,14 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.4
+
+### Patch Changes
+
+- 989731cabf: 1. Added a new column in the table to quickly view the latest DAG runs, plus a link to it if you want to have a deeper look. 2. Table columns are togglable 3. Set hidden columns 4. Fixed bug with turning on/off the DAGs
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+
 ## 0.2.4-next.1
 
 ### Patch Changes

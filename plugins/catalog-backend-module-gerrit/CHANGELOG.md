@@ -1,5 +1,35 @@
 # @backstage/plugin-catalog-backend-module-gerrit
 
+## 0.1.6
+
+### Patch Changes
+
+- 4fba50f5d4: Add `gerritEntityProviderCatalogModule` (new backend-plugin-api, alpha).
+- 4c9f7847e4: Updated dependency `msw` to `^0.48.0` while moving it to be a dev dependency.
+- 134b69f478: `GerritEntityProvider`: Add option to configure schedule via `app-config.yaml` instead of in code.
+
+  Please find how to configure the schedule at the config at
+  https://backstage.io/docs/integrations/gerrit/discovery
+
+- a6d779d58a: Remove explicit default visibility at `config.d.ts` files.
+
+  ```ts
+  /**
+   * @visibility backend
+   */
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-catalog-backend@1.5.1
+  - @backstage/integration@1.4.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
 ## 0.1.6-next.1
 
 ### Patch Changes

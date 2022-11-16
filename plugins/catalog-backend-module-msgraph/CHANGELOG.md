@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.4.4
+
+### Patch Changes
+
+- 0e37858f22: Added cause information to logged warnings
+- 8d1a5e08ca: `MicrosoftGraphOrgEntityProvider`: Add option to configure schedule via `app-config.yaml` instead of in code.
+
+  Please find how to configure the schedule at the config at
+  https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-msgraph#readme
+
+- 384f99c276: Add `microsoftGraphOrgEntityProviderCatalogModule` (new backend-plugin-api, alpha).
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.5.1
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/config@1.0.4
+
 ## 0.4.4-next.1
 
 ### Patch Changes
