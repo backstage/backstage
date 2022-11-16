@@ -33,7 +33,8 @@
     "build-storybook": "yarn ./storybook run build-storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postinstall": "husky install"
   },
   "workspaces": {
     "packages": [
@@ -94,8 +95,11 @@
     "*.md": [
       "node ./scripts/check-docs-quality"
     ],
-    "yarn.lock": [
-      "node ./scripts/verify-lockfile-duplicates"
+    "./yarn.lock": [
+      "node ./scripts/verify-lockfile-duplicates --fix"
+    ],
+    "*/yarn.lock": [
+      "node ./scripts/verify-lockfile-duplicates --fix"
     ]
   },
   "packageManager": "yarn@3.2.3"
