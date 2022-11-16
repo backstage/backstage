@@ -54,7 +54,7 @@ begun work on various aspects of all three phases. Looking at the
 [milestones for active issues](https://github.com/backstage/backstage/milestones)
 will also give you a sense of our progress.
 
-### My company doesn't have thousands of developers or services. Is Backstage overkill?
+### My company doesn't have thousands of developers or services. Is use of Backstage excessive?
 
 Not at all! A core reason to adopt Backstage is to standardize how software is
 built at your company. It's easier to decide on those standards as a small
