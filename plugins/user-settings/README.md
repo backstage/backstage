@@ -16,7 +16,7 @@ for installation instructions.
 
 Add the item to the Sidebar:
 
-```ts
+```tsx
 import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 
 <SidebarPage>
@@ -28,7 +28,7 @@ import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 
 Add the page to the App routing:
 
-```ts
+```tsx
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 
 const AppRoutes = () => (
@@ -46,7 +46,7 @@ By default, the plugin provides a list of configured authentication providers fe
 
 If you want to supply your own custom list of Authentication Providers, use the `providerSettings` prop:
 
-```ts
+```tsx
 const MyAuthProviders = () => (
   <ListItem>
     <ListItemText primary="example" />
@@ -71,20 +71,20 @@ const AppRoutes = () => (
 By default, the plugin renders 3 tabs of settings; GENERAL, AUTHENTICATION PROVIDERS, and FEATURE FLAGS.
 
 If you want to add more options for your users,
-just pass the extra tabs using `UserSettingsTab` components as children of the `UserSettingsPage` route.
+just pass the extra tabs using `SettingsLayout.Route` components as children of the `UserSettingsPage` route.
 The path is in this case a child of the settings path,
 in the example below it would be `/settings/advanced` so that you can easily link to it.
 
 ```tsx
 import {
+  SettingsLayout,
   UserSettingsPage,
-  UserSettingsTab,
 } from '@backstage/plugin-user-settings';
 
 <Route path="/settings" element={<UserSettingsPage />}>
-  <UserSettingsTab path="/advanced" title="Advanced">
+  <SettingsLayout.Route path="/advanced" title="Advanced">
     <AdvancedSettings />
-  </UserSettingsTab>
+  </SettingsLayout.Route>
 </Route>;
 ```
 
@@ -93,3 +93,40 @@ make sure you use a similar component structure as the other tabs.
 You can take a look at
 [the example extra tab](https://github.com/backstage/backstage/blob/master/packages/app/src/components/advancedSettings/AdvancedSettings.tsx)
 we have created in Backstage's demo app.
+
+To change the layout altogether, create a custom page in `packages/app/src/components/user-settings/SettingsPage.tsx`:
+
+```tsx
+import React from 'react';
+import {
+  SettingsLayout,
+  UserSettingsGeneral,
+} from '@backstage/plugin-user-settings';
+import { AdvancedSettings } from './advancedSettings';
+
+export const settingsPage = (
+  <SettingsLayout>
+    <SettingsLayout.Route path="general" title="General">
+      <UserSettingsGeneral />
+    </SettingsLayout.Route>
+    <SettingsLayout.Route path="advanced" title="Advanced">
+      <AdvancedSettings />
+    </SettingsLayout.Route>
+  </SettingsLayout>
+);
+```
+
+Now register the new settings page in `packages/app/src/App.tsx`:
+
+```diff
++ import {settingsPage} from './components/settings/settingsPage';
+
+const routes = (
+  <FlatRoutes>
+-    <Route path="/settings" element={<UserSettingsPage />} />
++    <Route path="/settings" element={<UserSettingsPage />}>
++      {settingsPage}
++    </Route>
+  </FlatRoutes>
+);
+```
