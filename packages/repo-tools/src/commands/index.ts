@@ -18,20 +18,13 @@ import { assertError } from '@backstage/errors';
 import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
 
-const configOption = [
-  '--config <path>',
-  'Config files to load instead of app-config.yaml',
-  (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
-  Array<string>(),
-] as const;
-
 export function registerCommands(program: Command) {
   program
     .command('api-reports [path...]')
-    .option('--ci', 'Do not require environment variables to be set')
-    .option('--tsc', 'Only validate the frontend configuration')
-    .option('--docs', 'Output deprecated configuration settings')
-    .description('Generate an API report for changed packages')
+    .option('--ci', 'CI run checks that there is no changes on API reports')
+    .option('--tsc', 'executes the tsc compilation before extracting the APIs')
+    .option('--docs', 'generates the api documentation')
+    .description('Generate an API report for selected packages')
     .action(
       lazy(() => import('./api-reports/api-reports').then(m => m.default)),
     );

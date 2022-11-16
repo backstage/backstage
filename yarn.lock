@@ -7658,6 +7658,10 @@ __metadata:
   resolution: "@backstage/repo-tools@workspace:packages/repo-tools"
   dependencies:
     "@backstage/errors": "workspace:^"
+    "@microsoft/api-documenter": ^7.17.11
+    "@microsoft/api-extractor": ^7.23.0
+    "@microsoft/api-extractor-model": ^7.17.2
+    "@microsoft/tsdoc": 0.14.1
     chalk: ^4.0.0
     commander: ^9.1.0
     fs-extra: 10.1.0
@@ -10498,13 +10502,6 @@ __metadata:
   version: 0.14.1
   resolution: "@microsoft/tsdoc@npm:0.14.1"
   checksum: e4ad038ccff2cd96e0d53ee42e2136f0f5a925b16cfda14261f1c2eb55ba0088a0e3b08ff819b476ddc69b2242a391925fab7f6ae2afabb19b96f87e19c114fc
-  languageName: node
-  linkType: hard
-
-"@microsoft/tsdoc@npm:^0.14.1":
-  version: 0.14.2
-  resolution: "@microsoft/tsdoc@npm:0.14.2"
-  checksum: b167c89e916ba73ee20b9c9d5dba6aa3a0de25ed3d50050e8a344dca7cd43cb2e1059bd515c820369b6e708901dd3fda476a42bc643ca74a35671ce77f724a3a
   languageName: node
   linkType: hard
 
@@ -33071,10 +33068,6 @@ __metadata:
     "@backstage/repo-tools": "workspace:*"
     "@changesets/cli": ^2.14.0
     "@manypkg/get-packages": ^1.1.3
-    "@microsoft/api-documenter": ^7.17.11
-    "@microsoft/api-extractor": ^7.23.0
-    "@microsoft/api-extractor-model": ^7.17.2
-    "@microsoft/tsdoc": ^0.14.1
     "@octokit/rest": ^19.0.3
     "@spotify/prettier-config": ^14.0.0
     "@techdocs/cli": "workspace:*"

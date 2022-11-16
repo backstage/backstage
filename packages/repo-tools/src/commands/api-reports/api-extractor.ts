@@ -24,7 +24,7 @@ import {
   dirname,
   join,
 } from 'path';
-import { spawnSync, execFile } from 'child_process';
+import { execFile } from 'child_process';
 import prettier from 'prettier';
 import fs from 'fs-extra';
 import {
@@ -49,11 +49,17 @@ import {
 import { DocTable } from '@microsoft/api-documenter/lib/nodes/DocTable';
 import { DocTableRow } from '@microsoft/api-documenter/lib/nodes/DocTableRow';
 import { DocHeading } from '@microsoft/api-documenter/lib/nodes/DocHeading';
-import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
+import {
+  CustomMarkdownEmitter,
+  ICustomMarkdownEmitterOptions,
+} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 
-const tmpDir = resolvePath(process.cwd(), './node_modules/.cache/api-extractor');
+const tmpDir = resolvePath(
+  process.cwd(),
+  './node_modules/.cache/api-extractor',
+);
 
 /**
  * All of this monkey patching below is because MUI has these bare package.json file as a method
@@ -99,7 +105,9 @@ function patchFileMessageFetcher(
   } = router;
 
   router.fetchAssociatedMessagesForReviewFile =
-    function patchedFetchAssociatedMessagesForReviewFile(ast) {
+    function patchedFetchAssociatedMessagesForReviewFile(
+      ast: AstDeclaration | undefined,
+    ) {
       const messages = fetchAssociatedMessagesForReviewFile.call(this, ast);
       return transform(messages, ast);
     };
@@ -113,7 +121,10 @@ function patchFileMessageFetcher(
 const originalGenerateReviewFileContent =
   ApiReportGenerator.generateReviewFileContent;
 ApiReportGenerator.generateReviewFileContent =
-  function decoratedGenerateReviewFileContent(collector, ...moreArgs) {
+  function decoratedGenerateReviewFileContent(
+    collector: { program: Program; messageRouter: any },
+    ...moreArgs: any[]
+  ) {
     const program = collector.program as Program;
 
     // The purpose of this override is to allow the @ignore tag to be used to ignore warnings
@@ -137,7 +148,9 @@ ApiReportGenerator.generateReviewFileContent =
           }
           const [, symbolName] = symbolMatch;
 
-          const sourceFile = program.getSourceFile(message.sourceFilePath);
+          const sourceFile =
+            message.sourceFilePath &&
+            program.getSourceFile(message.sourceFilePath);
           if (!sourceFile) {
             throw new Error(
               `Failed to find source file in program at path "${message.sourceFilePath}"`,
@@ -358,7 +371,10 @@ export async function runApiExtraction({
   await fs.remove(outputDir);
 
   const entryPoints = packageDirs.map(packageDir => {
-    return resolvePath(process.cwd(), `./dist-types/${packageDir}/src/index.d.ts`);
+    return resolvePath(
+      process.cwd(),
+      `./dist-types/${packageDir}/src/index.d.ts`,
+    );
   });
 
   let compilerState: CompilerState | undefined = undefined;
@@ -368,7 +384,11 @@ export async function runApiExtraction({
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
     const projectFolder = resolvePath(process.cwd(), packageDir);
-    const packageFolder = resolvePath(process.cwd(), './dist-types', packageDir);
+    const packageFolder = resolvePath(
+      process.cwd(),
+      './dist-types',
+      packageDir,
+    );
 
     const warningCountBefore = await countApiReportWarnings(projectFolder);
 
@@ -618,7 +638,7 @@ class ApiModelTransforms {
     if (serialized.members.length !== 1) {
       throw new Error(
         `Unexpected members in serialized ApiPackage, [${serialized.members
-          .map(m => m.kind)
+          .map((m: { kind: any }) => m.kind)
           .join(' ')}]`,
       );
     }
@@ -634,7 +654,7 @@ class ApiModelTransforms {
       members: [
         {
           ...entryPoint,
-          members: entryPoint.members.map(member =>
+          members: entryPoint.members.map((member: any) =>
             transforms.reduce((m, t) => t(m), member),
           ),
         },
@@ -847,7 +867,11 @@ export async function buildDocs({
     }
 
     /** @override */
-    emit(stringBuilder, docNode, options) {
+    emit(
+      stringBuilder: any,
+      docNode: DocNode,
+      options: ICustomMarkdownEmitterOptions,
+    ) {
       // Hack to get rid of the leading comment of each file, since
       // we want the front matter to come first
       stringBuilder._chunks.length = 0;
@@ -886,7 +910,7 @@ export async function buildDocs({
     // so we hook in wherever we can. In this case we add the front matter
     // just before writing the breadcrumbs at the top.
     /** @override */
-    _writeBreadcrumb(output, apiItem) {
+    _writeBreadcrumb(output: any, apiItem: ApiItem & { name: string }) {
       let title;
       let description;
 
@@ -897,9 +921,12 @@ export async function buildDocs({
       } else if (apiItem.kind === 'Model') {
         title = 'Package Index';
         description = 'Index of all Backstage Packages';
-      } else {
+      } else if (apiItem.name) {
         title = apiItem.name;
         description = `API Reference for ${apiItem.name}`;
+      } else {
+        title = apiItem.displayName;
+        description = `API Reference for ${apiItem.displayName}`;
       }
 
       // Add our front matter
@@ -925,7 +952,10 @@ export async function buildDocs({
       };
     }
 
-    _writeModelTable(output, apiModel): void {
+    _writeModelTable(
+      output: { appendNode: (arg0: DocTable | DocHeading) => void },
+      apiModel: { members: any },
+    ): void {
       const configuration = this._tsdocConfiguration;
 
       const packagesTable = new DocTable({
@@ -998,7 +1028,10 @@ export async function buildDocs({
   documenter.generateFiles();
 }
 
-export async function categorizePackageDirs(projectRoot, packageDirs) {
+export async function categorizePackageDirs(
+  projectRoot: string,
+  packageDirs: any[],
+) {
   const dirs = packageDirs.slice();
   const tsPackageDirs = new Array<string>();
   const cliPackageDirs = new Array<string>();
@@ -1086,11 +1119,11 @@ function parseHelpPage(helpPageContent: string) {
       // Trim away documentation
       const sectionItems = sectionLines
         .map(line => line.match(/^\s{1,8}(.*?)\s\s+/)?.[1])
-        .filter(Boolean);
+        .filter(Boolean) as string[];
 
-      if (sectionName.toLocaleLowerCase('en-US') === 'options:') {
+      if (sectionName?.toLocaleLowerCase('en-US') === 'options:') {
         options = sectionItems;
-      } else if (sectionName.toLocaleLowerCase('en-US') === 'commands:') {
+      } else if (sectionName?.toLocaleLowerCase('en-US') === 'commands:') {
         commands = sectionItems;
       } else {
         throw new Error(`Unknown CLI section: ${sectionName}`);
@@ -1250,96 +1283,3 @@ export async function runCliExtraction({
     }
   }
 }
-
-async function main() {
-  const projectRoot = resolvePath(process.cwd());
-  const isCiBuild = process.argv.includes('--ci');
-  const isDocsBuild = process.argv.includes('--docs');
-  const runTsc = process.argv.includes('--tsc');
-
-  const selectedPackageDirs = await findSpecificPackageDirs(
-    process.argv.slice(2).filter(arg => !arg.startsWith('--')),
-  );
-  if (selectedPackageDirs && isCiBuild) {
-    throw new Error(
-      'Package path arguments are not supported together with the --ci flag',
-    );
-  }
-  if (!selectedPackageDirs && !isCiBuild && !isDocsBuild) {
-    console.log('');
-    console.log(
-      'TIP: You can generate api-reports for select packages by passing package paths:',
-    );
-    console.log('');
-    console.log(
-      '       yarn build:api-reports packages/config packages/core-plugin-api',
-    );
-    console.log('');
-  }
-
-  let temporaryTsConfigPath: string | undefined;
-  if (selectedPackageDirs) {
-    temporaryTsConfigPath = await createTemporaryTsConfig(selectedPackageDirs);
-  }
-  const tsconfigFilePath =
-    temporaryTsConfigPath ?? resolvePath(projectRoot, 'tsconfig.json');
-
-  if (runTsc) {
-    await fs.remove(resolvePath(projectRoot, 'dist-types'));
-    const { status } = spawnSync(
-      'yarn',
-      [
-        'tsc',
-        ['--project', tsconfigFilePath],
-        ['--skipLibCheck', 'false'],
-        ['--incremental', 'false'],
-      ].flat(),
-      {
-        stdio: 'inherit',
-        shell: true,
-        cwd: projectRoot,
-      },
-    );
-    if (status !== 0) {
-      process.exit(status);
-    }
-  }
-
-  const packageDirs = selectedPackageDirs ?? (await findPackageDirs());
-
-  const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
-    projectRoot,
-    packageDirs,
-  );
-
-  if (tsPackageDirs.length > 0) {
-    console.log('# Generating package API reports');
-    await runApiExtraction({
-      packageDirs: tsPackageDirs,
-      outputDir: tmpDir,
-      isLocalBuild: !isCiBuild,
-      tsconfigFilePath,
-    });
-  }
-  if (cliPackageDirs.length > 0) {
-    console.log('# Generating package CLI reports');
-    await runCliExtraction({
-      projectRoot,
-      packageDirs: cliPackageDirs,
-      isLocalBuild: !isCiBuild,
-    });
-  }
-
-  if (isDocsBuild) {
-    console.log('# Generating package documentation');
-    await buildDocs({
-      inputDir: tmpDir,
-      outputDir: resolvePath(projectRoot, 'docs/reference'),
-    });
-  }
-}
-
-main().catch(error => {
-  console.error(error.stack || String(error));
-  process.exit(1);
-});

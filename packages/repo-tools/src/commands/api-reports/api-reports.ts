@@ -18,104 +18,105 @@ import { OptionValues } from 'commander';
 import {resolve as resolvePath} from 'path';
 import fs from 'fs-extra';
 import { spawnSync } from 'child_process';
-import {resolvePackagePath} from "@backstage/backend-common"
-import {findSpecificPackageDirs, createTemporaryTsConfig, findPackageDirs, categorizePackageDirs, runApiExtraction, runCliExtraction, buildDocs} from './api-extractor';
+import {
+  findSpecificPackageDirs,
+  createTemporaryTsConfig,
+  findPackageDirs,
+  categorizePackageDirs,
+  runApiExtraction,
+  runCliExtraction,
+  buildDocs,
+} from './api-extractor';
 
-export default async (paths:string[], opts: OptionValues ) => {
-    if(opts.ci){
-        process.stderr.write(
-            `hello ci`,
-          );
-    }
-    console.log(opts, paths)
-    process.stderr.write(
-        `hello `,
-    );
+export default async (paths: string[], opts: OptionValues) => {
+  const tmpDir = resolvePath(
+    process.cwd(),
+    './node_modules/.cache/api-extractor',
+  );
+  const projectRoot = resolvePath(process.cwd());
+  const isCiBuild = opts.ci;
+  const isDocsBuild = opts.docs;
+  const runTsc = opts.tsc;
 
-    const tmpDir = resolvePath('./node_modules/.cache/api-extractor');
-    const projectRoot = resolvePath(process.cwd());
-    console.log(`DIRNAME: ${__dirname}, ${projectRoot}`)
-    const isCiBuild = opts.ci;
-    const isDocsBuild = opts.docs;
-    const runTsc = opts.tsc;
-  
-    const selectedPackageDirs = await findSpecificPackageDirs(paths
+  const selectedPackageDirs = await findSpecificPackageDirs(paths);
+
+  if (selectedPackageDirs && isCiBuild) {
+    throw new Error(
+      'Package path arguments are not supported together with the --ci flag',
     );
-    if (selectedPackageDirs && isCiBuild) {
-      throw new Error(
-        'Package path arguments are not supported together with the --ci flag',
-      );
+  }
+  if (!selectedPackageDirs && !isCiBuild && !isDocsBuild) {
+    console.log('');
+    console.log(
+      'TIP: You can generate api-reports for select packages by passing package paths:',
+    );
+    console.log('');
+    console.log(
+      '       yarn build:api-reports packages/config packages/core-plugin-api',
+    );
+    console.log('');
+  }
+
+  let temporaryTsConfigPath: string | undefined;
+  if (selectedPackageDirs) {
+    temporaryTsConfigPath = await createTemporaryTsConfig(selectedPackageDirs);
+  }
+  const tsconfigFilePath =
+    temporaryTsConfigPath ?? resolvePath(projectRoot, 'tsconfig.json');
+
+  if (runTsc) {
+    await fs.remove(resolvePath(projectRoot, 'dist-types'));
+    const { status } = spawnSync(
+      'yarn',
+      [
+        'tsc',
+        ['--project', tsconfigFilePath],
+        ['--skipLibCheck', 'false'],
+        ['--incremental', 'false'],
+      ].flat(),
+      {
+        stdio: 'inherit',
+        shell: true,
+        cwd: projectRoot,
+      },
+    );
+    if (status !== 0) {
+      process.exit(status || undefined);
     }
-    if (!selectedPackageDirs && !isCiBuild && !isDocsBuild) {
-      console.log('');
-      console.log(
-        'TIP: You can generate api-reports for select packages by passing package paths:',
-      );
-      console.log('');
-      console.log(
-        '       yarn build:api-reports packages/config packages/core-plugin-api',
-      );
-      console.log('');
-    }
-  
-    let temporaryTsConfigPath: string | undefined;
-    if (selectedPackageDirs) {
-      temporaryTsConfigPath = await createTemporaryTsConfig(selectedPackageDirs);
-    }
-    const tsconfigFilePath =
-      temporaryTsConfigPath ?? resolvePath(projectRoot, 'tsconfig.json');
-  
-    if (runTsc) {
-      await fs.remove(resolvePath(projectRoot, 'dist-types'));
-      const { status } = spawnSync(
-        'yarn',
-        [
-          'tsc',
-          ['--project', tsconfigFilePath],
-          ['--skipLibCheck', 'false'],
-          ['--incremental', 'false'],
-        ].flat(),
-        {
-          stdio: 'inherit',
-          shell: true,
-          cwd: projectRoot,
-        },
-      );
-      if (status !== 0) {
-        process.exit(status || undefined);
-      }
-    }
-  
-    const packageDirs = selectedPackageDirs ?? (await findPackageDirs());
-  
-    const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
+  }
+
+  const packageDirs = selectedPackageDirs ?? (await findPackageDirs());
+
+  const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
+    projectRoot,
+    packageDirs,
+  );
+
+  console.log({ tsPackageDirs, cliPackageDirs, isDocsBuild });
+
+  if (tsPackageDirs.length > 0) {
+    console.log('# Generating package API reports');
+    await runApiExtraction({
+      packageDirs: tsPackageDirs,
+      outputDir: tmpDir,
+      isLocalBuild: !isCiBuild,
+      tsconfigFilePath,
+    });
+  }
+  if (cliPackageDirs.length > 0) {
+    console.log('# Generating package CLI reports');
+    await runCliExtraction({
       projectRoot,
-      packageDirs,
-    );
-  
-    if (tsPackageDirs.length > 0) {
-      console.log('# Generating package API reports');
-      await runApiExtraction({
-        packageDirs: tsPackageDirs,
-        outputDir: tmpDir,
-        isLocalBuild: !isCiBuild,
-        tsconfigFilePath,
-      });
-    }
-    if (cliPackageDirs.length > 0) {
-      console.log('# Generating package CLI reports');
-      await runCliExtraction({
-        projectRoot,
-        packageDirs: cliPackageDirs,
-        isLocalBuild: !isCiBuild,
-      });
-    }
-  
-    if (isDocsBuild) {
-      console.log('# Generating package documentation');
-      await buildDocs({
-        inputDir: tmpDir,
-        outputDir: resolvePath(projectRoot, 'docs/reference'),
-      });
-    }
+      packageDirs: cliPackageDirs,
+      isLocalBuild: !isCiBuild,
+    });
+  }
+
+  if (isDocsBuild) {
+    console.log('# Generating package documentation');
+    await buildDocs({
+      inputDir: tmpDir,
+      outputDir: resolvePath(projectRoot, 'docs/reference'),
+    });
+  }
 };
