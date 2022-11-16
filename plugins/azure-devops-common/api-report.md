@@ -134,6 +134,8 @@ export enum PolicyType {
   RequiredReviewers = 'RequiredReviewers',
   // (undocumented)
   Status = 'Status',
+  // (undocumented)
+  WorkItem = 'WorkItem',
 }
 
 // @public (undocumented)
@@ -144,6 +146,7 @@ export enum PolicyTypeId {
   MinimumReviewers = 'fa4e907d-c16b-4a4c-9dfa-4906e5d171dd',
   RequiredReviewers = 'fd2167ab-b0be-447a-8ec8-39368250530e',
   Status = 'cbdc66da-9728-4af8-aada-9a5a32e4a226',
+  WorkItem = '40e92b44-2fe1-4dd6-b3d8-74a9c21d0c6e',
 }
 
 // @public (undocumented)
