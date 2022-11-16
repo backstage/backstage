@@ -16,7 +16,7 @@
 
 import parseGitUrl from 'git-url-parse';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   replaceGithubUrlType,
   replaceGitLabUrlType,
@@ -59,9 +59,10 @@ export const getBody = (selection: Selection, markdownUrl: string) => {
     .split('\n')
     .map(line => `> ${line.trim()}`)
     .join('\n');
-
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptional('app.title') || 'Backstage';
   const facts = [
-    `Backstage URL: <${window.location.href}> \nMarkdown URL: <${markdownUrl}>`,
+    `${appTitle} URL: <${window.location.href}> \nMarkdown URL: <${markdownUrl}>`,
   ];
 
   return `${title}\n\n ${subheading} \n\n ${highlightedTextAsQuote}\n\n ${commentHeading} \n ${commentPlaceholder}\n\n ___\n${facts}`;
