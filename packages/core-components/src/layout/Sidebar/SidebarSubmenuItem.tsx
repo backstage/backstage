@@ -55,7 +55,7 @@ const useStyles = makeStyles<BackstageTheme>(
     label: {
       margin: 14,
       marginLeft: 7,
-      fontSize: 14,
+      fontSize: theme.typography.body2.fontSize,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       'text-overflow': 'ellipsis',
@@ -88,7 +88,7 @@ const useStyles = makeStyles<BackstageTheme>(
       color: theme.palette.navigation.color,
       paddingLeft: theme.spacing(4),
       paddingRight: theme.spacing(1),
-      fontSize: '14px',
+      fontSize: theme.typography.body2.fontSize,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       'text-overflow': 'ellipsis',

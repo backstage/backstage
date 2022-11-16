@@ -76,7 +76,7 @@ const useStyles = makeStyles<
       },
     }),
     title: {
-      fontSize: 24,
+      fontSize: theme.typography.h5.fontSize,
       fontWeight: 500,
       color: '#FFF',
       padding: 20,

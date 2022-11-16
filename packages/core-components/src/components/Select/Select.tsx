@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -30,6 +30,7 @@ import {
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
+
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
 
@@ -45,17 +46,17 @@ const BootstrapInput = withStyles(
         },
       },
       input: {
-        borderRadius: 4,
+        borderRadius: theme.shape.borderRadius,
         position: 'relative',
         backgroundColor: theme.palette.background.paper,
         border: '1px solid #ced4da',
-        fontSize: 16,
-        padding: '10px 26px 10px 12px',
+        fontSize: theme.typography.body1.fontSize,
+        padding: theme.spacing(1.25, 3.25, 1.25, 1.5),
         transition: theme.transitions.create(['border-color', 'box-shadow']),
         fontFamily: 'Helvetica Neue',
         '&:focus': {
           background: theme.palette.background.paper,
-          borderRadius: 4,
+          borderRadius: theme.shape.borderRadius,
         },
       },
     }),
@@ -81,7 +82,7 @@ const useStyles = makeStyles(
       label: {
         transform: 'initial',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: theme.typography.body2.fontSize,
         fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
         '&.Mui-focused': {
@@ -91,7 +92,7 @@ const useStyles = makeStyles(
       formLabel: {
         transform: 'initial',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: theme.typography.body2.fontSize,
         fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
         '&.Mui-focused': {
@@ -196,7 +197,7 @@ export function SelectComponent(props: SelectProps) {
   };
 
   return (
-    <div className={classes.root}>
+    <Box className={classes.root}>
       <ClickAwayListener onClickAway={handleClickAway}>
         <FormControl className={classes.formControl}>
           <InputLabel className={classes.formLabel}>{label}</InputLabel>
@@ -217,7 +218,7 @@ export function SelectComponent(props: SelectProps) {
             tabIndex={0}
             renderValue={s =>
               multiple && (value as any[]).length !== 0 ? (
-                <div className={classes.chips}>
+                <Box className={classes.chips}>
                   {(s as string[]).map(selectedValue => (
                     <Chip
                       key={items.find(el => el.value === selectedValue)?.value}
@@ -229,7 +230,7 @@ export function SelectComponent(props: SelectProps) {
                       className={classes.chip}
                     />
                   ))}
-                </div>
+                </Box>
               ) : (
                 <Typography>
                   {(value as any[]).length === 0
@@ -279,6 +280,6 @@ export function SelectComponent(props: SelectProps) {
           </Select>
         </FormControl>
       </ClickAwayListener>
-    </div>
+    </Box>
   );
 }
