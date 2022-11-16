@@ -93,6 +93,9 @@
     ],
     "*.md": [
       "node ./scripts/check-docs-quality"
+    ],
+    "yarn.lock": [
+      "node ./scripts/verify-lockfile-duplicates"
     ]
   },
   "packageManager": "yarn@3.2.3"
