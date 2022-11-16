@@ -19,10 +19,10 @@ import { Context } from './types';
 
 /**
  * Since the root context can never abort, and since nobody is every meant to
- * dispatch events through it, we can use a static dummy instance for
+ * dispatch events through it, we can use a static sample instance for
  * efficiency.
  */
-const dummyAbortSignal: AbortSignal = Object.freeze({
+const sampleAbortSignal: AbortSignal = Object.freeze({
   aborted: false,
   addEventListener() {},
   removeEventListener() {},
@@ -36,7 +36,7 @@ const dummyAbortSignal: AbortSignal = Object.freeze({
  * An empty root context.
  */
 export class RootContext implements Context {
-  readonly abortSignal = dummyAbortSignal;
+  readonly abortSignal = sampleAbortSignal;
   readonly deadline = undefined;
 
   value<T = unknown>(_key: string): T | undefined {

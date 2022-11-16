@@ -374,7 +374,7 @@ export async function queryWithPaging<
   const result: OutputType[] = [];
 
   let cursor: string | undefined = undefined;
-  for (let j = 0; j < 1000 /* just for sanity */; ++j) {
+  for (let j = 0; j < 1000 /* just for confidence */; ++j) {
     const response: Response = await client(query, {
       ...variables,
       cursor,
