@@ -67,7 +67,7 @@ export type HttpRouterFactoryOptions = {
   indexPlugin?: string;
 };
 
-// @public (undocumented)
+// @public
 export const lifecycleFactory: (
   options?: undefined,
 ) => ServiceFactory<BackendLifecycle>;

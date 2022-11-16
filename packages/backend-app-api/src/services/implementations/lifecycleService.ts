@@ -25,7 +25,7 @@ import {
 import { Logger } from 'winston';
 
 const CALLBACKS = ['SIGTERM', 'SIGINT', 'beforeExit'];
-class BackendLifecycleImpl {
+export class BackendLifecycleImpl {
   constructor(private readonly logger: Logger) {
     CALLBACKS.map(signal => process.on(signal, () => this.shutdown()));
   }
@@ -76,7 +76,9 @@ class PluginScopedLifecycleImpl implements BackendLifecycle {
   }
 }
 
-/** @public */
+/**
+ * Allows plugins to register shutdown hooks that are run when the process is about to exit.
+ * @public */
 export const lifecycleFactory = createServiceFactory({
   service: lifecycleServiceRef,
   deps: {
