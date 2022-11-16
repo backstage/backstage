@@ -120,7 +120,7 @@ For packages at version `1.0.0` or above, the following policy also applies:
   changes without a deprecation period, but the changes must still adhere to
   semver.
 
-### Changes that are not Considered Breaking
+### Changes that are Not Considered Breaking
 
 There are a few changes that would typically be considered breaking changes, but
 that we make exceptions for. This is both to be able to evolve the project more

@@ -171,9 +171,9 @@ Exported types can be marked with either `@public`, `@alpha` or `@beta` release 
 
 If a package does not have this configuration, then all exported types are considered stable, even if they are marked as `@alpha` or `@beta`.
 
-#### Changes that are not Considered Breaking
+#### Changes that are Not Considered Breaking
 
-There are a few exceptions that are not considered breaking in the [versioning policy](https://backstage.io/docs/overview/versioning-policy),
+There are a few exceptions that are not considered breaking in the [versioning policy](https://backstage.io/docs/overview/versioning-policy#changes-that-are-not-considered-breaking),
 primarily regarding Utility APIs and Backend Service interfaces (referred to "contracts" below) that are supplied by the
 Backstage core packages.
 
