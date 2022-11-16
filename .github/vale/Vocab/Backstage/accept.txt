@@ -316,6 +316,7 @@ Spotifiers
 spotify
 Spotify
 sqlite
+sqs
 squidfunk
 src
 statefulsets

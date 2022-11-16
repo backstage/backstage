@@ -205,7 +205,7 @@ A typical plugin consists of up to five packages, two frontend ones, two
 backend, and one isomorphic package. All packages within the plugin must share a
 common prefix, typically of the form `@<scope>/plugin-<plugin-id>`, but
 alternatives like `backstage-plugin-<plugin-id>` or
-`@scope/backstage-plugin-<plugin-id>` are also valid. Along with this prefix,
+`@<scope>/backstage-plugin-<plugin-id>` are also valid. Along with this prefix,
 each of the packages have their own unique suffix that denotes their role. In
 addition to these five plugin packages it's also possible for a plugin to have
 additional frontend and backend modules that can be installed to enable optional

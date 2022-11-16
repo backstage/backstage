@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { RELATION_HAS_PART, RELATION_PART_OF } from '@backstage/catalog-model';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import {
-  CatalogApi,
-  catalogApiRef,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   MockAnalyticsApi,
   renderInTestApp,
@@ -38,63 +35,59 @@ jest.mock('react-router', () => ({
 
 describe('<CatalogGraphPage/>', () => {
   let wrapper: JSX.Element;
-  let catalog: jest.Mocked<CatalogApi>;
+  const entityC = {
+    apiVersion: 'a',
+    kind: 'b',
+    metadata: {
+      name: 'c',
+      namespace: 'd',
+    },
+    relations: [
+      {
+        type: RELATION_PART_OF,
+        targetRef: 'b:d/e',
+        target: {
+          kind: 'b',
+          namespace: 'd',
+          name: 'e',
+        },
+      },
+    ],
+  };
+  const entityE = {
+    apiVersion: 'a',
+    kind: 'b',
+    metadata: {
+      name: 'e',
+      namespace: 'd',
+    },
+    relations: [
+      {
+        type: RELATION_HAS_PART,
+        targetRef: 'b:d/c',
+        target: {
+          kind: 'b',
+          namespace: 'd',
+          name: 'c',
+        },
+      },
+    ],
+  };
+  const catalog = {
+    getEntities: jest.fn(),
+    getEntityByRef: jest.fn(),
+    removeEntityByUid: jest.fn(),
+    getLocationById: jest.fn(),
+    getLocationByRef: jest.fn(),
+    addLocation: jest.fn(),
+    removeLocationById: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
+  };
 
   beforeEach(() => {
-    const entityC = {
-      apiVersion: 'a',
-      kind: 'b',
-      metadata: {
-        name: 'c',
-        namespace: 'd',
-      },
-      relations: [
-        {
-          type: RELATION_PART_OF,
-          targetRef: 'b:d/e',
-          target: {
-            kind: 'b',
-            namespace: 'd',
-            name: 'e',
-          },
-        },
-      ],
-    };
-    const entityE = {
-      apiVersion: 'a',
-      kind: 'b',
-      metadata: {
-        name: 'e',
-        namespace: 'd',
-      },
-      relations: [
-        {
-          type: RELATION_HAS_PART,
-          targetRef: 'b:d/c',
-          target: {
-            kind: 'b',
-            namespace: 'd',
-            name: 'c',
-          },
-        },
-      ],
-    };
-    catalog = {
-      getEntities: jest.fn(),
-      getEntityByRef: jest.fn(async (n: any) =>
-        n === 'b:d/e' ? entityE : entityC,
-      ),
-      removeEntityByUid: jest.fn(),
-      getLocationById: jest.fn(),
-      getLocationByRef: jest.fn(),
-      addLocation: jest.fn(),
-      removeLocationById: jest.fn(),
-      refreshEntity: jest.fn(),
-      getEntityAncestors: jest.fn(),
-      getEntityFacets: jest.fn(),
-      validateEntity: jest.fn(),
-    };
-
     wrapper = (
       <TestApiProvider apis={[[catalogApiRef, catalog]]}>
         <CatalogGraphPage
@@ -111,6 +104,10 @@ describe('<CatalogGraphPage/>', () => {
   afterEach(() => jest.resetAllMocks());
 
   test('should render without exploding', async () => {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
     const { getByText, findByText, findAllByTestId } = await renderInTestApp(
       wrapper,
       {
@@ -128,6 +125,10 @@ describe('<CatalogGraphPage/>', () => {
   });
 
   test('should toggle filters', async () => {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
     const { getByText, queryByText } = await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
@@ -142,6 +143,10 @@ describe('<CatalogGraphPage/>', () => {
   });
 
   test('should select other entity', async () => {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
     const { getByText, findByText, findAllByTestId } = await renderInTestApp(
       wrapper,
       {
@@ -159,6 +164,10 @@ describe('<CatalogGraphPage/>', () => {
   });
 
   test('should navigate to entity', async () => {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
     const { getByText, findAllByTestId } = await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
@@ -174,6 +183,10 @@ describe('<CatalogGraphPage/>', () => {
   });
 
   test('should capture analytics event when selecting other entity', async () => {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
     const analyticsSpy = new MockAnalyticsApi();
     const { getByText, findAllByTestId } = await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
@@ -200,6 +213,10 @@ describe('<CatalogGraphPage/>', () => {
   });
 
   test('should capture analytics event when navigating to entity', async () => {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
     const analyticsSpy = new MockAnalyticsApi();
     const { getByText, findAllByTestId } = await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>

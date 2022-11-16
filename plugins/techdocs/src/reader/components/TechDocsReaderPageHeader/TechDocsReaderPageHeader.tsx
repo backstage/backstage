@@ -17,6 +17,7 @@
 import React, { PropsWithChildren, useEffect } from 'react';
 import Helmet from 'react-helmet';
 
+import { Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import CodeIcon from '@material-ui/icons/Code';
 
@@ -35,6 +36,8 @@ import {
 import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
+
+import { capitalize } from 'lodash';
 
 import { rootRouteRef } from '../../../routes';
 
@@ -102,7 +105,7 @@ export const TechDocsReaderPageHeader = (
   const labels = (
     <>
       <HeaderLabel
-        label="Component"
+        label={capitalize(entityMetadata?.kind || 'entity')}
         value={
           <EntityRefLink
             color="inherit"
@@ -131,14 +134,21 @@ export const TechDocsReaderPageHeader = (
         <HeaderLabel
           label=""
           value={
-            <a
-              href={locationMetadata.target}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Grid
+              container
+              direction="column"
+              alignItems="center"
+              style={{ color: '#fff' }}
             >
-              <CodeIcon style={{ marginTop: '-25px', fill: '#fff' }} />
-            </a>
+              <Grid style={{ padding: 0 }} item>
+                <CodeIcon style={{ marginTop: '-25px' }} />
+              </Grid>
+              <Grid style={{ padding: 0 }} item>
+                Source
+              </Grid>
+            </Grid>
           }
+          url={locationMetadata.target}
         />
       ) : null}
     </>

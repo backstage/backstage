@@ -8,7 +8,8 @@
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
-    "build": "backstage-cli repo build --all",
+    "build:backend": "yarn workspace backend build",
+    "build:all": "backstage-cli repo build --all",
     "build:api-reports": "yarn build:api-reports:only --tsc",
     "build:api-reports:only": "ts-node -T -P scripts/tsconfig.json scripts/api-extractor.ts",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs",
@@ -44,7 +45,7 @@
     "@types/react": "^17",
     "@types/react-dom": "^17"
   },
-  "version": "1.8.0-next.2",
+  "version": "1.8.0",
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",

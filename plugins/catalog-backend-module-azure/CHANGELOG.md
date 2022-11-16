@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.1.9
+
+### Patch Changes
+
+- 87ff05892d: `AzureDevOpsEntityProvider`: Add option to configure schedule via `app-config.yaml` instead of in code.
+
+  Please find how to configure the schedule at the config at
+  https://backstage.io/docs/integrations/azure/discovery
+
+- 0ca399b31b: Add `azureDevOpsEntityProviderCatalogModule` (new backend-plugin-api, alpha).
+- 4c9f7847e4: Updated dependency `msw` to `^0.48.0` while moving it to be a dev dependency.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-catalog-backend@1.5.1
+  - @backstage/integration@1.4.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/types@1.0.1
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
 ## 0.1.9-next.1
 
 ### Patch Changes

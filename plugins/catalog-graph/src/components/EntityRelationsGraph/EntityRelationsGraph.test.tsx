@@ -22,7 +22,7 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { DependencyGraphTypes } from '@backstage/core-components';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import React, { FunctionComponent } from 'react';
@@ -30,98 +30,96 @@ import { EntityRelationsGraph } from './EntityRelationsGraph';
 
 describe('<EntityRelationsGraph/>', () => {
   let Wrapper: FunctionComponent;
-  let catalog: jest.Mocked<CatalogApi>;
+  const entities: { [ref: string]: Entity } = {
+    'b:d/c': {
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c',
+        namespace: 'd',
+      },
+      relations: [
+        {
+          targetRef: 'k:d/a1',
+          type: RELATION_OWNER_OF,
+        },
+        {
+          targetRef: 'b:d/c1',
+          type: RELATION_HAS_PART,
+        },
+      ],
+    },
+    'k:d/a1': {
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: {
+        name: 'a1',
+        namespace: 'd',
+      },
+      relations: [
+        {
+          targetRef: 'b:d/c',
+          type: RELATION_OWNED_BY,
+        },
+        {
+          targetRef: 'b:d/c1',
+          type: RELATION_OWNED_BY,
+        },
+      ],
+    },
+    'b:d/c1': {
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c1',
+        namespace: 'd',
+      },
+      relations: [
+        {
+          targetRef: 'b:d/c',
+          type: RELATION_PART_OF,
+        },
+        {
+          targetRef: 'k:d/a1',
+          type: RELATION_OWNER_OF,
+        },
+        {
+          targetRef: 'b:d/c2',
+          type: RELATION_HAS_PART,
+        },
+      ],
+    },
+    'b:d/c2': {
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c2',
+        namespace: 'd',
+      },
+      relations: [
+        {
+          targetRef: 'b:d/c1',
+          type: RELATION_PART_OF,
+        },
+      ],
+    },
+  };
+  const catalog = {
+    getEntities: jest.fn(),
+    getEntityByRef: jest.fn(),
+    removeEntityByUid: jest.fn(),
+    getLocationById: jest.fn(),
+    getLocationByRef: jest.fn(),
+    addLocation: jest.fn(),
+    removeLocationById: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
+  };
   const CUSTOM_TEST_ID = 'custom-test-id';
 
   beforeEach(() => {
-    const entities: { [ref: string]: Entity } = {
-      'b:d/c': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            targetRef: 'k:d/a1',
-            type: RELATION_OWNER_OF,
-          },
-          {
-            targetRef: 'b:d/c1',
-            type: RELATION_HAS_PART,
-          },
-        ],
-      },
-      'k:d/a1': {
-        apiVersion: 'a',
-        kind: 'k',
-        metadata: {
-          name: 'a1',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            targetRef: 'b:d/c',
-            type: RELATION_OWNED_BY,
-          },
-          {
-            targetRef: 'b:d/c1',
-            type: RELATION_OWNED_BY,
-          },
-        ],
-      },
-      'b:d/c1': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c1',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            targetRef: 'b:d/c',
-            type: RELATION_PART_OF,
-          },
-          {
-            targetRef: 'k:d/a1',
-            type: RELATION_OWNER_OF,
-          },
-          {
-            targetRef: 'b:d/c2',
-            type: RELATION_HAS_PART,
-          },
-        ],
-      },
-      'b:d/c2': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c2',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            targetRef: 'b:d/c1',
-            type: RELATION_PART_OF,
-          },
-        ],
-      },
-    };
-    catalog = {
-      getEntities: jest.fn(),
-      getEntityByRef: jest.fn(async n => entities[n as string]),
-      removeEntityByUid: jest.fn(),
-      getLocationById: jest.fn(),
-      getLocationByRef: jest.fn(),
-      addLocation: jest.fn(),
-      removeLocationById: jest.fn(),
-      refreshEntity: jest.fn(),
-      getEntityAncestors: jest.fn(),
-      getEntityFacets: jest.fn(),
-      validateEntity: jest.fn(),
-    };
-
     Wrapper = ({ children }) => (
       <TestApiProvider apis={[[catalogApiRef, catalog]]}>
         {children}
@@ -129,7 +127,7 @@ describe('<EntityRelationsGraph/>', () => {
     );
   });
 
-  afterAll(() => {
+  afterEach(() => {
     jest.resetAllMocks();
   });
 
@@ -213,6 +211,8 @@ describe('<EntityRelationsGraph/>', () => {
   });
 
   test('renders at max depth of one', async () => {
+    catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
+
     const { findByText, findAllByTestId, findAllByText } =
       await renderInTestApp(
         <Wrapper>
@@ -235,7 +235,9 @@ describe('<EntityRelationsGraph/>', () => {
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(3);
   });
 
-  test('renders simplied graph at full depth', async () => {
+  test('renders simplified graph at full depth', async () => {
+    catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
+
     const { findByText, findAllByText, findAllByTestId } =
       await renderInTestApp(
         <Wrapper>
@@ -261,6 +263,8 @@ describe('<EntityRelationsGraph/>', () => {
   });
 
   test('renders full graph at full depth', async () => {
+    catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
+
     const { findAllByText, findByText, findAllByTestId } =
       await renderInTestApp(
         <Wrapper>
@@ -288,6 +292,8 @@ describe('<EntityRelationsGraph/>', () => {
   });
 
   test('renders full graph at full depth with merged relations', async () => {
+    catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
+
     const { findAllByText, findByText, findAllByTestId } =
       await renderInTestApp(
         <Wrapper>
@@ -313,6 +319,8 @@ describe('<EntityRelationsGraph/>', () => {
   });
 
   test('renders a graph with multiple root nodes', async () => {
+    catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
+
     const { findAllByText, findByText, findAllByTestId } =
       await renderInTestApp(
         <Wrapper>
@@ -339,6 +347,8 @@ describe('<EntityRelationsGraph/>', () => {
   });
 
   test('renders a graph with filtered kinds and relations', async () => {
+    catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
+
     const { findAllByText, findByText, findAllByTestId } =
       await renderInTestApp(
         <Wrapper>
@@ -361,6 +371,8 @@ describe('<EntityRelationsGraph/>', () => {
   });
 
   test('handle clicks on a node', async () => {
+    catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
+
     const onNodeClick = jest.fn();
     const { findByText } = await renderInTestApp(
       <Wrapper>
@@ -376,6 +388,8 @@ describe('<EntityRelationsGraph/>', () => {
   });
 
   test('render custom node', async () => {
+    catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
+
     const renderNode = (props: DependencyGraphTypes.RenderNodeProps) => (
       <g>
         <text>{props.node.id}</text>
@@ -398,6 +412,8 @@ describe('<EntityRelationsGraph/>', () => {
   });
 
   test('render custom label', async () => {
+    catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
+
     const renderLabel = (props: DependencyGraphTypes.RenderLabelProps) => (
       <g>
         <text>{`Test-Label${props.edge.label}`}</text>

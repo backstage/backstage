@@ -1,5 +1,29 @@
 # @backstage/backend-common
 
+## 0.16.0
+
+### Minor Changes
+
+- a7607b5413: **BREAKING CHANGE**: The `UrlReader` interface has been updated to require that `readUrl` is implemented. `readUrl` has previously been optional to implement but a warning has been logged when calling its predecessor `read`.
+  The `read` method is now deprecated and will be removed in a future release.
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- 55227712dd: Generated development HTTPS backend certificate is now checked for expiration date instead of file age.
+- d05e1841ce: This patch adds GiteaURLReader to the available classes. It currently only reads single files via gitea's public repos api
+- e6ced2446a: Change to using `@keyv/memcache` now that `keyv-memcache` is deprecated
+- 210a3b5668: Small update to fix compatibility with newer versions of the `keyv` library
+- cfb30b700c: Pin `@kubernetes/client-node` version to `0.17.0`.
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/integration@1.4.0
+  - @backstage/types@1.0.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4
+  - @backstage/config-loader@1.1.6
+  - @backstage/errors@1.1.3
+
 ## 0.16.0-next.1
 
 ### Patch Changes
