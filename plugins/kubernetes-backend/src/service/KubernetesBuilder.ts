@@ -266,6 +266,7 @@ export class KubernetesBuilder {
       res.json({
         items: clusterDetails.map(cd => ({
           name: cd.name,
+          displayName: cd.displayName,
           dashboardUrl: cd.dashboardUrl,
           authProvider: cd.authProvider,
           oidcTokenProvider: cd.oidcTokenProvider,

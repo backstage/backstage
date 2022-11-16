@@ -80,6 +80,7 @@ const entity = {
 
 const cluster1 = {
   name: 'test-cluster',
+  displayName: 'some-name',
   authProvider: 'serviceAccount',
   customResources: [
     {
@@ -286,6 +287,7 @@ describe('getKubernetesObjectsByEntity', () => {
         clusters: [
           {
             name: 'test-cluster',
+            displayName: 'some-name',
             authProvider: 'serviceAccount',
           },
         ],
@@ -311,6 +313,7 @@ describe('getKubernetesObjectsByEntity', () => {
         {
           cluster: {
             name: 'test-cluster',
+            displayName: 'some-name',
           },
           errors: [],
           podMetrics: [POD_METRICS_FIXTURE],
@@ -369,6 +372,7 @@ describe('getKubernetesObjectsByEntity', () => {
         clusters: [
           {
             name: 'test-cluster',
+            displayName: 'some-name',
             authProvider: 'serviceAccount',
           },
           cluster2,
@@ -405,6 +409,7 @@ describe('getKubernetesObjectsByEntity', () => {
         clusters: [
           {
             name: 'test-cluster',
+            displayName: 'some-name',
             authProvider: 'serviceAccount',
           },
         ],
@@ -463,6 +468,7 @@ describe('getKubernetesObjectsByEntity', () => {
         {
           cluster: {
             name: 'test-cluster',
+            displayName: 'some-name',
           },
           errors: [],
           podMetrics: [POD_METRICS_FIXTURE, POD_METRICS_FIXTURE],
@@ -502,6 +508,7 @@ describe('getKubernetesObjectsByEntity', () => {
         clusters: [
           {
             name: 'test-cluster',
+            displayName: 'some-name',
             authProvider: 'serviceAccount',
             dashboardUrl: 'https://k8s.foo.coom',
           },
@@ -530,6 +537,7 @@ describe('getKubernetesObjectsByEntity', () => {
           cluster: {
             dashboardUrl: 'https://k8s.foo.coom',
             name: 'test-cluster',
+            displayName: 'some-name',
           },
           errors: [],
           podMetrics: [POD_METRICS_FIXTURE],
@@ -552,6 +560,7 @@ describe('getKubernetesObjectsByEntity', () => {
         clusters: [
           {
             name: 'test-cluster',
+            displayName: 'some-name',
             authProvider: 'serviceAccount',
           },
           {
@@ -582,6 +591,7 @@ describe('getKubernetesObjectsByEntity', () => {
         {
           cluster: {
             name: 'test-cluster',
+            displayName: 'some-name',
           },
           errors: [],
           podMetrics: [POD_METRICS_FIXTURE],
@@ -604,6 +614,7 @@ describe('getKubernetesObjectsByEntity', () => {
         clusters: [
           {
             name: 'test-cluster',
+            displayName: 'some-name',
             authProvider: 'serviceAccount',
           },
           {
@@ -638,6 +649,7 @@ describe('getKubernetesObjectsByEntity', () => {
         {
           cluster: {
             name: 'test-cluster',
+            displayName: 'some-name',
           },
           errors: [],
           podMetrics: [POD_METRICS_FIXTURE],
@@ -681,6 +693,7 @@ describe('getKubernetesObjectsByEntity', () => {
         clusters: [
           {
             name: 'test-cluster',
+            displayName: 'some-name',
             authProvider: 'serviceAccount',
             dashboardUrl: 'https://k8s.foo.coom',
           },
@@ -729,6 +742,7 @@ describe('getKubernetesObjectsByEntity', () => {
           cluster: {
             dashboardUrl: 'https://k8s.foo.coom',
             name: 'test-cluster',
+            displayName: 'some-name',
           },
           errors: [],
           podMetrics: [POD_METRICS_FIXTURE],
@@ -791,6 +805,7 @@ describe('getCustomResourcesByEntity', () => {
         clusters: [
           {
             name: 'test-cluster',
+            displayName: 'some-name',
             authProvider: 'serviceAccount',
           },
           cluster2,

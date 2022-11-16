@@ -103,6 +103,11 @@ export interface ClusterAttributes {
    * This is used by the GKE formatter which requires the project, region and cluster name.
    */
   dashboardParameters?: JsonObject;
+  /**
+   * Specifies the custom cluster name.
+   * If it's defined, displayName will be used as a cluster name instead of @name.
+   */
+  displayName?: string;
 }
 
 /** @public */

@@ -33,6 +33,7 @@ export interface KubernetesApi {
   getClusters(): Promise<
     {
       name: string;
+      displayName?: string | undefined;
       authProvider: string;
       oidcTokenProvider?: string | undefined;
     }[]

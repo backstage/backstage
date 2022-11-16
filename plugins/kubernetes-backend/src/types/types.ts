@@ -204,6 +204,11 @@ export interface ClusterDetails {
    * Kubernetes resources.
    */
   customResources?: CustomResourceMatcher[];
+  /**
+   * Specifies the custom cluster name.
+   * If it's defined, displayName will be used as a cluster name instead of @name.
+   */
+  displayName?: string;
 }
 
 /**

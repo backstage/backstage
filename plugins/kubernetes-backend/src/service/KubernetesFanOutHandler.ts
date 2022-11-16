@@ -336,6 +336,9 @@ export class KubernetesFanOutHandler {
     if (clusterDetails.dashboardParameters) {
       objects.cluster.dashboardParameters = clusterDetails.dashboardParameters;
     }
+    if (clusterDetails.displayName) {
+      objects.cluster.displayName = clusterDetails.displayName;
+    }
     return objects;
   }
 
