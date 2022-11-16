@@ -81,6 +81,7 @@ export interface ClusterDetails {
   dashboardApp?: string;
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;
+  displayName?: string;
   name: string;
   oidcTokenProvider?: string | undefined;
   // (undocumented)

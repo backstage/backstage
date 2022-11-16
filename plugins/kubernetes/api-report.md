@@ -243,6 +243,7 @@ export interface KubernetesApi {
   getClusters(): Promise<
     {
       name: string;
+      displayName?: string;
       authProvider: string;
       oidcTokenProvider?: string | undefined;
     }[]
@@ -311,6 +312,7 @@ export class KubernetesBackendClient implements KubernetesApi {
   getClusters(): Promise<
     {
       name: string;
+      displayName: string;
       authProvider: string;
     }[]
   >;

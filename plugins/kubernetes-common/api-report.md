@@ -59,6 +59,7 @@ export interface ClusterAttributes {
   dashboardApp?: string;
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;
+  displayName?: string;
   name: string;
 }
 

@@ -38,6 +38,7 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           skipMetricsLookup: c.getOptionalBoolean('skipMetricsLookup') ?? false,
           caData: c.getOptionalString('caData'),
           authProvider: authProvider,
+          displayName: c.getOptionalString('displayName'),
         };
         const dashboardUrl = c.getOptionalString('dashboardUrl');
         if (dashboardUrl) {
@@ -49,6 +50,9 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
         }
         if (c.has('dashboardParameters')) {
           clusterDetails.dashboardParameters = c.get('dashboardParameters');
+        }
+        if (c.has('displayName')) {
+          clusterDetails.displayName = c.getOptionalString('displayName');
         }
 
         switch (authProvider) {

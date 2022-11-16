@@ -24,6 +24,7 @@ kubernetes:
       clusters:
         - url: http://127.0.0.1:9999
           name: minikube
+          displayName: mycluster
           authProvider: 'serviceAccount'
           skipTLSVerify: false
           skipMetricsLookup: true
@@ -94,7 +95,13 @@ The base URL to the Kubernetes control plane. Can be found by using the
 ##### `clusters.\*.name`
 
 A name to represent this cluster, this must be unique within the `clusters`
-array. Users will see this value in the Software Catalog Kubernetes plugin.
+array.
+Users will see this value in the Software Catalog Kubernetes plugin if `clusters.\*.displayName` is not set.
+
+##### `clusters.\*.displayName`
+
+An alternative name to represent this cluster.
+Users will see this value in the Software Catalog Kubernetes plugin if it's defined.
 
 ##### `clusters.\*.authProvider`
 
