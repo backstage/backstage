@@ -26,7 +26,6 @@ import { getVoidLogger } from '../logging';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { NotModifiedError, NotFoundError } from '@backstage/errors';
-import getRawBody from 'raw-body';
 import {
   GitLabIntegration,
   readGitLabIntegrationConfig,
@@ -151,8 +150,8 @@ describe('GitlabUrlReader', () => {
         treeResponseFactory,
       });
 
-      const data = await reader.readUrl(url);
-      const fromStream = await getRawBody(data.stream!());
+      const { buffer } = await reader.readUrl(url);
+      const fromStream = await buffer();
       const res = await JSON.parse(fromStream.toString());
       expect(res).toEqual(response);
     });

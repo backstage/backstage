@@ -116,9 +116,9 @@ describe('AzureUrlReader', () => {
         logger,
         treeResponseFactory,
       });
-
-      const data = await reader.readUrl(url);
-      const fromStream = await getRawBody(data.stream!());
+      
+      const { buffer } = await reader.readUrl(url);      
+      const fromStream = await buffer();
       const res = await JSON.parse(fromStream.toString());
       expect(res).toEqual(response);
     });
