@@ -78,7 +78,7 @@ export const useGitTemplate = (debounceTime?: number) => {
   const url = (editLink as HTMLAnchorElement)?.href ?? '';
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const configApi = useApi(configApiRef);
-  const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  let appTitle: string = configApi.getOptional('app.title') || 'Backstage';
   if (!selection || !url) return initialTemplate;
 
   const type = scmIntegrationsApi.byUrl(url)?.type;
