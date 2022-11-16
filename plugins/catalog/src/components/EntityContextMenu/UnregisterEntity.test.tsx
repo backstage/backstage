@@ -69,7 +69,7 @@ describe('ComponentContextMenu', () => {
       />,
     );
 
-    const unregister = await screen.getByText('Unregister entity');
+    const unregister = screen.getByText('Unregister entity');
     expect(unregister).toBeInTheDocument();
 
     const unregisterSpanItem = getByText(/Unregister entity/);

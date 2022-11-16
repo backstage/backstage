@@ -15,7 +15,6 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-
 import React from 'react';
 import { OwnerListPicker } from './OwnerListPicker';
 import { fireEvent } from '@testing-library/react';
@@ -29,8 +28,8 @@ describe('<OwnerListPicker />', () => {
 
     const { getByText } = await renderInTestApp(<OwnerListPicker {...props} />);
 
-    expect(await getByText('Owned')).toBeDefined();
-    expect(await getByText('All')).toBeDefined();
+    expect(getByText('Owned')).toBeDefined();
+    expect(getByText('All')).toBeDefined();
   });
 
   it('should call the function on select other item', async () => {
@@ -41,7 +40,7 @@ describe('<OwnerListPicker />', () => {
 
     const { getByText } = await renderInTestApp(<OwnerListPicker {...props} />);
 
-    fireEvent.click(await getByText('All'));
+    fireEvent.click(getByText('All'));
     expect(props.onSelectOwner).toHaveBeenCalledWith('all');
   });
 });
