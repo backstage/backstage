@@ -10,7 +10,6 @@
     "start-backend": "yarn workspace example-backend start",
     "build:backend": "yarn workspace backend build",
     "build:all": "backstage-cli repo build --all",
-    "build": "backstage-cli repo build --all",
     "build:api-reports": "yarn build:api-reports:only --tsc",
     "build:api-reports:only": "backstage-repo-tools api-reports",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs",

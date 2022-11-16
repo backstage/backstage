@@ -15,7 +15,7 @@
  */
 
 import { OptionValues } from 'commander';
-import {resolve as resolvePath} from 'path';
+import { resolve as resolvePath } from 'path';
 import fs from 'fs-extra';
 import { spawnSync } from 'child_process';
 import {

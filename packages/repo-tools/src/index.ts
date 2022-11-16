@@ -15,7 +15,7 @@
  */
 
 /**
- * CLI for developing Backstage plugins and apps
+ * CLI for Backstage repo tooling 
  *
  * @packageDocumentation
  */
@@ -23,7 +23,6 @@
 import { program } from 'commander';
 import chalk from 'chalk';
 import { exitWithError } from './lib/errors';
-//  import { version } from './lib/version';
 import { registerCommands } from './commands';
 
 const main = (argv: string[]) => {
