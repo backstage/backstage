@@ -32,6 +32,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { LoadingProvider } from '../../hooks';
 import { Cost } from '@backstage/plugin-cost-insights-common';
+import { createPlugin, PluginProvider } from '@backstage/core-plugin-api';
 
 function renderInContext(children: JSX.Element) {
   const mockEntity = {
@@ -56,6 +57,21 @@ function renderInContext(children: JSX.Element) {
     getAlerts: jest.fn().mockResolvedValue({}),
   };
 
+  type TestInputPluginOptions = {
+    showTrendLine: boolean;
+  };
+
+  type TestPluginOptions = {
+    showTrendLine: boolean;
+  };
+
+  const plugin = createPlugin({
+    id: 'my-plugin',
+    __experimentalConfigure(_: TestInputPluginOptions): TestPluginOptions {
+      return { showTrendLine: false };
+    },
+  });
+
   return renderInTestApp(
     <TestApiProvider apis={[[costInsightsApiRef, mockApi]]}>
       <EntityProvider entity={mockEntity}>
@@ -64,7 +80,9 @@ function renderInContext(children: JSX.Element) {
             <LoadingProvider>
               <MockFilterProvider>
                 <MockBillingDateProvider>
-                  <MockScrollProvider>{children}</MockScrollProvider>
+                  <MockScrollProvider>
+                    <PluginProvider plugin={plugin}>{children}</PluginProvider>
+                  </MockScrollProvider>
                 </MockBillingDateProvider>
               </MockFilterProvider>
             </LoadingProvider>

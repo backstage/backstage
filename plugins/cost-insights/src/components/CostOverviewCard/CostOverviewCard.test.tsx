@@ -30,6 +30,7 @@ import {
   MockScrollProvider,
 } from '../../testUtils';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
+import { createPlugin, PluginProvider } from '@backstage/core-plugin-api';
 
 const mockGroupDailyCost: Cost = {
   id: 'test-group',
@@ -38,13 +39,30 @@ const mockGroupDailyCost: Cost = {
   trendline: trendlineOf(MockAggregatedDailyCosts),
 };
 
+type TestInputPluginOptions = {
+  showTrendLine: boolean;
+};
+
+type TestPluginOptions = {
+  showTrendLine: boolean;
+};
+
+const plugin = createPlugin({
+  id: 'my-plugin',
+  __experimentalConfigure(_: TestInputPluginOptions): TestPluginOptions {
+    return { showTrendLine: false };
+  },
+});
+
 function renderInContext(children: JSX.Element) {
   return renderInTestApp(
     <CostInsightsThemeProvider>
       <MockConfigProvider>
         <MockFilterProvider>
           <MockBillingDateProvider>
-            <MockScrollProvider>{children}</MockScrollProvider>
+            <MockScrollProvider>
+              <PluginProvider plugin={plugin}>{children}</PluginProvider>
+            </MockScrollProvider>
           </MockBillingDateProvider>
         </MockFilterProvider>
       </MockConfigProvider>
