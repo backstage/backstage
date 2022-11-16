@@ -35,7 +35,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
     preparePullRequest: jest.fn(),
   };
 
-  const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
+  const catalogApi = {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     getEntityByRef: jest.fn(),

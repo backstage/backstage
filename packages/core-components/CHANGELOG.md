@@ -1,5 +1,26 @@
 # @backstage/core-components
 
+## 0.12.0
+
+### Minor Changes
+
+- fb3733e446: **BREAKING**: Removed the `HomepageTimer` as it has been replaced by the `HeaderWorldClock` in the Home plugin and was deprecated over a year ago.
+
+### Patch Changes
+
+- 5f695c219a: Set the `searchTooltip` to "Filter" to follow how the `searchPlaceholder` is set making this more consistent
+- f36127f5fe: Add optional step to SimpleStepper
+- b4fb5c8ecc: MissingAnnotationEmptyState now accepts either a string or an array of strings to support multiple missing annotations.
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- 858986f6b6: Disable base path workaround in `Link` component when React Router v6 stable is used.
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.2
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/theme@0.2.16
+
 ## 0.12.0-next.1
 
 ### Patch Changes
