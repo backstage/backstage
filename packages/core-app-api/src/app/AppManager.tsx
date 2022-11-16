@@ -196,14 +196,12 @@ export class AppManager implements BackstageApp {
     this.pluginMetadataExtender = new PluginMetadataExtender(options);
     this.apis = options.apis ?? [];
     this.icons = options.icons;
-    this.plugins = new Set(
-      ((options.plugins as CompatiblePlugin[]) ?? []).map(plugin => {
-        plugin.__internalSetMetadataExtender?.(
-          this.pluginMetadataExtender.extend,
-        );
-        return plugin;
-      }),
-    );
+    this.plugins = new Set(options.plugins);
+    this.plugins.forEach(plugin => {
+      plugin.__internalSetMetadataExtender?.(
+        this.pluginMetadataExtender.extend,
+      );
+    });
     this.components = options.components;
     this.themes = options.themes as AppTheme[];
     this.configLoader = options.configLoader ?? defaultConfigLoader;
