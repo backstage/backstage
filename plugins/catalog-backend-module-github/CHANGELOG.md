@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.2.1
+
+### Patch Changes
+
+- 781e49839a: Fix incorrectly exported GithubOrgEntityProvider as a type
+
 ## 0.2.0
 
 ### Minor Changes
