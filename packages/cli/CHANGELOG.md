@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.21.1
+
+### Patch Changes
+
+- 4f87415b5c: Removed the lint rule that forbid imports of `Link` from `@material-ui/core`.
+
 ## 0.21.0
 
 ### Minor Changes
