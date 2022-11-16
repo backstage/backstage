@@ -152,18 +152,6 @@ export const Stepper = (props: StepperProps) => {
             fields={extensions}
             showErrorList={false}
             transformErrors={props.transformErrors}
-            // this is needed because handleNext is really triggering the validation
-            // which only happens onSubmit
-            onChange={({ formData, schema }) => {
-              if (props.transformErrors) {
-                validator.validateFormData(
-                  formData,
-                  schema,
-                  undefined,
-                  props.transformErrors,
-                );
-              }
-            }}
           >
             <div className={styles.footer}>
               <Button
