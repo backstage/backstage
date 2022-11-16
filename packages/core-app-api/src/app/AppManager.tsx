@@ -48,6 +48,11 @@ import {
   identityApiRef,
   BackstagePlugin,
 } from '@backstage/core-plugin-api';
+import {
+  EntityLink,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
   childDiscoverer,
@@ -76,6 +81,7 @@ import {
   BackstageApp,
   SignInPageProps,
   CompatiblePlugin,
+  MetadataSpec,
 } from './types';
 import { AppThemeProvider } from './AppThemeProvider';
 import { defaultConfigLoader } from './defaultConfigLoader';
@@ -175,12 +181,17 @@ class AppContextImpl implements AppContext {
   }
 }
 
+function getFullEntityRef(entityRef: string, defaultKind = 'Group') {
+  return stringifyEntityRef(parseEntityRef(entityRef, { defaultKind }));
+}
+
 export class AppManager implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
 
   private readonly apis: Iterable<AnyApiFactory>;
   private readonly icons: NonNullable<AppOptions['icons']>;
+  private readonly metadata: MetadataSpec;
   private readonly plugins: Set<CompatiblePlugin>;
   private readonly pluginMetadataExtender: PluginMetadataExtender;
   private readonly components: AppComponents;
@@ -196,6 +207,12 @@ export class AppManager implements BackstageApp {
     this.pluginMetadataExtender = new PluginMetadataExtender(options);
     this.apis = options.apis ?? [];
     this.icons = options.icons;
+    this.metadata = Object.fromEntries(
+      Object.entries(options.metadata ?? {}).map(([entityRef, val]) => [
+        getFullEntityRef(entityRef),
+        val,
+      ]),
+    );
     this.plugins = new Set(options.plugins);
     this.plugins.forEach(plugin => {
       plugin.__internalSetMetadataExtender?.(
@@ -463,6 +480,14 @@ export class AppManager implements BackstageApp {
     };
 
     return AppRouter;
+  }
+
+  public getEntityLinks(entityRef: string): EntityLink[] {
+    const { entityLinks = {} } = this.metadata;
+
+    const fullEntityRef = getFullEntityRef(entityRef);
+
+    return entityLinks[fullEntityRef] ?? [];
   }
 
   private getApiHolder(): ApiHolder {

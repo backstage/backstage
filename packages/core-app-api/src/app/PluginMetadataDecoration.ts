@@ -18,7 +18,7 @@ import { ExtendMetadata } from '@backstage/core-plugin-api';
 
 import { AppOptions } from './types';
 
-export type PluginDecorationOptions = Pick<AppOptions, 'pluginInfo'>;
+export type PluginDecorationOptions = Pick<AppOptions, 'metadata'>;
 
 /**
  * Extends plugin metadata with app-level configurations for setting owners
@@ -28,8 +28,8 @@ export class PluginMetadataExtender {
   private readonly matchers: ReadonlyArray<readonly [RegExp, string]>;
 
   constructor(private options: PluginDecorationOptions) {
-    const { pluginInfo } = this.options;
-    const { pluginOwners = [] } = pluginInfo ?? {};
+    const { metadata } = this.options;
+    const { pluginOwners = [] } = metadata ?? {};
 
     this.matchers = pluginOwners.flatMap(rec =>
       Object.entries(rec).map(
@@ -49,7 +49,7 @@ export class PluginMetadataExtender {
         this.matchOwner(pkgName) ?? pkgJson.backstage?.owner;
     }
 
-    this.options.pluginInfo?.pluginInfoDecorator?.(info, pluginId);
+    this.options.metadata?.pluginInfoDecorator?.(info, pluginId);
   };
 
   private matchOwner(pkgName: string): string | undefined {

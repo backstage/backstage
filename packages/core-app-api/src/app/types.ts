@@ -27,6 +27,7 @@ import {
   PluginInfo,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
+import { EntityLink } from '@backstage/catalog-model';
 
 /**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
@@ -178,11 +179,11 @@ export type AppRouteBinder = <
 ) => void;
 
 /**
- * Plugin information, such as ownership and metadata.
+ * Metadata, such as plugin information and ownership, or catalog metadata.
  *
  * @public
  */
-export type PluginInfoSpec = {
+export type MetadataSpec = {
   /**
    * A map of plugin package names to internal groups (as entity refs defaulting
    * to kind Group).
@@ -196,6 +197,12 @@ export type PluginInfoSpec = {
    * Decorate the PluginInfo part of a plugin
    */
   pluginInfoDecorator?: (plugin: PluginInfo, id: string) => void;
+
+  /**
+   * A map of entities to entity links. The default entity kind is Group, but
+   * can be a full entity ref for another kind.
+   */
+  entityLinks?: Record<string, EntityLink[]>;
 };
 
 /**
@@ -236,9 +243,10 @@ export type AppOptions = {
   >;
 
   /**
-   * Supply plugin information, such as ownership and metadata.
+   * Supply metadata information, such as plugin ownership and metadata, or
+   * catalog metadata.
    */
-  pluginInfo?: PluginInfoSpec;
+  metadata?: MetadataSpec;
 
   /**
    * Supply components to the app to override the default ones.
@@ -336,6 +344,12 @@ export type BackstageApp = {
    * and any other components that should only be available while signed in.
    */
   getRouter(): ComponentType<{}>;
+
+  /**
+   * Get additional entity links for a certain catalog entity. The default kind
+   * is Group.
+   */
+  getEntityLinks(entityRef: string): EntityLink[];
 };
 
 /**

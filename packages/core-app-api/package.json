@@ -32,6 +32,7 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",

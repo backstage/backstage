@@ -3803,6 +3803,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/core-app-api@workspace:packages/core-app-api"
   dependencies:
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
