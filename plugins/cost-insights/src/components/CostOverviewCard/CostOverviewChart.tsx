@@ -133,7 +133,7 @@ export const CostOverviewChart = ({
     );
   };
 
-  const { showTrendLine } = useCostInsightsOptions();
+  const { hideTrendLine } = useCostInsightsOptions();
 
   return (
     <Box display="flex" flexDirection="column">
@@ -180,7 +180,7 @@ export const CostOverviewChart = ({
             stroke="none"
             yAxisId={data.dailyCost.dataKey}
           />
-          {showTrendLine && (
+          {!hideTrendLine && (
             <Line
               activeDot={false}
               dataKey="trend"

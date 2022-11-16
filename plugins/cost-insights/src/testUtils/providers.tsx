@@ -26,6 +26,7 @@ import {
 } from '../hooks/useLastCompleteBillingDate';
 import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
 import { Group, Duration } from '../types';
+import { createPlugin, PluginProvider } from '@backstage/core-plugin-api';
 
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
@@ -143,6 +144,19 @@ export const MockBillingDateProvider = ({
 };
 
 export type MockScrollProviderProps = PropsWithChildren<{}>;
+
+export const MockPluginProvider = ({ children }: PropsWithChildren<{}>) => {
+  type TestInputPluginOptions = {};
+  type TestPluginOptions = {};
+  const plugin = createPlugin({
+    id: 'my-plugin',
+    __experimentalConfigure(_: TestInputPluginOptions): TestPluginOptions {
+      return {};
+    },
+  });
+
+  return <PluginProvider plugin={plugin}>{children}</PluginProvider>;
+};
 
 export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
   const defaultContext: ScrollContextProps = {

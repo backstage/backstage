@@ -49,7 +49,7 @@ export const costInsightsPlugin = createPlugin({
     options?: CostInsightsInputPluginOptions,
   ): CostInsightsPluginOptions {
     const defaultOptions = {
-      showTrendLine: true,
+      hideTrendLine: false,
     };
     return { ...defaultOptions, ...options };
   },

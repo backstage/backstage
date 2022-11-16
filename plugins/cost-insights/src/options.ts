@@ -17,12 +17,12 @@
 import { usePluginOptions } from '@backstage/core-plugin-api';
 
 export type CostInsightsPluginOptions = {
-  showTrendLine: boolean;
+  hideTrendLine?: boolean;
 };
 
 /** @ignore */
 export type CostInsightsInputPluginOptions = {
-  showTrendLine: boolean;
+  hideTrendLine?: boolean;
 };
 
 export const useCostInsightsOptions = () =>
