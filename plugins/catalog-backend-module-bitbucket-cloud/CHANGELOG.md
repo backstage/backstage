@@ -1,5 +1,61 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.1.5
+
+### Patch Changes
+
+- d089fbe7dc: Handle Bitbucket Cloud `repo:push` events at the `BitbucketCloudEntityProvider`
+  by subscribing to the topic `bitbucketCloud.repo:push.`
+
+  Implements `EventSubscriber` to receive events for the topic `bitbucketCloud.repo:push`.
+
+  On `repo:push`, the affected repository will be refreshed.
+  This includes adding new Location entities, refreshing existing ones,
+  and removing obsolete ones.
+
+  To support this, a new annotation `bitbucket.org/repo-url` was added
+  to Location entities.
+
+  A full refresh will require 1 API call to Bitbucket Cloud to discover all catalog files.
+  When we handle one `repo:push` event, we also need 1 API call in order to know
+  which catalog files exist.
+  This may lead to more discovery-related API calls (code search).
+  The main cause for hitting the rate limits are Locations refresh-related operations.
+
+  A reduction of total API calls to reduce the rate limit issues can only be achieved in
+  combination with
+
+  1. reducing the full refresh frequency (e.g., to monthly)
+  2. reducing the frequency of general Location refresh operations by the processing loop
+
+  For (2.), it is not possible to reduce the frequency only for Bitbucket Cloud-related
+  Locations though.
+
+  Further optimizations might be required to resolve the rate limit issue.
+
+  **Installation and Migration**
+
+  Please find more information at
+  https://backstage.io/docs/integrations/bitbucketCloud/discovery,
+  in particular the section about "_Installation with Events Support_".
+
+  In case of the new backend-plugin-api _(alpha)_ the module will take care of
+  registering itself at both.
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-catalog-backend@1.5.1
+  - @backstage/integration@1.4.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-events-node@0.1.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.1
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/plugin-catalog-common@1.0.8
+
 ## 0.1.5-next.1
 
 ### Patch Changes

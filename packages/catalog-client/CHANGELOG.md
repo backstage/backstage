@@ -1,5 +1,13 @@
 # @backstage/catalog-client
 
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.3
+  - @backstage/errors@1.1.3
+
 ## 1.1.2-next.0
 
 ### Patch Changes

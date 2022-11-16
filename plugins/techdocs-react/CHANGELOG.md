@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.6
+
+### Patch Changes
+
+- 7d1352d459: Analytics events captured within the `<TechDocsReaderPageProvider>` now include the conventional `entityRef` context value, associating those events with their corresponding entity.
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/version-bridge@1.0.2
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/config@1.0.4
+
 ## 1.0.6-next.1
 
 ### Patch Changes

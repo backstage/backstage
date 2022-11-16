@@ -4,6 +4,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { screen } from '@testing-library/react';
 import {
   setupRequestMockHandlers,
   renderInTestApp,
@@ -22,11 +23,11 @@ describe('ExampleComponent', () => {
   });
 
   it('should render', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
         <ExampleComponent />
       </ThemeProvider>,
     );
-    expect(rendered.getByText('Welcome to {{ id }}!')).toBeInTheDocument();
+    expect(screen.getByText('Welcome to {{ id }}!')).toBeInTheDocument();
   });
 });

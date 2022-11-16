@@ -1,5 +1,113 @@
 # @backstage/create-app
 
+## 0.4.34
+
+### Patch Changes
+
+- f1c3cdfb2d: Bumped create-app version.
+- df21bbd4ad: The [Analytics API](https://backstage.io/docs/plugins/analytics) is the recommended way to track usage in Backstage; an optionally installable [Google Analytics module](https://github.com/backstage/backstage/tree/master/plugins/analytics-module-ga#installation) has superseded the old app.googleAnalyticsTrackingId config and its corresponding script tags in packages/app/public/index.html.
+
+  For an existing installation where you want to remove the redundant app.googleAnalyticsTrackingId, you should make the following adjustment to `packages/app/public/index.html`:
+
+  ```diff
+      <title><%= config.getString('app.title') %></title>
+  -   <% if (config.has('app.googleAnalyticsTrackingId')) { %>
+  -   <script
+  -       async
+  -       src="https://www.googletagmanager.com/gtag/js?id=<%= config.getString('app.googleAnalyticsTrackingId') %>"
+  -   ></script>
+  -   <script>
+  -       window.dataLayer = window.dataLayer || [];
+  -       function gtag() {
+  -       dataLayer.push(arguments);
+  -       }
+  -       gtag('js', new Date());
+  -       gtag(
+  -       'config',
+  -       '<%= config.getString("app.googleAnalyticsTrackingId") %>',
+  -       );
+  -   </script>
+  -   <% } %>
+  </head>
+  ```
+
+  Additionally, you should make the following adjustment to `app-config.yaml`:
+
+  ```diff
+  app:
+    title: Backstage Example App
+    baseUrl: http://localhost:3000
+  - googleAnalyticsTrackingId: # UA-000000-0
+  ```
+
+- 4091c73e68: Updated `@swc/core` to `v1.3.9` which fixes a `.tsx` parser bug. You may want to run `yarn backstage-cli versions:bump` to get on latest version including the CLI itself.
+- 80bfac5266: Updated the create-app command to no longer require Git to be installed and configured. A git repository will only be initialized if possible and if not already in an git repository.
+- 286d474675: The `build` script in the root `package.json` has been split into two separate scripts, `build:backend` and `build:all`. This is to more accurately reflect what is being built, to avoid confusion.
+
+  If you want to build the project for a production deployment, you will want to use `build:backend`, as this builds both the frontend and backend package. If you are not using the `app-backend` plugin you will want to add your own `build:frontend` script, to which you can pass additional configuration parameters if needed.
+
+  The `build:all` script is useful if you simply want to check that it is possible to build all packages in the project. This might be useful as a CI check, but is generally unnecessary.
+
+  If you want to publish the packages in your repository you can add a `build:packages` script that calls `backstage-cli repo build`. This will skip the frontend and backend packages builds, as those are quite time consuming.
+
+  To apply these changes to an existing project, make the following change to the root `package.json` file:
+
+  ```diff
+  -    "build": "backstage-cli repo build --all",
+  +    "build:backend": "yarn workspace backend build",
+  +    "build:all": "backstage-cli repo build --all",
+  ```
+
+  There are also a couple of places where documentation has been updated, see the [upgrade helper](https://backstage.github.io/upgrade-helper/?to=1.8.0) for a full list of changes.
+
+- 384eaa2307: Switched Node.js version to support version 16 & 18, rather than 14 & 16. To switch the Node.js version in your own project, apply the following change to the root `package.json`:
+
+  ```diff
+     "engines": {
+  -    "node": "14 || 16"
+  +    "node": "16 || 18"
+     },
+  ```
+
+  As well as the following change to `packages/app/package.json`:
+
+  ```diff
+  -    "@types/node": "^14.14.32",
+  +    "@types/node": "^16.11.26",
+  ```
+
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- 864c876e57: Fixed incorrect comments in the templated `app-config.yaml` and `app-config.production.yaml`. The `backend.listen` directive is not in fact needed to override the `backend.baseUrl`, the backend listens to all interfaces by default. The configuration has also been updated to listen to all interfaces, rather than just IPv4 ones, as this is required for Node.js v18. The production configuration now also shows the option to specify `backend.listen` as a single string.
+
+  To apply this changes to an existing app, make the following change to `app-config.yaml`:
+
+  ```diff
+  -    # Uncomment the following host directive to bind to all IPv4 interfaces and
+  -    # not just the baseUrl hostname.
+  -    # host: 0.0.0.0
+  +    # Uncomment the following host directive to bind to specific interfaces
+  +    # host: 127.0.0.1
+  ```
+
+  And the following change to `app-config.production.yaml`:
+
+  ```diff
+  -  listen:
+  -    port: 7007
+  -    # The following host directive binds to all IPv4 interfaces when its value
+  -    # is "0.0.0.0". This is the most permissive setting. The right value depends
+  -    # on your specific deployment. If you remove the host line entirely, the
+  -    # backend will bind on the interface that corresponds to the backend.baseUrl
+  -    # hostname.
+  -    host: 0.0.0.0
+  +  # The listener can also be expressed as a single <host>:<port> string. In this case we bind to
+  +  # all interfaces, the most permissive setting. The right value depends on your specific deployment.
+  +  listen: ':7007'
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
 ## 0.4.34-next.2
 
 ### Patch Changes

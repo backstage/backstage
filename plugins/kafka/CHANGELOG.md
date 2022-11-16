@@ -1,5 +1,18 @@
 # @backstage/plugin-kafka
 
+## 0.3.11
+
+### Patch Changes
+
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/config@1.0.4
+  - @backstage/theme@0.2.16
+
 ## 0.3.11-next.1
 
 ### Patch Changes
