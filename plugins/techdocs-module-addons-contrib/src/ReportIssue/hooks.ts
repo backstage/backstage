@@ -49,6 +49,8 @@ export const getTitle = (selection: Selection) => {
 };
 
 export const getBody = (selection: Selection, markdownUrl: string) => {
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptional('app.title') || 'Backstage';
   const title = '## Documentation Feedback 📝';
   const subheading = '#### The highlighted text:';
   const commentHeading = '#### The comment on the text:';
@@ -59,8 +61,6 @@ export const getBody = (selection: Selection, markdownUrl: string) => {
     .split('\n')
     .map(line => `> ${line.trim()}`)
     .join('\n');
-  const configApi = useApi(configApiRef);
-  const appTitle = configApi.getOptional('app.title') || 'Backstage';
   const facts = [
     `${appTitle} URL: <${window.location.href}> \nMarkdown URL: <${markdownUrl}>`,
   ];
