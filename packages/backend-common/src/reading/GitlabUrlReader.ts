@@ -258,10 +258,6 @@ export class GitlabUrlReader implements UrlReader {
   }
 
   private async getGitlabFetchUrl(target: string): Promise<string> {
-    // If the target is a raw API url then trust that no parsing is needed
-    if (target.includes('/api/v4/')) {
-      return target;
-    }
     // If the target is for a job artifact then go down that path
     if (target.includes('/-/jobs/artifacts/')) {
       return this.getGitlabArtifactFetchUrl(target).then(value =>

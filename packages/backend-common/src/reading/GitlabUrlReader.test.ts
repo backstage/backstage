@@ -601,12 +601,6 @@ describe('GitlabUrlReader', () => {
         'https://gitlab.com/api/v4/projects/12345/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
       );
     });
-    it('should pass API urls naively', async () => {
-      const apiUrl = 'https://gitlab.com/api/v4/my/api/path';
-      await expect(
-        (gitlabProcessor as any).getGitlabFetchUrl(apiUrl)
-      ).resolves.toEqual(apiUrl,);
-    });
     it('should fail on unfamiliar or non-Gitlab urls', async () => {
       await expect(
         (gitlabProcessor as any).getGitlabFetchUrl(
