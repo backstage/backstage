@@ -68,7 +68,7 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
       </ListItemIcon>
       <ListItemText
         primary={item.title}
-        secondary={item.links?.reduce<React.ReactNodeArray>(
+        secondary={item.links?.reduce<React.ReactNode[]>(
           (prev, link, idx) => [
             ...prev,
             idx > 0 && <br key={idx} />,
