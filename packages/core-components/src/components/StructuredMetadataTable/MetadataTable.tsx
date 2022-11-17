@@ -63,7 +63,6 @@ export type MetadataTableListItemClassKey = 'root' | 'random';
 const listItemStyles = (theme: Theme) =>
   createStyles({
     root: {
-      gutters: 0,
       padding: theme.spacing(0, 0, 1, 0),
     },
     random: {},

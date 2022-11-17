@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import * as ingresses from './__fixtures__/2-ingresses.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { textContentMatcher, wrapInTestApp } from '@backstage/test-utils';
 import { IngressDrawer } from './IngressDrawer';
 
 describe('IngressDrawer', () => {
@@ -28,11 +28,17 @@ describe('IngressDrawer', () => {
       ),
     );
 
-    expect(getAllByText('awesome-service')).toHaveLength(2);
+    expect(getAllByText('awesome-service')).toHaveLength(4);
     expect(getByText('YAML')).toBeInTheDocument();
     expect(getByText('Rules')).toBeInTheDocument();
-    expect(getByText('Host: api.awesome-host.io')).toBeInTheDocument();
-    expect(getAllByText('Service Port: 80')).toHaveLength(2);
-    expect(getAllByText('Service Name: awesome-service')).toHaveLength(2);
+    expect(
+      getByText(textContentMatcher('Host: api.awesome-host.io')),
+    ).toBeInTheDocument();
+    expect(getAllByText(textContentMatcher('Service Port: 80'))).toHaveLength(
+      2,
+    );
+    expect(
+      getAllByText(textContentMatcher('Service Name: awesome-service')),
+    ).toHaveLength(2);
   });
 });
