@@ -264,7 +264,7 @@ The default `ScmAuthAPi` provides integrations for `github`, `gitlab`, `azure` a
 ScmAuth.createDefaultApiFactory();
 ```
 
-If you only require only a subset of these integrations then you will need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi).  It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed, and is used for example by the Scaffolder (Software Templates) and Catalog Import plugins.
+If you require only a subset of these integrations, then you will need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate different SCM systems generically, based on what resource is being accessed, and is used for example, by the Scaffolder (Software Templates) and Catalog Import plugins.
 
 The first step is to remove the code that creates the default providers.
 
@@ -282,7 +282,7 @@ The first step is to remove the code that creates the default providers.
  ];
 ```
 
-Then replace it with something like this which will create an `ApiFactory` with 
+Then replace it with something like this, which will create an `ApiFactory` with only a github provider.
 
 ```ts
 export const apis: AnyApiFactory[] = [
@@ -298,9 +298,9 @@ export const apis: AnyApiFactory[] = [
   });
 ```
 
-If you are using any custom authentication integrations, a new provider can be added to the `ApiFactory`.  
+If you use any custom authentication integrations, a new provider can be added to the `ApiFactory`.
 
-The first step is to create a new authentication ref which follows the naming convention of `xxxAuthApiRef`.  The example below is for a new github enterprise integration which can be defined either inside the app itself if it's only used for this purpose, or inside an internal common package for APIs, such as `@internal/apis`:
+The first step is to create a new authentication ref, which follows the naming convention of `xxxAuthApiRef`. The example below is for a new GitHub enterprise integration which can be defined either inside the app itself if it's only used for this purpose or inside a common internal package for APIs, such as `@internal/apis`:
 
 ```ts
 const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
@@ -328,7 +328,7 @@ createApiFactory({
 });
 ```
 
-Finally you also need to add and configure another provider to the `auth-backend` using the provider ID, which in this example is `ghe`:
+Finally, you also need to add and configure another provider to the `auth-backend` using the provider ID, which in this example is `ghe`:
 
 ```ts
 import { providers } from '@backstage/plugin-auth-backend';
