@@ -17,6 +17,10 @@
 import React, { PropsWithChildren } from 'react';
 import { createPlugin, PluginProvider } from '@backstage/core-plugin-api';
 
+/**
+ * Mock for PluginProvider to use in unit tests
+ * @alpha
+ */
 export const MockPluginProvider = ({ children }: PropsWithChildren<{}>) => {
   type TestInputPluginOptions = {};
   type TestPluginOptions = {};
