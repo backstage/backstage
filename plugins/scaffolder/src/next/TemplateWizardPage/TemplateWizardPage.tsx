@@ -44,9 +44,11 @@ import {
 } from '../../routes';
 import { SecretsContext } from '../../components/secrets/SecretsContext';
 import { JsonValue } from '@backstage/types';
+import type { ErrorTransformer } from '@rjsf/utils';
 
 export interface TemplateWizardPageProps {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  transformErrors?: ErrorTransformer;
 }
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
@@ -137,6 +139,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
                 manifest={manifest}
                 extensions={props.customFieldExtensions}
                 onComplete={onComplete}
+                transformErrors={props.transformErrors}
               />
             </InfoCard>
           )}

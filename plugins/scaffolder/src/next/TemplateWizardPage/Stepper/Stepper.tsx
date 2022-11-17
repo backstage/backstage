@@ -36,6 +36,7 @@ import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
 import validator from '@rjsf/validator-ajv8';
 import { selectedTemplateRouteRef } from '../../../routes';
+import type { ErrorTransformer } from '@rjsf/utils';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -56,6 +57,7 @@ export interface StepperProps {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  transformErrors?: ErrorTransformer;
 }
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -149,6 +151,7 @@ export const Stepper = (props: StepperProps) => {
             onSubmit={handleNext}
             fields={extensions}
             showErrorList={false}
+            transformErrors={props.transformErrors}
           >
             <div className={styles.footer}>
               <Button
