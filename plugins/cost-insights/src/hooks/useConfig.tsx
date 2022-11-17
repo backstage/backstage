@@ -25,7 +25,7 @@ import { Config as BackstageConfig } from '@backstage/config';
 import { Currency, Icon, Metric, Product } from '../types';
 import { getIcon } from '../utils/navigation';
 import { validateCurrencies, validateMetrics } from '../utils/config';
-import { createCurrency, defaultCurrencies } from '../utils/currency';
+import { createCurrencyFormat, defaultCurrencies } from '../utils/currency';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 /*
@@ -80,7 +80,7 @@ export const ConfigContext = createContext<ConfigContextProps | undefined>(
 );
 
 const defaultState: ConfigContextProps = {
-  baseCurrency: createCurrency(),
+  baseCurrency: createCurrencyFormat(),
   metrics: [],
   products: [],
   icons: [],
@@ -124,11 +124,11 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       if (baseCurrency) {
         const options = baseCurrency.getOptionalConfig('options');
         return new Intl.NumberFormat(
-          baseCurrency.getOptionalString('locales'),
+          baseCurrency.getOptionalString('locale'),
           options
             ? {
                 localeMatcher: options.getOptionalString('localeMatcher'),
-                style: options.getOptionalString('style'),
+                style: 'currency',
                 currency: options.getOptionalString('currency'),
                 currencySign: options.getOptionalString('currencySign'),
                 useGrouping: options.getOptionalBoolean('useGrouping'),

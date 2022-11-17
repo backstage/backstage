@@ -186,7 +186,11 @@ In the case you would like to show your baseline costs on the graph on other cur
 ## ./app-config.yaml
 costInsights:
   engineerCost: 200000
-  baseCurrency: EUR
+  baseCurrency:
+    locale: en-US
+    options:
+      currency: EUR
+      minimumFractionDigits: 3
 ```
 
 ### Currencies (Optional)

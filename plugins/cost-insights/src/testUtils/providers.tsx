@@ -23,7 +23,7 @@ import { CurrencyContext, CurrencyContextProps } from '../hooks';
 import { BillingDateContext, BillingDateContextProps } from '../hooks';
 import { ScrollContext, ScrollContextProps } from '../hooks';
 import { Duration } from '../types';
-import { createCurrency } from '../utils/currency';
+import { createCurrencyFormat } from '../utils/currency';
 
 export type MockFilterProviderProps = PropsWithChildren<
   Partial<FilterContextProps>
@@ -81,7 +81,7 @@ export const MockConfigProvider = (props: MockConfigProviderProps) => {
   const { children, ...context } = props;
 
   const defaultContext: ConfigContextProps = {
-    baseCurrency: createCurrency(),
+    baseCurrency: createCurrencyFormat(),
     metrics: [],
     products: [],
     icons: [],

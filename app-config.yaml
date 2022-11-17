@@ -373,6 +373,11 @@ auth:
       development: {}
 costInsights:
   engineerCost: 200000
+  baseCurrency:
+    locale: en-US
+    options:
+      currency: EUR
+      minimumFractionDigits: 3
   products:
     computeEngine:
       name: Compute Engine

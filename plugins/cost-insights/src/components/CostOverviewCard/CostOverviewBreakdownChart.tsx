@@ -186,9 +186,10 @@ export const CostOverviewBreakdownChart = ({
         ? DateTime.fromMillis(label)
         : DateTime.fromISO(label!);
     const dateTitle = date.toUTC().toFormat(DEFAULT_DATE_FORMAT);
+    const formatGraphValueWith = formatGraphValue(baseCurrency);
     const items = payload.map((p, i) => ({
       label: p.dataKey as string,
-      value: formatGraphValue(baseCurrency)(Number(p.value), i),
+      value: formatGraphValueWith(Number(p.value), i),
       fill: p.color!,
     }));
     const expandText = (

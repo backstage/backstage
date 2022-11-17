@@ -108,6 +108,7 @@ export const CostOverviewChart = ({
         ? DateTime.fromMillis(label)
         : DateTime.fromISO(label!);
     const title = date.toUTC().toFormat(DEFAULT_DATE_FORMAT);
+    const formatGraphValueWith = formatGraphValue(baseCurrency);
     const items = payload
       .filter(p => dataKeys.includes(p.dataKey as string))
       .map((p, i) => ({
@@ -117,16 +118,8 @@ export const CostOverviewChart = ({
             : data.metric.name,
         value:
           p.dataKey === data.dailyCost.dataKey
-            ? formatGraphValue(baseCurrency)(
-                Number(p.value),
-                i,
-                data.dailyCost.format,
-              )
-            : formatGraphValue(baseCurrency)(
-                Number(p.value),
-                i,
-                data.metric.format,
-              ),
+            ? formatGraphValueWith(Number(p.value), i, data.dailyCost.format)
+            : formatGraphValueWith(Number(p.value), i, data.metric.format),
         fill:
           p.dataKey === data.dailyCost.dataKey
             ? theme.palette.blue

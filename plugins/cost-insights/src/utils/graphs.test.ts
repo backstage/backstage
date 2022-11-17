@@ -16,19 +16,23 @@
 
 import { formatGraphValue, tooltipItemOf } from './graphs';
 import { DataKey } from '../types';
-import { createCurrency } from './currency';
+import { createCurrencyFormat } from './currency';
 
 describe('graphs', () => {
   it('formatGraphValue', () => {
-    expect(formatGraphValue(createCurrency('SEK'))(1000, 0)).toEqual(
+    expect(formatGraphValue(createCurrencyFormat('SEK'))(1000, 0)).toEqual(
       'SEK 1,000',
     );
-    expect(formatGraphValue(createCurrency('EUR'))(1000, 0)).toEqual('€1,000');
-    expect(formatGraphValue(createCurrency('USD'))(1000, 0)).toEqual('$1,000');
+    expect(formatGraphValue(createCurrencyFormat('EUR'))(1000, 0)).toEqual(
+      '€1,000',
+    );
+    expect(formatGraphValue(createCurrencyFormat('USD'))(1000, 0)).toEqual(
+      '$1,000',
+    );
   });
   it('tooltipItemOf', () => {
     expect(
-      tooltipItemOf(createCurrency('EUR'))({
+      tooltipItemOf(createCurrencyFormat('EUR'))({
         value: '1000',
         color: 'red',
         dataKey: DataKey.Current,
@@ -37,7 +41,7 @@ describe('graphs', () => {
     ).toEqual({
       fill: 'red',
       label: 'Kubernetes',
-      value: '€1,000',
+      value: '€1,000.00',
     });
   });
 });
