@@ -19,11 +19,17 @@ import { Router } from 'express';
 import type { UrlReader } from '@backstage/backend-common';
 
 // @public
-export interface EntityIteratorResult<T> {
-  cursor?: T;
-  done: boolean;
-  entities?: DeferredEntity[];
-}
+export type EntityIteratorResult<T> =
+  | {
+      done: false;
+      entities: DeferredEntity[];
+      cursor: T;
+    }
+  | {
+      done: true;
+      entities?: DeferredEntity[];
+      cursor?: T;
+    };
 
 // @public
 export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION =
