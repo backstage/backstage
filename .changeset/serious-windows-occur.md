@@ -1,6 +1,5 @@
 ---
 '@backstage/backend-common': patch
-'@backstage/config': patch
 '@backstage/core-components': patch
 ---
 
