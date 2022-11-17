@@ -9,4 +9,3 @@ Install the package via Yarn:
 ```sh
 yarn add @backstage/repo-tools
 ```
-

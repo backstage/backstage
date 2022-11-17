@@ -15,7 +15,7 @@
  */
 
 /**
- * CLI for Backstage repo tooling 
+ * CLI for Backstage repo tooling
  *
  * @packageDocumentation
  */
