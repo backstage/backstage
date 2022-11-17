@@ -127,7 +127,7 @@ exports.up = async function up(knex) {
     table.timestamp('created_at').defaultTo(knex.fn.now());
   });
 
-  await schema().alterTable('ingestion_marks', t => {
+  await knex.schema.alterTable('ingestion_marks', t => {
     t.primary('id');
     t.index('ingestion_id', 'ingestion_mark_ingestion_id_idx');
   });
@@ -135,7 +135,7 @@ exports.up = async function up(knex) {
   /**
    * Set up the ingestion_mark_entities table
    */
-  await schema().createTable('ingestion_mark_entities', table => {
+  await knex.schema.createTable('ingestion_mark_entities', table => {
     table.comment(
       'tracks the entities recorded in each step of an iterative ingestion',
     );
@@ -158,7 +158,7 @@ exports.up = async function up(knex) {
       .comment('the entity reference of the marked entity');
   });
 
-  await schema().alterTable('ingestion_mark_entities', t => {
+  await knex.schema.alterTable('ingestion_mark_entities', t => {
     t.primary('id');
     t.index('ingestion_mark_id', 'ingestion_mark_entity_ingestion_mark_id_idx');
   });
@@ -168,9 +168,8 @@ exports.up = async function up(knex) {
  * @param { import("knex").Knex } knex
  */
 exports.down = async function down(knex) {
-  const schema = () => knex.schema.withSchema('public');
-  await schema().dropTable('ingestion_mark_entities');
-  await schema().dropTable('ingestion_marks');
-  await schema().dropTable('ingestions');
+  await knex.schema.dropTable('ingestion_mark_entities');
+  await knex.schema.dropTable('ingestion_marks');
+  await knex.schema.dropTable('ingestions');
   await knex.raw(`DROP INDEX increment_ingestion_provider_name_idx;`);
 };
