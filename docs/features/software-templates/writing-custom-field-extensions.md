@@ -181,3 +181,102 @@ const CustomFieldExtension = scaffolderPlugin.provide(
   })
 );
 ```
+
+## Previewing Custom Field Extensions
+
+You can preview custom field extensions you write in the Backstage UI using the Custom Field Explorer
+(accessible via the `/create/edit` route by default):
+
+![Custom Field Explorer](../../assets/software-templates/custom-field-explorer.png)
+
+In order to make your new custom field extension available in the explorer you will have to define a
+JSON schema that describes the input/output types on your field like in the following example:
+
+```tsx
+//packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
+export const MyCustomExtensionWithOptionsSchema = {
+  uiOptions: {
+    type: 'object',
+    properties: {
+      focused: {
+        description: 'Whether to focus this field',
+        type: 'boolean',
+      },
+    },
+  },
+  returnValue: { type: 'string' },
+};
+
+export const MyCustomExtensionWithOptions = ({
+  onChange,
+  rawErrors,
+  required,
+  formData,
+}: FieldExtensionComponentProps<string, { focused?: boolean }>) => {
+  return (
+    <FormControl
+      margin="normal"
+      required={required}
+      error={rawErrors?.length > 0 && !formData}
+      onChange={onChange}
+      focused={focused}
+    />
+  );
+};
+```
+
+```tsx
+// packages/app/src/scaffolder/MyCustomExtensionWithOptions/extensions.ts
+...
+import { MyCustomExtensionWithOptions, MyCustomExtensionWithOptionsSchema } from './MyCustomExtensionWithOptions';
+
+export const MyCustomFieldWithOptionsExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    name: 'MyCustomExtensionWithOptions',
+    component: MyCustomExtensionWithOptions,
+    schema: MyCustomExtensionWithOptionsSchema,
+  }),
+);
+```
+
+We recommend using a library like [zod](https://github.com/colinhacks/zod) to define your schema
+and the provided `makeFieldSchemaFromZod` helper utility function to generate both the JSON schema
+and type for your field props to preventing having to duplicate the definitions:
+
+```tsx
+//packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
+...
+import { z } from 'zod';
+import { makeFieldSchemaFromZod } from '@backstage/plugin-scaffolder';
+
+const MyCustomExtensionWithOptionsFieldSchema = makeFieldSchemaFromZod(
+  z.string(),
+  z.object({
+    focused: z
+      .boolean()
+      .optional()
+      .describe('Whether to focus this field'),
+  }),
+);
+
+export const MyCustomExtensionWithOptionsSchema = MyCustomExtensionWithOptionsFieldSchema.schema;
+
+type MyCustomExtensionWithOptionsProps = typeof MyCustomExtensionWithOptionsFieldSchema.type;
+
+export const MyCustomExtensionWithOptions = ({
+  onChange,
+  rawErrors,
+  required,
+  formData,
+}: MyCustomExtensionWithOptionsProps) => {
+  return (
+    <FormControl
+      margin="normal"
+      required={required}
+      error={rawErrors?.length > 0 && !formData}
+      onChange={onChange}
+      focused={focused}
+    />
+  );
+};
+```

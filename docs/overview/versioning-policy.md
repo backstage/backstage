@@ -99,7 +99,7 @@ This versioning is completely decoupled from the Backstage release versioning,
 meaning you might for example have `@backstage/core-plugin-api` version `3.1.4`
 be part of the `1.12` Backstage release.
 
-Following versioning policy applies to all packages:
+The following versioning policy applies to all packages:
 
 - Breaking changes are noted in the changelog, and documentation is updated.
 - Breaking changes are prefixed with `**BREAKING**: ` in the changelog.
@@ -119,6 +119,25 @@ For packages at version `1.0.0` or above, the following policy also applies:
 - Exports that have been marked as `@alpha` or `@beta` may receive breaking
   changes without a deprecation period, but the changes must still adhere to
   semver.
+
+### Changes that are Not Considered Breaking
+
+There are a few changes that would typically be considered breaking changes, but
+that we make exceptions for. This is both to be able to evolve the project more
+rapidly, also because the alternative ends up having a bigger impact on users.
+
+For all Utility APIs and Backend Services that _have_ a built-in implementation,
+we only consider the API stability for consumers of those interfaces. This means
+that it is not considered a breaking change to break the contract for producers
+of the interface.
+
+Changes that fall under the above rule, must be marked with
+`**BREAKING PRODUCERS**:` in the changelog.
+
+For any case of dependency injection, it is not considered a breaking change to
+add a dependency on a Utility API or Backend Service that is provided by the
+framework. This includes any dependency that is provided by the
+`@backstage/app-defaults` and `@backstage/backend-defaults` packages.
 
 ### Release Stages
 
