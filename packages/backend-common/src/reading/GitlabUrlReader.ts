@@ -259,8 +259,9 @@ export class GitlabUrlReader implements UrlReader {
 
   private async getGitlabFetchUrl(target: string): Promise<string> {
     // If the target is for a job artifact then go down that path
-    if (target.includes('/-/jobs/artifacts/')) {
-      return this.getGitlabArtifactFetchUrl(target).then(value =>
+    const targetUrl = new URL(target);
+    if (targetUrl.pathname.includes('/-/jobs/artifacts/')) {
+      return this.getGitlabArtifactFetchUrl(targetUrl).then(value =>
         value.toString(),
       );
     }
@@ -272,22 +273,19 @@ export class GitlabUrlReader implements UrlReader {
   //    https://example.com/<namespace>/<project>/-/jobs/artifacts/<ref>/raw/<path_to_file>?job=<job_name>
   // to urls of the form:
   //    https://example.com/api/v4/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path?job=<job_name>
-  private async getGitlabArtifactFetchUrl(target: string): Promise<URL> {
-    const url = new URL(target);
-    if (!url.pathname.includes('/-/jobs/artifacts/')) {
+  private async getGitlabArtifactFetchUrl(target: URL): Promise<URL> {
+    if (!target.pathname.includes('/-/jobs/artifacts/')) {
       throw new Error('Unable to process url as an GitLab artifact');
     }
     try {
-      const [namespaceAndProject, ref] =
-        url.pathname.split('/-/jobs/artifacts/');
-      const projectPath = new URL(url);
+      const [namespaceAndProject, ref] = target.pathname.split('/-/jobs/artifacts/');
+      const projectPath = new URL(target);
       projectPath.pathname = namespaceAndProject;
       const projectId = await this.resolveProjectToId(projectPath);
-      const relativePath = getGitLabIntegrationRelativePath(
-        this.integration.config,
-      );
-      url.pathname = `${relativePath}/api/v4/projects/${projectId}/jobs/artifacts/${ref}`;
-      return url;
+      const relativePath = getGitLabIntegrationRelativePath(this.integration.config);
+      const newUrl = new URL(target);
+      newUrl.pathname = `${relativePath}/api/v4/projects/${projectId}/jobs/artifacts/${ref}`;
+      return newUrl;
     } catch (e) {
       throw new Error(
         `Unable to translate GitLab artifact URL: ${target}, ${e}`,
