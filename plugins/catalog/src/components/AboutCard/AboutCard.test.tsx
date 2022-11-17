@@ -28,6 +28,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 import { AboutCard } from './AboutCard';
@@ -73,7 +74,7 @@ describe('<AboutCard />', () => {
       ],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -98,10 +99,10 @@ describe('<AboutCard />', () => {
       },
     );
 
-    expect(getByText('service')).toBeInTheDocument();
-    expect(getByText('user:guest')).toBeInTheDocument();
-    expect(getByText('production')).toBeInTheDocument();
-    expect(getByText('This is the description')).toBeInTheDocument();
+    expect(screen.getByText('service')).toBeInTheDocument();
+    expect(screen.getByText('user:guest')).toBeInTheDocument();
+    expect(screen.getByText('production')).toBeInTheDocument();
+    expect(screen.getByText('This is the description')).toBeInTheDocument();
   });
 
   it('renders "view source" link', async () => {
@@ -122,7 +123,7 @@ describe('<AboutCard />', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -153,7 +154,7 @@ describe('<AboutCard />', () => {
         },
       },
     );
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
+    expect(screen.getByText('View Source').closest('a')).toHaveAttribute(
       'href',
       'https://github.com/backstage/backstage/blob/master/software.yaml',
     );
@@ -177,7 +178,7 @@ describe('<AboutCard />', () => {
       },
     };
 
-    const { getByTitle } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -209,7 +210,7 @@ describe('<AboutCard />', () => {
       },
     );
 
-    const editLink = getByTitle('Edit Metadata').closest('a');
+    const editLink = screen.getByTitle('Edit Metadata').closest('a');
     expect(editLink).toHaveAttribute(
       'href',
       'https://github.com/backstage/backstage/edit/master/software.yaml',
@@ -230,7 +231,7 @@ describe('<AboutCard />', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -250,8 +251,8 @@ describe('<AboutCard />', () => {
         },
       },
     );
-    expect(getByText('View Source')).toBeVisible();
-    expect(getByText('View Source').closest('a')).toBeNull();
+    expect(screen.getByText('View Source')).toBeVisible();
+    expect(screen.getByText('View Source').closest('a')).toBeNull();
   });
 
   it.each([
@@ -274,7 +275,7 @@ describe('<AboutCard />', () => {
       },
     };
 
-    const { getByTitle } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -299,7 +300,7 @@ describe('<AboutCard />', () => {
       'component:default/software',
     );
 
-    await userEvent.click(getByTitle('Schedule entity refresh'));
+    await userEvent.click(screen.getByTitle('Schedule entity refresh'));
 
     expect(catalogApi.refreshEntity).toHaveBeenCalledWith(
       'component:default/software',
@@ -320,7 +321,7 @@ describe('<AboutCard />', () => {
       },
     };
 
-    const { queryByTitle } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -341,7 +342,9 @@ describe('<AboutCard />', () => {
       },
     );
 
-    expect(queryByTitle('Schedule entity refresh')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTitle('Schedule entity refresh'),
+    ).not.toBeInTheDocument();
   });
 
   it('renders techdocs link', async () => {
@@ -361,7 +364,7 @@ describe('<AboutCard />', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -394,7 +397,7 @@ describe('<AboutCard />', () => {
       },
     );
 
-    expect(getByText('View TechDocs').closest('a')).toHaveAttribute(
+    expect(screen.getByText('View TechDocs').closest('a')).toHaveAttribute(
       'href',
       '/docs/default/Component/software',
     );
@@ -414,7 +417,7 @@ describe('<AboutCard />', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -446,8 +449,8 @@ describe('<AboutCard />', () => {
       },
     );
 
-    expect(getByText('View TechDocs')).toBeVisible();
-    expect(getByText('View TechDocs').closest('a')).toBeNull();
+    expect(screen.getByText('View TechDocs')).toBeVisible();
+    expect(screen.getByText('View TechDocs').closest('a')).toBeNull();
   });
 
   it('renders disabled techdocs link when route is not bound', async () => {
@@ -467,7 +470,7 @@ describe('<AboutCard />', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -499,7 +502,7 @@ describe('<AboutCard />', () => {
       },
     );
 
-    expect(getByText('View TechDocs')).toBeVisible();
-    expect(getByText('View TechDocs').closest('a')).toBeNull();
+    expect(screen.getByText('View TechDocs')).toBeVisible();
+    expect(screen.getByText('View TechDocs').closest('a')).toBeNull();
   });
 });
