@@ -43,7 +43,7 @@ export class IncrementalIngestionDatabaseManager {
   async updateIngestionRecordById(options: IngestionRecordUpdate) {
     await this.client.transaction(async tx => {
       const { ingestionId, update } = options;
-      await tx('ingestion.ingestions').where('id', ingestionId).update(update);
+      await tx('ingestions').where('id', ingestionId).update(update);
     });
   }
 
@@ -57,7 +57,7 @@ export class IncrementalIngestionDatabaseManager {
     update: Partial<IngestionUpsertIFace>,
   ) {
     await this.client.transaction(async tx => {
-      await tx('ingestion.ingestions')
+      await tx('ingestions')
         .where('provider_name', provider)
         .andWhere('completion_ticket', 'open')
         .update(update);
@@ -65,12 +65,12 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Performs an insert into the `ingestion.ingestions` table with the supplied values.
+   * Performs an insert into the `ingestions` table with the supplied values.
    * @param record - IngestionUpsertIFace
    */
   async insertIngestionRecord(record: IngestionUpsertIFace) {
     await this.client.transaction(async tx => {
-      await tx('ingestion.ingestions').insert(record);
+      await tx('ingestions').insert(record);
     });
   }
 
@@ -87,7 +87,7 @@ export class IncrementalIngestionDatabaseManager {
     let deleted = 0;
 
     for (const chunk of chunks) {
-      const chunkDeleted = await tx('ingestion.ingestion_mark_entities')
+      const chunkDeleted = await tx('ingestion_mark_entities')
         .delete()
         .whereIn(
           'id',
@@ -106,7 +106,7 @@ export class IncrementalIngestionDatabaseManager {
    */
   async getCurrentIngestionRecord(provider: string) {
     return await this.client.transaction(async tx => {
-      const record = await tx<IngestionRecord>('ingestion.ingestions')
+      const record = await tx<IngestionRecord>('ingestions')
         .where('provider_name', provider)
         .andWhere('completion_ticket', 'open')
         .first();
@@ -122,32 +122,32 @@ export class IncrementalIngestionDatabaseManager {
    */
   async clearFinishedIngestions(provider: string) {
     return await this.client.transaction(async tx => {
-      const markEntitiesDeleted = await tx('ingestion.ingestion_mark_entities')
+      const markEntitiesDeleted = await tx('ingestion_mark_entities')
         .delete()
         .whereIn(
           'ingestion_mark_id',
-          tx('ingestion.ingestion_marks')
+          tx('ingestion_marks')
             .select('id')
             .whereIn(
               'ingestion_id',
-              tx('ingestion.ingestions')
+              tx('ingestions')
                 .select('id')
                 .where('provider_name', provider)
                 .andWhereNot('completion_ticket', 'open'),
             ),
         );
 
-      const marksDeleted = await tx('ingestion.ingestion_marks')
+      const marksDeleted = await tx('ingestion_marks')
         .delete()
         .whereIn(
           'ingestion_id',
-          tx('ingestion.ingestions')
+          tx('ingestions')
             .select('id')
             .where('provider_name', provider)
             .andWhereNot('completion_ticket', 'open'),
         );
 
-      const ingestionsDeleted = await tx('ingestion.ingestions')
+      const ingestionsDeleted = await tx('ingestions')
         .delete()
         .where('provider_name', provider)
         .andWhereNot('completion_ticket', 'open');
@@ -171,24 +171,20 @@ export class IncrementalIngestionDatabaseManager {
    */
   async clearDuplicateIngestions(ingestionId: string, provider: string) {
     await this.client.transaction(async tx => {
-      const invalid = await tx<IngestionRecord>('ingestion.ingestions')
+      const invalid = await tx<IngestionRecord>('ingestions')
         .where('provider_name', provider)
         .andWhere('rest_completed_at', null)
         .andWhereNot('id', ingestionId);
 
       if (invalid.length > 0) {
-        await tx('ingestion.ingestions').delete().whereIn('id', invalid);
-        await tx('ingestion.ingestion_mark_entities')
+        await tx('ingestions').delete().whereIn('id', invalid);
+        await tx('ingestion_mark_entities')
           .delete()
           .whereIn(
             'ingestion_mark_id',
-            tx('ingestion.ingestion_marks')
-              .select('id')
-              .whereIn('ingestion_id', invalid),
+            tx('ingestion_marks').select('id').whereIn('ingestion_id', invalid),
           );
-        await tx('ingestion.ingestion_marks')
-          .delete()
-          .whereIn('ingestion_id', invalid);
+        await tx('ingestion_marks').delete().whereIn('ingestion_id', invalid);
       }
     });
   }
@@ -201,13 +197,13 @@ export class IncrementalIngestionDatabaseManager {
    */
   async purgeAndResetProvider(provider: string) {
     return await this.client.transaction(async tx => {
-      const ingestionIDs: { id: string }[] = await tx('ingestion.ingestions')
+      const ingestionIDs: { id: string }[] = await tx('ingestions')
         .select('id')
         .where('provider_name', provider);
 
       const markIDs: { id: string }[] =
         ingestionIDs.length > 0
-          ? await tx('ingestion.ingestion_marks')
+          ? await tx('ingestion_marks')
               .select('id')
               .whereIn(
                 'ingestion_id',
@@ -217,7 +213,7 @@ export class IncrementalIngestionDatabaseManager {
 
       const markEntityIDs: { id: string }[] =
         markIDs.length > 0
-          ? await tx('ingestion.ingestion_mark_entities')
+          ? await tx('ingestion_mark_entities')
               .select('id')
               .whereIn(
                 'ingestion_mark_id',
@@ -232,7 +228,7 @@ export class IncrementalIngestionDatabaseManager {
 
       const marksDeleted =
         markIDs.length > 0
-          ? await tx('ingestion.ingestion_marks')
+          ? await tx('ingestion_marks')
               .delete()
               .whereIn(
                 'ingestion_id',
@@ -240,7 +236,7 @@ export class IncrementalIngestionDatabaseManager {
               )
           : 0;
 
-      const ingestionsDeleted = await tx('ingestion.ingestions')
+      const ingestionsDeleted = await tx('ingestions')
         .delete()
         .where('provider_name', provider);
 
@@ -310,14 +306,14 @@ export class IncrementalIngestionDatabaseManager {
         )
         .whereNotIn(
           'entity_ref',
-          tx('ingestion.ingestion_marks')
+          tx('ingestion_marks')
             .join(
-              'ingestion.ingestion_mark_entities',
-              'ingestion.ingestion_marks.id',
-              'ingestion.ingestion_mark_entities.ingestion_mark_id',
+              'ingestion_mark_entities',
+              'ingestion_marks.id',
+              'ingestion_mark_entities.ingestion_mark_id',
             )
-            .select('ingestion.ingestion_mark_entities.ref')
-            .where('ingestion.ingestion_marks.ingestion_id', ingestionId),
+            .select('ingestion_mark_entities.ref')
+            .where('ingestion_marks.ingestion_id', ingestionId),
         );
       return removed.map(entity => {
         return { entity: JSON.parse(entity.entity) };
@@ -332,7 +328,7 @@ export class IncrementalIngestionDatabaseManager {
   async healthcheck() {
     return await this.client.transaction(async tx => {
       const records = await tx<{ id: string; provider_name: string }>(
-        'ingestion.ingestions',
+        'ingestions',
       )
         .distinct('id', 'provider_name')
         .where('rest_completed_at', null);
@@ -352,9 +348,9 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Purges the following tables:
-   * * `ingestion.ingestions`
-   * * `ingestion.ingestion_marks`
-   * * `ingestion.ingestion_mark_entities`
+   * * `ingestions`
+   * * `ingestion_marks`
+   * * `ingestion_mark_entities`
    *
    * This function leaves the ingestions table with all providers in a paused state.
    * @returns Results from cleaning up all ingestion tables.
@@ -362,7 +358,7 @@ export class IncrementalIngestionDatabaseManager {
   async cleanupProviders() {
     const providers = await this.listProviders();
 
-    const ingestionsDeleted = await this.purgeTable('ingestion.ingestions');
+    const ingestionsDeleted = await this.purgeTable('ingestions');
 
     const next_action_at = new Date();
     next_action_at.setTime(next_action_at.getTime() + 24 * 60 * 60 * 1000);
@@ -379,11 +375,9 @@ export class IncrementalIngestionDatabaseManager {
       });
     }
 
-    const ingestionMarksDeleted = await this.purgeTable(
-      'ingestion.ingestion_marks',
-    );
+    const ingestionMarksDeleted = await this.purgeTable('ingestion_marks');
     const markEntitiesDeleted = await this.purgeTable(
-      'ingestion.ingestion_mark_entities',
+      'ingestion_mark_entities',
     );
 
     return { ingestionsDeleted, ingestionMarksDeleted, markEntitiesDeleted };
@@ -512,13 +506,13 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Returns the last record from `ingestion.ingestion_marks` for the supplied ingestionId.
+   * Returns the last record from `ingestion_marks` for the supplied ingestionId.
    * @param ingestionId - string
    * @returns MarkRecord | undefined
    */
   async getLastMark(ingestionId: string) {
     return await this.client.transaction(async tx => {
-      const mark = await tx<MarkRecord>('ingestion.ingestion_marks')
+      const mark = await tx<MarkRecord>('ingestion_marks')
         .where('ingestion_id', ingestionId)
         .orderBy('sequence', 'desc')
         .first();
@@ -528,7 +522,7 @@ export class IncrementalIngestionDatabaseManager {
 
   async getAllMarks(ingestionId: string) {
     return await this.client.transaction(async tx => {
-      const marks = await tx<MarkRecord>('ingestion.ingestion_marks')
+      const marks = await tx<MarkRecord>('ingestion_marks')
         .where('ingestion_id', ingestionId)
         .orderBy('sequence', 'desc');
       return marks;
@@ -536,23 +530,23 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Performs an insert into the `ingestion.ingestion_marks` table with the supplied values.
+   * Performs an insert into the `ingestion_marks` table with the supplied values.
    * @param options - MarkRecordInsert
    */
   async createMark(options: MarkRecordInsert) {
     const { record } = options;
     await this.client.transaction(async tx => {
-      await tx('ingestion.ingestion_marks').insert(record);
+      await tx('ingestion_marks').insert(record);
     });
   }
   /**
-   * Performs an upsert to the `ingestion.ingestion_mark_entities` table for all deferred entities.
+   * Performs an upsert to the `ingestion_mark_entities` table for all deferred entities.
    * @param markId - string
    * @param entities - DeferredEntity[]
    */
   async createMarkEntities(markId: string, entities: DeferredEntity[]) {
     await this.client.transaction(async tx => {
-      await tx('ingestion.ingestion_mark_entities').insert(
+      await tx('ingestion_mark_entities').insert(
         entities.map(entity => ({
           id: v4(),
           ingestion_mark_id: markId,
@@ -580,7 +574,7 @@ export class IncrementalIngestionDatabaseManager {
   async listProviders() {
     return await this.client.transaction(async tx => {
       const providers = await tx<{ provider_name: string }>(
-        'ingestion.ingestions',
+        'ingestions',
       ).distinct('provider_name');
       return providers.map(entry => entry.provider_name);
     });

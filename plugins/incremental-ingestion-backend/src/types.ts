@@ -164,7 +164,7 @@ export interface IterationEngineOptions {
 }
 
 /**
- * The shape of data inserted into or updated in the `ingestion.ingestions` table.
+ * The shape of data inserted into or updated in the `ingestions` table.
  *
  * @public
  */
@@ -234,7 +234,7 @@ export interface IngestionRecordUpdate {
 }
 
 /**
- * The expected response from the `ingestion.ingestion_marks` table.
+ * The expected response from the `ingestion_marks` table.
  * 
  * @public
  */
@@ -247,7 +247,7 @@ export interface MarkRecord {
 }
 
 /**
- * The expected response from the `ingestion.ingestions` table.
+ * The expected response from the `ingestions` table.
  * 
  * @public
  */

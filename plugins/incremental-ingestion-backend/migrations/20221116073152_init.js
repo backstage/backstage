@@ -18,19 +18,19 @@
  * @param { import("knex").Knex } knex
  */
 exports.up = async function up(knex) {
-  await knex.raw(`
-CREATE VIEW ingestion.current_entities as SELECT
-  FORMAT('%s:%s/%s',
-    LOWER(final_entity::json #>> '{kind}'),
-    LOWER(final_entity::json #>> '{metadata, namespace}'),
-    LOWER(final_entity::json #>> '{metadata, name}')) as ref,
-  final_entity::json #>> '{metadata, annotations, backstage.io/incremental-provider-name}' as provider_name,
-  final_entity FROM public.final_entities;
-`);
+  /**
+   * Create an index on the final_entities table for the provider name
+   * annotation
+   */
 
-  const schema = () => knex.schema.withSchema('ingestion');
+  await knex.raw(
+    `CREATE INDEX IF NOT EXISTS increment_ingestion_provider_name_idx ON public.final_entities ((final_entity::json #>> '{metadata, annotations, backstage.io/incremental-provider-name}'));`,
+  );
 
-  await schema().createTable('ingestions', table => {
+  /**
+   * Sets up the ingestions table
+   */
+  await knex.schema.createTable('ingestions', table => {
     table.comment('Tracks ingestion streams for very large data sets');
 
     table
@@ -81,9 +81,26 @@ CREATE VIEW ingestion.current_entities as SELECT
     table
       .timestamp('rest_completed_at')
       .comment('when did the rest period actually end');
+
+    table
+      .string('completion_ticket')
+      .notNullable()
+      .comment('indicates whether the ticket is still open or stamped complete')
   });
 
-  await schema().createTable('ingestion_marks', table => {
+  await knex.schema.alterTable('ingestions', t => {
+    t.primary('id');
+    t.index('provider_name', 'ingestion_provider_name_idx');
+    t.unique(['provider_name', 'completion_ticket'], {
+      indexName: 'ingestion_composite_index',
+      deferrable: 'deferred',
+    });
+  });
+
+  /**
+   * Sets up the ingestion_marks table
+   */
+  await knex.schema.createTable('ingestion_marks', table => {
     table.comment('tracks each step of an iterative ingestion');
 
     table
@@ -110,6 +127,14 @@ CREATE VIEW ingestion.current_entities as SELECT
     table.timestamp('created_at').defaultTo(knex.fn.now());
   });
 
+  await schema().alterTable('ingestion_marks', t => {
+    t.primary('id');
+    t.index('ingestion_id', 'ingestion_mark_ingestion_id_idx');
+  });
+
+  /**
+   * Set up the ingestion_mark_entities table
+   */
   await schema().createTable('ingestion_mark_entities', table => {
     table.comment(
       'tracks the entities recorded in each step of an iterative ingestion',
@@ -132,15 +157,20 @@ CREATE VIEW ingestion.current_entities as SELECT
       .notNullable()
       .comment('the entity reference of the marked entity');
   });
+
+  await schema().alterTable('ingestion_mark_entities', t => {
+    t.primary('id');
+    t.index('ingestion_mark_id', 'ingestion_mark_entity_ingestion_mark_id_idx');
+  });
 };
 
 /**
  * @param { import("knex").Knex } knex
  */
 exports.down = async function down(knex) {
-  const schema = () => knex.schema.withSchema('ingestion');
-  await schema().dropView('current_entities');
+  const schema = () => knex.schema.withSchema('public');
   await schema().dropTable('ingestion_mark_entities');
   await schema().dropTable('ingestion_marks');
   await schema().dropTable('ingestions');
+  await knex.raw(`DROP INDEX increment_ingestion_provider_name_idx;`);
 };
