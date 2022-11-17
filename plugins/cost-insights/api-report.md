@@ -227,7 +227,7 @@ export type ChartData = {
 
 // @public (undocumented)
 export type ConfigContextProps = {
-  baseCurrency: string;
+  baseCurrency: Intl.NumberFormat;
   metrics: Metric[];
   products: Product[];
   icons: Icon[];

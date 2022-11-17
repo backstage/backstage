@@ -43,14 +43,12 @@ import { isInvalid, titleOf, tooltipItemOf } from '../../utils/graphs';
 import { TooltipRenderer } from '../../types';
 import { useConfig } from '../../hooks';
 
-const defaultTooltip = (baseCurrency: string) => {
+const defaultTooltip = (baseCurrency: Intl.NumberFormat) => {
   const tooltip: TooltipRenderer = ({ label, payload = [] }) => {
     if (isInvalid({ label, payload })) return null;
 
     const title = titleOf(label);
-    const items = payload
-      .map(p => tooltipItemOf(baseCurrency, p))
-      .filter(notEmpty);
+    const items = payload.map(tooltipItemOf(baseCurrency)).filter(notEmpty);
     return (
       <BarChartTooltip title={title}>
         {items.map((item, index) => (

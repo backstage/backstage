@@ -61,3 +61,12 @@ export const defaultCurrencies: Currency[] = [
     rate: 5.5,
   },
 ];
+
+export const createCurrency = (
+  currency: string = 'USD',
+  locale: string = 'en-US',
+) =>
+  new Intl.NumberFormat(locale, {
+    currency,
+    style: 'currency',
+  });

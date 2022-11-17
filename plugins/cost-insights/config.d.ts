@@ -24,7 +24,7 @@ export interface Config {
     /**
      * @visibility frontend
      */
-    baseCurrency?: string;
+    baseCurrency?: Intl.NumberFormat;
 
     products?: {
       [kind: string]: {
