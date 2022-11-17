@@ -13,40 +13,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityPicker } from '../components/fields/EntityPicker/EntityPicker';
-import { EntityNamePicker } from '../components/fields/EntityNamePicker/EntityNamePicker';
+import {
+  EntityPicker,
+  EntityPickerSchema,
+} from '../components/fields/EntityPicker/EntityPicker';
+import {
+  EntityNamePicker,
+  EntityNamePickerSchema,
+} from '../components/fields/EntityNamePicker/EntityNamePicker';
 import { entityNamePickerValidation } from '../components/fields/EntityNamePicker/validation';
-import { EntityTagsPicker } from '../components/fields/EntityTagsPicker/EntityTagsPicker';
-import { OwnerPicker } from '../components/fields/OwnerPicker/OwnerPicker';
-import { RepoUrlPicker } from '../components/fields/RepoUrlPicker/RepoUrlPicker';
+import {
+  EntityTagsPicker,
+  EntityTagsPickerSchema,
+} from '../components/fields/EntityTagsPicker/EntityTagsPicker';
+import {
+  OwnerPicker,
+  OwnerPickerSchema,
+} from '../components/fields/OwnerPicker/OwnerPicker';
+import {
+  RepoUrlPicker,
+  RepoUrlPickerSchema,
+} from '../components/fields/RepoUrlPicker/RepoUrlPicker';
 import { repoPickerValidation } from '../components/fields/RepoUrlPicker/validation';
-import { OwnedEntityPicker } from '../components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import {
+  OwnedEntityPicker,
+  OwnedEntityPickerSchema,
+} from '../components/fields/OwnedEntityPicker/OwnedEntityPicker';
 
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
     component: EntityPicker,
     name: 'EntityPicker',
+    schema: EntityPickerSchema,
   },
   {
     component: EntityNamePicker,
     name: 'EntityNamePicker',
     validation: entityNamePickerValidation,
+    schema: EntityNamePickerSchema,
   },
   {
     component: EntityTagsPicker,
     name: 'EntityTagsPicker',
+    schema: EntityTagsPickerSchema,
   },
   {
     component: RepoUrlPicker,
     name: 'RepoUrlPicker',
     validation: repoPickerValidation,
+    schema: RepoUrlPickerSchema,
   },
   {
     component: OwnerPicker,
     name: 'OwnerPicker',
+    schema: OwnerPickerSchema,
   },
   {
     component: OwnedEntityPicker,
     name: 'OwnedEntityPicker',
+    schema: OwnedEntityPickerSchema,
   },
 ];

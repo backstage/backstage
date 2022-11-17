@@ -47,7 +47,7 @@
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",
     "react-use": "^17.2.4",
-    "zen-observable": "^0.8.15"
+    "zen-observable": "^0.9.0"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
