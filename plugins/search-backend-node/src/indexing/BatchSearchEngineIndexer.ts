@@ -111,6 +111,12 @@ export abstract class BatchSearchEngineIndexer extends Writable {
    */
   async _final(done: (error?: Error | null) => void) {
     try {
+      const maybeError = await this.initialized;
+      if (maybeError) {
+        done(maybeError);
+        return;
+      }
+
       // Index any remaining documents.
       if (this.currentBatch.length) {
         await this.index(this.currentBatch);

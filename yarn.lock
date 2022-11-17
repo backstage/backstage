@@ -3269,7 +3269,7 @@ __metadata:
     react-router-dom-stable: "npm:react-router-dom@^6.3.0"
     react-router-stable: "npm:react-router@^6.3.0"
     react-use: ^17.2.4
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
     zod: ^3.11.6
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -3390,7 +3390,7 @@ __metadata:
     react-virtualized-auto-sizer: ^1.0.6
     react-window: ^1.8.6
     remark-gfm: ^3.0.1
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
     zod: ^3.11.6
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -3422,7 +3422,7 @@ __metadata:
     history: ^5.0.0
     msw: ^0.48.0
     prop-types: ^15.7.2
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -3477,7 +3477,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.0.0
     react-use: ^17.2.4
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -4712,7 +4712,7 @@ __metadata:
     react-test-renderer: ^16.13.1
     react-use: ^17.2.4
     yaml: ^2.0.0
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -4752,7 +4752,7 @@ __metadata:
     lodash: ^4.17.21
     react-helmet: 6.1.0
     react-use: ^17.2.4
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -5020,7 +5020,7 @@ __metadata:
     jsonschema: ^1.2.6
     msw: ^0.48.0
     react-use: ^17.2.4
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown
@@ -6571,7 +6571,7 @@ __metadata:
     vm2: ^3.9.11
     winston: ^3.2.1
     yaml: ^2.0.0
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
     zod: ^3.11.6
   languageName: unknown
   linkType: soft
@@ -6645,7 +6645,9 @@ __metadata:
     react-use: ^17.2.4
     use-immer: ^0.7.0
     yaml: ^2.0.0
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
+    zod: ^3.11.6
+    zod-to-json-schema: ^3.18.1
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -6880,7 +6882,7 @@ __metadata:
     react-hook-form: ^7.12.2
     react-use: ^17.2.4
     uuid: ^8.3.2
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
@@ -7474,7 +7476,7 @@ __metadata:
     cross-fetch: ^3.1.5
     msw: ^0.48.0
     react-use: ^17.2.4
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
@@ -7600,7 +7602,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.48.0
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -7626,7 +7628,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@types/zen-observable": ^0.8.0
     luxon: ^3.0.0
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   languageName: unknown
   linkType: soft
 
@@ -20884,7 +20886,7 @@ __metadata:
     react-router-dom: ^6.3.0
     react-use: ^17.2.4
     start-server-and-test: ^1.10.11
-    zen-observable: ^0.8.15
+    zen-observable: ^0.9.0
   languageName: unknown
   linkType: soft
 
@@ -37622,6 +37624,13 @@ __metadata:
   version: 0.8.15
   resolution: "zen-observable@npm:0.8.15"
   checksum: b7289084bc1fc74a559b7259faa23d3214b14b538a8843d2b001a35e27147833f4107590b1b44bf5bc7f6dfe6f488660d3a3725f268e09b3925b3476153b7821
+  languageName: node
+  linkType: hard
+
+"zen-observable@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "zen-observable@npm:0.9.0"
+  checksum: d770639f7cb47c89e442b0b87e6955079b9d0f3f7da220f081c3a478ee7b837ee792be4ae8764f2d49fe0afaaa3fbcdc7a88042c3ed471df9ae551de90e82ea2
   languageName: node
   linkType: hard
 
