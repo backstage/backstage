@@ -174,9 +174,8 @@ describe('FetchUrlReader', () => {
       const { buffer } = await fetchUrlReader.readUrl(
         'https://backstage.io/some-resource',
       );
-      const fromStream = await buffer();
-      const res = await fromStream;
-      expect(res.toString()).toBe('content foo');
+      const response = await buffer();
+      expect(response.toString()).toBe('content foo');
     });
 
     it('should throw NotFound if server responds with 404', async () => {
