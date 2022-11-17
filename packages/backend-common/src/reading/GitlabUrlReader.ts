@@ -257,7 +257,7 @@ export class GitlabUrlReader implements UrlReader {
     return `gitlab{host=${host},authed=${Boolean(token)}}`;
   }
 
-  async getGitlabFetchUrl(target: string): Promise<string> {
+  private async getGitlabFetchUrl(target: string): Promise<string> {
     // If the target is a raw API url then trust that no parsing is needed
     if (target.includes('/api/v4/')) {
       return target;
@@ -276,7 +276,7 @@ export class GitlabUrlReader implements UrlReader {
   //    https://example.com/<namespace>/<project>/-/jobs/artifacts/<ref>/raw/<path_to_file>?job=<job_name>
   // to urls of the form:
   //    https://example.com/api/v4/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path?job=<job_name>
-  async getGitlabArtifactFetchUrl(target: string): Promise<URL> {
+  private async getGitlabArtifactFetchUrl(target: string): Promise<URL> {
     const url = new URL(target);
     if (!url.pathname.includes('/-/jobs/artifacts/')) {
       throw new Error('Unable to process url as an GitLab artifact');

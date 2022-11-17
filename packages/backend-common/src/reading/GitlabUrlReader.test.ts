@@ -585,7 +585,7 @@ describe('GitlabUrlReader', () => {
     });
     it('should fall back to getGitLabFileFetchUrl for blob urls', async () => {
       await expect(
-        gitlabProcessor.getGitlabFetchUrl(
+        (gitlabProcessor as any).getGitlabFetchUrl(
           'https://gitlab.com/group/subgroup/project/-/blob/branch/my/path/to/file.yaml',
         ),
       ).resolves.toEqual(
@@ -594,7 +594,7 @@ describe('GitlabUrlReader', () => {
     });
     it('should work for job artifact urls', async () => {
       await expect(
-        gitlabProcessor.getGitlabFetchUrl(
+        (gitlabProcessor as any).getGitlabFetchUrl(
           'https://gitlab.com/group/subgroup/project/-/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
         ),
       ).resolves.toEqual(
@@ -603,13 +603,13 @@ describe('GitlabUrlReader', () => {
     });
     it('should pass API urls naively', async () => {
       const apiUrl = 'https://gitlab.com/api/v4/my/api/path';
-      await expect(gitlabProcessor.getGitlabFetchUrl(apiUrl)).resolves.toEqual(
-        apiUrl,
-      );
+      await expect(
+        (gitlabProcessor as any).getGitlabFetchUrl(apiUrl)
+      ).resolves.toEqual(apiUrl,);
     });
     it('should fail on unfamiliar or non-Gitlab urls', async () => {
       await expect(
-        gitlabProcessor.getGitlabFetchUrl(
+        (gitlabProcessor as any).getGitlabFetchUrl(
           'https://gitlab.com/some/random/endpoint',
         ),
       ).rejects.toThrow('Please provide full path to yaml file from GitLab');
@@ -633,14 +633,14 @@ describe('GitlabUrlReader', () => {
     });
     it('should reject urls that are not for the job artifacts API', async () => {
       await expect(
-        gitlabProcessor.getGitlabArtifactFetchUrl(
+        (gitlabProcessor as any).getGitlabArtifactFetchUrl(
           'https://gitlab.com/some/url',
         ),
       ).rejects.toThrow('Unable to process url as an GitLab artifact');
     });
     it('should work for job artifact urls', async () => {
       await expect(
-        gitlabProcessor.getGitlabFetchUrl(
+        (gitlabProcessor as any).getGitlabFetchUrl(
           'https://gitlab.com/group/subgroup/project/-/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
         ),
       ).resolves.toEqual(
@@ -649,7 +649,7 @@ describe('GitlabUrlReader', () => {
     });
     it('errors in mapping the project ID should be captured', async () => {
       await expect(
-        gitlabProcessor.getGitlabFetchUrl(
+        (gitlabProcessor as any).getGitlabFetchUrl(
           'https://gitlab.com/groupA/subgroup/project/-/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
         ),
       ).rejects.toThrow(/^Unable to translate GitLab artifact URL:/);
