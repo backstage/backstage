@@ -171,21 +171,22 @@ describe('FetchUrlReader', () => {
 
   describe('read', () => {
     it('should return etag from the response', async () => {
-      const buffer = await fetchUrlReader.read(
+      const { buffer } = await fetchUrlReader.readUrl(
         'https://backstage.io/some-resource',
       );
-      expect(buffer.toString()).toBe('content foo');
+      const response = await buffer();
+      expect(response.toString()).toBe('content foo');
     });
 
     it('should throw NotFound if server responds with 404', async () => {
       await expect(
-        fetchUrlReader.read('https://backstage.io/not-exists'),
+        fetchUrlReader.readUrl('https://backstage.io/not-exists'),
       ).rejects.toThrow(NotFoundError);
     });
 
     it('should throw Error if server responds with 500', async () => {
       await expect(
-        fetchUrlReader.read('https://backstage.io/error'),
+        fetchUrlReader.readUrl('https://backstage.io/error'),
       ).rejects.toThrow(Error);
     });
   });

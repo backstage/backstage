@@ -224,7 +224,7 @@ describe('CommonValidatorFunctions', () => {
     ['abc xyz', true],
     ['abc xyz abc.', true],
   ])(`isValidString %p ? %p`, (value, result) => {
-    expect(CommonValidatorFunctions.isValidString(value)).toBe(result);
+    expect(CommonValidatorFunctions.isNonEmptyString(value)).toBe(result);
   });
 
   it.each([
