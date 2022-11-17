@@ -35,7 +35,7 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Typography, Paper, useTheme } from '@material-ui/core';
+import { makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import classNames from 'classnames';
 import React from 'react';
@@ -43,14 +43,10 @@ import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   graph: {
-    flex: 1,
     minHeight: '100%',
   },
   graphWrapper: {
-    position: 'relative',
-    flex: 1,
-    minHeight: 0,
-    display: 'flex',
+    height: '100%',
   },
   organizationNode: {
     fill: theme.palette.secondary.light,
@@ -236,27 +232,25 @@ export function GroupsDiagram() {
   }
 
   return (
-    <>
-      <Paper className={classes.graphWrapper}>
-        <DependencyGraph
-          nodes={nodes}
-          edges={edges}
-          nodeMargin={10}
-          direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
-          renderNode={RenderNode}
-          className={classes.graph}
-        />
+    <div className={classes.graphWrapper}>
+      <DependencyGraph
+        nodes={nodes}
+        edges={edges}
+        nodeMargin={10}
+        direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
+        renderNode={RenderNode}
+        className={classes.graph}
+      />
 
-        <Typography
-          variant="caption"
-          color="textSecondary"
-          display="block"
-          className={classes.legend}
-        >
-          <ZoomOutMap className="icon" /> Use pinch &amp; zoom to move around
-          the diagram.
-        </Typography>
-      </Paper>
-    </>
+      <Typography
+        variant="caption"
+        color="textSecondary"
+        display="block"
+        className={classes.legend}
+      >
+        <ZoomOutMap className="icon" /> Use pinch &amp; zoom to move around the
+        diagram.
+      </Typography>
+    </div>
   );
 }
