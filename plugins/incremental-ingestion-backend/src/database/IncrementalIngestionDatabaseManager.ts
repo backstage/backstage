@@ -254,7 +254,7 @@ export class IncrementalIngestionDatabaseManager {
         next_action_at,
         ingestion_completed_at: new Date(),
         status: 'resting',
-        completion_ticket: v4(),
+        completion_ticket: 'open',
       });
 
       return { provider, ingestionsDeleted, marksDeleted, markEntitiesDeleted };
@@ -375,7 +375,7 @@ export class IncrementalIngestionDatabaseManager {
         next_action_at,
         ingestion_completed_at: new Date(),
         status: 'resting',
-        completion_ticket: v4(),
+        completion_ticket: 'open',
       });
     }
 
