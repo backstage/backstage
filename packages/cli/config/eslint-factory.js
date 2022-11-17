@@ -56,14 +56,14 @@ function createConfig(dir, extraConfig = {}) {
   return {
     ...otherConfig,
     extends: [
-      '@spotify/eslint-config-base',
-      '@spotify/eslint-config-typescript',
-      'prettier',
+      require.resolve('@spotify/eslint-config-base'),
+      require.resolve('@spotify/eslint-config-typescript'),
+      require.resolve('eslint-config-prettier'),
       'plugin:jest/recommended',
       'plugin:monorepo/recommended',
       ...(extraExtends ?? []),
     ],
-    parser: '@typescript-eslint/parser',
+    parser: require.resolve('@typescript-eslint/parser'),
     plugins: ['import', ...(plugins ?? [])],
     env: {
       jest: true,
@@ -214,7 +214,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
       return createConfig(dir, {
         ...extraConfig,
         extends: [
-          '@spotify/eslint-config-react',
+          require.resolve('@spotify/eslint-config-react'),
           ...(extraConfig.extends ?? []),
         ],
         parserOptions: {
