@@ -38,7 +38,7 @@
     "@backstage/version-bridge": "workspace:^",
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
-    "zen-observable": "^0.8.15"
+    "zen-observable": "^0.9.0"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
