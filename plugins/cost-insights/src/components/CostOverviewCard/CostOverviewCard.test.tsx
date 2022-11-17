@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { MockPluginProvider, renderInTestApp } from '@backstage/test-utils';
 import { CostOverviewCard } from './CostOverviewCard';
 import { Cost } from '../../types';
 import {
@@ -23,12 +23,11 @@ import {
   getGroupedProducts,
   getGroupedProjects,
   MockAggregatedDailyCosts,
-  trendlineOf,
   MockBillingDateProvider,
   MockConfigProvider,
   MockFilterProvider,
   MockScrollProvider,
-  MockPluginProvider,
+  trendlineOf,
 } from '../../testUtils';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
 

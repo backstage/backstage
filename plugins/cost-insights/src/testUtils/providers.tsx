@@ -15,18 +15,23 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { LoadingContext, LoadingContextProps } from '../hooks/useLoading';
-import { GroupsContext, GroupsContextProps } from '../hooks/useGroups';
-import { FilterContext, FilterContextProps } from '../hooks/useFilters';
-import { ConfigContext, ConfigContextProps } from '../hooks/useConfig';
-import { CurrencyContext, CurrencyContextProps } from '../hooks/useCurrency';
 import {
+  LoadingContext,
+  LoadingContextProps,
+  GroupsContext,
+  GroupsContextProps,
+  FilterContext,
+  FilterContextProps,
+  ConfigContext,
+  ConfigContextProps,
+  CurrencyContext,
+  CurrencyContextProps,
   BillingDateContext,
   BillingDateContextProps,
-} from '../hooks/useLastCompleteBillingDate';
-import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
+  ScrollContext,
+  ScrollContextProps,
+} from '../hooks';
 import { Group, Duration } from '../types';
-import { createPlugin, PluginProvider } from '@backstage/core-plugin-api';
 
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
@@ -144,19 +149,6 @@ export const MockBillingDateProvider = ({
 };
 
 export type MockScrollProviderProps = PropsWithChildren<{}>;
-
-export const MockPluginProvider = ({ children }: PropsWithChildren<{}>) => {
-  type TestInputPluginOptions = {};
-  type TestPluginOptions = {};
-  const plugin = createPlugin({
-    id: 'my-plugin',
-    __experimentalConfigure(_: TestInputPluginOptions): TestPluginOptions {
-      return {};
-    },
-  });
-
-  return <PluginProvider plugin={plugin}>{children}</PluginProvider>;
-};
 
 export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
   const defaultContext: ScrollContextProps = {

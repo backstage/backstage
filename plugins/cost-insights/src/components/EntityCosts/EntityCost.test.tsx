@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  MockPluginProvider,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import {
   changeOf,
   MockAggregatedDailyCosts,
   MockBillingDateProvider,
   MockConfigProvider,
   MockFilterProvider,
-  MockPluginProvider,
   MockScrollProvider,
   trendlineOf,
 } from '../../testUtils';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
 import { EntityCostsCard } from './EntityCosts';
-import { TestApiProvider } from '@backstage/test-utils';
 import { CostInsightsApi, costInsightsApiRef } from '../../api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
