@@ -21,7 +21,7 @@ export type {
   IncrementalEntityProviderOptions,
   IngestionRecord,
   IngestionRecordUpdate,
-  IngestionUpsertIFace,
+  IngestionUpsert as IngestionUpsertIFace,
   MarkRecord,
   MarkRecordInsert,
   INCREMENTAL_ENTITY_PROVIDER_ANNOTATION,

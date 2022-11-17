@@ -23,7 +23,7 @@ import {
   INCREMENTAL_ENTITY_PROVIDER_ANNOTATION,
   IngestionRecord,
   IngestionRecordUpdate,
-  IngestionUpsertIFace,
+  IngestionUpsert,
   MarkRecord,
   MarkRecordInsert,
 } from '../types';
@@ -54,7 +54,7 @@ export class IncrementalIngestionDatabaseManager {
    */
   async updateIngestionRecordByProvider(
     provider: string,
-    update: Partial<IngestionUpsertIFace>,
+    update: Partial<IngestionUpsert>,
   ) {
     await this.client.transaction(async tx => {
       await tx('ingestions')
@@ -68,7 +68,7 @@ export class IncrementalIngestionDatabaseManager {
    * Performs an insert into the `ingestions` table with the supplied values.
    * @param record - IngestionUpsertIFace
    */
-  async insertIngestionRecord(record: IngestionUpsertIFace) {
+  async insertIngestionRecord(record: IngestionUpsert) {
     await this.client.transaction(async tx => {
       await tx('ingestions').insert(record);
     });
@@ -455,7 +455,7 @@ export class IncrementalIngestionDatabaseManager {
    * @param message - string (optional)
    */
   async setProviderCanceling(ingestionId: string, message?: string) {
-    const update: Partial<IngestionUpsertIFace> = {
+    const update: Partial<IngestionUpsert> = {
       next_action: 'cancel',
       last_error: message ? message : undefined,
       next_action_at: new Date(),
@@ -580,7 +580,7 @@ export class IncrementalIngestionDatabaseManager {
     });
   }
 
-  async updateByName(provider: string, update: Partial<IngestionUpsertIFace>) {
+  async updateByName(provider: string, update: Partial<IngestionUpsert>) {
     await this.updateIngestionRecordByProvider(provider, update);
   }
 }

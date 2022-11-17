@@ -89,23 +89,15 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
  *
  * @public
  */
-export interface EntityIteratorResult<T> {
-  /**
-   * Indicates whether there are any further pages of entities to
-   * ingest after this one.
-   */
-  done: boolean;
-
-  /**
-   * A value that marks the page of entities after this one. It will
-   * be used to pass into the following invocation of `next()`
-   */
-  cursor?: T;
-
-  /**
-   * The entities to ingest.
-   */
+export type EntityIteratorResult<T> = 
+| {
+  done: false;
+  entities: DeferredEntity[];
+  cursor: T;
+} | {
+  done: true;
   entities?: DeferredEntity[];
+  cursor?: T;
 }
 
 /** @public */
@@ -168,7 +160,7 @@ export interface IterationEngineOptions {
  *
  * @public
  */
-export interface IngestionUpsertIFace {
+export interface IngestionUpsert {
   /**
    * The ingestion record id.
    */
@@ -230,7 +222,7 @@ export interface IngestionUpsertIFace {
  */
 export interface IngestionRecordUpdate {
   ingestionId: string;
-  update: Partial<IngestionUpsertIFace>;
+  update: Partial<IngestionUpsert>;
 }
 
 /**
@@ -251,7 +243,7 @@ export interface MarkRecord {
  * 
  * @public
  */
-export interface IngestionRecord extends IngestionUpsertIFace {
+export interface IngestionRecord extends IngestionUpsert {
   id: string;
   next_action_at: Date;
   /**
