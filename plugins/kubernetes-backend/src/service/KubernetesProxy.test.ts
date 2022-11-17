@@ -16,12 +16,14 @@
 import 'buffer';
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
 import { getMockReq, getMockRes } from '@jest-mock/express';
-import { Request } from 'express';
+import type { Request } from 'express';
+import express from 'express';
+import request from 'supertest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import {
@@ -33,6 +35,7 @@ import {
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
   const worker = setupServer();
+
   setupRequestMockHandlers(worker);
 
   const buildMockRequest = (clusterName: any, path: string): Request => {
@@ -58,20 +61,17 @@ describe('KubernetesProxy', () => {
     return req;
   };
 
-  const buildClustersSupplierWithClusters = (
-    clusters: ClusterDetails[],
-  ): KubernetesClustersSupplier => ({
-    getClusters: async () => {
-      return clusters;
-    },
-  });
+  const clusterSupplier: jest.Mocked<KubernetesClustersSupplier> = {
+    getClusters: jest.fn(),
+  };
 
   beforeEach(() => {
-    proxy = new KubernetesProxy(getVoidLogger());
+    jest.resetAllMocks();
+    proxy = new KubernetesProxy(getVoidLogger(), clusterSupplier);
   });
 
   it('should return a ERROR_NOT_FOUND if no clusters are found', async () => {
-    proxy.clustersSupplier = buildClustersSupplierWithClusters([]);
+    clusterSupplier.getClusters.mockResolvedValue([]);
 
     const req = buildMockRequest('test', 'api');
     const { res, next } = getMockRes();
@@ -81,22 +81,7 @@ describe('KubernetesProxy', () => {
     );
   });
 
-  it('should match the response code of the Kubernetes response', async () => {
-    const clusters: ClusterDetails[] = [
-      {
-        name: 'cluster1',
-        url: 'https://localhost:9999',
-        serviceAccountToken: 'token',
-        authProvider: 'serviceAccount',
-        skipTLSVerify: true,
-      },
-    ];
-
-    proxy.clustersSupplier = buildClustersSupplierWithClusters(clusters);
-
-    const req = buildMockRequest('cluster1', 'api');
-    const { res: response, next } = getMockRes();
-
+  it('should pass the exact response from Kubernetes', async () => {
     const apiResponse = {
       kind: 'APIVersions',
       versions: ['v1'],
@@ -108,54 +93,28 @@ describe('KubernetesProxy', () => {
       ],
     };
 
-    worker.use(
-      rest.get(`${clusters[0].url}/${req.params.path}`, (_, res, ctx) =>
-        res(ctx.status(299), ctx.body(JSON.stringify(apiResponse))),
-      ),
-    );
-
-    await proxy.proxyRequestHandler(req, response, next);
-
-    expect(response.status).toHaveBeenCalledWith(299);
-    expect(response.json).toHaveBeenCalledWith(apiResponse);
-  });
-
-  it('should pass the exact response data from Kubernetes', async () => {
-    const clusters: ClusterDetails[] = [
+    clusterSupplier.getClusters.mockResolvedValue([
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        serviceAccountToken: 'token',
+        serviceAccountToken: '',
         authProvider: 'serviceAccount',
-        skipTLSVerify: true,
       },
-    ];
-
-    proxy.clustersSupplier = buildClustersSupplierWithClusters(clusters);
-
-    const req = buildMockRequest('cluster1', 'api');
-    const { res: response, next } = getMockRes();
-
-    const apiResponse = {
-      kind: 'APIVersions',
-      versions: ['v1'],
-      serverAddressByClientCIDRs: [
-        {
-          clientCIDR: '0.0.0.0/0',
-          serverAddress: '192.168.0.1:3333',
-        },
-      ],
-    };
-
+    ] as ClusterDetails[]);
+    const app = express().use('/mountpath', proxy.proxyRequestHandler);
+    const requestPromise = request(app)
+      .get('/mountpath/api')
+      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
     worker.use(
-      rest.get(`${clusters[0].url}/${req.params.path}`, (_, res, ctx) =>
-        res(ctx.status(200), ctx.body(JSON.stringify(apiResponse))),
+      rest.get('https://localhost:9999/api', (_, res, ctx) =>
+        res(ctx.status(299), ctx.json(apiResponse)),
       ),
+      rest.all(requestPromise.url, (req, _res, _ctx) => req.passthrough()),
     );
 
-    await proxy.proxyRequestHandler(req, response, next);
+    const response = await requestPromise;
 
-    expect(response.status).toHaveBeenCalledWith(200);
-    expect(response.json).toHaveBeenCalledWith(apiResponse);
+    expect(response.status).toEqual(299);
+    expect(response.body).toStrictEqual(apiResponse);
   });
 });

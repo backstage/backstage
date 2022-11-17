@@ -108,11 +108,9 @@ export class KubernetesBuilder {
 
     const fetcher = this.getFetcher();
 
-    const proxy = this.getProxy();
-
     const clusterSupplier = this.getClusterSupplier();
 
-    proxy.clustersSupplier = clusterSupplier;
+    const proxy = this.getProxy(logger, clusterSupplier);
 
     const serviceLocator = this.getServiceLocator();
 
@@ -128,6 +126,7 @@ export class KubernetesBuilder {
       objectsProvider,
       clusterSupplier,
       this.env.catalogApi,
+      proxy,
     );
 
     return {
@@ -252,8 +251,11 @@ export class KubernetesBuilder {
     throw new Error('not implemented');
   }
 
-  protected buildProxy(): KubernetesProxy {
-    this.proxy = new KubernetesProxy(this.env.logger);
+  protected buildProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesProxy {
+    this.proxy = new KubernetesProxy(logger, clusterSupplier);
     return this.proxy;
   }
 
@@ -261,12 +263,11 @@ export class KubernetesBuilder {
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
+    proxy: KubernetesProxy,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
     router.use(express.json());
-
-    const proxy = this.getProxy();
 
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
@@ -298,13 +299,7 @@ export class KubernetesBuilder {
       });
     });
 
-    if (typeof proxy?.proxyRequestHandler === 'function') {
-      router.get(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
-      router.post(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
-      router.put(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
-      router.patch(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
-      router.delete(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
-    }
+    router.use('/proxy', proxy.proxyRequestHandler);
 
     addResourceRoutesToRouter(router, catalogApi, objectsProvider);
 
@@ -384,7 +379,10 @@ export class KubernetesBuilder {
     return objectTypesToFetch;
   }
 
-  protected getProxy() {
-    return this.proxy ?? this.buildProxy();
+  protected getProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ) {
+    return this.proxy ?? this.buildProxy(logger, clusterSupplier);
   }
 }

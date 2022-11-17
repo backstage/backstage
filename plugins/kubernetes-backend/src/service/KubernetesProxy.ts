@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  AuthenticationError,
-  ConflictError,
-  ForwardedError,
-  InputError,
-  NotFoundError,
-} from '@backstage/errors';
-import { bufferFromFileOrString, KubeConfig } from '@kubernetes/client-node';
-import * as https from 'https';
-import fetch, { RequestInit, Response } from 'node-fetch';
+import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
+import { bufferFromFileOrString } from '@kubernetes/client-node';
 import { Logger } from 'winston';
+import { ErrorResponseBody, serializeError } from '@backstage/errors';
 
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
-import type { Request as ExpressRequest, RequestHandler } from 'express';
+import type { Request } from 'express';
+import {
+  RequestHandler,
+  Options,
+  createProxyMiddleware,
+} from 'http-proxy-middleware';
 
 /**
  *
@@ -41,52 +39,66 @@ export const APPLICATION_JSON: string = 'application/json';
  */
 export const HEADER_KUBERNETES_CLUSTER: string = 'X-Kubernetes-Cluster';
 
-const HEADER_CONTENT_TYPE: string = 'Content-Type';
-
-const CLUSTER_USER_NAME: string = 'backstage';
-
 /**
  *
  * @alpha
  */
 export class KubernetesProxy {
-  private _clustersSupplier?: KubernetesClustersSupplier;
+  constructor(
+    private readonly logger: Logger,
+    private readonly clusterSupplier: KubernetesClustersSupplier,
+  ) {}
 
-  static readonly PROXY_PATH: string = '/proxy/:path(*)';
-
-  constructor(protected readonly logger: Logger) {}
-
-  public proxyRequestHandler: RequestHandler = async (req, res) => {
+  public proxyRequestHandler: RequestHandler = async (req, res, next) => {
     const requestedCluster = this.getKubernetesRequestedCluster(req);
 
     const clusterDetails = await this.getClusterDetails(requestedCluster);
 
-    const response = await this.makeRequestToCluster(clusterDetails, req);
+    const clusterUrl = new URL(clusterDetails.url);
+    const options = {
+      logProvider: () => this.logger,
+      secure: !clusterDetails.skipTLSVerify,
+      target: {
+        protocol: clusterUrl.protocol,
+        host: clusterUrl.hostname,
+        port: clusterUrl.port,
+        ca: bufferFromFileOrString('', clusterDetails.caData)?.toString(),
+      },
+      pathRewrite: { [`^${req.baseUrl}`]: '' },
+      onError: (error: Error) => {
+        const wrappedError = new ForwardedError(
+          `Cluster '${requestedCluster}' request error`,
+          error,
+        );
 
-    const data = await response.text();
+        this.logger.error(wrappedError);
 
-    res.status(response.status).send(data);
+        const body: ErrorResponseBody = {
+          error: serializeError(wrappedError, {
+            includeStack: process.env.NODE_ENV === 'development',
+          }),
+          request: { method: req.method, url: req.originalUrl },
+          response: { statusCode: 500 },
+        };
+
+        res.status(500).json(body);
+      },
+    } as Options;
+
+    // Probably too risky without permissions protecting this endpoint
+    // if (clusterDetails.serviceAccountToken) {
+    //   options.headers = {
+    //     Authorization: `Bearer ${clusterDetails.serviceAccountToken}`,
+    //   };
+    // }
+    createProxyMiddleware(options)(req, res, next);
   };
 
-  public get clustersSupplier(): KubernetesClustersSupplier {
-    if (this._clustersSupplier ? false : this._clustersSupplier ?? true) {
-      throw new ConflictError("Missing Proxy's Clusters Supplier");
-    }
-
-    return this._clustersSupplier as KubernetesClustersSupplier;
-  }
-
-  public set clustersSupplier(clustersSupplier) {
-    this._clustersSupplier = clustersSupplier;
-  }
-
-  private getKubernetesRequestedCluster(req: ExpressRequest): string {
-    const requestedClusterName: string =
-      req.header(HEADER_KUBERNETES_CLUSTER) ?? '';
+  private getKubernetesRequestedCluster(req: Request): string {
+    const requestedClusterName = req.header(HEADER_KUBERNETES_CLUSTER);
 
     if (!requestedClusterName) {
-      this.logger.error(`Malformed ${HEADER_KUBERNETES_CLUSTER} header.`);
-      throw new InputError(`Malformed ${HEADER_KUBERNETES_CLUSTER} header.`);
+      throw new InputError(`Missing '${HEADER_KUBERNETES_CLUSTER}' header.`);
     }
 
     return requestedClusterName;
@@ -95,62 +107,16 @@ export class KubernetesProxy {
   private async getClusterDetails(
     requestedCluster: string,
   ): Promise<ClusterDetails> {
-    const clusters = await this.clustersSupplier.getClusters();
+    const clusters = await this.clusterSupplier.getClusters();
 
-    const clusterDetail = clusters.find(cluster =>
-      requestedCluster.includes(cluster.name),
+    const clusterDetail = clusters.find(
+      cluster => cluster.name === requestedCluster,
     );
 
-    if (clusterDetail ? false : clusterDetail ?? true) {
-      this.logger.error(
-        `Cluster ${requestedCluster} details not found in config`,
-      );
-
-      throw new NotFoundError("Cluster's detail not found");
+    if (!clusterDetail) {
+      throw new NotFoundError(`Cluster '${requestedCluster}' not found`);
     }
 
-    return clusterDetail as ClusterDetails;
+    return clusterDetail;
   }
-
-  private async makeRequestToCluster(
-    details: ClusterDetails,
-    req: ExpressRequest,
-  ): Promise<Response> {
-    const serverURI = details.url;
-
-    const path = decodeURIComponent(req.params.path) || '';
-    const uri = `${serverURI}/${path}`;
-
-    return await this.sendClusterRequest(details, uri, req);
-  }
-
-  private async sendClusterRequest(
-    details: ClusterDetails,
-    uri: string,
-    req: ExpressRequest,
-  ): Promise<Response> {
-    const { method, headers, body } = req;
-
-    const reqData: RequestInit = {
-      method,
-      headers: headers as { [key: string]: string },
-    };
-
-    if (details.skipTLSVerify) {
-      reqData.agent = new https.Agent({ rejectUnauthorized: false });
-    } else if (details.caData) {
-      const ca = bufferFromFileOrString('', details.caData)?.toString() || '';
-      reqData.agent = new https.Agent({ ca });
-    }
-
-    if (body && Object.keys(body).length > 0) {
-      reqData.body = JSON.stringify(body);
-    }
-
-    try {
-      return fetch(uri, reqData);
-    } catch (e: any) {
-      throw new ForwardedError(`Cluster ${details.name} request error`, e);
-    }
-  }
-
+}

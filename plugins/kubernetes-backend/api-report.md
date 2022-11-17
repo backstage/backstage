@@ -22,7 +22,7 @@ import { Logger } from 'winston';
 import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import type { RequestHandler } from 'express';
+import { RequestHandler } from 'http-proxy-middleware';
 import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
@@ -195,12 +195,16 @@ export class KubernetesBuilder {
     options: KubernetesObjectsProviderOptions,
   ): KubernetesObjectsProvider;
   // (undocumented)
-  protected buildProxy(): KubernetesProxy;
+  protected buildProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesProxy;
   // (undocumented)
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
+    proxy: KubernetesProxy,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
@@ -226,7 +230,10 @@ export class KubernetesBuilder {
   // (undocumented)
   protected getObjectTypesToFetch(): ObjectToFetch[] | undefined;
   // (undocumented)
-  protected getProxy(): KubernetesProxy;
+  protected getProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesProxy;
   // (undocumented)
   protected getServiceLocator(): KubernetesServiceLocator;
   // (undocumented)
@@ -348,14 +355,7 @@ export type KubernetesObjectTypes =
 
 // @alpha (undocumented)
 export class KubernetesProxy {
-  constructor(logger: Logger);
-  // (undocumented)
-  get clustersSupplier(): KubernetesClustersSupplier;
-  set clustersSupplier(clustersSupplier: KubernetesClustersSupplier);
-  // (undocumented)
-  protected readonly logger: Logger;
-  // (undocumented)
-  static readonly PROXY_PATH: string;
+  constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
   // (undocumented)
   proxyRequestHandler: RequestHandler;
 }
