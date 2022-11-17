@@ -111,6 +111,9 @@ exports.up = async function up(knex) {
     table
       .uuid('ingestion_id')
       .notNullable()
+      .references('id')
+      .inTable('ingestions')
+      .onDelete('CASCADE')
       .comment('The id of the ingestion in which this mark took place');
 
     table
@@ -148,6 +151,9 @@ exports.up = async function up(knex) {
     table
       .uuid('ingestion_mark_id')
       .notNullable()
+      .references('id')
+      .inTable('ingestion_marks')
+      .onDelete('CASCADE')
       .comment(
         'Every time a mark happens during an ingestion, there are a list of entities marked.',
       );

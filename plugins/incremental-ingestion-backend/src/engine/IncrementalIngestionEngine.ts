@@ -280,12 +280,24 @@ export class IncrementalIngestionEngine implements IterationEngine {
         },
       })) ?? [];
 
-    const removed: DeferredEntity[] = done
-      ? []
-      : await this.manager.computeRemoved(
-          this.options.provider.getProviderName(),
-          id,
-        );
+    const removed: DeferredEntity[] = [];
+
+    let doComputeRemoved = false;
+
+    if (!done) {
+      doComputeRemoved = true;
+    } else {
+      if (entities && entities.length > 0) {
+        doComputeRemoved = true;
+      }
+    }
+    
+    if(doComputeRemoved) {
+      removed.push(...await this.manager.computeRemoved(
+        this.options.provider.getProviderName(),
+        id,
+      ));
+    }
 
     await this.options.connection.applyMutation({
       type: 'delta',
