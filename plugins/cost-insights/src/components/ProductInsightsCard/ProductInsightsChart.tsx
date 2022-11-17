@@ -133,9 +133,7 @@ export const ProductInsightsChart = ({
     const id = label === '' ? null : label;
 
     const title = titleOf(label);
-    const items = payload
-      .map(p => tooltipItemOf(baseCurrency, p))
-      .filter(notEmpty);
+    const items = payload.map(tooltipItemOf(baseCurrency)).filter(notEmpty);
 
     const activeEntity = findAlways(entities, e => e.id === id);
     const breakdowns = Object.keys(activeEntity.entities);

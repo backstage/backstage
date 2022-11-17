@@ -24,7 +24,7 @@ import {
 } from './formatters';
 
 export const formatGraphValue =
-  (baseCurrency: string) =>
+  (baseCurrency: Intl.NumberFormat) =>
   (value: number, _index: number, format?: string) => {
     if (format === 'number') {
       return value.toLocaleString();
@@ -40,28 +40,26 @@ export const formatGraphValue =
 export const overviewGraphTickFormatter = (millis: string | number) =>
   typeof millis === 'number' ? dateFormatter.format(millis) : millis;
 
-export const tooltipItemOf = (
-  baseCurrency: string,
-  payload: Payload<string, string>,
-) => {
-  const value =
-    payload.value && !isNaN(Number(payload.value))
-      ? currencyFormatter(baseCurrency).format(Number(payload.value))
-      : payload.value;
-  const fill = payload.color as string;
+export const tooltipItemOf =
+  (baseCurrency: Intl.NumberFormat) => (payload: Payload<string, string>) => {
+    const value =
+      payload.value && !isNaN(Number(payload.value))
+        ? baseCurrency.format(Number(payload.value))
+        : payload.value;
+    const fill = payload.color as string;
 
-  switch (payload.dataKey) {
-    case DataKey.Current:
-    case DataKey.Previous:
-      return {
-        label: payload.name,
-        value: value,
-        fill: fill,
-      };
-    default:
-      return null;
-  }
-};
+    switch (payload.dataKey) {
+      case DataKey.Current:
+      case DataKey.Previous:
+        return {
+          label: payload.name,
+          value: value,
+          fill: fill,
+        };
+      default:
+        return null;
+    }
+  };
 
 export const resourceOf = (entity: Entity | AlertCost): ResourceData => ({
   name: entity.id,

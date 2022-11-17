@@ -21,6 +21,7 @@ import {
   quarterOf,
 } from './formatters';
 import { Duration } from '../types';
+import { createCurrency } from './currency';
 
 Date.now = jest.fn(() => new Date(Date.parse('2019-12-07')).valueOf());
 
@@ -39,7 +40,7 @@ describe('date formatters', () => {
       0.00000040925, 0.21, 0.0000004, 0.4139877878, 0.00000234566,
     ];
     const formattedValues = values.map(val =>
-      lengthyCurrencyFormatter('USD').format(val),
+      lengthyCurrencyFormatter(createCurrency()).format(val),
     );
     expect(formattedValues).toEqual([
       '$0.00000041',
@@ -55,7 +56,7 @@ describe('date formatters', () => {
       0.00000040925, 0.21, 0.0000004, 0.4139877878, 0.00000234566,
     ];
     const formattedValues = values.map(val =>
-      lengthyCurrencyFormatter('EUR').format(val),
+      lengthyCurrencyFormatter(createCurrency('EUR')).format(val),
     );
     expect(formattedValues).toEqual([
       '€0.00000041',

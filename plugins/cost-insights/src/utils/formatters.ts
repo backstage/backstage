@@ -25,28 +25,28 @@ export type Period = {
   periodEnd: string;
 };
 
-export const costFormatter = (currency: string) =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-  });
+export const currencyFormatter = (currency: Intl.NumberFormat) => {
+  const options = currency.resolvedOptions();
 
-export const currencyFormatter = (currency: string) =>
-  new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(options.locale, {
     style: 'currency',
-    currency,
+    currency: options.currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
+};
 
-export const lengthyCurrencyFormatter = (currency: string) =>
-  new Intl.NumberFormat('en-US', {
+export const lengthyCurrencyFormatter = (currency: Intl.NumberFormat) => {
+  const options = currency.resolvedOptions();
+
+  return new Intl.NumberFormat(options.locale, {
     style: 'currency',
-    currency,
+    currency: options.currency,
     minimumFractionDigits: 0,
     minimumSignificantDigits: 2,
     maximumSignificantDigits: 2,
   });
+};
 
 export const numberFormatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 0,

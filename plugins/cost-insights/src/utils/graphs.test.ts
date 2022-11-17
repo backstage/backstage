@@ -16,16 +16,19 @@
 
 import { formatGraphValue, tooltipItemOf } from './graphs';
 import { DataKey } from '../types';
+import { createCurrency } from './currency';
 
 describe('graphs', () => {
   it('formatGraphValue', () => {
-    expect(formatGraphValue('SEK')(1000, 0)).toEqual('SEK 1,000');
-    expect(formatGraphValue('EUR')(1000, 0)).toEqual('€1,000');
-    expect(formatGraphValue('USD')(1000, 0)).toEqual('$1,000');
+    expect(formatGraphValue(createCurrency('SEK'))(1000, 0)).toEqual(
+      'SEK 1,000',
+    );
+    expect(formatGraphValue(createCurrency('EUR'))(1000, 0)).toEqual('€1,000');
+    expect(formatGraphValue(createCurrency('USD'))(1000, 0)).toEqual('$1,000');
   });
   it('tooltipItemOf', () => {
     expect(
-      tooltipItemOf('EUR', {
+      tooltipItemOf(createCurrency('EUR'))({
         value: '1000',
         color: 'red',
         dataKey: DataKey.Current,
