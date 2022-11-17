@@ -258,11 +258,49 @@ Passport-supported authentication method.
 
 ## Custom ScmAuthApi Implementation
 
-If you are using any custom authentication providers, like for example one for GitHub Enterprise, then you are likely to need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed, and is used for example by the Scaffolder (Software Templates) and Catalog Import plugins.
+The default `ScmAuthAPi` provides integrations for `github`, `gitlab`, `azure` and `bitbucket` and is created by the following code in `packages/app/src/apis.ts`:
 
-To set up a custom `ScmAuthApi` implementation, you'll will need to complete the following steps which creates an example entry for a github enterprise installation:
+```ts
+ScmAuth.createDefaultApiFactory();
+```
 
-1.  Create an additional `xxxAuthApiRef` which can be defined either inside the app itself if it's only used for this purpose, or inside an internal common package for APIs, such as `@internal/apis`:
+If you only require only a subset of these integrations then you will need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi).  It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed, and is used for example by the Scaffolder (Software Templates) and Catalog Import plugins.
+
+The first step is to remove the code that creates the default providers.
+
+```diff
+ import {
+   ScmIntegrationsApi,
+   scmIntegrationsApiRef,
++   ScmAuth,
+ } from '@backstage/integration-react';
+
+ export const apis: AnyApiFactory[] = [
+...
++  ScmAuth.createDefaultApiFactory(),
+...
+ ];
+```
+
+Then replace it with something like this which will create an `ApiFactory` with 
+
+```ts
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: scmAuthApiRef,
+    deps: {
+      githubAuthApi: githubAuthApiRef,
+    },
+    factory: ({ githubAuthApi }) =>
+      ScmAuth.merge(
+        ScmAuth.forGithub(githubAuthApi),
+      ),
+  });
+```
+
+If you are using any custom authentication integrations, a new provider can be added to the `ApiFactory`.  
+
+The first step is to create a new authentication ref which follows the naming convention of `xxxAuthApiRef`.  The example below is for a new github enterprise integration which can be defined either inside the app itself if it's only used for this purpose, or inside an internal common package for APIs, such as `@internal/apis`:
 
 ```ts
 const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
@@ -271,7 +309,7 @@ const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
   });
 ```
 
-2.  Add an API factory entry to `packages/app/src/apis.ts`. The following example shows an implementation that supports both public GitHub via `githubAuthApi` as well as a GitHub Enterprise installation hosted at `ghe.example.com` via `gheAuthApi`:
+The new ref is then used to add a new provider to the ApiFactory:
 
 ```ts
 createApiFactory({
@@ -290,9 +328,7 @@ createApiFactory({
 });
 ```
 
-\_**Warning:** You will need to remove the default `ScmAuth.createDefaultApiFactory();` with this approach.
-
-3.  Finally you also need to add and configure another GitHub provider to the `auth-backend` using the provider ID, which in this example is `ghe`:
+Finally you also need to add and configure another provider to the `auth-backend` using the provider ID, which in this example is `ghe`:
 
 ```ts
 import { providers } from '@backstage/plugin-auth-backend';
