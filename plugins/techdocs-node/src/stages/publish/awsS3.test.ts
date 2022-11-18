@@ -22,7 +22,7 @@ import {
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
-  UploadPartCommand
+  UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import { getVoidLogger } from '@backstage/backend-common';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
@@ -474,7 +474,8 @@ describe('AwsS3Publish', () => {
       s3Mock.on(GetObjectCommand).callsFake(_ => {
         return {
           Body: new ErrorReadable('No stream!'),
-      }});
+        };
+      });
 
       const publisher = createPublisherFromConfig();
 
@@ -612,7 +613,8 @@ describe('AwsS3Publish', () => {
       s3Mock.on(GetObjectCommand).callsFake(_ => {
         return {
           Body: new ErrorReadable('No stream!'),
-      }});
+        };
+      });
 
       const response = await request(app).get(
         `/${entityTripletPath}/not-found.html`,

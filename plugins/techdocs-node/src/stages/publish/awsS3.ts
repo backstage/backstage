@@ -131,7 +131,10 @@ export class AwsS3Publish implements PublisherBase {
     const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
-    const credentials = AwsS3Publish.buildCredentials(credentialsConfig, region);
+    const credentials = AwsS3Publish.buildCredentials(
+      credentialsConfig,
+      region,
+    );
 
     // AWS endpoint is an optional config. If missing, the default endpoint is built from
     // the configured region.
@@ -180,7 +183,10 @@ export class AwsS3Publish implements PublisherBase {
     };
   }
 
-  private static buildCredentials(config?: Config, region?: string): CredentialProvider {
+  private static buildCredentials(
+    config?: Config,
+    region?: string,
+  ): CredentialProvider {
     if (!config) {
       return fromNodeProviderChain();
     }
