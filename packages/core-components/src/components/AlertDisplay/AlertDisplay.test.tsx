@@ -17,10 +17,11 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import { AlertDisplay } from './AlertDisplay';
-import { alertApiRef } from '@backstage/core-plugin-api';
+import { alertApiRef, AlertMessage } from '@backstage/core-plugin-api';
 import { AlertApiForwarder } from '@backstage/core-app-api';
 import Observable from 'zen-observable';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { act } from '@testing-library/react';
 
 const TEST_MESSAGE = 'TEST_MESSAGE';
 
@@ -91,6 +92,100 @@ describe('<AlertDisplay />', () => {
       );
 
       expect(screen.getByText('(2 older messages)')).toBeInTheDocument();
+    });
+  });
+
+  describe('with transient message', () => {
+    const apis = [
+      [
+        alertApiRef,
+        {
+          post() {},
+          alert$() {
+            return Observable.of<AlertMessage>({
+              message: 'transient message one',
+              display: 'transient',
+            });
+          },
+        },
+      ] as const,
+    ] as const;
+
+    it('renders message and then removes it', async () => {
+      jest.useFakeTimers();
+      const { queryByText } = await renderInTestApp(
+        <TestApiProvider apis={apis}>
+          <AlertDisplay />
+        </TestApiProvider>,
+      );
+
+      expect(queryByText('transient message one')).toBeInTheDocument();
+      act(() => {
+        jest.advanceTimersByTime(5005);
+      });
+      expect(queryByText('transient message one')).not.toBeInTheDocument();
+      jest.useRealTimers();
+    });
+
+    it('respects transientTimeoutMs prop', async () => {
+      jest.useFakeTimers();
+      const { queryByText } = await renderInTestApp(
+        <TestApiProvider apis={apis}>
+          <AlertDisplay transientTimeoutMs={2500} />
+        </TestApiProvider>,
+      );
+
+      expect(queryByText('transient message one')).toBeInTheDocument();
+      act(() => {
+        jest.advanceTimersByTime(2505);
+      });
+      expect(queryByText('transient message one')).not.toBeInTheDocument();
+      jest.useRealTimers();
+    });
+  });
+
+  // What I'd like to do here is be able to trigger a few messages with a bit of time between each
+  // Then be able to check that they close one after the other, just not sure how to set that up?
+  describe('with multiple transient messages', () => {
+    const apis = [
+      [
+        alertApiRef,
+        {
+          post() {},
+          alert$() {
+            return Observable.of<AlertMessage>(
+              {
+                message: 'transient message one',
+                display: 'transient',
+              },
+              {
+                message: 'transient message two',
+                display: 'transient',
+              },
+              {
+                message: 'transient message three',
+                display: 'transient',
+              },
+            );
+          },
+        },
+      ] as const,
+    ] as const;
+
+    it('renders message and then removes it', async () => {
+      jest.useFakeTimers();
+      const { queryByText } = await renderInTestApp(
+        <TestApiProvider apis={apis}>
+          <AlertDisplay />
+        </TestApiProvider>,
+      );
+
+      expect(queryByText('transient message one')).toBeInTheDocument();
+      act(() => {
+        jest.advanceTimersByTime(5005);
+      });
+      expect(queryByText('transient message one')).not.toBeInTheDocument();
+      jest.useRealTimers();
     });
   });
 });
