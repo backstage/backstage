@@ -80,6 +80,9 @@ export type ScaffolderTaskOutput = {
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
+  ['ui:options']?: {
+    finishButtonLabel?: string;
+  };
   steps: Array<{
     title: string;
     description?: string;
