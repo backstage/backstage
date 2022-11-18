@@ -102,7 +102,7 @@ If either existing
 don't work for your use-case, it is possible to implement a custom
 [KubernetesClustersSupplier](https://backstage.io/docs/reference/plugin-kubernetes-backend.kubernetesclusterssupplier).
 
-Change the following in `packages/backend/src/plugin/kubernetes.ts`:
+Change the following in `packages/backend/src/plugins/kubernetes.ts`:
 
 ```diff
 -import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';

@@ -23,7 +23,7 @@ export const entityNamePickerValidation = (
 ) => {
   if (!KubernetesValidatorFunctions.isValidObjectName(value)) {
     validation.addError(
-      'must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
+      'Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
     );
   }
 };

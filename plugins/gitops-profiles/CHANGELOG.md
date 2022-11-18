@@ -1,5 +1,24 @@
 # @backstage/plugin-gitops-profiles
 
+## 0.3.29
+
+### Patch Changes
+
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/theme@0.2.16
+
+## 0.3.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.3.29-next.0
 
 ### Patch Changes

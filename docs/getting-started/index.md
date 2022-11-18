@@ -34,6 +34,7 @@ guide to do a repository-based installation.
   - [Package manager](https://nodejs.org/en/download/package-manager/)
   - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
 - `yarn` [Installation](https://classic.yarnpkg.com/en/docs/install)
+  - You will need to use Yarn classic to create a new project, but it can then be [migrated to Yarn 3](../tutorials/yarn-migration.md)
 - `docker` [installation](https://docs.docker.com/engine/install/)
 - `git` [installation](https://github.com/git-guides/install-git)
 - If the system is not directly accessible over your network the following ports

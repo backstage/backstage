@@ -54,12 +54,14 @@ import { TooltipRenderer } from '../../types/Tooltip';
 
 export type CostOverviewBreakdownChartProps = {
   costBreakdown: Cost[];
+  responsive?: boolean;
 };
 
 const LOW_COST_THRESHOLD = 0.1;
 
 export const CostOverviewBreakdownChart = ({
   costBreakdown,
+  responsive = true,
 }: CostOverviewBreakdownChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const classes = useStyles(theme);
@@ -228,7 +230,7 @@ export const CostOverviewBreakdownChart = ({
         />
       </Box>
       <ResponsiveContainer
-        width={classes.container.width}
+        width={responsive ? '100%' : classes.container.width}
         height={classes.container.height}
       >
         <AreaChart

@@ -16,12 +16,24 @@
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
-import { EntityPicker } from './components/fields/EntityPicker/EntityPicker';
+import {
+  EntityPicker,
+  EntityPickerSchema,
+} from './components/fields/EntityPicker/EntityPicker';
 import { entityNamePickerValidation } from './components/fields/EntityNamePicker';
-import { EntityNamePicker } from './components/fields/EntityNamePicker/EntityNamePicker';
-import { OwnerPicker } from './components/fields/OwnerPicker/OwnerPicker';
+import {
+  EntityNamePicker,
+  EntityNamePickerSchema,
+} from './components/fields/EntityNamePicker/EntityNamePicker';
+import {
+  OwnerPicker,
+  OwnerPickerSchema,
+} from './components/fields/OwnerPicker/OwnerPicker';
 import { repoPickerValidation } from './components/fields/RepoUrlPicker';
-import { RepoUrlPicker } from './components/fields/RepoUrlPicker/RepoUrlPicker';
+import {
+  RepoUrlPicker,
+  RepoUrlPickerSchema,
+} from './components/fields/RepoUrlPicker/RepoUrlPicker';
 import { createScaffolderFieldExtension } from './extensions';
 import {
   nextRouteRef,
@@ -37,8 +49,14 @@ import {
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
-import { EntityTagsPicker } from './components/fields/EntityTagsPicker/EntityTagsPicker';
+import {
+  OwnedEntityPicker,
+  OwnedEntityPickerSchema,
+} from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import {
+  EntityTagsPicker,
+  EntityTagsPickerSchema,
+} from './components/fields/EntityTagsPicker/EntityTagsPicker';
 
 /**
  * The main plugin export for the scaffolder.
@@ -82,6 +100,7 @@ export const EntityPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: EntityPicker,
     name: 'EntityPicker',
+    schema: EntityPickerSchema,
   }),
 );
 
@@ -95,6 +114,7 @@ export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
     component: EntityNamePicker,
     name: 'EntityNamePicker',
     validation: entityNamePickerValidation,
+    schema: EntityNamePickerSchema,
   }),
 );
 
@@ -109,6 +129,7 @@ export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
     component: RepoUrlPicker,
     name: 'RepoUrlPicker',
     validation: repoPickerValidation,
+    schema: RepoUrlPickerSchema,
   }),
 );
 
@@ -121,6 +142,7 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: OwnerPicker,
     name: 'OwnerPicker',
+    schema: OwnerPickerSchema,
   }),
 );
 
@@ -146,6 +168,7 @@ export const OwnedEntityPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: OwnedEntityPicker,
     name: 'OwnedEntityPicker',
+    schema: OwnedEntityPickerSchema,
   }),
 );
 
@@ -157,6 +180,7 @@ export const EntityTagsPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: EntityTagsPicker,
     name: 'EntityTagsPicker',
+    schema: EntityTagsPickerSchema,
   }),
 );
 

@@ -34,7 +34,7 @@ describe('RegisterExistingButton', () => {
       <RegisterExistingButton title="Pick me" />,
     );
 
-    expect(await queryByText('Pick me')).not.toBeInTheDocument();
+    expect(queryByText('Pick me')).not.toBeInTheDocument();
   });
 
   it('should not render if permissions are not allowed', async () => {
@@ -43,7 +43,7 @@ describe('RegisterExistingButton', () => {
       <RegisterExistingButton title="Pick me" to="blah" />,
     );
 
-    expect(await queryByText('Pick me')).not.toBeInTheDocument();
+    expect(queryByText('Pick me')).not.toBeInTheDocument();
   });
 
   it('should render the button with the text', async () => {
@@ -52,6 +52,6 @@ describe('RegisterExistingButton', () => {
       <RegisterExistingButton title="Pick me" to="blah" />,
     );
 
-    expect(await queryByText('Pick me')).toBeInTheDocument();
+    expect(queryByText('Pick me')).toBeInTheDocument();
   });
 });

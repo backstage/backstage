@@ -42,7 +42,9 @@ import { metricsInit, metricsHandler } from './metrics';
 import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
+import catalogEventBasedProviders from './plugins/catalogEventBasedProviders';
 import codeCoverage from './plugins/codecoverage';
+import events from './plugins/events';
 import kubernetes from './plugins/kubernetes';
 import kafka from './plugins/kafka';
 import rollbar from './plugins/rollbar';
@@ -141,10 +143,19 @@ async function main() {
   );
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const playlistEnv = useHotMemoize(module, () => createEnv('playlist'));
+  const eventsEnv = useHotMemoize(module, () => createEnv('events'));
+
+  const eventBasedEntityProviders = await catalogEventBasedProviders(
+    catalogEnv,
+  );
 
   const apiRouter = Router();
-  apiRouter.use('/catalog', await catalog(catalogEnv));
+  apiRouter.use(
+    '/catalog',
+    await catalog(catalogEnv, eventBasedEntityProviders),
+  );
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
+  apiRouter.use('/events', await events(eventsEnv, eventBasedEntityProviders));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
   apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));

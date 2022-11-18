@@ -18,6 +18,7 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
+import type { RJSFValidationError } from '@rjsf/utils';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -139,5 +140,51 @@ describe('Stepper', () => {
     );
 
     expect(getByText('im a custom field extension')).toBeInTheDocument();
+  });
+
+  it('should transform default error message', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              postcode: {
+                type: 'string',
+                pattern: '[A-Z][0-9][A-Z] [0-9][A-Z][0-9]',
+              },
+            },
+          },
+        },
+      ],
+      title: 'transformErrors Form Test',
+    };
+
+    const transformErrors = (errors: RJSFValidationError[]) => {
+      return errors.map(err =>
+        err.property === '.postcode'
+          ? { ...err, message: 'invalid postcode' }
+          : err,
+      );
+    };
+
+    const { getByText, getByRole } = await renderInTestApp(
+      <Stepper
+        manifest={manifest}
+        extensions={[]}
+        onComplete={jest.fn()}
+        transformErrors={transformErrors}
+      />,
+    );
+
+    await fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
+      target: { value: 'invalid' },
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Review' }));
+    });
+
+    expect(getByText('invalid postcode')).toBeInTheDocument();
   });
 });

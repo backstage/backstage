@@ -171,6 +171,37 @@ Exported types can be marked with either `@public`, `@alpha` or `@beta` release 
 
 If a package does not have this configuration, then all exported types are considered stable, even if they are marked as `@alpha` or `@beta`.
 
+#### Changes that are Not Considered Breaking
+
+There are a few exceptions that are not considered breaking in the [versioning policy](https://backstage.io/docs/overview/versioning-policy#changes-that-are-not-considered-breaking),
+primarily regarding Utility APIs and Backend Service interfaces (referred to "contracts" below) that are supplied by the
+Backstage core packages.
+
+Example of a non-breaking change to a contract which has a default
+implementation, since consumers typically only interact with that contract as
+callers of existing methods:
+
+```diff
+ export interface MyService {
+   oldMethod(): void;
++  newMethod(): void;
+ }
+```
+
+Changes such as these must still be marked with `**BREAKING PRODUCERS**:` in the
+changelog, to highlight them for those who might be implementing custom
+implementations of those contracts or putting mocks of the contract in tests.
+
+Example of a breaking change to a contract, which affects existing consumers and
+therefore makes it NOT fall under these exceptions:
+
+```diff
+ export interface MyService {
+-   oldMethod(): void;
++   oldMethod(): Promise<void>;
+ }
+```
+
 #### Type Contract Direction
 
 An important distinction to make when looking at changes to an API Report is the direction of the contract of a changed type, that is, whether it's used as input or output from the user's point of view. In the next two sections we'll dive into the different directions of a type contract, and how it affects whether a change is breaking or not.

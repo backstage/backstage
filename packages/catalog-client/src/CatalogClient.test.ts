@@ -195,6 +195,35 @@ describe('CatalogClient', () => {
     });
   });
 
+  describe('getEntitiesByRefs', () => {
+    it('encodes and decodes the query correctly', async () => {
+      const entity = {
+        apiVersion: '1',
+        kind: 'Component',
+        metadata: {
+          name: 'Test2',
+          namespace: 'test1',
+        },
+      };
+      server.use(
+        rest.post(`${mockBaseUrl}/entities/by-refs`, async (req, res, ctx) => {
+          expect(req.url.searchParams.get('fields')).toBe('a,b');
+          await expect(req.json()).resolves.toEqual({
+            entityRefs: ['k:n/a', 'k:n/b'],
+          });
+          return res(ctx.json({ items: [entity, null] }));
+        }),
+      );
+
+      const response = await client.getEntitiesByRefs(
+        { entityRefs: ['k:n/a', 'k:n/b'], fields: ['a', 'b'] },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [entity, null] });
+    });
+  });
+
   describe('getEntityByRef', () => {
     const existingEntity: Entity = {
       apiVersion: 'v1',

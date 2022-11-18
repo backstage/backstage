@@ -79,3 +79,39 @@ const routes = (
   </FlatRoutes>
 );
 ```
+
+## ToolExplorer Content Customization
+
+Override the `exploreToolsConfigRef` API in `/packages/app/src/apis.ts`.
+
+```tsx
+import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
+
+export const apis: AnyApiFactory[] = [
+  ...
+
+  createApiFactory({
+    api: exploreToolsConfigRef,
+    deps: {},
+    factory: () => ({
+        async getTools() {
+          return tools;
+        },
+      /*  e.g. tools = [
+            {
+              title: 'New Relic',
+              description:'new relic plugin,
+              url: '/newrelic',
+              image: 'https://i.imgur.com/L37ikrX.jpg',
+              tags: ['newrelic', 'proxy', 'nerdGraph'],
+            },
+          ]
+       */
+    }),
+  }),
+
+  ....
+
+];
+
+```

@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 
+/** @public */
 export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 export const SONARQUBE_PROJECT_INSTANCE_SEPARATOR = '/';
 
@@ -42,11 +43,16 @@ export const useProjectInfo = (
   const annotation =
     entity?.metadata.annotations?.[SONARQUBE_PROJECT_KEY_ANNOTATION];
   if (annotation) {
-    if (annotation.indexOf(SONARQUBE_PROJECT_INSTANCE_SEPARATOR) > -1) {
-      [projectInstance, projectKey] = annotation.split(
-        SONARQUBE_PROJECT_INSTANCE_SEPARATOR,
-        2,
-      );
+    const instanceSeparatorIndex = annotation.indexOf(
+      SONARQUBE_PROJECT_INSTANCE_SEPARATOR,
+    );
+    if (instanceSeparatorIndex > -1) {
+      // Examples:
+      //   instanceA/projectA  -> projectInstance = "instanceA" & projectKey = "projectA"
+      //   instanceA/tenantA:projectA -> projectInstance = "instanceA" & projectKey = "tenantA:projectA"
+      //   instanceA/tenantA/projectA -> projectInstance = "instanceA" & projectKey = "tenantA/projectA"
+      projectInstance = annotation.substring(0, instanceSeparatorIndex);
+      projectKey = annotation.substring(instanceSeparatorIndex + 1);
     } else {
       projectKey = annotation;
     }

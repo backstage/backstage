@@ -24,25 +24,8 @@ import { Transform } from 'stream';
  * @public
  */
 export abstract class DecoratorBase extends Transform {
-  private initialized: Promise<undefined | Error>;
-
   constructor() {
     super({ objectMode: true });
-
-    // @todo Once node v15 is minimum, convert to _construct implementation.
-    this.initialized = new Promise(done => {
-      // Necessary to allow concrete implementation classes to construct
-      // themselves before calling their initialize() methods.
-      setImmediate(async () => {
-        try {
-          await this.initialize();
-          done(undefined);
-        } catch (e) {
-          assertError(e);
-          done(e);
-        }
-      });
-    });
   }
 
   /**
@@ -69,6 +52,20 @@ export abstract class DecoratorBase extends Transform {
   public abstract finalize(): Promise<void>;
 
   /**
+   * Encapsulates initialization logic.
+   * @internal
+   */
+  async _construct(done: (error?: Error | null | undefined) => void) {
+    try {
+      await this.initialize();
+      done();
+    } catch (e) {
+      assertError(e);
+      done(e);
+    }
+  }
+
+  /**
    * Encapsulates simple transform stream logic.
    * @internal
    */
@@ -77,13 +74,6 @@ export abstract class DecoratorBase extends Transform {
     _: any,
     done: (error?: Error | null) => void,
   ) {
-    // Wait for init before proceeding. Throw error if initialization failed.
-    const maybeError = await this.initialized;
-    if (maybeError) {
-      done(maybeError);
-      return;
-    }
-
     try {
       const decorated = await this.decorate(document);
 

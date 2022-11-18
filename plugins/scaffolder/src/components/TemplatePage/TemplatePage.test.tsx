@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   MockAnalyticsApi,
   renderInTestApp,
@@ -340,9 +341,9 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(await queryByText('Name')).not.toBeInTheDocument();
-    expect(await queryByText('Description')).toBeInTheDocument();
-    expect(await queryByText('Owner')).toBeInTheDocument();
-    expect(await queryByText('Send data')).toBeInTheDocument();
+    expect(queryByText('Name')).not.toBeInTheDocument();
+    expect(queryByText('Description')).toBeInTheDocument();
+    expect(queryByText('Owner')).toBeInTheDocument();
+    expect(queryByText('Send data')).toBeInTheDocument();
   });
 });

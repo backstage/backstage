@@ -41,7 +41,7 @@ describe('<Select />', () => {
     const { getByText, getByTestId } = render(<Select {...minProps} />);
 
     expect(getByText('Default')).toBeInTheDocument();
-    const input = await getByTestId('select');
+    const input = getByTestId('select');
     expect(input.textContent).toBe('All results');
 
     // Simulate click on input

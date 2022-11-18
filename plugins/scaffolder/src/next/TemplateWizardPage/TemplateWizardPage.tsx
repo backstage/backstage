@@ -26,6 +26,7 @@ import { NextFieldExtensionOptions } from '../../extensions';
 import { Navigate, useNavigate } from 'react-router';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
+  AnalyticsContext,
   errorApiRef,
   useApi,
   useRouteRef,
@@ -43,9 +44,11 @@ import {
 } from '../../routes';
 import { SecretsContext } from '../../components/secrets/SecretsContext';
 import { JsonValue } from '@backstage/types';
+import type { ErrorTransformer } from '@rjsf/utils';
 
 export interface TemplateWizardPageProps {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  transformErrors?: ErrorTransformer;
 }
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
@@ -111,34 +114,37 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   }
 
   return (
-    <Page themeId="website">
-      <Header
-        pageTitleOverride="Create a new component"
-        title="Create a new component"
-        subtitle="Create new software components using standard templates in your organization"
-      />
-      <Content>
-        {loading && <Progress />}
-        {manifest && (
-          <InfoCard
-            title={manifest.title}
-            subheader={
-              <MarkdownContent
-                className={styles.markdown}
-                content={manifest.description ?? 'No description'}
+    <AnalyticsContext attributes={{ entityRef: templateRef }}>
+      <Page themeId="website">
+        <Header
+          pageTitleOverride="Create a new component"
+          title="Create a new component"
+          subtitle="Create new software components using standard templates in your organization"
+        />
+        <Content>
+          {loading && <Progress />}
+          {manifest && (
+            <InfoCard
+              title={manifest.title}
+              subheader={
+                <MarkdownContent
+                  className={styles.markdown}
+                  content={manifest.description ?? 'No description'}
+                />
+              }
+              noPadding
+              titleTypographyProps={{ component: 'h2' }}
+            >
+              <Stepper
+                manifest={manifest}
+                extensions={props.customFieldExtensions}
+                onComplete={onComplete}
+                transformErrors={props.transformErrors}
               />
-            }
-            noPadding
-            titleTypographyProps={{ component: 'h2' }}
-          >
-            <Stepper
-              manifest={manifest}
-              extensions={props.customFieldExtensions}
-              onComplete={onComplete}
-            />
-          </InfoCard>
-        )}
-      </Content>
-    </Page>
+            </InfoCard>
+          )}
+        </Content>
+      </Page>
+    </AnalyticsContext>
   );
 };

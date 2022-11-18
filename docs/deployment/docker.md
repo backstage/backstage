@@ -34,8 +34,8 @@ more efficient caching of dependencies on the host, where a single change won't
 bust the entire cache.
 
 The required steps in the host build are to install dependencies with
-`yarn install`, generate type definitions using `yarn tsc`, and build all
-packages with `yarn build`.
+`yarn install`, generate type definitions using `yarn tsc`, and build the backend
+package with `yarn build:backend`.
 
 > NOTE: If you created your app prior to 2021-02-18, follow the
 > [migration step](https://github.com/backstage/backstage/releases/tag/release-2021-02-18)
@@ -49,8 +49,8 @@ yarn install --frozen-lockfile
 # tsc outputs type definitions to dist-types/ in the repo root, which are then consumed by the build
 yarn tsc
 
-# Build all packages and in the end bundle them all up into the packages/backend/dist folder.
-yarn build
+# Build the backend, which bundles it all up into the packages/backend/dist folder.
+yarn build:backend
 ```
 
 Once the host build is complete, we are ready to build our image. The following
@@ -108,10 +108,13 @@ root of the repo to speed up the build by reducing build context size:
 
 ```text
 .git
+.yarn/cache
+.yarn/install-state.gz
 node_modules
 packages/*/src
 packages/*/node_modules
 plugins
+*.local.yaml
 ```
 
 With the project built and the `.dockerignore` and `Dockerfile` in place, we are
