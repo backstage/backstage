@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { FeatureFlagged } from './FeatureFlagged';
 import { render } from '@testing-library/react';
@@ -44,7 +45,7 @@ describe('FeatureFlagged', () => {
         </Wrapper>,
       );
 
-      expect(await queryByText('BACKSTAGE!')).toBeInTheDocument();
+      expect(queryByText('BACKSTAGE!')).toBeInTheDocument();
     });
     it('should not render contents when the feature flag is disabled', async () => {
       jest
@@ -61,7 +62,7 @@ describe('FeatureFlagged', () => {
         </Wrapper>,
       );
 
-      expect(await queryByText('BACKSTAGE!')).not.toBeInTheDocument();
+      expect(queryByText('BACKSTAGE!')).not.toBeInTheDocument();
     });
   });
   describe('without', () => {
@@ -80,7 +81,7 @@ describe('FeatureFlagged', () => {
         </Wrapper>,
       );
 
-      expect(await queryByText('BACKSTAGE!')).not.toBeInTheDocument();
+      expect(queryByText('BACKSTAGE!')).not.toBeInTheDocument();
     });
     it('should render contents when the feature flag is disabled', async () => {
       jest
@@ -97,7 +98,7 @@ describe('FeatureFlagged', () => {
         </Wrapper>,
       );
 
-      expect(await queryByText('BACKSTAGE!')).toBeInTheDocument();
+      expect(queryByText('BACKSTAGE!')).toBeInTheDocument();
     });
   });
 });

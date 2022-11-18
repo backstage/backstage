@@ -103,10 +103,10 @@ describe('Entity List Docs Grid', () => {
       },
     );
 
-    expect(await screen.queryByText('All Documentation')).toBeInTheDocument();
-    expect(await screen.queryByText('Documentation #1')).toBeInTheDocument();
-    expect(await screen.queryByText('Documentation #2')).toBeInTheDocument();
-    expect(await screen.queryByTestId('doc-not-found')).not.toBeInTheDocument();
+    expect(screen.queryByText('All Documentation')).toBeInTheDocument();
+    expect(screen.queryByText('Documentation #1')).toBeInTheDocument();
+    expect(screen.queryByText('Documentation #2')).toBeInTheDocument();
+    expect(screen.queryByTestId('doc-not-found')).not.toBeInTheDocument();
   });
 
   it('should render only filtered entities with filtering', async () => {
@@ -131,14 +131,10 @@ describe('Entity List Docs Grid', () => {
       },
     );
 
-    expect(
-      await screen.queryByText('Curated Documentation'),
-    ).toBeInTheDocument();
-    expect(await screen.queryByText('Documentation #1')).toBeInTheDocument();
-    expect(
-      await screen.queryByText('Documentation #2'),
-    ).not.toBeInTheDocument();
-    expect(await screen.queryByTestId('doc-not-found')).not.toBeInTheDocument();
+    expect(screen.queryByText('Curated Documentation')).toBeInTheDocument();
+    expect(screen.queryByText('Documentation #1')).toBeInTheDocument();
+    expect(screen.queryByText('Documentation #2')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('doc-not-found')).not.toBeInTheDocument();
   });
 
   it('should render nothing with filtering yielding no result', async () => {
@@ -163,16 +159,10 @@ describe('Entity List Docs Grid', () => {
       },
     );
 
-    expect(
-      await screen.queryByText('Curated Documentation'),
-    ).not.toBeInTheDocument();
-    expect(
-      await screen.queryByText('Documentation #1'),
-    ).not.toBeInTheDocument();
-    expect(
-      await screen.queryByText('Documentation #2'),
-    ).not.toBeInTheDocument();
-    expect(await screen.queryByTestId('doc-not-found')).not.toBeInTheDocument();
+    expect(screen.queryByText('Curated Documentation')).not.toBeInTheDocument();
+    expect(screen.queryByText('Documentation #1')).not.toBeInTheDocument();
+    expect(screen.queryByText('Documentation #2')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('doc-not-found')).not.toBeInTheDocument();
   });
 
   it('should render an error without any documentation and without filtering', async () => {
@@ -189,15 +179,9 @@ describe('Entity List Docs Grid', () => {
       },
     );
 
-    expect(
-      await screen.queryByText('All Documentation'),
-    ).not.toBeInTheDocument();
-    expect(
-      await screen.queryByText('Documentation #1'),
-    ).not.toBeInTheDocument();
-    expect(
-      await screen.queryByText('Documentation #2'),
-    ).not.toBeInTheDocument();
-    expect(await screen.queryByTestId('doc-not-found')).toBeInTheDocument();
+    expect(screen.queryByText('All Documentation')).not.toBeInTheDocument();
+    expect(screen.queryByText('Documentation #1')).not.toBeInTheDocument();
+    expect(screen.queryByText('Documentation #2')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('doc-not-found')).toBeInTheDocument();
   });
 });
