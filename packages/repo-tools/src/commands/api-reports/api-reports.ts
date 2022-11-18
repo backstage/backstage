@@ -92,8 +92,6 @@ export default async (paths: string[], opts: OptionValues) => {
     packageDirs,
   );
 
-  console.log({ tsPackageDirs, cliPackageDirs, isDocsBuild });
-
   if (tsPackageDirs.length > 0) {
     console.log('# Generating package API reports');
     await runApiExtraction({
