@@ -22,11 +22,8 @@ import { Logger } from 'winston';
 import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { RequestHandler } from 'http-proxy-middleware';
+import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
-
-// @alpha (undocumented)
-export const APPLICATION_JSON: string;
 
 // @alpha (undocumented)
 export interface AWSClusterDetails extends ClusterDetails {
@@ -146,7 +143,7 @@ export class GoogleServiceAccountAuthTranslator
   ): Promise<GKEClusterDetails>;
 }
 
-// @alpha (undocumented)
+// @alpha
 export const HEADER_KUBERNETES_CLUSTER: string;
 
 // @alpha (undocumented)
@@ -353,7 +350,7 @@ export type KubernetesObjectTypes =
   | 'statefulsets'
   | 'daemonsets';
 
-// @alpha (undocumented)
+// @alpha
 export class KubernetesProxy {
   constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
   // (undocumented)

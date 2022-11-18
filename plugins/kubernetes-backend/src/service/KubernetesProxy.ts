@@ -13,33 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
-import { bufferFromFileOrString } from '@kubernetes/client-node';
-import { Logger } from 'winston';
-import { ErrorResponseBody, serializeError } from '@backstage/errors';
 
+import {
+  ErrorResponseBody,
+  ForwardedError,
+  InputError,
+  NotFoundError,
+  serializeError,
+} from '@backstage/errors';
+import { bufferFromFileOrString } from '@kubernetes/client-node';
+import type { Request, RequestHandler } from 'express';
+import {
+  createProxyMiddleware,
+  Options as ProxyMiddlewareOptions,
+} from 'http-proxy-middleware';
+import { Logger } from 'winston';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
-import type { Request } from 'express';
-import {
-  RequestHandler,
-  Options,
-  createProxyMiddleware,
-} from 'http-proxy-middleware';
-
-/**
- *
- * @alpha
- */
 export const APPLICATION_JSON: string = 'application/json';
 
 /**
+ * The header that is used to specify the cluster name.
  *
  * @alpha
  */
 export const HEADER_KUBERNETES_CLUSTER: string = 'X-Kubernetes-Cluster';
 
 /**
+ * A proxy that routes requests to the Kubernetes API.
  *
  * @alpha
  */
@@ -55,7 +56,7 @@ export class KubernetesProxy {
     const clusterDetails = await this.getClusterDetails(requestedCluster);
 
     const clusterUrl = new URL(clusterDetails.url);
-    const options = {
+    const options: ProxyMiddlewareOptions = {
       logProvider: () => this.logger,
       secure: !clusterDetails.skipTLSVerify,
       target: {
@@ -83,7 +84,7 @@ export class KubernetesProxy {
 
         res.status(500).json(body);
       },
-    } as Options;
+    };
 
     // Probably too risky without permissions protecting this endpoint
     // if (clusterDetails.serviceAccountToken) {
