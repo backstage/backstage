@@ -30,8 +30,8 @@ import React, { useEffect, useState } from 'react';
  *
  * Shown as SnackBar at the center top of the page by default. Configurable with props.
  *
- * @param anchorOrigin.vertical - Vertical orientation of where the AlertDisplay will be located
- * @param anchorOrigin.horizontal - Horizontal orientation of where the AlertDisplay will be located
+ * @param anchorOrigin - The `vertical` property will set the vertical orientation of where the AlertDisplay will be located
+ * and the `horizontal` property will set the horizontal orientation of where the AlertDisplay will be located
  * @param transientTimeoutMs - Number of milliseconds a transient alert will stay open for. Default value is 5000
  *
  * @example
