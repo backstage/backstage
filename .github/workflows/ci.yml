@@ -68,7 +68,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: verify yarn dependency duplicates
-        run: yarn dedupe --check
+        run: node scripts/verify-lockfile-duplicates.js
 
       - name: verify changesets
         run: node scripts/verify-changesets.js

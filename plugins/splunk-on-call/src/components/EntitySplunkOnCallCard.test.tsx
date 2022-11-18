@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import {
@@ -187,7 +188,7 @@ describe('SplunkOnCallCard', () => {
       { timeout: 2000 },
     );
 
-    const createIncidentButton = await getByText('Create Incident');
+    const createIncidentButton = getByText('Create Incident');
     await act(async () => {
       fireEvent.click(createIncidentButton);
     });

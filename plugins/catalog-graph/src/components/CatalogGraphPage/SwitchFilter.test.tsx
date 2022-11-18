@@ -13,31 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render } from '@testing-library/react';
+
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { SwitchFilter } from './SwitchFilter';
 
 describe('<SwitchFilter/>', () => {
   test('should render value', () => {
-    const { getByLabelText } = render(
-      <SwitchFilter label="My label" value={false} onChange={() => {}} />,
-    );
+    render(<SwitchFilter label="My label" value={false} onChange={() => {}} />);
 
-    expect(getByLabelText('My label')).toBeInTheDocument();
-    expect(getByLabelText('My label')).not.toBeChecked();
+    expect(screen.getByLabelText('My label')).toBeInTheDocument();
+    expect(screen.getByLabelText('My label')).not.toBeChecked();
   });
 
   test('should toggle value', async () => {
     const onChange = jest.fn();
-    const { getByLabelText } = render(
-      <SwitchFilter label="My label" value onChange={onChange} />,
-    );
+    render(<SwitchFilter label="My label" value onChange={onChange} />);
 
-    expect(getByLabelText('My label')).toBeInTheDocument();
-    expect(getByLabelText('My label')).toBeChecked();
+    expect(screen.getByLabelText('My label')).toBeInTheDocument();
+    expect(screen.getByLabelText('My label')).toBeChecked();
 
-    await userEvent.click(getByLabelText('My label'));
+    await userEvent.click(screen.getByLabelText('My label'));
 
     expect(onChange).toHaveBeenCalledWith(false);
   });

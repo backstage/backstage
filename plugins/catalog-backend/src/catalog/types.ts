@@ -80,6 +80,36 @@ export type EntitiesResponse = {
   pageInfo: PageInfo;
 };
 
+/**
+ * A request for a batch of entities.
+ */
+export interface EntitiesBatchRequest {
+  /**
+   * The refs for which to fetch entities.
+   */
+  entityRefs: string[];
+  /**
+   * Any additional filters to apply in the selection of the entities.
+   */
+  filter?: EntityFilter;
+  /**
+   * Strips out only the parts of the entity bodies to include in the response.
+   */
+  fields?: (entity: Entity) => Entity;
+  /**
+   * The optional token that authorizes the action.
+   */
+  authorizationToken?: string;
+}
+
+export interface EntitiesBatchResponse {
+  /**
+   * The list of entities, in the same order as the refs in the request. Entries
+   * that are null signify that no entity existed with that ref.
+   */
+  items: Array<Entity | null>;
+}
+
 export type EntityAncestryResponse = {
   rootEntityRef: string;
   items: Array<{
@@ -129,6 +159,11 @@ export interface EntitiesCatalog {
    * @param request - Request options
    */
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
+
+  /**
+   * Fetches a batch of entities.
+   */
+  entitiesBatch(request: EntitiesBatchRequest): Promise<EntitiesBatchResponse>;
 
   /**
    * Removes a single entity.

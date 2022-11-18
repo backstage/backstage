@@ -32,6 +32,9 @@ jobs:
         run: yarn install --immutable
         working-directory: microsite
 
+      - name: verify yarn dependency duplicates
+        run: node scripts/verify-lockfile-duplicates.js
+
       - name: prettier
         run: yarn prettier:check
         working-directory: microsite
