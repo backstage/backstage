@@ -22,7 +22,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { DependsOnResourcesCard } from './DependsOnResourcesCard';
 
@@ -51,7 +51,7 @@ describe('<DependsOnResourcesCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <DependsOnResourcesCard />
@@ -64,9 +64,9 @@ describe('<DependsOnResourcesCard />', () => {
       },
     );
 
-    expect(getByText('Depends on resources')).toBeInTheDocument();
+    expect(screen.getByText('Depends on resources')).toBeInTheDocument();
     expect(
-      getByText(/No resource is a dependency of this component/i),
+      screen.getByText(/No resource is a dependency of this component/i),
     ).toBeInTheDocument();
   });
 
@@ -99,7 +99,7 @@ describe('<DependsOnResourcesCard />', () => {
       ],
     });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <DependsOnResourcesCard />
@@ -113,8 +113,8 @@ describe('<DependsOnResourcesCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Depends on resources')).toBeInTheDocument();
-      expect(getByText(/target-name/i)).toBeInTheDocument();
+      expect(screen.getByText('Depends on resources')).toBeInTheDocument();
+      expect(screen.getByText(/target-name/i)).toBeInTheDocument();
     });
   });
 });
