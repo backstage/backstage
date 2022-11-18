@@ -35,6 +35,10 @@ const entity = {
 };
 
 const location: Record<string, LocationSpec> = {
+  w: {
+    type: 'url',
+    target: 'https://github.com/backstage/blob/master/w.yaml',
+  },
   x: {
     type: 'url',
     target: 'https://github.com/a/b/blob/master/x.yaml',
@@ -215,6 +219,19 @@ describe('DefaultCatalogRulesEnforcer', () => {
       expect(enforcer.isAllowed(entity.group, location.z)).toBe(true);
       expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
       expect(enforcer.isAllowed(entity.location, location.z)).toBe(false);
+    });
+
+    it('should only allow sources that are specified in sources', () => {
+      const enforcer = DefaultCatalogRulesEnforcer.fromConfig(
+        new ConfigReader({
+          catalog: {
+            rules: [{ allow: ['Component'], sources: ['github.com/backstage'] }],
+          },
+        }),
+      );
+      expect(enforcer.isAllowed(entity.component, location.w)).toBe(true);
+      expect(enforcer.isAllowed(entity.component, location.y)).toBe(false);
+      expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
     });
   });
 });
