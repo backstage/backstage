@@ -43,6 +43,7 @@ import {
   createGithubRepoPushAction,
   createGithubWebhookAction,
 } from './github';
+import { createBitbucketCloudRepoCreateAction } from './bitbucket-cloud';
 import {
   createPublishAzureAction,
   createPublishBitbucketAction,
@@ -183,6 +184,10 @@ export const createBuiltinActions = (
       integrations,
       config,
       githubCredentialsProvider,
+    }),
+    createBitbucketCloudRepoCreateAction({
+      integrations,
+      config,
     }),
   ];
 
