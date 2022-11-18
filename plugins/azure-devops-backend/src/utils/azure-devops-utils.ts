@@ -126,6 +126,7 @@ export function convertPolicy(
       [PolicyTypeId.Comments]: PolicyType.Comments,
       [PolicyTypeId.RequiredReviewers]: PolicyType.RequiredReviewers,
       [PolicyTypeId.MergeStrategy]: PolicyType.MergeStrategy,
+      [PolicyTypeId.WorkItem]: PolicyType.WorkItem,
     } as Record<string, PolicyType | undefined>
   )[policyTypeId];
 
@@ -194,6 +195,9 @@ export function convertPolicy(
     case PolicyType.RequiredReviewers:
       break;
     case PolicyType.MergeStrategy:
+      break;
+    case PolicyType.WorkItem:
+      break;
     default:
       return undefined;
   }
