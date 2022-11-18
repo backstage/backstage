@@ -278,11 +278,14 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error('Unable to process url as an GitLab artifact');
     }
     try {
-      const [namespaceAndProject, ref] = target.pathname.split('/-/jobs/artifacts/');
+      const [namespaceAndProject, ref] =
+        target.pathname.split('/-/jobs/artifacts/');
       const projectPath = new URL(target);
       projectPath.pathname = namespaceAndProject;
       const projectId = await this.resolveProjectToId(projectPath);
-      const relativePath = getGitLabIntegrationRelativePath(this.integration.config);
+      const relativePath = getGitLabIntegrationRelativePath(
+        this.integration.config,
+      );
       const newUrl = new URL(target);
       newUrl.pathname = `${relativePath}/api/v4/projects/${projectId}/jobs/artifacts/${ref}`;
       return newUrl;
