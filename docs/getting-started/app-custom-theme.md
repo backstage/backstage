@@ -397,9 +397,9 @@ Note: If the icon is not available as one of the default icons or one you've add
 
 As you've seen there are many ways that you can customize your Backstage app. The following section will show you how you can customize the sidebar.
 
-### Sidebar Submenu
+### Sidebar Sub-menu
 
-For this example we'll show you how you can expand the sidebar with a submenu:
+For this example we'll show you how you can expand the sidebar with a sub-menu:
 
 1. Open the `Root.tsx` file located in `packages/app/src/components/Root` as this is where the sidebar code lives
 2. Then we want to add the following imports for the icons:
@@ -479,9 +479,9 @@ For this example we'll show you how you can expand the sidebar with a submenu:
    </SidebarItem>
    ```
 
-When you startup your Backstage app and hover over the Home option on the sidebar you'll now see a nice submenu appear with links to the various Kinds in your Catalog. It would look like this:
+When you startup your Backstage app and hover over the Home option on the sidebar you'll now see a nice sub-menu appear with links to the various Kinds in your Catalog. It would look like this:
 
-![Sidebar submenu example](./../assets/getting-started/sidebar-submenu-example.png)
+![Sidebar sub-menu example](./../assets/getting-started/sidebar-submenu-example.png)
 
 You can see more ways to use this in the [Storybook Sidebar examples](https://backstage.io/storybook/?path=/story/layout-sidebar--sample-scalable-sidebar)
 
