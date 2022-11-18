@@ -30,6 +30,7 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { nextSelectedTemplateRouteRef } from '../../routes';
 import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
+import type { ErrorTransformer } from '@rjsf/utils';
 
 /**
  * The Props for the Scaffolder Router
@@ -44,6 +45,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
+  transformErrors?: ErrorTransformer;
 };
 
 /**
