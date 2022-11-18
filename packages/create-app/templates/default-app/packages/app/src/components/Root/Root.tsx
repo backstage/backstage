@@ -23,18 +23,9 @@ import {
   SidebarSpace,
   useSidebarOpenState,
   Link,
-  GroupIcon,
-  SidebarSubmenu,
-  SidebarSubmenuItem,
 } from '@backstage/core-components';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import ApiIcon from '@material-ui/icons/Extension';
-import ComponentIcon from '@material-ui/icons/Memory';
-import DomainIcon from '@material-ui/icons/Apartment';
-import ResourceIcon from '@material-ui/icons/Work';
-import SystemIcon from '@material-ui/icons/Category';
-import UserIcon from '@material-ui/icons/Person';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
