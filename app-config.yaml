@@ -376,7 +376,7 @@ costInsights:
   baseCurrency:
     locale: en-US
     options:
-      currency: EUR
+      currency: USD
       minimumFractionDigits: 3
   products:
     computeEngine:

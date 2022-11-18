@@ -48,7 +48,7 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
  *       name: Metric B
  *   baseCurrency:
  *     locales:
- *     - en-US
+ *     - nl-NL
  *     options:
  *       style: currency
  *       currency: EUR
