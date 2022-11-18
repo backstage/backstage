@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-export type { RequestDetails } from './RequestDetails';
-export type { RequestRejectionDetails } from './RequestRejectionDetails';
-export type { RequestValidationContext } from './RequestValidationContext';
-export type { RequestValidator } from './RequestValidator';
+/**
+ * @public
+ */
+export interface RequestDetails {
+  /**
+   * Request body. JSON payloads have been parsed already.
+   */
+  body: unknown;
+  /**
+   * Key-value pairs of header names and values. Header names are lower-cased.
+   */
+  headers: Record<string, string | string[] | undefined>;
+}
