@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import 'buffer';
 
+import 'buffer';
 import { getVoidLogger } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { getMockReq, getMockRes } from '@jest-mock/express';
@@ -24,7 +24,6 @@ import request from 'supertest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import {
   APPLICATION_JSON,
@@ -76,7 +75,7 @@ describe('KubernetesProxy', () => {
     const req = buildMockRequest('test', 'api');
     const { res, next } = getMockRes();
 
-    await expect(proxy.proxyRequestHandler(req, res, next)).rejects.toThrow(
+    await expect(proxy.createRequestHandler()(req, res, next)).rejects.toThrow(
       NotFoundError,
     );
   });
@@ -101,7 +100,7 @@ describe('KubernetesProxy', () => {
         authProvider: 'serviceAccount',
       },
     ] as ClusterDetails[]);
-    const app = express().use('/mountpath', proxy.proxyRequestHandler);
+    const app = express().use('/mountpath', proxy.createRequestHandler());
     const requestPromise = request(app)
       .get('/mountpath/api')
       .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');

@@ -299,7 +299,7 @@ export class KubernetesBuilder {
       });
     });
 
-    router.use('/proxy', proxy.proxyRequestHandler);
+    router.use('/proxy', proxy.createRequestHandler());
 
     addResourceRoutesToRouter(router, catalogApi, objectsProvider);
 

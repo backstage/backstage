@@ -354,7 +354,7 @@ export type KubernetesObjectTypes =
 export class KubernetesProxy {
   constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
   // (undocumented)
-  proxyRequestHandler: RequestHandler;
+  createRequestHandler(): RequestHandler;
 }
 
 // @alpha
