@@ -1542,17 +1542,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/types@npm:3.208.0, @aws-sdk/types@npm:^3.208.0":
+"@aws-sdk/types@npm:3.208.0, @aws-sdk/types@npm:^3.1.0, @aws-sdk/types@npm:^3.110.0, @aws-sdk/types@npm:^3.208.0":
   version: 3.208.0
   resolution: "@aws-sdk/types@npm:3.208.0"
   checksum: 3d4eb51720bd20b6811dece5e096ba3b59da842d1c8b2a8e2785e9931d916f41197651da689aa415083e1259e03507b7703ecbbac001b4cdbe68dde2ed94b5cf
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/types@npm:^3.1.0, @aws-sdk/types@npm:^3.110.0":
-  version: 3.183.0
-  resolution: "@aws-sdk/types@npm:3.183.0"
-  checksum: ab6e888ef8f6d5f5c047dbe0899ac94ad4aa83b9ae1b1fd7a3b88eacec61ab912f215fda65c71f783418d569d1088641806f6b98c9a28ddae04cc70d0eeccea7
   languageName: node
   linkType: hard
 
@@ -1758,21 +1751,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-utf8-browser@npm:3.188.0":
+"@aws-sdk/util-utf8-browser@npm:3.188.0, @aws-sdk/util-utf8-browser@npm:^3.0.0":
   version: 3.188.0
   resolution: "@aws-sdk/util-utf8-browser@npm:3.188.0"
   dependencies:
     tslib: ^2.3.1
   checksum: dacd27164aa0835888434e080b67f04510e2281560540ff73496f2d0aa73b0b7f830ec08491b35c3a51bf6214615579182aff8727e151e54a74a97a197a2ac31
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/util-utf8-browser@npm:^3.0.0":
-  version: 3.183.0
-  resolution: "@aws-sdk/util-utf8-browser@npm:3.183.0"
-  dependencies:
-    tslib: ^2.3.1
-  checksum: f1c9cbafc3dcf5b04264c3708509117d5e6f6b373fb30712a0cd9d09966a2cdead0a91067a8e9513abac9b082971fd40519e421a2e046b3653ce1ede136197c2
   languageName: node
   linkType: hard
 
