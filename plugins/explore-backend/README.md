@@ -1,8 +1,9 @@
 # explore-backend
 
-Welcome to the explore-backend backend plugin!
-
-_This plugin was created through the Backstage CLI_
+The `explore-backend` plugin provides a backend service for the Explore plugin.
+This allows your organizations tools to be surfaced in the Explore plugin
+through an API. It also provides a search collator to make it possible to search
+for these tools.
 
 ## Getting started
 
@@ -13,36 +14,6 @@ _This plugin was created through the Backstage CLI_
 yarn add --cwd packages/backend @backstage/plugin-explore-backend
 ```
 
-### Create a ToolProvider
-
-Create a `ToolProvider` to provide `ExploreTool` objects.
-
-```ts
-import {
-  GetExploreToolsRequest,
-  GetExploreToolsResponse,
-} from '@backstage/plugin-explore-common';
-
-export async function getExploreTools(
-  request: GetExploreToolsRequest,
-): Promise<GetExploreToolsResponse> {
-  const { filter } = request ?? {};
-
-  // Get tool data from a file or some other source
-  const toolData = getToolData();
-
-  // Populate ExploreTool[] objects & use filter to filter them
-  const tools = [...toolData].filter(filterToolPredicate);
-
-  return {
-    tools,
-  };
-}
-```
-
-**NOTE: You can see the `plugins/explore-backend/src/example/getExampleTools.ts`
-as a simple hardcoded example.**
-
 ### Adding the plugin to your `packages/backend`
 
 You'll need to add the plugin to the router in your `backend` package. You can
@@ -51,20 +22,18 @@ do this by creating a file called `packages/backend/src/plugins/explore.ts`
 ```ts
 import {
   createRouter,
-  getExampleTools,
+  StaticExploreToolProvider,
 } from '@backstage/plugin-explore-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { getExploreTools } from '../data/explore';
+import { exploreTools } from '../path/to/your/exploreTools';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   return await createRouter({
     logger: env.logger,
-    toolProvider: {
-      getTools: getExploreTools,
-    },
+    toolProvider: StaticExploreToolProvider.fromData(exploreTools),
   });
 }
 ```
@@ -86,6 +55,29 @@ async function main() {
 +  apiRouter.use('/explore', await explore(exploreEnv));
   ...
   apiRouter.use(notFoundHandler());
+```
+
+### Wire up Search Indexing
+
+To index explore tools you will need to register the search collator in the
+`packages/backend/src/plugins/search.ts` file.
+
+```diff
++import { ToolDocumentCollatorFactory } from '@backstage/plugin-explore-backend';
+
+async function createSearchEngine(
+  env: PluginEnvironment,
+): Promise<SearchEngine> {
+  ...
++  indexBuilder.addCollator({
++    schedule,
++    factory: ToolDocumentCollatorFactory.fromConfig(env.config, {
++      discovery: env.discovery,
++      logger: env.logger,
++    }),
++  });
+  ...
+}
 ```
 
 ### Wire up the Frontend
