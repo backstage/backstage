@@ -18,6 +18,8 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { ObjectToFetch } from '../types/types';
 import { topPods } from '@kubernetes/client-node';
+import http from 'http';
+import { V1Namespace } from '@kubernetes/client-node/dist/gen/api';
 
 jest.mock('@kubernetes/client-node', () => ({
   ...jest.requireActual('@kubernetes/client-node'),
@@ -56,20 +58,40 @@ const POD_METRICS_FIXTURE = {
 
 describe('KubernetesFetcher', () => {
   describe('fetchObjectsForService', () => {
-    let clientMock: any;
+    let coreObjectsClientMock: any;
+    let customObjectsClientMock: any;
     let kubernetesClientProvider: any;
     let sut: KubernetesClientBasedFetcher;
 
     beforeEach(() => {
       jest.resetAllMocks();
-      clientMock = {
+      const response = {
+        statusCode: 200,
+      } as unknown as http.IncomingMessage;
+      const body = {
+        status: {
+          phase: 'Active',
+        },
+      } as unknown as V1Namespace;
+
+      coreObjectsClientMock = {
+        readNamespace: jest.fn((_namespace: string) =>
+          Promise.resolve({
+            response: response,
+            body: body,
+          }),
+        ),
+      };
+
+      customObjectsClientMock = {
         listClusterCustomObject: jest.fn(),
         listNamespacedCustomObject: jest.fn(),
         addInterceptor: jest.fn(),
       };
 
       kubernetesClientProvider = {
-        getCustomObjectsClient: jest.fn(() => clientMock),
+        getCoreClientByClusterDetails: jest.fn(() => coreObjectsClientMock),
+        getCustomObjectsClient: jest.fn(() => customObjectsClientMock),
       };
 
       sut = new KubernetesClientBasedFetcher({
@@ -82,7 +104,7 @@ describe('KubernetesFetcher', () => {
       errorResponse: any,
       expectedResult: any,
     ) => {
-      clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listClusterCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -94,7 +116,9 @@ describe('KubernetesFetcher', () => {
         },
       });
 
-      clientMock.listClusterCustomObject.mockRejectedValue(errorResponse);
+      customObjectsClientMock.listClusterCustomObject.mockRejectedValue(
+        errorResponse,
+      );
 
       const result = await sut.fetchObjectsForService({
         serviceId: 'some-service',
@@ -125,9 +149,13 @@ describe('KubernetesFetcher', () => {
         ],
       });
 
-      expect(clientMock.listClusterCustomObject.mock.calls.length).toBe(2);
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls.length,
+      ).toBe(2);
 
-      expect(clientMock.listClusterCustomObject.mock.calls[0]).toEqual([
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls[0],
+      ).toEqual([
         '',
         'v1',
         'pods',
@@ -138,7 +166,9 @@ describe('KubernetesFetcher', () => {
         'backstage.io/kubernetes-id=some-service',
       ]);
 
-      expect(clientMock.listClusterCustomObject.mock.calls[1]).toEqual([
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls[1],
+      ).toEqual([
         '',
         'v1',
         'services',
@@ -155,7 +185,7 @@ describe('KubernetesFetcher', () => {
     };
 
     it('should return pods, services', async () => {
-      clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listClusterCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -167,7 +197,7 @@ describe('KubernetesFetcher', () => {
         },
       });
 
-      clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listClusterCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -218,9 +248,13 @@ describe('KubernetesFetcher', () => {
         ],
       });
 
-      expect(clientMock.listClusterCustomObject.mock.calls.length).toBe(2);
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls.length,
+      ).toBe(2);
 
-      expect(clientMock.listClusterCustomObject.mock.calls[0]).toEqual([
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls[0],
+      ).toEqual([
         '',
         'v1',
         'pods',
@@ -231,7 +265,9 @@ describe('KubernetesFetcher', () => {
         'backstage.io/kubernetes-id=some-service',
       ]);
 
-      expect(clientMock.listClusterCustomObject.mock.calls[1]).toEqual([
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls[1],
+      ).toEqual([
         '',
         'v1',
         'services',
@@ -247,7 +283,7 @@ describe('KubernetesFetcher', () => {
       ).toBe(2);
     });
     it('should return pods, services and customobjects', async () => {
-      clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listClusterCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -259,7 +295,7 @@ describe('KubernetesFetcher', () => {
         },
       });
 
-      clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listClusterCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -271,7 +307,7 @@ describe('KubernetesFetcher', () => {
         },
       });
 
-      clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listClusterCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -339,9 +375,13 @@ describe('KubernetesFetcher', () => {
         ],
       });
 
-      expect(clientMock.listClusterCustomObject.mock.calls.length).toBe(3);
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls.length,
+      ).toBe(3);
 
-      expect(clientMock.listClusterCustomObject.mock.calls[0]).toEqual([
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls[0],
+      ).toEqual([
         '',
         'v1',
         'pods',
@@ -352,7 +392,9 @@ describe('KubernetesFetcher', () => {
         'backstage.io/kubernetes-id=some-service',
       ]);
 
-      expect(clientMock.listClusterCustomObject.mock.calls[1]).toEqual([
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls[1],
+      ).toEqual([
         '',
         'v1',
         'services',
@@ -363,7 +405,9 @@ describe('KubernetesFetcher', () => {
         'backstage.io/kubernetes-id=some-service',
       ]);
 
-      expect(clientMock.listClusterCustomObject.mock.calls[2]).toEqual([
+      expect(
+        customObjectsClientMock.listClusterCustomObject.mock.calls[2],
+      ).toEqual([
         'some-group',
         'v2',
         'things',
@@ -463,7 +507,7 @@ describe('KubernetesFetcher', () => {
       );
     });
     it('should always add a labelSelector query', async () => {
-      clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listClusterCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -475,7 +519,7 @@ describe('KubernetesFetcher', () => {
         },
       });
 
-      clientMock.listClusterCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listClusterCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -500,13 +544,14 @@ describe('KubernetesFetcher', () => {
         customResources: [],
       });
 
-      const mockCall = clientMock.listClusterCustomObject.mock.calls[0];
+      const mockCall =
+        customObjectsClientMock.listClusterCustomObject.mock.calls[0];
       const actualSelector = mockCall[mockCall.length - 1];
       const expectedSelector = 'backstage.io/kubernetes-id=some-service';
       expect(actualSelector).toBe(expectedSelector);
     });
     it('should use namespace if provided', async () => {
-      clientMock.listNamespacedCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listNamespacedCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -518,7 +563,7 @@ describe('KubernetesFetcher', () => {
         },
       });
 
-      clientMock.listNamespacedCustomObject.mockResolvedValueOnce({
+      customObjectsClientMock.listNamespacedCustomObject.mockResolvedValueOnce({
         body: {
           items: [
             {
@@ -544,7 +589,8 @@ describe('KubernetesFetcher', () => {
         customResources: [],
       });
 
-      const mockCall = clientMock.listNamespacedCustomObject.mock.calls[0];
+      const mockCall =
+        customObjectsClientMock.listNamespacedCustomObject.mock.calls[0];
       const namespace = mockCall[2];
       expect(namespace).toBe('some-namespace');
     });

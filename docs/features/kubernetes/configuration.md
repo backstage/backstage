@@ -53,7 +53,7 @@ This configures how to determine which clusters a component is running in.
 Currently, the only valid value is:
 
 - `multiTenant` - This configuration assumes that all components run on all the
-  provided clusters.
+  provided clusters. All clusters where the namespace of the entity does not exist will not be visualized.
 
 ### `clusterLocatorMethods`
 

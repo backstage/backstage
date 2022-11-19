@@ -62,6 +62,8 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
       return 'BAD_REQUEST';
     case 401:
       return 'UNAUTHORIZED_ERROR';
+    case 403:
+      return 'FORBIDDEN';
     case 404:
       return 'NOT_FOUND';
     case 500:
@@ -143,6 +145,35 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     throw e;
   }
 
+  private namespaceExists(
+    clusterDetails: ClusterDetails,
+    namespace?: string | undefined,
+  ): Promise<boolean> {
+    if (!namespace) {
+      return Promise.resolve(false);
+    }
+    const coreApi =
+      this.kubernetesClientProvider.getCoreClientByClusterDetails(
+        clusterDetails,
+      );
+    return coreApi
+      .readNamespace(namespace)
+      .then(r => {
+        const existsAndActive: boolean =
+          r.response?.statusCode !== undefined &&
+          r.response.statusCode >= 200 &&
+          r.response.statusCode < 300 &&
+          r.body?.status?.phase === 'Active';
+        return Promise.resolve(existsAndActive);
+      })
+      .catch(e => {
+        if (e.response && e.response.statusCode === 404) {
+          return Promise.resolve(false);
+        }
+        return Promise.reject(e);
+      });
+  }
+
   private fetchResource(
     clusterDetails: ClusterDetails,
     resource: ObjectToFetch,
@@ -157,42 +188,49 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       requestOptions.uri = requestOptions.uri.replace('/apis//v1/', '/api/v1/');
     });
 
-    if (namespace) {
-      return customObjects
-        .listNamespacedCustomObject(
-          resource.group,
-          resource.apiVersion,
-          namespace,
-          resource.plural,
-          '',
-          false,
-          '',
-          '',
-          labelSelector,
-        )
-        .then(r => {
-          return {
-            type: objectType,
-            resources: (r.body as any).items,
-          };
-        });
-    }
-    return customObjects
-      .listClusterCustomObject(
-        resource.group,
-        resource.apiVersion,
-        resource.plural,
-        '',
-        false,
-        '',
-        '',
-        labelSelector,
-      )
-      .then(r => {
-        return {
-          type: objectType,
-          resources: (r.body as any).items,
-        };
+    return this.namespaceExists(clusterDetails, namespace).then(exists => {
+      if (exists && namespace) {
+        return customObjects
+          .listNamespacedCustomObject(
+            resource.group,
+            resource.apiVersion,
+            namespace,
+            resource.plural,
+            '',
+            false,
+            '',
+            '',
+            labelSelector,
+          )
+          .then(r => {
+            return {
+              type: objectType,
+              resources: (r.body as any).items,
+            };
+          });
+      } else if (!namespace) {
+        return customObjects
+          .listClusterCustomObject(
+            resource.group,
+            resource.apiVersion,
+            resource.plural,
+            '',
+            false,
+            '',
+            '',
+            labelSelector,
+          )
+          .then(r => {
+            return {
+              type: objectType,
+              resources: (r.body as any).items,
+            };
+          });
+      }
+      return Promise.resolve({
+        type: objectType,
+        resources: [],
       });
+    });
   }
 }

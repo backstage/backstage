@@ -232,9 +232,10 @@ export interface KubernetesFetchError {
 /** @public */
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
-  | 'UNAUTHORIZED_ERROR'
+  | 'FORBIDDEN'
   | 'NOT_FOUND'
   | 'SYSTEM_ERROR'
+  | 'UNAUTHORIZED_ERROR'
   | 'UNKNOWN_ERROR';
 
 /** @public */
