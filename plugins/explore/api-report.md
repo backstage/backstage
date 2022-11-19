@@ -10,6 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default as default_2 } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { DomainEntity } from '@backstage/catalog-model';
+import { ExploreToolsConfig } from '@backstage/plugin-explore-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { GetExploreToolsRequest } from '@backstage/plugin-explore-common';
@@ -51,9 +52,11 @@ export class ExploreClient implements ExploreApi {
   constructor({
     discoveryApi,
     fetchApi,
+    exploreToolsConfig,
   }: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    exploreToolsConfig?: ExploreToolsConfig;
   });
   // (undocumented)
   getTools(request?: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;

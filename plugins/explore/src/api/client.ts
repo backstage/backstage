@@ -20,6 +20,7 @@ import {
   GetExploreToolsRequest,
   GetExploreToolsResponse,
 } from '@backstage/plugin-explore-common';
+import { ExploreToolsConfig } from '@backstage/plugin-explore-react';
 import { ExploreApi } from './types';
 
 /**
@@ -30,21 +31,38 @@ import { ExploreApi } from './types';
 export class ExploreClient implements ExploreApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
+  // NOTE: This will be removed in the future as it is replaced by the ExploreApi.getTools method
+  private readonly exploreToolsConfig: ExploreToolsConfig | undefined;
 
+  /**
+   * @remarks The exploreToolsConfig is for backwards compatibility with the exporeToolsConfigRef
+   * and will be removed in the future.
+   */
   constructor({
     discoveryApi,
     fetchApi,
+    exploreToolsConfig = undefined,
   }: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    exploreToolsConfig?: ExploreToolsConfig;
   }) {
     this.discoveryApi = discoveryApi;
     this.fetchApi = fetchApi;
+    this.exploreToolsConfig = exploreToolsConfig;
   }
 
   async getTools(
     request: GetExploreToolsRequest = {},
   ): Promise<GetExploreToolsResponse> {
+    // NOTE: This will be removed in the future as it is replaced by the ExploreApi.getTools method
+    if (this.exploreToolsConfig) {
+      const tools = await this.exploreToolsConfig.getTools();
+      if (tools) {
+        return { tools };
+      }
+    }
+
     const { fetch } = this.fetchApi;
 
     const filter = request.filter ?? {};

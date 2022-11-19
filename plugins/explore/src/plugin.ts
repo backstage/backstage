@@ -23,6 +23,7 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { ExploreClient, exploreApiRef } from './api';
+import { exampleTools } from './util/examples';
 
 /** @public */
 export const explorePlugin = createPlugin({
@@ -33,9 +34,11 @@ export const explorePlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         fetchApi: fetchApiRef,
+        exploreToolsConfig: exploreToolsConfigRef,
       },
-      factory: ({ discoveryApi, fetchApi }) =>
-        new ExploreClient({ discoveryApi, fetchApi }),
+      factory: ({ discoveryApi, fetchApi, exploreToolsConfig }) =>
+        // NOTE: The exploreToolsConfig is for backwards compatibility and will be removed in the future
+        new ExploreClient({ discoveryApi, fetchApi, exploreToolsConfig }),
     }),
     /**
      * @deprecated Use ExploreApi from `@backstage/plugin-explore` instead
@@ -45,14 +48,15 @@ export const explorePlugin = createPlugin({
      */
     createApiFactory({
       api: exploreToolsConfigRef,
-      deps: {
-        exploreApi: exploreApiRef,
-      },
-      factory: ({ exploreApi }) => ({
+      deps: {},
+      factory: () => ({
         async getTools() {
-          // TODO: Can we make this backwards compatible so it works off the static frontend example tools?
-          // return exampleTools;
-          return (await exploreApi.getTools()).tools;
+          // TODO: Determine if this should return undefined or exampleTools
+          // - `undefined` will enable the explore-backend to be used via the ExploreClient backwards compatibility
+          //    which is likely the desired behavior for anyone that has not yet overriden this API
+          // return undefined as any;
+          // - `exampleTools` will disable the explore-backend fetching for users that have not yet overriden this API
+          return exampleTools;
         },
       }),
     }),
