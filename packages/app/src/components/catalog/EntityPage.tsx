@@ -157,6 +157,10 @@ import {
   LightBox,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { EntityCostInsightsContent } from '@backstage/plugin-cost-insights';
+import {
+  isLinguistAvailable,
+  EntityLinguistCard,
+} from '@backstage/plugin-linguist';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -402,6 +406,14 @@ const overviewContent = (
       <EntitySwitch.Case if={isGithubPullRequestsAvailable}>
         <Grid item sm={4}>
           <EntityGithubPullRequestsOverviewCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isLinguistAvailable}>
+        <Grid item md={6}>
+          <EntityLinguistCard />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
