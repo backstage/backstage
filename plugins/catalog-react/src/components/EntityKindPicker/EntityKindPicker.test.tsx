@@ -148,21 +148,21 @@ describe('<EntityKindPicker/>', () => {
   });
 
   it('renders unknown kinds provided in query parameters', async () => {
-    const rendered = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ queryParameters: { kind: 'frob' } }}
+          value={{ queryParameters: { kind: 'FROb' } }}
         >
           <EntityKindPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
 
-    expect(rendered.getByText('Frob')).toBeInTheDocument();
+    expect(screen.getByText('FROb')).toBeInTheDocument();
   });
 
   it('limits kinds when allowedKinds is set', async () => {
-    const rendered = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider>
           <EntityKindPicker allowedKinds={['component', 'domain']} />
@@ -170,56 +170,20 @@ describe('<EntityKindPicker/>', () => {
       </ApiProvider>,
     );
 
-    const input = rendered.getByTestId('select');
+    const input = screen.getByTestId('select');
     fireEvent.click(input);
 
     expect(
-      rendered.getByRole('option', { name: 'Component' }),
+      screen.getByRole('option', { name: 'Component' }),
     ).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
     expect(
-      rendered.getByRole('option', { name: 'Domain' }),
-    ).toBeInTheDocument();
-    expect(
-      rendered.queryByRole('option', { name: 'Template' }),
+      screen.queryByRole('option', { name: 'Template' }),
     ).not.toBeInTheDocument();
   });
 
-  it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
-    const rendered = await renderWithEffects(
-      <ApiProvider apis={apis}>
-        <MockEntityListContextProvider
-          value={{
-            updateFilters,
-            queryParameters: { kind: 'component' },
-          }}
-        >
-          <EntityKindPicker />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-    );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('component'),
-    });
-    rendered.rerender(
-      <ApiProvider apis={apis}>
-        <MockEntityListContextProvider
-          value={{
-            updateFilters,
-            queryParameters: { kind: 'domain' },
-          }}
-        >
-          <EntityKindPicker />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-    );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('domain'),
-    });
-  });
-
   it('renders kind from the query parameter even when not in allowedKinds', async () => {
-    const rendered = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{ queryParameters: { kind: 'Frob' } }}
@@ -229,12 +193,10 @@ describe('<EntityKindPicker/>', () => {
       </ApiProvider>,
     );
 
-    expect(rendered.getByText('Frob')).toBeInTheDocument();
+    expect(screen.getByText('Frob')).toBeInTheDocument();
 
-    const input = rendered.getByTestId('select');
+    const input = screen.getByTestId('select');
     fireEvent.click(input);
-    expect(
-      rendered.getByRole('option', { name: 'Domain' }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
   });
 });

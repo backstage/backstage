@@ -432,6 +432,9 @@ export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
   entity: Entity;
 };
 
+// Warning: (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
+// Warning: (ae-missing-release-tag) "filterAndCapitalize" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function filterAndCapitalize(
   allKinds: string[],
@@ -511,6 +514,9 @@ export type UnregisterEntityDialogProps = {
   entity: Entity;
 };
 
+// Warning: (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
+// Warning: (ae-missing-release-tag) "useAllKinds" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export function useAllKinds(): {
   loading: boolean;

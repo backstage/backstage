@@ -105,14 +105,14 @@ describe('<CatalogKindHeader />', () => {
     await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ queryParameters: { kind: 'frob' } }}
+          value={{ queryParameters: { kind: 'FROb' } }}
         >
           <CatalogKindHeader />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
 
-    expect(screen.getByText('Frobs')).toBeInTheDocument();
+    expect(screen.getByText('FRObs')).toBeInTheDocument();
   });
 
   it('updates the kind filter', async () => {
@@ -132,40 +132,6 @@ describe('<CatalogKindHeader />', () => {
     fireEvent.click(option);
 
     expect(updateFilters).toHaveBeenCalledWith({
-      kind: new EntityKindFilter('template'),
-    });
-  });
-
-  it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
-    const rendered = await renderWithEffects(
-      <ApiProvider apis={apis}>
-        <MockEntityListContextProvider
-          value={{
-            updateFilters,
-            queryParameters: { kind: ['components'] },
-          }}
-        >
-          <CatalogKindHeader />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-    );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('components'),
-    });
-    rendered.rerender(
-      <ApiProvider apis={apis}>
-        <MockEntityListContextProvider
-          value={{
-            updateFilters,
-            queryParameters: { kind: ['template'] },
-          }}
-        >
-          <CatalogKindHeader />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-    );
-    expect(updateFilters).toHaveBeenLastCalledWith({
       kind: new EntityKindFilter('template'),
     });
   });

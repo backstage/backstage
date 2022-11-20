@@ -36,6 +36,6 @@ export {
   getEntitySourceLocation,
   isOwnerOf,
   useAllKinds,
-  filterAndCapitalize,
+  filterKinds,
 } from './utils';
 export type { EntitySourceLocation } from './utils';

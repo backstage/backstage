@@ -20,7 +20,7 @@ import { Box } from '@material-ui/core';
 import React, { useEffect, useMemo, useState } from 'react';
 import { EntityKindFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
-import { filterAndCapitalize, useAllKinds } from '../../utils/kindFilterUtils';
+import { filterKinds, useAllKinds } from '../../utils/kindFilterUtils';
 
 function useEntityKindFilter(opts: { initialFilter: string }): {
   loading: boolean;
@@ -57,14 +57,6 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
       kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
     });
   }, [selectedKind, updateFilters]);
-
-  // Set selected kinds on query parameter updates; this happens at initial page load and from
-  // external updates to the page location.
-  useEffect(() => {
-    if (queryParamKind) {
-      setSelectedKind(queryParamKind);
-    }
-  }, [queryParamKind]);
 
   const { allKinds, loading, error } = useAllKinds();
 
@@ -114,7 +106,7 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
 
   if (error) return null;
 
-  const options = filterAndCapitalize(allKinds, allowedKinds, [selectedKind]);
+  const options = filterKinds(allKinds, allowedKinds, selectedKind);
 
   const items = Object.keys(options).map(key => ({
     value: key,

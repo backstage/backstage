@@ -25,7 +25,7 @@ import {
 } from '@material-ui/core';
 import {
   EntityKindFilter,
-  filterAndCapitalize,
+  filterKinds,
   useAllKinds,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
@@ -90,15 +90,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
     });
   }, [selectedKind, updateFilters]);
 
-  // Set selected Kind on query parameter updates; this happens at initial page load and from
-  // external updates to the page location.
-  useEffect(() => {
-    if (queryParamKind) {
-      setSelectedKind(queryParamKind);
-    }
-  }, [queryParamKind]);
-
-  const options = filterAndCapitalize(allKinds, allowedKinds, [selectedKind]);
+  const options = filterKinds(allKinds, allowedKinds, selectedKind);
 
   return (
     <Select
