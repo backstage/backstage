@@ -187,32 +187,32 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     customObjects.addInterceptor((requestOptions: any) => {
       requestOptions.uri = requestOptions.uri.replace('/apis//v1/', '/api/v1/');
     });
-
+    if (!namespace) {
+      return customObjects
+        .listClusterCustomObject(
+          resource.group,
+          resource.apiVersion,
+          resource.plural,
+          '',
+          false,
+          '',
+          '',
+          labelSelector,
+        )
+        .then(r => {
+          return {
+            type: objectType,
+            resources: (r.body as any).items,
+          };
+        });
+    }
     return this.namespaceExists(clusterDetails, namespace).then(exists => {
-      if (exists && namespace) {
+      if (exists) {
         return customObjects
           .listNamespacedCustomObject(
             resource.group,
             resource.apiVersion,
             namespace,
-            resource.plural,
-            '',
-            false,
-            '',
-            '',
-            labelSelector,
-          )
-          .then(r => {
-            return {
-              type: objectType,
-              resources: (r.body as any).items,
-            };
-          });
-      } else if (!namespace) {
-        return customObjects
-          .listClusterCustomObject(
-            resource.group,
-            resource.apiVersion,
             resource.plural,
             '',
             false,
