@@ -21,7 +21,7 @@ import {
   GetExploreToolsResponse,
 } from '@backstage/plugin-explore-common';
 import { ExploreToolsConfig } from '@backstage/plugin-explore-react';
-import { ExploreApi } from './types';
+import { ExploreApi } from './ExploreApi';
 
 /**
  * Default implementation of the ExploreApi.

@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-export { ExploreClient } from './ExploreClient';
-export { exploreApiRef } from './ExploreApi';
-export type { ExploreApi } from './ExploreApi';
+/**
+ * Common functionalities for the explore plugin.
+ *
+ * @packageDocumentation
+ */
+
+export * from './api';
+export * from './types';
