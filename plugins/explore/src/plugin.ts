@@ -23,7 +23,7 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { ExploreClient, exploreApiRef } from './api';
-import { exampleTools } from './util/examples';
+// import { exampleTools } from './util/examples';
 
 /** @public */
 export const explorePlugin = createPlugin({
@@ -54,9 +54,9 @@ export const explorePlugin = createPlugin({
           // TODO: Determine if this should return undefined or exampleTools
           // - `undefined` will enable the explore-backend to be used via the ExploreClient backwards compatibility
           //    which is likely the desired behavior for anyone that has not yet overriden this API
-          // return undefined as any;
+          return undefined as any;
           // - `exampleTools` will disable the explore-backend fetching for users that have not yet overriden this API
-          return exampleTools;
+          // return exampleTools;
         },
       }),
     }),

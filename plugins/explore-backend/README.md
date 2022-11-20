@@ -99,7 +99,7 @@ See [the explore plugin README](../explore/README.md) for more information.
 
 The `explore-backend` uses the `ExploreToolProvider` interface to provide a list
 of tools used in your organization and/or within your Backstage instance. This
-can be overriden to provide tools from any source. For example you could create
+can be customized to provide tools from any source. For example you could create
 a `CustomExploreToolProvider` that queries an internal for tools in your
 `packages/backend/src/plugins/explore.ts` file.
 

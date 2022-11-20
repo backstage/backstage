@@ -59,7 +59,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     </Sidebar>
 ```
 
-### Use earch result list item for Explore Tools
+### Use search result list item for Explore Tools
 
 When you have your `packages/app/src/components/search/SearchPage.tsx` file
 ready to make modifications, add the following code snippet to add the
