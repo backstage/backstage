@@ -15,7 +15,7 @@
  */
 
 import { ExploreTool } from '@backstage/plugin-explore-common';
-import { StaticExploreToolProvider } from './providers';
+import { StaticExploreToolProvider } from './StaticExploreToolProvider';
 
 describe('StaticExploreToolProvider', () => {
   const tool1: ExploreTool = {

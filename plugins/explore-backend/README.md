@@ -26,7 +26,18 @@ import {
 } from '@backstage/plugin-explore-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { exploreTools } from '../path/to/your/exploreTools';
+
+// List of tools you want to surface in the Explore plugin "Tools" page.
+const tools: ExploreTool[] = [
+  {
+    title: 'New Relic',
+    description:'new relic plugin',
+    url: '/newrelic',
+    image: 'https://i.imgur.com/L37ikrX.jpg',
+    tags: ['newrelic', 'proxy', 'nerdGraph'],
+  },
+  ...
+];
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -83,3 +94,51 @@ async function createSearchEngine(
 ### Wire up the Frontend
 
 See [the explore plugin README](../explore/README.md) for more information.
+
+## Explore Tool Customization
+
+The `explore-backend` uses the `ExploreToolProvider` interface to provide a list
+of tools used in your organization and/or within your Backstage instance. This
+can be overriden to provide tools from any source. For example you could create
+a `CustomExploreToolProvider` that queries an internal for tools in your
+`packages/backend/src/plugins/explore.ts` file.
+
+```ts
+import {
+  createRouter,
+  StaticExploreToolProvider,
+} from '@backstage/plugin-explore-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+class CustomExploreToolProvider implements ExploreToolProvider {
+  async getTools(
+    request: GetExploreToolsRequest,
+  ): Promise<GetExploreToolsResponse> {
+    const externalTools = await queryExternalTools(request);
+
+    const tools: ExploreTool[] = [
+      ...externalTools,
+      // Backstage Tools
+      {
+        title: 'New Relic',
+        description: 'new relic plugin',
+        url: '/newrelic',
+        image: 'https://i.imgur.com/L37ikrX.jpg',
+        tags: ['newrelic', 'proxy', 'nerdGraph'],
+      },
+    ];
+
+    return { tools };
+  }
+}
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    toolProvider: new CustomExploreToolProvider(),
+  });
+}
+```

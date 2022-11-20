@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { StaticExploreToolProvider } from './providers';
-export type { ExploreToolProvider } from './types';
+export { StaticExploreToolProvider } from './providers/StaticExploreToolProvider';
+export * from './types';
