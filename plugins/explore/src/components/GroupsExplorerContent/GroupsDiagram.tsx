@@ -240,6 +240,7 @@ export function GroupsDiagram() {
         direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
         renderNode={RenderNode}
         className={classes.graph}
+        fit="contain"
       />
 
       <Typography
