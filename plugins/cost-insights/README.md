@@ -187,7 +187,7 @@ In the case you would like to show your baseline costs on the graph on other cur
 costInsights:
   engineerCost: 200000
   baseCurrency:
-    locale: en-US
+    locale: nl-NL
     options:
       currency: EUR
       minimumFractionDigits: 3

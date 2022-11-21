@@ -49,7 +49,6 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
  *   baseCurrency:
  *     locale: nl-NL
  *     options:
- *       style: currency
  *       currency: EUR
  *       minimumFractionDigits: 3
  *   currencies:
