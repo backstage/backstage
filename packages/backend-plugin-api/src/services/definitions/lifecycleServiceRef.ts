@@ -14,7 +14,29 @@
  * limitations under the License.
  */
 
-export type { RequestDetails } from './RequestDetails';
-export type { RequestRejectionDetails } from './RequestRejectionDetails';
-export type { RequestValidationContext } from './RequestValidationContext';
-export type { RequestValidator } from './RequestValidator';
+import { createServiceRef } from '../system/types';
+
+/**
+ * @public
+ **/
+export type BackendLifecycleShutdownHook = {
+  fn: () => void | Promise<void>;
+};
+
+/**
+ * @public
+ **/
+export interface BackendLifecycle {
+  /**
+   * Register a function to be called when the backend is shutting down.
+   */
+  addShutdownHook(options: BackendLifecycleShutdownHook): void;
+}
+
+/**
+ * @public
+ */
+export const lifecycleServiceRef = createServiceRef<BackendLifecycle>({
+  id: 'core.lifecycle',
+  scope: 'plugin',
+});
