@@ -144,7 +144,7 @@ jobs:
         uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
 
       # the 2 steps below can be removed if you aren't using plantuml in your documentation
       - name: setup java
