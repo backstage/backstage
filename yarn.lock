@@ -1100,17 +1100,17 @@ __metadata:
   linkType: hard
 
 "@azure/arm-appservice@npm:^13.0.1":
-  version: 13.0.2
-  resolution: "@azure/arm-appservice@npm:13.0.2"
+  version: 13.0.3
+  resolution: "@azure/arm-appservice@npm:13.0.3"
   dependencies:
     "@azure/abort-controller": ^1.0.0
     "@azure/core-auth": ^1.3.0
-    "@azure/core-client": ^1.5.0
+    "@azure/core-client": ^1.6.1
     "@azure/core-lro": ^2.2.0
     "@azure/core-paging": ^1.2.0
     "@azure/core-rest-pipeline": ^1.8.0
     tslib: ^2.2.0
-  checksum: 6d604c492a70a6cdd4d3ad3f634a74228dc081ed4f49128873e76bfa5e65ec8cce18b7b19319fd2b1b4edbd390dbd66c9ac48646f0ed80cae09cd2f1d05fb279
+  checksum: 9cd73985a31744fd7da56654c1de2d1396e93fa0cc3527b7c2843e56913e2b0abd81d996a319447f2f289421c45ede6a87f820ed0f4414e7cd2afeb383ee8a0a
   languageName: node
   linkType: hard
 
@@ -1143,7 +1143,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-client@npm:^1.4.0, @azure/core-client@npm:^1.5.0":
+"@azure/core-client@npm:^1.4.0, @azure/core-client@npm:^1.6.1":
   version: 1.6.1
   resolution: "@azure/core-client@npm:1.6.1"
   dependencies:
