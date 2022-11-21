@@ -1,0 +1,13 @@
+---
+title: Cloudsmith
+author: Roadie
+authorUrl: https://roadie.io
+category: CI/CD
+description: Show Cloudsmith Repository stats on your backstage homepage.
+documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/tree/main/plugins/frontend/backstage-plugin-cloudsmith
+iconUrl: https://cloudsmith.com/img/cloudsmith-mini-dark.svg
+npmPackageName: '@roadiehq/backstage-plugin-cloudsmith'
+tags:
+  - dashboards
+  - monitoring
+addedDate: '2022-11-18'

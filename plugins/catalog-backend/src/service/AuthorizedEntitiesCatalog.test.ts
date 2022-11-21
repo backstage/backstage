@@ -24,6 +24,7 @@ import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 describe('AuthorizedEntitiesCatalog', () => {
   const fakeCatalog = {
     entities: jest.fn(),
+    entitiesBatch: jest.fn(),
     removeEntityByUid: jest.fn(),
     entityAncestry: jest.fn(),
     facets: jest.fn(),
@@ -87,6 +88,67 @@ describe('AuthorizedEntitiesCatalog', () => {
       await catalog.entities({ authorizationToken: 'abcd' });
 
       expect(fakeCatalog.entities).toHaveBeenCalledWith({
+        authorizationToken: 'abcd',
+      });
+    });
+  });
+
+  describe('entitiesBatch', () => {
+    it('returns empty response on DENY', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        { result: AuthorizeResult.DENY },
+      ]);
+      const catalog = createCatalog();
+
+      await expect(
+        catalog.entitiesBatch({
+          entityRefs: ['component:default/component-a'],
+          authorizationToken: 'abcd',
+        }),
+      ).resolves.toEqual({
+        items: [null],
+      });
+
+      expect(fakeCatalog.entitiesBatch).not.toHaveBeenCalled();
+    });
+
+    it('calls underlying catalog method with correct filter on CONDITIONAL', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'IS_ENTITY_KIND',
+            params: { kinds: ['b'] },
+          },
+        },
+      ]);
+      const catalog = createCatalog(isEntityKind);
+
+      await catalog.entitiesBatch({
+        entityRefs: ['component:default/component-a'],
+        authorizationToken: 'abcd',
+      });
+
+      expect(fakeCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['component:default/component-a'],
+        authorizationToken: 'abcd',
+        filter: { key: 'kind', values: ['b'] },
+      });
+    });
+
+    it('calls underlying catalog method on ALLOW', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      const catalog = createCatalog();
+
+      await catalog.entitiesBatch({
+        entityRefs: ['component:default/component-a'],
+        authorizationToken: 'abcd',
+      });
+
+      expect(fakeCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['component:default/component-a'],
         authorizationToken: 'abcd',
       });
     });
