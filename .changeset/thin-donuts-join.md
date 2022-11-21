@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Add `pluralize()` to the catalog kind header component.
+Fixed Entity kind pluralisation in the `CatalogKindHeader` component.
