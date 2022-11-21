@@ -22,7 +22,7 @@ import {
 
 function parseJwtPayload(token: string) {
   const [_header, payload, _signature] = token.split('.');
-  return JSON.parse(atob(payload));
+  return JSON.parse(Buffer.from(payload, 'base64'));
 }
 
 type LegacySignInResult = {
