@@ -59,8 +59,6 @@ const BoldHeader = withStyles(
 )(CardHeader);
 
 type Props = {
-  /** @deprecated Use errorBoundaryProps instead */
-  slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
   children?: ReactElement<TabProps>[];
   onChange?: (event: React.ChangeEvent<{}>, value: number | string) => void;
@@ -70,15 +68,8 @@ type Props = {
 };
 
 export function TabbedCard(props: PropsWithChildren<Props>) {
-  const {
-    slackChannel,
-    errorBoundaryProps,
-    children,
-    title,
-    deepLink,
-    value,
-    onChange,
-  } = props;
+  const { errorBoundaryProps, children, title, deepLink, value, onChange } =
+    props;
   const tabsClasses = useTabsStyles();
   const [selectedIndex, selectIndex] = useState(0);
 
@@ -101,8 +92,7 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
     });
   }
 
-  const errProps: ErrorBoundaryProps =
-    errorBoundaryProps || (slackChannel ? { slackChannel } : {});
+  const errProps: ErrorBoundaryProps = errorBoundaryProps || {};
 
   return (
     <Card>
