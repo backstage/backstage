@@ -25324,9 +25324,9 @@ __metadata:
   linkType: hard
 
 "js-base64@npm:^3.6.0":
-  version: 3.7.2
-  resolution: "js-base64@npm:3.7.2"
-  checksum: 573f28e9a27c3df60096d4d3f551bcb4fcb6d49161cf83396e9bad9b76f94736a70bb70b8808fe834dff2a388f76604ba09d6e153bbf181646e407720139fa5b
+  version: 3.7.3
+  resolution: "js-base64@npm:3.7.3"
+  checksum: ee19bed9ba21693e4583a47773dd701938de63db82e7c324d4c19093046157f0d87905cc20540f194f1d0ec88d6e1bfc4056aea916bcb873ebcf95942d26aa5a
   languageName: node
   linkType: hard
 
