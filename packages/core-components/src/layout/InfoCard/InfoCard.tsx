@@ -130,8 +130,6 @@ export type Props = {
   subheader?: ReactNode;
   divider?: boolean;
   deepLink?: BottomLinkProps;
-  /** @deprecated Use errorBoundaryProps instead */
-  slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
   variant?: InfoCardVariants;
   children?: ReactNode;
@@ -160,7 +158,6 @@ export function InfoCard(props: Props): JSX.Element {
     subheader,
     divider = true,
     deepLink,
-    slackChannel,
     errorBoundaryProps,
     variant,
     children,
@@ -208,8 +205,7 @@ export function InfoCard(props: Props): JSX.Element {
     );
   };
 
-  const errProps: ErrorBoundaryProps =
-    errorBoundaryProps || (slackChannel ? { slackChannel } : {});
+  const errProps: ErrorBoundaryProps = errorBoundaryProps || {};
 
   return (
     <Card style={calculatedStyle} className={className}>
