@@ -123,18 +123,14 @@ export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
 
   return (
     <>
-      {errors.length === 0 ? (
-        <InfoCard title="Error Reporting">
-          <ErrorEmptyState />
-        </InfoCard>
-      ) : (
+      {errors.length !== 0 && 
         <Table
           title="Error Reporting"
           data={errors}
           columns={columns}
           options={{ paging: true, search: false }}
         />
-      )}
+      }
     </>
   );
 };
