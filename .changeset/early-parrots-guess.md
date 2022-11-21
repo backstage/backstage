@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-initialize all formData in next/Stepper
+Initialize all `formData` in the `Stepper` in `/next`
