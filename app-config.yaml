@@ -219,7 +219,6 @@ catalog:
         - Domain
         - Location
 
-
   processors:
     ldapOrg:
       ### Example for how to add your enterprise LDAP server
