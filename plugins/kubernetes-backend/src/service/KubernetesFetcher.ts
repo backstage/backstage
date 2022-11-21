@@ -62,8 +62,6 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
       return 'BAD_REQUEST';
     case 401:
       return 'UNAUTHORIZED_ERROR';
-    case 403:
-      return 'FORBIDDEN';
     case 404:
       return 'NOT_FOUND';
     case 500:
