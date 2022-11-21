@@ -15,9 +15,8 @@
  */
 import * as React from 'react';
 import { DetectedError, DetectedErrorsByCluster } from '../../error-detection';
-import { Chip, Typography, Grid } from '@material-ui/core';
-import EmptyStateImage from '../../assets/emptystate.svg';
-import { Table, TableColumn, InfoCard } from '@backstage/core-components';
+import { Chip } from '@material-ui/core';
+import { Table, TableColumn } from '@backstage/core-components';
 
 type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
