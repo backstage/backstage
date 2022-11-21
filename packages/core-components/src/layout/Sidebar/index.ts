@@ -53,16 +53,10 @@ export {
   SidebarOpenStateProvider,
   useSidebarOpenState,
 } from './SidebarOpenStateContext';
-export type {
-  SidebarContextType,
-  SidebarOpenState,
-} from './SidebarOpenStateContext';
+export type { SidebarOpenState } from './SidebarOpenStateContext';
 export {
   LegacySidebarPinStateContext as SidebarPinStateContext,
   SidebarPinStateProvider,
   useSidebarPinState,
 } from './SidebarPinStateContext';
-export type {
-  SidebarPinStateContextType,
-  SidebarPinState,
-} from './SidebarPinStateContext';
+export type { SidebarPinState } from './SidebarPinStateContext';

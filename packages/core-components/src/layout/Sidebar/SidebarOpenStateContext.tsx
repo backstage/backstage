@@ -61,7 +61,7 @@ const defaultSidebarOpenStateContext = {
  * @public @deprecated
  * Use `<SidebarOpenStateProvider>` + `useSidebarOpenState()` instead.
  */
-export const LegacySidebarContext = createContext<SidebarContextType>(
+export const LegacySidebarContext = createContext<SidebarOpenState>(
   defaultSidebarOpenStateContext,
 );
 

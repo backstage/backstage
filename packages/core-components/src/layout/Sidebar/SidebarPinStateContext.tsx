@@ -69,8 +69,9 @@ const defaultSidebarPinStateContext = {
  * @public @deprecated
  * Use `<SidebarPinStateContextProvider>` + `useSidebarPinState()` instead.
  */
-export const LegacySidebarPinStateContext =
-  createContext<SidebarPinStateContextType>(defaultSidebarPinStateContext);
+export const LegacySidebarPinStateContext = createContext<SidebarPinState>(
+  defaultSidebarPinStateContext,
+);
 
 const VersionedSidebarPinStateContext = createVersionedContext<{
   1: SidebarPinState;
@@ -83,7 +84,7 @@ const VersionedSidebarPinStateContext = createVersionedContext<{
  */
 export function SidebarPinStateProvider(props: {
   children: ReactNode;
-  value: SidebarPinStateContextType;
+  value: SidebarPinState;
 }) {
   const { children, value } = props;
   return (
