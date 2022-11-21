@@ -99,13 +99,13 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
         };
 
         const locConf = ruleConfig.getOptionalConfigArray('locations');
-        if (locConf) 
-          rule.locations = locConf.map( locationConfig => ({
-          match: locationConfig.getOptionalString('match'),
-          type: locationConfig.getString('type'),
-          target: locationConfig.getOptionalString('target')
-        }))
-        
+        if (locConf)
+          rule.locations = locConf.map(locationConfig => ({
+            match: locationConfig.getOptionalString('match'),
+            type: locationConfig.getString('type'),
+            target: locationConfig.getOptionalString('target')
+          }))
+
         return rule;
       });
       rules.push(...globalRules);
@@ -135,7 +135,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     return new DefaultCatalogRulesEnforcer(rules);
   }
 
-  constructor(private readonly rules: CatalogRule[]) {}
+  constructor(private readonly rules: CatalogRule[]) { }
 
   /**
    * Checks whether a specific entity/location combination is allowed
