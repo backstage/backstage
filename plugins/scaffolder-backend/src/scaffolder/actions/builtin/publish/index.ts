@@ -15,7 +15,6 @@
  */
 
 export { createPublishAzureAction } from './azure';
-export { createPublishBitbucketAction } from './bitbucket';
 export { createPublishBitbucketCloudAction } from './bitbucketCloud';
 export { createPublishBitbucketServerAction } from './bitbucketServer';
 export { createPublishGerritAction } from './gerrit';
