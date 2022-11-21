@@ -170,8 +170,8 @@ const http = HttpPostIngressEventPublisher.fromConfig({
     },
   },
   logger: env.logger,
-  router: httpRouter,
 });
+http.bind(router);
 
 await new EventsBackend(env.logger)
   .addPublishers(http)

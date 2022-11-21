@@ -5233,8 +5233,6 @@ __metadata:
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@types/express": ^4.17.6
-    express: ^4.17.1
   languageName: unknown
   linkType: soft
 
