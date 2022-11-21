@@ -32,7 +32,8 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import { Cost, DEFAULT_DATE_FORMAT, CostInsightsTheme } from '../../types';
+import { DEFAULT_DATE_FORMAT, CostInsightsTheme } from '../../types';
+import { Cost } from '@backstage/plugin-cost-insights-common';
 import {
   BarChartTooltip as Tooltip,
   BarChartTooltipItem as TooltipItem,

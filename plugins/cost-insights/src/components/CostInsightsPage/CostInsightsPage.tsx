@@ -48,7 +48,14 @@ import {
   useLastCompleteBillingDate,
   useLoading,
 } from '../../hooks';
-import { Alert, Cost, Maybe, MetricData, Product, Project } from '../../types';
+import { Alert } from '../../types';
+import {
+  Cost,
+  Maybe,
+  MetricData,
+  Product,
+  Project,
+} from '@backstage/plugin-cost-insights-common';
 import { mapLoadingToProps } from './selector';
 import { ProjectSelect } from '../ProjectSelect';
 import { intervalsOf } from '../../utils/duration';

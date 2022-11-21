@@ -26,15 +26,13 @@ import {
   Line,
   ResponsiveContainer,
 } from 'recharts';
+import { ChartData, DEFAULT_DATE_FORMAT, CostInsightsTheme } from '../../types';
 import {
-  ChartData,
   Cost,
-  DEFAULT_DATE_FORMAT,
   Maybe,
   Metric,
   MetricData,
-  CostInsightsTheme,
-} from '../../types';
+} from '@backstage/plugin-cost-insights-common';
 import {
   BarChartTooltip as Tooltip,
   BarChartTooltipItem as TooltipItem,
