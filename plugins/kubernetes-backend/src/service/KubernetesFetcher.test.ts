@@ -65,9 +65,16 @@ describe('KubernetesFetcher', () => {
 
     beforeEach(() => {
       jest.resetAllMocks();
-      const response = {
+      const successResponse = {
         statusCode: 200,
       } as unknown as http.IncomingMessage;
+      const notFoundResponse = {
+        statusCode: 404,
+      } as unknown as http.IncomingMessage;
+      const notFoundBody = {
+        status: {},
+      } as unknown as V1Namespace;
+
       const body = {
         status: {
           phase: 'Active',
@@ -75,12 +82,18 @@ describe('KubernetesFetcher', () => {
       } as unknown as V1Namespace;
 
       coreObjectsClientMock = {
-        readNamespace: jest.fn((_namespace: string) =>
-          Promise.resolve({
-            response: response,
+        readNamespace: jest.fn((namespace: string) => {
+          if (namespace === 'missing-namespace') {
+            return Promise.reject({
+              response: notFoundResponse,
+              body: notFoundBody,
+            });
+          }
+          return Promise.resolve({
+            response: successResponse,
             body: body,
-          }),
-        ),
+          });
+        }),
       };
 
       customObjectsClientMock = {
@@ -593,6 +606,58 @@ describe('KubernetesFetcher', () => {
         customObjectsClientMock.listNamespacedCustomObject.mock.calls[0];
       const namespace = mockCall[2];
       expect(namespace).toBe('some-namespace');
+    });
+
+    it('should use namespace if provided - missing namespace', async () => {
+      customObjectsClientMock.listNamespacedCustomObject.mockResolvedValueOnce({
+        body: {
+          items: [
+            {
+              metadata: {
+                name: 'pod-name',
+              },
+            },
+          ],
+        },
+      });
+
+      customObjectsClientMock.listNamespacedCustomObject.mockResolvedValueOnce({
+        body: {
+          items: [
+            {
+              metadata: {
+                name: 'service-name',
+              },
+            },
+          ],
+        },
+      });
+
+      const objectsForService = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          serviceAccountToken: 'token',
+          authProvider: 'serviceAccount',
+        },
+        objectTypesToFetch: OBJECTS_TO_FETCH,
+        labelSelector: '',
+        namespace: 'missing-namespace',
+        customResources: [],
+      });
+
+      expect(objectsForService).toStrictEqual({
+        errors: [],
+        responses: [
+          { resources: [], type: 'pods' },
+          { resources: [], type: 'services' },
+        ],
+      });
+
+      const mockCall = coreObjectsClientMock.readNamespace.mock.calls[0];
+      const namespace = mockCall[0];
+      expect(namespace).toBe('missing-namespace');
     });
   });
 
