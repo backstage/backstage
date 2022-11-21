@@ -26,7 +26,6 @@
 '@backstage/plugin-config-schema': patch
 '@backstage/plugin-cost-insights': patch
 '@backstage/plugin-dynatrace': patch
-'@internal/plugin-todo-list': patch
 '@backstage/plugin-explore': patch
 '@backstage/plugin-firehydrant': patch
 '@backstage/plugin-fossa': patch
