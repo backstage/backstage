@@ -61,12 +61,11 @@ type ItemCardProps = {
  * @see https://material-ui.com/components/cards/
  */
 export function ItemCard(props: ItemCardProps) {
-  const { description, tags, title, type, subtitle, label, onClick, href } =
-    props;
+  const { description, tags, title, subtitle, label, onClick, href } = props;
   return (
     <Card>
       <CardMedia>
-        <ItemCardHeader title={title} subtitle={subtitle || type} />
+        <ItemCardHeader title={title} subtitle={subtitle} />
       </CardMedia>
       <CardContent>
         {tags?.length ? (
