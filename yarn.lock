@@ -8307,7 +8307,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.7.0, @gitbeaker/core@npm:^35.8.0":
+"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.0":
   version: 35.8.0
   resolution: "@gitbeaker/core@npm:35.8.0"
   dependencies:
@@ -8322,19 +8322,19 @@ __metadata:
   linkType: hard
 
 "@gitbeaker/node@npm:^35.1.0":
-  version: 35.7.0
-  resolution: "@gitbeaker/node@npm:35.7.0"
+  version: 35.8.0
+  resolution: "@gitbeaker/node@npm:35.8.0"
   dependencies:
-    "@gitbeaker/core": ^35.7.0
-    "@gitbeaker/requester-utils": ^35.7.0
+    "@gitbeaker/core": ^35.8.0
+    "@gitbeaker/requester-utils": ^35.8.0
     delay: ^5.0.0
     got: ^11.8.3
     xcase: ^2.0.1
-  checksum: 879595b065f40027b6191f609bddba05988c308c924323aa0cf30220801c21ba01e62c3395fd9cd0072ff6bc330f211e7aadcf63d80e893d7d33149c09ba221e
+  checksum: af75fa2348ec6fcdd1605f269df10c13bd7d53f9a5c42da7e013db920a1129075072de3a0ada97d800be732575bb838b8a462472faebcfaf9fe243b93d29a464
   languageName: node
   linkType: hard
 
-"@gitbeaker/requester-utils@npm:^35.7.0, @gitbeaker/requester-utils@npm:^35.8.0":
+"@gitbeaker/requester-utils@npm:^35.8.0":
   version: 35.8.0
   resolution: "@gitbeaker/requester-utils@npm:35.8.0"
   dependencies:
