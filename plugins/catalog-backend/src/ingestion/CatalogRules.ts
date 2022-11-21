@@ -31,9 +31,7 @@ export type CatalogRule = {
   locations?: Array<{
     target?: string;
     type: string;
-  }>;
-  sources?: Array<{
-    source: string;
+    match?: string;
   }>;
 };
 
@@ -58,7 +56,6 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
   static readonly defaultRules: CatalogRule[] = [
     {
       allow: ['Component', 'API', 'Location'].map(kind => ({ kind })),
-      sources: [],
     },
   ];
 
@@ -96,10 +93,21 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     const rules = new Array<CatalogRule>();
 
     if (config.has('catalog.rules')) {
-      const globalRules = config.getConfigArray('catalog.rules').map(sub => ({
-        allow: sub.getStringArray('allow').map(kind => ({ kind })),
-        sources: (sub.getOptionalStringArray('sources') || []).map(source => ({ source })),
-      }));
+      const globalRules = config.getConfigArray('catalog.rules').map(ruleConfig => {
+        const rule: CatalogRule = {
+          allow: ruleConfig.getStringArray('allow').map(kind => ({ kind })),
+        };
+
+        const locConf = ruleConfig.getOptionalConfigArray('locations');
+        if (locConf) 
+          rule.locations = locConf.map( locationConfig => ({
+          match: locationConfig.getOptionalString('match'),
+          type: locationConfig.getString('type'),
+          target: locationConfig.getOptionalString('target')
+        }))
+        
+        return rule;
+      });
       rules.push(...globalRules);
     } else {
       rules.push(...DefaultCatalogRulesEnforcer.defaultRules);
@@ -139,10 +147,6 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
         continue;
       }
 
-      if (!this.matchSources(location, rule.sources)) {
-        return false;
-      }
-
       if (this.matchEntity(entity, rule.allow)) {
         return true;
       }
@@ -153,7 +157,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
 
   private matchLocation(
     location: LocationSpec,
-    matchers?: { target?: string; type: string }[],
+    matchers?: { target?: string; type: string, match?: string }[],
   ): boolean {
     if (!matchers) {
       return true;
@@ -164,6 +168,9 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
         continue;
       }
       if (matcher.target && matcher.target !== location?.target) {
+        continue;
+      }
+      if (matcher.match && !location?.target.match(matcher.match)) {
         continue;
       }
       return true;
@@ -185,19 +192,6 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       return true;
     }
 
-    return false;
-  }
-
-  private matchSources(location: LocationSpec, matchers?: { source: string }[]): boolean {
-    if (!matchers || matchers.length === 0) {
-      return true;
-    }
-
-    const filteredRegex = new RegExp(`^http[s]?://${`(?:${matchers.map((filter, i) => i === 0 ? filter.source : `|${filter.source}`)})`}`);
-
-    if ( location.target && location.target.length > 0) {
-      return filteredRegex.test(location.target);
-    } 
     return false;
   }
 }

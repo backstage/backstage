@@ -37,7 +37,7 @@ const entity = {
 const location: Record<string, LocationSpec> = {
   w: {
     type: 'url',
-    target: 'https://github.com/backstage/blob/master/w.yaml',
+    target: 'https://github.com/b/c/blob/master/w.yaml',
   },
   x: {
     type: 'url',
@@ -209,7 +209,7 @@ describe('DefaultCatalogRulesEnforcer', () => {
       const enforcer = DefaultCatalogRulesEnforcer.fromConfig(
         new ConfigReader({
           catalog: {
-            rules: [{ allow: ['Group'], locations: [{ type: 'url' }] }],
+            rules: [{ allow: ['Group'] }],
           },
         }),
       );
@@ -221,11 +221,11 @@ describe('DefaultCatalogRulesEnforcer', () => {
       expect(enforcer.isAllowed(entity.location, location.z)).toBe(false);
     });
 
-    it('should only allow sources that are specified in sources', () => {
+    it('should only allow locations that match a given regex', () => {
       const enforcer = DefaultCatalogRulesEnforcer.fromConfig(
         new ConfigReader({
           catalog: {
-            rules: [{ allow: ['Component'], sources: ['github.com/backstage'] }],
+            rules: [{ allow: ['Component'], locations: [{type: 'url', match: 'https://github.com/b/*'}] }],
           },
         }),
       );
