@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import { splunkOnCallApiRef } from '../../api';
-import { TriggerDialog } from './TriggerDialog';
-
 import { ApiProvider } from '@backstage/core-app-api';
 import { alertApiRef } from '@backstage/core-plugin-api';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { render } from '@testing-library/react';
+import React from 'react';
+import { splunkOnCallApiRef } from '../../api';
+import { TriggerDialog } from './TriggerDialog';
+import { expectTriggeredIncident } from './testUtils';
 
 describe('TriggerDialog', () => {
   const mockTriggerAlarmFn = jest.fn();
@@ -38,7 +38,7 @@ describe('TriggerDialog', () => {
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <TriggerDialog
-            team="Example"
+            routingKey="Example"
             showDialog
             handleDialog={() => {}}
             onIncidentCreated={() => {}}
@@ -53,34 +53,6 @@ describe('TriggerDialog', () => {
         exact: false,
       }),
     ).toBeInTheDocument();
-    const incidentType = getByTestId('trigger-incident-type');
-    const incidentId = getByTestId('trigger-incident-id');
-    const incidentDisplayName = getByTestId('trigger-incident-displayName');
-    const incidentMessage = getByTestId('trigger-incident-message');
-
-    await act(async () => {
-      fireEvent.change(incidentType, { target: { value: 'CRITICAL' } });
-      fireEvent.change(incidentId, { target: { value: 'incident-id' } });
-      fireEvent.change(incidentDisplayName, {
-        target: { value: 'incident-display-name' },
-      });
-      fireEvent.change(incidentMessage, {
-        target: { value: 'incident-message' },
-      });
-    });
-
-    // Trigger incident creation button
-    const triggerButton = getByTestId('trigger-button');
-    await act(async () => {
-      fireEvent.click(triggerButton);
-    });
-    expect(mockTriggerAlarmFn).toHaveBeenCalled();
-    expect(mockTriggerAlarmFn).toHaveBeenCalledWith({
-      incidentType: 'CRITICAL',
-      incidentId: 'incident-id',
-      routingKey: 'Example',
-      incidentDisplayName: 'incident-display-name',
-      incidentMessage: 'incident-message',
-    });
+    await expectTriggeredIncident('Example', getByTestId, mockTriggerAlarmFn);
   });
 });

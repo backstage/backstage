@@ -136,10 +136,21 @@ function findTypesPackage(dep, pkg) {
         return undefined;
       } catch {
         try {
-          // Finally check if it's just a .d.ts file
+          // Check if it's just a .d.ts file
           require.resolve(`${dep}.d.ts`, { paths: [pkg.dir] });
           return undefined;
         } catch {
+          // And finally a naive lookup of the file directly, in case `require.resolve` fails us due to "exports"
+          if (fs.existsSync(resolvePath(pkg.dir, `node_modules/${dep}.d.ts`))) {
+            return undefined;
+          }
+          if (
+            fs.existsSync(
+              resolvePath(pkg.dir, `../../node_modules/${dep}.d.ts`),
+            )
+          ) {
+            return undefined;
+          }
           throw mkErr('MissingDepError', `No types for ${dep}`, { dep });
         }
       }

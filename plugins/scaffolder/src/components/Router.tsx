@@ -163,6 +163,7 @@ export const Router = (props: RouterProps) => {
             <TemplatePage
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
+              headerOptions={props.headerOptions}
             />
           </SecretsContextProvider>
         }

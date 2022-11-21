@@ -70,8 +70,8 @@ describe('<FeatureCalloutCircular />', () => {
         description="description"
       />,
     );
-    const dot = await getByTestId('dot');
-    const text = await getByTestId('text');
+    const dot = getByTestId('dot');
+    const text = getByTestId('text');
 
     expect(dot).toBeInTheDocument();
     expect(text).toBeInTheDocument();
@@ -96,8 +96,8 @@ describe('<FeatureCalloutCircular />', () => {
         description="description"
       />,
     );
-    const dot = await getByTestId('dot');
-    const text = await getByTestId('text');
+    const dot = getByTestId('dot');
+    const text = getByTestId('text');
 
     act(() => {
       Element.prototype.getBoundingClientRect = jest.fn(
@@ -128,8 +128,8 @@ describe('<FeatureCalloutCircular />', () => {
         description="description"
       />,
     );
-    const dot = await getByTestId('dot');
-    const text = await getByTestId('text');
+    const dot = getByTestId('dot');
+    const text = getByTestId('text');
 
     act(() => {
       Element.prototype.getBoundingClientRect = jest.fn(

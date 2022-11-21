@@ -21,7 +21,7 @@ import { useTheme, useMediaQuery } from '@material-ui/core';
 
 import { BackstageTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import {
@@ -63,6 +63,7 @@ export const useTechDocsReaderDom = (
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
   const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();
+  const analytics = useAnalytics();
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
@@ -177,6 +178,12 @@ export const useTechDocsReaderDom = (
             const parsedUrl = new URL(url);
             const fullPath = `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
 
+            // capture link clicks within documentation
+            const linkText =
+              (event.target as HTMLAnchorElement | undefined)?.innerText || url;
+            const to = url.replace(window.location.origin, '');
+            analytics.captureEvent('click', linkText, { attributes: { to } });
+
             // hash exists when anchor is clicked on secondary sidebar
             if (parsedUrl.hash) {
               if (modifierActive) {
@@ -219,7 +226,7 @@ export const useTechDocsReaderDom = (
           onLoaded: () => {},
         }),
       ]),
-    [theme, navigate],
+    [theme, navigate, analytics],
   );
 
   useEffect(() => {

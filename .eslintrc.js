@@ -18,7 +18,7 @@ var path = require('path');
 
 module.exports = {
   root: true,
-  plugins: ['notice'],
+  plugins: ['notice', 'testing-library'],
   rules: {
     'notice/notice': [
       'error',
@@ -45,5 +45,10 @@ module.exports = {
           "CallExpression[arguments.length=0] > MemberExpression[property.name='toUpperCase']",
       },
     ],
+    'testing-library/await-async-query': 'error',
+    'testing-library/await-async-utils': 'error',
+    'testing-library/no-await-sync-query': 'error',
+    'testing-library/prefer-wait-for': 'error',
+    'testing-library/no-dom-import': 'error',
   },
 };

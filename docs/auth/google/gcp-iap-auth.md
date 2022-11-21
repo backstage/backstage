@@ -26,6 +26,7 @@ auth:
   providers:
     gcp-iap:
       audience: '/projects/<project number>/global/backendServices/<backend service id>'
+      jwtHeader: x-custom-header # Optional: Only if you are using a custom header for the IAP JWT
 ```
 
 You can find the project number and service ID in the Google Cloud Console.

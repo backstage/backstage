@@ -37,7 +37,7 @@ import {
   readProviderConfigs,
   GithubEntityProviderConfig,
 } from './GithubEntityProviderConfig';
-import { getOrganizationRepositories, Repository } from '../lib/github';
+import { getOrganizationRepositories, RepositoryResponse } from '../lib/github';
 import { satisfiesTopicFilter } from '../lib/util';
 
 /**
@@ -175,7 +175,7 @@ export class GithubEntityProvider implements EntityProvider {
   }
 
   // go to the server and get all of the repositories
-  private async findCatalogFiles(): Promise<Repository[]> {
+  private async findCatalogFiles(): Promise<RepositoryResponse[]> {
     const organization = this.config.organization;
     const host = this.integration.host;
     const catalogPath = this.config.catalogPath;
@@ -208,7 +208,7 @@ export class GithubEntityProvider implements EntityProvider {
     return repositories;
   }
 
-  private matchesFilters(repositories: Repository[]) {
+  private matchesFilters(repositories: RepositoryResponse[]) {
     const repositoryFilter = this.config.filters?.repository;
     const topicFilters = this.config.filters?.topic;
 
@@ -226,7 +226,7 @@ export class GithubEntityProvider implements EntityProvider {
     return matchingRepositories;
   }
 
-  private createLocationUrl(repository: Repository): string {
+  private createLocationUrl(repository: RepositoryResponse): string {
     const branch =
       this.config.filters?.branch || repository.defaultBranchRef?.name || '-';
     const catalogFile = this.config.catalogPath.startsWith('/')

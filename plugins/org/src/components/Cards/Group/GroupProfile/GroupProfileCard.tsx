@@ -52,6 +52,7 @@ import {
   Link,
 } from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { LinksGroup } from '../../Meta';
 
 const CardTitle = (props: { title: string }) => (
   <Box display="flex" alignItems="center">
@@ -76,7 +77,7 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
   }
 
   const {
-    metadata: { name, description, annotations },
+    metadata: { name, description, annotations, links },
     spec: { profile },
   } = group;
 
@@ -190,6 +191,7 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
                 secondary="Child Groups"
               />
             </ListItem>
+            <LinksGroup links={links} />
           </List>
         </Grid>
       </Grid>

@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
+import { TokenManager } from '@backstage/backend-common';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import { CatalogApi } from '@backstage/catalog-client';
+import {
+  Entity,
+  LocationEntity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   BitbucketCloudIntegration,
@@ -22,22 +29,35 @@ import {
 } from '@backstage/integration';
 import {
   BitbucketCloudClient,
+  Events,
   Models,
 } from '@backstage/plugin-bitbucket-cloud-common';
 import {
+  DeferredEntity,
   EntityProvider,
   EntityProviderConnection,
-  LocationSpec,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
+import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import {
   BitbucketCloudEntityProviderConfig,
   readProviderConfigs,
 } from './BitbucketCloudEntityProviderConfig';
+import limiterFactory from 'p-limit';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 
 const DEFAULT_BRANCH = 'master';
+const TOPIC_REPO_PUSH = 'bitbucketCloud/repo:push';
+
+/** @public */
+export const ANNOTATION_BITBUCKET_CLOUD_REPO_URL = 'bitbucket.org/repo-url';
+
+interface IngestionTarget {
+  fileUrl: string;
+  repoUrl: string;
+}
 
 /**
  * Discovers catalog files located in [Bitbucket Cloud](https://bitbucket.org).
@@ -47,19 +67,27 @@ const DEFAULT_BRANCH = 'master';
  *
  * @public
  */
-export class BitbucketCloudEntityProvider implements EntityProvider {
+export class BitbucketCloudEntityProvider
+  implements EntityProvider, EventSubscriber
+{
   private readonly client: BitbucketCloudClient;
   private readonly config: BitbucketCloudEntityProviderConfig;
   private readonly logger: Logger;
   private readonly scheduleFn: () => Promise<void>;
+  private readonly catalogApi?: CatalogApi;
+  private readonly tokenManager?: TokenManager;
   private connection?: EntityProviderConnection;
+
+  private eventConfigErrorThrown = false;
 
   static fromConfig(
     config: Config,
     options: {
+      catalogApi?: CatalogApi;
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
+      tokenManager?: TokenManager;
     },
   ): BitbucketCloudEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -90,6 +118,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
         integration,
         options.logger,
         taskRunner,
+        options.catalogApi,
+        options.tokenManager,
       );
     });
   }
@@ -99,6 +129,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     integration: BitbucketCloudIntegration,
     logger: Logger,
     taskRunner: TaskRunner,
+    catalogApi?: CatalogApi,
+    tokenManager?: TokenManager,
   ) {
     this.client = BitbucketCloudClient.fromConfig(integration.config);
     this.config = config;
@@ -106,6 +138,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       target: this.getProviderName(),
     });
     this.scheduleFn = this.createScheduleFn(taskRunner);
+    this.catalogApi = catalogApi;
+    this.tokenManager = tokenManager;
   }
 
   private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
@@ -154,15 +188,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     logger.info('Discovering catalog files in Bitbucket Cloud repositories');
 
     const targets = await this.findCatalogFiles();
-    const entities = targets
-      .map(BitbucketCloudEntityProvider.toLocationSpec)
-      .map(location => locationSpecToLocationEntity({ location }))
-      .map(entity => {
-        return {
-          locationKey: this.getProviderName(),
-          entity: entity,
-        };
-      });
+    const entities = this.toDeferredEntities(targets);
 
     await this.connection.applyMutation({
       type: 'full',
@@ -174,7 +200,135 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     );
   }
 
-  private async findCatalogFiles(): Promise<string[]> {
+  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.supportsEventTopics} */
+  supportsEventTopics(): string[] {
+    return [TOPIC_REPO_PUSH];
+  }
+
+  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.onEvent} */
+  async onEvent(params: EventParams): Promise<void> {
+    if (params.topic !== TOPIC_REPO_PUSH) {
+      return;
+    }
+
+    if (params.metadata?.['x-event-key'] === 'repo:push') {
+      await this.onRepoPush(params.eventPayload as Events.RepoPushEvent);
+    }
+  }
+
+  private canHandleEvents(): boolean {
+    if (this.catalogApi && this.tokenManager) {
+      return true;
+    }
+
+    // throw only once
+    if (!this.eventConfigErrorThrown) {
+      this.eventConfigErrorThrown = true;
+      throw new Error(
+        `${this.getProviderName()} not well configured to handle repo:push. Missing CatalogApi and/or TokenManager.`,
+      );
+    }
+
+    return false;
+  }
+
+  async onRepoPush(event: Events.RepoPushEvent): Promise<void> {
+    if (!this.canHandleEvents()) {
+      return;
+    }
+
+    if (!this.connection) {
+      throw new Error('Not initialized');
+    }
+
+    if (event.repository.workspace.slug !== this.config.workspace) {
+      return;
+    }
+
+    if (!this.matchesFilters(event.repository)) {
+      return;
+    }
+
+    const repoName = event.repository.slug;
+    const repoUrl = event.repository.links!.html!.href!;
+    this.logger.info(`handle repo:push event for ${repoUrl}`);
+
+    // The commit information at the webhook only contains some high level metadata.
+    // In order to understand whether relevant files have changed we would need to
+    // look up all commits which would cost additional API calls.
+    // The overall goal is to optimize the necessary amount of API calls.
+    // Hence, we will just trigger a refresh for catalog file(s) within the repository
+    // if we get notified about changes there.
+
+    const targets = await this.findCatalogFiles(repoName);
+
+    const { token } = await this.tokenManager!.getToken();
+    const existing = await this.findExistingLocations(repoUrl, token);
+
+    const added: DeferredEntity[] = this.toDeferredEntities(
+      targets.filter(
+        // All Locations are managed by this provider and only have `target`, never `targets`.
+        // All URLs (fileUrl, target) are created using `BitbucketCloudEntityProvider.toUrl`.
+        // Hence, we can keep the comparison simple and don't need to handle different
+        // casing  or encoding, etc.
+        target => !existing.find(item => item.spec.target === target.fileUrl),
+      ),
+    );
+
+    const limiter = limiterFactory(10);
+
+    const stillExisting: Entity[] = [];
+    const removed: DeferredEntity[] = [];
+    existing.forEach(item => {
+      if (targets.find(value => value.fileUrl === item.spec.target)) {
+        stillExisting.push(item);
+      } else {
+        removed.push({
+          locationKey: this.getProviderName(),
+          entity: item,
+        });
+      }
+    });
+
+    const promises: Promise<void>[] = stillExisting.map(entity =>
+      limiter(async () =>
+        this.catalogApi!.refreshEntity(stringifyEntityRef(entity), { token }),
+      ),
+    );
+
+    if (added.length > 0 || removed.length > 0) {
+      const connection = this.connection;
+      promises.push(
+        limiter(async () =>
+          connection.applyMutation({
+            type: 'delta',
+            added: added,
+            removed: removed,
+          }),
+        ),
+      );
+    }
+
+    await Promise.all(promises);
+  }
+
+  private async findExistingLocations(
+    repoUrl: string,
+    token: string,
+  ): Promise<LocationEntity[]> {
+    const filter: Record<string, string> = {};
+    filter.kind = 'Location';
+    filter[`metadata.annotations.${ANNOTATION_BITBUCKET_CLOUD_REPO_URL}`] =
+      repoUrl;
+
+    return this.catalogApi!.getEntities({ filter }, { token }).then(
+      result => result.items,
+    ) as Promise<LocationEntity[]>;
+  }
+
+  private async findCatalogFiles(
+    repoName?: string,
+  ): Promise<IngestionTarget[]> {
     const workspace = this.config.workspace;
     const catalogPath = this.config.catalogPath;
 
@@ -197,12 +351,13 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       // ...except the one we need
       '+values.file.commit.repository.links.html.href',
     ].join(',');
-    const query = `"${catalogFilename}" path:${catalogPath}`;
+    const optRepoFilter = repoName ? ` repo:${repoName}` : '';
+    const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
     const searchResults = this.client
       .searchCode(workspace, query, { fields })
       .iterateResults();
 
-    const result: string[] = [];
+    const result: IngestionTarget[] = [];
 
     for await (const searchResult of searchResults) {
       // not a file match, but a code match
@@ -212,12 +367,13 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
       const repository = searchResult.file!.commit!.repository!;
       if (this.matchesFilters(repository)) {
-        result.push(
-          BitbucketCloudEntityProvider.toUrl(
+        result.push({
+          fileUrl: BitbucketCloudEntityProvider.toUrl(
             repository,
             searchResult.file!.path!,
           ),
-        );
+          repoUrl: repository.links!.html!.href!,
+        });
       }
     }
 
@@ -234,11 +390,32 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     );
   }
 
+  private toDeferredEntities(targets: IngestionTarget[]): DeferredEntity[] {
+    return targets
+      .map(target => {
+        const location = BitbucketCloudEntityProvider.toLocationSpec(
+          target.fileUrl,
+        );
+        const entity = locationSpecToLocationEntity({ location });
+        entity.metadata.annotations = {
+          ...entity.metadata.annotations,
+          [ANNOTATION_BITBUCKET_CLOUD_REPO_URL]: target.repoUrl,
+        };
+        return entity;
+      })
+      .map(entity => {
+        return {
+          locationKey: this.getProviderName(),
+          entity: entity,
+        };
+      });
+  }
+
   private static toUrl(
     repository: Models.Repository,
     filePath: string,
   ): string {
-    const repoUrl = repository.links!.html!.href;
+    const repoUrl = repository.links!.html!.href!;
     const branch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
 
     return `${repoUrl}/src/${branch}/${filePath}`;

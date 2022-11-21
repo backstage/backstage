@@ -16,6 +16,7 @@
 
 import React from 'react';
 import {
+  CustomFieldExtensionSchema,
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
@@ -72,7 +73,7 @@ export function createNextScaffolderFieldExtension<
   TInputProps extends UIOptionsType = {},
 >(
   options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
-): Extension<NextFieldExtensionComponentProps<TReturnValue, TInputProps>> {
+): Extension<FieldExtensionComponent<TReturnValue, TInputProps>> {
   return {
     expose() {
       const FieldExtensionDataHolder: any = () => null;
@@ -103,6 +104,7 @@ attachComponentData(
 );
 
 export type {
+  CustomFieldExtensionSchema,
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,

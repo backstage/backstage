@@ -153,6 +153,7 @@ import {
   TextSize,
   ReportIssue,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
+import { EntityCostInsightsContent } from '@backstage/plugin-cost-insights';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -487,6 +488,10 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/costs" title="Costs">
+      <EntityCostInsightsContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route

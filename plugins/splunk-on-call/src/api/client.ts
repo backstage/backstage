@@ -64,7 +64,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
       'proxy',
     )}/splunk-on-call/v1/incidents`;
 
-    const { incidents } = await this.getByUrl<IncidentsResponse>(url);
+    const { incidents } = await this.findByUrl<IncidentsResponse>(url);
 
     return incidents;
   }
@@ -73,7 +73,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v1/oncall/current`;
-    const { teamsOnCall } = await this.getByUrl<OnCallsResponse>(url);
+    const { teamsOnCall } = await this.findByUrl<OnCallsResponse>(url);
 
     return teamsOnCall;
   }
@@ -82,7 +82,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v1/team`;
-    const teams = await this.getByUrl<Team[]>(url);
+    const teams = await this.findByUrl<Team[]>(url);
 
     return teams;
   }
@@ -91,7 +91,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v1/org/routing-keys`;
-    const { routingKeys } = await this.getByUrl<ListRoutingKeyResponse>(url);
+    const { routingKeys } = await this.findByUrl<ListRoutingKeyResponse>(url);
 
     return routingKeys;
   }
@@ -100,7 +100,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v2/user`;
-    const { users } = await this.getByUrl<ListUserResponse>(url);
+    const { users } = await this.findByUrl<ListUserResponse>(url);
 
     return users;
   }
@@ -109,7 +109,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v1/policies`;
-    const { policies } = await this.getByUrl<EscalationPolicyResponse>(url);
+    const { policies } = await this.findByUrl<EscalationPolicyResponse>(url);
 
     return policies;
   }
@@ -146,7 +146,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     return this.request(url, options);
   }
 
-  private async getByUrl<T>(url: string): Promise<T> {
+  private async findByUrl<T>(url: string): Promise<T> {
     const options = {
       method: 'GET',
       headers: {

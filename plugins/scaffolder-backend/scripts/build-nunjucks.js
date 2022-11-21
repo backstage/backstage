@@ -58,7 +58,7 @@ require('esbuild')
     bundle: true,
     format: 'cjs',
     platform: 'node',
-    target: 'node14',
+    target: 'node16',
     banner: { js: NUNJUCKS_LICENSE },
     external: ['fsevents'],
     outfile: path.resolve(__dirname, '../assets/nunjucks.js.txt'),

@@ -15,7 +15,7 @@
  */
 
 import { FormHelperText, TextField } from '@material-ui/core';
-import { act, render } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { asInputRef } from '../helpers';
@@ -25,7 +25,7 @@ describe('<PreparePullRequestForm />', () => {
   it('renders without exploding', async () => {
     const onSubmitFn = jest.fn();
 
-    const { getByRole } = render(
+    render(
       <PreparePullRequestForm<{ main: string }>
         defaultValues={{ main: 'default' }}
         render={({ register }) => (
@@ -39,7 +39,7 @@ describe('<PreparePullRequestForm />', () => {
     );
 
     await act(async () => {
-      await userEvent.click(getByRole('button', { name: /submit/i }));
+      await userEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
     expect(onSubmitFn).toHaveBeenCalledTimes(1);
@@ -49,7 +49,7 @@ describe('<PreparePullRequestForm />', () => {
   it('should register a text field', async () => {
     const onSubmitFn = jest.fn();
 
-    const { getByRole, getByLabelText } = render(
+    render(
       <PreparePullRequestForm<{ main: string }>
         defaultValues={{ main: 'default' }}
         render={({ register }) => (
@@ -67,9 +67,9 @@ describe('<PreparePullRequestForm />', () => {
     );
 
     await act(async () => {
-      await userEvent.clear(getByLabelText('Main Field'));
-      await userEvent.type(getByLabelText('Main Field'), 'My Text');
-      await userEvent.click(getByRole('button', { name: /submit/i }));
+      await userEvent.clear(screen.getByLabelText('Main Field'));
+      await userEvent.type(screen.getByLabelText('Main Field'), 'My Text');
+      await userEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
     expect(onSubmitFn).toHaveBeenCalledTimes(1);
@@ -79,7 +79,7 @@ describe('<PreparePullRequestForm />', () => {
   it('registers required attribute', async () => {
     const onSubmitFn = jest.fn();
 
-    const { queryByText, getByRole } = render(
+    render(
       <PreparePullRequestForm<{ main: string }>
         defaultValues={{}}
         render={({ formState, register }) => (
@@ -100,13 +100,17 @@ describe('<PreparePullRequestForm />', () => {
       />,
     );
 
-    expect(queryByText('Error in required main field')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Error in required main field'),
+    ).not.toBeInTheDocument();
 
     await act(async () => {
-      await userEvent.click(getByRole('button', { name: /submit/i }));
+      await userEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
     expect(onSubmitFn).not.toHaveBeenCalled();
-    expect(queryByText('Error in required main field')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Error in required main field'),
+    ).toBeInTheDocument();
   });
 });

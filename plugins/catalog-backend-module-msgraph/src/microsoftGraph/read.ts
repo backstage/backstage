@@ -122,7 +122,7 @@ export async function readMicrosoftGraphUsers(
             120,
           );
         } catch (e) {
-          options.logger.warn(`Unable to load photo for ${user.id}`);
+          options.logger.warn(`Unable to load photo for ${user.id}, ${e}`);
         }
 
         const entity = await transformer(user, userPhoto);
@@ -206,7 +206,7 @@ export async function readMicrosoftGraphUsersInGroups(
             expand: options.userExpand,
           });
         } catch (e) {
-          options.logger.warn(`Unable to load user for ${userId}`);
+          options.logger.warn(`Unable to load user for ${userId}, ${e}`);
         }
         if (user) {
           try {
@@ -217,7 +217,7 @@ export async function readMicrosoftGraphUsersInGroups(
               120,
             );
           } catch (e) {
-            options.logger.warn(`Unable to load userphoto for ${userId}`);
+            options.logger.warn(`Unable to load userphoto for ${userId}, ${e}`);
           }
 
           const entity = await transformer(user, userPhoto);
