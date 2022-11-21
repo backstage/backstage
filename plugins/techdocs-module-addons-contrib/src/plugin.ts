@@ -209,6 +209,7 @@ export const TextSize = techdocsModuleAddonsContribPlugin.provide(
  * TechDocs add-on to allow redirects to take place when a `redirects.redirect_maps` parameter is provided.
  *
  * @example
+ * This is a short example of mkdocs.yaml file that will work with this
  * ```yaml
  * # mkdocs.yaml file
  * plugins:
@@ -220,6 +221,8 @@ export const TextSize = techdocsModuleAddonsContribPlugin.provide(
  *         # redirects tutorial to tutorial/01-getting-started
  *         tutorial: tutorial/01-getting-started
  * ```
+ *
+ * @public
  */
 export const TechDocsRedirect = techdocsModuleAddonsContribPlugin.provide(
   createTechDocsAddonExtension({

@@ -34,5 +34,8 @@ export type ReportIssueTemplateBuilder = (options: {
 export const techdocsModuleAddonsContribPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
+export const TechDocsRedirect: () => JSX.Element | null;
+
+// @public
 export const TextSize: () => JSX.Element | null;
 ```

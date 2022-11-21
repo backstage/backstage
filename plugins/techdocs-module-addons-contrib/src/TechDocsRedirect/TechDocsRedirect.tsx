@@ -27,6 +27,12 @@ type TechDocsMetadataExt = TechDocsMetadata & {
   redirects?: { [key: string]: string };
 };
 
+/**
+ * TechDocsRedirectAddon component
+ *
+ * @internal
+ *
+ */
 export const TechDocsRedirectAddon = () => {
   const { metadata } = useTechDocsReaderPage();
   const params = useParams();
