@@ -77,6 +77,7 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
   ExpandableNavigation,
   ReportIssue,
+  TechDocsRedirect,
   TextSize,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import {
@@ -198,6 +199,7 @@ const routes = (
       <TechDocsAddons>
         <ExpandableNavigation />
         <ReportIssue />
+        <TechDocsRedirect />
         <TextSize />
       </TechDocsAddons>
     </Route>
