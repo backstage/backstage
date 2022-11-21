@@ -167,6 +167,7 @@ export const Router = (props: RouterProps) => {
               ReviewStepComponent={ReviewStepComponent}
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
+              headerOptions={props.headerOptions}
             />
           </SecretsContextProvider>
         }

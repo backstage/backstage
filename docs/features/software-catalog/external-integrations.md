@@ -159,7 +159,12 @@ Check out the numbered markings - let's go through them one by one.
    the outcome of that. This example issues a `fetch` to the right service and
    issues a full refresh of its entity bucket based on that.
 5. The method translates the foreign data model to the native `Entity` form, as
-   expected by the catalog.
+   expected by the catalog. The `Entity` must include the
+   `backstage.io/managed-by-location` and
+   `backstage.io/managed-by-origin-location annotations`; otherwise, it will not
+   appear in the Catalog and will generate warning logs. The
+   [Well-known Annotations](./well-known-annotations.md#backstageiomanaged-by-location)
+   documentation has guidance on what values to use for these.
 6. Finally, we issue a "mutation" to the catalog. This persists the entities in
    our own bucket, along with an optional `locationKey` that's used for conflict
    checks. But this is a bigger topic - mutations warrant their own explanatory

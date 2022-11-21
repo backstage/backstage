@@ -90,14 +90,11 @@ export const eventsPlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         config: configServiceRef,
-        httpRouter: httpRouterServiceRef,
         logger: loggerServiceRef,
+        router: httpRouterServiceRef,
       },
-      async init({ config, httpRouter, logger }) {
+      async init({ config, logger, router }) {
         const winstonLogger = loggerToWinstonLogger(logger);
-        const eventsRouter = Router();
-        const router = Router();
-        eventsRouter.use('/http', router);
 
         const ingresses = Object.fromEntries(
           extensionPoint.httpPostIngresses.map(ingress => [
@@ -108,23 +105,20 @@ export const eventsPlugin = createBackendPlugin({
 
         const http = HttpPostIngressEventPublisher.fromConfig({
           config,
-          logger: winstonLogger,
-          router,
           ingresses,
+          logger: winstonLogger,
         });
+        const eventsRouter = Router();
+        http.bind(eventsRouter);
+        router.use(eventsRouter);
 
-        if (!extensionPoint.eventBroker) {
-          extensionPoint.setEventBroker(new InMemoryEventBroker(winstonLogger));
-        }
+        const eventBroker =
+          extensionPoint.eventBroker ?? new InMemoryEventBroker(winstonLogger);
 
-        extensionPoint.eventBroker!.subscribe(extensionPoint.subscribers);
+        eventBroker.subscribe(extensionPoint.subscribers);
         [extensionPoint.publishers, http]
           .flat()
-          .forEach(publisher =>
-            publisher.setEventBroker(extensionPoint.eventBroker!),
-          );
-
-        httpRouter.use(eventsRouter);
+          .forEach(publisher => publisher.setEventBroker(eventBroker));
       },
     });
   },
