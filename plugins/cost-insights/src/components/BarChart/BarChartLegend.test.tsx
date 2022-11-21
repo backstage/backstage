@@ -27,6 +27,6 @@ describe('<BarChartLegend />', () => {
       </MockConfigProvider>,
     );
     expect(rendered.getByText(/\$1,000/)).toBeInTheDocument();
-    expect(rendered.queryByText(/\$5,000/)).toBeInTheDocument();
+    expect(rendered.getByText(/\$5,000/)).toBeInTheDocument();
   });
 });
