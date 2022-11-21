@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
-import { Knex } from 'knex';
-import { DB_MIGRATIONS_TABLE } from './tables';
-
-export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
-  const migrationsDir = resolvePackagePath(
-    '@backstage/plugin-incremental-ingestion-backend',
-    'migrations',
-  );
-
-  await knex.migrate.latest({
-    directory: migrationsDir,
-    tableName: DB_MIGRATIONS_TABLE,
-  });
-}
+export const DB_MIGRATIONS_TABLE = 'plugin_incremental_ingestion_backend__knex_migrations';

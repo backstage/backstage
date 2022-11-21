@@ -300,10 +300,7 @@ export class IncrementalIngestionDatabaseManager {
           'refresh_state.entity_id',
           'final_entities.entity_id',
         )
-        .whereRaw(
-          `((final_entity::json #>> '{metadata, annotations, ${INCREMENTAL_ENTITY_PROVIDER_ANNOTATION}}')) = ?`,
-          [provider],
-        )
+        .join('search', 'search.entity_id', 'final_entities.entity_id')
         .whereNotIn(
           'entity_ref',
           tx('ingestion_marks')
@@ -314,7 +311,12 @@ export class IncrementalIngestionDatabaseManager {
             )
             .select('ingestion_mark_entities.ref')
             .where('ingestion_marks.ingestion_id', ingestionId),
-        );
+        )
+        .andWhere(
+          'search.key',
+          `metadata.annotations.${INCREMENTAL_ENTITY_PROVIDER_ANNOTATION}`,
+        )
+        .andWhere('search.value', provider);
       return removed.map(entity => {
         return { entity: JSON.parse(entity.entity) };
       });

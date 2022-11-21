@@ -19,15 +19,6 @@
  */
 exports.up = async function up(knex) {
   /**
-   * Create an index on the final_entities table for the provider name
-   * annotation
-   */
-
-  await knex.raw(
-    `CREATE INDEX IF NOT EXISTS increment_ingestion_provider_name_idx ON public.final_entities ((final_entity::json #>> '{metadata, annotations, backstage.io/incremental-provider-name}'));`,
-  );
-
-  /**
    * Sets up the ingestions table
    */
   await knex.schema.createTable('ingestions', table => {
@@ -57,6 +48,7 @@ exports.up = async function up(knex) {
 
     table
       .timestamp('next_action_at')
+      .notNullable()
       .defaultTo(knex.fn.now())
       .comment('the moment in time at which point ingestion can begin again');
 
@@ -66,11 +58,13 @@ exports.up = async function up(knex) {
 
     table
       .integer('attempts')
+      .notNullable()
       .defaultTo(0)
       .comment('how many attempts have been made to burst without success');
 
     table
       .timestamp('created_at')
+      .notNullable()
       .defaultTo(knex.fn.now())
       .comment('when did this ingestion actually begin');
 
@@ -124,10 +118,14 @@ exports.up = async function up(knex) {
 
     table
       .integer('sequence')
+      .notNullable()
       .defaultTo(0)
       .comment('what is the order of this mark');
 
-    table.timestamp('created_at').defaultTo(knex.fn.now());
+    table
+      .timestamp('created_at')
+      .notNullable()
+      .defaultTo(knex.fn.now());
   });
 
   await knex.schema.alterTable('ingestion_marks', t => {
@@ -177,5 +175,4 @@ exports.down = async function down(knex) {
   await knex.schema.dropTable('ingestion_mark_entities');
   await knex.schema.dropTable('ingestion_marks');
   await knex.schema.dropTable('ingestions');
-  await knex.raw(`DROP INDEX increment_ingestion_provider_name_idx;`);
 };

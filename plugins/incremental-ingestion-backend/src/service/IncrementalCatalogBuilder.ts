@@ -24,7 +24,7 @@ import { Knex } from 'knex';
 import { IncrementalIngestionEngine } from '../engine/IncrementalIngestionEngine';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
-import { createIncrementalProviderRouter } from '../routes';
+import { createIncrementalProviderRouter } from '../router/routes';
 
 class Deferred<T> implements Promise<T> {
   #resolve?: (value: T) => void;

@@ -17,7 +17,8 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { IncrementalIngestionDatabaseManager } from './';
+import { IncrementalIngestionDatabaseManager } from '..';
+import { PROVIDER_BASE_PATH, PROVIDER_CLEANUP, PROVIDER_HEALTH } from './paths';
 
 /** @public */
 export const createIncrementalProviderRouter = async (
@@ -28,7 +29,7 @@ export const createIncrementalProviderRouter = async (
   router.use(express.json());
 
   // Get the overall health of all incremental providers
-  router.get('/health', async (_, res) => {
+  router.get(PROVIDER_HEALTH, async (_, res) => {
     const records = await manager.healthcheck();
     const providers = records.map(record => record.provider_name);
     const duplicates = [
@@ -43,13 +44,13 @@ export const createIncrementalProviderRouter = async (
   });
 
   // Clean up and pause all providers
-  router.delete('/cleanup', async (_, res) => {
+  router.post(PROVIDER_CLEANUP, async (_, res) => {
     const result = await manager.cleanupProviders();
     res.json(result);
   });
 
   // Get basic status of the provider
-  router.get('/:provider', async (req, res) => {
+  router.get(PROVIDER_BASE_PATH, async (req, res) => {
     const { provider } = req.params;
     const record = await manager.getCurrentIngestionRecord(provider);
     if (record) {
@@ -84,7 +85,7 @@ export const createIncrementalProviderRouter = async (
   });
 
   // Trigger the provider's next action
-  router.put('/:provider', async (req, res) => {
+  router.put(PROVIDER_BASE_PATH, async (req, res) => {
     const { provider } = req.params;
     const record = await manager.getCurrentIngestionRecord(provider);
     if (record) {
@@ -111,7 +112,7 @@ export const createIncrementalProviderRouter = async (
   });
 
   // Start a brand-new ingestion cycle for the provider
-  router.post('/:provider', async (req, res) => {
+  router.post(PROVIDER_BASE_PATH, async (req, res) => {
     const { provider } = req.params;
 
     const record = await manager.getCurrentIngestionRecord(provider);
@@ -144,7 +145,7 @@ export const createIncrementalProviderRouter = async (
   });
 
   // Stop the provider and pause it for 24 hours
-  router.post('/:provider/cancel', async (req, res) => {
+  router.post(`${PROVIDER_BASE_PATH}/cancel`, async (req, res) => {
     const { provider } = req.params;
     const record = await manager.getCurrentIngestionRecord(provider);
     if (record) {
@@ -178,14 +179,14 @@ export const createIncrementalProviderRouter = async (
   });
 
   // Wipe out all ingestion records for the provider and pause for 24 hours
-  router.delete('/:provider', async (req, res) => {
+  router.delete(PROVIDER_BASE_PATH, async (req, res) => {
     const { provider } = req.params;
     const result = await manager.purgeAndResetProvider(provider);
     res.json(result);
   });
 
   // Get the ingestion marks for the current cycle
-  router.get('/:provider/marks', async (req, res) => {
+  router.get(`${PROVIDER_BASE_PATH}/marks`, async (req, res) => {
     const { provider } = req.params;
     const record = await manager.getCurrentIngestionRecord(provider);
     if (record) {
@@ -213,7 +214,7 @@ export const createIncrementalProviderRouter = async (
     }
   });
 
-  router.delete('/:provider/marks', async (req, res) => {
+  router.delete(`${PROVIDER_BASE_PATH}/marks`, async (req, res) => {
     const { provider } = req.params;
     const deletions = await manager.clearFinishedIngestions(provider);
 
