@@ -41,7 +41,14 @@ import useAsync from 'react-use/lib/useAsync';
  *
  * @public
  */
-export const Content = () => {
+
+interface starredEntitiesProp {
+  defaultMessage?: string;
+}
+
+export const Content = ({
+  defaultMessage = 'Click the star beside an entity name to add the entity to this list!',
+}: starredEntitiesProp) => {
   const catalogApi = useApi(catalogApiRef);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
@@ -76,7 +83,8 @@ export const Content = () => {
   if (starredEntities.size === 0)
     return (
       <Typography variant="body1">
-        You do not have any starred entities yet!
+        {/* You do not have any starred entities yet! */}
+        {defaultMessage}
       </Typography>
     );
 
