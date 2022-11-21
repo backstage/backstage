@@ -22,6 +22,7 @@ import {
 import { ExpandableNavigationAddon } from './ExpandableNavigation';
 import { ReportIssueAddon, ReportIssueProps } from './ReportIssue';
 import { TextSizeAddon } from './TextSize';
+import { TechDocsRedirectAddon } from './TechDocsRedirect';
 
 /**
  * The TechDocs addons contrib plugin
@@ -201,5 +202,29 @@ export const TextSize = techdocsModuleAddonsContribPlugin.provide(
     name: 'TextSize',
     location: TechDocsAddonLocations.Settings,
     component: TextSizeAddon,
+  }),
+);
+
+/**
+ * TechDocs add-on to allow redirects to take place when a `redirects.redirect_maps` parameter is provided.
+ *
+ * @example
+ * ```yaml
+ * # mkdocs.yaml file
+ * plugins:
+ *   - techdocs-core
+ *   - redirects:
+ *       redirect_maps:
+ *         # redirects to main homepage
+ *         welcome: ''
+ *         # redirects tutorial to tutorial/01-getting-started
+ *         tutorial: tutorial/01-getting-started
+ * ```
+ */
+export const TechDocsRedirect = techdocsModuleAddonsContribPlugin.provide(
+  createTechDocsAddonExtension({
+    name: 'TechDocsRedirectExtension',
+    location: TechDocsAddonLocations.Header,
+    component: TechDocsRedirectAddon,
   }),
 );
