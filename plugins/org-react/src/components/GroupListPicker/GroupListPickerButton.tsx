@@ -22,25 +22,22 @@ import PeopleIcon from '@material-ui/icons/People';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   btn: {
-    margin: 0,
-    padding: 10,
+    padding: '10px',
     width: '100%',
     cursor: 'pointer',
     justifyContent: 'space-between',
-    '& p': {
-      width: '100%',
-      textAlign: 'left',
-      marginLeft: 4,
-    },
   },
   title: {
     fontSize: '1.5rem',
     fontStyle: 'normal',
     fontWeight: theme.typography.fontWeightBold,
-    letterSpacing: '-0.25px',
     height: '32px',
+    letterSpacing: '-0.25px',
     marginBottom: 0,
+    marginLeft: '4px',
+    textAlign: 'left',
     textTransform: 'none',
+    width: '100%',
   },
   icon: {
     transform: 'scale(1.5)',
