@@ -409,3 +409,4 @@ Zolotusky
 zoomable
 zsh
 Lainfiesta
+allowlisted
