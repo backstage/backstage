@@ -5992,7 +5992,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     morgan: ^1.10.0
-    msw: ^0.48.0
+    msw: ^0.49.0
     node-fetch: ^2.6.7
     stream-buffers: ^3.0.2
     supertest: ^6.1.3
