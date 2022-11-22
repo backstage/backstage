@@ -157,7 +157,7 @@ function useConfigLoader(
   let configReader = ConfigReader.fromConfigs(config.value ?? []);
 
   const resolveRelativeUrl = (relativeUrl: string) => {
-    // Backend.baseUrl should always be defined.
+    // relativeUrl should always be defined.
     let url;
     try {
       url = new URL(relativeUrl, document.location.origin).href.replace(
@@ -165,7 +165,7 @@ function useConfigLoader(
         '',
       );
     } catch (err) {
-      // Backend.baseUrl was not a valid URL. This should be caught during the build process.
+      // relativeUrl was not a valid URL. This should be caught during the build process.
     }
     return url;
   };

@@ -213,8 +213,6 @@ Options:
   --experimental-type-build
   --skip-build-dependencies
   --stats
-  --public-path <path>
-  --backend-url <url>
   --config <path>
   -h, --help
 ```
