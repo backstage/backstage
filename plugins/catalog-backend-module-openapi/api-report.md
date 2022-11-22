@@ -13,6 +13,11 @@ import { PlaceholderResolverParams } from '@backstage/plugin-catalog-backend';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 
+// @public (undocumented)
+export function jsonSchemaRefPlaceholderResolver(
+  params: PlaceholderResolverParams,
+): Promise<JsonValue>;
+
 // @public @deprecated (undocumented)
 export const openApiPlaceholderResolver: typeof jsonSchemaRefPlaceholderResolver;
 
@@ -36,11 +41,6 @@ export class OpenApiRefProcessor implements CatalogProcessor {
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
-
-// @public (undocumented)
-export function jsonSchemaRefPlaceholderResolver(
-  params: PlaceholderResolverParams,
-): Promise<JsonValue>;
 
 // (No @packageDocumentation comment for this package)
 ```
