@@ -45,6 +45,7 @@ import {
 } from './github';
 import {
   createPublishAzureAction,
+  createPublishBitbucketAction,
   createPublishBitbucketCloudAction,
   createPublishBitbucketServerAction,
   createPublishGerritAction,
@@ -140,6 +141,10 @@ export const createBuiltinActions = (
     }),
     createPublishGitlabMergeRequestAction({
       integrations,
+    }),
+    createPublishBitbucketAction({
+      integrations,
+      config,
     }),
     createPublishBitbucketCloudAction({
       integrations,
