@@ -15,10 +15,9 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  SONARQUBE_PROJECT_INSTANCE_SEPARATOR,
-  SONARQUBE_PROJECT_KEY_ANNOTATION,
-} from '../components';
+import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '../components';
+
+export const SONARQUBE_PROJECT_INSTANCE_SEPARATOR = '/';
 
 /**
  *
@@ -27,8 +26,8 @@ import {
  * If part or all info are not found, they will default to undefined
  *
  * @alpha
- * @param entity entity to find the sonarqube information from.
- * @return a ProjectInfo properly populated.
+ * @param entity - entity to find the sonarqube information from.
+ * @returns a ProjectInfo properly populated.
  */
 export const useProjectInfo = (
   entity: Entity,

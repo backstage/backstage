@@ -16,6 +16,7 @@
 
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @alpha */
 export type MetricKey =
   // alert status
   | 'alert_status'
@@ -42,15 +43,19 @@ export type MetricKey =
   // duplicated lines
   | 'duplicated_lines_density';
 
+/** @alpha */
 export type SonarUrlProcessorFunc = (identifier: string) => string;
 
 /**
+ * @alpha
+ *
  * Define a type to make sure that all metrics are used
  */
 export type Metrics = {
   [key in MetricKey]: string | undefined;
 };
 
+/** @alpha */
 export interface FindingSummary {
   lastAnalysis: string;
   metrics: Metrics;
@@ -60,6 +65,7 @@ export interface FindingSummary {
   getSecurityHotspotsUrl: () => string;
 }
 
+/** @alpha */
 export const sonarQubeApiRef = createApiRef<SonarQubeApi>({
   id: 'plugin.sonarqube.service',
 });

@@ -17,5 +17,4 @@
 export {
   isSonarQubeAvailable,
   SONARQUBE_PROJECT_KEY_ANNOTATION,
-  SONARQUBE_PROJECT_INSTANCE_SEPARATOR,
 } from './isSonarQubeAvailable';

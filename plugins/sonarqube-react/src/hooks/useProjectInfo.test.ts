@@ -15,11 +15,9 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  SONARQUBE_PROJECT_INSTANCE_SEPARATOR,
-  SONARQUBE_PROJECT_KEY_ANNOTATION,
-} from '../components';
+import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '../components';
 import { useProjectInfo } from './useProjectInfo';
+import { SONARQUBE_PROJECT_INSTANCE_SEPARATOR } from './useProjectInfo';
 
 const createDummyEntity = (sonarqubeAnnotationValue: string): Entity => {
   return {

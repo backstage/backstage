@@ -24,11 +24,15 @@ export type { DuplicationRating } from './SonarQubeCard';
 export type { SonarQubeContentPageProps } from './SonarQubeContentPage';
 
 /**
+ * @public
+ *
  * @deprecated use the same type from `@backstage/plugin-sonarqube-react` instead
  */
 export const isSonarQubeAvailable = NonDeprecatedIsSonarQubeAvailable;
 
 /**
+ * @public
+ *
  * @deprecated use the same type from `@backstage/plugin-sonarqube-react` instead
  */
 export const SONARQUBE_PROJECT_KEY_ANNOTATION =
