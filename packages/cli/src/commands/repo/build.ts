@@ -153,7 +153,6 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           return;
         }
         await buildFrontend({
-          cliOptions: opts,
           targetDir: pkg.dir,
           configPaths: (buildOptions.config as string[]) ?? [],
           writeStats: Boolean(buildOptions.stats),

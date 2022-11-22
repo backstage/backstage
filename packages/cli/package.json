@@ -154,7 +154,6 @@
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "del": "^6.0.0",
-    "get-port": "^6.1.2",
     "mock-fs": "^5.1.0",
     "msw": "^0.49.0",
     "nodemon": "^2.0.2",
