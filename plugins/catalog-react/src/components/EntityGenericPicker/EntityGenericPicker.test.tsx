@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityFieldFilter } from '../../filters';
@@ -57,36 +57,36 @@ const EntityDomainPicker = () => (
 
 describe('<EntityGenericPicker/>', () => {
   it('renders all options', () => {
-    const rendered = render(
+    render(
       <MockEntityListContextProvider
         value={{ entities: mockEntities, backendEntities: mockEntities }}
       >
         <EntityDomainPicker />
       </MockEntityListContextProvider>,
     );
-    expect(rendered.getByText(/domain/i)).toBeInTheDocument();
+    expect(screen.getByText(/domain/i)).toBeInTheDocument();
 
-    fireEvent.click(rendered.getByTestId('domain-picker-expand'));
+    fireEvent.click(screen.getByTestId('domain-picker-expand'));
     mockEntities
       .flatMap(e => e.metadata.domain!)
       .forEach(domain => {
-        expect(rendered.getByText(domain as string)).toBeInTheDocument();
+        expect(screen.getByText(domain as string)).toBeInTheDocument();
       });
   });
 
   it('renders unique options in alphabetical order', () => {
-    const rendered = render(
+    render(
       <MockEntityListContextProvider
         value={{ entities: mockEntities, backendEntities: mockEntities }}
       >
         <EntityDomainPicker />
       </MockEntityListContextProvider>,
     );
-    expect(rendered.getByText(/domain/i)).toBeInTheDocument();
+    expect(screen.getByText(/domain/i)).toBeInTheDocument();
 
-    fireEvent.click(rendered.getByTestId('domain-picker-expand'));
+    fireEvent.click(screen.getByTestId('domain-picker-expand'));
 
-    expect(rendered.getAllByRole('option').map(o => o.textContent)).toEqual([
+    expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
       'domain1',
       'domain2',
     ]);
@@ -94,7 +94,7 @@ describe('<EntityGenericPicker/>', () => {
 
   it('select a value from filter', () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    render(
       <MockEntityListContextProvider
         value={{
           entities: mockEntities,
@@ -106,8 +106,8 @@ describe('<EntityGenericPicker/>', () => {
       </MockEntityListContextProvider>,
     );
 
-    fireEvent.click(rendered.getByTestId('domain-picker-expand'));
-    fireEvent.click(rendered.getByText('domain1'));
+    fireEvent.click(screen.getByTestId('domain-picker-expand'));
+    fireEvent.click(screen.getByText('domain1'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
     });
@@ -136,7 +136,7 @@ describe('<EntityGenericPicker/>', () => {
 
   it('adds a value from available options to filters', () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    render(
       <MockEntityListContextProvider
         value={{
           entities: mockEntities,
@@ -151,8 +151,8 @@ describe('<EntityGenericPicker/>', () => {
       option: undefined,
     });
 
-    fireEvent.click(rendered.getByTestId('domain-picker-expand'));
-    fireEvent.click(rendered.getByText('domain1'));
+    fireEvent.click(screen.getByTestId('domain-picker-expand'));
+    fireEvent.click(screen.getByText('domain1'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
     });
@@ -160,7 +160,7 @@ describe('<EntityGenericPicker/>', () => {
 
   it('removes a value from filters', () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    render(
       <MockEntityListContextProvider
         value={{
           entities: mockEntities,
@@ -177,10 +177,10 @@ describe('<EntityGenericPicker/>', () => {
     expect(updateFilters).toHaveBeenLastCalledWith({
       option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
     });
-    fireEvent.click(rendered.getByTestId('domain-picker-expand'));
-    expect(rendered.getByLabelText('domain1')).toBeChecked();
+    fireEvent.click(screen.getByTestId('domain-picker-expand'));
+    expect(screen.getByLabelText('domain1')).toBeChecked();
 
-    fireEvent.click(rendered.getByLabelText('domain1'));
+    fireEvent.click(screen.getByLabelText('domain1'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       option: undefined,
     });

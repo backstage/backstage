@@ -118,11 +118,10 @@ export const ScaffolderPageContents = ({
             />
             <TemplateTypePicker />
             <EntityTagPicker />
-            {customFilters && customFilters.map((component, index) => (
-                  <React.Fragment key={index}>
-                    {component}
-                  </React.Fragment>
-            ))} 
+            {customFilters &&
+              customFilters.map((component, index) => (
+                <React.Fragment key={index}>{component}</React.Fragment>
+              ))}
           </CatalogFilterLayout.Filters>
           <CatalogFilterLayout.Content>
             {groups &&
