@@ -50,9 +50,7 @@ describe('jsonSchemaRefPlaceholderResolver', () => {
   it('should throw error if unable to bundle the OpenAPI specification', async () => {
     (bundleFileWithRefs as any).mockRejectedValue(new Error('TEST'));
 
-    await expect(jsonSchemaRefPlaceholderResolver(params)).rejects.toThrow(
-      'Placeholder $openapi unable to bundle OpenAPI specification',
-    );
+    await expect(jsonSchemaRefPlaceholderResolver(params)).rejects.toThrow();
   });
 
   it('should bundle the OpenAPI specification', async () => {
