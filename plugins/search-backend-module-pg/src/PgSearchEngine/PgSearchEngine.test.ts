@@ -231,6 +231,7 @@ describe('PgSearchEngine', () => {
           },
         ],
         nextPageCursor: undefined,
+        numberOfResults: 1,
       });
       expect(database.transaction).toHaveBeenCalledTimes(1);
       expect(database.query).toHaveBeenCalledWith(tx, {
@@ -288,6 +289,7 @@ describe('PgSearchEngine', () => {
             },
           })),
         nextPageCursor: 'MQ==',
+        numberOfResults: 30,
       });
       expect(database.transaction).toHaveBeenCalledTimes(1);
       expect(database.query).toHaveBeenCalledWith(tx, {
@@ -348,6 +350,7 @@ describe('PgSearchEngine', () => {
           }))
           .slice(25),
         previousPageCursor: 'MA==',
+        numberOfResults: 5,
       });
       expect(database.transaction).toHaveBeenCalledTimes(1);
       expect(database.query).toHaveBeenCalledWith(tx, {

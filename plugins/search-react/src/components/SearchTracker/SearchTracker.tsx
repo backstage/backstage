@@ -23,14 +23,18 @@ import { useSearch } from '../../context';
  */
 export const TrackSearch = ({ children }: { children: React.ReactChild }) => {
   const analytics = useAnalytics();
-  const { term } = useSearch();
+  const { term, result } = useSearch();
+
+  const numberOfResults = result.value?.numberOfResults ?? undefined;
 
   useEffect(() => {
     if (term) {
       // Capture analytics search event with search term provided as value
-      analytics.captureEvent('search', term);
+      analytics.captureEvent('search', term, {
+        value: numberOfResults,
+      });
     }
-  }, [analytics, term]);
+  }, [analytics, term, numberOfResults]);
 
   return <>{children}</>;
 };

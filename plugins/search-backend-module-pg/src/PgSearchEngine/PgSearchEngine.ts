@@ -194,6 +194,7 @@ export class PgSearchEngine implements SearchEngine {
     const previousPageCursor = hasPreviousPage
       ? encodePageCursor({ page: page - 1 })
       : undefined;
+    const numberOfResults = rows.length;
 
     const results = pageRows.map(
       ({ type, document, highlight }, index): IndexableResult => ({
@@ -215,7 +216,7 @@ export class PgSearchEngine implements SearchEngine {
       }),
     );
 
-    return { results, nextPageCursor, previousPageCursor };
+    return { results, nextPageCursor, previousPageCursor, numberOfResults };
   }
 }
 
