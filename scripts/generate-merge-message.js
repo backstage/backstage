@@ -31,6 +31,7 @@ async function hasNewChangesets(ref) {
     '--compact-summary',
     ref,
     '.changeset/*.md',
+    ':(exclude).changeset/create-app-*.md',
   ]);
   return stdout.includes('(new)');
 }
