@@ -388,12 +388,27 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
 export type RepoUrlPickerUiOptions =
   typeof RepoUrlPickerFieldSchema.uiOptionsType;
 
+// @public
+export type ReviewStepProps = {
+  disableButtons: boolean;
+  formData: JsonObject;
+  handleBack: () => void;
+  handleReset: () => void;
+  handleCreate: () => void;
+  steps: {
+    uiSchema: UiSchema;
+    mergedSchema: JsonObject;
+    schema: JsonObject;
+  }[];
+};
+
 // @public (undocumented)
 export const rootRouteRef: RouteRef<undefined>;
 
 // @public
 export type RouterProps = {
   components?: {
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
     TemplateCardComponent?:
       | ComponentType<{
           template: TemplateEntityV1beta3;

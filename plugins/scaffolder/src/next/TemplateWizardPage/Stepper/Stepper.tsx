@@ -37,6 +37,7 @@ import { ReviewState } from './ReviewState';
 import validator from '@rjsf/validator-ajv8';
 import { selectedTemplateRouteRef } from '../../../routes';
 import type { ErrorTransformer } from '@rjsf/utils';
+import { getDefaultFormState } from '@rjsf/utils';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -108,7 +109,18 @@ export const Stepper = (props: StepperProps) => {
     // to display it's own loading? Or should we grey out the entire form.
     setErrors(undefined);
 
-    const returnedValidation = await validation(formData);
+    const schema = steps[activeStep]?.schema;
+    const rootSchema = steps[activeStep]?.mergedSchema;
+
+    const newFormData = getDefaultFormState(
+      validator,
+      schema,
+      formData,
+      rootSchema,
+      true,
+    );
+
+    const returnedValidation = await validation(newFormData);
 
     const hasErrors = Object.values(returnedValidation).some(
       i => i.__errors?.length,
@@ -124,7 +136,7 @@ export const Stepper = (props: StepperProps) => {
         return stepNum;
       });
     }
-    setFormState(current => ({ ...current, ...formData }));
+    setFormState(current => ({ ...current, ...newFormData }));
   };
 
   return (

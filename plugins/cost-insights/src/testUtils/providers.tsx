@@ -32,6 +32,7 @@ import {
   ScrollContextProps,
 } from '../hooks';
 import { Group, Duration } from '../types';
+import { createCurrencyFormat } from '../utils/currency';
 
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
@@ -91,6 +92,7 @@ export const MockConfigProvider = (props: MockConfigProviderProps) => {
   const { children, ...context } = props;
 
   const defaultContext: ConfigContextProps = {
+    baseCurrency: createCurrencyFormat(),
     metrics: [],
     products: [],
     icons: [],
