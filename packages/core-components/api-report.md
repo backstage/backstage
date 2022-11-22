@@ -250,6 +250,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   edgeRanks?: number;
   edges: DependencyEdge<EdgeData>[];
   edgeWeight?: number;
+  fit?: 'grow' | 'contain';
   labelOffset?: number;
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   labelPosition?: LabelPosition;

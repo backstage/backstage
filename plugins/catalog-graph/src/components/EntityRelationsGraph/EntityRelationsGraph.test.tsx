@@ -24,6 +24,7 @@ import {
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { FunctionComponent } from 'react';
 import { EntityRelationsGraph } from './EntityRelationsGraph';
@@ -142,7 +143,7 @@ describe('<EntityRelationsGraph/>', () => {
       relations: [],
     });
 
-    const { findByText, findAllByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityRelationsGraph
           rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
@@ -150,15 +151,15 @@ describe('<EntityRelationsGraph/>', () => {
       </Wrapper>,
     );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(1);
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(1);
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
   });
 
   test('renders a progress indicator while loading', async () => {
     catalog.getEntityByRef.mockImplementation(() => new Promise(() => {}));
 
-    const { findByRole } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityRelationsGraph
           rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
@@ -166,7 +167,7 @@ describe('<EntityRelationsGraph/>', () => {
       </Wrapper>,
     );
 
-    expect(await findByRole('progressbar')).toBeInTheDocument();
+    expect(await screen.findByRole('progressbar')).toBeInTheDocument();
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
   });
 
@@ -197,7 +198,7 @@ describe('<EntityRelationsGraph/>', () => {
       return undefined;
     });
 
-    const { findByText, findAllByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityRelationsGraph
           rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
@@ -205,32 +206,31 @@ describe('<EntityRelationsGraph/>', () => {
       </Wrapper>,
     );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(1);
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(1);
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(2);
   });
 
   test('renders at max depth of one', async () => {
     catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
 
-    const { findByText, findAllByTestId, findAllByText } =
-      await renderInTestApp(
-        <Wrapper>
-          <EntityRelationsGraph
-            rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
-            maxDepth={1}
-          />
-        </Wrapper>,
-      );
+    await renderInTestApp(
+      <Wrapper>
+        <EntityRelationsGraph
+          rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
+          maxDepth={1}
+        />
+      </Wrapper>,
+    );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findByText('b:d/c1')).toBeInTheDocument();
-    expect(await findByText('k:d/a1')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(3);
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c1')).toBeInTheDocument();
+    expect(await screen.findByText('k:d/a1')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(3);
 
-    expect(await findAllByText('ownerOf')).toHaveLength(1);
-    expect(await findAllByText('hasPart')).toHaveLength(1);
-    expect(await findAllByTestId('label')).toHaveLength(2);
+    expect(await screen.findAllByText('ownerOf')).toHaveLength(1);
+    expect(await screen.findAllByText('hasPart')).toHaveLength(1);
+    expect(await screen.findAllByTestId('label')).toHaveLength(2);
 
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(3);
   });
@@ -238,26 +238,25 @@ describe('<EntityRelationsGraph/>', () => {
   test('renders simplified graph at full depth', async () => {
     catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
 
-    const { findByText, findAllByText, findAllByTestId } =
-      await renderInTestApp(
-        <Wrapper>
-          <EntityRelationsGraph
-            unidirectional
-            maxDepth={Number.POSITIVE_INFINITY}
-            rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
-          />
-        </Wrapper>,
-      );
+    await renderInTestApp(
+      <Wrapper>
+        <EntityRelationsGraph
+          unidirectional
+          maxDepth={Number.POSITIVE_INFINITY}
+          rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
+        />
+      </Wrapper>,
+    );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findByText('b:d/c1')).toBeInTheDocument();
-    expect(await findByText('k:d/a1')).toBeInTheDocument();
-    expect(await findByText('b:d/c2')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(4);
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c1')).toBeInTheDocument();
+    expect(await screen.findByText('k:d/a1')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c2')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(4);
 
-    expect(await findAllByText('ownerOf')).toHaveLength(1);
-    expect(await findAllByText('hasPart')).toHaveLength(2);
-    expect(await findAllByTestId('label')).toHaveLength(3);
+    expect(await screen.findAllByText('ownerOf')).toHaveLength(1);
+    expect(await screen.findAllByText('hasPart')).toHaveLength(2);
+    expect(await screen.findAllByTestId('label')).toHaveLength(3);
 
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(4);
   });
@@ -265,28 +264,27 @@ describe('<EntityRelationsGraph/>', () => {
   test('renders full graph at full depth', async () => {
     catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
 
-    const { findAllByText, findByText, findAllByTestId } =
-      await renderInTestApp(
-        <Wrapper>
-          <EntityRelationsGraph
-            unidirectional={false}
-            mergeRelations={false}
-            rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
-          />
-        </Wrapper>,
-      );
+    await renderInTestApp(
+      <Wrapper>
+        <EntityRelationsGraph
+          unidirectional={false}
+          mergeRelations={false}
+          rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
+        />
+      </Wrapper>,
+    );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findByText('b:d/c1')).toBeInTheDocument();
-    expect(await findByText('k:d/a1')).toBeInTheDocument();
-    expect(await findByText('b:d/c2')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(4);
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c1')).toBeInTheDocument();
+    expect(await screen.findByText('k:d/a1')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c2')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(4);
 
-    expect(await findAllByText('ownerOf')).toHaveLength(2);
-    expect(await findAllByText('ownedBy')).toHaveLength(2);
-    expect(await findAllByText('hasPart')).toHaveLength(2);
-    expect(await findAllByText('partOf')).toHaveLength(2);
-    expect(await findAllByTestId('label')).toHaveLength(8);
+    expect(await screen.findAllByText('ownerOf')).toHaveLength(2);
+    expect(await screen.findAllByText('ownedBy')).toHaveLength(2);
+    expect(await screen.findAllByText('hasPart')).toHaveLength(2);
+    expect(await screen.findAllByText('partOf')).toHaveLength(2);
+    expect(await screen.findAllByTestId('label')).toHaveLength(8);
 
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(4);
   });
@@ -294,26 +292,25 @@ describe('<EntityRelationsGraph/>', () => {
   test('renders full graph at full depth with merged relations', async () => {
     catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
 
-    const { findAllByText, findByText, findAllByTestId } =
-      await renderInTestApp(
-        <Wrapper>
-          <EntityRelationsGraph
-            unidirectional={false}
-            mergeRelations
-            rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
-          />
-        </Wrapper>,
-      );
+    await renderInTestApp(
+      <Wrapper>
+        <EntityRelationsGraph
+          unidirectional={false}
+          mergeRelations
+          rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
+        />
+      </Wrapper>,
+    );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findByText('b:d/c1')).toBeInTheDocument();
-    expect(await findByText('k:d/a1')).toBeInTheDocument();
-    expect(await findByText('b:d/c2')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(4);
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c1')).toBeInTheDocument();
+    expect(await screen.findByText('k:d/a1')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c2')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(4);
 
-    expect(await findAllByText('ownerOf')).toHaveLength(2);
-    expect(await findAllByText('hasPart')).toHaveLength(2);
-    expect(await findAllByTestId('label')).toHaveLength(4);
+    expect(await screen.findAllByText('ownerOf')).toHaveLength(2);
+    expect(await screen.findAllByText('hasPart')).toHaveLength(2);
+    expect(await screen.findAllByTestId('label')).toHaveLength(4);
 
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(4);
   });
@@ -321,27 +318,26 @@ describe('<EntityRelationsGraph/>', () => {
   test('renders a graph with multiple root nodes', async () => {
     catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
 
-    const { findAllByText, findByText, findAllByTestId } =
-      await renderInTestApp(
-        <Wrapper>
-          <EntityRelationsGraph
-            rootEntityNames={[
-              { kind: 'b', namespace: 'd', name: 'c' },
-              { kind: 'b', namespace: 'd', name: 'c2' },
-            ]}
-          />
-        </Wrapper>,
-      );
+    await renderInTestApp(
+      <Wrapper>
+        <EntityRelationsGraph
+          rootEntityNames={[
+            { kind: 'b', namespace: 'd', name: 'c' },
+            { kind: 'b', namespace: 'd', name: 'c2' },
+          ]}
+        />
+      </Wrapper>,
+    );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findByText('b:d/c1')).toBeInTheDocument();
-    expect(await findByText('k:d/a1')).toBeInTheDocument();
-    expect(await findByText('b:d/c2')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(4);
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c1')).toBeInTheDocument();
+    expect(await screen.findByText('k:d/a1')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c2')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(4);
 
-    expect(await findAllByText('ownerOf')).toHaveLength(1);
-    expect(await findAllByText('partOf')).toHaveLength(2);
-    expect(await findAllByTestId('label')).toHaveLength(3);
+    expect(await screen.findAllByText('ownerOf')).toHaveLength(1);
+    expect(await screen.findAllByText('partOf')).toHaveLength(2);
+    expect(await screen.findAllByTestId('label')).toHaveLength(3);
 
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(4);
   });
@@ -349,23 +345,22 @@ describe('<EntityRelationsGraph/>', () => {
   test('renders a graph with filtered kinds and relations', async () => {
     catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
 
-    const { findAllByText, findByText, findAllByTestId } =
-      await renderInTestApp(
-        <Wrapper>
-          <EntityRelationsGraph
-            rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
-            relations={['ownerOf', 'ownedBy']}
-            kinds={['k']}
-          />
-        </Wrapper>,
-      );
+    await renderInTestApp(
+      <Wrapper>
+        <EntityRelationsGraph
+          rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
+          relations={['ownerOf', 'ownedBy']}
+          kinds={['k']}
+        />
+      </Wrapper>,
+    );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findByText('k:d/a1')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(2);
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findByText('k:d/a1')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
 
-    expect(await findAllByText('ownerOf')).toHaveLength(1);
-    expect(await findAllByTestId('label')).toHaveLength(1);
+    expect(await screen.findAllByText('ownerOf')).toHaveLength(1);
+    expect(await screen.findAllByTestId('label')).toHaveLength(1);
 
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(2);
   });
@@ -374,7 +369,7 @@ describe('<EntityRelationsGraph/>', () => {
     catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
 
     const onNodeClick = jest.fn();
-    const { findByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityRelationsGraph
           rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
@@ -383,7 +378,7 @@ describe('<EntityRelationsGraph/>', () => {
       </Wrapper>,
     );
 
-    await userEvent.click(await findByText('k:d/a1'));
+    await userEvent.click(await screen.findByText('k:d/a1'));
     expect(onNodeClick).toHaveBeenCalledTimes(1);
   });
 
@@ -397,7 +392,7 @@ describe('<EntityRelationsGraph/>', () => {
       </g>
     );
 
-    const { findAllByTestId, container } = await renderInTestApp(
+    const { container } = await renderInTestApp(
       <Wrapper>
         <EntityRelationsGraph
           rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
@@ -406,7 +401,7 @@ describe('<EntityRelationsGraph/>', () => {
       </Wrapper>,
     );
 
-    const node = await findAllByTestId(CUSTOM_TEST_ID);
+    const node = await screen.findAllByTestId(CUSTOM_TEST_ID);
     expect(node[0]).toBeInTheDocument();
     expect(container.querySelector('circle')).toBeInTheDocument();
   });
@@ -421,7 +416,7 @@ describe('<EntityRelationsGraph/>', () => {
       </g>
     );
 
-    const { findAllByTestId, findAllByText, container } = await renderInTestApp(
+    const { container } = await renderInTestApp(
       <Wrapper>
         <EntityRelationsGraph
           rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
@@ -429,10 +424,10 @@ describe('<EntityRelationsGraph/>', () => {
         />
       </Wrapper>,
     );
-    const node = await findAllByTestId(CUSTOM_TEST_ID);
+    const node = await screen.findAllByTestId(CUSTOM_TEST_ID);
     expect(node[0]).toBeInTheDocument();
     expect(container.querySelector('circle')).toBeInTheDocument();
-    const labels = await findAllByText('Test-Labelvisible');
+    const labels = await screen.findAllByText('Test-Labelvisible');
     expect(labels[0]).toBeInTheDocument();
   });
 });

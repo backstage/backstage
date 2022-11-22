@@ -28,6 +28,7 @@ import {
   TestApiProvider,
   TestApiRegistry,
 } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { catalogGraphRouteRef } from '../../routes';
@@ -79,15 +80,15 @@ describe('<CatalogGraphCard/>', () => {
       relations: [],
     }));
 
-    const { findByText, findAllByTestId } = await renderInTestApp(wrapper, {
+    await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
         '/catalog-graph': catalogGraphRouteRef,
       },
     });
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(1);
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(1);
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
   });
 
@@ -97,7 +98,7 @@ describe('<CatalogGraphCard/>', () => {
       relations: [],
     }));
 
-    const { findByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
           <CatalogGraphCard title="Custom Title" />
@@ -111,7 +112,7 @@ describe('<CatalogGraphCard/>', () => {
       },
     );
 
-    expect(await findByText('Custom Title')).toBeInTheDocument();
+    expect(await screen.findByText('Custom Title')).toBeInTheDocument();
   });
 
   test('renders link to standalone viewer', async () => {
@@ -120,15 +121,15 @@ describe('<CatalogGraphCard/>', () => {
       relations: [],
     }));
 
-    const { findByText, getByText } = await renderInTestApp(wrapper, {
+    await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
         '/catalog-graph': catalogGraphRouteRef,
       },
     });
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    const button = getByText('View graph');
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    const button = screen.getByText('View graph');
     expect(button).toBeInTheDocument();
     expect(button.closest('a')).toHaveAttribute(
       'href',
@@ -137,7 +138,7 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('renders link to standalone viewer with custom config', async () => {
-    const { findByText, getByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
           <CatalogGraphCard maxDepth={2} mergeRelations={false} />
@@ -151,8 +152,8 @@ describe('<CatalogGraphCard/>', () => {
       },
     );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    const button = getByText('View graph');
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    const button = screen.getByText('View graph');
     expect(button).toBeInTheDocument();
     expect(button.closest('a')).toHaveAttribute(
       'href',
@@ -167,7 +168,7 @@ describe('<CatalogGraphCard/>', () => {
     }));
 
     const analyticsSpy = new MockAnalyticsApi();
-    const { findByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         {wrapper}
       </TestApiProvider>,
@@ -179,8 +180,8 @@ describe('<CatalogGraphCard/>', () => {
       },
     );
 
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    await userEvent.click(await findByText('b:d/c'));
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    await userEvent.click(await screen.findByText('b:d/c'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',

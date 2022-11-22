@@ -21,7 +21,7 @@ import {
   SystemEntity,
 } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { entityRouteRef } from '../../routes';
 import { EntityTable } from './EntityTable';
@@ -54,7 +54,7 @@ describe('systemEntityColumns', () => {
       },
     ];
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <EntityTable
         title="My Systems"
         entities={entities}
@@ -69,10 +69,10 @@ describe('systemEntityColumns', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('my-namespace/my-system')).toBeInTheDocument();
-      expect(getByText('my-namespace/my-domain')).toBeInTheDocument();
-      expect(getByText('test')).toBeInTheDocument();
-      expect(getByText(/Some/)).toBeInTheDocument();
+      expect(screen.getByText('my-namespace/my-system')).toBeInTheDocument();
+      expect(screen.getByText('my-namespace/my-domain')).toBeInTheDocument();
+      expect(screen.getByText('test')).toBeInTheDocument();
+      expect(screen.getByText(/Some/)).toBeInTheDocument();
     });
   });
 });
@@ -106,7 +106,7 @@ describe('componentEntityColumns', () => {
       },
     ];
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <EntityTable
         title="My Components"
         entities={entities}
@@ -121,12 +121,12 @@ describe('componentEntityColumns', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('my-namespace/my-component')).toBeInTheDocument();
-      expect(getByText('my-namespace/my-system')).toBeInTheDocument();
-      expect(getByText('test')).toBeInTheDocument();
-      expect(getByText('production')).toBeInTheDocument();
-      expect(getByText('service')).toBeInTheDocument();
-      expect(getByText(/Some/)).toBeInTheDocument();
+      expect(screen.getByText('my-namespace/my-component')).toBeInTheDocument();
+      expect(screen.getByText('my-namespace/my-system')).toBeInTheDocument();
+      expect(screen.getByText('test')).toBeInTheDocument();
+      expect(screen.getByText('production')).toBeInTheDocument();
+      expect(screen.getByText('service')).toBeInTheDocument();
+      expect(screen.getByText(/Some/)).toBeInTheDocument();
     });
   });
 });

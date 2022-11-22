@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Request } from 'express';
+import { RequestDetails } from './RequestDetails';
 import { RequestValidationContext } from './RequestValidationContext';
 
 /**
@@ -29,6 +29,6 @@ import { RequestValidationContext } from './RequestValidationContext';
  * @public
  */
 export type RequestValidator = (
-  request: Request,
+  request: RequestDetails,
   context: RequestValidationContext,
 ) => Promise<void>;
