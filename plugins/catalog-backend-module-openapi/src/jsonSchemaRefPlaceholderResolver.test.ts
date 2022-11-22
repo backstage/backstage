@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { PlaceholderResolverParams } from '@backstage/plugin-catalog-backend';
-import { refPlaceholderResolver } from './refPlaceholderResolver';
+import { jsonSchemaRefPlaceholderResolver } from './jsonSchemaRefPlaceholderResolver';
 import { bundleFileWithRefs } from './lib';
 
 jest.mock('./lib', () => ({
@@ -23,7 +23,7 @@ jest.mock('./lib', () => ({
 
 const bundled = '<bundled-specification>';
 
-describe('refPlaceholderResolver', () => {
+describe('jsonSchemaRefPlaceholderResolver', () => {
   const mockResolveUrl = jest.fn();
   mockResolveUrl.mockReturnValue('mockUrl');
 
@@ -50,13 +50,13 @@ describe('refPlaceholderResolver', () => {
   it('should throw error if unable to bundle the OpenAPI specification', async () => {
     (bundleFileWithRefs as any).mockRejectedValue(new Error('TEST'));
 
-    await expect(refPlaceholderResolver(params)).rejects.toThrow(
+    await expect(jsonSchemaRefPlaceholderResolver(params)).rejects.toThrow(
       'Placeholder $openapi unable to bundle OpenAPI specification',
     );
   });
 
   it('should bundle the OpenAPI specification', async () => {
-    const result = await refPlaceholderResolver(params);
+    const result = await jsonSchemaRefPlaceholderResolver(params);
 
     expect(result).toEqual(bundled);
   });

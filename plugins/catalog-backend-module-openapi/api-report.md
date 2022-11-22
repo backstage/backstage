@@ -14,7 +14,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public @deprecated (undocumented)
-export const openApiPlaceholderResolver: typeof refPlaceholderResolver;
+export const openApiPlaceholderResolver: typeof jsonSchemaRefPlaceholderResolver;
 
 // @public @deprecated (undocumented)
 export class OpenApiRefProcessor implements CatalogProcessor {
@@ -38,7 +38,7 @@ export class OpenApiRefProcessor implements CatalogProcessor {
 }
 
 // @public (undocumented)
-export function refPlaceholderResolver(
+export function jsonSchemaRefPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue>;
 

@@ -17,13 +17,13 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-openapi
 
 ### Adding the plugin to your `packages/backend`
 
-#### **refPlaceholderResolver**
+#### **jsonSchemaRefPlaceholderResolver**
 
-The placeholder resolver can be added by importing `refPlaceholderResolver` in `src/plugins/catalog.ts` in your `backend` package and adding the following.
+The placeholder resolver can be added by importing `jsonSchemaRefPlaceholderResolver` in `src/plugins/catalog.ts` in your `backend` package and adding the following.
 
 ```ts
-builder.setPlaceholderResolver('openapi', refPlaceholderResolver);
-builder.setPlaceholderResolver('asyncapi', refPlaceholderResolver);
+builder.setPlaceholderResolver('openapi', jsonSchemaRefPlaceholderResolver);
+builder.setPlaceholderResolver('asyncapi', jsonSchemaRefPlaceholderResolver);
 ```
 
 This allows you to use the `$openapi` placeholder when referencing your OpenAPI specification and `$asyncapi` when referencing your AsyncAPI specifications. This will then resolve all `$ref` instances in your specification.

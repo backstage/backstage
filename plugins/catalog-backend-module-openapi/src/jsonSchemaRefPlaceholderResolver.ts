@@ -19,7 +19,7 @@ import { processingResult } from '@backstage/plugin-catalog-node';
 import { bundleFileWithRefs } from './lib';
 
 /** @public */
-export async function refPlaceholderResolver(
+export async function jsonSchemaRefPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
   const { content, url } = await readTextLocation(params);
@@ -35,7 +35,7 @@ export async function refPlaceholderResolver(
     );
   } catch (error) {
     throw new Error(
-      `Placeholder \$${params.key} unable to bundle OpenAPI specification at ${params.value}, ${error}`,
+      `Placeholder \$${params.key} unable to bundle the file at ${params.value}, ${error}`,
     );
   }
 }

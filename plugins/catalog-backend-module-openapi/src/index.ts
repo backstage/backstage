@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { refPlaceholderResolver } from './refPlaceholderResolver';
+import { jsonSchemaRefPlaceholderResolver } from './jsonSchemaRefPlaceholderResolver';
 
 export { OpenApiRefProcessor } from './OpenApiRefProcessor';
-export { refPlaceholderResolver } from './refPlaceholderResolver';
+export { jsonSchemaRefPlaceholderResolver } from './jsonSchemaRefPlaceholderResolver';
 /**
  * @public
- * @deprecated replaced by refPlaceholderResolver
+ * @deprecated replaced by jsonSchemaRefPlaceholderResolver
  */
-export const openApiPlaceholderResolver = refPlaceholderResolver;
+export const openApiPlaceholderResolver = jsonSchemaRefPlaceholderResolver;
