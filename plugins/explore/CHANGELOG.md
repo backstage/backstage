@@ -1,5 +1,19 @@
 # @backstage/plugin-explore
 
+## 0.3.43-next.0
+
+### Patch Changes
+
+- ea4a5be8f3: Adds styling to graph forcing it to always fill out the available space.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/plugin-explore-react@0.0.24-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.3.42
 
 ### Patch Changes

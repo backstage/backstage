@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-import
 
+## 0.9.2-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/integration-react@1.1.7-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/plugin-catalog-common@1.0.9-next.0
+
 ## 0.9.1
 
 ### Patch Changes
