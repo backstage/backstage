@@ -28,7 +28,6 @@ import {
   MarkRecordInsert,
 } from '../types';
 
-/** @public */
 export class IncrementalIngestionDatabaseManager {
   private client: Knex;
 

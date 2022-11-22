@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-incremental-ingestion-backend': patch
+'@backstage/plugin-incremental-ingestion-backend': minor
 ---
 
-This change introduces incremental entity providers, which are used for streaming very large data sources into the catalog.
+Introduces incremental entity providers, which are used for streaming very large data sources into the catalog.

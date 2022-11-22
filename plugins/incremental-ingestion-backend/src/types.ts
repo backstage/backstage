@@ -26,10 +26,11 @@ import type {
   DeferredEntity,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-backend';
-import type { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
-import { IncrementalIngestionDatabaseManager } from './';
+import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
+
 /**
  * Entity annotation containing the incremental entity provider.
  *
@@ -64,7 +65,7 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
    * ingestion.
    *
    * @param context - anything needed in order to fetch a single page.
-   * @param cursor - a uniqiue value identifying the page to ingest.
+   * @param cursor - a unique value identifying the page to ingest.
    * @returns The entities to be ingested, as well as the cursor of
    * the next page after this one.
    */
@@ -137,15 +138,13 @@ export type PluginEnvironment = {
   scheduler: PluginTaskScheduler;
   config: Config;
   reader: UrlReader;
-  permissions: PermissionAuthorizer;
+  permissions: PermissionEvaluator;
 };
 
-/** @public */
 export interface IterationEngine {
   taskFn: TaskFunction;
 }
 
-/** @public */
 export interface IterationEngineOptions {
   logger: Logger;
   connection: EntityProviderConnection;
@@ -158,8 +157,6 @@ export interface IterationEngineOptions {
 
 /**
  * The shape of data inserted into or updated in the `ingestions` table.
- *
- * @public
  */
 export interface IngestionUpsert {
   /**
@@ -218,8 +215,6 @@ export interface IngestionUpsert {
 
 /**
  * This interface is for updating an existing ingestion record.
- *
- * @public
  */
 export interface IngestionRecordUpdate {
   ingestionId: string;
@@ -228,8 +223,6 @@ export interface IngestionRecordUpdate {
 
 /**
  * The expected response from the `ingestion_marks` table.
- *
- * @public
  */
 export interface MarkRecord {
   id: string;
@@ -241,8 +234,6 @@ export interface MarkRecord {
 
 /**
  * The expected response from the `ingestions` table.
- *
- * @public
  */
 export interface IngestionRecord extends IngestionUpsert {
   id: string;
@@ -255,8 +246,6 @@ export interface IngestionRecord extends IngestionUpsert {
 
 /**
  * This interface supplies all the values for adding an ingestion mark.
- *
- * @public
  */
 export interface MarkRecordInsert {
   record: {

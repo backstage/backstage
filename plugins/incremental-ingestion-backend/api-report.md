@@ -8,11 +8,9 @@
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
-import { Duration } from 'luxon';
 import type { DurationObjectUnits } from 'luxon';
-import { Knex } from 'knex';
 import type { Logger } from 'winston';
-import type { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { PluginDatabaseManager } from '@backstage/backend-common';
 import type { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Router } from 'express';
@@ -38,14 +36,13 @@ export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION =
 // @public (undocumented)
 export class IncrementalCatalogBuilder {
   // (undocumented)
-  addIncrementalEntityProvider<T, C>(
-    provider: IncrementalEntityProvider<T, C>,
+  addIncrementalEntityProvider<TCursor, TContext>(
+    provider: IncrementalEntityProvider<TCursor, TContext>,
     options: IncrementalEntityProviderOptions,
   ): void;
   // (undocumented)
   build(): Promise<{
     incrementalAdminRouter: Router;
-    manager: IncrementalIngestionDatabaseManager;
   }>;
   static create(
     env: PluginEnvironment,
@@ -72,170 +69,12 @@ export interface IncrementalEntityProviderOptions {
 }
 
 // @public (undocumented)
-export class IncrementalIngestionDatabaseManager {
-  constructor(options: { client: Knex });
-  cleanupProviders(): Promise<{
-    ingestionsDeleted: void;
-    ingestionMarksDeleted: void;
-    markEntitiesDeleted: void;
-  }>;
-  clearDuplicateIngestions(
-    ingestionId: string,
-    provider: string,
-  ): Promise<void>;
-  clearFinishedIngestions(provider: string): Promise<{
-    deletions: {
-      markEntitiesDeleted: number;
-      marksDeleted: number;
-      ingestionsDeleted: number;
-    };
-  }>;
-  computeRemoved(
-    provider: string,
-    ingestionId: string,
-  ): Promise<
-    {
-      entity: any;
-    }[]
-  >;
-  createMark(options: MarkRecordInsert): Promise<void>;
-  createMarkEntities(markId: string, entities: DeferredEntity[]): Promise<void>;
-  createProviderIngestionRecord(provider: string): Promise<
-    | {
-        ingestionId: string;
-        nextAction: string;
-        attempts: number;
-        nextActionAt: number;
-      }
-    | undefined
-  >;
-  // (undocumented)
-  getAllMarks(ingestionId: string): Promise<MarkRecord[]>;
-  getCurrentIngestionRecord(
-    provider: string,
-  ): Promise<IngestionRecord | undefined>;
-  getLastMark(ingestionId: string): Promise<MarkRecord | undefined>;
-  healthcheck(): Promise<
-    Pick<
-      {
-        id: string;
-        provider_name: string;
-      },
-      'id' | 'provider_name'
-    >[]
-  >;
-  insertIngestionRecord(record: IngestionUpsertIFace): Promise<void>;
-  listProviders(): Promise<string[]>;
-  purgeAndResetProvider(provider: string): Promise<{
-    provider: string;
-    ingestionsDeleted: number;
-    marksDeleted: number;
-    markEntitiesDeleted: number;
-  }>;
-  purgeTable(table: string): Promise<void>;
-  setProviderBackoff(
-    ingestionId: string,
-    attempts: number,
-    error: Error,
-    backoffLength: number,
-  ): Promise<void>;
-  setProviderBursting(ingestionId: string): Promise<void>;
-  setProviderCanceled(ingestionId: string): Promise<void>;
-  setProviderCanceling(ingestionId: string, message?: string): Promise<void>;
-  setProviderComplete(ingestionId: string): Promise<void>;
-  setProviderIngesting(ingestionId: string): Promise<void>;
-  setProviderInterstitial(ingestionId: string): Promise<void>;
-  setProviderResting(ingestionId: string, restLength: Duration): Promise<void>;
-  triggerNextProviderAction(provider: string): Promise<void>;
-  // (undocumented)
-  updateByName(
-    provider: string,
-    update: Partial<IngestionUpsertIFace>,
-  ): Promise<void>;
-  updateIngestionRecordById(options: IngestionRecordUpdate): Promise<void>;
-  updateIngestionRecordByProvider(
-    provider: string,
-    update: Partial<IngestionUpsertIFace>,
-  ): Promise<void>;
-}
-
-// @public
-export interface IngestionRecord extends IngestionUpsertIFace {
-  created_at: string;
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  next_action_at: Date;
-}
-
-// @public
-export interface IngestionRecordUpdate {
-  // (undocumented)
-  ingestionId: string;
-  // (undocumented)
-  update: Partial<IngestionUpsertIFace>;
-}
-
-// @public
-export interface IngestionUpsertIFace {
-  attempts?: number;
-  completion_ticket: string;
-  id?: string;
-  ingestion_completed_at?: Date | string | null;
-  last_error?: string | null;
-  next_action:
-    | 'rest'
-    | 'ingest'
-    | 'backoff'
-    | 'cancel'
-    | 'nothing (done)'
-    | 'nothing (canceled)';
-  next_action_at?: Date;
-  provider_name: string;
-  rest_completed_at?: Date | string | null;
-  status:
-    | 'complete'
-    | 'bursting'
-    | 'resting'
-    | 'canceling'
-    | 'interstitial'
-    | 'backing off';
-}
-
-// @public
-export interface MarkRecord {
-  // (undocumented)
-  created_at: string;
-  // (undocumented)
-  cursor: string;
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  ingestion_id: string;
-  // (undocumented)
-  sequence: number;
-}
-
-// @public
-export interface MarkRecordInsert {
-  // (undocumented)
-  record: {
-    id: string;
-    ingestion_id: string;
-    cursor: unknown;
-    sequence: number;
-  };
-}
-
-// @public (undocumented)
 export type PluginEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
   scheduler: PluginTaskScheduler;
   config: Config;
   reader: UrlReader;
-  permissions: PermissionAuthorizer;
+  permissions: PermissionEvaluator;
 };
-
-// (No @packageDocumentation comment for this package)
 ```

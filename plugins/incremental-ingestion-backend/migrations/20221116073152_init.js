@@ -54,7 +54,7 @@ exports.up = async function up(knex) {
 
     table
       .string('last_error')
-      .comment('records any error that occured in the previous burst attempt');
+      .comment('records any error that occurred in the previous burst attempt');
 
     table
       .integer('attempts')
