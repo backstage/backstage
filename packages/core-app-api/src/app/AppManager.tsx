@@ -156,33 +156,35 @@ function useConfigLoader(
 
   let configReader = ConfigReader.fromConfigs(config.value ?? []);
 
-  const getFullBackendUrl = () => {
+  const resolveRelativeUrl = (relativeUrl: string) => {
     // Backend.baseUrl should always be defined.
     let url;
     try {
-      url = new URL(
-        configReader.getString('backend.baseUrl'),
-        document.location.origin,
-      ).href.replace(/\/$/, '');
+      url = new URL(relativeUrl, document.location.origin).href.replace(
+        /\/$/,
+        '',
+      );
     } catch (err) {
       // Backend.baseUrl was not a valid URL. This should be caught during the build process.
     }
     return url;
   };
 
-  const relativeBackendConfig = {
+  config.value?.push({
     data: {
+      app: {
+        baseUrl: resolveRelativeUrl(
+          configReader.getOptionalString('app.baseUrl') || '/',
+        ),
+      },
       backend: {
-        baseUrl: getFullBackendUrl(),
+        baseUrl: resolveRelativeUrl(
+          configReader.getOptionalString('backend.baseUrl') || '/',
+        ),
       },
     },
-    context: 'relative-override',
-  };
-
-  // Config reader may not have backend.baseUrl set. config.value may be undefined.
-  if (configReader.getOptionalString('backend.baseUrl')?.startsWith('/')) {
-    config.value?.push(relativeBackendConfig);
-  }
+    context: 'relative-resolver',
+  });
 
   configReader = ConfigReader.fromConfigs(config.value ?? []);
 

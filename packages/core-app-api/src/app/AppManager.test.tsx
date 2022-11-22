@@ -571,92 +571,128 @@ describe('Integration Test', () => {
     ]);
   });
 
-  it('should add the fully qualified origin when the backend.baseUrl is relative', async () => {
-    const app = new AppManager({
-      apis: [],
-      defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
-      icons,
-      plugins: [],
-      components,
-      configLoader: async () => [
-        {
-          context: 'test',
-          data: {
-            backend: {
-              baseUrl: '/',
-            },
+  describe('relative url resolvers', () => {
+    const checkConfigValue = async (
+      data: object,
+      configString: string,
+      expectedValue: string,
+    ) => {
+      const app = new AppManager({
+        apis: [],
+        defaultApis: [],
+        themes: [
+          {
+            id: 'light',
+            title: 'Light Theme',
+            variant: 'light',
+            Provider: ({ children }) => <>{children}</>,
+          },
+        ],
+        icons,
+        plugins: [],
+        components,
+        configLoader: async () => [
+          {
+            context: 'test',
+            data,
+          },
+        ],
+      });
+
+      const Provider = app.getProvider();
+      const ConfigDisplay = () => {
+        const apiHolder = useApiHolder();
+        const config = apiHolder.get(configApiRef);
+        return <span>{config?.getString(configString)}</span>;
+      };
+
+      const dom = await renderWithEffects(
+        <Provider>
+          <ConfigDisplay />
+        </Provider>,
+      );
+
+      // Verify that the backend.baseUrl is set correctly by the AppManager.
+      expect(dom.getByText(expectedValue)).toBeTruthy();
+    };
+    [
+      {
+        data: {
+          backend: {
+            baseUrl: '/',
           },
         },
-      ],
-    });
-
-    const Provider = app.getProvider();
-    const ConfigDisplay = () => {
-      const apiHolder = useApiHolder();
-      const config = apiHolder.get(configApiRef);
-      return <span>{config?.getString('backend.baseUrl')}</span>;
-    };
-
-    const dom = await renderWithEffects(
-      <Provider>
-        <ConfigDisplay />
-      </Provider>,
-    );
-
-    // Verify that the backend.baseUrl is set correctly by the AppManager.
-    expect(dom.getByText(document.location.origin)).toBeTruthy();
-  });
-
-  it('should NOT change the origin when the backend.baseUrl is absolute', async () => {
-    const backendUrl = 'http://localhost:7007';
-    const app = new AppManager({
-      apis: [],
-      defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
-      icons,
-      plugins: [],
-      components,
-      configLoader: async () => [
-        {
-          context: 'test',
-          data: {
-            backend: {
-              baseUrl: backendUrl,
-            },
+        paths: ['backend.baseUrl'],
+      },
+      {
+        data: {
+          app: {
+            baseUrl: '/',
           },
         },
-      ],
+        paths: ['app.baseUrl'],
+      },
+      {
+        data: {
+          backend: {
+            baseUrl: '/',
+          },
+          app: {
+            baseUrl: '/',
+          },
+        },
+        paths: ['app.baseUrl', 'backend.baseUrl'],
+      },
+    ].forEach(item => {
+      item.paths.forEach(path => {
+        it('should add the fully qualified origin when the relevant urls are relative', async () => {
+          await checkConfigValue(item.data, path, 'http://localhost');
+        });
+      });
     });
-
-    const Provider = app.getProvider();
-    const ConfigDisplay = () => {
-      const apiHolder = useApiHolder();
-      const config = apiHolder.get(configApiRef);
-      return <span>{config?.getString('backend.baseUrl')}</span>;
-    };
-
-    const dom = await renderWithEffects(
-      <Provider>
-        <ConfigDisplay />
-      </Provider>,
-    );
-
-    // Verify that the backend.baseUrl is set correctly by the AppManager.
-    expect(dom.getByText(backendUrl)).toBeTruthy();
+    [
+      {
+        data: {
+          backend: {
+            baseUrl: 'https://google.com',
+          },
+        },
+        paths: ['backend.baseUrl'],
+      },
+      {
+        data: {
+          app: {
+            baseUrl: 'https://bing.com',
+          },
+        },
+        paths: ['app.baseUrl'],
+      },
+      {
+        data: {
+          backend: {
+            baseUrl: 'https://google.com',
+          },
+          app: {
+            baseUrl: 'https://bing.com',
+          },
+        },
+        paths: ['app.baseUrl', 'backend.baseUrl'],
+      },
+    ].forEach(item => {
+      item.paths.forEach(path => {
+        it('should NOT change the origin when the relevant urls are absolute', async () => {
+          await checkConfigValue(
+            item.data,
+            path,
+            path
+              .split('.')
+              .reduce(
+                (o, i) => o[i] as { [key: string]: object },
+                item.data as { [key: string]: object },
+              ) as unknown as string,
+          );
+        });
+      });
+    });
   });
 });
