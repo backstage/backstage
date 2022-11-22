@@ -1170,7 +1170,7 @@
 
 ### Minor Changes
 
-- bc9d62f4f: Move the sanity checks of the publisher configurations to a dedicated `PublisherBase#getReadiness()` method instead of throwing an error when doing `Publisher.fromConfig(...)`.
+- bc9d62f4f: Move the confidence checks of the publisher configurations to a dedicated `PublisherBase#getReadiness()` method instead of throwing an error when doing `Publisher.fromConfig(...)`.
   You should include the check when your backend to get early feedback about a potential misconfiguration:
 
   ```diff

@@ -133,7 +133,7 @@ describe('AwsS3UrlReader', () => {
     });
   };
 
-  it('creates a dummy reader without the awsS3 field', () => {
+  it('creates a sample reader without the awsS3 field', () => {
     const entries = createReader({
       integrations: {},
     });
