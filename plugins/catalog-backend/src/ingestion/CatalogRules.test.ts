@@ -225,7 +225,12 @@ describe('DefaultCatalogRulesEnforcer', () => {
       const enforcer = DefaultCatalogRulesEnforcer.fromConfig(
         new ConfigReader({
           catalog: {
-            rules: [{ allow: ['Component'], locations: [{ type: 'url', match: 'https://github.com/b/*' }] }],
+            rules: [
+              {
+                allow: ['Component'],
+                locations: [{ type: 'url', match: 'https://github.com/b/*' }],
+              },
+            ],
           },
         }),
       );

@@ -93,21 +93,23 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     const rules = new Array<CatalogRule>();
 
     if (config.has('catalog.rules')) {
-      const globalRules = config.getConfigArray('catalog.rules').map(ruleConfig => {
-        const rule: CatalogRule = {
-          allow: ruleConfig.getStringArray('allow').map(kind => ({ kind })),
-        };
+      const globalRules = config
+        .getConfigArray('catalog.rules')
+        .map(ruleConfig => {
+          const rule: CatalogRule = {
+            allow: ruleConfig.getStringArray('allow').map(kind => ({ kind })),
+          };
 
-        const locConf = ruleConfig.getOptionalConfigArray('locations');
-        if (locConf)
-          rule.locations = locConf.map(locationConfig => ({
-            match: locationConfig.getOptionalString('match'),
-            type: locationConfig.getString('type'),
-            target: locationConfig.getOptionalString('target')
-          }))
+          const locConf = ruleConfig.getOptionalConfigArray('locations');
+          if (locConf)
+            rule.locations = locConf.map(locationConfig => ({
+              match: locationConfig.getOptionalString('match'),
+              type: locationConfig.getString('type'),
+              target: locationConfig.getOptionalString('target'),
+            }));
 
-        return rule;
-      });
+          return rule;
+        });
       rules.push(...globalRules);
     } else {
       rules.push(...DefaultCatalogRulesEnforcer.defaultRules);
@@ -135,7 +137,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     return new DefaultCatalogRulesEnforcer(rules);
   }
 
-  constructor(private readonly rules: CatalogRule[]) { }
+  constructor(private readonly rules: CatalogRule[]) {}
 
   /**
    * Checks whether a specific entity/location combination is allowed
@@ -157,7 +159,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
 
   private matchLocation(
     location: LocationSpec,
-    matchers?: { target?: string; type: string, match?: string }[],
+    matchers?: { target?: string; type: string; match?: string }[],
   ): boolean {
     if (!matchers) {
       return true;

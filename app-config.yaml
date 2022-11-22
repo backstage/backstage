@@ -212,12 +212,12 @@ catalog:
     pullRequestBranchName: backstage-integration
   rules:
     - allow:
-      - Component
-      - API
-      - Resource
-      - System
-      - Domain
-      - Location
+        - Component
+        - API
+        - Resource
+        - System
+        - Domain
+        - Location
 
   processors:
     ldapOrg:
