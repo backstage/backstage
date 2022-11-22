@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: '${{ github.event.pull_request.merge_commit_sha }}'
+          ref: '${{ github.event.pull_request.head.sha }}'
 
       - name: fetch base
         run: git fetch --depth 1 origin ${{ github.event.pull_request.base.sha }}
