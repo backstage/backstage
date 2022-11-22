@@ -187,7 +187,6 @@ export function createBitbucketCloudRepoCreateAction(options: {
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
-      ctx.output('enablePipeline', enablePipeline);
     },
   });
 }
