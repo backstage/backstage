@@ -40,6 +40,8 @@ import {
   IDocNodeContainerParameters,
   TSDocTagSyntaxKind,
   TSDocConfiguration,
+  Standardization,
+  DocBlockTag,
   DocPlainText,
   DocLinkTag,
 } from '@microsoft/tsdoc';
@@ -342,7 +344,12 @@ export async function getTsDocConfig() {
     tagName: '@ignore',
     syntaxKind: TSDocTagSyntaxKind.ModifierTag,
   });
+  tsdocConfigFile.addTagDefinition({
+    tagName: '@config',
+    syntaxKind: TSDocTagSyntaxKind.BlockTag,
+  });
   tsdocConfigFile.setSupportForTag('@ignore', true);
+  tsdocConfigFile.setSupportForTag('@config', true);
   return tsdocConfigFile;
 }
 
@@ -879,9 +886,15 @@ export async function buildDocs({
           context.writer.writeLine();
           break;
         }
+        case 'BlockTag': {
+          const node = docNode as DocBlockTag;
+          if (node.tagName === '@config') {
+            context.writer.writeLine('## Related config ');
+          }
+          break;
+        }
         case DocCodeSpanLink.kind: {
           const node = docNode as DocLinkTag;
-
           if (node.codeDestination) {
             // TODO @sarabadu understand if we need `codeDestination` at all on this custom DocCodeSpanLink
             super.writeLinkTagWithCodeDestination(node, context);
@@ -938,8 +951,19 @@ export async function buildDocs({
         DocFrontMatter.kind,
         DocCodeSpanLink.kind,
       ]);
-      );
 
+      const def = {
+        tagName: '@config',
+        syntaxKind: TSDocTagSyntaxKind.BlockTag,
+        tagNameWithUpperCase: '@CONFIG',
+        standardization: Standardization.Extended,
+        allowMultiple: false,
+      };
+      (this._tsdocConfiguration as TSDocConfiguration).addTagDefinition(def);
+      (this._tsdocConfiguration as TSDocConfiguration).setSupportForTag(
+        def,
+        true,
+      );
       this._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
     }
 
