@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './fields';
-export type { RepoUrlPickerUiOptions } from './fields';
-export { TemplateTypePicker } from './TemplateTypePicker';
-export * from './secrets';
-export { TaskPage } from './TaskPage';
-export type { RouterProps } from './Router';
-export type { ReviewStepProps } from './types';
+
+import { UiSchema } from '@rjsf/utils';
+import { JsonObject } from '@backstage/types';
+
+/**
+ * The props for the Last Step in scaffolder template form.
+ * Which represents the summary of the input provided by the end user.
+ *
+ * @public
+ */
+export type ReviewStepProps = {
+  disableButtons: boolean;
+  formData: JsonObject;
+  handleBack: () => void;
+  handleReset: () => void;
+  handleCreate: () => void;
+  steps: {
+    uiSchema: UiSchema;
+    mergedSchema: JsonObject;
+    schema: JsonObject;
+  }[];
+};

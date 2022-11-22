@@ -120,7 +120,7 @@ export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
 
 /**
  * The field extension which provides the ability to select a RepositoryUrl.
- * Currently this is an encoded URL that looks something like the following `github.com?repo=myRepoName&owner=backstage`.
+ * Currently, this is an encoded URL that looks something like the following `github.com?repo=myRepoName&owner=backstage`.
  *
  * @public
  */
