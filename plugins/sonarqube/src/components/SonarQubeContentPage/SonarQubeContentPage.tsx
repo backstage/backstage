@@ -22,11 +22,11 @@ import {
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
+import { SonarQubeCard } from '../SonarQubeCard';
 import {
   isSonarQubeAvailable,
   SONARQUBE_PROJECT_KEY_ANNOTATION,
-} from '../useProjectKey';
-import { SonarQubeCard } from '../SonarQubeCard';
+} from '@backstage/plugin-sonarqube-react';
 
 /** @public */
 export type SonarQubeContentPageProps = {

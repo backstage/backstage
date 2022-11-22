@@ -19,9 +19,13 @@ import { createDevApp, EntityGridItem } from '@backstage/dev-utils';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { EntitySonarQubeCard, sonarQubePlugin } from '../src';
-import { FindingSummary, SonarQubeApi, sonarQubeApiRef } from '../src/api';
-import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '../src/components/useProjectKey';
 import { Content, Header, Page } from '@backstage/core-components';
+import {
+  FindingSummary,
+  SONARQUBE_PROJECT_KEY_ANNOTATION,
+  SonarQubeApi,
+  sonarQubeApiRef,
+} from '@backstage/plugin-sonarqube-react';
 
 const entity = (name?: string) =>
   ({

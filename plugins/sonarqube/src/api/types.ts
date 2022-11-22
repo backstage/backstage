@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { MetricKey } from '@backstage/plugin-sonarqube-react';
+
 export interface InstanceUrlWrapper {
   instanceUrl: string;
 }
@@ -23,35 +25,7 @@ export interface FindingsWrapper {
   measures: Measure[];
 }
 
-export type MetricKey =
-  // alert status
-  | 'alert_status'
-
-  // bugs and rating (-> reliability)
-  | 'bugs'
-  | 'reliability_rating'
-
-  // vulnerabilities and rating (-> security)
-  | 'vulnerabilities'
-  | 'security_rating'
-
-  // code smells and rating (-> maintainability)
-  | 'code_smells'
-  | 'sqale_rating'
-
-  // security hotspots
-  | 'security_hotspots_reviewed'
-  | 'security_review_rating'
-
-  // coverage
-  | 'coverage'
-
-  // duplicated lines
-  | 'duplicated_lines_density';
-
 export interface Measure {
   metric: MetricKey;
   value: string;
 }
-
-export type SonarUrlProcessorFunc = (identifier: string) => string;

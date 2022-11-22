@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { sonarQubeApiRef, SonarQubeClient } from './api';
+import { SonarQubeClient } from './api';
 import {
   createApiFactory,
   createComponentExtension,
@@ -22,6 +22,7 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { sonarQubeApiRef } from '@backstage/plugin-sonarqube-react';
 
 /** @public */
 export const sonarQubePlugin = createPlugin({
