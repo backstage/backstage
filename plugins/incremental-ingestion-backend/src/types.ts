@@ -89,16 +89,17 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
  *
  * @public
  */
-export type EntityIteratorResult<T> = 
-| {
-  done: false;
-  entities: DeferredEntity[];
-  cursor: T;
-} | {
-  done: true;
-  entities?: DeferredEntity[];
-  cursor?: T;
-}
+export type EntityIteratorResult<T> =
+  | {
+      done: false;
+      entities: DeferredEntity[];
+      cursor: T;
+    }
+  | {
+      done: true;
+      entities?: DeferredEntity[];
+      cursor?: T;
+    };
 
 /** @public */
 export interface IncrementalEntityProviderOptions {
@@ -217,7 +218,7 @@ export interface IngestionUpsert {
 
 /**
  * This interface is for updating an existing ingestion record.
- * 
+ *
  * @public
  */
 export interface IngestionRecordUpdate {
@@ -227,7 +228,7 @@ export interface IngestionRecordUpdate {
 
 /**
  * The expected response from the `ingestion_marks` table.
- * 
+ *
  * @public
  */
 export interface MarkRecord {
@@ -240,7 +241,7 @@ export interface MarkRecord {
 
 /**
  * The expected response from the `ingestions` table.
- * 
+ *
  * @public
  */
 export interface IngestionRecord extends IngestionUpsert {
@@ -254,7 +255,7 @@ export interface IngestionRecord extends IngestionUpsert {
 
 /**
  * This interface supplies all the values for adding an ingestion mark.
- * 
+ *
  * @public
  */
 export interface MarkRecordInsert {

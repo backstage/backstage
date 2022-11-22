@@ -30,8 +30,12 @@ class Deferred<T> implements Promise<T> {
   #resolve?: (value: T) => void;
   #reject?: (error: Error) => void;
 
-  get resolve() { return this.#resolve!; }
-  get reject() { return this.#reject!; }
+  get resolve() {
+    return this.#resolve!;
+  }
+  get reject() {
+    return this.#reject!;
+  }
 
   then: Promise<T>['then'];
   catch: Promise<T>['catch'];

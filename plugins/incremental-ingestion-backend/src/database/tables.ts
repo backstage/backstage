@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export const DB_MIGRATIONS_TABLE = 'plugin_incremental_ingestion_backend__knex_migrations';
+export const DB_MIGRATIONS_TABLE =
+  'plugin_incremental_ingestion_backend__knex_migrations';

@@ -291,12 +291,14 @@ export class IncrementalIngestionEngine implements IterationEngine {
         doComputeRemoved = true;
       }
     }
-    
-    if(doComputeRemoved) {
-      removed.push(...await this.manager.computeRemoved(
-        this.options.provider.getProviderName(),
-        id,
-      ));
+
+    if (doComputeRemoved) {
+      removed.push(
+        ...(await this.manager.computeRemoved(
+          this.options.provider.getProviderName(),
+          id,
+        )),
+      );
     }
 
     await this.options.connection.applyMutation({

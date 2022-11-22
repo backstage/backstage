@@ -79,7 +79,9 @@ exports.up = async function up(knex) {
     table
       .string('completion_ticket')
       .notNullable()
-      .comment('indicates whether the ticket is still open or stamped complete')
+      .comment(
+        'indicates whether the ticket is still open or stamped complete',
+      );
   });
 
   await knex.schema.alterTable('ingestions', t => {
@@ -122,10 +124,7 @@ exports.up = async function up(knex) {
       .defaultTo(0)
       .comment('what is the order of this mark');
 
-    table
-      .timestamp('created_at')
-      .notNullable()
-      .defaultTo(knex.fn.now());
+    table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
   });
 
   await knex.schema.alterTable('ingestion_marks', t => {
