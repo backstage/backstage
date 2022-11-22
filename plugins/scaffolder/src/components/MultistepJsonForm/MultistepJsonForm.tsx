@@ -29,7 +29,8 @@ import {
   useRouteRefParams,
   useApi,
 } from '@backstage/core-plugin-api';
-import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
+import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
+import { UiSchema } from '@rjsf/utils';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { ComponentType, useState } from 'react';
 import { transformSchemaToProps } from './schema';
@@ -75,11 +76,7 @@ export function getSchemasFromSteps(steps: Step[]): {
   return steps.map(({ schema }) => ({
     mergedSchema: schema,
     ...extractSchemaFromStep(schema),
-  })) as unknown as {
-    uiSchema: UiSchema;
-    mergedSchema: JsonObject;
-    schema: JsonObject;
-  }[];
+  }));
 }
 
 /**
