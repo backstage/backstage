@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs-module-addons-contrib': minor
 ---
 
-add TechDocsRedirect add-on
+Add TechDocsRedirect add-on: import and add `<TechDocsRedirect />` inside the `<TechDocsAddons>` tag of App.tsx and TechDocs may handle redirections set in `techdocs_metadata.json`
