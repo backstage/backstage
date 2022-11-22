@@ -139,11 +139,8 @@ export const Router = (props: RouterProps) => {
             templateFilter={templateFilter}
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
-<<<<<<< HEAD
             headerOptions={props.headerOptions}
-=======
             customFilters={props.customFilters}
->>>>>>> 0f96ac883d (Customize scaffolder page to allow usage of Entity generic picker)
           />
         }
       />
