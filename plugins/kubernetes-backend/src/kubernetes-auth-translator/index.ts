@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage backend plugin that integrates towards Kubernetes
- *
- * @packageDocumentation
- */
-
-export * from './kubernetes-auth-translator';
-export * from './service';
+export * from './AwsIamKubernetesAuthTranslator';
+export * from './AzureIdentityKubernetesAuthTranslator';
+export * from './GoogleKubernetesAuthTranslator';
+export * from './GoogleServiceAccountAuthProvider';
+export * from './KubernetesAuthTranslatorGenerator';
+export * from './NoopKubernetesAuthTranslator';
+export * from './OidcKubernetesAuthTranslator';
 export * from './types';
