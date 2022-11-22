@@ -126,6 +126,7 @@ github
 Gitiles
 gitlab
 GitLab
+globals
 Gource
 Grafana
 graphql
