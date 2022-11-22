@@ -21,7 +21,8 @@ import userEvent from '@testing-library/user-event';
 import { PeriodSelect, getDefaultOptions } from './PeriodSelect';
 import { getDefaultPageFilters } from '../../utils/filters';
 import { MockBillingDateProvider } from '../../testUtils';
-import { Group, Duration } from '../../types';
+import { Duration } from '../../types';
+import { Group } from '@backstage/plugin-cost-insights-common';
 
 const DefaultPageFilters = getDefaultPageFilters([{ id: 'tools' }] as Group[]);
 const lastCompleteBillingDate = '2020-05-01';
