@@ -85,7 +85,7 @@ export const createIncrementalProviderRouter = async (
   });
 
   // Trigger the provider's next action
-  router.put(PROVIDER_BASE_PATH, async (req, res) => {
+  router.post(`${PROVIDER_BASE_PATH}/trigger`, async (req, res) => {
     const { provider } = req.params;
     const record = await manager.getCurrentIngestionRecord(provider);
     if (record) {
@@ -111,18 +111,19 @@ export const createIncrementalProviderRouter = async (
     }
   });
 
-  // Start a brand-new ingestion cycle for the provider
-  router.post(PROVIDER_BASE_PATH, async (req, res) => {
+  // Start a brand-new ingestion cycle for the provider.
+  // (Cancel's the current run if active, or marks it complete if resting)
+  router.post(`${PROVIDER_BASE_PATH}/start`, async (req, res) => {
     const { provider } = req.params;
 
     const record = await manager.getCurrentIngestionRecord(provider);
     if (record) {
-      await manager.updateByName(provider, {
-        next_action: 'nothing (done)',
-        ingestion_completed_at: new Date(),
-        rest_completed_at: new Date(),
-        status: 'complete',
-      });
+      const ingestionId = record.id;
+      if (record.status === 'resting') {
+        await manager.setProviderComplete(ingestionId);
+      } else {
+        await manager.setProviderCanceling(ingestionId);
+      }
       res.json({
         success: true,
         message: `${provider}: Next cycle triggered.`,
