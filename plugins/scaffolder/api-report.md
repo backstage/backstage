@@ -35,8 +35,7 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
-import { UiSchema } from '@rjsf/core';
-import { UiSchema as UiSchema_2 } from '@rjsf/utils';
+import { UiSchema } from '@rjsf/utils';
 import { z } from 'zod';
 
 // @alpha
@@ -234,7 +233,7 @@ export interface NextFieldExtensionComponentProps<
   TUiOptions = {},
 > extends PropsWithChildren<FieldProps_2<TFieldReturnValue>> {
   // (undocumented)
-  uiSchema?: UiSchema_2<TFieldReturnValue> & {
+  uiSchema?: UiSchema<TFieldReturnValue> & {
     'ui:options'?: TUiOptions & UIOptionsType;
   };
 }
