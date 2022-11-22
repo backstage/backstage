@@ -31,6 +31,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
+import pluralize from 'pluralize';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -132,7 +133,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
     >
       {Object.keys(options).map(kind => (
         <MenuItem value={kind} key={kind}>
-          {`${options[kind]}s`}
+          {`${pluralize(options[kind])}`}
         </MenuItem>
       ))}
     </Select>

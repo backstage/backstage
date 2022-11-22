@@ -135,13 +135,27 @@ async function main(prNumberStr) {
   for (const logSha of logLines.split(/\r?\n/)) {
     await run('git', 'cherry-pick', '-n', logSha);
   }
-  await run('git', 'commit', '--signoff', '-m', `Patch from PR #${prNumber}`);
+  await run(
+    'git',
+    'commit',
+    '--signoff',
+    '--no-verify',
+    '-m',
+    `Patch from PR #${prNumber}`,
+  );
 
   console.log('Running "yarn release" ...');
   await run('yarn', 'release');
 
   await run('git', 'add', '.');
-  await run('git', 'commit', '--signoff', '-m', 'Generate Release');
+  await run(
+    'git',
+    'commit',
+    '--signoff',
+    '--no-verify',
+    '-m',
+    'Generate Release',
+  );
 
   await run('git', 'push', 'origin', '-u', branchName);
 

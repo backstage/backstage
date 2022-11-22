@@ -41,7 +41,6 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
     config: Config;
     ingresses?: { [topic: string]: Omit<HttpPostIngressOptions, 'topic'> };
     logger: Logger;
-    router: express.Router;
   }): HttpPostIngressEventPublisher {
     const topics =
       env.config.getOptionalStringArray('events.http.topics') ?? [];
@@ -55,15 +54,18 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
       }
     });
 
-    return new HttpPostIngressEventPublisher(env.logger, env.router, ingresses);
+    return new HttpPostIngressEventPublisher(env.logger, ingresses);
   }
 
   private constructor(
-    private logger: Logger,
-    router: express.Router,
-    ingresses: { [topic: string]: Omit<HttpPostIngressOptions, 'topic'> },
-  ) {
-    router.use(this.createRouter(ingresses));
+    private readonly logger: Logger,
+    private readonly ingresses: {
+      [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
+    },
+  ) {}
+
+  bind(router: express.Router): void {
+    router.use('/http', this.createRouter(this.ingresses));
   }
 
   async setEventBroker(eventBroker: EventBroker): Promise<void> {
@@ -92,8 +94,12 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
     const path = `/${topic}`;
 
     router.post(path, async (request, response) => {
+      const requestDetails = {
+        body: request.body,
+        headers: request.headers,
+      };
       const context = new RequestValidationContextImpl();
-      await validator?.(request, context);
+      await validator?.(requestDetails, context);
       if (context.wasRejected()) {
         response
           .status(context.rejectionDetails!.status)

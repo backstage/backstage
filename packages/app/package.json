@@ -80,7 +80,7 @@
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-use": "^17.2.4",
-    "zen-observable": "^0.8.15"
+    "zen-observable": "^0.9.0"
   },
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",

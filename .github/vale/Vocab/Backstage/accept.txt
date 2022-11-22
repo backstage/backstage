@@ -241,6 +241,7 @@ pageview
 parallelization
 parseable
 Patrik
+pattison
 Peloton
 performant
 Performant
@@ -316,6 +317,7 @@ Spotifiers
 spotify
 Spotify
 sqlite
+sqs
 squidfunk
 src
 statefulsets
@@ -406,3 +408,4 @@ zod
 Zolotusky
 zoomable
 zsh
+Lainfiesta

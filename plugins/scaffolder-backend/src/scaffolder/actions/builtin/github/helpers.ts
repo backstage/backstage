@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Config } from '@backstage/config';
 import { assertError, InputError } from '@backstage/errors';
 import {
@@ -124,6 +125,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   topics: string[] | undefined,
   logger: Logger,
 ) {
+  // eslint-disable-next-line testing-library/no-await-sync-query
   const user = await client.rest.users.getByUsername({
     username: owner,
   });

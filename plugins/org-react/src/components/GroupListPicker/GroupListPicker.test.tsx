@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ApiProvider } from '@backstage/core-app-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -74,13 +75,13 @@ describe('<GroupListPicker />', () => {
       </ApiProvider>,
     );
 
-    fireEvent.click(getByTestId('group-list-picker-button'));
+    await userEvent.click(getByTestId('group-list-picker-button'));
     const input = getByTestId('group-list-picker-input').querySelector('input');
-    fireEvent.change(input as HTMLElement, { target: { value: 'GR' } });
+    await userEvent.type(input as HTMLElement, 'GR');
 
     await waitFor(async () => {
       expect(getByText('Group A')).toBeInTheDocument();
-      fireEvent.click(getByText('Group A'));
+      await userEvent.click(getByText('Group A'));
       expect(getByText('Group A')).toBeInTheDocument();
     });
   });

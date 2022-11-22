@@ -11,6 +11,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import type { ErrorTransformer } from '@rjsf/utils';
 import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
@@ -35,6 +36,7 @@ import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
+import { z } from 'zod';
 
 // @alpha
 export function createNextScaffolderFieldExtension<
@@ -58,6 +60,12 @@ export function createScaffolderLayout<TInputProps = unknown>(
 ): Extension<LayoutComponent<TInputProps>>;
 
 // @public
+export type CustomFieldExtensionSchema = {
+  returnValue: JSONSchema7;
+  uiOptions?: JSONSchema7;
+};
+
+// @public
 export type CustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
   field: FieldValidation,
@@ -75,36 +83,52 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent<
 // @public
 export const EntityPickerFieldExtension: FieldExtensionComponent<
   string,
-  EntityPickerUiOptions
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const EntityPickerFieldSchema: FieldSchema<
+  string,
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
 >;
 
 // @public
-export interface EntityPickerUiOptions {
-  // (undocumented)
-  allowArbitraryValues?: boolean;
-  // (undocumented)
-  allowedKinds?: string[];
-  // (undocumented)
-  defaultKind?: string;
-  // (undocumented)
-  defaultNamespace?: string | false;
-}
+export type EntityPickerUiOptions =
+  typeof EntityPickerFieldSchema.uiOptionsType;
 
 // @public
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
   string[],
-  EntityTagsPickerUiOptions
+  {
+    showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const EntityTagsPickerFieldSchema: FieldSchema<
+  string[],
+  {
+    showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
+  }
 >;
 
 // @public
-export interface EntityTagsPickerUiOptions {
-  // (undocumented)
-  helperText?: string;
-  // (undocumented)
-  kinds?: string[];
-  // (undocumented)
-  showCounts?: boolean;
-}
+export type EntityTagsPickerUiOptions =
+  typeof EntityTagsPickerFieldSchema.uiOptionsType;
 
 // @public
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
@@ -130,7 +154,18 @@ export type FieldExtensionOptions<
     props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
   ) => JSX.Element | null;
   validation?: CustomFieldValidator<TFieldReturnValue>;
+  schema?: CustomFieldExtensionSchema;
 };
+
+// @public
+export interface FieldSchema<TReturn, TUiOptions> {
+  // (undocumented)
+  readonly schema: CustomFieldExtensionSchema;
+  // (undocumented)
+  readonly type: FieldExtensionComponentProps<TReturn, TUiOptions>;
+  // (undocumented)
+  readonly uiOptionsType: TUiOptions;
+}
 
 // @public
 export type LayoutComponent<_TInputProps> = () => null;
@@ -169,6 +204,20 @@ export type LogEvent = {
   taskId: string;
 };
 
+// @public
+export function makeFieldSchemaFromZod<
+  TReturnSchema extends z.ZodType,
+  TUiOptionsSchema extends z.ZodType = z.ZodType<any, any, {}>,
+>(
+  returnSchema: TReturnSchema,
+  uiOptionsSchema?: TUiOptionsSchema,
+): FieldSchema<
+  TReturnSchema extends z.ZodType<any, any, infer IReturn> ? IReturn : never,
+  TUiOptionsSchema extends z.ZodType<any, any, infer IUiOptions>
+    ? IUiOptions
+    : never
+>;
+
 // @alpha
 export type NextCustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
@@ -199,6 +248,7 @@ export type NextFieldExtensionOptions<
     props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
   ) => JSX.Element | null;
   validation?: NextCustomFieldValidator<TFieldReturnValue>;
+  schema?: CustomFieldExtensionSchema;
 };
 
 // @alpha (undocumented)
@@ -213,6 +263,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React_2.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
+  transformErrors?: ErrorTransformer;
 };
 
 // @alpha
@@ -228,36 +279,51 @@ export const nextSelectedTemplateRouteRef: SubRouteRef<
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
   string,
-  OwnedEntityPickerUiOptions
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const OwnedEntityPickerFieldSchema: FieldSchema<
+  string,
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
 >;
 
 // @public
-export interface OwnedEntityPickerUiOptions {
-  // (undocumented)
-  allowArbitraryValues?: boolean;
-  // (undocumented)
-  allowedKinds?: string[];
-  // (undocumented)
-  defaultKind?: string;
-  // (undocumented)
-  defaultNamespace?: string | false;
-}
+export type OwnedEntityPickerUiOptions =
+  typeof OwnedEntityPickerFieldSchema.uiOptionsType;
 
 // @public
 export const OwnerPickerFieldExtension: FieldExtensionComponent<
   string,
-  OwnerPickerUiOptions
+  {
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const OwnerPickerFieldSchema: FieldSchema<
+  string,
+  {
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
 >;
 
 // @public
-export interface OwnerPickerUiOptions {
-  // (undocumented)
-  allowArbitraryValues?: boolean;
-  // (undocumented)
-  allowedKinds?: string[];
-  // (undocumented)
-  defaultNamespace?: string | false;
-}
+export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
 
 // @public
 export const repoPickerValidation: (
@@ -271,31 +337,56 @@ export const repoPickerValidation: (
 // @public
 export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
   string,
-  RepoUrlPickerUiOptions
+  {
+    allowedOwners?: string[] | undefined;
+    allowedOrganizations?: string[] | undefined;
+    allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
+    requestUserCredentials?:
+      | {
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+              }
+            | undefined;
+          secretsKey: string;
+        }
+      | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const RepoUrlPickerFieldSchema: FieldSchema<
+  string,
+  {
+    allowedOwners?: string[] | undefined;
+    allowedOrganizations?: string[] | undefined;
+    allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
+    requestUserCredentials?:
+      | {
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+              }
+            | undefined;
+          secretsKey: string;
+        }
+      | undefined;
+  }
 >;
 
 // @public
-export interface RepoUrlPickerUiOptions {
-  // (undocumented)
-  allowedHosts?: string[];
-  // (undocumented)
-  allowedOrganizations?: string[];
-  // (undocumented)
-  allowedOwners?: string[];
-  // (undocumented)
-  allowedRepos?: string[];
-  // (undocumented)
-  requestUserCredentials?: {
-    secretsKey: string;
-    additionalScopes?: {
-      gerrit?: string[];
-      github?: string[];
-      gitlab?: string[];
-      bitbucket?: string[];
-      azure?: string[];
-    };
-  };
-}
+export type RepoUrlPickerUiOptions =
+  typeof RepoUrlPickerFieldSchema.uiOptionsType;
 
 // @public (undocumented)
 export const rootRouteRef: RouteRef<undefined>;

@@ -34,7 +34,7 @@
     "react-hook-form": "^7.12.2",
     "react-use": "^17.2.4",
     "uuid": "^8.3.2",
-    "zen-observable": "^0.8.15"
+    "zen-observable": "^0.9.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0",
