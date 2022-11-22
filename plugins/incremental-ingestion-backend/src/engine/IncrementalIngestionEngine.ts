@@ -279,17 +279,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
 
     const removed: DeferredEntity[] = [];
 
-    let doComputeRemoved = false;
-
-    if (!done) {
-      doComputeRemoved = true;
-    } else {
-      if (entities && entities.length > 0) {
-        doComputeRemoved = true;
-      }
-    }
-
-    if (doComputeRemoved) {
+    if (done) {
       removed.push(
         ...(await this.manager.computeRemoved(
           this.options.provider.getProviderName(),
