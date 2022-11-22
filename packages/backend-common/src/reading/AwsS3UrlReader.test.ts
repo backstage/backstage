@@ -31,7 +31,6 @@ import AWSMock from 'aws-sdk-mock';
 import aws from 'aws-sdk';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
-import getRawBody from 'raw-body';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -247,15 +246,16 @@ describe('AwsS3UrlReader', () => {
     });
 
     it('returns contents of an object in a bucket', async () => {
-      const response = await reader.read(
+      const { buffer } = await reader.readUrl(
         'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
       );
+      const response = await buffer();
       expect(response.toString().trim()).toBe('site_name: Test');
     });
 
     it('rejects unknown targets', async () => {
       await expect(
-        reader.read(
+        reader.readUrl(
           'https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml',
         ),
       ).rejects.toThrow(
@@ -294,21 +294,21 @@ describe('AwsS3UrlReader', () => {
     });
 
     it('returns contents of an object in a bucket via buffer', async () => {
-      const response = await reader.readUrl!(
+      const { buffer, etag } = await reader.readUrl(
         'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
       );
-      expect(response.etag).toBe('123abc');
-      const buffer = await response.buffer();
-      expect(buffer.toString().trim()).toBe('site_name: Test');
+      expect(etag).toBe('123abc');
+      const response = await buffer();
+      expect(response.toString().trim()).toBe('site_name: Test');
     });
 
     it('returns contents of an object in a bucket via stream', async () => {
-      const response = await reader.readUrl!(
+      const { buffer, etag } = await reader.readUrl(
         'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
       );
-      expect(response.etag).toBe('123abc');
-      const fromStream = await getRawBody(response.stream!());
-      expect(fromStream.toString().trim()).toBe('site_name: Test');
+      expect(etag).toBe('123abc');
+      const response = await buffer();
+      expect(response.toString().trim()).toBe('site_name: Test');
     });
 
     it('rejects unknown targets', async () => {
@@ -354,12 +354,12 @@ describe('AwsS3UrlReader', () => {
     });
 
     it('returns contents of an object in a bucket via buffer', async () => {
-      const response = await reader.readUrl!(
+      const { buffer, etag } = await reader.readUrl(
         'http://localhost:4566/test-bucket/awsS3-mock-object.yaml',
       );
-      expect(response.etag).toBe('123abc');
-      const buffer = await response.buffer();
-      expect(buffer.toString().trim()).toBe('site_name: Test');
+      expect(etag).toBe('123abc');
+      const response = await buffer();
+      expect(response.toString().trim()).toBe('site_name: Test');
     });
   });
 

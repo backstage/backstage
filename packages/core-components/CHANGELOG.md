@@ -1,5 +1,22 @@
 # @backstage/core-components
 
+## 0.12.1-next.0
+
+### Patch Changes
+
+- ea4a5be8f3: Create a variable for minimum height and add a prop named 'fit' for determining if the graph height should grow or be contained.
+- 64a579a998: Add items prop to SupportButton. This prop can be used to override the items that would otherwise be grabbed from the config.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- 17a8e32f39: Updated dependency `rc-progress` to `3.4.1`.
+- dfc8edf9c5: Internal refactor to avoid usage of deprecated symbols.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.2
+
 ## 0.12.0
 
 ### Minor Changes

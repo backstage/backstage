@@ -1,5 +1,14 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.33-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/config@1.0.5-next.0
+
 ## 0.2.32
 
 ### Patch Changes

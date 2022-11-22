@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-test-utils",
   "description": "Test helpers library for Backstage backends",
-  "version": "0.1.30",
+  "version": "0.1.31-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -41,7 +41,7 @@
     "@backstage/config": "workspace:^",
     "better-sqlite3": "^7.5.0",
     "knex": "^2.0.0",
-    "msw": "^0.48.0",
+    "msw": "^0.49.0",
     "mysql2": "^2.2.5",
     "pg": "^8.3.0",
     "testcontainers": "^8.1.2",

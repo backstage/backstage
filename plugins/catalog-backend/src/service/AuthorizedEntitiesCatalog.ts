@@ -26,6 +26,8 @@ import {
 } from '@backstage/plugin-permission-common';
 import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import {
+  EntitiesBatchRequest,
+  EntitiesBatchResponse,
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
@@ -71,6 +73,37 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     return this.entitiesCatalog.entities(request);
+  }
+
+  async entitiesBatch(
+    request: EntitiesBatchRequest,
+  ): Promise<EntitiesBatchResponse> {
+    const authorizeDecision = (
+      await this.permissionApi.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { token: request?.authorizationToken },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      return {
+        items: new Array(request.entityRefs.length).fill(null),
+      };
+    }
+
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.transformConditions(
+        authorizeDecision.conditions,
+      );
+      return this.entitiesCatalog.entitiesBatch({
+        ...request,
+        filter: request?.filter
+          ? { allOf: [permissionFilter, request.filter] }
+          : permissionFilter,
+      });
+    }
+
+    return this.entitiesCatalog.entitiesBatch(request);
   }
 
   async removeEntityByUid(

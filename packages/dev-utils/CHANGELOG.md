@@ -1,5 +1,21 @@
 # @backstage/dev-utils
 
+## 1.0.9-next.0
+
+### Patch Changes
+
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-app-api@1.2.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/integration-react@1.1.7-next.0
+  - @backstage/test-utils@1.2.3-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/app-defaults@1.0.9-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/theme@0.2.16
+
 ## 1.0.8
 
 ### Patch Changes

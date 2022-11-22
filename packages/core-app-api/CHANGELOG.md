@@ -1,5 +1,17 @@
 # @backstage/core-app-api
 
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/version-bridge@1.0.2
+
 ## 1.2.0
 
 ### Minor Changes

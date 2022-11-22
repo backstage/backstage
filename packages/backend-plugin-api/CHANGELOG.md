@@ -1,5 +1,16 @@
 # @backstage/backend-plugin-api
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- d6dbf1792b: Added initial support for registering shutdown hooks via `lifecycleServiceRef`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/plugin-permission-common@0.7.2-next.0
+  - @backstage/backend-tasks@0.3.8-next.0
+  - @backstage/config@1.0.5-next.0
+
 ## 0.1.4
 
 ### Patch Changes

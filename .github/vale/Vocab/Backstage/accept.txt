@@ -126,6 +126,7 @@ github
 Gitiles
 gitlab
 GitLab
+globals
 Gource
 Grafana
 graphql
@@ -241,6 +242,7 @@ pageview
 parallelization
 parseable
 Patrik
+pattison
 Peloton
 performant
 Performant
@@ -407,3 +409,5 @@ zod
 Zolotusky
 zoomable
 zsh
+Lainfiesta
+allowlisted

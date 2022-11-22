@@ -17,13 +17,13 @@
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import CloudIcon from '@material-ui/icons/Cloud';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { IconLink } from './IconLink';
 
 describe('IconLink', () => {
   it('should render an icon link', () => {
-    const rendered = render(
+    render(
       <ThemeProvider theme={lightTheme}>
         <IconLink
           href="https://example.com"
@@ -33,6 +33,6 @@ describe('IconLink', () => {
       </ThemeProvider>,
     );
 
-    expect(rendered.queryByText('I am Link')).toBeInTheDocument();
+    expect(screen.queryByText('I am Link')).toBeInTheDocument();
   });
 });
