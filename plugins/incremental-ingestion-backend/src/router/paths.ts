@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export const PROVIDER_CLEANUP = '/providers/cleanup';
-export const PROVIDER_HEALTH = '/providers/health';
-export const PROVIDER_BASE_PATH = '/providers/:provider';
+export const PROVIDER_CLEANUP = '/incremental/cleanup';
+export const PROVIDER_HEALTH = '/incremental/health';
+export const PROVIDER_BASE_PATH = '/incremental/providers/:provider';
