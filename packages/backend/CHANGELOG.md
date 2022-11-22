@@ -1,5 +1,51 @@
 # example-backend
 
+## 0.2.78-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.8.1-next.0
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/plugin-catalog-backend@1.6.0-next.0
+  - @backstage/plugin-events-backend@0.2.0-next.0
+  - @backstage/plugin-search-backend-node@1.0.5-next.0
+  - @backstage/plugin-events-node@0.2.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/plugin-app-backend@0.3.39-next.0
+  - @backstage/plugin-auth-backend@0.17.2-next.0
+  - @backstage/plugin-auth-node@0.2.8-next.0
+  - @backstage/plugin-azure-devops-backend@0.3.18-next.0
+  - @backstage/plugin-azure-sites-backend@0.1.1-next.0
+  - @backstage/plugin-code-coverage-backend@0.2.5-next.0
+  - @backstage/plugin-graphql-backend@0.1.29-next.0
+  - @backstage/plugin-jenkins-backend@0.1.29-next.0
+  - @backstage/plugin-permission-backend@0.5.14-next.0
+  - @backstage/plugin-permission-common@0.7.2-next.0
+  - @backstage/plugin-permission-node@0.7.2-next.0
+  - @backstage/plugin-playlist-backend@0.2.2-next.0
+  - @backstage/plugin-proxy-backend@0.2.33-next.0
+  - @backstage/plugin-rollbar-backend@0.1.36-next.0
+  - @backstage/plugin-techdocs-backend@1.4.2-next.0
+  - @backstage/plugin-todo-backend@0.1.36-next.0
+  - @backstage/plugin-kubernetes-backend@0.8.1-next.0
+  - example-app@0.2.78-next.0
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.7-next.0
+  - @backstage/plugin-badges-backend@0.1.33-next.0
+  - @backstage/plugin-catalog-node@1.2.2-next.0
+  - @backstage/plugin-tech-insights-backend@0.5.5-next.0
+  - @backstage/backend-tasks@0.3.8-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/plugin-kafka-backend@0.2.32-next.0
+  - @backstage/plugin-search-backend@1.1.2-next.0
+  - @backstage/plugin-search-backend-module-elasticsearch@1.0.5-next.0
+  - @backstage/plugin-search-backend-module-pg@0.4.3-next.0
+  - @backstage/plugin-search-common@1.1.2-next.0
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.23-next.0
+  - @backstage/plugin-tech-insights-node@0.3.7-next.0
+
 ## 0.2.77
 
 ### Patch Changes

@@ -18,7 +18,7 @@ jobs:
       # also contains an "--config=.github/vale/config.ini" option
       - name: generate vale args
         id: generate
-        run: echo "::set-output name=args::$(node scripts/check-docs-quality.js --ci-args)"
+        run: echo "args=$(node scripts/check-docs-quality.js --ci-args)" >> $GITHUB_OUTPUT
 
       - name: documentation quality check
         uses: errata-ai/vale-action@v2.0.1

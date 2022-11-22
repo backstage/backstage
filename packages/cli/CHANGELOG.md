@@ -1,5 +1,20 @@
 # @backstage/cli
 
+## 0.21.2-next.0
+
+### Patch Changes
+
+- 91d050c140: changed tests created by create-plugin to follow eslint-rules best practices particularly testing-library/prefer-screen-queries and testing-library/render-result-naming-convention
+- 459a3457e1: Bump `msw` version in default plugin/app templates
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.7-next.0
+  - @backstage/release-manifests@0.0.8-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
 ## 0.21.0
 
 ### Minor Changes

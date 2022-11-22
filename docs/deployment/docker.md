@@ -275,6 +275,11 @@ browser at `http://localhost:7007`
 
 ## Separate Frontend
 
+> NOTE: This is an optional step, and you will lose out on the features of the
+> `@backstage/plugin-app-backend` plugin. Most notably the frontend configuration
+> will no longer be injected by the backend, you will instead need to use the
+> correct configuration when building the frontend bundle.
+
 It is sometimes desirable to serve the frontend separately from the backend,
 either from a separate image or for example a static file serving provider. The
 first step in doing so is to remove the `app-backend` plugin from the backend

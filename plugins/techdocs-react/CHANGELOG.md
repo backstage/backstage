@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.7-next.0
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/version-bridge@1.0.2
+
 ## 1.0.6
 
 ### Patch Changes
