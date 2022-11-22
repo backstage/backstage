@@ -31,10 +31,8 @@ import {
   ScrollContext,
   ScrollContextProps,
 } from '../hooks';
-import { Group, Duration } from '../types';
+import { Duration } from '../types';
 import { createCurrencyFormat } from '../utils/currency';
-
-export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
 export type MockFilterProviderProps = PropsWithChildren<
   Partial<FilterContextProps>
