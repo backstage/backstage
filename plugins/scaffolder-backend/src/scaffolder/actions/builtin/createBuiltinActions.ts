@@ -42,6 +42,7 @@ import {
   createGithubRepoCreateAction,
   createGithubRepoPushAction,
   createGithubWebhookAction,
+  createGithubTemplateRepoCreateAction,
 } from './github';
 import {
   createPublishAzureAction,
@@ -182,6 +183,10 @@ export const createBuiltinActions = (
     createGithubRepoPushAction({
       integrations,
       config,
+      githubCredentialsProvider,
+    }),
+    createGithubTemplateRepoCreateAction({
+      integrations,
       githubCredentialsProvider,
     }),
   ];
