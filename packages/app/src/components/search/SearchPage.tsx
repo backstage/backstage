@@ -19,7 +19,6 @@ import {
   Content,
   DocsIcon,
   Header,
-  Lifecycle,
   Page,
   useSidebarPinState,
 } from '@backstage/core-components';
@@ -66,7 +65,7 @@ const SearchPage = () => {
 
   return (
     <Page themeId="home">
-      {!isMobile && <Header title="Search" subtitle={<Lifecycle alpha />} />}
+      {!isMobile && <Header title="Search" />}
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
