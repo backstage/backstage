@@ -53,7 +53,7 @@ export function useEntityOwnership(): {
         stringifyEntityRef,
       );
       for (const ref of entityOwnerRefs) {
-        if (myOwnerRefs.has(ref)) {
+        if (myOwnerRefs.map(e => e.toLowerCase()).has(ref)) {
           return true;
         }
       }
