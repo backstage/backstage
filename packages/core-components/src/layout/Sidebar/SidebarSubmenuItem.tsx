@@ -26,6 +26,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
@@ -39,7 +40,7 @@ const useStyles = makeStyles<BackstageTheme>(
       display: 'flex',
       alignItems: 'center',
       color: theme.palette.navigation.color,
-      padding: 20,
+      padding: theme.spacing(2.5),
       cursor: 'pointer',
       position: 'relative',
       background: 'none',
@@ -53,8 +54,8 @@ const useStyles = makeStyles<BackstageTheme>(
       color: '#FFF',
     },
     label: {
-      margin: 14,
-      marginLeft: 7,
+      margin: theme.spacing(1.75),
+      marginLeft: theme.spacing(1),
       fontSize: theme.typography.body2.fontSize,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
@@ -155,7 +156,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
       return isActive;
     });
     return (
-      <div className={classes.itemContainer}>
+      <Box className={classes.itemContainer}>
         <Tooltip title={title} enterDelay={500} enterNextDelay={500}>
           <button
             onClick={handleClickDropdown}
@@ -183,7 +184,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           </button>
         </Tooltip>
         {dropdownItems && showDropDown && (
-          <div className={classes.dropdown}>
+          <Box className={classes.dropdown}>
             {dropdownItems.map((object, key) => (
               <Tooltip
                 key={key}
@@ -204,14 +205,14 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                 </Link>
               </Tooltip>
             ))}
-          </div>
+          </Box>
         )}
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className={classes.itemContainer}>
+    <Box className={classes.itemContainer}>
       <Tooltip title={title} enterDelay={500} enterNextDelay={500}>
         <Link
           to={to!}
@@ -235,6 +236,6 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           </Typography>
         </Link>
       </Tooltip>
-    </div>
+    </Box>
   );
 };
