@@ -21,15 +21,20 @@ const { resolve: resolvePath } = require('path');
 
 const execFile = promisify(execFileCb);
 
-async function hasNewChangesets(ref) {
-  if (!ref) {
-    throw new Error('ref is required');
+async function hasNewChangesets(baseRef, headRef) {
+  if (!baseRef) {
+    throw new Error('baseRef is required');
+  }
+  if (!headRef) {
+    throw new Error('headRef is required');
   }
 
   const { stdout } = await execFile('git', [
     'diff',
     '--compact-summary',
-    ref,
+    baseRef,
+    headRef,
+    '--',
     '.changeset/*.md',
   ]);
   return stdout.includes('(new)');
@@ -88,8 +93,9 @@ function findNextRelease(currentRelease, releaseSchedule) {
 }
 
 async function main() {
-  const [diffRef = 'origin/master'] = process.argv.slice(2);
-  const needsMessage = await hasNewChangesets(diffRef);
+  const [diffBaseRefRef = 'origin/master', diffHeadRef = 'HEAD'] =
+    process.argv.slice(2);
+  const needsMessage = await hasNewChangesets(diffBaseRefRef, diffHeadRef);
   if (!needsMessage) {
     return;
   }
