@@ -58,8 +58,7 @@ describe('DryRunResultsView', () => {
                 directoryContents: [
                   {
                     path: 'foo.txt',
-                    base64Content:
-                      Buffer.from('Foo Content').toString('base64'),
+                    base64Content: window.btoa('Foo Content'),
                     executable: false,
                   },
                 ],

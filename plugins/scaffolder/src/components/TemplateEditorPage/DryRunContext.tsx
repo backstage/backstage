@@ -59,11 +59,11 @@ interface DryRunProviderProps {
 
 export function base64EncodeContent(content: string): string {
   if (content.length > MAX_CONTENT_SIZE) {
-    return Buffer.from('<file too large>').toString('base64');
+    return window.btoa('<file too large>');
   }
 
   try {
-    return Buffer.from(content).toString('base64');
+    return window.btoa(content);
   } catch {
     const decoder = new TextEncoder();
     const buffer = decoder.encode(content);
@@ -74,7 +74,7 @@ export function base64EncodeContent(content: string): string {
         String.fromCharCode(...buffer.slice(offset, offset + CHUNK_SIZE)),
       );
     }
-    return Buffer.from(chunks.join('')).toString('base64');
+    return window.btoa(chunks.join(''));
   }
 }
 
