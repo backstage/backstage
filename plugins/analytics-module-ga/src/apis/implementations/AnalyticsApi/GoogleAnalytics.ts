@@ -241,7 +241,7 @@ export class GoogleAnalytics implements AnalyticsApi {
    * Simple hash function; relies on web cryptography + the sha-256 algorithm.
    */
   private async hash(value: string): Promise<string> {
-    const digest = await crypto.subtle.digest(
+    const digest = await window.crypto.subtle.digest(
       'sha-256',
       new TextEncoder().encode(value),
     );
