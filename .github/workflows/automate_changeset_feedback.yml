@@ -37,7 +37,10 @@ jobs:
           rm -f generate.js
           wget -O generate.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/generate-changeset-feedback.js 1>&2
           node generate.js FETCH_HEAD > feedback.txt
-
+        # This command will get the last published version of @backstage/repo-tools and use that version
+        # (NPX doesn't work because it uses the current source)
+        # should be uncommented only after having one version with `changeset-feedback` published
+        # run: yarn dlx @backstage/repo-tools@latest changeset-feedback FETCH_HEAD > feedback.txt
       - name: Post Feedback
         uses: actions/github-script@v6
         env:

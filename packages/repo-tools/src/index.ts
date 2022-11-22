@@ -26,7 +26,7 @@ import { exitWithError } from './lib/errors';
 import { registerCommands } from './commands';
 
 const main = (argv: string[]) => {
-  program.name('backstage-repo-tools').version('1.0');
+  program.name('backstage-repo-tools').version('2.0');
 
   registerCommands(program);
 

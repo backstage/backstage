@@ -281,30 +281,30 @@ The following package(s) are private and do not need a changeset:
   return output;
 }
 
-async function main() {
-  const [diffRef = 'origin/master'] = process.argv.slice(2);
-  const changedFiles = await listChangedFiles(diffRef);
-  const packages = await listPackages();
+// async function main() {
+//   const [diffRef = 'origin/master'] = process.argv.slice(2);
+//   const changedFiles = await listChangedFiles(diffRef);
+//   const packages = await listPackages();
 
-  const changesets = await loadChangesets(changedFiles);
-  const changedPackages = await listChangedPackages(changedFiles, packages);
+//   const changesets = await loadChangesets(changedFiles);
+//   const changedPackages = await listChangedPackages(changedFiles, packages);
 
-  process.stderr.write(
-    JSON.stringify(
-      {
-        changesets,
-        changedPackages,
-      },
-      null,
-      2,
-    ),
-  );
+//   process.stderr.write(
+//     JSON.stringify(
+//       {
+//         changesets,
+//         changedPackages,
+//       },
+//       null,
+//       2,
+//     ),
+//   );
 
-  const summary = formatSummary(changedPackages, changesets);
-  process.stdout.write(summary);
-}
+//   const summary = formatSummary(changedPackages, changesets);
+//   process.stdout.write(summary);
+// }
 
-main().catch(error => {
-  console.error(error.stack);
-  process.exit(1);
-});
+// main().catch(error => {
+//   console.error(error.stack);
+//   process.exit(1);
+// });
