@@ -79,7 +79,7 @@ describe('assignGroupsToUsers', () => {
         spec: {
           type: 'team',
           children: [],
-          members: ['u1', 'u2'],
+          members: ['default/u1', 'default/u2'],
         },
       },
       {

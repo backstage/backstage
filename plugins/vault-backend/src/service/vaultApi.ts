@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import fetch from 'node-fetch';
 import plimit from 'p-limit';
 import { getVaultConfig, VaultConfig } from '../config';
@@ -103,6 +103,8 @@ export class VaultClient implements VaultApi {
       return (await response.json()) as T;
     } else if (response.status === 404) {
       throw new NotFoundError(`No secrets found in path '${path}'`);
+    } else if (response.status === 403) {
+      throw new NotAllowedError(response.statusText);
     }
     throw new Error(
       `Unexpected error while fetching secrets from path '${path}'`,

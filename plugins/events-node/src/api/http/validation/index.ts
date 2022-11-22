@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export type { RequestDetails } from './RequestDetails';
 export type { RequestRejectionDetails } from './RequestRejectionDetails';
 export type { RequestValidationContext } from './RequestValidationContext';
 export type { RequestValidator } from './RequestValidator';
