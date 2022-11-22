@@ -1,0 +1,16 @@
+---
+'@backstage/plugin-catalog-backend-module-github': patch
+---
+
+Handle Github `github.push` events at the `GithubEntityProvider` by subscribing to the topic `github.push.`
+
+Implements `EventSubscriber` to receive events for the topic `github.push`.
+
+On `github.push`, the affected repository will be refreshed.
+This includes adding new Location entities, refreshing existing ones,
+and removing obsolete ones.
+
+**Installation and Migration**
+
+Please find more information at
+https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks

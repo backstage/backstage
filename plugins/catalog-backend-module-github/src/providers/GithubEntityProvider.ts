@@ -24,22 +24,36 @@ import {
   SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
 import {
+  DeferredEntity,
   EntityProvider,
   EntityProviderConnection,
-  LocationSpec,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-backend';
 
+import { LocationSpec } from '@backstage/plugin-catalog-common';
+
 import { graphql } from '@octokit/graphql';
 import * as uuid from 'uuid';
+import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
 import {
   readProviderConfigs,
   GithubEntityProviderConfig,
 } from './GithubEntityProviderConfig';
-import { getOrganizationRepositories, RepositoryResponse } from '../lib/github';
+import {
+  getOrganizationRepositories,
+  getOrganizationRepository,
+  RepositoryResponse,
+} from '../lib/github';
 import { satisfiesTopicFilter } from '../lib/util';
 
+import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { PushEvent, Commit } from '@octokit/webhooks-types';
+import { CatalogApi } from '@backstage/catalog-client';
+import { TokenManager } from '@backstage/backend-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+
+const TOPIC_REPO_PUSH = 'github.push';
 /**
  * Discovers catalog files located in [GitHub](https://github.com).
  * The provider will search your GitHub account and register catalog files matching the configured path
@@ -48,20 +62,24 @@ import { satisfiesTopicFilter } from '../lib/util';
  *
  * @public
  */
-export class GithubEntityProvider implements EntityProvider {
+export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   private readonly config: GithubEntityProviderConfig;
   private readonly logger: Logger;
   private readonly integration: GithubIntegrationConfig;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
+  private readonly catalogApi?: CatalogApi;
+  private readonly tokenManager?: TokenManager;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
     options: {
+      catalogApi?: CatalogApi;
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
+      tokenManager?: TokenManager;
     },
   ): GithubEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -95,6 +113,8 @@ export class GithubEntityProvider implements EntityProvider {
         integration,
         options.logger,
         taskRunner,
+        options.catalogApi,
+        options.tokenManager,
       );
     });
   }
@@ -104,6 +124,8 @@ export class GithubEntityProvider implements EntityProvider {
     integration: GithubIntegration,
     logger: Logger,
     taskRunner: TaskRunner,
+    catalogApi?: CatalogApi,
+    tokenManager?: TokenManager,
   ) {
     this.config = config;
     this.integration = integration.config;
@@ -113,6 +135,9 @@ export class GithubEntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(taskRunner);
     this.githubCredentialsProvider =
       SingleInstanceGithubCredentialsProvider.create(integration.config);
+
+    this.catalogApi = catalogApi;
+    this.tokenManager = tokenManager;
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
@@ -241,6 +266,200 @@ export class GithubEntityProvider implements EntityProvider {
       target: target,
       presence: 'optional',
     };
+  }
+
+  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.onEvent} */
+  async onEvent(params: EventParams): Promise<void> {
+    this.logger.debug(`Received event from ${params.topic}`);
+    if (params.topic !== TOPIC_REPO_PUSH) {
+      return;
+    }
+
+    if (params.metadata?.['x-github-event'] === 'push') {
+      await this.onRepoPush(params.eventPayload as PushEvent);
+    }
+
+    return;
+  }
+
+  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.supportsEventTopics} */
+  supportsEventTopics(): string[] {
+    return [TOPIC_REPO_PUSH];
+  }
+
+  private async onRepoPush(event: PushEvent) {
+    if (!this.connection) {
+      throw new Error('Not initialized');
+    }
+
+    const repoName = event.repository.name;
+    const repoUrl = event.repository.url;
+    this.logger.debug(`handle github:push event for ${repoName} - ${repoUrl}`);
+
+    const branch =
+      this.config.filters?.branch || event.repository.default_branch;
+
+    if (!event.ref.includes(branch)) {
+      this.logger.debug(`skipping push event from ref ${event.ref}`);
+      return;
+    }
+
+    if (this.config.checkRepositoryFiltersForWebhook) {
+      const repository = await this.getRepositoryInfo(repoName);
+
+      if (!repository) {
+        this.logger.debug(
+          `skipping push event from repository ${repoName} because didn't find information in Github`,
+        );
+        return;
+      }
+
+      const matchingTargets = this.matchesFilters([repository]);
+      if (matchingTargets.length === 0) {
+        this.logger.debug(
+          `skipping push event from repository ${repoName} because didn't match provider filters`,
+        );
+        return;
+      }
+    }
+
+    // the commit has information about the files (added,removed,modified)
+    // so we will process the change based in this data
+    // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#push
+    const added = this.collectDeferredEntitiesFromCommit(
+      event.repository.url,
+      branch,
+      event.commits,
+      (commit: Commit) => [...commit.added],
+    );
+    const removed = this.collectDeferredEntitiesFromCommit(
+      event.repository.url,
+      branch,
+      event.commits,
+      (commit: Commit) => [...commit.removed],
+    );
+    const modifiedCatalogFiles = this.collectFilesFromCommit(
+      event.commits,
+      (commit: Commit) => [...commit.modified],
+    );
+
+    const limiter = limiterFactory(10);
+
+    let modified = [];
+    let promises: Promise<void>[] = [];
+
+    if (this.catalogApi && this.tokenManager) {
+      modified = modifiedCatalogFiles
+        .map(filePath => `${event.repository.url}/blob/${branch}/${filePath}`)
+        .map(url => {
+          const location = GithubEntityProvider.toLocationSpec(url);
+
+          return locationSpecToLocationEntity({ location });
+        });
+
+      const { token } = await this.tokenManager.getToken();
+
+      promises = modified.map(entity =>
+        limiter(async () =>
+          this.catalogApi!.refreshEntity(stringifyEntityRef(entity), { token }),
+        ),
+      );
+    } else {
+      this.logger.debug(
+        `skipping modified operation because is missing CatalogApi and/or TokenManager.`,
+      );
+    }
+
+    if (added.length > 0 || removed.length > 0) {
+      const connection = this.connection;
+      promises.push(
+        limiter(async () =>
+          connection.applyMutation({
+            type: 'delta',
+            added: added,
+            removed: removed,
+          }),
+        ),
+      );
+    }
+
+    await Promise.all(promises);
+    this.logger.info(
+      `Processed Github push event: added ${added.length} - removed ${removed.length} - modified ${modified.length}`,
+    );
+  }
+
+  private collectDeferredEntitiesFromCommit(
+    repositoryUrl: string,
+    branch: string,
+    commits: Commit[],
+    transformOperation: (commit: Commit) => string[],
+  ): DeferredEntity[] {
+    const catalogFiles = this.collectFilesFromCommit(
+      commits,
+      transformOperation,
+    );
+    return this.toDeferredEntities(
+      catalogFiles.map(
+        filePath => `${repositoryUrl}/blob/${branch}/${filePath}`,
+      ),
+    );
+  }
+
+  private collectFilesFromCommit(
+    commits: Commit[],
+    transformOperation: (commit: Commit) => string[],
+  ): string[] {
+    const catalogFile = this.config.catalogPath.startsWith('/')
+      ? this.config.catalogPath.substring(1)
+      : this.config.catalogPath;
+
+    return commits
+      .map(transformOperation)
+      .flat()
+      .filter(file => catalogFile.includes(file));
+  }
+
+  private async getRepositoryInfo(
+    repoName: string,
+  ): Promise<RepositoryResponse | undefined> {
+    const organization = this.config.organization;
+    const host = this.integration.host;
+    const catalogPath = this.config.catalogPath;
+    const orgUrl = `https://${host}/${organization}`;
+
+    const { headers } = await this.githubCredentialsProvider.getCredentials({
+      url: orgUrl,
+    });
+
+    const client = graphql.defaults({
+      baseUrl: this.integration.apiBaseUrl,
+      headers,
+    });
+
+    const { repository } = await getOrganizationRepository(
+      client,
+      organization,
+      catalogPath,
+      repoName,
+    );
+
+    return repository;
+  }
+
+  private toDeferredEntities(targets: string[]): DeferredEntity[] {
+    return targets
+      .map(target => {
+        const location = GithubEntityProvider.toLocationSpec(target);
+
+        return locationSpecToLocationEntity({ location });
+      })
+      .map(entity => {
+        return {
+          locationKey: this.getProviderName(),
+          entity: entity,
+        };
+      });
   }
 }
 

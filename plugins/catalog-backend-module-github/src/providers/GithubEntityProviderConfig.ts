@@ -34,6 +34,7 @@ export type GithubEntityProviderConfig = {
     topic?: GithubTopicFilters;
   };
   validateLocationsExist: boolean;
+  checkRepositoryFiltersForWebhook: boolean;
   schedule?: TaskScheduleDefinition;
 };
 
@@ -81,6 +82,9 @@ function readProviderConfig(
   const validateLocationsExist =
     config?.getOptionalBoolean('validateLocationsExist') ?? false;
 
+  const checkRepositoryFiltersForWebhook =
+    config?.getOptionalBoolean('checkRepositoryFiltersForWebhook') ?? false;
+
   const catalogPathContainsWildcard = catalogPath.includes('*');
 
   if (validateLocationsExist && catalogPathContainsWildcard) {
@@ -110,6 +114,7 @@ function readProviderConfig(
     },
     schedule,
     validateLocationsExist,
+    checkRepositoryFiltersForWebhook,
   };
 }
 

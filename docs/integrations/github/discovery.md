@@ -111,6 +111,13 @@ catalog:
           branch: 'main' # string
           repository: '.*' # Regex
         validateLocationsExist: true # optional boolean
+      checkRepositoryFiltersForWebhook:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          branch: 'main' # string
+          repository: '.*' # Regex
+        checkRepositoryFiltersForWebhook: true # optional boolean
       enterpriseProviderId:
         host: ghe.example.net
         organization: 'backstage' # string
@@ -153,6 +160,11 @@ This provider supports multiple organizations via unique provider IDs.
   Defaults to `false`.
   Due to limitations in the GitHub API's ability to query for repository objects, this option cannot be used in
   conjunction with wildcards in the `catalogPath`.
+- **`checkRepositoryFiltersForWebhook`** _(optional)_:
+  Whether to validate push events received from webhook.
+  This option enforce check the repository from push event to be matched against the filters configured in the entity provider.
+  Defaults to `false`.
+  It is disabled for default because you can configure the webhook only in expected repositories
 - **`schedule`** _(optional)_:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.

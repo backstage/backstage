@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, TokenManager } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -24,10 +24,13 @@ import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
+import { EventParams } from '@backstage/plugin-events-node';
+import { CatalogApi } from '@backstage/catalog-client';
 
 jest.mock('../lib/github', () => {
   return {
     getOrganizationRepositories: jest.fn(),
+    getOrganizationRepository: jest.fn(),
   };
 });
 class PersistingTaskRunner implements TaskRunner {
@@ -44,6 +47,15 @@ class PersistingTaskRunner implements TaskRunner {
 }
 
 const logger = getVoidLogger();
+
+const mockCatalogApi: Partial<CatalogApi> = {
+  refreshEntity: jest.fn(),
+};
+
+const mockTokenManager: jest.Mocked<TokenManager> = {
+  getToken: jest.fn(),
+  authenticate: jest.fn(),
+};
 
 describe('GithubEntityProvider', () => {
   afterEach(() => jest.resetAllMocks());
@@ -715,5 +727,421 @@ describe('GithubEntityProvider', () => {
 
     expect(providers).toHaveLength(1);
     expect(providers[0].getProviderName()).toEqual('github-provider:default');
+  });
+
+  it('apply delta update on added files from push event', async () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+          },
+        },
+      },
+    });
+
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    await provider.connect(entityProviderConnection);
+
+    const mockGetOrganizationRepository = jest.spyOn(
+      helpers,
+      'getOrganizationRepository',
+    );
+
+    mockGetOrganizationRepository.mockReturnValue(
+      Promise.resolve({
+        repository: {
+          name: 'test-repo',
+          url: 'https://github.com/test-org/test-repo',
+          repositoryTopics: { nodes: [] },
+          isArchived: false,
+          defaultBranchRef: {
+            name: 'main',
+          },
+          catalogInfoFile: {
+            __typename: 'Blob',
+            id: 'abc123',
+            text: 'some yaml',
+          },
+        },
+      }),
+    );
+
+    const event: EventParams = {
+      topic: 'github.push',
+      metadata: {
+        'x-github-event': 'push',
+      },
+      eventPayload: {
+        ref: 'refs/heads/main',
+        repository: {
+          name: 'teste-1',
+          url: 'https://github.com/test-org/test-repo',
+          default_branch: 'main',
+          stargazers: 0,
+          master_branch: 'main',
+          organization: 'test-org',
+        },
+        created: true,
+        deleted: false,
+        forced: false,
+        commits: [
+          {
+            added: ['new-file.yaml'],
+            removed: [],
+            modified: [],
+          },
+          {
+            added: ['catalog-info.yaml'],
+            removed: [],
+            modified: [],
+          },
+        ],
+      },
+    };
+    const url =
+      'https://github.com/test-org/test-repo/blob/main/catalog-info.yaml';
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+            },
+            name: 'generated-8688630f57e421bc85f12b9828ed7dad6aff3bb3',
+          },
+          spec: {
+            presence: 'optional',
+            target: `${url}`,
+            type: 'url',
+          },
+        },
+        locationKey: 'github-provider:default',
+      },
+    ];
+
+    await provider.onEvent(event);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'delta',
+      added: expectedEntities,
+      removed: [],
+    });
+  });
+
+  it('apply delta update on removed files from push event', async () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+          },
+        },
+      },
+    });
+
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    await provider.connect(entityProviderConnection);
+
+    const mockGetOrganizationRepository = jest.spyOn(
+      helpers,
+      'getOrganizationRepository',
+    );
+
+    mockGetOrganizationRepository.mockReturnValue(
+      Promise.resolve({
+        repository: {
+          name: 'test-repo',
+          url: 'https://github.com/test-org/test-repo',
+          repositoryTopics: { nodes: [] },
+          isArchived: false,
+          defaultBranchRef: {
+            name: 'main',
+          },
+          catalogInfoFile: {
+            __typename: 'Blob',
+            id: 'abc123',
+            text: 'some yaml',
+          },
+        },
+      }),
+    );
+
+    const event: EventParams = {
+      topic: 'github.push',
+      metadata: {
+        'x-github-event': 'push',
+      },
+      eventPayload: {
+        ref: 'refs/heads/main',
+        repository: {
+          name: 'teste-1',
+          url: 'https://github.com/test-org/test-repo',
+          default_branch: 'main',
+          stargazers: 0,
+          master_branch: 'main',
+          organization: 'test-org',
+        },
+        created: true,
+        deleted: false,
+        forced: false,
+        commits: [
+          {
+            added: ['new-file.yaml'],
+            removed: [],
+            modified: [],
+          },
+          {
+            added: [],
+            removed: ['catalog-info.yaml'],
+            modified: [],
+          },
+        ],
+      },
+    };
+    const url =
+      'https://github.com/test-org/test-repo/blob/main/catalog-info.yaml';
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+            },
+            name: 'generated-8688630f57e421bc85f12b9828ed7dad6aff3bb3',
+          },
+          spec: {
+            presence: 'optional',
+            target: `${url}`,
+            type: 'url',
+          },
+        },
+        locationKey: 'github-provider:default',
+      },
+    ];
+
+    await provider.onEvent(event);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'delta',
+      added: [],
+      removed: expectedEntities,
+    });
+  });
+
+  it('apply refresh call on modified files from push event', async () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+          },
+        },
+      },
+    });
+
+    mockTokenManager.getToken.mockResolvedValue({ token: '' });
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      tokenManager: mockTokenManager,
+      catalogApi: mockCatalogApi as unknown as CatalogApi,
+    })[0];
+
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    await provider.connect(entityProviderConnection);
+
+    const mockGetOrganizationRepository = jest.spyOn(
+      helpers,
+      'getOrganizationRepository',
+    );
+
+    mockGetOrganizationRepository.mockReturnValue(
+      Promise.resolve({
+        repository: {
+          name: 'test-repo',
+          url: 'https://github.com/test-org/test-repo',
+          repositoryTopics: { nodes: [] },
+          isArchived: false,
+          defaultBranchRef: {
+            name: 'main',
+          },
+          catalogInfoFile: {
+            __typename: 'Blob',
+            id: 'abc123',
+            text: 'some yaml',
+          },
+        },
+      }),
+    );
+
+    const event: EventParams = {
+      topic: 'github.push',
+      metadata: {
+        'x-github-event': 'push',
+      },
+      eventPayload: {
+        ref: 'refs/heads/main',
+        repository: {
+          name: 'teste-1',
+          url: 'https://github.com/test-org/test-repo',
+          default_branch: 'main',
+          stargazers: 0,
+          master_branch: 'main',
+          organization: 'test-org',
+        },
+        created: true,
+        deleted: false,
+        forced: false,
+        commits: [
+          {
+            added: ['new-file.yaml'],
+            removed: [],
+            modified: [],
+          },
+          {
+            added: [],
+            removed: [],
+            modified: ['catalog-info.yaml'],
+          },
+        ],
+      },
+    };
+
+    await provider.onEvent(event);
+
+    expect(mockCatalogApi.refreshEntity).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.refreshEntity).toHaveBeenCalledWith(
+      'location:default/generated-8688630f57e421bc85f12b9828ed7dad6aff3bb3',
+      { token: '' },
+    );
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
+
+  it('should recover repository information when match filters from push event', async () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            checkRepositoryFiltersForWebhook: true,
+            filters: {
+              branch: 'my-special-branch',
+            },
+          },
+        },
+      },
+    });
+
+    mockTokenManager.getToken.mockResolvedValue({ token: '' });
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      tokenManager: mockTokenManager,
+      catalogApi: mockCatalogApi as unknown as CatalogApi,
+    })[0];
+
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    await provider.connect(entityProviderConnection);
+
+    const mockGetOrganizationRepository = jest.spyOn(
+      helpers,
+      'getOrganizationRepository',
+    );
+
+    mockGetOrganizationRepository.mockReturnValue(
+      Promise.resolve({
+        repository: {
+          name: 'test-repo',
+          url: 'https://github.com/test-org/test-repo',
+          repositoryTopics: { nodes: [] },
+          isArchived: false,
+          defaultBranchRef: {
+            name: 'main',
+          },
+          catalogInfoFile: {
+            __typename: 'Blob',
+            id: 'abc123',
+            text: 'some yaml',
+          },
+        },
+      }),
+    );
+
+    const event: EventParams = {
+      topic: 'github.push',
+      metadata: {
+        'x-github-event': 'push',
+      },
+      eventPayload: {
+        ref: 'refs/heads/my-special-branch',
+        repository: {
+          name: 'teste-1',
+          url: 'https://github.com/test-org/test-repo',
+          default_branch: 'main',
+          stargazers: 0,
+          master_branch: 'main',
+          organization: 'test-org',
+        },
+        created: true,
+        deleted: false,
+        forced: false,
+        commits: [
+          {
+            added: ['new-file.yaml'],
+            removed: [],
+            modified: [],
+          },
+          {
+            added: [],
+            removed: [],
+            modified: ['catalog-info.yaml'],
+          },
+        ],
+      },
+    };
+
+    await provider.onEvent(event);
+
+    expect(mockCatalogApi.refreshEntity).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.refreshEntity).toHaveBeenCalledWith(
+      'location:default/generated-6ffd478ea33caf9af61fa75cc09b5aa7770470f0de',
+      { token: '' },
+    );
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
 });

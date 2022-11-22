@@ -5,12 +5,15 @@
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-backend';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EventParams } from '@backstage/plugin-events-node';
+import { EventSubscriber } from '@backstage/plugin-events-node';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegrationConfig } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -76,22 +79,28 @@ export class GitHubEntityProvider implements EntityProvider {
 }
 
 // @public
-export class GithubEntityProvider implements EntityProvider {
+export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
+      catalogApi?: CatalogApi;
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
+      tokenManager?: TokenManager;
     },
   ): GithubEntityProvider[];
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
+  onEvent(params: EventParams): Promise<void>;
+  // (undocumented)
   refresh(logger: Logger): Promise<void>;
+  // (undocumented)
+  supportsEventTopics(): string[];
 }
 
 // @alpha
