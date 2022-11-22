@@ -37,7 +37,7 @@ import { EntityRelationSpec } from '@backstage/plugin-catalog-node';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -86,9 +86,9 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
   // (undocumented)
   preProcessEntity(
     entity: Entity,
-    location: LocationSpec,
+    location: LocationSpec_2,
     _: CatalogProcessorEmit,
-    originLocation: LocationSpec,
+    originLocation: LocationSpec_2,
   ): Promise<Entity>;
 }
 
@@ -100,7 +100,7 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)
-  preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
+  preProcessEntity(entity: Entity, location: LocationSpec_2): Promise<Entity>;
 }
 
 // @public (undocumented)
@@ -110,7 +110,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   // (undocumented)
   postProcessEntity(
     entity: Entity,
-    _location: LocationSpec,
+    _location: LocationSpec_2,
     emit: CatalogProcessorEmit,
   ): Promise<Entity>;
   // (undocumented)
@@ -284,7 +284,7 @@ export class CodeOwnersProcessor implements CatalogProcessor {
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)
-  preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
+  preProcessEntity(entity: Entity, location: LocationSpec_2): Promise<Entity>;
 }
 
 // @alpha
@@ -409,7 +409,7 @@ export class FileReaderProcessor implements CatalogProcessor {
   getProcessorName(): string;
   // (undocumented)
   readLocation(
-    location: LocationSpec,
+    location: LocationSpec_2,
     optional: boolean,
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
@@ -431,7 +431,7 @@ export class LocationEntityProcessor implements CatalogProcessor {
   // (undocumented)
   postProcessEntity(
     entity: Entity,
-    location: LocationSpec,
+    location: LocationSpec_2,
     emit: CatalogProcessorEmit,
   ): Promise<Entity>;
 }
@@ -441,18 +441,19 @@ export type LocationEntityProcessorOptions = {
   integrations: ScmIntegrationRegistry;
 };
 
-export { LocationSpec };
+// @public @deprecated
+export type LocationSpec = LocationSpec_2;
 
 // @public (undocumented)
 export function locationSpecToLocationEntity(opts: {
-  location: LocationSpec;
+  location: LocationSpec_2;
   parentEntity?: Entity;
 }): LocationEntityV1alpha1;
 
 // @public (undocumented)
 export function parseEntityYaml(
   data: Buffer,
-  location: LocationSpec,
+  location: LocationSpec_2,
 ): Iterable<CatalogProcessorResult>;
 
 // @alpha
@@ -518,7 +519,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
   // (undocumented)
   preProcessEntity(
     entity: Entity,
-    location: LocationSpec,
+    location: LocationSpec_2,
     emit: CatalogProcessorEmit,
   ): Promise<Entity>;
 }
@@ -574,7 +575,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
   getProcessorName(): string;
   // (undocumented)
   readLocation(
-    location: LocationSpec,
+    location: LocationSpec_2,
     optional: boolean,
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,

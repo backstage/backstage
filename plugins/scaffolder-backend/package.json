@@ -78,7 +78,7 @@
     "vm2": "^3.9.11",
     "winston": "^3.2.1",
     "yaml": "^2.0.0",
-    "zen-observable": "^0.8.15",
+    "zen-observable": "^0.9.0",
     "zod": "^3.11.6"
   },
   "devDependencies": {
@@ -94,7 +94,7 @@
     "esbuild": "^0.15.0",
     "jest-when": "^3.1.0",
     "mock-fs": "^5.1.0",
-    "msw": "^0.48.0",
+    "msw": "^0.49.0",
     "supertest": "^6.1.3",
     "yaml": "^2.0.0"
   },

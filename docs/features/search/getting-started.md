@@ -68,7 +68,7 @@ export const searchPage = (
                   switch (result.type) {
                     case 'software-catalog':
                       return (
-                        <CatalogResultListItem
+                        <CatalogSearchResultListItem
                           key={result.document.location}
                           result={result.document}
                           highlight={result.highlight}
@@ -253,7 +253,7 @@ const MyCustomFilter = () => {
 
 It's good practice for search results to highlight information that was used to
 return it in the first place! The code below highlights how you might specify a
-custom result item component, using the `<CatalogResultListItem />` component as
+custom result item component, using the `<CatalogSearchResultListItem />` component as
 an example:
 
 ```tsx {7-13}
@@ -265,7 +265,7 @@ an example:
         switch (result.type) {
           case 'software-catalog':
             return (
-              <CatalogResultListItem
+              <CatalogSearchResultListItem
                 key={result.document.location}
                 result={result.document}
                 highlight={result.highlight}

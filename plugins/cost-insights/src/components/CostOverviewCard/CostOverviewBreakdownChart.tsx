@@ -16,41 +16,41 @@
 import React, { useState } from 'react';
 import { DateTime } from 'luxon';
 import {
-  useTheme,
   Box,
-  Typography,
   Divider,
   emphasize,
+  Typography,
+  useTheme,
 } from '@material-ui/core';
 import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
 import {
+  Area,
   AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
   XAxis,
   YAxis,
-  Tooltip as RechartsTooltip,
-  Area,
-  ResponsiveContainer,
-  CartesianGrid,
 } from 'recharts';
-import { Cost, DEFAULT_DATE_FORMAT, CostInsightsTheme } from '../../types';
+import { Cost, CostInsightsTheme, DEFAULT_DATE_FORMAT } from '../../types';
 import {
+  BarChartLegend,
   BarChartTooltip as Tooltip,
   BarChartTooltipItem as TooltipItem,
-  BarChartLegend,
 } from '../BarChart';
 import {
-  overviewGraphTickFormatter,
   formatGraphValue,
   isInvalid,
+  overviewGraphTickFormatter,
 } from '../../utils/graphs';
 import { useCostOverviewStyles as useStyles } from '../../utils/styles';
-import { useFilters, useLastCompleteBillingDate } from '../../hooks';
+import { useConfig, useFilters, useLastCompleteBillingDate } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { getPreviousPeriodTotalCost } from '../../utils/change';
 import { formatPeriod } from '../../utils/formatters';
 import { aggregationSum } from '../../utils/sum';
-import { BarChartLegendOptions } from '../BarChart/BarChartLegend';
-import { TooltipRenderer } from '../../types/Tooltip';
+import { BarChartLegendOptions } from '../BarChart';
+import { TooltipRenderer } from '../../types';
 
 export type CostOverviewBreakdownChartProps = {
   costBreakdown: Cost[];
@@ -65,6 +65,7 @@ export const CostOverviewBreakdownChart = ({
 }: CostOverviewBreakdownChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const classes = useStyles(theme);
+  const { baseCurrency } = useConfig();
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { duration } = useFilters(mapFiltersToProps);
   const [isExpanded, setExpanded] = useState(false);
@@ -185,9 +186,10 @@ export const CostOverviewBreakdownChart = ({
         ? DateTime.fromMillis(label)
         : DateTime.fromISO(label!);
     const dateTitle = date.toUTC().toFormat(DEFAULT_DATE_FORMAT);
+    const formatGraphValueWith = formatGraphValue(baseCurrency);
     const items = payload.map((p, i) => ({
       label: p.dataKey as string,
-      value: formatGraphValue(Number(p.value), i),
+      value: formatGraphValueWith(Number(p.value), i),
       fill: p.color!,
     }));
     const expandText = (
@@ -253,7 +255,7 @@ export const CostOverviewBreakdownChart = ({
           <YAxis
             domain={[() => 0, 'dataMax']}
             tick={{ fill: classes.axis.fill }}
-            tickFormatter={formatGraphValue}
+            tickFormatter={formatGraphValue(baseCurrency)}
             width={classes.yAxis.width}
           />
           {renderAreas()}

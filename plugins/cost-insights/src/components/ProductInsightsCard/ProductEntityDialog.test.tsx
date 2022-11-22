@@ -19,6 +19,7 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { ProductEntityDialog } from './ProductEntityDialog';
 import { render } from '@testing-library/react';
 import { Entity } from '../../types';
+import { MockConfigProvider } from '../../testUtils';
 
 const atomicEntity: Entity = {
   id: null,
@@ -86,11 +87,13 @@ describe('<ProductEntityDialog/>', () => {
   it('Should show a tab for a single sub-entity type', () => {
     const { getByText } = render(
       wrapInTestApp(
-        <ProductEntityDialog
-          open
-          entity={singleBreakdownEntity}
-          onClose={jest.fn()}
-        />,
+        <MockConfigProvider>
+          <ProductEntityDialog
+            open
+            entity={singleBreakdownEntity}
+            onClose={jest.fn()}
+          />
+        </MockConfigProvider>,
       ),
     );
     expect(getByText('Breakdown by SKU')).toBeInTheDocument();
@@ -99,11 +102,13 @@ describe('<ProductEntityDialog/>', () => {
   it('Should show tabs when multiple sub-entity types exist', () => {
     const { getByText } = render(
       wrapInTestApp(
-        <ProductEntityDialog
-          open
-          entity={multiBreakdownEntity}
-          onClose={jest.fn()}
-        />,
+        <MockConfigProvider>
+          <ProductEntityDialog
+            open
+            entity={multiBreakdownEntity}
+            onClose={jest.fn()}
+          />
+        </MockConfigProvider>,
       ),
     );
     expect(getByText('Breakdown by SKU')).toBeInTheDocument();

@@ -241,6 +241,7 @@ pageview
 parallelization
 parseable
 Patrik
+pattison
 Peloton
 performant
 Performant
@@ -407,3 +408,4 @@ zod
 Zolotusky
 zoomable
 zsh
+Lainfiesta

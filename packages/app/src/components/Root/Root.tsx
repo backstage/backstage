@@ -47,11 +47,20 @@ import {
   SidebarSpace,
   Link,
   useSidebarOpenState,
+  SidebarSubmenu,
+  SidebarSubmenuItem,
 } from '@backstage/core-components';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
 import { SearchModal } from '../search/SearchModal';
 import Score from '@material-ui/icons/Score';
+
+import ApiIcon from '@material-ui/icons/Extension';
+import ComponentIcon from '@material-ui/icons/Memory';
+import DomainIcon from '@material-ui/icons/Apartment';
+import ResourceIcon from '@material-ui/icons/Work';
+import SystemIcon from '@material-ui/icons/Category';
+import UserIcon from '@material-ui/icons/Person';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -93,7 +102,47 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+        <SidebarItem icon={HomeIcon} to="catalog" text="Home">
+          <SidebarSubmenu title="Catalog">
+            <SidebarSubmenuItem
+              title="Domains"
+              to="catalog?filters[kind]=domain"
+              icon={DomainIcon}
+            />
+            <SidebarSubmenuItem
+              title="Systems"
+              to="catalog?filters[kind]=system"
+              icon={SystemIcon}
+            />
+            <SidebarSubmenuItem
+              title="Components"
+              to="catalog?filters[kind]=component"
+              icon={ComponentIcon}
+            />
+            <SidebarSubmenuItem
+              title="APIs"
+              to="catalog?filters[kind]=api"
+              icon={ApiIcon}
+            />
+            <SidebarDivider />
+            <SidebarSubmenuItem
+              title="Resources"
+              to="catalog?filters[kind]=resource"
+              icon={ResourceIcon}
+            />
+            <SidebarDivider />
+            <SidebarSubmenuItem
+              title="Groups"
+              to="catalog?filters[kind]=group"
+              icon={GroupIcon}
+            />
+            <SidebarSubmenuItem
+              title="Users"
+              to="catalog?filters[kind]=user"
+              icon={UserIcon}
+            />
+          </SidebarSubmenu>
+        </SidebarItem>
         <MyGroupsSidebarItem
           singularTitle="My Squad"
           pluralTitle="My Squads"

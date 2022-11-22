@@ -23,9 +23,10 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Config, JsonObject, JsonValue } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
+import { JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
   TemplateEntityV1beta3,
