@@ -156,7 +156,7 @@ describe('Edit Button', () => {
     expect(rendered.getByRole('button')).toBeInTheDocument();
   });
 
-  it('Should show the extra fields if either links or extra profile are filled', async () => {
+  it('Should show the extra fields if either links', async () => {
     const annotations: Record<string, string> = {
       'backstage.io/edit-url': 'https://example.com/user.yaml',
     };
@@ -208,5 +208,59 @@ describe('Edit Button', () => {
     );
     expect(rendered.getByText('Slack')).toBeInTheDocument();
     expect(rendered.getByText('Google')).toBeInTheDocument();
+  });
+
+  it('Should hide the links if hidelinks', async () => {
+    const annotations: Record<string, string> = {
+      'backstage.io/edit-url': 'https://example.com/user.yaml',
+    };
+    const userEntity: UserEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        name: 'calum.leavy',
+        description: 'Super awesome human',
+        annotations,
+        links: [
+          {
+            url: 'slack://user?team=T00000000&id=U00000000',
+            title: 'Slack',
+            icon: 'message',
+          },
+          {
+            url: 'https://www.google.com',
+            title: 'Google',
+          },
+        ],
+      },
+      spec: {
+        profile: {
+          displayName: 'Calum Leavy',
+          email: 'calum-leavy@example.com',
+        },
+        memberOf: ['ExampleGroup'],
+      },
+      relations: [
+        {
+          type: 'memberOf',
+          targetRef: 'group:default/examplegroup',
+        },
+      ],
+    };
+
+    const rendered = await renderWithEffects(
+      wrapInTestApp(
+        <EntityProvider entity={userEntity}>
+          <UserProfileCard variant="gridItem" hideLinks />
+        </EntityProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      ),
+    );
+    expect(rendered.queryByText('Slack')).toBeNull();
+    expect(rendered.queryByText('Google')).toBeNull();
   });
 });
