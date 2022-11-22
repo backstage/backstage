@@ -25,6 +25,16 @@ export interface BackendFeature {
 }
 
 // @public (undocumented)
+export interface BackendLifecycle {
+  addShutdownHook(options: BackendLifecycleShutdownHook): void;
+}
+
+// @public (undocumented)
+export type BackendLifecycleShutdownHook = {
+  fn: () => void | Promise<void>;
+};
+
+// @public (undocumented)
 export interface BackendModuleConfig<TOptions> {
   // (undocumented)
   moduleId: string;
@@ -157,6 +167,9 @@ export interface HttpRouterService {
 
 // @public (undocumented)
 export const httpRouterServiceRef: ServiceRef<HttpRouterService, 'plugin'>;
+
+// @public (undocumented)
+export const lifecycleServiceRef: ServiceRef<BackendLifecycle, 'plugin'>;
 
 // @public (undocumented)
 export interface Logger {

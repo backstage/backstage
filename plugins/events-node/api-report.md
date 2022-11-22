@@ -4,7 +4,6 @@
 
 ```ts
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { Request as Request_2 } from 'express';
 
 // @public
 export interface EventBroker {
@@ -74,6 +73,12 @@ export interface HttpPostIngressOptions {
   validator?: RequestValidator;
 }
 
+// @public (undocumented)
+export interface RequestDetails {
+  body: unknown;
+  headers: Record<string, string | string[] | undefined>;
+}
+
 // @public
 export interface RequestRejectionDetails {
   // (undocumented)
@@ -89,7 +94,7 @@ export interface RequestValidationContext {
 
 // @public
 export type RequestValidator = (
-  request: Request_2,
+  request: RequestDetails,
   context: RequestValidationContext,
 ) => Promise<void>;
 
