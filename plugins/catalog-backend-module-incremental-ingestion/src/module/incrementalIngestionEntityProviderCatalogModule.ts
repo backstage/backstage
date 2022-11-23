@@ -54,12 +54,16 @@ export const incrementalIngestionEntityProviderCatalogModule =
           database: databaseServiceRef,
           scheduler: schedulerServiceRef,
         },
-        async init({ catalog, ...otherDeps }) {
-          const providers = new WrapperProviders(otherDeps);
+        async init({ catalog, config, logger, database, scheduler }) {
+          const providers = new WrapperProviders({
+            config,
+            logger,
+            client: await database.getClient(),
+            scheduler,
+          });
           for (const entry of options.providers) {
-            catalog.addEntityProvider(
-              providers.wrap(entry.provider, entry.options),
-            );
+            const wrapped = providers.wrap(entry.provider, entry.options);
+            catalog.addEntityProvider(wrapped);
           }
         },
       });

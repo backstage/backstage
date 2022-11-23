@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Logger, loggerToWinstonLogger } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
@@ -23,6 +22,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
+import { Knex } from 'knex';
 import once from 'lodash/once';
 import { Duration } from 'luxon';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
@@ -45,10 +45,10 @@ export class WrapperProviders {
   private readonly readySignal = new Deferred<void>();
 
   constructor(
-    private readonly deps: {
+    private readonly options: {
       config: Config;
       logger: Logger;
-      database: PluginDatabaseManager;
+      client: Knex;
       scheduler: PluginTaskScheduler;
     },
   ) {}
@@ -58,49 +58,41 @@ export class WrapperProviders {
     options: IncrementalEntityProviderOptions,
   ): EntityProvider {
     this.numberOfProvidersToConnect += 1;
-
-    const wrapper: EntityProvider = {
+    return {
       getProviderName: () => provider.getProviderName(),
       connect: async connection => {
-        this.readySignal.then(() =>
-          this.startProvider(provider, options, connection),
-        );
-
+        await this.startProvider(provider, options, connection);
         this.numberOfProvidersToConnect -= 1;
-
         if (this.numberOfProvidersToConnect === 0) {
           this.readySignal.resolve();
         }
       },
     };
-
-    return wrapper;
   }
 
   private async startProvider(
     provider: IncrementalEntityProvider<unknown, unknown>,
-    options: IncrementalEntityProviderOptions,
+    providerOptions: IncrementalEntityProviderOptions,
     connection: EntityProviderConnection,
   ) {
     const logger = loggerToWinstonLogger(
-      this.deps.logger.child({
+      this.options.logger.child({
         entityProvider: provider.getProviderName(),
       }),
     );
 
     try {
-      const client = await this.deps.database.getClient();
-      await applyDatabaseMigrationsOnce(client);
+      await applyDatabaseMigrationsOnce(this.options.client);
 
-      const { burstInterval, burstLength, restLength } = options;
+      const { burstInterval, burstLength, restLength } = providerOptions;
 
       logger.info(`Connecting`);
 
       const manager = new IncrementalIngestionDatabaseManager({
-        client,
+        client: this.options.client,
       });
       const engine = new IncrementalIngestionEngine({
-        ...options,
+        ...providerOptions,
         ready: this.readySignal,
         manager,
         logger,
@@ -116,7 +108,7 @@ export class WrapperProviders {
         ? burstLength
         : Duration.fromObject(burstLength);
 
-      await this.deps.scheduler.scheduleTask({
+      await this.options.scheduler.scheduleTask({
         id: provider.getProviderName(),
         fn: engine.taskFn.bind(engine),
         frequency,
