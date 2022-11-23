@@ -20,6 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
+import lodash from 'lodash';
 import { Knex } from 'knex';
 import {
   EntitiesBatchRequest,
