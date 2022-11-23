@@ -38129,11 +38129,11 @@ __metadata:
   linkType: hard
 
 "zod-to-json-schema@npm:^3.18.1":
-  version: 3.18.1
-  resolution: "zod-to-json-schema@npm:3.18.1"
+  version: 3.19.1
+  resolution: "zod-to-json-schema@npm:3.19.1"
   peerDependencies:
-    zod: ^3.18.0
-  checksum: e55d0de83b50fbd1caa7541d037858815964477b52a9e6495496e447107386cf16e2c08b007fcfbffd7fbe069ca2c19018425a53eaee36aff5dda942d3db71f4
+    zod: ^3.19.0
+  checksum: 22c07668e3c28c9d7c9bd3ad04a354ea017b6fc8b4df77ed29d11e42c4c03181612319db374932a1f8b5c37ef861157938dced9d848cad5281ee1540a156995c
   languageName: node
   linkType: hard
 
