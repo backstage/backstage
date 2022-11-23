@@ -28,6 +28,10 @@ export function registerCommands(program: Command) {
     .action(
       lazy(() => import('./api-reports/api-reports').then(m => m.default)),
     );
+
+  program
+    .command('type-deps')
+    .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
 }
 
 // Wraps an action function so that it always exits and handles errors

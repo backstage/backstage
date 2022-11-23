@@ -21,7 +21,7 @@
     "lint": "backstage-cli repo lint --since origin/master",
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:all": "backstage-cli repo lint",
-    "lint:type-deps": "node scripts/check-type-dependencies.js",
+    "lint:type-deps": "backstage-repo-tools type-deps",
     "docker-build": "yarn tsc && yarn workspace example-backend build --build-dependencies && yarn workspace example-backend build-image",
     "new": "backstage-cli new --scope backstage --baseVersion 0.0.0 --no-private",
     "create-plugin": "echo \"use 'yarn new' instead\"",

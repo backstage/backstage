@@ -1,6 +1,5 @@
-#!/usr/bin/env node
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +14,14 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
-const { resolve: resolvePath } = require('path');
+import fs from 'fs';
+import { resolve as resolvePath } from 'path';
 // Cba polluting root package.json, we'll have this
 // eslint-disable-next-line import/no-extraneous-dependencies
-const chalk = require('chalk');
-const { getPackages } = require('@manypkg/get-packages');
+import chalk from 'chalk';
+import { getPackages, Package } from '@manypkg/get-packages';
 
-async function main() {
+export default async () => {
   const { packages } = await getPackages(resolvePath('.'));
 
   let hadErrors = false;
@@ -63,24 +62,29 @@ async function main() {
 
     process.exit(2);
   }
-}
+};
 
-function shouldCheckTypes(pkg) {
+type PackageJsonWithTypes = {
+  packageJson: {
+    types?: string;
+  };
+};
+function shouldCheckTypes(pkg: Package & PackageJsonWithTypes) {
   return (
-    !pkg.private &&
+    !pkg.packageJson.private &&
     pkg.packageJson.types &&
     fs.existsSync(resolvePath(pkg.dir, 'dist/index.d.ts'))
   );
 }
 
-function findAllDeps(declSrc) {
+function findAllDeps(declSrc: string) {
   const importedDeps = (declSrc.match(/^import .* from '.*';$/gm) || [])
-    .map(match => match.match(/from '(.*)'/)[1])
+    .map(match => match.match(/from '(.*)'/)?.[1] ?? '')
     .filter(n => !n.startsWith('.'));
   const referencedDeps = (
     declSrc.match(/^\/\/\/ <reference types=".*" \/>$/gm) || []
   )
-    .map(match => match.match(/types="(.*)"/)[1])
+    .map(match => match.match(/types="(.*)"/)?.[1] ?? '')
     .filter(n => !n.startsWith('.'))
     // We allow references to these without an explicit dependency.
     .filter(n => !['node', 'react'].includes(n));
@@ -91,7 +95,7 @@ function findAllDeps(declSrc) {
  * Scan index.d.ts for imports and return errors for any dependency that's
  * missing or incorrect in package.json
  */
-function checkTypes(pkg) {
+function checkTypes(pkg: Package) {
   const typeDecl = fs.readFileSync(
     resolvePath(pkg.dir, 'dist/index.d.ts'),
     'utf8',
@@ -121,7 +125,7 @@ function checkTypes(pkg) {
  * Find the package used for types. This assumes that types are working is a package
  * can be resolved, it doesn't do any checking of presence of types inside the dep.
  */
-function findTypesPackage(dep, pkg) {
+function findTypesPackage(dep: string, pkg: Package) {
   try {
     require.resolve(`@types/${dep}/package.json`, { paths: [pkg.dir] });
     return `@types/${dep}`;
@@ -161,7 +165,7 @@ function findTypesPackage(dep, pkg) {
 /**
  * Figures out what type dependencies are missing, or should be moved between dep types
  */
-function findTypeDepErrors(typeDeps, pkg) {
+function findTypeDepErrors(typeDeps: string[], pkg: Package) {
   const devDeps = mkTypeDepSet(pkg.packageJson.devDependencies);
   const deps = mkTypeDepSet({
     ...pkg.packageJson.dependencies,
@@ -204,19 +208,14 @@ function findTypeDepErrors(typeDeps, pkg) {
   return errors;
 }
 
-function mkTypeDepSet(deps) {
+function mkTypeDepSet(deps: Record<string, string> | undefined) {
   const typeDeps = Object.keys(deps || {}).filter(n => n.startsWith('@types/'));
   return new Set(typeDeps);
 }
 
-function mkErr(name, msg, extra) {
+function mkErr(name: string, msg: string, extra: Record<string, string>) {
   const error = new Error(msg);
   error.name = name;
   Object.assign(error, extra);
   return error;
 }
-
-main().catch(error => {
-  console.error(error.stack || error);
-  process.exit(1);
-});
