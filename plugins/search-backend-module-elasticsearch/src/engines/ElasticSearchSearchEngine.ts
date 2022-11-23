@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { awsGetCredentials, createAWSConnection } from 'aws-os-connection';
-import { Config } from '@backstage/config';
 import {
   IndexableDocument,
   IndexableResult,
@@ -23,15 +21,18 @@ import {
   SearchEngine,
   SearchQuery,
 } from '@backstage/plugin-search-common';
+import { awsGetCredentials, createAWSConnection } from 'aws-os-connection';
+import { isEmpty, isNumber, isNaN as nan } from 'lodash';
+
+import { Config } from '@backstage/config';
+import { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
+import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
+import { ElasticSearchCustomIndexTemplate } from './types';
+import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
+import { Logger } from 'winston';
 import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
-import { isEmpty, isNaN as nan, isNumber } from 'lodash';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
-import { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
-import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
-import { ElasticSearchCustomIndexTemplate } from './types';
-import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 
 export type { ElasticSearchClientOptions };
 
@@ -63,7 +64,7 @@ export type ElasticSearchQueryTranslator = (
 ) => ElasticSearchConcreteQuery;
 
 /**
- * Options for instansiate ElasticSearchSearchEngine
+ * Options for instantiate ElasticSearchSearchEngine
  * @public
  */
 export type ElasticSearchOptions = {

@@ -15,13 +15,13 @@
  */
 
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
-import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Readable } from 'stream';
-import { Logger } from 'winston';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
+import { IndexableDocument } from '@backstage/plugin-search-common';
+import { Logger } from 'winston';
+import { Readable } from 'stream';
 
 /**
- * Options for instansiate ElasticSearchSearchEngineIndexer
+ * Options for instantiate ElasticSearchSearchEngineIndexer
  * @public
  */
 export type ElasticSearchSearchEngineIndexerOptions = {

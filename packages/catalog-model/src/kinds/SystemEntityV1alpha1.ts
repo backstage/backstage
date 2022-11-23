@@ -15,11 +15,11 @@
  */
 
 import type { Entity } from '../entity/Entity';
-import schema from '../schema/kinds/System.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
+import schema from '../schema/kinds/System.v1alpha1.schema.json';
 
 /**
- * Backstage catalog System kind Entity. Systems group Comopnents, Resources and APIs together.
+ * Backstage catalog System kind Entity. Systems group Components, Resources and APIs together.
  *
  * @remarks
  *
