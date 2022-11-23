@@ -34,6 +34,7 @@ import {
   IconComponent,
   useElementFilter,
   useRouteRefParams,
+  useRouteRef,
 } from '@backstage/core-plugin-api';
 import {
   EntityRefLinks,
@@ -49,6 +50,7 @@ import { Alert } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
+import { rootRouteRef } from '../../routes';
 
 /** @public */
 export type EntityLayoutRouteProps = {
@@ -185,6 +187,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
   const location = useLocation();
+  const catalogRootLink = useRouteRef(rootRouteRef)();
   const routes = useElementFilter(
     children,
     elements =>
@@ -244,6 +247,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         title={<EntityLayoutTitle title={headerTitle} entity={entity!} />}
         pageTitleOverride={headerTitle}
         type={headerType}
+        typeLink={catalogRootLink}
       >
         {entity && (
           <>
