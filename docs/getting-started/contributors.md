@@ -30,8 +30,8 @@ commands once to set things up for development:
 
 ```bash
 $ cd backstage  # change to root directory of project
-$ yarn install  # fetch dependency packages - may take a while
 
+$ yarn install  # fetch dependency packages - may take a while
 $ yarn tsc      # does a first run of type generation and checks
 ```
 
