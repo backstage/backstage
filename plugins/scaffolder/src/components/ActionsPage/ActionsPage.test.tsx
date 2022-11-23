@@ -65,9 +65,9 @@ describe('TemplatePage', () => {
         },
       },
     );
-    expect(rendered.queryByText('Test title')).toBeInTheDocument();
-    expect(rendered.queryByText('example description')).toBeInTheDocument();
-    expect(rendered.queryByText('foobar')).toBeInTheDocument();
+    expect(rendered.getByText('Test title')).toBeInTheDocument();
+    expect(rendered.getByText('example description')).toBeInTheDocument();
+    expect(rendered.getByText('foobar')).toBeInTheDocument();
     expect(rendered.queryByText('output')).not.toBeInTheDocument();
   });
 
@@ -109,10 +109,10 @@ describe('TemplatePage', () => {
         },
       },
     );
-    expect(rendered.queryByText('Test title')).toBeInTheDocument();
-    expect(rendered.queryByText('example description')).toBeInTheDocument();
-    expect(rendered.queryByText('foobar')).toBeInTheDocument();
-    expect(rendered.queryByText('Test output')).toBeInTheDocument();
+    expect(rendered.getByText('Test title')).toBeInTheDocument();
+    expect(rendered.getByText('example description')).toBeInTheDocument();
+    expect(rendered.getByText('foobar')).toBeInTheDocument();
+    expect(rendered.getByText('Test output')).toBeInTheDocument();
   });
 
   it('renders action with oneOf input', async () => {
@@ -160,10 +160,10 @@ describe('TemplatePage', () => {
         },
       },
     );
-    expect(rendered.queryByText('oneOf')).toBeInTheDocument();
-    expect(rendered.queryByText('Foo title')).toBeInTheDocument();
-    expect(rendered.queryByText('Foo description')).toBeInTheDocument();
-    expect(rendered.queryByText('Bar title')).toBeInTheDocument();
-    expect(rendered.queryByText('Bar description')).toBeInTheDocument();
+    expect(rendered.getByText('oneOf')).toBeInTheDocument();
+    expect(rendered.getByText('Foo title')).toBeInTheDocument();
+    expect(rendered.getByText('Foo description')).toBeInTheDocument();
+    expect(rendered.getByText('Bar title')).toBeInTheDocument();
+    expect(rendered.getByText('Bar description')).toBeInTheDocument();
   });
 });
