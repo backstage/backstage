@@ -35,6 +35,7 @@ import {
 import { act, fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityLayout } from './EntityLayout';
+import { rootRouteRef } from '../../routes';
 
 const mockEntity = {
   kind: 'MyKind',
@@ -65,6 +66,7 @@ describe('EntityLayout', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -96,6 +98,7 @@ describe('EntityLayout', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -119,6 +122,7 @@ describe('EntityLayout', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -145,6 +149,7 @@ describe('EntityLayout', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -177,6 +182,7 @@ describe('EntityLayout', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -224,6 +230,7 @@ describe('EntityLayout', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -231,5 +238,26 @@ describe('EntityLayout', () => {
     expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(screen.queryByText('tabbed-test-title-2')).not.toBeInTheDocument();
     expect(screen.getByText('tabbed-test-title-3')).toBeInTheDocument();
+  });
+
+  it('should render a link back to the component page', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <AsyncEntityProvider loading={false}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </AsyncEntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+    expect(screen.getByText('Sevice - component')).toBeInTheDocument();
   });
 });
