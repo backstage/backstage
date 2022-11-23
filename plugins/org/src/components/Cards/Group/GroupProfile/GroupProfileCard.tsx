@@ -65,7 +65,7 @@ const CardTitle = (props: { title: string }) => (
 /** @public */
 export const GroupProfileCard = (props: {
   variant?: InfoCardVariants;
-  hideLinks?: boolean;
+  showLinks?: boolean;
 }) => {
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
@@ -195,7 +195,7 @@ export const GroupProfileCard = (props: {
                 secondary="Child Groups"
               />
             </ListItem>
-            {!props?.hideLinks && <LinksGroup links={links} />}
+            {props?.showLinks && <LinksGroup links={links} />}
           </List>
         </Grid>
       </Grid>

@@ -60,7 +60,7 @@ const CardTitle = (props: { title?: string }) =>
 /** @public */
 export const UserProfileCard = (props: {
   variant?: InfoCardVariants;
-  hideLinks?: boolean;
+  showLinks?: boolean;
 }) => {
   const { entity: user } = useEntity<UserEntity>();
   if (!user) {
@@ -134,7 +134,7 @@ export const UserProfileCard = (props: {
               </ListItemText>
             </ListItem>
 
-            {!props?.hideLinks && <LinksGroup links={links} />}
+            {props?.showLinks && <LinksGroup links={links} />}
           </List>
         </Grid>
       </Grid>

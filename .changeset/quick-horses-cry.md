@@ -2,4 +2,4 @@
 '@backstage/plugin-org': patch
 ---
 
-Small change to allow disabling of links in the user and group profile cards
+Update `UserProfileCard` and `GroupProfileCard` to not render links unless the `showLinks` prop is set. The primary component for rendering links are the `EntityLinksCard` from plugin-catalog.

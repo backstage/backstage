@@ -156,7 +156,7 @@ describe('Edit Button', () => {
     expect(rendered.getByRole('button')).toBeInTheDocument();
   });
 
-  it('Should show the extra fields if either links', async () => {
+  it('Should not show links by default', async () => {
     const annotations: Record<string, string> = {
       'backstage.io/edit-url': 'https://example.com/user.yaml',
     };
@@ -206,11 +206,11 @@ describe('Edit Button', () => {
         },
       ),
     );
-    expect(rendered.getByText('Slack')).toBeInTheDocument();
-    expect(rendered.getByText('Google')).toBeInTheDocument();
+    expect(rendered.queryByText('Slack')).toBeNull();
+    expect(rendered.queryByText('Google')).toBeNull();
   });
 
-  it('Should hide the links if hidelinks', async () => {
+  it('Should show the links if showLinks is set', async () => {
     const annotations: Record<string, string> = {
       'backstage.io/edit-url': 'https://example.com/user.yaml',
     };
@@ -251,7 +251,7 @@ describe('Edit Button', () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <EntityProvider entity={userEntity}>
-          <UserProfileCard variant="gridItem" hideLinks />
+          <UserProfileCard showLinks variant="gridItem" />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -260,7 +260,7 @@ describe('Edit Button', () => {
         },
       ),
     );
-    expect(rendered.queryByText('Slack')).toBeNull();
-    expect(rendered.queryByText('Google')).toBeNull();
+    expect(rendered.getByText('Slack')).toBeInTheDocument();
+    expect(rendered.getByText('Google')).toBeInTheDocument();
   });
 });
