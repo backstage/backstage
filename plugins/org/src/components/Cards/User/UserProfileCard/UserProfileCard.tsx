@@ -58,7 +58,10 @@ const CardTitle = (props: { title?: string }) =>
   ) : null;
 
 /** @public */
-export const UserProfileCard = (props: { variant?: InfoCardVariants, hideLinks?: boolean }) => {
+export const UserProfileCard = (props: {
+  variant?: InfoCardVariants;
+  hideLinks?: boolean;
+}) => {
   const { entity: user } = useEntity<UserEntity>();
   if (!user) {
     return <Alert severity="error">User not found</Alert>;

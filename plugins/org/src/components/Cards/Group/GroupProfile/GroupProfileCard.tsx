@@ -63,7 +63,10 @@ const CardTitle = (props: { title: string }) => (
 );
 
 /** @public */
-export const GroupProfileCard = (props: { variant?: InfoCardVariants, hideLinks?: boolean }) => {
+export const GroupProfileCard = (props: {
+  variant?: InfoCardVariants;
+  hideLinks?: boolean;
+}) => {
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const { entity: group } = useEntity<GroupEntity>();
