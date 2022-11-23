@@ -36,6 +36,7 @@ async function hasNewChangesets(baseRef, headRef) {
     headRef,
     '--',
     '.changeset/*.md',
+    ':(exclude).changeset/create-app-*.md',
   ]);
   return stdout.includes('(new)');
 }
