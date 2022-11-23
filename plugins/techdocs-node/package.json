@@ -39,7 +39,7 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
-    "@azure/identity": "^2.0.1",
+    "@azure/identity": "^2.1.0",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-common": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
