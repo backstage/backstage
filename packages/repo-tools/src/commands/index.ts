@@ -31,6 +31,7 @@ export function registerCommands(program: Command) {
 
   program
     .command('type-deps')
+    .description('Find inconsistencies in types of all packages and plugins')
     .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
 }
 
