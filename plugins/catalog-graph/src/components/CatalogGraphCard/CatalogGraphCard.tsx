@@ -45,7 +45,6 @@ const useStyles = makeStyles<Theme, { height: number | undefined }>(
       display: 'flex',
       flexDirection: 'column',
       maxHeight: height,
-      minHeight: height,
     }),
     graph: {
       flex: 1,

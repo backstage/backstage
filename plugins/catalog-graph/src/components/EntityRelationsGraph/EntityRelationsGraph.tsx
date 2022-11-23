@@ -49,7 +49,7 @@ const useStyles = makeStyles(
     },
     graph: {
       width: '100%',
-      flex: 1,
+      minHeight: '100%',
       // Right now there is no good way to style edges between nodes, we have to
       // fallback to these hacks:
       '& path[marker-end]': {
@@ -149,6 +149,7 @@ export const EntityRelationsGraph = (props: {
           labelOffset={theme.spacing(1)}
           zoom={zoom}
           curve={curve}
+          fit="contain"
         />
       )}
     </div>
