@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Divider, Grid, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
 import { ErrorPanel } from './ErrorPanel';
 import { ErrorReporting } from './ErrorReporting';
@@ -81,9 +81,6 @@ export const KubernetesContent = ({
           <Grid container spacing={3} direction="column">
             <Grid item>
               <ErrorReporting detectedErrors={detectedErrors} />
-            </Grid>
-            <Grid item>
-              <Divider />
             </Grid>
             <Grid item>
               <Typography variant="h3">Your Clusters</Typography>
