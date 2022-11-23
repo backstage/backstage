@@ -17,9 +17,8 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { ObjectToFetch } from '../types/types';
-import { topPods } from '@kubernetes/client-node';
+import { topPods, V1Namespace } from '@kubernetes/client-node';
 import http from 'http';
-import { V1Namespace } from '@kubernetes/client-node/dist/gen/api';
 
 jest.mock('@kubernetes/client-node', () => ({
   ...jest.requireActual('@kubernetes/client-node'),
