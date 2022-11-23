@@ -17,12 +17,12 @@
 import React from 'react';
 import classnames from 'classnames';
 import {
-  ChangeStatistic,
   CurrencyType,
   Duration,
   EngineerThreshold,
   GrowthType,
 } from '../../types';
+import { ChangeStatistic } from '@backstage/plugin-cost-insights-common';
 import { rateOf } from '../../utils/currency';
 import { growthOf } from '../../utils/change';
 import { useCostGrowthStyles as useStyles } from '../../utils/styles';

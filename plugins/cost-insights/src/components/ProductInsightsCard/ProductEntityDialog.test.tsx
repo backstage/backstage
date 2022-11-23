@@ -18,7 +18,7 @@ import React from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { ProductEntityDialog } from './ProductEntityDialog';
 import { render } from '@testing-library/react';
-import { Entity } from '../../types';
+import { Entity } from '@backstage/plugin-cost-insights-common';
 import { MockConfigProvider } from '../../testUtils';
 
 const atomicEntity: Entity = {

@@ -17,7 +17,7 @@ import React from 'react';
 import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CostOverviewCard } from './CostOverviewCard';
-import { Cost } from '../../types';
+import { Cost } from '@backstage/plugin-cost-insights-common';
 import {
   changeOf,
   getGroupedProducts,
