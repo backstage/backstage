@@ -40,20 +40,23 @@ import {
   readProviderConfigs,
   GithubEntityProviderConfig,
 } from './GithubEntityProviderConfig';
-import {
-  getOrganizationRepositories,
-  getOrganizationRepository,
-  RepositoryResponse,
-} from '../lib/github';
+import { getOrganizationRepositories } from '../lib/github';
 import { satisfiesTopicFilter } from '../lib/util';
 
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { PushEvent, Commit } from '@octokit/webhooks-types';
-import { CatalogApi } from '@backstage/catalog-client';
-import { TokenManager } from '@backstage/backend-common';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const TOPIC_REPO_PUSH = 'github.push';
+
+type Repository = {
+  name: string;
+  url: string;
+  isArchived: boolean;
+  repositoryTopics: string[];
+  defaultBranchRef: string | null;
+  isCatalogInfoFilePresent: boolean;
+};
+
 /**
  * Discovers catalog files located in [GitHub](https://github.com).
  * The provider will search your GitHub account and register catalog files matching the configured path
@@ -68,18 +71,14 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   private readonly integration: GithubIntegrationConfig;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
-  private readonly catalogApi?: CatalogApi;
-  private readonly tokenManager?: TokenManager;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
     options: {
-      catalogApi?: CatalogApi;
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
-      tokenManager?: TokenManager;
     },
   ): GithubEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -113,8 +112,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         integration,
         options.logger,
         taskRunner,
-        options.catalogApi,
-        options.tokenManager,
       );
     });
   }
@@ -124,8 +121,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     integration: GithubIntegration,
     logger: Logger,
     taskRunner: TaskRunner,
-    catalogApi?: CatalogApi,
-    tokenManager?: TokenManager,
   ) {
     this.config = config;
     this.integration = integration.config;
@@ -135,9 +130,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     this.scheduleFn = this.createScheduleFn(taskRunner);
     this.githubCredentialsProvider =
       SingleInstanceGithubCredentialsProvider.create(integration.config);
-
-    this.catalogApi = catalogApi;
-    this.tokenManager = tokenManager;
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
@@ -200,7 +192,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   // go to the server and get all of the repositories
-  private async findCatalogFiles(): Promise<RepositoryResponse[]> {
+  private async findCatalogFiles(): Promise<Repository[]> {
     const organization = this.config.organization;
     const host = this.integration.host;
     const catalogPath = this.config.catalogPath;
@@ -215,45 +207,49 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       headers,
     });
 
-    const { repositories } = await getOrganizationRepositories(
-      client,
-      organization,
-      catalogPath,
-    );
+    const { repositories: repositoriesFromGithub } =
+      await getOrganizationRepositories(client, organization, catalogPath);
+    const repositories = repositoriesFromGithub.map(r => {
+      return {
+        url: r.url,
+        name: r.name,
+        defaultBranchRef: r.defaultBranchRef?.name || null,
+        repositoryTopics: r.repositoryTopics.nodes.map(t => t.topic.name),
+        isArchived: r.isArchived,
+        isCatalogInfoFilePresent:
+          r.catalogInfoFile?.__typename === 'Blob' &&
+          r.catalogInfoFile.text !== '',
+      };
+    });
 
     if (this.config.validateLocationsExist) {
-      return repositories.filter(repository => {
-        return (
-          repository.catalogInfoFile?.__typename === 'Blob' &&
-          repository.catalogInfoFile.text !== ''
-        );
-      });
+      return repositories.filter(
+        repository => repository.isCatalogInfoFilePresent,
+      );
     }
 
     return repositories;
   }
 
-  private matchesFilters(repositories: RepositoryResponse[]) {
+  private matchesFilters(repositories: Repository[]) {
     const repositoryFilter = this.config.filters?.repository;
     const topicFilters = this.config.filters?.topic;
 
     const matchingRepositories = repositories.filter(r => {
-      const repoTopics: string[] = r.repositoryTopics.nodes.map(
-        node => node.topic.name,
-      );
+      const repoTopics: string[] = r.repositoryTopics;
       return (
         !r.isArchived &&
         (!repositoryFilter || repositoryFilter.test(r.name)) &&
         satisfiesTopicFilter(repoTopics, topicFilters) &&
-        r.defaultBranchRef?.name
+        r.defaultBranchRef
       );
     });
     return matchingRepositories;
   }
 
-  private createLocationUrl(repository: RepositoryResponse): string {
+  private createLocationUrl(repository: Repository): string {
     const branch =
-      this.config.filters?.branch || repository.defaultBranchRef?.name || '-';
+      this.config.filters?.branch || repository.defaultBranchRef || '-';
     const catalogFile = this.config.catalogPath.startsWith('/')
       ? this.config.catalogPath.substring(1)
       : this.config.catalogPath;
@@ -275,11 +271,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       return;
     }
 
-    if (params.metadata?.['x-github-event'] === 'push') {
-      await this.onRepoPush(params.eventPayload as PushEvent);
-    }
-
-    return;
+    await this.onRepoPush(params.eventPayload as PushEvent);
   }
 
   /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.supportsEventTopics} */
@@ -304,23 +296,23 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       return;
     }
 
-    if (this.config.checkRepositoryFiltersForWebhook) {
-      const repository = await this.getRepositoryInfo(repoName);
+    const repository: Repository = {
+      url: event.repository.url,
+      name: event.repository.name,
+      defaultBranchRef: event.repository.default_branch,
+      repositoryTopics: event.repository.topics,
+      isArchived: event.repository.archived,
+      // we can consider this file present because
+      // only the catalog file will be recovered from the commits
+      isCatalogInfoFilePresent: true,
+    };
 
-      if (!repository) {
-        this.logger.debug(
-          `skipping push event from repository ${repoName} because didn't find information in Github`,
-        );
-        return;
-      }
-
-      const matchingTargets = this.matchesFilters([repository]);
-      if (matchingTargets.length === 0) {
-        this.logger.debug(
-          `skipping push event from repository ${repoName} because didn't match provider filters`,
-        );
-        return;
-      }
+    const matchingTargets = this.matchesFilters([repository]);
+    if (matchingTargets.length === 0) {
+      this.logger.debug(
+        `skipping push event from repository ${repoName} because didn't match provider filters`,
+      );
+      return;
     }
 
     // the commit has information about the files (added,removed,modified)
@@ -338,35 +330,25 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       event.commits,
       (commit: Commit) => [...commit.removed],
     );
-    const modifiedCatalogFiles = this.collectFilesFromCommit(
+    const modified = this.collectFilesFromCommit(
       event.commits,
       (commit: Commit) => [...commit.modified],
     );
 
     const limiter = limiterFactory(10);
+    const promises: Promise<void>[] = [];
 
-    let modified = [];
-    let promises: Promise<void>[] = [];
-
-    if (this.catalogApi && this.tokenManager) {
-      modified = modifiedCatalogFiles
-        .map(filePath => `${event.repository.url}/blob/${branch}/${filePath}`)
-        .map(url => {
-          const location = GithubEntityProvider.toLocationSpec(url);
-
-          return locationSpecToLocationEntity({ location });
-        });
-
-      const { token } = await this.tokenManager.getToken();
-
-      promises = modified.map(entity =>
+    if (modified.length > 0) {
+      const connection = this.connection;
+      promises.push(
         limiter(async () =>
-          this.catalogApi!.refreshEntity(stringifyEntityRef(entity), { token }),
+          connection.refresh({
+            keys: modified.map(
+              filePath =>
+                `url:${event.repository.url}/tree/${branch}/${filePath}`,
+            ),
+          }),
         ),
-      );
-    } else {
-      this.logger.debug(
-        `skipping modified operation because is missing CatalogApi and/or TokenManager.`,
       );
     }
 
@@ -418,33 +400,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       .map(transformOperation)
       .flat()
       .filter(file => catalogFile.includes(file));
-  }
-
-  private async getRepositoryInfo(
-    repoName: string,
-  ): Promise<RepositoryResponse | undefined> {
-    const organization = this.config.organization;
-    const host = this.integration.host;
-    const catalogPath = this.config.catalogPath;
-    const orgUrl = `https://${host}/${organization}`;
-
-    const { headers } = await this.githubCredentialsProvider.getCredentials({
-      url: orgUrl,
-    });
-
-    const client = graphql.defaults({
-      baseUrl: this.integration.apiBaseUrl,
-      headers,
-    });
-
-    const { repository } = await getOrganizationRepository(
-      client,
-      organization,
-      catalogPath,
-      repoName,
-    );
-
-    return repository;
   }
 
   private toDeferredEntities(targets: string[]): DeferredEntity[] {

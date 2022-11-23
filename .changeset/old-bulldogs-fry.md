@@ -2,7 +2,7 @@
 '@backstage/plugin-catalog-backend-module-github': patch
 ---
 
-Handle Github `github.push` events at the `GithubEntityProvider` by subscribing to the topic `github.push.`
+Handle Github `push` events at the `GithubEntityProvider` by subscribing to the topic `github.push.`
 
 Implements `EventSubscriber` to receive events for the topic `github.push`.
 
@@ -13,4 +13,4 @@ and removing obsolete ones.
 **Installation and Migration**
 
 Please find more information at
-https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks
+https://backstage.io/docs/integrations/github/discovery#installation-with-events-support

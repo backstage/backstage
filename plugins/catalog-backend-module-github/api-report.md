@@ -5,7 +5,6 @@
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-backend';
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
@@ -86,11 +85,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   static fromConfig(
     config: Config,
     options: {
-      catalogApi?: CatalogApi;
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
-      tokenManager?: TokenManager;
     },
   ): GithubEntityProvider[];
   // (undocumented)

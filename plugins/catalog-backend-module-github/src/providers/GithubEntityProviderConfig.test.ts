@@ -102,7 +102,6 @@ describe('readProviderConfigs', () => {
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
-      checkRepositoryFiltersForWebhook: false,
       host: 'github.com',
       filters: {
         repository: undefined,
@@ -120,7 +119,6 @@ describe('readProviderConfigs', () => {
       organization: 'test-org2',
       catalogPath: 'custom/path/catalog-info.yaml',
       host: 'github.com',
-      checkRepositoryFiltersForWebhook: false,
       filters: {
         repository: undefined,
         branch: undefined,
@@ -136,7 +134,6 @@ describe('readProviderConfigs', () => {
       id: 'providerWithRepositoryFilter',
       organization: 'test-org3', // organization
       catalogPath: '/catalog-info.yaml', // file
-      checkRepositoryFiltersForWebhook: false,
       host: 'github.com',
       filters: {
         repository: /^repository.*filter$/, // repo
@@ -153,7 +150,6 @@ describe('readProviderConfigs', () => {
       id: 'providerWithBranchFilter',
       organization: 'test-org4',
       catalogPath: '/catalog-info.yaml',
-      checkRepositoryFiltersForWebhook: false,
       host: 'github.com',
       filters: {
         repository: undefined,
@@ -170,7 +166,6 @@ describe('readProviderConfigs', () => {
       id: 'providerWithTopicFilter',
       organization: 'test-org5',
       catalogPath: '/catalog-info.yaml',
-      checkRepositoryFiltersForWebhook: false,
       host: 'github.com',
       filters: {
         repository: undefined,
@@ -187,7 +182,6 @@ describe('readProviderConfigs', () => {
       id: 'providerWithHost',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
-      checkRepositoryFiltersForWebhook: false,
       host: 'ghe.internal.com',
       filters: {
         repository: undefined,
@@ -204,7 +198,6 @@ describe('readProviderConfigs', () => {
       id: 'providerWithSchedule',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
-      checkRepositoryFiltersForWebhook: false,
       host: 'github.com',
       filters: {
         repository: undefined,

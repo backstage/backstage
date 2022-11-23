@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, TokenManager } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -25,12 +25,10 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
 import { EventParams } from '@backstage/plugin-events-node';
-import { CatalogApi } from '@backstage/catalog-client';
 
 jest.mock('../lib/github', () => {
   return {
     getOrganizationRepositories: jest.fn(),
-    getOrganizationRepository: jest.fn(),
   };
 });
 class PersistingTaskRunner implements TaskRunner {
@@ -47,15 +45,6 @@ class PersistingTaskRunner implements TaskRunner {
 }
 
 const logger = getVoidLogger();
-
-const mockCatalogApi: Partial<CatalogApi> = {
-  refreshEntity: jest.fn(),
-};
-
-const mockTokenManager: jest.Mocked<TokenManager> = {
-  getToken: jest.fn(),
-  authenticate: jest.fn(),
-};
 
 describe('GithubEntityProvider', () => {
   afterEach(() => jest.resetAllMocks());
@@ -752,30 +741,6 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const mockGetOrganizationRepository = jest.spyOn(
-      helpers,
-      'getOrganizationRepository',
-    );
-
-    mockGetOrganizationRepository.mockReturnValue(
-      Promise.resolve({
-        repository: {
-          name: 'test-repo',
-          url: 'https://github.com/test-org/test-repo',
-          repositoryTopics: { nodes: [] },
-          isArchived: false,
-          defaultBranchRef: {
-            name: 'main',
-          },
-          catalogInfoFile: {
-            __typename: 'Blob',
-            id: 'abc123',
-            text: 'some yaml',
-          },
-        },
-      }),
-    );
-
     const event: EventParams = {
       topic: 'github.push',
       metadata: {
@@ -790,6 +755,7 @@ describe('GithubEntityProvider', () => {
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          topics: [],
         },
         created: true,
         deleted: false,
@@ -865,30 +831,6 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const mockGetOrganizationRepository = jest.spyOn(
-      helpers,
-      'getOrganizationRepository',
-    );
-
-    mockGetOrganizationRepository.mockReturnValue(
-      Promise.resolve({
-        repository: {
-          name: 'test-repo',
-          url: 'https://github.com/test-org/test-repo',
-          repositoryTopics: { nodes: [] },
-          isArchived: false,
-          defaultBranchRef: {
-            name: 'main',
-          },
-          catalogInfoFile: {
-            __typename: 'Blob',
-            id: 'abc123',
-            text: 'some yaml',
-          },
-        },
-      }),
-    );
-
     const event: EventParams = {
       topic: 'github.push',
       metadata: {
@@ -903,6 +845,7 @@ describe('GithubEntityProvider', () => {
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          topics: [],
         },
         created: true,
         deleted: false,
@@ -967,12 +910,9 @@ describe('GithubEntityProvider', () => {
       },
     });
 
-    mockTokenManager.getToken.mockResolvedValue({ token: '' });
     const provider = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
-      tokenManager: mockTokenManager,
-      catalogApi: mockCatalogApi as unknown as CatalogApi,
     })[0];
 
     const entityProviderConnection: EntityProviderConnection = {
@@ -980,30 +920,6 @@ describe('GithubEntityProvider', () => {
       refresh: jest.fn(),
     };
     await provider.connect(entityProviderConnection);
-
-    const mockGetOrganizationRepository = jest.spyOn(
-      helpers,
-      'getOrganizationRepository',
-    );
-
-    mockGetOrganizationRepository.mockReturnValue(
-      Promise.resolve({
-        repository: {
-          name: 'test-repo',
-          url: 'https://github.com/test-org/test-repo',
-          repositoryTopics: { nodes: [] },
-          isArchived: false,
-          defaultBranchRef: {
-            name: 'main',
-          },
-          catalogInfoFile: {
-            __typename: 'Blob',
-            id: 'abc123',
-            text: 'some yaml',
-          },
-        },
-      }),
-    );
 
     const event: EventParams = {
       topic: 'github.push',
@@ -1019,6 +935,7 @@ describe('GithubEntityProvider', () => {
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          topics: [],
         },
         created: true,
         deleted: false,
@@ -1040,36 +957,34 @@ describe('GithubEntityProvider', () => {
 
     await provider.onEvent(event);
 
-    expect(mockCatalogApi.refreshEntity).toHaveBeenCalledTimes(1);
-    expect(mockCatalogApi.refreshEntity).toHaveBeenCalledWith(
-      'location:default/generated-8688630f57e421bc85f12b9828ed7dad6aff3bb3',
-      { token: '' },
-    );
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+      keys: [
+        'url:https://github.com/test-org/test-repo/tree/main/catalog-info.yaml',
+      ],
+    });
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
 
-  it('should recover repository information when match filters from push event', async () => {
+  it('should process repository when match filters from push event', async () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader({
       catalog: {
         providers: {
           github: {
             organization: 'test-org',
-            checkRepositoryFiltersForWebhook: true,
             filters: {
               branch: 'my-special-branch',
+              repository: 'test-repo',
             },
           },
         },
       },
     });
 
-    mockTokenManager.getToken.mockResolvedValue({ token: '' });
     const provider = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
-      tokenManager: mockTokenManager,
-      catalogApi: mockCatalogApi as unknown as CatalogApi,
     })[0];
 
     const entityProviderConnection: EntityProviderConnection = {
@@ -1077,30 +992,6 @@ describe('GithubEntityProvider', () => {
       refresh: jest.fn(),
     };
     await provider.connect(entityProviderConnection);
-
-    const mockGetOrganizationRepository = jest.spyOn(
-      helpers,
-      'getOrganizationRepository',
-    );
-
-    mockGetOrganizationRepository.mockReturnValue(
-      Promise.resolve({
-        repository: {
-          name: 'test-repo',
-          url: 'https://github.com/test-org/test-repo',
-          repositoryTopics: { nodes: [] },
-          isArchived: false,
-          defaultBranchRef: {
-            name: 'main',
-          },
-          catalogInfoFile: {
-            __typename: 'Blob',
-            id: 'abc123',
-            text: 'some yaml',
-          },
-        },
-      }),
-    );
 
     const event: EventParams = {
       topic: 'github.push',
@@ -1110,12 +1001,13 @@ describe('GithubEntityProvider', () => {
       eventPayload: {
         ref: 'refs/heads/my-special-branch',
         repository: {
-          name: 'teste-1',
+          name: 'test-repo',
           url: 'https://github.com/test-org/test-repo',
           default_branch: 'main',
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          topics: [],
         },
         created: true,
         deleted: false,
@@ -1137,11 +1029,78 @@ describe('GithubEntityProvider', () => {
 
     await provider.onEvent(event);
 
-    expect(mockCatalogApi.refreshEntity).toHaveBeenCalledTimes(1);
-    expect(mockCatalogApi.refreshEntity).toHaveBeenCalledWith(
-      'location:default/generated-6ffd478ea33caf9af61fa75cc09b5aa7770470f0de',
-      { token: '' },
-    );
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+      keys: [
+        'url:https://github.com/test-org/test-repo/tree/my-special-branch/catalog-info.yaml',
+      ],
+    });
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
+
+  it("should skip process when didn't match filters from push event", async () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            filters: {
+              repository: 'only-special-repository',
+            },
+          },
+        },
+      },
+    });
+
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    await provider.connect(entityProviderConnection);
+
+    const event: EventParams = {
+      topic: 'github.push',
+      metadata: {
+        'x-github-event': 'push',
+      },
+      eventPayload: {
+        ref: 'refs/heads/main',
+        repository: {
+          name: 'teste-1',
+          url: 'https://github.com/test-org/test-repo',
+          default_branch: 'main',
+          stargazers: 0,
+          master_branch: 'main',
+          organization: 'test-org',
+          topics: [],
+        },
+        created: true,
+        deleted: false,
+        forced: false,
+        commits: [
+          {
+            added: ['new-file.yaml'],
+            removed: [],
+            modified: [],
+          },
+          {
+            added: [],
+            removed: [],
+            modified: ['catalog-info.yaml'],
+          },
+        ],
+      },
+    };
+
+    await provider.onEvent(event);
+
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
 });
