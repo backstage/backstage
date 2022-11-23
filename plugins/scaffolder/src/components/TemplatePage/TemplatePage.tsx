@@ -152,7 +152,6 @@ export const TemplatePage = ({
                 onReset={handleFormReset}
                 onFinish={handleCreate}
                 layouts={layouts}
-                finishButtonLabel={schema['ui:options']?.finishButtonLabel}
                 steps={schema.steps.map(step => {
                   return {
                     ...step,

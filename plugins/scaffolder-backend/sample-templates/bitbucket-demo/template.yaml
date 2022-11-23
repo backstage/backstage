@@ -4,8 +4,6 @@ metadata:
   name: bitbucket-demo
   title: Test Bitbucket RepoUrlPicker template
   description: scaffolder v1beta3 template demo publishing to bitbucket
-  ui:options:
-    finishButtonLabel: Publish
 spec:
   owner: backstage/techdocs-core
   type: service
