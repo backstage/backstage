@@ -38,6 +38,32 @@ export interface Config {
        * E.g. ["Component", "API", "Template", "Location"]
        */
       allow: Array<string>;
+      /**
+       * Limit this rule to a specific location
+       *
+       * Example with a fixed location
+       *  { "type": "url", "target": "https://github.com/a/b/blob/file.yaml}
+       *
+       * Example using a Regex
+       *  { "type": "url", "match": "https://github.com/a/*}
+       *
+       */
+      location?: Array<{
+        /**
+         * The type of location, e.g. "url".
+         */
+        type: string;
+        /**
+         * The target URL of the location, e.g.
+         * "https://github.com/org/repo/blob/master/users.yaml".
+         */
+        target?: string;
+        /**
+         * The target Regex of the location, e.g.
+         * "https://github.com/org/*.
+         */
+        match?: string;
+      }>;
     }>;
 
     /**
