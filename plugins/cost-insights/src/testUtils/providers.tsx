@@ -95,6 +95,7 @@ export const MockConfigProvider = (props: MockConfigProviderProps) => {
     products: [],
     icons: [],
     engineerCost: 0,
+    engineerThreshold: 0.5,
     currencies: [],
   };
 

@@ -19,7 +19,6 @@ import classnames from 'classnames';
 import {
   CurrencyType,
   Duration,
-  EngineerThreshold,
   GrowthType,
 } from '../../types';
 import { ChangeStatistic } from '@backstage/plugin-cost-insights-common';
@@ -42,7 +41,7 @@ export const CostGrowth = (props: CostGrowthProps) => {
   const { change, duration } = props;
 
   const styles = useStyles();
-  const { engineerCost } = useConfig();
+  const { engineerCost, engineerThreshold } = useConfig();
   const [currency] = useCurrency();
 
   // Only display costs in absolute values
@@ -55,7 +54,7 @@ export const CostGrowth = (props: CostGrowthProps) => {
 
   // If a ratio cannot be calculated, don't format.
   const growth = notEmpty(change.ratio)
-    ? growthOf({ ratio: change.ratio, amount: engineers })
+    ? growthOf({ ratio: change.ratio, amount: engineers }, engineerThreshold)
     : null;
   // Determine if growth is significant enough to highlight
   const classes = classnames({
@@ -63,7 +62,7 @@ export const CostGrowth = (props: CostGrowthProps) => {
     [styles.savings]: growth === GrowthType.Savings,
   });
 
-  if (engineers < EngineerThreshold) {
+  if (engineers < engineerThreshold) {
     return <span className={classes}>Negligible</span>;
   }
 
