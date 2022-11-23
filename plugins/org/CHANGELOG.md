@@ -1,5 +1,11 @@
 # @backstage/plugin-org
 
+## 0.6.1
+
+### Patch Changes
+
+- eb286a2a78: Update `UserProfileCard` and `GroupProfileCard` to not render links unless the `showLinks` prop is set. The primary component for rendering links are the `EntityLinksCard` from plugin-catalog.
+
 ## 0.6.0
 
 ### Minor Changes
