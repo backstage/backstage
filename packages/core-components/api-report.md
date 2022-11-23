@@ -921,14 +921,10 @@ export const sidebarConfig: {
   mobileSidebarHeight: number;
 };
 
+// Warning: (ae-forgotten-export) The symbol "SidebarContextType" needs to be exported by the entry point index.d.ts
+//
 // @public @deprecated
 export const SidebarContext: React_2.Context<SidebarContextType>;
-
-// @public @deprecated
-export type SidebarContextType = {
-  isOpen: boolean;
-  setOpen: (open: boolean) => void;
-};
 
 // Warning: (ae-missing-release-tag) "SidebarDivider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1038,19 +1034,12 @@ export type SidebarPinState = {
 };
 
 // @public @deprecated
-export const SidebarPinStateContext: React_2.Context<SidebarPinStateContextType>;
-
-// @public @deprecated
-export type SidebarPinStateContextType = {
-  isPinned: boolean;
-  toggleSidebarPinState: () => any;
-  isMobile?: boolean;
-};
+export const SidebarPinStateContext: React_2.Context<SidebarPinState>;
 
 // @public
 export function SidebarPinStateProvider(props: {
   children: ReactNode;
-  value: SidebarPinStateContextType;
+  value: SidebarPinState;
 }): JSX.Element;
 
 // @public (undocumented)
