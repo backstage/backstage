@@ -19,14 +19,14 @@ import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Duration } from 'luxon';
 import { v4 } from 'uuid';
+import { INCREMENTAL_ENTITY_PROVIDER_ANNOTATION } from '../types';
 import {
-  INCREMENTAL_ENTITY_PROVIDER_ANNOTATION,
   IngestionRecord,
   IngestionRecordUpdate,
   IngestionUpsert,
   MarkRecord,
   MarkRecordInsert,
-} from '../types';
+} from './tables';
 
 export class IncrementalIngestionDatabaseManager {
   private client: Knex;

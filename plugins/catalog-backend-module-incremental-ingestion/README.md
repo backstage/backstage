@@ -1,6 +1,6 @@
-# `@backstage/plugin-incremental-ingestion-backend`
+# `@backstage/plugin-catalog-backend-module-incremental-ingestion`
 
-The Incremental Ingestion Backend plugin provides an Incremental Entity Provider that can be used to ingest data from sources using delta mutations, while retaining the orphan prevention mechanism provided by full mutations.
+The Incremental Ingestion catalog backend module provides an Incremental Entity Provider that can be used to ingest data from sources using delta mutations, while retaining the orphan prevention mechanism provided by full mutations.
 
 ## Why did we create it?
 
@@ -42,8 +42,8 @@ The Incremental Entity Provider backend is designed for data sources that provid
 
 ## Installation
 
-1. Install `@backstage/plugin-incremental-ingestion-backend` with `yarn workspace backend add @backstage/plugin-incremental-ingestion-backend`
-2. Import `IncrementalCatalogBuilder` from `@backstage/plugin-incremental-ingestion-backend` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
+1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn workspace backend add @backstage/plugin-catalog-backend-module-incremental-ingestion`
+2. Import `IncrementalCatalogBuilder` from `@backstage/plugin-catalog-backend-module-incremental-ingestion` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
 
    ```ts
    const builder = CatalogBuilder.create(env);
@@ -70,7 +70,7 @@ The Incremental Entity Provider backend is designed for data sources that provid
    ```ts
    import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
    import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
-   import { IncrementalCatalogBuilder } from '@backstage/plugin-incremental-ingestion-backend';
+   import { IncrementalCatalogBuilder } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
    import { Router } from 'express';
    import { Duration } from 'luxon';
    import { PluginEnvironment } from '../types';
@@ -164,7 +164,7 @@ These are the only 3 methods that you need to implement. `getProviderName()` is 
 import {
   IncrementalEntityProvider,
   EntityIteratorResult,
-} from '@backstage/plugin-incremental-ingestion-backend';
+} from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 
 // this will include your pagination information, let's say our API accepts a `page` parameter.
 // In this case, the cursor will include `page`

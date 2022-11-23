@@ -25,35 +25,7 @@ import { IncrementalIngestionEngine } from '../engine/IncrementalIngestionEngine
 import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { createIncrementalProviderRouter } from '../router/routes';
-
-class Deferred<T> implements Promise<T> {
-  #resolve?: (value: T) => void;
-  #reject?: (error: Error) => void;
-
-  get resolve() {
-    return this.#resolve!;
-  }
-  get reject() {
-    return this.#reject!;
-  }
-
-  then: Promise<T>['then'];
-  catch: Promise<T>['catch'];
-  finally: Promise<T>['finally'];
-
-  constructor() {
-    const promise = new Promise<T>((resolve, reject) => {
-      this.#resolve = resolve;
-      this.#reject = reject;
-    });
-
-    this.then = promise.then.bind(promise);
-    this.catch = promise.catch.bind(promise);
-    this.finally = promise.finally.bind(promise);
-  }
-
-  [Symbol.toStringTag]: 'Deferred' = 'Deferred';
-}
+import { Deferred } from '../util';
 
 /** @public */
 export class IncrementalCatalogBuilder {

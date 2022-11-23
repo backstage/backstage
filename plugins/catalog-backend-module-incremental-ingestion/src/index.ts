@@ -20,11 +20,12 @@
  * @packageDocumentation
  */
 
-export { IncrementalCatalogBuilder } from './service/IncrementalCatalogBuilder';
-export type {
-  EntityIteratorResult,
-  IncrementalEntityProvider,
-  IncrementalEntityProviderOptions,
+export * from './module';
+export * from './service';
+export {
   INCREMENTAL_ENTITY_PROVIDER_ANNOTATION,
-  PluginEnvironment,
+  type EntityIteratorResult,
+  type IncrementalEntityProvider,
+  type IncrementalEntityProviderOptions,
+  type PluginEnvironment,
 } from './types';

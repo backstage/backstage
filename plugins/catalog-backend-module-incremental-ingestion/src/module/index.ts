@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
-import { Knex } from 'knex';
-import { DB_MIGRATIONS_TABLE } from './tables';
-
-export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
-  const migrationsDir = resolvePackagePath(
-    '@backstage/plugin-incremental-ingestion-backend',
-    'migrations',
-  );
-
-  await knex.migrate.latest({
-    directory: migrationsDir,
-    tableName: DB_MIGRATIONS_TABLE,
-  });
-}
+export { incrementalIngestionEntityProviderCatalogModule } from './incrementalIngestionEntityProviderCatalogModule';
