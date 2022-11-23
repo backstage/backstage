@@ -3294,7 +3294,7 @@ __metadata:
     mock-fs: ^5.1.0
     msw: ^0.49.0
     node-fetch: ^2.6.7
-    typescript-json-schema: ^0.54.0
+    typescript-json-schema: ^0.55.0
     yaml: ^2.0.0
     yup: ^0.32.9
   languageName: unknown
@@ -35935,7 +35935,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.0.0, ts-node@npm:^10.2.1, ts-node@npm:^10.4.0, ts-node@npm:^10.8.1":
+"ts-node@npm:^10.0.0, ts-node@npm:^10.4.0, ts-node@npm:^10.8.1, ts-node@npm:^10.9.1":
   version: 10.9.1
   resolution: "ts-node@npm:10.9.1"
   dependencies:
@@ -36173,25 +36173,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-json-schema@npm:^0.54.0":
-  version: 0.54.0
-  resolution: "typescript-json-schema@npm:0.54.0"
+"typescript-json-schema@npm:^0.55.0":
+  version: 0.55.0
+  resolution: "typescript-json-schema@npm:0.55.0"
   dependencies:
     "@types/json-schema": ^7.0.9
     "@types/node": ^16.9.2
     glob: ^7.1.7
     path-equal: ^1.1.2
     safe-stable-stringify: ^2.2.0
-    ts-node: ^10.2.1
-    typescript: ~4.6.0
+    ts-node: ^10.9.1
+    typescript: ~4.8.2
     yargs: ^17.1.1
   bin:
     typescript-json-schema: bin/typescript-json-schema
-  checksum: 49e03bd2612f79fe3ee9e9afcea34ae563da9aa799a8b4cf12b73feb60eb62a0786300eedb30261c69c482ed7e545acf1e5617d59861e6deee4f6570a658de88
+  checksum: 4188e9d4cc1f1fc3201e2aa06b8d87d35695b0eaf049ff9d2cd3027d87406efc6978c4f90c2bf06f4fcd8d6dd40ceb65e744dc3cf9b412e1f74b8eb5bae96a05
   languageName: node
   linkType: hard
 
-"typescript@npm:~4.6.0, typescript@npm:~4.6.3":
+"typescript@npm:~4.6.3":
   version: 4.6.4
   resolution: "typescript@npm:4.6.4"
   bin:
@@ -36211,7 +36211,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@~4.6.0#~builtin<compat/typescript>, typescript@patch:typescript@~4.6.3#~builtin<compat/typescript>":
+"typescript@npm:~4.8.2":
+  version: 4.8.4
+  resolution: "typescript@npm:4.8.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 3e4f061658e0c8f36c820802fa809e0fd812b85687a9a2f5430bc3d0368e37d1c9605c3ce9b39df9a05af2ece67b1d844f9f6ea8ff42819f13bcb80f85629af0
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~4.6.3#~builtin<compat/typescript>":
   version: 4.6.4
   resolution: "typescript@patch:typescript@npm%3A4.6.4#~builtin<compat/typescript>::version=4.6.4&hash=a1c5e5"
   bin:
@@ -36228,6 +36238,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~4.8.2#~builtin<compat/typescript>":
+  version: 4.8.4
+  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=a1c5e5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 563a0ef47abae6df27a9a3ab38f75fc681f633ccf1a3502b1108e252e187787893de689220f4544aaf95a371a4eb3141e4a337deb9895de5ac3c1ca76430e5f0
   languageName: node
   linkType: hard
 
