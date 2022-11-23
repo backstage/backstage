@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-export * from './apis';
-export { default as mockBreakpoint } from './mockBreakpoint';
-export {
-  wrapInTestApp,
-  renderInTestApp,
-  createTestAppWrapper,
-} from './appWrappers';
-export type { TestAppOptions } from './appWrappers';
-export * from './msw';
-export * from './logCollector';
-export * from './providers';
-export * from './testingLibrary';
-export { TestApiProvider, TestApiRegistry } from './TestApiProvider';
-export type { TestApiProviderProps } from './TestApiProvider';
+import { usePluginOptions } from '@backstage/core-plugin-api';
+
+export type CostInsightsPluginOptions = {
+  hideTrendLine?: boolean;
+};
+
+/** @ignore */
+export type CostInsightsInputPluginOptions = {
+  hideTrendLine?: boolean;
+};
+
+export const useCostInsightsOptions = () =>
+  usePluginOptions<CostInsightsPluginOptions>();

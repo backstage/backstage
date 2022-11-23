@@ -322,7 +322,7 @@ const costInsightsPlugin: BackstagePlugin<
     unlabeledDataflowAlerts: RouteRef<undefined>;
   },
   {},
-  {}
+  CostInsightsInputPluginOptions
 >;
 export { costInsightsPlugin };
 export { costInsightsPlugin as plugin };

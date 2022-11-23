@@ -47,6 +47,7 @@ import { groupByDate, toDataMax, trendFrom } from '../../utils/charts';
 import { aggregationSort } from '../../utils/sort';
 import { CostOverviewLegend } from './CostOverviewLegend';
 import { TooltipRenderer } from '../../types';
+import { useCostInsightsOptions } from '../../options';
 import { useConfig } from '../../hooks';
 
 type CostOverviewChartProps = {
@@ -133,6 +134,8 @@ export const CostOverviewChart = ({
     );
   };
 
+  const { hideTrendLine } = useCostInsightsOptions();
+
   return (
     <Box display="flex" flexDirection="column">
       <CostOverviewLegend
@@ -178,15 +181,17 @@ export const CostOverviewChart = ({
             stroke="none"
             yAxisId={data.dailyCost.dataKey}
           />
-          <Line
-            activeDot={false}
-            dataKey="trend"
-            dot={false}
-            isAnimationActive={false}
-            strokeWidth={2}
-            stroke={theme.palette.blue}
-            yAxisId={data.dailyCost.dataKey}
-          />
+          {!hideTrendLine && (
+            <Line
+              activeDot={false}
+              dataKey="trend"
+              dot={false}
+              isAnimationActive={false}
+              strokeWidth={2}
+              stroke={theme.palette.blue}
+              yAxisId={data.dailyCost.dataKey}
+            />
+          )}
           {metric && (
             <Line
               dataKey={data.metric.dataKey}
