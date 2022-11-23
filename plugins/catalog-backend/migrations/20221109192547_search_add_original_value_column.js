@@ -33,6 +33,6 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   await knex.schema.alterTable('search', table => {
     table.dropIndex([], 'search_original_value_idx');
-    table.dropColumn('original_value')
+    table.dropColumn('original_value');
   });
 };
