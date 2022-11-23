@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-api-docs",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
-  "version": "0.8.11",
+  "version": "0.8.12-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -66,7 +66,7 @@
     "@types/node": "^16.11.26",
     "@types/swagger-ui-react": "^4.1.1",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.48.0"
+    "msw": "^0.49.0"
   },
   "files": [
     "dist"

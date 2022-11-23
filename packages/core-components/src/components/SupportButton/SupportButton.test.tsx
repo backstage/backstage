@@ -15,31 +15,38 @@
  */
 
 import React from 'react';
+import { fireEvent, screen } from '@testing-library/react';
 import {
-  render,
-  act,
-  RenderResult,
-  waitFor,
-  fireEvent,
-  screen,
-} from '@testing-library/react';
-import { wrapInTestApp, renderInTestApp } from '@backstage/test-utils';
+  MockConfigApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import { SupportButton } from './SupportButton';
+import { configApiRef } from '@backstage/core-plugin-api';
+
+const configApi = new MockConfigApi({
+  app: {
+    support: {
+      url: 'https://github.com',
+      items: [
+        {
+          title: 'Github',
+          icon: 'github',
+          links: [{ title: 'Github Issues', url: '/issues' }],
+        },
+      ],
+    },
+  },
+});
 
 const SUPPORT_BUTTON_ID = 'support-button';
 const POPOVER_ID = 'support-button-popover';
 
 describe('<SupportButton />', () => {
   it('renders without exploding', async () => {
-    let renderResult: RenderResult;
+    await renderInTestApp(<SupportButton />);
 
-    await act(async () => {
-      renderResult = render(wrapInTestApp(<SupportButton />));
-    });
-
-    await waitFor(() =>
-      expect(renderResult.getByTestId(SUPPORT_BUTTON_ID)).toBeInTheDocument(),
-    );
+    expect(screen.getByTestId(SUPPORT_BUTTON_ID)).toBeInTheDocument();
   });
 
   it('supports passing a title', async () => {
@@ -48,26 +55,52 @@ describe('<SupportButton />', () => {
     expect(screen.getByText('Custom title')).toBeInTheDocument();
   });
 
+  it('supports passing link items through props', async () => {
+    await renderInTestApp(
+      <SupportButton
+        items={[
+          {
+            title: 'Documentation',
+            icon: 'description',
+            links: [{ title: 'Show docs', url: '/docs' }],
+          },
+        ]}
+      />,
+    );
+
+    const supportButton = screen.getByTestId(SUPPORT_BUTTON_ID);
+    expect(supportButton).toBeInTheDocument();
+
+    fireEvent.click(supportButton);
+
+    const documentationItem = screen.getByText('Documentation');
+    expect(documentationItem).toBeInTheDocument();
+  });
+
+  it('shows items from support config', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <SupportButton />
+      </TestApiProvider>,
+    );
+
+    const supportButton = screen.getByTestId(SUPPORT_BUTTON_ID);
+    expect(supportButton).toBeInTheDocument();
+
+    fireEvent.click(supportButton);
+
+    const defaultGithubSupportConfig = screen.getByText('Github Issues');
+    expect(defaultGithubSupportConfig).toBeInTheDocument();
+  });
+
   it('shows popover on click', async () => {
-    let renderResult: RenderResult;
+    await renderInTestApp(<SupportButton />);
 
-    await act(async () => {
-      renderResult = render(wrapInTestApp(<SupportButton />));
-    });
+    const supportButton = screen.getByTestId(SUPPORT_BUTTON_ID);
+    expect(supportButton).toBeInTheDocument();
 
-    let button: HTMLElement;
+    fireEvent.click(supportButton);
 
-    await waitFor(() => {
-      expect(renderResult.getByTestId(SUPPORT_BUTTON_ID)).toBeInTheDocument();
-      button = renderResult.getByTestId(SUPPORT_BUTTON_ID);
-    });
-
-    await act(async () => {
-      fireEvent.click(button);
-    });
-
-    await waitFor(() => {
-      expect(renderResult.getByTestId(POPOVER_ID)).toBeInTheDocument();
-    });
+    expect(screen.getByTestId(POPOVER_ID)).toBeInTheDocument();
   });
 });

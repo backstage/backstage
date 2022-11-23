@@ -16,7 +16,7 @@
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { ComponentType, useCallback, useContext, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router';
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
@@ -41,6 +41,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LayoutOptions } from '../../layouts';
+import { ReviewStepProps } from '../types';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -52,6 +53,7 @@ const useTemplateParameterSchema = (templateRef: string) => {
 };
 
 type Props = {
+  ReviewStepComponent?: ComponentType<ReviewStepProps>;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   headerOptions?: {
@@ -62,6 +64,7 @@ type Props = {
 };
 
 export const TemplatePage = ({
+  ReviewStepComponent,
   customFieldExtensions = [],
   layouts = [],
   headerOptions,
@@ -155,6 +158,7 @@ export const TemplatePage = ({
               titleTypographyProps={{ component: 'h2' }}
             >
               <MultistepJsonForm
+                ReviewStepComponent={ReviewStepComponent}
                 formData={formState}
                 fields={customFieldComponents}
                 onChange={handleChange}

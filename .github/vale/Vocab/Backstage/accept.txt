@@ -407,6 +407,7 @@ Gitiles
 gitlab
 GitLab
 gke
+globals
 gocdPlugin
 Gource
 Grafana
@@ -490,6 +491,7 @@ isKind
 isOrphan
 isPermission
 isRegistered
+item_id
 iteratePages
 iterateResults
 JaCoCo

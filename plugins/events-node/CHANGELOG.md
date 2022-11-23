@@ -1,5 +1,19 @@
 # @backstage/plugin-events-node
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- cf41eedf43: Introduce a new interface `RequestDetails` to abstract `Request`
+  providing access to request body and headers.
+
+  **BREAKING:** Replace `request: Request` with `request: RequestDetails` at `RequestValidator`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.5-next.0
+
 ## 0.1.0
 
 ### Minor Changes

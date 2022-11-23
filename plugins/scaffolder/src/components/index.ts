@@ -19,3 +19,4 @@ export { TemplateTypePicker } from './TemplateTypePicker';
 export * from './secrets';
 export { TaskPage } from './TaskPage';
 export type { RouterProps } from './Router';
+export type { ReviewStepProps } from './types';
