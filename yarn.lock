@@ -3242,7 +3242,7 @@ __metadata:
     yaml: ^2.0.0
     yml-loader: ^2.1.0
     yn: ^4.0.0
-    zod: ^3.11.6
+    zod: ^3.9.5
   peerDependencies:
     "@microsoft/api-extractor": ^7.21.2
   peerDependenciesMeta:
@@ -3348,7 +3348,7 @@ __metadata:
     react-router-stable: "npm:react-router@^6.3.0"
     react-use: ^17.2.4
     zen-observable: ^0.9.0
-    zod: ^3.11.6
+    zod: ^3.9.5
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -3520,7 +3520,7 @@ __metadata:
     react-window: ^1.8.6
     remark-gfm: ^3.0.1
     zen-observable: ^0.9.0
-    zod: ^3.11.6
+    zod: ^3.9.5
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -4736,7 +4736,7 @@ __metadata:
     winston: ^3.2.1
     yaml: ^2.0.0
     yn: ^4.0.0
-    zod: ^3.11.6
+    zod: ^3.9.5
   languageName: unknown
   linkType: soft
 
@@ -6490,7 +6490,7 @@ __metadata:
     supertest: ^6.1.6
     winston: ^3.2.1
     yn: ^4.0.0
-    zod: ^3.11.6
+    zod: ^3.9.5
   languageName: unknown
   linkType: soft
 
@@ -6519,7 +6519,7 @@ __metadata:
     cross-fetch: ^3.1.5
     msw: ^0.49.0
     uuid: ^8.0.0
-    zod: ^3.11.6
+    zod: ^3.9.5
   languageName: unknown
   linkType: soft
 
@@ -6540,7 +6540,7 @@ __metadata:
     express-promise-router: ^4.1.0
     msw: ^0.49.0
     supertest: ^6.1.3
-    zod: ^3.11.6
+    zod: ^3.9.5
     zod-to-json-schema: ^3.18.1
   languageName: unknown
   linkType: soft
@@ -6610,7 +6610,7 @@ __metadata:
     uuid: ^8.2.0
     winston: ^3.2.1
     yn: ^4.0.0
-    zod: ^3.11.6
+    zod: ^3.9.5
   languageName: unknown
   linkType: soft
 
@@ -6871,7 +6871,7 @@ __metadata:
     winston: ^3.2.1
     yaml: ^2.0.0
     zen-observable: ^0.9.0
-    zod: ^3.11.6
+    zod: ^3.9.5
   languageName: unknown
   linkType: soft
 
@@ -6945,7 +6945,7 @@ __metadata:
     use-immer: ^0.7.0
     yaml: ^2.0.0
     zen-observable: ^0.9.0
-    zod: ^3.11.6
+    zod: ^3.9.5
     zod-to-json-schema: ^3.18.1
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7039,7 +7039,7 @@ __metadata:
     supertest: ^6.1.3
     winston: ^3.2.1
     yn: ^4.0.0
-    zod: ^3.11.6
+    zod: ^3.9.5
   languageName: unknown
   linkType: soft
 
@@ -38138,9 +38138,9 @@ __metadata:
   linkType: hard
 
 "zod@npm:^3.11.6, zod@npm:^3.9.5":
-  version: 3.18.0
-  resolution: "zod@npm:3.18.0"
-  checksum: 86a9a9928f4b40a07020d4b9832842fa4a70050c2d7bd1b2866bc1acfd734aa53a40f87a99a4312a637341a608b0105770c7a1f83b56df78e97691b4f5badcd8
+  version: 3.19.1
+  resolution: "zod@npm:3.19.1"
+  checksum: 56e420ea5845912324a8fc61833714a2aec84954e418b52660d76502183c6e62fef9447cbfa64349640c5ce190cf2c24267e006bb80f066183e2f3fa9fe11864
   languageName: node
   linkType: hard
 
