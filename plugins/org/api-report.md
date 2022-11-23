@@ -13,7 +13,7 @@ import { InfoCardVariants } from '@backstage/core-components';
 // @public (undocumented)
 export const EntityGroupProfileCard: (props: {
   variant?: InfoCardVariants | undefined;
-  hideLinks?: boolean | undefined;
+  showLinks?: boolean | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -33,13 +33,13 @@ export const EntityOwnershipCard: (props: {
 // @public (undocumented)
 export const EntityUserProfileCard: (props: {
   variant?: InfoCardVariants | undefined;
-  hideLinks?: boolean | undefined;
+  showLinks?: boolean | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const GroupProfileCard: (props: {
   variant?: InfoCardVariants;
-  hideLinks?: boolean;
+  showLinks?: boolean;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -78,6 +78,6 @@ export const OwnershipCard: (props: {
 // @public (undocumented)
 export const UserProfileCard: (props: {
   variant?: InfoCardVariants;
-  hideLinks?: boolean;
+  showLinks?: boolean;
 }) => JSX.Element;
 ```
