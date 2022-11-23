@@ -1,5 +1,19 @@
 # @backstage/plugin-org-react
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 4cb5066828: Bug fixes and adding the possibility to add a default value for the `GroupListPicker`. Fixes: Vertical size jump on text entry, left align for text, selecting a value closes the popup, auto focus on the popup when opening
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.1.0
 
 ### Minor Changes

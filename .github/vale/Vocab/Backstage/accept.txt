@@ -126,6 +126,7 @@ github
 Gitiles
 gitlab
 GitLab
+globals
 Gource
 Grafana
 graphql
@@ -409,3 +410,4 @@ Zolotusky
 zoomable
 zsh
 Lainfiesta
+allowlisted

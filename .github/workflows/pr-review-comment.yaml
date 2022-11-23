@@ -33,7 +33,7 @@ jobs:
             }
 
             const prNumber = artifact.name.slice('pr_number-'.length)
-            console.log(`::set-output name=pr-number::${prNumber}`);
+            core.setOutput('pr-number', prNumber);
 
       - uses: backstage/actions/re-review@v0.5.7
         with:
