@@ -37971,8 +37971,8 @@ __metadata:
   linkType: hard
 
 "yeoman-environment@npm:^3.9.1":
-  version: 3.10.0
-  resolution: "yeoman-environment@npm:3.10.0"
+  version: 3.12.1
+  resolution: "yeoman-environment@npm:3.12.1"
   dependencies:
     "@npmcli/arborist": ^4.0.4
     are-we-there-yet: ^2.0.0
@@ -38015,7 +38015,7 @@ __metadata:
     mem-fs-editor: ^8.1.2 || ^9.0.0
   bin:
     yoe: cli/index.js
-  checksum: 2ab844358d148889285fc9cd68b9eb6660af4721033c86f833ad60a0028bbe8b5c637fa290a1c29f54c4957df53e6c5cd05692c6e25e7d88c9442c9a5f9775dc
+  checksum: 71e777fcfa4baf26f9848265292447d7283f4bcb0e6b781018c8f8610c47c430e5a331eb0da03491621a7bcdd6ed40a2854c664a4f9f1ceb9ee111def37f52d1
   languageName: node
   linkType: hard
 
