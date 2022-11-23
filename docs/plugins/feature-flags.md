@@ -52,6 +52,8 @@ import { FeatureFlagged } from '@backstage/core-app-api'
 </FeatureFlagged>
 ```
 
+If you use a `<FeatureFlagged>` component, you do not need to pass `featureFlags: [{ name: 'show-example-feature' }],` into the `createPlugin()` like done at the top of this page. Doing so will cause duplicate entries to appear under `Settings` > `Feature Flags`.
+
 ## Evaluating Feature Flag State
 
 It is also possible to test the feature flag state using the [FeatureFlags Api](https://backstage.io/docs/reference/core-plugin-api.featureflagsapi).
