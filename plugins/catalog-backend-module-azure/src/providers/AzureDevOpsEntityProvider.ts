@@ -166,17 +166,18 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   }
 
   private createLocationSpec(file: CodeSearchResultItem): LocationSpec {
+    const target = this.createObjectUrl(file);
+
     return {
       type: 'url',
-      target: this.createObjectUrl(file),
+      target: target,
       presence: 'required',
     };
   }
 
   private createObjectUrl(file: CodeSearchResultItem): string {
-    const baseUrl = `https://${this.config.host}/${this.config.organization}/${this.config.project}`;
-    return encodeURI(
-      `${baseUrl}/_git/${file.repository.name}?path=${file.path}`,
-    );
+    const baseUrl = `https://${this.config.host}/${this.config.organization}`;
+    const encodedUri = `${baseUrl}/${file.project.name}/_git/${file.repository.name}?path=${file.path}`;
+    return encodedUri;
   }
 }
