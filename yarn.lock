@@ -1290,7 +1290,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/identity@npm:^2.0.1, @azure/identity@npm:^2.0.4, @azure/identity@npm:^2.1.0":
+"@azure/identity@npm:^2.0.4, @azure/identity@npm:^2.1.0":
   version: 2.1.0
   resolution: "@azure/identity@npm:2.1.0"
   dependencies:
@@ -7598,7 +7598,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-node@workspace:plugins/techdocs-node"
   dependencies:
-    "@azure/identity": ^2.0.1
+    "@azure/identity": ^2.1.0
     "@azure/storage-blob": ^12.5.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
