@@ -11,10 +11,15 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { ChangeStatistic as ChangeStatistic_2 } from '@backstage/plugin-cost-insights-common';
 import * as common from '@backstage/plugin-cost-insights-common';
+import { Cost as Cost_2 } from '@backstage/plugin-cost-insights-common';
 import { Dispatch } from 'react';
+import { Entity as Entity_2 } from '@backstage/plugin-cost-insights-common';
 import { ForwardRefExoticComponent } from 'react';
+import { Group as Group_2 } from '@backstage/plugin-cost-insights-common';
 import { Maybe as Maybe_2 } from '@backstage/plugin-cost-insights-common';
+import { MetricData as MetricData_2 } from '@backstage/plugin-cost-insights-common';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
+import { Project as Project_2 } from '@backstage/plugin-cost-insights-common';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
@@ -248,34 +253,34 @@ export const CostGrowthIndicator: (
 
 // @public (undocumented)
 export type CostGrowthIndicatorProps = TypographyProps & {
-  change: ChangeStatistic;
+  change: ChangeStatistic_2;
   formatter?: (
-    change: ChangeStatistic,
+    change: ChangeStatistic_2,
     options?: {
       absolute: boolean;
     },
-  ) => Maybe<string>;
+  ) => Maybe_2<string>;
 };
 
 // @public (undocumented)
 export type CostGrowthProps = {
-  change: ChangeStatistic;
+  change: ChangeStatistic_2;
   duration: Duration;
 };
 
 // @public (undocumented)
 export type CostInsightsApi = {
   getLastCompleteBillingDate(): Promise<string>;
-  getUserGroups(userId: string): Promise<Group[]>;
-  getGroupProjects(group: string): Promise<Project[]>;
+  getUserGroups(userId: string): Promise<Group_2[]>;
+  getGroupProjects(group: string): Promise<Project_2[]>;
   getCatalogEntityDailyCost?(
     catalogEntityRef: string,
     intervals: string,
-  ): Promise<Cost>;
-  getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
-  getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
-  getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
-  getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
+  ): Promise<Cost_2>;
+  getGroupDailyCost(group: string, intervals: string): Promise<Cost_2>;
+  getProjectDailyCost(project: string, intervals: string): Promise<Cost_2>;
+  getDailyMetricData(metric: string, intervals: string): Promise<MetricData_2>;
+  getProductInsights(options: ProductInsightsOptions): Promise<Entity_2>;
   getAlerts(group: string): Promise<Alert[]>;
 };
 
@@ -317,7 +322,7 @@ const costInsightsPlugin: BackstagePlugin<
     unlabeledDataflowAlerts: RouteRef<undefined>;
   },
   {},
-  {}
+  CostInsightsInputPluginOptions
 >;
 export { costInsightsPlugin };
 export { costInsightsPlugin as plugin };
@@ -539,7 +544,7 @@ export type ProductInsightsOptions = {
   product: string;
   group: string;
   intervals: string;
-  project: Maybe<string>;
+  project: Maybe_2<string>;
 };
 
 // @public (undocumented)

@@ -45,7 +45,7 @@ describe('ScaffolderPageContextMenu', () => {
 
     await userEvent.click(screen.getByTestId('container').firstElementChild!);
 
-    expect(screen.queryByText('Template Editor')).toBeInTheDocument();
+    expect(screen.getByText('Template Editor')).toBeInTheDocument();
     expect(screen.queryByText('Installed Actions')).not.toBeInTheDocument();
   });
 
@@ -62,7 +62,7 @@ describe('ScaffolderPageContextMenu', () => {
     await userEvent.click(screen.getByTestId('container').firstElementChild!);
 
     expect(screen.queryByText('Template Editor')).not.toBeInTheDocument();
-    expect(screen.queryByText('Installed Actions')).toBeInTheDocument();
+    expect(screen.getByText('Installed Actions')).toBeInTheDocument();
   });
 
   it('renders all options', async () => {
@@ -77,7 +77,7 @@ describe('ScaffolderPageContextMenu', () => {
 
     await userEvent.click(screen.getByTestId('container').firstElementChild!);
 
-    expect(screen.queryByText('Template Editor')).toBeInTheDocument();
-    expect(screen.queryByText('Installed Actions')).toBeInTheDocument();
+    expect(screen.getByText('Template Editor')).toBeInTheDocument();
+    expect(screen.getByText('Installed Actions')).toBeInTheDocument();
   });
 });

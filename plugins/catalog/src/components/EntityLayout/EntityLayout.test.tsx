@@ -190,7 +190,7 @@ describe('EntityLayout', () => {
     expect(screen.queryByText('tabbed-test-content')).not.toBeInTheDocument();
 
     expect(screen.getByText('tabbed-test-title-2')).toBeInTheDocument();
-    expect(screen.queryByText('tabbed-test-content-2')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-content-2')).toBeInTheDocument();
   });
 
   it('should conditionally render tabs', async () => {
@@ -228,8 +228,8 @@ describe('EntityLayout', () => {
       },
     );
 
-    expect(screen.queryByText('tabbed-test-title')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(screen.queryByText('tabbed-test-title-2')).not.toBeInTheDocument();
-    expect(screen.queryByText('tabbed-test-title-3')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-title-3')).toBeInTheDocument();
   });
 });

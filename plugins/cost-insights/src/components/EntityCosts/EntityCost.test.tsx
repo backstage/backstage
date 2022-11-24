@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  MockPluginProvider,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import {
   changeOf,
   MockAggregatedDailyCosts,
@@ -26,7 +30,6 @@ import {
 } from '../../testUtils';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
 import { EntityCostsCard } from './EntityCosts';
-import { TestApiProvider } from '@backstage/test-utils';
 import { CostInsightsApi, costInsightsApiRef } from '../../api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
@@ -64,7 +67,11 @@ function renderInContext(children: JSX.Element) {
             <LoadingProvider>
               <MockFilterProvider>
                 <MockBillingDateProvider>
-                  <MockScrollProvider>{children}</MockScrollProvider>
+                  <MockScrollProvider>
+                    <MockScrollProvider>
+                      <MockPluginProvider>{children}</MockPluginProvider>
+                    </MockScrollProvider>
+                  </MockScrollProvider>
                 </MockBillingDateProvider>
               </MockFilterProvider>
             </LoadingProvider>

@@ -21,45 +21,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/json-schema-ref-parser@npm:9.0.6, @apidevtools/json-schema-ref-parser@npm:^9.0.6":
-  version: 9.0.6
-  resolution: "@apidevtools/json-schema-ref-parser@npm:9.0.6"
+"@apidevtools/json-schema-ref-parser@npm:^9.0.6":
+  version: 9.0.9
+  resolution: "@apidevtools/json-schema-ref-parser@npm:9.0.9"
   dependencies:
     "@jsdevtools/ono": ^7.1.3
+    "@types/json-schema": ^7.0.6
     call-me-maybe: ^1.0.1
-    js-yaml: ^3.13.1
-  checksum: c7ff53623ab8a9dd221772a5757fa0b9e5167a5ac3a71c23596634bae6efc85d8efcdebbe17f73ee5c027ea5afc48c705e8a720f02c4909f9a357d8027040b7b
-  languageName: node
-  linkType: hard
-
-"@apidevtools/openapi-schemas@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@apidevtools/openapi-schemas@npm:2.1.0"
-  checksum: 4a8f64935b9049ef21e41fa4b188f39f6bc3f5291cebd451701db1115451ccb246a739e46cc5ce9ecdec781671431db40db7851acdac84a990a45756e0f32de3
-  languageName: node
-  linkType: hard
-
-"@apidevtools/swagger-methods@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@apidevtools/swagger-methods@npm:3.0.2"
-  checksum: d06b1ac5c1956613c4c6be695612ef860cd4e962b93a509ca551735a328a856cae1e33399cac1dcbf8333ba22b231746f3586074769ef0e172cf549ec9e7eaae
-  languageName: node
-  linkType: hard
-
-"@apidevtools/swagger-parser@npm:^10.1.0":
-  version: 10.1.0
-  resolution: "@apidevtools/swagger-parser@npm:10.1.0"
-  dependencies:
-    "@apidevtools/json-schema-ref-parser": 9.0.6
-    "@apidevtools/openapi-schemas": ^2.1.0
-    "@apidevtools/swagger-methods": ^3.0.2
-    "@jsdevtools/ono": ^7.1.3
-    ajv: ^8.6.3
-    ajv-draft-04: ^1.0.0
-    call-me-maybe: ^1.0.1
-  peerDependencies:
-    openapi-types: ">=7"
-  checksum: c7c923755bd025ee2cae97e1cfd525538523ba74c341a0ac814c023ffe5e63fc2d997539a8ccf9a0fcec41a2d6337d40cc5735acb991ddcbb415853a241908d1
+    js-yaml: ^4.1.0
+  checksum: b21f6bdd37d2942c3967ee77569bc74fadd1b922f688daf5ef85057789a2c3a7f4afc473aa2f3a93ec950dabb6ef365f8bd9cf51e4e062a1ee1e59b989f8f9b4
   languageName: node
   linkType: hard
 
@@ -1320,7 +1290,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/identity@npm:^2.0.1, @azure/identity@npm:^2.0.4, @azure/identity@npm:^2.1.0":
+"@azure/identity@npm:^2.0.4, @azure/identity@npm:^2.1.0":
   version: 2.1.0
   resolution: "@azure/identity@npm:2.1.0"
   dependencies:
@@ -3324,7 +3294,7 @@ __metadata:
     mock-fs: ^5.1.0
     msw: ^0.49.0
     node-fetch: ^2.6.7
-    typescript-json-schema: ^0.54.0
+    typescript-json-schema: ^0.55.0
     yaml: ^2.0.0
     yup: ^0.32.9
   languageName: unknown
@@ -4649,6 +4619,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion"
+  dependencies:
+    "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@types/express": ^4.17.6
+    "@types/luxon": ^3.0.0
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    get-port: ^6.1.2
+    knex: ^2.0.0
+    lodash: ^4.17.21
+    luxon: ^3.0.0
+    uuid: ^8.3.2
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-ldap@workspace:plugins/catalog-backend-module-ldap":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-ldap@workspace:plugins/catalog-backend-module-ldap"
@@ -4701,7 +4700,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-openapi@workspace:plugins/catalog-backend-module-openapi"
   dependencies:
-    "@apidevtools/swagger-parser": ^10.1.0
+    "@apidevtools/json-schema-ref-parser": ^9.0.6
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -7628,7 +7627,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-node@workspace:plugins/techdocs-node"
   dependencies:
-    "@azure/identity": ^2.0.1
+    "@azure/identity": ^2.1.0
     "@azure/storage-blob": ^12.5.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -8334,11 +8333,11 @@ __metadata:
   linkType: hard
 
 "@codemirror/legacy-modes@npm:^6.1.0":
-  version: 6.3.0
-  resolution: "@codemirror/legacy-modes@npm:6.3.0"
+  version: 6.3.1
+  resolution: "@codemirror/legacy-modes@npm:6.3.1"
   dependencies:
     "@codemirror/language": ^6.0.0
-  checksum: d4da9b338376b72c1936e6780b4b53ec6a9581ac3d47ad2c1ec26a0068183b77489bbffde747837c89a5a92c69e9724ddebedc7790975a22f783fb13ede94403
+  checksum: 9065e521bf14e33856e9d3ea114d7b352adf341a8b8d4fb94b4c866189336a32b5ed42ffc20f5d2fa3c839f1bdf29a868bbf9b74c105ed83fa9fd6080e0429e9
   languageName: node
   linkType: hard
 
@@ -8384,13 +8383,13 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0":
-  version: 6.5.1
-  resolution: "@codemirror/view@npm:6.5.1"
+  version: 6.6.0
+  resolution: "@codemirror/view@npm:6.6.0"
   dependencies:
     "@codemirror/state": ^6.1.4
     style-mod: ^4.0.0
     w3c-keyname: ^2.2.4
-  checksum: 1bd66b4f174642c559a521b546e80a67556fdc1b7cc7d1c7baf1cac37fed83e0e63d7a9ff6a88f3991a82d11bbbcfcca6e7b3491dcdd536c4c114de142b0300d
+  checksum: 9b007eedcf13e94ec7d9c30ee302e1a1fcd382bef2481bd9afa3a116458652983e745b40494eb29d80df1dca8f99e91dcb1e4eba37670c2553ffc90bef0933e7
   languageName: node
   linkType: hard
 
@@ -15434,18 +15433,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv-draft-04@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "ajv-draft-04@npm:1.0.0"
-  peerDependencies:
-    ajv: ^8.5.0
-  peerDependenciesMeta:
-    ajv:
-      optional: true
-  checksum: 3f11fa0e7f7359bef6608657f02ab78e9cc62b1fb7bdd860db0d00351b3863a1189c1a23b72466d2d82726cab4eb20725c76f5e7c134a89865e2bfd0e6828137
-  languageName: node
-  linkType: hard
-
 "ajv-formats@npm:^2.1.1":
   version: 2.1.1
   resolution: "ajv-formats@npm:2.1.1"
@@ -15480,7 +15467,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv8@npm:ajv@^8.11.0, ajv@npm:^8.0.0, ajv@npm:^8.10.0, ajv@npm:^8.6.3, ajv@npm:^8.8.0":
+"ajv8@npm:ajv@^8.11.0, ajv@npm:^8.0.0, ajv@npm:^8.10.0, ajv@npm:^8.8.0":
   version: 8.11.2
   resolution: "ajv@npm:8.11.2"
   dependencies:
@@ -18644,9 +18631,11 @@ __metadata:
   linkType: hard
 
 "cronstrue@npm:^2.2.0":
-  version: 2.14.0
-  resolution: "cronstrue@npm:2.14.0"
-  checksum: ffbceca5211575513b37a454253fe7aeb16fe841ed12c1e8a2241f0e55f46a72d4cb97fc3b56aa6bfc58c7d249f8c168f89bfd2011841f237098f86f435f6fcf
+  version: 2.19.0
+  resolution: "cronstrue@npm:2.19.0"
+  bin:
+    cronstrue: bin/cli.js
+  checksum: 8f51c4c5016ed696569aed4fdb91013a499c3ace93cc5385dfe41d15b9fcc5f284d7eb457fdfe2fa4b05a3849f025ba8a3ad22197c40453efb0ef94271b3e843
   languageName: node
   linkType: hard
 
@@ -25614,9 +25603,9 @@ __metadata:
   linkType: hard
 
 "jose@npm:^4.10.0, jose@npm:^4.6.0":
-  version: 4.11.0
-  resolution: "jose@npm:4.11.0"
-  checksum: 8d81e978e0da306911b61b1de1e2d78bd4903b4aa68a4b338b7c89c41edc3d56aea4d5ef4784a078a630dd6aa81f6328901ae3ce215f33b90d51ee8ebf4c9dbd
+  version: 4.11.1
+  resolution: "jose@npm:4.11.1"
+  checksum: cd15cba258d0fd20f6168631ce2e94fda8442df80e43c1033c523915cecdf390a1cc8efe0eab0c2d65935ca973d791c668aea80724d2aa9c2879d4e70f3081d7
   languageName: node
   linkType: hard
 
@@ -28235,13 +28224,13 @@ __metadata:
   linkType: hard
 
 "mini-css-extract-plugin@npm:^2.4.2":
-  version: 2.6.1
-  resolution: "mini-css-extract-plugin@npm:2.6.1"
+  version: 2.7.0
+  resolution: "mini-css-extract-plugin@npm:2.7.0"
   dependencies:
     schema-utils: ^4.0.0
   peerDependencies:
     webpack: ^5.0.0
-  checksum: df60840404878c4832b4104799fd29c5a89b06b1e377956c8d4a5729efe0ef301a52e5087d6f383871df5e69a8445922a0ae635c11abf412d7645a7096d0e973
+  checksum: e6b111d4289132bd496286eec42801c74c83af7eac71af630a5babae48ca65377f47d8b39e1f0653b449e68e67b57dbd0d36917242f08fc3e7770e70c0cb56cd
   languageName: node
   linkType: hard
 
@@ -31205,11 +31194,11 @@ __metadata:
   linkType: hard
 
 "prettier@npm:^2.2.1, prettier@npm:^2.7.1":
-  version: 2.7.1
-  resolution: "prettier@npm:2.7.1"
+  version: 2.8.0
+  resolution: "prettier@npm:2.8.0"
   bin:
     prettier: bin-prettier.js
-  checksum: 55a4409182260866ab31284d929b3cb961e5fdb91fe0d2e099dac92eaecec890f36e524b4c19e6ceae839c99c6d7195817579cdffc8e2c80da0cb794463a748b
+  checksum: 72004ce0cc9bb097daf3e3833f62495768724392c1d5b178dd47372337616e9e50ecbb0804f236596223f7b5eb1bbe69cefc8957dca21112c5777e77ef73a564
   languageName: node
   linkType: hard
 
@@ -33653,7 +33642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selfsigned@npm:^2.0.0, selfsigned@npm:^2.0.1":
+"selfsigned@npm:^2.0.0, selfsigned@npm:^2.1.1":
   version: 2.1.1
   resolution: "selfsigned@npm:2.1.1"
   dependencies:
@@ -35108,8 +35097,8 @@ __metadata:
   linkType: hard
 
 "sucrase@npm:^3.18.0, sucrase@npm:^3.20.2":
-  version: 3.28.0
-  resolution: "sucrase@npm:3.28.0"
+  version: 3.29.0
+  resolution: "sucrase@npm:3.29.0"
   dependencies:
     commander: ^4.0.0
     glob: 7.1.6
@@ -35120,7 +35109,7 @@ __metadata:
   bin:
     sucrase: bin/sucrase
     sucrase-node: bin/sucrase-node
-  checksum: 6a2369c140cee674988ebcf83538f38b11270e47ebaffc811baabe1db3fc586f1a357d4bbc66388a6b99054ba06a08f31b44b764e777abbd457b9e29332b12d0
+  checksum: fc8f04c34f29c0e9ca63109815df138182d62663dbe9565fcd94161b77a88a639f40c46559d0bb84d7acf9346ce23ea102476fd9168ec279330c7faecefb81eb
   languageName: node
   linkType: hard
 
@@ -35977,7 +35966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.0.0, ts-node@npm:^10.2.1, ts-node@npm:^10.4.0, ts-node@npm:^10.8.1":
+"ts-node@npm:^10.0.0, ts-node@npm:^10.4.0, ts-node@npm:^10.8.1, ts-node@npm:^10.9.1":
   version: 10.9.1
   resolution: "ts-node@npm:10.9.1"
   dependencies:
@@ -36215,25 +36204,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-json-schema@npm:^0.54.0":
-  version: 0.54.0
-  resolution: "typescript-json-schema@npm:0.54.0"
+"typescript-json-schema@npm:^0.55.0":
+  version: 0.55.0
+  resolution: "typescript-json-schema@npm:0.55.0"
   dependencies:
     "@types/json-schema": ^7.0.9
     "@types/node": ^16.9.2
     glob: ^7.1.7
     path-equal: ^1.1.2
     safe-stable-stringify: ^2.2.0
-    ts-node: ^10.2.1
-    typescript: ~4.6.0
+    ts-node: ^10.9.1
+    typescript: ~4.8.2
     yargs: ^17.1.1
   bin:
     typescript-json-schema: bin/typescript-json-schema
-  checksum: 49e03bd2612f79fe3ee9e9afcea34ae563da9aa799a8b4cf12b73feb60eb62a0786300eedb30261c69c482ed7e545acf1e5617d59861e6deee4f6570a658de88
+  checksum: 4188e9d4cc1f1fc3201e2aa06b8d87d35695b0eaf049ff9d2cd3027d87406efc6978c4f90c2bf06f4fcd8d6dd40ceb65e744dc3cf9b412e1f74b8eb5bae96a05
   languageName: node
   linkType: hard
 
-"typescript@npm:~4.6.0, typescript@npm:~4.6.3":
+"typescript@npm:~4.6.3":
   version: 4.6.4
   resolution: "typescript@npm:4.6.4"
   bin:
@@ -36253,7 +36242,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@~4.6.0#~builtin<compat/typescript>, typescript@patch:typescript@~4.6.3#~builtin<compat/typescript>":
+"typescript@npm:~4.8.2":
+  version: 4.8.4
+  resolution: "typescript@npm:4.8.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 3e4f061658e0c8f36c820802fa809e0fd812b85687a9a2f5430bc3d0368e37d1c9605c3ce9b39df9a05af2ece67b1d844f9f6ea8ff42819f13bcb80f85629af0
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~4.6.3#~builtin<compat/typescript>":
   version: 4.6.4
   resolution: "typescript@patch:typescript@npm%3A4.6.4#~builtin<compat/typescript>::version=4.6.4&hash=a1c5e5"
   bin:
@@ -36270,6 +36269,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~4.8.2#~builtin<compat/typescript>":
+  version: 4.8.4
+  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=a1c5e5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 563a0ef47abae6df27a9a3ab38f75fc681f633ccf1a3502b1108e252e187787893de689220f4544aaf95a371a4eb3141e4a337deb9895de5ac3c1ca76430e5f0
   languageName: node
   linkType: hard
 
@@ -37209,8 +37218,8 @@ __metadata:
   linkType: hard
 
 "webpack-dev-server@npm:^4.7.3":
-  version: 4.10.1
-  resolution: "webpack-dev-server@npm:4.10.1"
+  version: 4.11.1
+  resolution: "webpack-dev-server@npm:4.11.1"
   dependencies:
     "@types/bonjour": ^3.5.9
     "@types/connect-history-api-fallback": ^1.3.5
@@ -37235,7 +37244,7 @@ __metadata:
     p-retry: ^4.5.0
     rimraf: ^3.0.2
     schema-utils: ^4.0.0
-    selfsigned: ^2.0.1
+    selfsigned: ^2.1.1
     serve-index: ^1.9.1
     sockjs: ^0.3.24
     spdy: ^4.0.2
@@ -37248,7 +37257,7 @@ __metadata:
       optional: true
   bin:
     webpack-dev-server: bin/webpack-dev-server.js
-  checksum: d026e6be63058ba5f881c58c9d49367a26c43d76bb7c2a1d9fb80eeae644099cc098913b4e9f32e2ed89eff0e7cc08e03cae8a1c4e7a1c8f67c5c673ab70761e
+  checksum: b7601a39ee0f413988259e29a36835b0a68522cfaa161de5b7ec99b3399acdd99d44189add4aaf4a5191258bb130f9cf3e68919324a1955c7557f5fe6ab0d96c
   languageName: node
   linkType: hard
 
@@ -37993,8 +38002,8 @@ __metadata:
   linkType: hard
 
 "yeoman-environment@npm:^3.9.1":
-  version: 3.10.0
-  resolution: "yeoman-environment@npm:3.10.0"
+  version: 3.12.1
+  resolution: "yeoman-environment@npm:3.12.1"
   dependencies:
     "@npmcli/arborist": ^4.0.4
     are-we-there-yet: ^2.0.0
@@ -38037,7 +38046,7 @@ __metadata:
     mem-fs-editor: ^8.1.2 || ^9.0.0
   bin:
     yoe: cli/index.js
-  checksum: 2ab844358d148889285fc9cd68b9eb6660af4721033c86f833ad60a0028bbe8b5c637fa290a1c29f54c4957df53e6c5cd05692c6e25e7d88c9442c9a5f9775dc
+  checksum: 71e777fcfa4baf26f9848265292447d7283f4bcb0e6b781018c8f8610c47c430e5a331eb0da03491621a7bcdd6ed40a2854c664a4f9f1ceb9ee111def37f52d1
   languageName: node
   linkType: hard
 
@@ -38151,11 +38160,11 @@ __metadata:
   linkType: hard
 
 "zod-to-json-schema@npm:^3.18.1":
-  version: 3.18.1
-  resolution: "zod-to-json-schema@npm:3.18.1"
+  version: 3.19.1
+  resolution: "zod-to-json-schema@npm:3.19.1"
   peerDependencies:
-    zod: ^3.18.0
-  checksum: e55d0de83b50fbd1caa7541d037858815964477b52a9e6495496e447107386cf16e2c08b007fcfbffd7fbe069ca2c19018425a53eaee36aff5dda942d3db71f4
+    zod: ^3.19.0
+  checksum: 22c07668e3c28c9d7c9bd3ad04a354ea017b6fc8b4df77ed29d11e42c4c03181612319db374932a1f8b5c37ef861157938dced9d848cad5281ee1540a156995c
   languageName: node
   linkType: hard
 

@@ -110,7 +110,7 @@ describe('<PreparePullRequestForm />', () => {
 
     expect(onSubmitFn).not.toHaveBeenCalled();
     expect(
-      screen.queryByText('Error in required main field'),
+      screen.getByText('Error in required main field'),
     ).toBeInTheDocument();
   });
 });
