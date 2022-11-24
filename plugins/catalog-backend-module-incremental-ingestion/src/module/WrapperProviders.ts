@@ -22,12 +22,14 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
+import express from 'express';
 import { Knex } from 'knex';
 import once from 'lodash/once';
 import { Duration } from 'luxon';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionEngine } from '../engine/IncrementalIngestionEngine';
+import { createIncrementalProviderRouter } from '../router/routes';
 import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
@@ -68,6 +70,13 @@ export class WrapperProviders {
         }
       },
     };
+  }
+
+  async adminRouter(): Promise<express.Router> {
+    return createIncrementalProviderRouter(
+      new IncrementalIngestionDatabaseManager({ client: this.options.client }),
+      loggerToWinstonLogger(this.options.logger),
+    );
   }
 
   private async startProvider(

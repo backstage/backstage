@@ -54,7 +54,10 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/backend-app-api": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-catalog-backend": "workspace:^",
+    "get-port": "^6.1.2"
   },
   "files": [
     "alpha",

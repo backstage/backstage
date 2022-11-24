@@ -28,8 +28,8 @@ import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
 
 export class IncrementalIngestionEngine implements IterationEngine {
-  restLength: Duration;
-  backoff: DurationObjectUnits[];
+  private readonly restLength: Duration;
+  private readonly backoff: DurationObjectUnits[];
 
   private manager: IncrementalIngestionDatabaseManager;
 

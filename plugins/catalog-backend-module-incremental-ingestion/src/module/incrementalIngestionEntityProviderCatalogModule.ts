@@ -18,6 +18,7 @@ import {
   configServiceRef,
   createBackendModule,
   databaseServiceRef,
+  httpRouterServiceRef,
   loggerServiceRef,
   schedulerServiceRef,
 } from '@backstage/backend-plugin-api';
@@ -50,21 +51,34 @@ export const incrementalIngestionEntityProviderCatalogModule =
         deps: {
           catalog: catalogProcessingExtensionPoint,
           config: configServiceRef,
-          logger: loggerServiceRef,
           database: databaseServiceRef,
+          httpRouter: httpRouterServiceRef,
+          logger: loggerServiceRef,
           scheduler: schedulerServiceRef,
         },
-        async init({ catalog, config, logger, database, scheduler }) {
+        async init({
+          catalog,
+          config,
+          database,
+          httpRouter,
+          logger,
+          scheduler,
+        }) {
+          const client = await database.getClient();
+
           const providers = new WrapperProviders({
             config,
             logger,
-            client: await database.getClient(),
+            client,
             scheduler,
           });
+
           for (const entry of options.providers) {
             const wrapped = providers.wrap(entry.provider, entry.options);
             catalog.addEntityProvider(wrapped);
           }
+
+          httpRouter.use(await providers.adminRouter());
         },
       });
     },

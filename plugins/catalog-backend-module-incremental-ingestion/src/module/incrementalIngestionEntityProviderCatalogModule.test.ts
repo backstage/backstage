@@ -18,6 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import {
   configServiceRef,
   databaseServiceRef,
+  httpRouterServiceRef,
   loggerServiceRef,
   schedulerServiceRef,
 } from '@backstage/backend-plugin-api';
@@ -29,21 +30,25 @@ import { incrementalIngestionEntityProviderCatalogModule } from './incrementalIn
 
 describe('bitbucketServerEntityProviderCatalogModule', () => {
   it('should register provider at the catalog extension point', async () => {
-    const provider1: IncrementalEntityProvider<{}, number> = {
+    const provider1: IncrementalEntityProvider<number, {}> = {
       getProviderName: () => 'provider1',
       around: burst => burst(0),
       next: async (cursor, _context) => {
-        return cursor === 0
+        return !cursor
           ? { done: false, entities: [], cursor: 1 }
           : { done: true };
       },
     };
 
     const addEntityProvider = jest.fn();
+    const httpRouterUse = jest.fn();
 
     const scheduler = {};
     const database = {
       getClient: jest.fn(),
+    };
+    const httpRouter = {
+      use: httpRouterUse,
     };
 
     await startTestBackend({
@@ -52,9 +57,10 @@ describe('bitbucketServerEntityProviderCatalogModule', () => {
       ],
       services: [
         [configServiceRef, new ConfigReader({})],
+        [databaseServiceRef, database],
+        [httpRouterServiceRef, httpRouter],
         [loggerServiceRef, getVoidLogger()],
         [schedulerServiceRef, scheduler],
-        [databaseServiceRef, database],
       ],
       features: [
         incrementalIngestionEntityProviderCatalogModule({
@@ -76,5 +82,6 @@ describe('bitbucketServerEntityProviderCatalogModule', () => {
     expect(addEntityProvider.mock.calls[0][0].getProviderName()).toBe(
       'provider1',
     );
+    expect(httpRouterUse).toHaveBeenCalledTimes(1);
   });
 });

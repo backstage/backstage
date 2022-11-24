@@ -53,17 +53,17 @@ describe('WrapperProviders', () => {
     async databaseId => {
       const client = await databases.init(databaseId);
 
-      const provider1: IncrementalEntityProvider<{}, number> = {
+      const provider1: IncrementalEntityProvider<number, {}> = {
         getProviderName: () => 'provider1',
         around: burst => burst(0),
         next: async (cursor, _context) => {
-          return cursor === 0
+          return !cursor
             ? { done: false, entities: [], cursor: 1 }
             : { done: true };
         },
       };
 
-      const provider2: IncrementalEntityProvider<{}, number> = {
+      const provider2: IncrementalEntityProvider<number, {}> = {
         getProviderName: () => 'provider2',
         around: burst => burst(0),
         next: async (cursor, _context) => {
