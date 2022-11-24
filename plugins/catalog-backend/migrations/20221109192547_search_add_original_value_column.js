@@ -18,13 +18,25 @@
  * @param { import("knex").Knex } knex
  */
 exports.up = async function up(knex) {
+  // Start out with an original_value column that's equal to the value column
   await knex.schema.alterTable('search', table => {
     table
       .string('original_value')
       .nullable()
       .comment('Holds the corresponding original case sensitive value');
-    table.index(['original_value'], 'search_original_value_idx');
   });
+  await knex('search').update({ original_value: knex.ref('value') });
+
+  // Make sure to reprocess everything, to make sure that the original_value
+  // column is populated with values with the proper casing. It's unfortunately
+  // not enough to just reset the final_entities hash, since stitching is driven
+  // only by processing resulting in data that isn't matching the refresh_state
+  // hash.
+  await knex('refresh_state').update({
+    result_hash: '',
+    next_update_at: knex.fn.now(),
+  });
+  await knex('final_entities').update({ hash: '' });
 };
 
 /**
@@ -32,7 +44,6 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('search', table => {
-    table.dropIndex([], 'search_original_value_idx');
     table.dropColumn('original_value');
   });
 };
