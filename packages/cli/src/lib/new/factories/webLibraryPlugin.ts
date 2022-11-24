@@ -32,7 +32,7 @@ type Options = {
 };
 
 export const webLibraryPlugin = createFactory<Options>({
-  name: 'plugin',
+  name: 'web-library-plugin',
   description: 'A new web-library plugin',
   optionsDiscovery: async () => ({
     codeOwnersPath: await getCodeownersFilePath(paths.targetRoot),
@@ -55,7 +55,7 @@ export const webLibraryPlugin = createFactory<Options>({
 
     await executePluginPackageTemplate(ctx, {
       targetDir,
-      templateName: 'default-plugin',
+      templateName: 'default-web-library-plugin',
       values: {
         id,
         name,
