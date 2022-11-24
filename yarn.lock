@@ -13935,11 +13935,11 @@ __metadata:
   linkType: hard
 
 "@types/node-forge@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@types/node-forge@npm:1.3.0"
+  version: 1.3.1
+  resolution: "@types/node-forge@npm:1.3.1"
   dependencies:
     "@types/node": "*"
-  checksum: f811885f997fbeebb0df2db8249b9b288ad5f5573beaecf6d323b019bb9a4c12f1476a8974c934f62329862f29986c116263a50aef0008364cc3f9867672a5a0
+  checksum: 88d1f85b5e2edfbb475d34c4a47b964edab408b20cec508dc4443b36258971062c2fef760d1eeb3f544fdb5321c710a4e5e2cd8a1a5923e81c53ca1cf6f3a722
   languageName: node
   linkType: hard
 
