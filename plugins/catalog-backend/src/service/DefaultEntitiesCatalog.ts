@@ -417,10 +417,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       const result = await dbQuery;
 
       facets[facet] = result.map(data => ({
-        value: data.value as string,
-        count: data.count as number,
+        value: String(data.value),
+        count: Number(data.count),
       }));
     }
+
     return { facets };
   }
 }
