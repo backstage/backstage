@@ -67,8 +67,8 @@ describe('<SystemDiagramCard />', () => {
       },
     );
 
-    expect(screen.queryByText(/System Diagram/)).toBeInTheDocument();
-    expect(screen.queryByText(/namespace2\/system2/)).toBeInTheDocument();
+    expect(screen.getByText(/System Diagram/)).toBeInTheDocument();
+    expect(screen.getByText(/namespace2\/system2/)).toBeInTheDocument();
     expect(screen.queryByText(/namespace\/entity/)).not.toBeInTheDocument();
   });
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { readGithubIntegrationConfigs } from '@backstage/integration';
 import {
@@ -43,7 +44,6 @@ import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { WorkflowRunLogs } from '../WorkflowRunLogs';
-
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Breadcrumbs, Link } from '@backstage/core-components';
 
@@ -116,8 +116,6 @@ const JobListItem = ({
     <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
-        aria-controls={`panel-${name}-content`}
-        id={`panel-${name}-header`}
         IconButtonProps={{
           className: classes.button,
         }}

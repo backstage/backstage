@@ -33,6 +33,6 @@ describe('IconLink', () => {
       </ThemeProvider>,
     );
 
-    expect(screen.queryByText('I am Link')).toBeInTheDocument();
+    expect(screen.getByText('I am Link')).toBeInTheDocument();
   });
 });

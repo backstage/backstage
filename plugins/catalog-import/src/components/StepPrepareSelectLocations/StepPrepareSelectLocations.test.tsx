@@ -69,7 +69,7 @@ describe('<StepPrepareSelectLocations />', () => {
     expect(screen.getByText('url-1')).toBeInTheDocument();
     expect(screen.getByText('url-2')).toBeInTheDocument();
     expect(
-      screen.queryByText(/Select one or more locations/),
+      screen.getByText(/Select one or more locations/),
     ).toBeInTheDocument();
     expect(
       screen.queryByText(/locations already exist/),
@@ -104,7 +104,7 @@ describe('<StepPrepareSelectLocations />', () => {
     );
 
     expect(screen.getByText(/my-target/)).toBeInTheDocument();
-    expect(screen.queryByText(/locations already exist/)).toBeInTheDocument();
+    expect(screen.getByText(/locations already exist/)).toBeInTheDocument();
     expect(
       screen.queryByText(/Select one or more locations/),
     ).not.toBeInTheDocument();

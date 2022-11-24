@@ -61,7 +61,9 @@ const DetailsPage = () => {
   const classes = useStyles();
 
   const [{ status, result: details, error }, { execute }] = useAsync(async () =>
-    api.getProject(decodeURIComponent(location.search.split('projectId=')[1])),
+    api.getProject(
+      decodeURIComponent(window.location.search.split('projectId=')[1]),
+    ),
   );
 
   useMountEffect(execute);

@@ -154,7 +154,7 @@ export class DefaultAuthConnector<AuthSession>
     const scope = this.joinScopesFunc(scopes);
     const popupUrl = await this.buildUrl('/start', {
       scope,
-      origin: location.origin,
+      origin: window.location.origin,
     });
 
     const payload = await showLoginPopup({

@@ -1,5 +1,23 @@
 # @backstage/plugin-search
 
+## 1.0.5-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.2
+  - @backstage/plugin-search-common@1.1.2-next.0
+  - @backstage/plugin-search-react@1.2.2-next.0
+
 ## 1.0.4
 
 ### Patch Changes

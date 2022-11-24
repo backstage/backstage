@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { MenuItem, Select } from '@material-ui/core';
-import { Maybe, Project } from '../../types';
+import { Maybe, Project } from '@backstage/plugin-cost-insights-common';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 
 type ProjectSelectProps = {

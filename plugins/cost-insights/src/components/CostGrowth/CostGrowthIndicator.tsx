@@ -20,8 +20,9 @@ import { Typography, TypographyProps } from '@material-ui/core';
 import { default as ArrowDropUp } from '@material-ui/icons/ArrowDropUp';
 import { default as ArrowDropDown } from '@material-ui/icons/ArrowDropDown';
 import { growthOf } from '../../utils/change';
-import { ChangeStatistic, GrowthType, Maybe } from '../../types';
+import { GrowthType } from '../../types';
 import { useCostGrowthStyles as useStyles } from '../../utils/styles';
+import { ChangeStatistic, Maybe } from '@backstage/plugin-cost-insights-common';
 
 /** @public */
 export type CostGrowthIndicatorProps = TypographyProps & {

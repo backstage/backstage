@@ -52,7 +52,7 @@ describe('EntityLinksCard', () => {
       ),
     );
 
-    expect(screen.queryByText('admin dashboard')).toBeInTheDocument();
+    expect(screen.getByText('admin dashboard')).toBeInTheDocument();
     expect(screen.queryByText('derp')).not.toBeInTheDocument();
   });
 
@@ -66,7 +66,7 @@ describe('EntityLinksCard', () => {
     );
 
     expect(
-      screen.queryByText(/.*No links defined for this entity.*/),
+      screen.getByText(/.*No links defined for this entity.*/),
     ).toBeInTheDocument();
     expect(screen.queryByText('admin dashboard')).not.toBeInTheDocument();
   });

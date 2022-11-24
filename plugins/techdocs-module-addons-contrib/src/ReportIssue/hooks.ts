@@ -16,7 +16,7 @@
 
 import parseGitUrl from 'git-url-parse';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   replaceGithubUrlType,
   replaceGitLabUrlType,
@@ -48,7 +48,11 @@ export const getTitle = (selection: Selection) => {
   return `Documentation feedback: ${text}${ellipsis}`;
 };
 
-export const getBody = (selection: Selection, markdownUrl: string) => {
+export const getBody = (
+  selection: Selection,
+  markdownUrl: string,
+  appTitle: string,
+) => {
   const title = '## Documentation Feedback 📝';
   const subheading = '#### The highlighted text:';
   const commentHeading = '#### The comment on the text:';
@@ -61,7 +65,7 @@ export const getBody = (selection: Selection, markdownUrl: string) => {
     .join('\n');
 
   const facts = [
-    `Backstage URL: <${window.location.href}> \nMarkdown URL: <${markdownUrl}>`,
+    `${appTitle} URL: <${window.location.href}> \nMarkdown URL: <${markdownUrl}>`,
   ];
 
   return `${title}\n\n ${subheading} \n\n ${highlightedTextAsQuote}\n\n ${commentHeading} \n ${commentPlaceholder}\n\n ___\n${facts}`;
@@ -73,7 +77,8 @@ export const useGitTemplate = (debounceTime?: number) => {
   const [editLink] = useShadowRootElements([PAGE_EDIT_LINK_SELECTOR]);
   const url = (editLink as HTMLAnchorElement)?.href ?? '';
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
-
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
   if (!selection || !url) return initialTemplate;
 
   const type = scmIntegrationsApi.byUrl(url)?.type;
@@ -82,7 +87,7 @@ export const useGitTemplate = (debounceTime?: number) => {
 
   return {
     title: getTitle(selection),
-    body: getBody(selection, resolveBlobUrl(url, type)),
+    body: getBody(selection, resolveBlobUrl(url, type), appTitle),
   };
 };
 

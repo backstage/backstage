@@ -1,5 +1,20 @@
 # @backstage/plugin-search-backend-node
 
+## 1.0.5-next.0
+
+### Patch Changes
+
+- a962ce0551: Wait for indexer initialization before finalizing indexing.
+- 683ced83f6: Fixed a bug that could cause a `max listeners exceeded warning` to be logged when more than 10 collators were running simultaneously.
+- 81b1e7b0fe: Updated indexer and decorator base classes to take advantage of features introduced in Node.js v16; be sure you are running a [supported version of Node.js](https://backstage.io/docs/releases/v1.8.0#node-16-and-18).
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/plugin-permission-common@0.7.2-next.0
+  - @backstage/backend-tasks@0.3.8-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/plugin-search-common@1.1.2-next.0
+
 ## 1.0.4
 
 ### Patch Changes

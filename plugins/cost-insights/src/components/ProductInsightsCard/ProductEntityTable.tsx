@@ -20,7 +20,11 @@ import { Typography } from '@material-ui/core';
 import { formatChange } from '../../utils/formatters';
 import { useEntityDialogStyles as useStyles } from '../../utils/styles';
 import { CostGrowthIndicator } from '../CostGrowth';
-import { BarChartOptions, ChangeStatistic, Entity } from '../../types';
+import { BarChartOptions } from '../../types';
+import {
+  ChangeStatistic,
+  Entity,
+} from '@backstage/plugin-cost-insights-common';
 import { Table, TableColumn } from '@backstage/core-components';
 import { useConfig } from '../../hooks';
 

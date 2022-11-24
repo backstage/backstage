@@ -151,8 +151,8 @@ describe('<UserListPicker />', () => {
       </ApiProvider>,
     );
 
-    expect(screen.queryByText('Personal')).toBeInTheDocument();
-    expect(screen.queryByText('Test Company')).toBeInTheDocument();
+    expect(screen.getByText('Personal')).toBeInTheDocument();
+    expect(screen.getByText('Test Company')).toBeInTheDocument();
   });
 
   it('renders filters', () => {
