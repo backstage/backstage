@@ -6942,7 +6942,7 @@ __metadata:
     msw: ^0.49.0
     qs: ^6.9.4
     react-use: ^17.2.4
-    use-immer: ^0.7.0
+    use-immer: ^0.8.0
     yaml: ^2.0.0
     zen-observable: ^0.9.0
     zod: ^3.11.6
@@ -36647,13 +36647,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-immer@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "use-immer@npm:0.7.0"
+"use-immer@npm:^0.8.0":
+  version: 0.8.1
+  resolution: "use-immer@npm:0.8.1"
   peerDependencies:
     immer: ">=2.0.0"
     react: ^16.8.0 || ^17.0.1 || ^18.0.0
-  checksum: 4711403fa2c3648c06b8e6795433eb43adb2c6e9bd00f45971ce6948ba8fc1c3e3cf73820a8d597b22979caa6445d0b791508e147975c3cc435a1ec1e5ce47db
+  checksum: 9ffc1a201a92b6b026c420718e6a00e72ba48b62420bb515927b379bb1d791b5b4766b57c755b4851c0e1f80000e639bc1cf8e73424e44466741c159391d35dd
   languageName: node
   linkType: hard
 
