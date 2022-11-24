@@ -53,7 +53,7 @@ type Repository = {
   url: string;
   isArchived: boolean;
   repositoryTopics: string[];
-  defaultBranchRef: string | null;
+  defaultBranchRef?: string;
   isCatalogInfoFilePresent: boolean;
 };
 
@@ -213,7 +213,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       return {
         url: r.url,
         name: r.name,
-        defaultBranchRef: r.defaultBranchRef?.name || null,
+        defaultBranchRef: r.defaultBranchRef?.name,
         repositoryTopics: r.repositoryTopics.nodes.map(t => t.topic.name),
         isArchived: r.isArchived,
         isCatalogInfoFilePresent:

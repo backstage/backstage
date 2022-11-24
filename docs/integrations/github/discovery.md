@@ -69,7 +69,6 @@ Set up your provider
 
 ```diff
 // packages/backend/src/plugins/catalogEventBasedProviders.ts
-+import { CatalogClient } from '@backstage/catalog-client';
 +import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
  import { EntityProvider } from '@backstage/plugin-catalog-node';
  import { EventSubscriber } from '@backstage/plugin-events-node';
@@ -97,6 +96,8 @@ Set up your provider
    return providers.flat();
  }
 ```
+
+You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request]https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks()
 
 ## Configuration
 
