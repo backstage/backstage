@@ -18,23 +18,11 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { Knex } from 'knex';
-import '../database/migrations';
 import { IncrementalEntityProvider } from '../types';
 import { WrapperProviders } from './WrapperProviders';
 
-const applyDatabaseMigrations = jest.fn();
-jest.mock('../database/migrations', () => {
-  const actual = jest.requireActual('../database/migrations');
-  return {
-    applyDatabaseMigrations: (knex: Knex) => {
-      applyDatabaseMigrations(knex);
-      return actual.applyDatabaseMigrations(knex);
-    },
-  };
-});
-
 describe('WrapperProviders', () => {
+  const applyDatabaseMigrations = jest.fn();
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
@@ -45,7 +33,7 @@ describe('WrapperProviders', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   it.each(databases.eachSupportedId())(
@@ -56,7 +44,7 @@ describe('WrapperProviders', () => {
       const provider1: IncrementalEntityProvider<number, {}> = {
         getProviderName: () => 'provider1',
         around: burst => burst(0),
-        next: async (cursor, _context) => {
+        next: async (_context, cursor) => {
           return !cursor
             ? { done: false, entities: [], cursor: 1 }
             : { done: true };
@@ -66,8 +54,8 @@ describe('WrapperProviders', () => {
       const provider2: IncrementalEntityProvider<number, {}> = {
         getProviderName: () => 'provider2',
         around: burst => burst(0),
-        next: async (cursor, _context) => {
-          return cursor === 0
+        next: async (_context, cursor) => {
+          return !cursor
             ? { done: false, entities: [], cursor: 1 }
             : { done: true };
         },
@@ -79,6 +67,7 @@ describe('WrapperProviders', () => {
         client,
         scheduler:
           scheduler as Partial<PluginTaskScheduler> as PluginTaskScheduler,
+        applyDatabaseMigrations,
       });
       const wrapped1 = providers.wrap(provider1, {
         burstInterval: { seconds: 1 },

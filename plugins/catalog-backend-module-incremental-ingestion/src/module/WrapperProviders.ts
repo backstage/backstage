@@ -24,7 +24,6 @@ import {
 } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import { Knex } from 'knex';
-import once from 'lodash/once';
 import { Duration } from 'luxon';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { applyDatabaseMigrations } from '../database/migrations';
@@ -36,13 +35,12 @@ import {
 } from '../types';
 import { Deferred } from '../util';
 
-const applyDatabaseMigrationsOnce = once(applyDatabaseMigrations);
-
 /**
  * Helps in the creation of the catalog entity providers that wrap the
  * incremental ones.
  */
 export class WrapperProviders {
+  private migrate: Promise<void> | undefined;
   private numberOfProvidersToConnect = 0;
   private readonly readySignal = new Deferred<void>();
 
@@ -52,6 +50,7 @@ export class WrapperProviders {
       logger: Logger;
       client: Knex;
       scheduler: PluginTaskScheduler;
+      applyDatabaseMigrations?: typeof applyDatabaseMigrations;
     },
   ) {}
 
@@ -91,7 +90,15 @@ export class WrapperProviders {
     );
 
     try {
-      await applyDatabaseMigrationsOnce(this.options.client);
+      if (!this.migrate) {
+        this.migrate = Promise.resolve().then(async () => {
+          const apply =
+            this.options.applyDatabaseMigrations ?? applyDatabaseMigrations;
+          await apply(this.options.client);
+        });
+      }
+
+      await this.migrate;
 
       const { burstInterval, burstLength, restLength } = providerOptions;
 
