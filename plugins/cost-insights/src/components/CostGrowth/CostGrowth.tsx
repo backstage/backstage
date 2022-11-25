@@ -16,11 +16,7 @@
 
 import React from 'react';
 import classnames from 'classnames';
-import {
-  CurrencyType,
-  Duration,
-  GrowthType,
-} from '../../types';
+import { CurrencyType, Duration, GrowthType } from '../../types';
 import { ChangeStatistic } from '@backstage/plugin-cost-insights-common';
 import { rateOf } from '../../utils/currency';
 import { growthOf } from '../../utils/change';

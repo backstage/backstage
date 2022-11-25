@@ -40,6 +40,7 @@ export const CostGrowthIndicator = (props: CostGrowthIndicatorProps) => {
   const { change, formatter, className, ...extraProps } = props;
 
   const classes = useStyles();
+
   const growth = growthOf(change, engineerThreshold);
 
   const classNames = classnames(classes.indicator, className, {
