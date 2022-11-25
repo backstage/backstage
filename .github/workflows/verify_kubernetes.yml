@@ -28,12 +28,12 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.7
+        uses: backstage/actions/yarn-install@v0.5.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: bootstrap kind
-        uses: helm/kind-action@v1.3.0
+        uses: helm/kind-action@v1.4.0
 
       - name: kubernetes test
         working-directory: packages/backend-common

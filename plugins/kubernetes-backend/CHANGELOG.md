@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.8.1-next.0
+
+### Patch Changes
+
+- b585179770: Added Kubernetes proxy API route to backend Kubernetes plugin, allowing Backstage plugin developers to read/write new information from Kubernetes (if proper credentials are provided).
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/backend-test-utils@0.1.31-next.0
+  - @backstage/plugin-auth-node@0.2.8-next.0
+  - @backstage/plugin-kubernetes-common@0.4.5-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
 ## 0.8.0
 
 ### Minor Changes

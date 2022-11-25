@@ -34,13 +34,14 @@ export const eventsPlugin: (options?: undefined) => BackendFeature;
 // @public
 export class HttpPostIngressEventPublisher implements EventPublisher {
   // (undocumented)
+  bind(router: express.Router): void;
+  // (undocumented)
   static fromConfig(env: {
     config: Config;
     ingresses?: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
     };
     logger: Logger;
-    router: express.Router;
   }): HttpPostIngressEventPublisher;
   // (undocumented)
   setEventBroker(eventBroker: EventBroker): Promise<void>;

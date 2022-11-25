@@ -41,3 +41,34 @@ Add the event router to the `EventsBackend`:
 +  .addSubscribers(githubEventRouter);
 // [...]
 ```
+
+### Signature Validator
+
+Add the signature validator for the topic `github`:
+
+```diff
+// at packages/backend/src/plugins/events.ts
++ import { createGithubSignatureValidator } from '@backstage/plugin-events-backend-module-github';
+// [...]
+   const http = HttpPostIngressEventPublisher.fromConfig({
+     config: env.config,
+     ingresses: {
++       github: {
++         validator: createGithubSignatureValidator(env.config),
++       },
+     },
+     logger: env.logger,
+  });
+```
+
+Additionally, you need to add the configuration:
+
+```yaml
+events:
+  modules:
+    github:
+      webhookSecret: your-secret-token
+```
+
+Configuration at GitHub:
+https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks

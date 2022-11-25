@@ -4,8 +4,13 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import { EventParams } from '@backstage/plugin-events-node';
+import { RequestValidator } from '@backstage/plugin-events-node';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
+
+// @public
+export function createGitlabTokenValidator(config: Config): RequestValidator;
 
 // @public
 export class GitlabEventRouter extends SubTopicEventRouter {
@@ -18,4 +23,7 @@ export class GitlabEventRouter extends SubTopicEventRouter {
 export const gitlabEventRouterEventsModule: (
   options?: undefined,
 ) => BackendFeature;
+
+// @alpha
+export const gitlabWebhookEventsModule: (options?: undefined) => BackendFeature;
 ```

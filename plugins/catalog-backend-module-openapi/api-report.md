@@ -14,9 +14,12 @@ import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
-export function openApiPlaceholderResolver(
+export function jsonSchemaRefPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue>;
+
+// @public @deprecated (undocumented)
+export const openApiPlaceholderResolver: typeof jsonSchemaRefPlaceholderResolver;
 
 // @public @deprecated (undocumented)
 export class OpenApiRefProcessor implements CatalogProcessor {

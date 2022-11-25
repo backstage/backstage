@@ -57,10 +57,10 @@ const isValidSelection = (newSelection: Selection) => {
 };
 
 /**
- * Hook for retreiving a selection within the ShadowRoot.
+ * Hook for retrieving a selection within the ShadowRoot.
  * @public
  */
-export const useShadowRootSelection = (wait: number = 0) => {
+export const useShadowRootSelection = (waitMillis: number = 0) => {
   const shadowRoot = useShadowRoot();
   const [selection, setSelection] = useState<Selection | null>(null);
   const handleSelectionChange = useMemo(
@@ -78,8 +78,8 @@ export const useShadowRootSelection = (wait: number = 0) => {
         } else {
           setSelection(null);
         }
-      }, wait),
-    [shadowRoot, setSelection, wait],
+      }, waitMillis),
+    [shadowRoot, setSelection, waitMillis],
   );
 
   useEffect(() => {

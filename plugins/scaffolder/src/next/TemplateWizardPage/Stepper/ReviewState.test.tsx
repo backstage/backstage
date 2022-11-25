@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { ReviewState } from './ReviewState';
 import { render } from '@testing-library/react';
@@ -97,9 +98,7 @@ describe('ReviewState', () => {
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
-    expect(
-      await queryByRole('row', { name: 'Name ******' }),
-    ).not.toBeInTheDocument();
+    expect(queryByRole('row', { name: 'Name ******' })).not.toBeInTheDocument();
   });
 
   it('should allow for masking an option with a set text', () => {

@@ -28,7 +28,8 @@ import {
 } from '@material-ui/core';
 import { default as CloseIcon } from '@material-ui/icons/Close';
 import { useAlertDialogStyles as useStyles } from '../../utils/styles';
-import { Alert, AlertStatus, Maybe } from '../../types';
+import { Alert, AlertStatus } from '../../types';
+import { Maybe } from '@backstage/plugin-cost-insights-common';
 import { choose, formOf } from '../../utils/alerts';
 
 const DEFAULT_FORM_ID = 'alert-form';

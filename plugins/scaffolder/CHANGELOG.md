@@ -1,5 +1,42 @@
 # @backstage/plugin-scaffolder
 
+## 1.9.0-next.0
+
+### Minor Changes
+
+- ddd1c3308d: Implement Custom Field Explorer to view and play around with available installed custom field extensions
+- adb1b01e32: Adds the ability to supply a `transformErrors` function to the `Stepper` for `/next`
+
+### Patch Changes
+
+- d4d07cf55e: Enabling the customization of the last step in the scaffolder template.
+
+  To override the content you have to do the next:
+
+  ```typescript jsx
+  <TemplatePage ReviewStepComponent={YourCustomComponent} />
+  ```
+
+- ef803022f1: Initialize all `formData` in the `Stepper` in `/next`
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- a63e2df559: fixed `headerOptions` not passed to `TemplatePage` component
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/integration-react@1.1.7-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.9-next.0
+  - @backstage/plugin-permission-react@0.4.8-next.0
+  - @backstage/plugin-scaffolder-common@1.2.3-next.0
+
 ## 1.8.0
 
 ### Minor Changes

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor, screen } from '@testing-library/react';
 import { EntitySearchBar } from './EntitySearchBar';
 import { DefaultEntityFilters } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
@@ -29,13 +29,13 @@ describe('EntitySearchBar', () => {
       text: new EntityTextFilter('hello'),
     };
 
-    const { getByDisplayValue } = render(
+    render(
       <MockEntityListContextProvider value={{ updateFilters, filters }}>
         <EntitySearchBar />
       </MockEntityListContextProvider>,
     );
 
-    const searchInput = getByDisplayValue('hello');
+    const searchInput = screen.getByDisplayValue('hello');
     expect(searchInput).toBeInTheDocument();
 
     fireEvent.change(searchInput, { target: { value: 'world' } });

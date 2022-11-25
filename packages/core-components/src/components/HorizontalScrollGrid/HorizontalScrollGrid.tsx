@@ -155,7 +155,7 @@ function useScrollDistance(
   return [scrollLeft, scrollRight];
 }
 
-// Used to animate scrolling. Returns a single setScrollTarger function, when called with e.g. 200,
+// Used to animate scrolling. Returns a single setScrollTarget function, when called with e.g. 200,
 // the element pointer to by the ref will be scrolled 200px forwards over time.
 function useSmoothScroll(
   ref: React.MutableRefObject<HTMLElement | undefined>,
@@ -169,7 +169,7 @@ function useSmoothScroll(
       return;
     }
 
-    const startTime = performance.now();
+    const startTime = window.performance.now();
     const id = requestAnimationFrame(frameTime => {
       if (!ref.current) {
         return;

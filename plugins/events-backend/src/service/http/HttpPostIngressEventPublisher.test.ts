@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorHandler, getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 import express from 'express';
@@ -35,39 +35,37 @@ describe('HttpPostIngressEventPublisher', () => {
     });
 
     const router = Router();
-    router.use(express.json());
-    router.use(errorHandler());
     const app = express().use(router);
 
     const publisher = HttpPostIngressEventPublisher.fromConfig({
       config,
-      logger,
-      router,
       ingresses: {
         testB: {},
       },
+      logger,
     });
+    publisher.bind(router);
 
     const eventBroker = new TestEventBroker();
     await publisher.setEventBroker(eventBroker);
 
     const notFoundResponse = await request(app)
-      .post('/unknown')
-      .timeout(100)
+      .post('/http/unknown')
+      .timeout(1000)
       .send({ test: 'data' });
     expect(notFoundResponse.status).toBe(404);
 
     const response1 = await request(app)
-      .post('/testA')
+      .post('/http/testA')
       .set('X-Custom-Header', 'test-value')
-      .timeout(100)
+      .timeout(1000)
       .send({ testA: 'data' });
     expect(response1.status).toBe(202);
 
     const response2 = await request(app)
-      .post('/testB')
+      .post('/http/testB')
       .set('X-Custom-Header', 'test-value')
-      .timeout(100)
+      .timeout(1000)
       .send({ testB: 'data' });
     expect(response2.status).toBe(202);
 
@@ -100,14 +98,10 @@ describe('HttpPostIngressEventPublisher', () => {
     });
 
     const router = Router();
-    router.use(express.json());
-    router.use(errorHandler());
     const app = express().use(router);
 
     const publisher = HttpPostIngressEventPublisher.fromConfig({
       config,
-      logger,
-      router,
       ingresses: {
         testB: {
           validator: async (req, context) => {
@@ -148,49 +142,51 @@ describe('HttpPostIngressEventPublisher', () => {
           },
         },
       },
+      logger,
     });
+    publisher.bind(router);
 
     const eventBroker = new TestEventBroker();
     await publisher.setEventBroker(eventBroker);
 
     const response1 = await request(app)
-      .post('/testA')
-      .timeout(100)
+      .post('/http/testA')
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response1.status).toBe(202);
 
     const response2 = await request(app)
-      .post('/testB')
-      .timeout(100)
+      .post('/http/testB')
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response2.status).toBe(400);
     expect(response2.body).toEqual({ message: 'wrong signature' });
 
     const response3 = await request(app)
-      .post('/testB')
+      .post('/http/testB')
       .set('X-Test-Signature', 'wrong')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response3.status).toBe(400);
     expect(response3.body).toEqual({ message: 'wrong signature' });
 
     const response4 = await request(app)
-      .post('/testB')
+      .post('/http/testB')
       .set('X-Test-Signature', 'testB-signature')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response4.status).toBe(202);
 
     const response5 = await request(app)
-      .post('/testC')
-      .timeout(100)
+      .post('/http/testC')
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response5.status).toBe(404);
     expect(response5.body).toEqual({});
 
     const response6 = await request(app)
-      .post('/testD')
-      .timeout(100)
+      .post('/http/testD')
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response6.status).toBe(403);
     expect(response6.body).toEqual({});
@@ -210,15 +206,10 @@ describe('HttpPostIngressEventPublisher', () => {
   it('without configuration', async () => {
     const config = new ConfigReader({});
 
-    const router = Router();
-    router.use(express.json());
-    router.use(errorHandler());
-
     expect(() =>
       HttpPostIngressEventPublisher.fromConfig({
         config,
         logger,
-        router,
       }),
     ).not.toThrow();
   });

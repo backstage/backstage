@@ -48,6 +48,7 @@ describe('createRouter readonly disabled', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
+      entitiesBatch: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),
@@ -254,6 +255,38 @@ describe('createRouter readonly disabled', () => {
         authorizationToken: 'someauthtoken',
       });
       expect(response.status).toEqual(404);
+    });
+  });
+
+  describe('POST /entities/by-refs', () => {
+    it.each([
+      '',
+      'not json',
+      '[',
+      '[]',
+      '{}',
+      '{"unknown":7}',
+      '{"entityRefs":7}',
+      '{"entityRefs":[7]}',
+    ])('properly rejects malformed request body, %p', async p => {
+      await expect(
+        request(app)
+          .post('/entities/by-refs')
+          .set('Content-Type', 'application/json')
+          .send(p),
+      ).resolves.toMatchObject({ status: 400 });
+    });
+
+    it('can fetch entities by refs', async () => {
+      const entity: Entity = {} as any;
+      entitiesCatalog.entitiesBatch.mockResolvedValue({ items: [entity] });
+      const response = await request(app)
+        .post('/entities/by-refs')
+        .set('Content-Type', 'application/json')
+        .send('{"entityRefs":["a"]}');
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ items: [entity] });
     });
   });
 
@@ -517,6 +550,7 @@ describe('createRouter readonly enabled', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
+      entitiesBatch: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),
@@ -706,6 +740,7 @@ describe('NextRouter permissioning', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
+      entitiesBatch: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),

@@ -22,6 +22,7 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { CatalogGraphPage } from './CatalogGraphPage';
@@ -108,19 +109,16 @@ describe('<CatalogGraphPage/>', () => {
       n === 'b:d/e' ? entityE : entityC,
     );
 
-    const { getByText, findByText, findAllByTestId } = await renderInTestApp(
-      wrapper,
-      {
-        mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-        },
+    await renderInTestApp(wrapper, {
+      mountedRoutes: {
+        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
       },
-    );
+    });
 
-    expect(getByText('Catalog Graph')).toBeInTheDocument();
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findByText('b:d/e')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(2);
+    expect(screen.getByText('Catalog Graph')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/e')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(2);
   });
 
@@ -129,17 +127,17 @@ describe('<CatalogGraphPage/>', () => {
       n === 'b:d/e' ? entityE : entityC,
     );
 
-    const { getByText, queryByText } = await renderInTestApp(wrapper, {
+    await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
       },
     });
 
-    expect(queryByText('Max Depth')).toBeNull();
+    expect(screen.queryByText('Max Depth')).toBeNull();
 
-    await userEvent.click(getByText('Filters'));
+    await userEvent.click(screen.getByText('Filters'));
 
-    expect(getByText('Max Depth')).toBeInTheDocument();
+    expect(screen.getByText('Max Depth')).toBeInTheDocument();
   });
 
   test('should select other entity', async () => {
@@ -147,20 +145,17 @@ describe('<CatalogGraphPage/>', () => {
       n === 'b:d/e' ? entityE : entityC,
     );
 
-    const { getByText, findByText, findAllByTestId } = await renderInTestApp(
-      wrapper,
-      {
-        mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-        },
+    await renderInTestApp(wrapper, {
+      mountedRoutes: {
+        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
       },
-    );
+    });
 
-    expect(await findAllByTestId('node')).toHaveLength(2);
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
 
-    await userEvent.click(getByText('b:d/e'));
+    await userEvent.click(screen.getByText('b:d/e'));
 
-    expect(await findByText('hasPart')).toBeInTheDocument();
+    expect(await screen.findByText('hasPart')).toBeInTheDocument();
   });
 
   test('should navigate to entity', async () => {
@@ -168,17 +163,17 @@ describe('<CatalogGraphPage/>', () => {
       n === 'b:d/e' ? entityE : entityC,
     );
 
-    const { getByText, findAllByTestId } = await renderInTestApp(wrapper, {
+    await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
       },
     });
 
-    expect(await findAllByTestId('node')).toHaveLength(2);
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
 
     const user = userEvent.setup();
     await user.keyboard('{Shift>}');
-    await user.click(getByText('b:d/e'));
+    await user.click(screen.getByText('b:d/e'));
     expect(navigate).toHaveBeenCalledWith('/entity/{kind}/{namespace}/{name}');
   });
 
@@ -188,7 +183,7 @@ describe('<CatalogGraphPage/>', () => {
     );
 
     const analyticsSpy = new MockAnalyticsApi();
-    const { getByText, findAllByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         {wrapper}
       </TestApiProvider>,
@@ -199,12 +194,12 @@ describe('<CatalogGraphPage/>', () => {
       },
     );
 
-    expect(await findAllByTestId('node')).toHaveLength(2);
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
 
     // We wait a bit here to reliably reproduce an issue where that requires the `baseVal` and `view` mocks
     await new Promise(r => setTimeout(r, 100));
 
-    await userEvent.click(getByText('b:d/e'));
+    await userEvent.click(screen.getByText('b:d/e'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',
@@ -218,7 +213,7 @@ describe('<CatalogGraphPage/>', () => {
     );
 
     const analyticsSpy = new MockAnalyticsApi();
-    const { getByText, findAllByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         {wrapper}
       </TestApiProvider>,
@@ -229,11 +224,11 @@ describe('<CatalogGraphPage/>', () => {
       },
     );
 
-    expect(await findAllByTestId('node')).toHaveLength(2);
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
 
     const user = userEvent.setup();
     await user.keyboard('{Shift>}');
-    await user.click(getByText('b:d/e'));
+    await user.click(screen.getByText('b:d/e'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',

@@ -141,14 +141,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-node@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
       # the 2 steps below can be removed if you aren't using plantuml in your documentation
       - name: setup java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '11'
