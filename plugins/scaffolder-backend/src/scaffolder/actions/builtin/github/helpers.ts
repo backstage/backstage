@@ -313,6 +313,115 @@ export async function initRepoPushAndProtect(
   }
 }
 
+export async function createGithubTemplateRepoWithCollaboratorsAndTopics(
+  client: Octokit,
+  repo: string,
+  owner: string,
+  repoVisibility: 'private' | 'public',
+  description: string | undefined,
+  templateOwner: string,
+  templateRepo: string,
+  access: string | undefined,
+  collaborators:
+    | (
+        | {
+            user: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            team: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            /** @deprecated This field is deprecated in favor of team */
+            username: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+      )[]
+    | undefined,
+  logger: Logger,
+) {
+  // eslint-disable-next-line testing-library/no-await-sync-query
+  const user = await client.rest.users.getByUsername({
+    username: owner,
+  });
+
+  const templateRepoCreationPromise = client.rest.repos.createUsingTemplate({
+    name: repo,
+    owner: owner,
+    private: repoVisibility === 'private',
+    description: description,
+    template_owner: templateOwner,
+    template_repo: templateRepo,
+  });
+
+  let newRepo;
+
+  try {
+    newRepo = (await templateRepoCreationPromise).data;
+  } catch (e) {
+    assertError(e);
+    if (e.message === 'Resource not accessible by integration') {
+      logger.warn(
+        `The GitHub app or token provided may not have the required permissions to create the ${user.data.type} repository ${owner}/${repo}.`,
+      );
+    }
+    throw new Error(
+      `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${e.message}`,
+    );
+  }
+
+  if (access?.startsWith(`${owner}/`)) {
+    const [, team] = access.split('/');
+    await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+      org: owner,
+      team_slug: team,
+      owner,
+      repo,
+      permission: 'admin',
+    });
+    // No need to add access if it's the person who owns the personal account
+  } else if (access && access !== owner) {
+    await client.rest.repos.addCollaborator({
+      owner,
+      repo,
+      username: access,
+      permission: 'admin',
+    });
+  }
+
+  if (collaborators) {
+    for (const collaborator of collaborators) {
+      try {
+        if ('user' in collaborator) {
+          await client.rest.repos.addCollaborator({
+            owner,
+            repo,
+            username: collaborator.user,
+            permission: collaborator.access,
+          });
+        } else if ('team' in collaborator) {
+          await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+            org: owner,
+            team_slug: collaborator.team,
+            owner,
+            repo,
+            permission: collaborator.access,
+          });
+        }
+      } catch (e) {
+        assertError(e);
+        const name = extractCollaboratorName(collaborator);
+        logger.warn(
+          `Skipping ${collaborator.access} access for ${name}, ${e.message}`,
+        );
+      }
+    }
+  }
+
+  return newRepo;
+}
+
 function extractCollaboratorName(
   collaborator: { user: string } | { team: string } | { username: string },
 ) {

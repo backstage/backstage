@@ -188,6 +188,18 @@ const sourcePath = {
   type: 'string',
 };
 
+const templateRepo = {
+  title: 'Template Repository Location',
+  description: `The name of the template repository. The name is not case sensitive.`,
+  type: 'string',
+};
+
+const templateOwner = {
+  title: 'Template Repository Owner',
+  description: `The organization or person who will own the template repository.`,
+  type: 'string',
+};
+
 export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
@@ -212,3 +224,5 @@ export { requireBranchesToBeUpToDate };
 export { sourcePath };
 export { token };
 export { topics };
+export { templateOwner };
+export { templateRepo };
