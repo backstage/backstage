@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-export type { ContainerRunner, RunContainerOptions } from './ContainerRunner';
-export { DockerContainerRunner } from './DockerContainerRunner';
-export type {
-  KubernetesContainerRunnerOptions,
-  KubernetesContainerRunnerMountBase,
-} from './KubernetesContainerRunner';
-export { KubernetesContainerRunner } from './KubernetesContainerRunner';
+export interface Config {
+  events?: {
+    modules?: {
+      /**
+       * events-backend-module-gitlab plugin configuration.
+       */
+      gitlab?: {
+        /**
+         * Secret token for webhook requests used to verify tokens.
+         *
+         * See https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#validate-payloads-by-using-a-secret-token
+         * for more details.
+         *
+         * @visibility secret
+         */
+        webhookSecret?: string;
+      };
+    };
+  };
+}

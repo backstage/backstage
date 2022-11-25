@@ -40,3 +40,31 @@ Add the event router to the `EventsBackend`:
 +  .addSubscribers(gitlabEventRouter);
 // [...]
 ```
+
+### Token Validator
+
+Add the token validator for the topic `gitlab`:
+
+```diff
+// at packages/backend/src/plugins/events.ts
++ import { createGitlabTokenValidator } from '@backstage/plugin-events-backend-module-gitlab';
+// [...]
+   const http = HttpPostIngressEventPublisher.fromConfig({
+     config: env.config,
+     ingresses: {
++       gitlab: {
++         validator: createGitlabTokenValidator(env.config),
++       },
+     },
+     logger: env.logger,
+  });
+```
+
+Additionally, you need to add the configuration:
+
+```yaml
+events:
+  modules:
+    gitlab:
+      webhookSecret: your-secret-token
+```

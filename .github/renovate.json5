@@ -21,5 +21,10 @@
       groupName: 'SVGR monorepo packages',
       rangeStrategy: 'replace',
     },
+    // We update yarn packages manually as it's gzip'd and we don't want to pollute the repository too much.
+    {
+      matchSourceUrls: ['https://github.com/yarnpkg/berry'],
+      enabled: false,
+    },
   ],
 }

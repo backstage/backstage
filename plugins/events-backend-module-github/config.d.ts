@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-export type { ContainerRunner, RunContainerOptions } from './ContainerRunner';
-export { DockerContainerRunner } from './DockerContainerRunner';
-export type {
-  KubernetesContainerRunnerOptions,
-  KubernetesContainerRunnerMountBase,
-} from './KubernetesContainerRunner';
-export { KubernetesContainerRunner } from './KubernetesContainerRunner';
+export interface Config {
+  events?: {
+    modules?: {
+      /**
+       * events-backend-module-github plugin configuration.
+       */
+      github?: {
+        /**
+         * Secret token for webhook requests used to verify signatures.
+         *
+         * See https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks
+         * for more details.
+         *
+         * @visibility secret
+         */
+        webhookSecret?: string;
+      };
+    };
+  };
+}
