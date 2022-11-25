@@ -222,7 +222,7 @@ costInsights:
       rate: 3.5
 ```
 
-### engineerThreshold (Optional; default 0.5)
+### Engineer Threshold (Optional; default 0.5)
 
 This threshold determines whether to show 'Negligible', or a percentage with a fraction of 'engineers' for cost savings or cost excess on top of the charts.  
 A threshold of 0.5 means that `Negligible` is shown when the difference in costs is lower than that fraction of engineers in that time frame,  
