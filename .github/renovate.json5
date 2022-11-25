@@ -21,5 +21,9 @@
       groupName: 'SVGR monorepo packages',
       rangeStrategy: 'replace',
     },
+    {
+      matchSourceUrls: ['https://github.com/yarnpkg/berry'],
+      excludePackagePatterns: ['^@yarnpkg', '^yarn'],
+    },
   ],
 }
