@@ -41,6 +41,15 @@ export function createGithubTemplateRepoCreateAction(options: {
 
   return createTemplateAction<{
     repoUrl: string;
+    defaultBranch?: string;
+    deleteBranchOnMerge?: boolean;
+    allowRebaseMerge?: boolean;
+    allowSquashMerge?: boolean;
+    allowMergeCommit?: boolean;
+    requireCodeOwnerReviews?: boolean;
+    requiredStatusCheckContexts?: string[];
+    topics?: string[];
+    configureBranchProtection: boolean;
     description?: string;
     templateOwner: string;
     templateRepo: string;
