@@ -118,7 +118,7 @@ describe.each`
   ${ChangeThreshold.lower} | ${0.5}     | ${0.5}      | ${'Negligible'}
   ${ChangeThreshold.upper} | ${0.5}     | ${0.000001} | ${'less than an engineer'}
   ${ChangeThreshold.upper} | ${0.5}     | ${0.5}      | ${'Negligible'}
-  ${3}                     | ${500_000} | ${0}        | ${`300% or ~ 30 engineers`}
+  ${3}                     | ${500_000} | ${0}        | ${`300% or ~30 engineers`}
   ${3}                     | ${500_000} | ${30}       | ${'Negligible'}
 `('<CostGrowth />', ({ ratio, amount, threshold, expected }) => {
   it(`should display the correct difference the threshold is different. ratio: ${ratio} threshold:${threshold} expected:${expected}`, async () => {
