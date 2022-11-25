@@ -24,6 +24,11 @@ export interface Config {
     /**
      * @visibility frontend
      */
+    engineerThreshold?: number;
+
+    /**
+     * @visibility frontend
+     */
     baseCurrency?: {
       /**
        * @visibility frontend

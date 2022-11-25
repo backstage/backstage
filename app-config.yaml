@@ -373,6 +373,7 @@ auth:
       development: {}
 costInsights:
   engineerCost: 200000
+  engineerThreshold: 0.5
   products:
     computeEngine:
       name: Compute Engine

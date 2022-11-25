@@ -18,7 +18,6 @@ import {
   Cost,
   ChangeStatistic,
   ChangeThreshold,
-  EngineerThreshold,
   GrowthType,
   MetricData,
   Duration,
@@ -29,8 +28,11 @@ import { inclusiveStartDateOf } from './duration';
 import { notEmpty } from './assert';
 
 // Used for displaying status colors
-export function growthOf(change: ChangeStatistic): GrowthType {
-  const exceedsEngineerThreshold = Math.abs(change.amount) >= EngineerThreshold;
+export function growthOf(
+  change: ChangeStatistic,
+  engineerThreshold: number,
+): GrowthType {
+  const exceedsEngineerThreshold = Math.abs(change.amount) >= engineerThreshold;
 
   if (notEmpty(change.ratio)) {
     if (exceedsEngineerThreshold && change.ratio >= ChangeThreshold.upper) {
@@ -41,9 +43,12 @@ export function growthOf(change: ChangeStatistic): GrowthType {
       return GrowthType.Savings;
     }
   } else {
-    if (exceedsEngineerThreshold && change.amount > 0) return GrowthType.Excess;
-    if (exceedsEngineerThreshold && change.amount < 0)
+    if (exceedsEngineerThreshold && change.amount > 0) {
+      return GrowthType.Excess;
+    }
+    if (exceedsEngineerThreshold && change.amount < 0) {
       return GrowthType.Savings;
+    }
   }
 
   return GrowthType.Negligible;

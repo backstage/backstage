@@ -31,7 +31,7 @@ import {
   ScrollContext,
   ScrollContextProps,
 } from '../hooks';
-import { Duration } from '../types';
+import { Duration, EngineerThreshold } from '../types';
 import { createCurrencyFormat } from '../utils/currency';
 
 export type MockFilterProviderProps = PropsWithChildren<
@@ -95,6 +95,7 @@ export const MockConfigProvider = (props: MockConfigProviderProps) => {
     products: [],
     icons: [],
     engineerCost: 0,
+    engineerThreshold: EngineerThreshold,
     currencies: [],
   };
 
