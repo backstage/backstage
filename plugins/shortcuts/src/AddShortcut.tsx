@@ -50,7 +50,7 @@ type Props = {
 export const AddShortcut = ({ onClose, anchorEl, api }: Props) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const [formValues, setFormValues] = useState<FormValues>();
   const open = Boolean(anchorEl);
 
@@ -74,7 +74,7 @@ export const AddShortcut = ({ onClose, anchorEl, api }: Props) => {
   };
 
   const handlePaste = () => {
-    setFormValues({ url: pathname, title: document.title });
+    setFormValues({ url: `${pathname}${search}`, title: document.title });
   };
 
   const handleClose = () => {

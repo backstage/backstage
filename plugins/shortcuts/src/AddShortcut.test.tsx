@@ -71,7 +71,7 @@ describe('AddShortcut', () => {
     const spy = jest.spyOn(api, 'add');
 
     await renderInTestApp(<AddShortcut {...props} />, {
-      routeEntries: ['/some-initial-url'],
+      routeEntries: ['/some-initial-url?page=2'],
     });
 
     fireEvent.click(screen.getByText('Use current page'));
@@ -79,7 +79,7 @@ describe('AddShortcut', () => {
     await waitFor(() => {
       expect(spy).toHaveBeenCalledWith({
         title: 'some document title',
-        url: '/some-initial-url',
+        url: '/some-initial-url?page=2',
       });
     });
   });
