@@ -64,12 +64,18 @@ describe('azure', () => {
           repository: {
             name: 'backstage',
           },
+          project: {
+            name: '*',
+          },
         },
         {
           fileName: 'catalog-info.yaml',
           path: '/catalog-info.yaml',
           repository: {
             name: 'ios-app',
+          },
+          project: {
+            name: '*',
           },
         },
       ],
@@ -151,6 +157,9 @@ describe('azure', () => {
           repository: {
             name: 'backstage',
           },
+          project: {
+            name: '*',
+          },
         },
       ],
     };
@@ -189,6 +198,9 @@ describe('azure', () => {
         path: '/catalog-info.yaml',
         repository: {
           name: 'backstage',
+        },
+        project: {
+          name: '*',
         },
       }));
     };
