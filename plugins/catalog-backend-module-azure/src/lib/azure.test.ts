@@ -33,7 +33,7 @@ describe('azure', () => {
           (req, res, ctx) => {
             expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
             expect(req.body).toEqual({
-              searchText: 'path:/catalog-info.yaml repo:*',
+              searchText: 'path:/catalog-info.yaml repo:* proj:*',
               $skip: 0,
               $top: 1000,
             });
@@ -87,7 +87,7 @@ describe('azure', () => {
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
-            searchText: 'path:/catalog-info.yaml repo:*',
+            searchText: 'path:/catalog-info.yaml repo:* proj:*',
             $skip: 0,
             $top: 1000,
           });
@@ -127,7 +127,7 @@ describe('azure', () => {
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
-            searchText: 'path:/catalog-info.yaml repo:backstage',
+            searchText: 'path:/catalog-info.yaml repo:backstage: proj:*',
             $skip: 0,
             $top: 1000,
           });
@@ -170,7 +170,7 @@ describe('azure', () => {
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
-            searchText: 'path:/catalog-info.yaml repo:*',
+            searchText: 'path:/catalog-info.yaml repo:* proj:*',
             $skip: 0,
             $top: 1000,
           });
