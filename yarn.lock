@@ -6072,7 +6072,6 @@ __metadata:
     express-promise-router: ^4.1.0
     jenkins: ^1.0.0
     msw: ^0.49.0
-    promise-any-polyfill: ^1.0.1
     supertest: ^6.1.6
     winston: ^3.2.1
     yn: ^4.0.0
@@ -31336,13 +31335,6 @@ __metadata:
   version: 1.0.1
   resolution: "promise-all-reject-late@npm:1.0.1"
   checksum: d7d61ac412352e2c8c3463caa5b1c3ca0f0cc3db15a09f180a3da1446e33d544c4261fc716f772b95e4c27d559cfd2388540f44104feb356584f9c73cfb9ffcb
-  languageName: node
-  linkType: hard
-
-"promise-any-polyfill@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "promise-any-polyfill@npm:1.0.1"
-  checksum: 8eccebb8f9278c422cda05083e506964e6c75061b9c6d7fb6f3b7ccb707e5d338138aed3092b8358355a18f8d6dd47c139d0e198aae1eb0c84cd943a35d7ee0c
   languageName: node
   linkType: hard
 
