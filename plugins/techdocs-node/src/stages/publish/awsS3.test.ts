@@ -464,8 +464,8 @@ describe('AwsS3Publish', () => {
       const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
 
       await expect(fails).rejects.toMatchObject({
-        message: expect.stringMatching(
-          'TechDocs metadata fetch failed; caused by Error: The file invalid/triplet/path/techdocs_metadata.json does not exist',
+        message: expect.stringContaining(
+          'The file invalid/triplet/path/techdocs_metadata.json does not exist',
         ),
       });
     });
