@@ -108,6 +108,13 @@ export function createGithubTemplateRepoCreateAction(options: {
       const client = new Octokit(octokitOptions);
 
       const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { templateOwner, templateRepo }  = parseRepoUrl(templateUrl, integrations);
+      
+        if (!templateOwner) {
+        throw new InputError(
+          'Invalid template repository owner provided in templateUrl',
+        );
+      }
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
