@@ -7216,6 +7216,7 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/zen-observable": ^0.8.2
     cross-fetch: ^3.1.5
+    jest-location-mock: ^1.0.9
     msw: ^0.49.0
     react-hook-form: ^7.12.2
     react-use: ^17.2.4
@@ -9561,6 +9562,13 @@ __metadata:
   version: 0.1.2
   resolution: "@istanbuljs/schema@npm:0.1.2"
   checksum: 5ce9facf2f0e3f4a93e56853cdfd78456e22d2c210c677530046e9c634ddc323dd62423ac711cd3554b5be06052c87fb8e0c266aa9010726940654c357290e78
+  languageName: node
+  linkType: hard
+
+"@jedmao/location@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@jedmao/location@npm:3.0.0"
+  checksum: 7fa57df6896979ff39685eeae2d917d6e4990b0fa409686330acfd5f239415148a3cbf3c8e06216d592bd3c2e072e224793c61527eca8b5b4aed1e908028a56a
   languageName: node
   linkType: hard
 
@@ -19753,6 +19761,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"diff-sequences@npm:^27.5.1":
+  version: 27.5.1
+  resolution: "diff-sequences@npm:27.5.1"
+  checksum: a00db5554c9da7da225db2d2638d85f8e41124eccbd56cbaefb3b276dcbb1c1c2ad851c32defe2055a54a4806f030656cbf6638105fd6ce97bb87b90b32a33ca
+  languageName: node
+  linkType: hard
+
 "diff-sequences@npm:^29.0.0":
   version: 29.0.0
   resolution: "diff-sequences@npm:29.0.0"
@@ -25186,6 +25201,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-diff@npm:^27.0.1":
+  version: 27.5.1
+  resolution: "jest-diff@npm:27.5.1"
+  dependencies:
+    chalk: ^4.0.0
+    diff-sequences: ^27.5.1
+    jest-get-type: ^27.5.1
+    pretty-format: ^27.5.1
+  checksum: 8be27c1e1ee57b2bb2bef9c0b233c19621b4c43d53a3c26e2c00a4e805eb4ea11fe1694a06a9fb0e80ffdcfdc0d2b1cb0b85920b3f5c892327ecd1e7bd96b865
+  languageName: node
+  linkType: hard
+
 "jest-diff@npm:^29.0.3":
   version: 29.0.3
   resolution: "jest-diff@npm:29.0.3"
@@ -25250,6 +25277,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-get-type@npm:^27.5.1":
+  version: 27.5.1
+  resolution: "jest-get-type@npm:27.5.1"
+  checksum: 63064ab70195c21007d897c1157bf88ff94a790824a10f8c890392e7d17eda9c3900513cb291ca1c8d5722cad79169764e9a1279f7c8a9c4cd6e9109ff04bbc0
+  languageName: node
+  linkType: hard
+
 "jest-get-type@npm:^29.0.0":
   version: 29.0.0
   resolution: "jest-get-type@npm:29.0.0"
@@ -25287,6 +25321,16 @@ __metadata:
     jest-get-type: ^29.0.0
     pretty-format: ^29.0.3
   checksum: a1657dbb72f2c3b4a8af148daec491d42eabdadc4e27eb8ec325d5267c21ac958e82e5c8ee679861c2131afd2bdfed4139b806511de7624d93b9838c6fcf5b2e
+  languageName: node
+  linkType: hard
+
+"jest-location-mock@npm:^1.0.9":
+  version: 1.0.9
+  resolution: "jest-location-mock@npm:1.0.9"
+  dependencies:
+    "@jedmao/location": ^3.0.0
+    jest-diff: ^27.0.1
+  checksum: fdf69457bbfb943d54018558be352af347f238c2e04e7d5eb28fddc3110a147060d3b735904bd5c3d53b6bf3b5860d19843f04882d47d2d453df1eac6145dead
   languageName: node
   linkType: hard
 
@@ -31236,7 +31280,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^27.0.2":
+"pretty-format@npm:^27.0.2, pretty-format@npm:^27.5.1":
   version: 27.5.1
   resolution: "pretty-format@npm:27.5.1"
   dependencies:

@@ -20,6 +20,7 @@ import { AddShortcut } from './AddShortcut';
 import { LocalStoredShortcuts } from './api';
 import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
+import 'jest-location-mock';
 
 describe('AddShortcut', () => {
   const api = new LocalStoredShortcuts(MockStorageApi.create());
@@ -69,6 +70,7 @@ describe('AddShortcut', () => {
 
   it('pastes the values', async () => {
     const spy = jest.spyOn(api, 'add');
+    window.location.assign('/some-initial-url?page=2');
 
     await renderInTestApp(<AddShortcut {...props} />, {
       routeEntries: ['/some-initial-url?page=2'],
