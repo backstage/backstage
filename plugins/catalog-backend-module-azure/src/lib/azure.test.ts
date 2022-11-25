@@ -65,7 +65,7 @@ describe('azure', () => {
             name: 'backstage',
           },
           project: {
-            name: '*',
+            name: 'backstage',
           },
         },
         {
@@ -75,7 +75,7 @@ describe('azure', () => {
             name: 'ios-app',
           },
           project: {
-            name: '*',
+            name: 'backstage',
           },
         },
       ],
@@ -87,7 +87,7 @@ describe('azure', () => {
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
-            searchText: 'path:/catalog-info.yaml repo:* proj:*',
+            searchText: 'path:/catalog-info.yaml repo:* proj:backstage',
             $skip: 0,
             $top: 1000,
           });
