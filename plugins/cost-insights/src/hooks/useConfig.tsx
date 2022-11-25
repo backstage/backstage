@@ -22,7 +22,7 @@ import React, {
   useState,
 } from 'react';
 import { Config as BackstageConfig } from '@backstage/config';
-import { Currency, Icon, Metric, Product } from '../types';
+import { Currency, EngineerThreshold, Icon, Metric, Product } from '../types';
 import { getIcon } from '../utils/navigation';
 import { validateCurrencies, validateMetrics } from '../utils/config';
 import { createCurrencyFormat, defaultCurrencies } from '../utils/currency';
@@ -84,7 +84,7 @@ const defaultState: ConfigContextProps = {
   products: [],
   icons: [],
   engineerCost: 0,
-  engineerThreshold: 0.5,
+  engineerThreshold: EngineerThreshold,
   currencies: defaultCurrencies,
 };
 
