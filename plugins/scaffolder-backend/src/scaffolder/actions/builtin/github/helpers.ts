@@ -346,6 +346,29 @@ export async function createGithubTemplateRepoWithCollaboratorsAndTopics(
     username: owner,
   });
 
+  const repoTemplatePromise = client.rest.repos.get({
+        owner: templateOwner,
+        repo: templateRepo,
+      });
+
+      let repoTemplate;
+      try {
+        repoTemplate = (await repoTemplatePromise).data;
+      } catch (e) {
+        assertError(e);
+        throw new Error(
+          `Template with name: ${templateOwner}/${templateRepo} not found, ${e.message}`,
+        );
+      }
+
+      if (!repoTemplate?.is_template) {
+        ctx.logger.warn(
+          `Invalid template repository provided in templateUrl, is the repository a GitHub template?`,
+        );
+        throw new InputError(
+          'Invalid template repository provided in templateUrl, is the repository a GitHub template?',
+        );
+      }
   const templateRepoCreationPromise = client.rest.repos.createUsingTemplate({
     name: repo,
     owner: owner,
