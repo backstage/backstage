@@ -42,7 +42,7 @@ describe('TechDocs Live Preview - MkDocs Serve', () => {
 
   it('toMatchImageSnapshot - MkDocs Page', () => {
     cy.visit(Cypress.env('mkDocsBaseUrl')).then(() => {
-      cy.document().toMatchImageSnapshot();
+      cy.document().matchImage();
     });
   });
 });
