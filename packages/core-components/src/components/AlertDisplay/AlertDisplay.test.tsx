@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { screen } from '@testing-library/react';
-import { AlertDisplay } from './AlertDisplay';
-import { alertApiRef, AlertMessage } from '@backstage/core-plugin-api';
+import { AlertMessage, alertApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import { fireEvent, screen } from '@testing-library/react';
+
 import { AlertApiForwarder } from '@backstage/core-app-api';
+import { AlertDisplay } from './AlertDisplay';
 import Observable from 'zen-observable';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import React from 'react';
 import { act } from '@testing-library/react';
 
 const TEST_MESSAGE = 'TEST_MESSAGE';
@@ -144,30 +145,33 @@ describe('<AlertDisplay />', () => {
     });
   });
 
-  // What I'd like to do here is be able to trigger a few messages with a bit of time between each
-  // Then be able to check that they close one after the other, just not sure how to set that up?
   describe('with multiple transient messages', () => {
+    const alert$ = () =>
+      new Observable<AlertMessage>(subscriber => {
+        subscriber.next({
+          message: 'transient message one',
+          display: 'transient',
+        });
+        setTimeout(() => {
+          subscriber.next({
+            message: 'transient message two',
+            display: 'transient',
+          });
+        }, 1000);
+        setTimeout(() => {
+          subscriber.next({
+            message: 'transient message three',
+            display: 'transient',
+          });
+        }, 2000);
+      });
+
     const apis = [
       [
         alertApiRef,
         {
           post() {},
-          alert$() {
-            return Observable.of<AlertMessage>(
-              {
-                message: 'transient message one',
-                display: 'transient',
-              },
-              {
-                message: 'transient message two',
-                display: 'transient',
-              },
-              {
-                message: 'transient message three',
-                display: 'transient',
-              },
-            );
-          },
+          alert$,
         },
       ] as const,
     ] as const;
@@ -179,12 +183,104 @@ describe('<AlertDisplay />', () => {
           <AlertDisplay />
         </TestApiProvider>,
       );
-
+      // Validate adding messages
       expect(queryByText('transient message one')).toBeInTheDocument();
       act(() => {
-        jest.advanceTimersByTime(5005);
+        jest.advanceTimersByTime(1000);
       });
-      expect(queryByText('transient message one')).not.toBeInTheDocument();
+      expect(queryByText('transient message one')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(queryByText('transient message one')).toBeInTheDocument();
+      expect(queryByText('(2 older messages)')).toBeInTheDocument();
+
+      // Validate removing messages
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      expect(queryByText('transient message two')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
+
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      expect(queryByText('transient message three')).toBeInTheDocument();
+
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      expect(queryByText('transient message')).not.toBeInTheDocument();
+      jest.useRealTimers();
+    });
+  });
+
+  describe('with multiple messages of mixed display', () => {
+    const alert$ = () =>
+      new Observable<AlertMessage>(subscriber => {
+        subscriber.next({
+          message: 'transient message one',
+          display: 'transient',
+        });
+        setTimeout(() => {
+          subscriber.next({
+            message: 'permanent message',
+            display: 'permanent',
+          });
+        }, 1000);
+        setTimeout(() => {
+          subscriber.next({
+            message: 'transient message three',
+            display: 'transient',
+          });
+        }, 2000);
+      });
+
+    const apis = [
+      [
+        alertApiRef,
+        {
+          post() {},
+          alert$,
+        },
+      ] as const,
+    ] as const;
+
+    it('renders message and then removes it', async () => {
+      jest.useFakeTimers();
+      const { queryByText } = await renderInTestApp(
+        <TestApiProvider apis={apis}>
+          <AlertDisplay />
+        </TestApiProvider>,
+      );
+      // Validate adding messages
+      expect(queryByText('transient message one')).toBeInTheDocument();
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(queryByText('transient message one')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(queryByText('transient message one')).toBeInTheDocument();
+      expect(queryByText('(2 older messages)')).toBeInTheDocument();
+
+      // Validate removing messages
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      expect(queryByText('permanent message')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('error-button-close'));
+      expect(queryByText('transient message three')).toBeInTheDocument();
+
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      expect(queryByText('transient message')).not.toBeInTheDocument();
       jest.useRealTimers();
     });
   });
