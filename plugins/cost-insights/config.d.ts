@@ -24,7 +24,7 @@ export interface Config {
     /**
      * @visibility frontend
      */
-    engineerThreshold: number;
+    engineerThreshold?: number;
 
     /**
      * @visibility frontend
