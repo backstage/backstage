@@ -1,5 +1,12 @@
 # example-app
 
+## 0.2.78
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-org@0.6.1
+
 ## 0.2.77
 
 ### Patch Changes
