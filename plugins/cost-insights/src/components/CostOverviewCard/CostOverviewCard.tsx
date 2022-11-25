@@ -34,7 +34,12 @@ import { useConfig, useFilters } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
 import { findAlways } from '../../utils/assert';
-import { Cost, CostInsightsTheme, Maybe, MetricData } from '../../types';
+import { CostInsightsTheme } from '../../types';
+import {
+  Cost,
+  Maybe,
+  MetricData,
+} from '@backstage/plugin-cost-insights-common';
 import { useOverviewTabsStyles } from '../../utils/styles';
 import { ScrollAnchor } from '../../utils/scroll';
 

@@ -25,7 +25,7 @@ describe('LighthouseIntro', () => {
   it('renders successfully', () => {
     const rendered = render(wrapInTestApp(<LighthouseIntro />));
     expect(
-      rendered.queryByText('Welcome to Lighthouse in Backstage!'),
+      rendered.getByText('Welcome to Lighthouse in Backstage!'),
     ).toBeInTheDocument();
   });
 
@@ -35,7 +35,7 @@ describe('LighthouseIntro', () => {
 
     it('selects the first text element', () => {
       const rendered = render(wrapInTestApp(<LighthouseIntro />));
-      expect(rendered.queryByText(firstTabRe)).toBeInTheDocument();
+      expect(rendered.getByText(firstTabRe)).toBeInTheDocument();
       expect(rendered.queryByText(secondTabRe)).not.toBeInTheDocument();
     });
 
@@ -43,7 +43,7 @@ describe('LighthouseIntro', () => {
       const rendered = render(wrapInTestApp(<LighthouseIntro />));
       fireEvent.click(rendered.getByText('Setup'));
       expect(rendered.queryByText(firstTabRe)).not.toBeInTheDocument();
-      expect(rendered.queryByText(secondTabRe)).toBeInTheDocument();
+      expect(rendered.getByText(secondTabRe)).toBeInTheDocument();
     });
   });
 

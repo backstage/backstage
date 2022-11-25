@@ -28,6 +28,7 @@ import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { KubeConfig } from '@kubernetes/client-node';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
 import { MergeResult } from 'isomorphic-git';
@@ -37,6 +38,7 @@ import { ReadCommitResult } from 'isomorphic-git';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
 import { Server } from 'http';
+import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
@@ -473,6 +475,29 @@ export { isChildPath };
 
 // @public
 export function isDatabaseConflictError(e: unknown): boolean;
+
+// @public
+export class KubernetesContainerRunner implements ContainerRunner {
+  constructor(options: KubernetesContainerRunnerOptions);
+  // (undocumented)
+  runContainer(options: RunContainerOptions): Promise<void>;
+}
+
+// @public
+export type KubernetesContainerRunnerMountBase = {
+  volumeName: string;
+  basePath: string;
+};
+
+// @public
+export type KubernetesContainerRunnerOptions = {
+  kubeConfig: KubeConfig;
+  name: string;
+  namespace?: string;
+  mountBase?: KubernetesContainerRunnerMountBase;
+  podTemplate?: V1PodTemplateSpec;
+  timeoutMs?: number;
+};
 
 // @public
 export function loadBackendConfig(options: {

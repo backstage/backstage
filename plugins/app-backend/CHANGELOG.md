@@ -1,5 +1,17 @@
 # @backstage/plugin-app-backend
 
+## 0.3.39-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/config-loader@1.1.7-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/backend-plugin-api@0.1.5-next.0
+  - @backstage/config@1.0.5-next.0
+
 ## 0.3.38
 
 ### Patch Changes

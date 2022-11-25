@@ -19,7 +19,7 @@ import {
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import { act, fireEvent, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import React from 'react';
 import { Route, Routes } from 'react-router';
 import { scaffolderApiRef } from '../../api';
@@ -31,7 +31,6 @@ import {
   FeatureFlagsApi,
   analyticsApiRef,
 } from '@backstage/core-plugin-api';
-
 import { ApiProvider } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
 
@@ -136,8 +135,8 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.queryByText('Create a New Component')).toBeInTheDocument();
-    expect(rendered.queryByText('React SSR Template')).toBeInTheDocument();
+    expect(rendered.getByText('Create a New Component')).toBeInTheDocument();
+    expect(rendered.getByText('React SSR Template')).toBeInTheDocument();
   });
 
   it('renders spinner while loading', async () => {
@@ -157,8 +156,8 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.queryByText('Create a New Component')).toBeInTheDocument();
-    expect(rendered.queryByTestId('loading-progress')).toBeInTheDocument();
+    expect(rendered.getByText('Create a New Component')).toBeInTheDocument();
+    expect(rendered.getByTestId('loading-progress')).toBeInTheDocument();
 
     await act(async () => {
       resolve!({
@@ -249,7 +248,7 @@ describe('TemplatePage', () => {
     expect(
       rendered.queryByText('Create a New Component'),
     ).not.toBeInTheDocument();
-    expect(rendered.queryByText('This is root')).toBeInTheDocument();
+    expect(rendered.getByText('This is root')).toBeInTheDocument();
   });
 
   it('display template with oneOf', async () => {
@@ -328,7 +327,7 @@ describe('TemplatePage', () => {
       schemaMockValue,
     );
 
-    const { queryByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <TemplatePage />
       </ApiProvider>,
@@ -339,9 +338,9 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(queryByText('Name')).not.toBeInTheDocument();
-    expect(queryByText('Description')).toBeInTheDocument();
-    expect(queryByText('Owner')).toBeInTheDocument();
-    expect(queryByText('Send data')).toBeInTheDocument();
+    expect(screen.queryByText('Name')).not.toBeInTheDocument();
+    expect(screen.getByText('Description')).toBeInTheDocument();
+    expect(screen.getByText('Owner')).toBeInTheDocument();
+    expect(screen.getByText('Send data')).toBeInTheDocument();
   });
 });

@@ -70,7 +70,7 @@ describe('DryRunResultsList', () => {
       </TestApiProvider>,
     );
 
-    expect(screen.queryByText('Result 1')).toBeInTheDocument();
+    expect(screen.getByText('Result 1')).toBeInTheDocument();
     expect(screen.queryByText('Result 2')).not.toBeInTheDocument();
 
     await act(async () => {
@@ -84,12 +84,12 @@ describe('DryRunResultsList', () => {
       );
     });
 
-    expect(screen.queryByText('Result 1')).toBeInTheDocument();
-    expect(screen.queryByText('Result 2')).toBeInTheDocument();
+    expect(screen.getByText('Result 1')).toBeInTheDocument();
+    expect(screen.getByText('Result 2')).toBeInTheDocument();
 
     await userEvent.click(screen.getAllByLabelText('delete')[0]);
 
     expect(screen.queryByText('Result 1')).not.toBeInTheDocument();
-    expect(screen.queryByText('Result 2')).toBeInTheDocument();
+    expect(screen.getByText('Result 2')).toBeInTheDocument();
   });
 });

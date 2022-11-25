@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { bundleOpenApiSpecification } from './bundle';
+import { bundleFileWithRefs } from './bundle';
 
 const specification = `
 openapi: "3.0.0"
@@ -70,7 +70,7 @@ paths:
                 type: string
 `;
 
-describe('bundleOpenApiSpecification', () => {
+describe('bundleFileWithRefs', () => {
   const read = jest.fn();
   const resolveUrl = jest.fn();
 
@@ -81,7 +81,7 @@ describe('bundleOpenApiSpecification', () => {
   it('should return the bundled specification', async () => {
     read.mockResolvedValue(list);
 
-    const result = await bundleOpenApiSpecification(
+    const result = await bundleFileWithRefs(
       specification,
       'https://github.com/owner/repo/blob/main/catalog-info.yaml',
       read,
@@ -108,7 +108,7 @@ describe('bundleOpenApiSpecification', () => {
 
     read.mockResolvedValue(list);
 
-    const result = await bundleOpenApiSpecification(
+    const result = await bundleFileWithRefs(
       spec,
       'https://github.com/owner/repo/blob/main/catalog-info.yaml',
       read,
@@ -116,5 +116,65 @@ describe('bundleOpenApiSpecification', () => {
     );
 
     expect(result).toEqual(expectedResult.trimStart());
+  });
+  it('should return the bundled asyncapi specification', async () => {
+    const spec = `
+      asyncapi: 2.5.0
+      info:
+        version: 1.0.0
+        title: Sample API
+        description: A sample API to illustrate OpenAPI concepts
+      channels:
+        my-topic:
+          subscribe:
+            message: 
+              schemaFormat: "application/schema+json;version=draft-07"
+              payload: 
+                $ref : "./asyncapi.schema.json"
+    `;
+    const jsonSchema = `
+      {
+        "type": "object",
+        "description": "ExampleSchema",
+        "properties": {
+          "name" : {
+            "type": "string"
+          },
+          "age" : {
+            "type" : "integer"
+          }
+        }
+      }
+    `;
+    const expectedSchema = `
+asyncapi: 2.5.0
+info:
+  version: 1.0.0
+  title: Sample API
+  description: A sample API to illustrate OpenAPI concepts
+channels:
+  my-topic:
+    subscribe:
+      message:
+        schemaFormat: application/schema+json;version=draft-07
+        payload:
+          type: object
+          description: ExampleSchema
+          properties:
+            name:
+              type: string
+            age:
+              type: integer
+`;
+    read.mockResolvedValue(jsonSchema);
+
+    const result = await bundleFileWithRefs(
+      spec,
+      'https://github.com/owner/repo/blob/main/catalog-info.yaml',
+      read,
+      resolveUrl,
+    );
+
+    expect(result).toEqual(expectedSchema.trimStart());
   });
 });

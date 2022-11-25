@@ -18,7 +18,7 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import useAsync from 'react-use/lib/useAsync';
 import { useCostInsightsStyles } from '../../utils/styles';
-import { Group } from '../../types';
+import { Group } from '@backstage/plugin-cost-insights-common';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 function useDisplayName(): string {

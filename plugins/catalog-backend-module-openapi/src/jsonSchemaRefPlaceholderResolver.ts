@@ -16,10 +16,10 @@
 import { PlaceholderResolverParams } from '@backstage/plugin-catalog-backend';
 import { JsonValue } from '@backstage/types';
 import { processingResult } from '@backstage/plugin-catalog-node';
-import { bundleOpenApiSpecification } from './lib';
+import { bundleFileWithRefs } from './lib';
 
 /** @public */
-export async function openApiPlaceholderResolver(
+export async function jsonSchemaRefPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
   const { content, url } = await readTextLocation(params);
@@ -27,7 +27,7 @@ export async function openApiPlaceholderResolver(
   params.emit(processingResult.refresh(`url:${url}`));
 
   try {
-    return await bundleOpenApiSpecification(
+    return await bundleFileWithRefs(
       content,
       url,
       params.read,
@@ -35,7 +35,7 @@ export async function openApiPlaceholderResolver(
     );
   } catch (error) {
     throw new Error(
-      `Placeholder \$${params.key} unable to bundle OpenAPI specification at ${params.value}, ${error}`,
+      `Placeholder \$${params.key} unable to bundle the file at ${params.value}, ${error}`,
     );
   }
 }

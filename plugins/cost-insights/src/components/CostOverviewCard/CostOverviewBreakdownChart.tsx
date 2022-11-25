@@ -32,7 +32,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { Cost, CostInsightsTheme, DEFAULT_DATE_FORMAT } from '../../types';
+import { DEFAULT_DATE_FORMAT, CostInsightsTheme } from '../../types';
+import { Cost } from '@backstage/plugin-cost-insights-common';
 import {
   BarChartLegend,
   BarChartTooltip as Tooltip,

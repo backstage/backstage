@@ -98,7 +98,7 @@ describe('AuditView', () => {
 
       websiteResponse.audits.forEach(a => {
         expect(
-          rendered.queryByText(formatTime(a.timeCreated)),
+          rendered.getByText(formatTime(a.timeCreated)),
         ).toBeInTheDocument();
       });
     });
@@ -199,7 +199,7 @@ describe('AuditView', () => {
 
       await rendered.findByTestId('audit-sidebar');
 
-      expect(rendered.queryByTestId('progress')).toBeInTheDocument();
+      expect(rendered.getByTestId('progress')).toBeInTheDocument();
     });
   });
 
@@ -219,7 +219,7 @@ describe('AuditView', () => {
 
       await rendered.findByTestId('audit-sidebar');
 
-      expect(rendered.queryByText(/This audit failed/)).toBeInTheDocument();
+      expect(rendered.getByText(/This audit failed/)).toBeInTheDocument();
     });
   });
 });

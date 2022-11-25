@@ -24,6 +24,7 @@ export {
 export type { TestAppOptions } from './appWrappers';
 export * from './msw';
 export * from './logCollector';
+export * from './providers';
 export * from './testingLibrary';
 export { TestApiProvider, TestApiRegistry } from './TestApiProvider';
 export type { TestApiProviderProps } from './TestApiProvider';

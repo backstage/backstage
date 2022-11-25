@@ -48,7 +48,8 @@ import {
   useProductInsightsChartStyles as useStyles,
   useBarChartLayoutStyles as useLayoutStyles,
 } from '../../utils/styles';
-import { Duration, Entity, Maybe } from '../../types';
+import { Duration } from '../../types';
+import { Entity, Maybe } from '@backstage/plugin-cost-insights-common';
 import { choose } from '../../utils/change';
 import { TooltipRenderer } from '../../types';
 import { useConfig } from '../../hooks';

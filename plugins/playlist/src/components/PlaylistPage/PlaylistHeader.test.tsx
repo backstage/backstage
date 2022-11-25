@@ -31,7 +31,6 @@ import { fireEvent, waitFor } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import React from 'react';
 import { SWRConfig } from 'swr';
-
 import { PlaylistApi, playlistApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { PlaylistHeader } from './PlaylistHeader';
@@ -122,7 +121,7 @@ describe('PlaylistHeader', () => {
 
     testPlaylist.public = false;
     rendered.rerender(element);
-    expect(rendered.queryByText('private')).toBeInTheDocument();
+    expect(rendered.getByText('private')).toBeInTheDocument();
   });
 
   it('has edit and delete options enabled if authorized', async () => {
@@ -202,7 +201,7 @@ describe('PlaylistHeader', () => {
     });
 
     expect(
-      rendered.queryByTestId('mock-playlist-edit-dialog'),
+      rendered.getByTestId('mock-playlist-edit-dialog'),
     ).toBeInTheDocument();
 
     act(() => {
