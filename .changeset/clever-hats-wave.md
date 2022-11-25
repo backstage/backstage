@@ -2,4 +2,4 @@
 '@backstage/plugin-shortcuts': patch
 ---
 
-Capture URL and query params when saving the current page via "Add Shortcuts"
+Capture URL and query parameters when saving the current page via "Add Shortcuts"
