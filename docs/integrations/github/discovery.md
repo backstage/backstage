@@ -97,7 +97,7 @@ Set up your provider
  }
 ```
 
-You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request]https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks()
+You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks). The webhook will need to be configured to forward `push` events.
 
 ## Configuration
 
