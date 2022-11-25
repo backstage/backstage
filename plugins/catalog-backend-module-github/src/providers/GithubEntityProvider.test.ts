@@ -961,6 +961,7 @@ describe('GithubEntityProvider', () => {
     expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
       keys: [
         'url:https://github.com/test-org/test-repo/tree/main/catalog-info.yaml',
+        'url:https://github.com/test-org/test-repo/blob/main/catalog-info.yaml',
       ],
     });
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
@@ -1033,6 +1034,7 @@ describe('GithubEntityProvider', () => {
     expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
       keys: [
         'url:https://github.com/test-org/test-repo/tree/my-special-branch/catalog-info.yaml',
+        'url:https://github.com/test-org/test-repo/blob/my-special-branch/catalog-info.yaml',
       ],
     });
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);

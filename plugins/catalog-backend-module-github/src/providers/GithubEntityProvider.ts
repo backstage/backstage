@@ -336,9 +336,16 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
     if (modified.length > 0) {
       await this.connection.refresh({
-        keys: modified.map(
-          filePath => `url:${event.repository.url}/tree/${branch}/${filePath}`,
-        ),
+        keys: [
+          ...modified.map(
+            filePath =>
+              `url:${event.repository.url}/tree/${branch}/${filePath}`,
+          ),
+          ...modified.map(
+            filePath =>
+              `url:${event.repository.url}/blob/${branch}/${filePath}`,
+          ),
+        ],
       });
     }
 
