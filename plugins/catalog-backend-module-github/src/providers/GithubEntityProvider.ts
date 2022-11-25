@@ -34,7 +34,6 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 import { graphql } from '@octokit/graphql';
 import * as uuid from 'uuid';
-import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
 import {
   readProviderConfigs,
@@ -335,37 +334,22 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       (commit: Commit) => [...commit.modified],
     );
 
-    const limiter = limiterFactory(10);
-    const promises: Promise<void>[] = [];
-
     if (modified.length > 0) {
-      const connection = this.connection;
-      promises.push(
-        limiter(async () =>
-          connection.refresh({
-            keys: modified.map(
-              filePath =>
-                `url:${event.repository.url}/tree/${branch}/${filePath}`,
-            ),
-          }),
+      await this.connection.refresh({
+        keys: modified.map(
+          filePath => `url:${event.repository.url}/tree/${branch}/${filePath}`,
         ),
-      );
+      });
     }
 
     if (added.length > 0 || removed.length > 0) {
-      const connection = this.connection;
-      promises.push(
-        limiter(async () =>
-          connection.applyMutation({
-            type: 'delta',
-            added: added,
-            removed: removed,
-          }),
-        ),
-      );
+      await this.connection.applyMutation({
+        type: 'delta',
+        added: added,
+        removed: removed,
+      });
     }
 
-    await Promise.all(promises);
     this.logger.info(
       `Processed Github push event: added ${added.length} - removed ${removed.length} - modified ${modified.length}`,
     );

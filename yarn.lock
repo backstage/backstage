@@ -4589,7 +4589,6 @@ __metadata:
     luxon: ^3.0.0
     msw: ^0.49.0
     node-fetch: ^2.6.7
-    p-limit: ^3.0.2
     uuid: ^8.0.0
     winston: ^3.2.1
   languageName: unknown
