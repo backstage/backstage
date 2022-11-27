@@ -19,7 +19,7 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex as KnexType } from 'knex';
 
 const bazaarProject: any = {
-  name: 'n1',
+  title: 'n1',
   entityRef: 'ref1',
   community: '',
   status: 'proposed',
@@ -64,7 +64,7 @@ describe('DatabaseHandler', () => {
 
       await knex('metadata').insert({
         entity_ref: bazaarProject.entityRef,
-        name: bazaarProject.name,
+        title: bazaarProject.title,
         description: bazaarProject.description,
         community: bazaarProject.community,
         status: bazaarProject.status,
