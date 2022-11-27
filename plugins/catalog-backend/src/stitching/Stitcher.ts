@@ -80,45 +80,37 @@ export class Stitcher {
     // one row (except in abnormal cases where the stitch was invoked for
     // something that didn't exist at all, in which case it's zero rows).
     // The join with the temporary incoming_references still gives one row.
-    const processedResult: Array<{
-      entityId: string;
-      processedEntity?: string;
-      errors: string;
-      incomingReferenceCount: string | number;
-      previousHash?: string;
-    }> = await this.database
-      .with('incoming_references', function incomingReferences(builder) {
-        return builder
-          .from('refresh_state_references')
-          .where({ target_entity_ref: entityRef })
-          .count({ count: '*' });
-      })
-      .select({
-        entityId: 'refresh_state.entity_id',
-        processedEntity: 'refresh_state.processed_entity',
-        errors: 'refresh_state.errors',
-        incomingReferenceCount: 'incoming_references.count',
-        previousHash: 'final_entities.hash',
-      })
-      .from('refresh_state')
-      .where({ 'refresh_state.entity_ref': entityRef })
-      .crossJoin(this.database.raw('incoming_references'))
-      .leftOuterJoin('final_entities', {
-        'final_entities.entity_id': 'refresh_state.entity_id',
-      });
-
-    const relationsResult: Array<{
-      relationType: string;
-      relationTarget: string;
-    }> = await this.database
-      .distinct({
-        relationType: 'type',
-        relationTarget: 'target_entity_ref',
-      })
-      .from('relations')
-      .where({ source_entity_ref: entityRef })
-      .orderBy('relationType', 'asc')
-      .orderBy('relationTarget', 'asc');
+    const [processedResult, relationsResult] = await Promise.all([
+      this.database
+        .with('incoming_references', function incomingReferences(builder) {
+          return builder
+            .from('refresh_state_references')
+            .where({ target_entity_ref: entityRef })
+            .count({ count: '*' });
+        })
+        .select({
+          entityId: 'refresh_state.entity_id',
+          processedEntity: 'refresh_state.processed_entity',
+          errors: 'refresh_state.errors',
+          incomingReferenceCount: 'incoming_references.count',
+          previousHash: 'final_entities.hash',
+        })
+        .from('refresh_state')
+        .where({ 'refresh_state.entity_ref': entityRef })
+        .crossJoin(this.database.raw('incoming_references'))
+        .leftOuterJoin('final_entities', {
+          'final_entities.entity_id': 'refresh_state.entity_id',
+        }),
+      this.database
+        .distinct({
+          relationType: 'type',
+          relationTarget: 'target_entity_ref',
+        })
+        .from('relations')
+        .where({ source_entity_ref: entityRef })
+        .orderBy('relationType', 'asc')
+        .orderBy('relationTarget', 'asc'),
+    ]);
 
     // If there were no rows returned, it would mean that there was no
     // matching row even in the refresh_state. This can happen for example
