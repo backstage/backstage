@@ -114,6 +114,7 @@ type Props = {
   tooltip?: string;
   type?: string;
   typeLink?: string;
+  breadcrumbsTitleOverride?: string;
 };
 
 type TypeFragmentProps = {
@@ -206,6 +207,7 @@ export function Header(props: PropsWithChildren<Props>) {
     style,
     subtitle,
     title,
+    breadcrumbsTitleOverride,
     tooltip,
     type,
     typeLink,
@@ -217,6 +219,7 @@ export function Header(props: PropsWithChildren<Props>) {
   const pageTitle = title || pageTitleOverride;
   const titleTemplate = `${documentTitle} | %s | ${appTitle}`;
   const defaultTitle = `${documentTitle} | ${appTitle}`;
+  const breadcrumbsTitle = breadcrumbsTitleOverride || title;
 
   return (
     <>
@@ -227,7 +230,7 @@ export function Header(props: PropsWithChildren<Props>) {
             classes={classes}
             type={type}
             typeLink={typeLink}
-            pageTitle={pageTitle}
+            pageTitle={breadcrumbsTitle}
           />
           <TitleFragment
             classes={classes}

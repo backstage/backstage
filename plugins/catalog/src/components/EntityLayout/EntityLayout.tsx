@@ -245,7 +245,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
       <Header
         title={<EntityLayoutTitle title={headerTitle} entity={entity!} />}
-        pageTitleOverride={headerTitle}
+        breadcrumbsTitleOverride={headerTitle}
         type={headerType}
         typeLink={catalogRootLink}
       >

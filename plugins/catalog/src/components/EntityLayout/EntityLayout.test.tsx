@@ -52,7 +52,7 @@ const mockApis = TestApiRegistry.from(
 );
 
 describe('EntityLayout', () => {
-  it.skip('renders simplest case', async () => {
+  it('renders simplest case', async () => {
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <EntityProvider entity={mockEntity}>
@@ -71,12 +71,12 @@ describe('EntityLayout', () => {
       },
     );
 
-    expect(screen.getByText('my-entity')).toBeInTheDocument();
+    expect(screen.getAllByText('my-entity')).toHaveLength(2);
     expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(screen.getByText('tabbed-test-content')).toBeInTheDocument();
   });
 
-  it.skip('renders the entity title if defined', async () => {
+  it('renders the entity title if defined', async () => {
     const mockEntityWithTitle = {
       kind: 'MyKind',
       metadata: {
@@ -103,7 +103,7 @@ describe('EntityLayout', () => {
       },
     );
 
-    expect(screen.getByText('My Entity')).toBeInTheDocument();
+    expect(screen.getAllByText('My Entity')).toHaveLength(2);
     expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(screen.getByText('tabbed-test-content')).toBeInTheDocument();
   });
