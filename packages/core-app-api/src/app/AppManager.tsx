@@ -168,7 +168,7 @@ function useConfigLoader(
    * We only want to override the URLs with the document origin when the URLs match
    *  and are defined. We use getOptionalString here to not throw when the app.baseUrl
    *  and backend.baseUrl are not defined. If they are defined but not well formatted URLs
-   *  the above resolveRelativeUrl() method will throw.
+   *  the above getRelativeUrl() method will throw.
    */
   if (
     configReader.getOptionalString('app.baseUrl') &&
