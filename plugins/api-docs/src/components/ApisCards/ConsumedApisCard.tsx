@@ -29,14 +29,18 @@ import {
   InfoCardVariants,
   Link,
   Progress,
+  TableColumn,
   WarningPanel,
 } from '@backstage/core-components';
 
 /**
  * @public
  */
-export const ConsumedApisCard = (props: { variant?: InfoCardVariants }) => {
-  const { variant = 'gridItem' } = props;
+export const ConsumedApisCard = (props: {
+  variant?: InfoCardVariants;
+  columns?: TableColumn<ApiEntity>[];
+}) => {
+  const { variant = 'gridItem', columns = apiEntityColumns } = props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_CONSUMES_API,
@@ -79,7 +83,7 @@ export const ConsumedApisCard = (props: { variant?: InfoCardVariants }) => {
           </Typography>
         </div>
       }
-      columns={apiEntityColumns}
+      columns={columns}
       entities={entities as ApiEntity[]}
     />
   );
