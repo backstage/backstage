@@ -51,12 +51,9 @@ export const explorePlugin = createPlugin({
       deps: {},
       factory: () => ({
         async getTools() {
-          // TODO: Determine if this should return undefined or exampleTools
-          // - `undefined` will enable the explore-backend to be used via the ExploreClient backwards compatibility
-          //    which is likely the desired behavior for anyone that has not yet overriden this API
+          // Returning `undefined` will enable the explore-backend to be used via the ExploreClient.
+          // If this API has been customized and returns data it will be respected first.
           return undefined as any;
-          // - `exampleTools` will disable the explore-backend fetching for users that have not yet overriden this API
-          // return exampleTools;
         },
       }),
     }),
