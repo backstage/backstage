@@ -17,13 +17,13 @@ import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import { useTheme } from '@material-ui/core/styles';
 import React from 'react';
+import type {} from 'react-syntax-highlighter';
 import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
 import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
 import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 
 import { CopyTextButton } from '../CopyTextButton';
 
-import type {} from 'react-syntax-highlighter';
 /**
  * Properties for {@link CodeSnippet}
  *
