@@ -19,6 +19,7 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   EntityErrorFilter,
   EntityOrphanFilter,
+  EntityTagFilter,
   EntityTextFilter,
 } from './filters';
 
@@ -140,5 +141,19 @@ describe('EntityErrorFilter', () => {
     const filter = new EntityErrorFilter(true);
     expect(filter.filterEntity(error)).toBeTruthy();
     expect(filter.filterEntity(entities[1])).toBeFalsy();
+  });
+});
+
+describe('EntityTagFilter', () => {
+  it('should filter on a single tag', () => {
+    const singleTagFilter = new EntityTagFilter(['react']);
+    expect(singleTagFilter.filterEntity(entities[0])).toBeTruthy();
+    expect(singleTagFilter.filterEntity(entities[1])).toBeFalsy();
+  });
+
+  it('should filter on multiple tags', () => {
+    const multipleTagFilter = new EntityTagFilter(['react', 'java']);
+    expect(multipleTagFilter.filterEntity(entities[0])).toBeTruthy();
+    expect(multipleTagFilter.filterEntity(entities[1])).toBeTruthy();
   });
 });

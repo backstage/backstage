@@ -68,7 +68,7 @@ export class EntityTagFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
   filterEntity(entity: Entity): boolean {
-    return this.values.every(v => (entity.metadata.tags ?? []).includes(v));
+    return this.values.some(v => (entity.metadata.tags ?? []).includes(v));
   }
 
   toQueryValue(): string[] {
