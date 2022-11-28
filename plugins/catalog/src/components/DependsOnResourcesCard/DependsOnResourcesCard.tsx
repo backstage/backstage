@@ -27,14 +27,15 @@ import {
 /** @public */
 export interface DependsOnResourcesCardProps {
   variant?: InfoCardVariants;
+  title?: string;
 }
 
 export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
-  const { variant = 'gridItem' } = props;
+  const { variant = 'gridItem', title = 'Depends on resources' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Depends on resources"
+      title={title}
       entityKind="Resource"
       relationType={RELATION_DEPENDS_ON}
       columns={resourceEntityColumns}
