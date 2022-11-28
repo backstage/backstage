@@ -1037,7 +1037,7 @@ export async function buildDocs({
                 configuration,
                 text: ' > ',
               }),
-              new DocCodeSpanLink({ 
+              new DocCodeSpanLink({
                 configuration,
                 tagName: '@link',
                 linkText: hierarchyItem.displayName,
