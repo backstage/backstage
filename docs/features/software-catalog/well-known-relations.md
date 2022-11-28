@@ -76,6 +76,9 @@ an entity to function. It can for example be used to express that a website
 component needs a library component as part of its build, or that a service
 component uses a persistent storage resource.
 
+This relation is commonly generated based on `spec.dependsOn` of the component
+or resource in question.
+
 ### `parentOf` and `childOf`
 
 A parent/child relation to build up a tree, used for example to describe the
