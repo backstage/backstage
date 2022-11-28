@@ -97,13 +97,15 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       const globalRules = config
         .getConfigArray('catalog.rules')
         .map(ruleConf => ({
-            allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
-            locations: ruleConf.getOptionalConfigArray('locations')?.map(locationConfig => ({
+          allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
+          locations: ruleConf
+            .getOptionalConfigArray('locations')
+            ?.map(locationConfig => ({
               match: locationConfig.getOptionalString('match'),
               type: locationConfig.getString('type'),
-              target: locationConfig.getOptionalString('target')
-            }))
-          }));
+              target: locationConfig.getOptionalString('target'),
+            })),
+        }));
       rules.push(...globalRules);
     } else {
       rules.push(...DefaultCatalogRulesEnforcer.defaultRules);
@@ -166,7 +168,10 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       if (matcher.target && matcher.target !== location?.target) {
         continue;
       }
-      if (matcher.match && !minimatch(location?.target, matcher.match, { nocase: true })) {
+      if (
+        matcher.match &&
+        !minimatch(location?.target, matcher.match, { nocase: true })
+      ) {
         continue;
       }
       return true;
