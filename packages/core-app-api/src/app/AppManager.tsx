@@ -156,35 +156,42 @@ function useConfigLoader(
 
   let configReader = ConfigReader.fromConfigs(config.value ?? []);
 
-  const resolveRelativeUrl = (relativeUrl: string) => {
-    // relativeUrl should always be defined.
-    let url;
-    try {
-      url = new URL(relativeUrl, document.location.origin).href.replace(
-        /\/$/,
-        '',
-      );
-    } catch (err) {
-      // relativeUrl was not a valid URL. This should be caught during the build process.
-    }
-    return url;
+  const resolveRelativeUrl = (relativeUrl: string) =>
+    new URL(relativeUrl, document.location.origin).href;
+
+  const getRelativeUrl = (fullUrl: string) => {
+    const url = new URL(fullUrl);
+    return fullUrl.replace(url.origin, '');
   };
 
-  config.value?.push({
-    data: {
-      app: {
-        baseUrl: resolveRelativeUrl(
-          configReader.getOptionalString('app.baseUrl') || '/',
-        ),
+  /**
+   * We only want to override the URLs with the document origin when the URLs match
+   *  and are defined. We use getOptionalString here to not throw when the app.baseUrl
+   *  and backend.baseUrl are not defined. If they are defined but not well formatted URLs
+   *  the above resolveRelativeUrl() method will throw.
+   */
+  if (
+    configReader.getOptionalString('app.baseUrl') &&
+    configReader.getOptionalString('backend.baseUrl') &&
+    configReader.getOptionalString('app.baseUrl') ===
+      configReader.getOptionalString('backend.baseUrl')
+  ) {
+    config.value?.push({
+      data: {
+        app: {
+          baseUrl: resolveRelativeUrl(
+            getRelativeUrl(configReader.getString('app.baseUrl')),
+          ),
+        },
+        backend: {
+          baseUrl: resolveRelativeUrl(
+            getRelativeUrl(configReader.getString('backend.baseUrl')),
+          ),
+        },
       },
-      backend: {
-        baseUrl: resolveRelativeUrl(
-          configReader.getOptionalString('backend.baseUrl') || '/',
-        ),
-      },
-    },
-    context: 'relative-resolver',
-  });
+      context: 'relative-resolver',
+    });
+  }
 
   configReader = ConfigReader.fromConfigs(config.value ?? []);
 

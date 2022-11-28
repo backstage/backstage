@@ -619,34 +619,29 @@ describe('Integration Test', () => {
       {
         data: {
           backend: {
-            baseUrl: '/',
+            baseUrl: 'http://localhost:8008/',
           },
-        },
-        paths: ['backend.baseUrl'],
-      },
-      {
-        data: {
           app: {
-            baseUrl: '/',
+            baseUrl: 'http://localhost:8008/',
           },
         },
-        paths: ['app.baseUrl'],
+        paths: ['app.baseUrl', 'backend.baseUrl'],
       },
       {
         data: {
           backend: {
-            baseUrl: '/',
+            baseUrl: 'http://test.com/',
           },
           app: {
-            baseUrl: '/',
+            baseUrl: 'http://test.com/',
           },
         },
         paths: ['app.baseUrl', 'backend.baseUrl'],
       },
     ].forEach(item => {
       item.paths.forEach(path => {
-        it('should add the fully qualified origin when the relevant urls are relative', async () => {
-          await checkConfigValue(item.data, path, 'http://localhost');
+        it('should force the urls to be relative when they are the same', async () => {
+          await checkConfigValue(item.data, path, 'http://localhost/');
         });
       });
     });
@@ -654,19 +649,45 @@ describe('Integration Test', () => {
       {
         data: {
           backend: {
-            baseUrl: 'https://google.com',
+            baseUrl: 'http://test.com/backstage',
+          },
+          app: {
+            baseUrl: 'http://test.com/backstage',
           },
         },
-        paths: ['backend.baseUrl'],
+        paths: ['app.baseUrl', 'backend.baseUrl'],
       },
+    ].forEach(item => {
+      item.paths.forEach(path => {
+        it('should force the urls to be relative when they are the same AND keep path values', async () => {
+          await checkConfigValue(item.data, path, 'http://localhost/backstage');
+        });
+      });
+    });
+    [
       {
         data: {
+          backend: {
+            baseUrl: 'http://test.com/backstage/my-instance',
+          },
           app: {
-            baseUrl: 'https://bing.com',
+            baseUrl: 'http://test.com/backstage/my-instance',
           },
         },
-        paths: ['app.baseUrl'],
+        paths: ['app.baseUrl', 'backend.baseUrl'],
       },
+    ].forEach(item => {
+      item.paths.forEach(path => {
+        it('should force the urls to be relative when they are the same AND keep nested path values', async () => {
+          await checkConfigValue(
+            item.data,
+            path,
+            'http://localhost/backstage/my-instance',
+          );
+        });
+      });
+    });
+    [
       {
         data: {
           backend: {
