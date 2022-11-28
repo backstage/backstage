@@ -287,6 +287,15 @@ export class IncrementalIngestionDatabaseManager {
    */
   async computeRemoved(provider: string, ingestionId: string) {
     return await this.client.transaction(async tx => {
+      const rows = await tx('final_entities')
+        .count({ total: '*' })
+        .join('search', 'search.entity_id', 'final_entities.entity_id')
+        .where(
+          'search.key',
+          `metadata.annotations.${INCREMENTAL_ENTITY_PROVIDER_ANNOTATION}`,
+        )
+        .andWhere('search.value', provider);
+      const total = rows.reduce((acc, cur) => acc + (cur.total as number), 0);
       const removed: { entity: string; ref: string }[] = await tx(
         'final_entities',
       )
@@ -302,23 +311,26 @@ export class IncrementalIngestionDatabaseManager {
         .join('search', 'search.entity_id', 'final_entities.entity_id')
         .whereNotIn(
           'entity_ref',
-          tx('ingestion_marks')
+          tx('ingestion.ingestion_marks')
             .join(
-              'ingestion_mark_entities',
-              'ingestion_marks.id',
-              'ingestion_mark_entities.ingestion_mark_id',
+              'ingestion.ingestion_mark_entities',
+              'ingestion.ingestion_marks.id',
+              'ingestion.ingestion_mark_entities.ingestion_mark_id',
             )
-            .select('ingestion_mark_entities.ref')
-            .where('ingestion_marks.ingestion_id', ingestionId),
+            .select('ingestion.ingestion_mark_entities.ref')
+            .where('ingestion.ingestion_marks.ingestion_id', ingestionId),
         )
         .andWhere(
           'search.key',
           `metadata.annotations.${INCREMENTAL_ENTITY_PROVIDER_ANNOTATION}`,
         )
         .andWhere('search.value', provider);
-      return removed.map(entity => {
-        return { entity: JSON.parse(entity.entity) };
-      });
+      return {
+        total,
+        removed: removed.map(entity => {
+          return { entity: JSON.parse(entity.entity) };
+        }),
+      };
     });
   }
 

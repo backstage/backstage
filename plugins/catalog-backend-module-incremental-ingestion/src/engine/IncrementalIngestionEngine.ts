@@ -27,6 +27,8 @@ import { Duration, DurationObjectUnits } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
 
+const REMOVAL_THRESHOLD = 5;
+
 export class IncrementalIngestionEngine implements IterationEngine {
   private readonly restLength: Duration;
   private readonly backoff: DurationObjectUnits[];
@@ -279,12 +281,33 @@ export class IncrementalIngestionEngine implements IterationEngine {
     const removed: DeferredEntity[] = [];
 
     if (done) {
-      removed.push(
-        ...(await this.manager.computeRemoved(
-          this.options.provider.getProviderName(),
-          id,
-        )),
+      this.options.logger.info(
+        `incremental-engine: Ingestion '${id}': Final page reached, calculating removed entities`,
       );
+      const result = await this.manager.computeRemoved(
+        this.options.provider.getProviderName(),
+        id,
+      );
+      const total = result.total + added.length;
+      const percentRemoved =
+        total > 0 ? (result.removed.length / total) * 100 : 0;
+      if (percentRemoved <= REMOVAL_THRESHOLD) {
+        this.options.logger.info(
+          `incremental-engine: Ingestion '${id}': Removing ${result.removed.length} entities that have no matching assets`,
+        );
+        removed.push(...result.removed);
+      } else {
+        const notice = `Attempted to remove ${percentRemoved}% of ${total} matching entities!`;
+        this.options.logger.error(
+          `incremental-engine: Ingestion '${id}': ${notice}`,
+        );
+        await this.manager.updateIngestionRecordById({
+          ingestionId: id,
+          update: {
+            last_error: `REMOVAL_THRESHOLD exceeded on ingestion mark ${markId}: ${notice}`,
+          },
+        });
+      }
     }
 
     await this.options.connection.applyMutation({
