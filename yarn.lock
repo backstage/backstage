@@ -30127,14 +30127,14 @@ __metadata:
   linkType: hard
 
 "openid-client@npm:^5.1.6, openid-client@npm:^5.2.1":
-  version: 5.3.0
-  resolution: "openid-client@npm:5.3.0"
+  version: 5.3.1
+  resolution: "openid-client@npm:5.3.1"
   dependencies:
     jose: ^4.10.0
     lru-cache: ^6.0.0
     object-hash: ^2.0.1
     oidc-token-hash: ^5.0.1
-  checksum: 27faa298e083daae2a2a99629b25cc89f648302f4845dd1acd04ec6e7105a6edf13a5c38ab1159bcb7b88c5bc54be08e021c911e22f0b8bfcca1b2d686ae3d95
+  checksum: e8993cfe6ac55942fb7a5fc4db8ab88ab36bbcf2a6519993a9a2e288bfc248fcfb07804b6785eb7852a9eea0eec27f80ae57a29193c0b835f31f611b11b9bda1
   languageName: node
   linkType: hard
 
