@@ -23,7 +23,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.0.0",
+    "@aws-sdk/client-sqs": "^3.208.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -33,6 +33,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@aws-sdk/types": "^3.208.0",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",

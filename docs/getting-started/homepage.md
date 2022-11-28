@@ -78,7 +78,7 @@ const routes = (
 )
 ```
 
-### 4. Update sidebar items
+#### 4. Update sidebar items
 
 Let's update the route for "Home" in the Backstage sidebar to point to the new homepage. We'll also add a Sidebar item to quickly open Catalog.
 

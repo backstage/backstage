@@ -50,7 +50,7 @@ export class SingleHostDiscovery implements PluginEndpointDiscovery {
 
     // Translate bind-all to localhost, and support IPv6
     let host = listenHost;
-    if (host === '::') {
+    if (host === '::' || host === '') {
       // We use localhost instead of ::1, since IPv6-compatible systems should default
       // to using IPv6 when they see localhost, but if the system doesn't support IPv6
       // things will still work.
