@@ -14,29 +14,36 @@
  * limitations under the License.
  */
 
-import { AbortSignal } from 'node-abort-controller';
 import { Context } from './types';
 
 /**
- * Since the root context can never abort, and since nobody is every meant to
- * dispatch events through it, we can use a static dummy instance for
+ * Since the root context can never abort, and since nobody is ever meant to
+ * dispatch events through it, we can use a static fake instance for
  * efficiency.
  */
-const dummyAbortSignal: AbortSignal = Object.freeze({
-  aborted: false,
-  addEventListener() {},
-  removeEventListener() {},
-  dispatchEvent() {
-    return true;
-  },
-  onabort: null,
-});
+const fakeAbortController = new AbortController();
+const fakeAbortSignal: AbortSignal = Object.freeze(
+  Object.assign(
+    {
+      aborted: false,
+      reason: undefined,
+      throwIfAborted() {},
+      onabort() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent() {
+        return true;
+      },
+    },
+    fakeAbortController.signal,
+  ),
+);
 
 /**
  * An empty root context.
  */
 export class RootContext implements Context {
-  readonly abortSignal = dummyAbortSignal;
+  readonly abortSignal = fakeAbortSignal;
   readonly deadline = undefined;
 
   value<T = unknown>(_key: string): T | undefined {
