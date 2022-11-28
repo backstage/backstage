@@ -27,16 +27,29 @@ import {
   runCliExtraction,
   buildDocs,
 } from './api-extractor';
+import { paths as cliPaths } from '../../lib/paths';
 
 export default async (paths: string[], opts: OptionValues) => {
+  console.log(opts);
+  console.log({
+    ownDir: cliPaths.ownDir,
+    ownRoot: cliPaths.ownRoot,
+    targetDir: cliPaths.targetDir,
+    targetRoot: cliPaths.targetRoot,
+    'process.cwd()': process.cwd(),
+  });
   const tmpDir = resolvePath(
-    process.cwd(),
+    cliPaths.targetRoot,
     './node_modules/.cache/api-extractor',
   );
-  const projectRoot = resolvePath(process.cwd());
+
+  const projectRoot = resolvePath(cliPaths.targetRoot);
   const isCiBuild = opts.ci;
   const isDocsBuild = opts.docs;
   const runTsc = opts.tsc;
+  const packageRoots = opts.folders;
+  const allowWarnings: boolean | string[] = opts.allowWarnings;
+  const omitMessages = opts.omitMessages;
 
   const selectedPackageDirs = await findSpecificPackageDirs(paths);
 
@@ -85,7 +98,8 @@ export default async (paths: string[], opts: OptionValues) => {
     }
   }
 
-  const packageDirs = selectedPackageDirs ?? (await findPackageDirs());
+  const packageDirs =
+    selectedPackageDirs ?? (await findPackageDirs(packageRoots));
 
   const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
     projectRoot,
@@ -99,6 +113,8 @@ export default async (paths: string[], opts: OptionValues) => {
       outputDir: tmpDir,
       isLocalBuild: !isCiBuild,
       tsconfigFilePath,
+      allowWarnings,
+      omitMessages,
     });
   }
   if (cliPackageDirs.length > 0) {

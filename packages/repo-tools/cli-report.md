@@ -26,6 +26,9 @@ Options:
   --ci
   --tsc
   --docs
+  --allow-warnings [allowWarningsPaths...]
+  --folders <folders...>
+  --omitMessages <messageCodes...>
   -h, --help
 ```
 

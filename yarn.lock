@@ -8467,6 +8467,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/repo-tools@workspace:packages/repo-tools"
   dependencies:
+    "@backstage/cli-common": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@manypkg/get-packages": ^1.1.3
     "@microsoft/api-documenter": ^7.17.11

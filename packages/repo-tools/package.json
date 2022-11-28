@@ -30,6 +30,7 @@
     "backstage-repo-tools": "bin/backstage-repo-tools"
   },
   "dependencies": {
+    "@backstage/cli-common": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
     "@microsoft/api-documenter": "^7.17.11",

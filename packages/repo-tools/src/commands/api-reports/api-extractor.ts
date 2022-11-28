@@ -65,9 +65,10 @@ import {
 } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
+import { paths as cliPaths } from '../../lib/paths';
 
 const tmpDir = resolvePath(
-  process.cwd(),
+  cliPaths.targetRoot,
   './node_modules/.cache/api-extractor',
 );
 
@@ -219,21 +220,10 @@ ApiReportGenerator.generateReviewFileContent =
     });
   };
 
-const PACKAGE_ROOTS = ['packages', 'plugins'];
-
-const ALLOW_WARNINGS = [
-  'packages/core-components',
-  'plugins/catalog',
-  'plugins/catalog-import',
-  'plugins/git-release-manager',
-  'plugins/jenkins',
-  'plugins/kubernetes',
-];
-
 async function resolvePackagePath(
   packagePath: string,
 ): Promise<string | undefined> {
-  const projectRoot = resolvePath(process.cwd());
+  const projectRoot = resolvePath(cliPaths.targetRoot);
   const fullPackageDir = resolvePath(projectRoot, packagePath);
 
   const stat = await fs.stat(fullPackageDir);
@@ -269,11 +259,11 @@ export async function findSpecificPackageDirs(unresolvedPackageDirs: string[]) {
   return packageDirs;
 }
 
-export async function findPackageDirs() {
+export async function findPackageDirs(packageRoots: string[]) {
   const packageDirs = new Array<string>();
-  const projectRoot = resolvePath(process.cwd());
+  const projectRoot = resolvePath(cliPaths.targetRoot);
 
-  for (const packageRoot of PACKAGE_ROOTS) {
+  for (const packageRoot of packageRoots) {
     const dirs = await fs.readdir(resolvePath(projectRoot, packageRoot));
     for (const dir of dirs) {
       const packageDir = await resolvePackagePath(join(packageRoot, dir));
@@ -289,7 +279,7 @@ export async function findPackageDirs() {
 }
 
 export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
-  const path = resolvePath(process.cwd(), 'tsconfig.tmp.json');
+  const path = resolvePath(cliPaths.targetRoot, 'tsconfig.tmp.json');
 
   process.once('exit', () => {
     fs.removeSync(path);
@@ -375,6 +365,8 @@ interface ApiExtractionOptions {
   outputDir: string;
   isLocalBuild: boolean;
   tsconfigFilePath: string;
+  allowWarnings: boolean | string[];
+  omitMessages?: string[];
 }
 
 export async function runApiExtraction({
@@ -382,25 +374,39 @@ export async function runApiExtraction({
   outputDir,
   isLocalBuild,
   tsconfigFilePath,
+  allowWarnings,
+  omitMessages = [],
 }: ApiExtractionOptions) {
   await fs.remove(outputDir);
 
   const entryPoints = packageDirs.map(packageDir => {
     return resolvePath(
-      process.cwd(),
+      cliPaths.targetRoot,
       `./dist-types/${packageDir}/src/index.d.ts`,
     );
   });
 
   let compilerState: CompilerState | undefined = undefined;
 
+  const allowWarningPkg = Array.isArray(allowWarnings) ? allowWarnings : [];
+
+  const messagesConf: { [key: string]: { logLevel: string } } = {};
+  for (const messageCode of omitMessages) {
+    messagesConf[messageCode] = {
+      logLevel: 'none',
+    };
+  }
   const warnings = new Array<string>();
 
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
-    const projectFolder = resolvePath(process.cwd(), packageDir);
+    const noBail = Array.isArray(allowWarnings)
+      ? allowWarnings.includes(packageDir)
+      : allowWarnings;
+
+    const projectFolder = resolvePath(cliPaths.targetRoot, packageDir);
     const packageFolder = resolvePath(
-      process.cwd(),
+      cliPaths.targetRoot,
       './dist-types',
       packageDir,
     );
@@ -453,6 +459,7 @@ export async function runApiExtraction({
               logLevel: 'warning' as ExtractorLogLevel.Warning,
               addToApiReportFile: true,
             },
+            ...messagesConf,
           },
           tsdocMessageReporting: {
             default: {
@@ -543,12 +550,12 @@ export async function runApiExtraction({
     }
 
     const warningCountAfter = await countApiReportWarnings(projectFolder);
-    if (warningCountAfter > 0 && !ALLOW_WARNINGS.includes(packageDir)) {
+    if (warningCountAfter > 0 && !noBail) {
       throw new Error(
         `The API Report for ${packageDir} is not allowed to have warnings`,
       );
     }
-    if (warningCountAfter === 0 && ALLOW_WARNINGS.includes(packageDir)) {
+    if (warningCountAfter === 0 && allowWarningPkg.includes(packageDir)) {
       console.log(
         `No need to allow warnings for ${packageDir}, it does not have any`,
       );

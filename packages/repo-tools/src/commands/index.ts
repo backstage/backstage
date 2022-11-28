@@ -24,6 +24,19 @@ export function registerCommands(program: Command) {
     .option('--ci', 'CI run checks that there is no changes on API reports')
     .option('--tsc', 'executes the tsc compilation before extracting the APIs')
     .option('--docs', 'generates the api documentation')
+    .option(
+      '--allow-warnings [allowWarningsPaths...]',
+      'continue processing packages after getting errors on selected packages',
+      false,
+    )
+    .option('--folders <folders...>', 'packages folder containers', [
+      'packages',
+      'plugins',
+    ])
+    .option(
+      '--omitMessages <messageCodes...>',
+      'select some message code to be omited on the API Extractor (i.e ae-cyclic-inherit-doc)',
+    )
     .description('Generate an API report for selected packages')
     .action(
       lazy(() => import('./api-reports/api-reports').then(m => m.default)),
