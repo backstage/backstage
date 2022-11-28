@@ -49,7 +49,7 @@ import * as uuid from 'uuid';
 import { Logger } from 'winston';
 
 const DEFAULT_BRANCH = 'master';
-const TOPIC_REPO_PUSH = 'bitbucketCloud/repo:push';
+const TOPIC_REPO_PUSH = 'bitbucketCloud.repo:push';
 
 /** @public */
 export const ANNOTATION_BITBUCKET_CLOUD_REPO_URL = 'bitbucket.org/repo-url';
@@ -211,9 +211,7 @@ export class BitbucketCloudEntityProvider
       return;
     }
 
-    if (params.metadata?.['x-event-key'] === 'repo:push') {
-      await this.onRepoPush(params.eventPayload as Events.RepoPushEvent);
-    }
+    await this.onRepoPush(params.eventPayload as Events.RepoPushEvent);
   }
 
   private canHandleEvents(): boolean {

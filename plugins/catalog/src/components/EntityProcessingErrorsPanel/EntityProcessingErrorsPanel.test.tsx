@@ -226,7 +226,7 @@ describe('<EntityProcessErrors />', () => {
     expect(screen.getByText('Error: Foo')).toBeInTheDocument();
     expect(screen.queryByText('Error: This should not be rendered')).toBeNull();
     expect(
-      screen.queryByText('The error below originates from'),
+      screen.getByText('The error below originates from'),
     ).toBeInTheDocument();
   });
 });

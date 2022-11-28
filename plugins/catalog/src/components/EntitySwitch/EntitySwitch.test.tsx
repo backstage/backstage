@@ -54,7 +54,7 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    expect(screen.queryByText('A')).toBeInTheDocument();
+    expect(screen.getByText('A')).toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
     expect(screen.queryByText('C')).not.toBeInTheDocument();
 
@@ -69,7 +69,7 @@ describe('EntitySwitch', () => {
     );
 
     expect(screen.queryByText('A')).not.toBeInTheDocument();
-    expect(screen.queryByText('B')).toBeInTheDocument();
+    expect(screen.getByText('B')).toBeInTheDocument();
     expect(screen.queryByText('C')).not.toBeInTheDocument();
 
     rendered.rerender(
@@ -84,7 +84,7 @@ describe('EntitySwitch', () => {
 
     expect(screen.queryByText('A')).not.toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
-    expect(screen.queryByText('C')).toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
 
     rendered.rerender(
       <Wrapper>
@@ -96,7 +96,7 @@ describe('EntitySwitch', () => {
 
     expect(screen.queryByText('A')).not.toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
-    expect(screen.queryByText('C')).toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
   });
 
   it('should switch child when filters switch', () => {
@@ -113,7 +113,7 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    expect(screen.queryByText('A')).toBeInTheDocument();
+    expect(screen.getByText('A')).toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
 
     rendered.rerender(
@@ -128,7 +128,7 @@ describe('EntitySwitch', () => {
     );
 
     expect(screen.queryByText('A')).not.toBeInTheDocument();
-    expect(screen.queryByText('B')).toBeInTheDocument();
+    expect(screen.getByText('B')).toBeInTheDocument();
   });
 
   it('should switch with async condition that is true', async () => {

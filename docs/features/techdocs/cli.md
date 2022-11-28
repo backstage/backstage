@@ -235,7 +235,7 @@ details.
 
 You need to make sure that your environment is able to authenticate with the
 target cloud provider. `techdocs-cli` uses the official Node.js clients provided
-by AWS (v2), Google Cloud and Azure. You can authenticate using environment
+by AWS (v3), Google Cloud and Azure. You can authenticate using environment
 variables and/or by other means (`~/.aws/credentials`, `~/.config/gcloud` etc.)
 
 Refer to the Authentication section of the following documentation depending

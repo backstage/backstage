@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { fireEvent, screen } from '@testing-library/react';
+import { configApiRef } from '@backstage/core-plugin-api';
 import {
   MockConfigApi,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
+import { act, fireEvent, screen } from '@testing-library/react';
+import React from 'react';
 import { SupportButton } from './SupportButton';
-import { configApiRef } from '@backstage/core-plugin-api';
 
 const configApi = new MockConfigApi({
   app: {
@@ -45,8 +45,9 @@ const POPOVER_ID = 'support-button-popover';
 describe('<SupportButton />', () => {
   it('renders without exploding', async () => {
     await renderInTestApp(<SupportButton />);
-
-    expect(screen.getByTestId(SUPPORT_BUTTON_ID)).toBeInTheDocument();
+    await expect(
+      screen.findByTestId(SUPPORT_BUTTON_ID),
+    ).resolves.toBeInTheDocument();
   });
 
   it('supports passing a title', async () => {
@@ -96,11 +97,13 @@ describe('<SupportButton />', () => {
   it('shows popover on click', async () => {
     await renderInTestApp(<SupportButton />);
 
-    const supportButton = screen.getByTestId(SUPPORT_BUTTON_ID);
-    expect(supportButton).toBeInTheDocument();
+    await expect(
+      screen.findByTestId(SUPPORT_BUTTON_ID),
+    ).resolves.toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId(SUPPORT_BUTTON_ID));
+    });
 
-    fireEvent.click(supportButton);
-
-    expect(screen.getByTestId(POPOVER_ID)).toBeInTheDocument();
+    await expect(screen.findByTestId(POPOVER_ID)).resolves.toBeInTheDocument();
   });
 });

@@ -24,13 +24,16 @@ import type { BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { fetchCatalogItems } from '../../util/fetchMethods';
 import { parseBazaarProject } from '../../util/parseMethods';
-import { ErrorPanel, InfoCard } from '@backstage/core-components';
+import { ErrorPanel, InfoCard, Link } from '@backstage/core-components';
 import { bazaarPlugin } from '../../plugin';
+import { IconButton } from '@material-ui/core';
+import StorefrontIcon from '@material-ui/icons/Storefront';
 
 /** @public */
 export type BazaarOverviewCardProps = {
   order: 'latest' | 'random';
   fullWidth?: boolean;
+  fullHeight?: boolean;
 };
 
 const getUnlinkedCatalogEntities = (
@@ -48,7 +51,7 @@ const getUnlinkedCatalogEntities = (
 
 /** @public */
 export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
-  const { order, fullWidth = false } = props;
+  const { order, fullWidth = false, fullHeight = false } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const root = useRouteRef(bazaarPlugin.routes.root);
@@ -127,7 +130,13 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
       title={
         order === 'latest' ? 'Bazaar Latest Projects' : 'Bazaar Random Projects'
       }
-      deepLink={bazaarLink}
+      action={
+        <IconButton>
+          <Link to={bazaarLink.link} title={bazaarLink.title}>
+            <StorefrontIcon />
+          </Link>
+        </IconButton>
+      }
     >
       <ProjectPreview
         bazaarProjects={bazaarProjects.value || []}
@@ -135,6 +144,7 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
         catalogEntities={unlinkedCatalogEntities || []}
         useTablePagination={false}
         gridSize={fullWidth ? 2 : 4}
+        height={fullHeight ? '13rem' : '7rem'}
       />
     </InfoCard>
   );

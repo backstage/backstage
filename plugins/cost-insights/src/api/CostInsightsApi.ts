@@ -15,14 +15,15 @@
  */
 
 import {
-  Alert,
   Cost,
   Entity,
   Group,
   Project,
   Maybe,
   MetricData,
-} from '../types';
+} from '@backstage/plugin-cost-insights-common';
+
+import { Alert } from '../types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
 /** @public */

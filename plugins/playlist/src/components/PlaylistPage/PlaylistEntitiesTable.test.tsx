@@ -27,7 +27,6 @@ import { fireEvent, waitFor } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import React from 'react';
 import { SWRConfig } from 'swr';
-
 import { PlaylistApi, playlistApiRef } from '../../api';
 import { PlaylistEntitiesTable } from './PlaylistEntitiesTable';
 
@@ -158,7 +157,7 @@ describe('PlaylistEntitiesTable', () => {
     });
 
     expect(
-      rendered.queryByTestId('mock-add-entities-drawer'),
+      rendered.getByTestId('mock-add-entities-drawer'),
     ).toBeInTheDocument();
 
     act(() => {

@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { screen } from '@testing-library/react';
 import { AlertDisplay } from './AlertDisplay';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { AlertApiForwarder } from '@backstage/core-app-api';
@@ -34,7 +35,7 @@ describe('<AlertDisplay />', () => {
   });
 
   it('renders with message', async () => {
-    const { queryByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -52,7 +53,7 @@ describe('<AlertDisplay />', () => {
       </TestApiProvider>,
     );
 
-    expect(queryByText(TEST_MESSAGE)).toBeInTheDocument();
+    expect(screen.getByText(TEST_MESSAGE)).toBeInTheDocument();
   });
 
   describe('with multiple messages', () => {
@@ -73,23 +74,23 @@ describe('<AlertDisplay />', () => {
     ] as const;
 
     it('renders first message', async () => {
-      const { queryByText } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider apis={apis}>
           <AlertDisplay />
         </TestApiProvider>,
       );
 
-      expect(queryByText('message one')).toBeInTheDocument();
+      expect(screen.getByText('message one')).toBeInTheDocument();
     });
 
     it('renders a count of remaining messages', async () => {
-      const { queryByText } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider apis={apis}>
           <AlertDisplay />
         </TestApiProvider>,
       );
 
-      expect(queryByText('(2 older messages)')).toBeInTheDocument();
+      expect(screen.getByText('(2 older messages)')).toBeInTheDocument();
     });
   });
 });

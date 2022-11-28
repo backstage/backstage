@@ -15,14 +15,23 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { LoadingContext, LoadingContextProps } from '../hooks';
-import { GroupsContext, GroupsContextProps } from '../hooks';
-import { FilterContext, FilterContextProps } from '../hooks';
-import { ConfigContext, ConfigContextProps } from '../hooks';
-import { CurrencyContext, CurrencyContextProps } from '../hooks';
-import { BillingDateContext, BillingDateContextProps } from '../hooks';
-import { ScrollContext, ScrollContextProps } from '../hooks';
-import { Duration } from '../types';
+import {
+  LoadingContext,
+  LoadingContextProps,
+  GroupsContext,
+  GroupsContextProps,
+  FilterContext,
+  FilterContextProps,
+  ConfigContext,
+  ConfigContextProps,
+  CurrencyContext,
+  CurrencyContextProps,
+  BillingDateContext,
+  BillingDateContextProps,
+  ScrollContext,
+  ScrollContextProps,
+} from '../hooks';
+import { Duration, EngineerThreshold } from '../types';
 import { createCurrencyFormat } from '../utils/currency';
 
 export type MockFilterProviderProps = PropsWithChildren<
@@ -86,6 +95,7 @@ export const MockConfigProvider = (props: MockConfigProviderProps) => {
     products: [],
     icons: [],
     engineerCost: 0,
+    engineerThreshold: EngineerThreshold,
     currencies: [],
   };
 

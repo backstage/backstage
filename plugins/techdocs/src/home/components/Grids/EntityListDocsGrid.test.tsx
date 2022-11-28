@@ -103,9 +103,9 @@ describe('Entity List Docs Grid', () => {
       },
     );
 
-    expect(screen.queryByText('All Documentation')).toBeInTheDocument();
-    expect(screen.queryByText('Documentation #1')).toBeInTheDocument();
-    expect(screen.queryByText('Documentation #2')).toBeInTheDocument();
+    expect(screen.getByText('All Documentation')).toBeInTheDocument();
+    expect(screen.getByText('Documentation #1')).toBeInTheDocument();
+    expect(screen.getByText('Documentation #2')).toBeInTheDocument();
     expect(screen.queryByTestId('doc-not-found')).not.toBeInTheDocument();
   });
 
@@ -131,8 +131,8 @@ describe('Entity List Docs Grid', () => {
       },
     );
 
-    expect(screen.queryByText('Curated Documentation')).toBeInTheDocument();
-    expect(screen.queryByText('Documentation #1')).toBeInTheDocument();
+    expect(screen.getByText('Curated Documentation')).toBeInTheDocument();
+    expect(screen.getByText('Documentation #1')).toBeInTheDocument();
     expect(screen.queryByText('Documentation #2')).not.toBeInTheDocument();
     expect(screen.queryByTestId('doc-not-found')).not.toBeInTheDocument();
   });
@@ -182,6 +182,6 @@ describe('Entity List Docs Grid', () => {
     expect(screen.queryByText('All Documentation')).not.toBeInTheDocument();
     expect(screen.queryByText('Documentation #1')).not.toBeInTheDocument();
     expect(screen.queryByText('Documentation #2')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('doc-not-found')).toBeInTheDocument();
+    expect(screen.getByTestId('doc-not-found')).toBeInTheDocument();
   });
 });

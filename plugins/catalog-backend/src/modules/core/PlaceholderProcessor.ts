@@ -107,7 +107,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
         return [data, false];
       }
 
-      const resolverKey = keys[0].substr(1);
+      const resolverKey = keys[0].substring(1);
       const resolverValue = data[keys[0]];
 
       const resolver = this.options.resolvers[resolverKey];

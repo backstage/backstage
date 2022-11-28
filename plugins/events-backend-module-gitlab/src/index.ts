@@ -16,10 +16,12 @@
 
 /**
  * The module "gitlab" for the Backstage backend plugin "events-backend"
- * adding an event router for GitLab.
+ * adding an event router and token validator for GitLab.
  *
  * @packageDocumentation
  */
 
+export { createGitlabTokenValidator } from './http/createGitlabTokenValidator';
 export { GitlabEventRouter } from './router/GitlabEventRouter';
 export { gitlabEventRouterEventsModule } from './service/GitlabEventRouterEventsModule';
+export { gitlabWebhookEventsModule } from './service/GitlabWebhookEventsModule';

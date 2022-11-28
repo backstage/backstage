@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 import { PlaceholderResolverParams } from '@backstage/plugin-catalog-backend';
-import { openApiPlaceholderResolver } from './openApiPlaceholderResolver';
-import { bundleOpenApiSpecification } from './lib';
+import { jsonSchemaRefPlaceholderResolver } from './jsonSchemaRefPlaceholderResolver';
+import { bundleFileWithRefs } from './lib';
 
 jest.mock('./lib', () => ({
-  bundleOpenApiSpecification: jest.fn(),
+  bundleFileWithRefs: jest.fn(),
 }));
 
-const bundledSpecification = '<bundled-specification>';
+const bundled = '<bundled-specification>';
 
-describe('openApiPlaceholderResolver', () => {
+describe('jsonSchemaRefPlaceholderResolver', () => {
   const mockResolveUrl = jest.fn();
   mockResolveUrl.mockReturnValue('mockUrl');
 
@@ -40,7 +40,7 @@ describe('openApiPlaceholderResolver', () => {
   };
 
   beforeEach(() => {
-    (bundleOpenApiSpecification as any).mockResolvedValue(bundledSpecification);
+    (bundleFileWithRefs as any).mockResolvedValue(bundled);
   });
 
   afterEach(() => {
@@ -48,16 +48,14 @@ describe('openApiPlaceholderResolver', () => {
   });
 
   it('should throw error if unable to bundle the OpenAPI specification', async () => {
-    (bundleOpenApiSpecification as any).mockRejectedValue(new Error('TEST'));
+    (bundleFileWithRefs as any).mockRejectedValue(new Error('TEST'));
 
-    await expect(openApiPlaceholderResolver(params)).rejects.toThrow(
-      'Placeholder $openapi unable to bundle OpenAPI specification',
-    );
+    await expect(jsonSchemaRefPlaceholderResolver(params)).rejects.toThrow();
   });
 
   it('should bundle the OpenAPI specification', async () => {
-    const result = await openApiPlaceholderResolver(params);
+    const result = await jsonSchemaRefPlaceholderResolver(params);
 
-    expect(result).toEqual(bundledSpecification);
+    expect(result).toEqual(bundled);
   });
 });

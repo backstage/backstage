@@ -51,21 +51,21 @@ describe('HttpPostIngressEventPublisher', () => {
 
     const notFoundResponse = await request(app)
       .post('/http/unknown')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'data' });
     expect(notFoundResponse.status).toBe(404);
 
     const response1 = await request(app)
       .post('/http/testA')
       .set('X-Custom-Header', 'test-value')
-      .timeout(100)
+      .timeout(1000)
       .send({ testA: 'data' });
     expect(response1.status).toBe(202);
 
     const response2 = await request(app)
       .post('/http/testB')
       .set('X-Custom-Header', 'test-value')
-      .timeout(100)
+      .timeout(1000)
       .send({ testB: 'data' });
     expect(response2.status).toBe(202);
 
@@ -151,13 +151,13 @@ describe('HttpPostIngressEventPublisher', () => {
 
     const response1 = await request(app)
       .post('/http/testA')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response1.status).toBe(202);
 
     const response2 = await request(app)
       .post('/http/testB')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response2.status).toBe(400);
     expect(response2.body).toEqual({ message: 'wrong signature' });
@@ -165,7 +165,7 @@ describe('HttpPostIngressEventPublisher', () => {
     const response3 = await request(app)
       .post('/http/testB')
       .set('X-Test-Signature', 'wrong')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response3.status).toBe(400);
     expect(response3.body).toEqual({ message: 'wrong signature' });
@@ -173,20 +173,20 @@ describe('HttpPostIngressEventPublisher', () => {
     const response4 = await request(app)
       .post('/http/testB')
       .set('X-Test-Signature', 'testB-signature')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response4.status).toBe(202);
 
     const response5 = await request(app)
       .post('/http/testC')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response5.status).toBe(404);
     expect(response5.body).toEqual({});
 
     const response6 = await request(app)
       .post('/http/testD')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'data' });
     expect(response6.status).toBe(403);
     expect(response6.body).toEqual({});
