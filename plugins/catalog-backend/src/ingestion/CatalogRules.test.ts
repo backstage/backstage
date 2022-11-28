@@ -221,7 +221,7 @@ describe('DefaultCatalogRulesEnforcer', () => {
       expect(enforcer.isAllowed(entity.location, location.z)).toBe(false);
     });
 
-    it('should only allow locations that match a given regex', () => {
+    it('should only allow locations that match a given pattern', () => {
       const enforcer = DefaultCatalogRulesEnforcer.fromConfig(
         new ConfigReader({
           catalog: {
