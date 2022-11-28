@@ -56,6 +56,7 @@ nav:
           - Installation: 'features/kubernetes/installation.md'
           - Configuration: 'features/kubernetes/configuration.md'
           - Authentication: 'features/kubernetes/authentication.md'
+          - Permission integration: 'features/kubernetes/permission-integration.md'
           - Troubleshooting: 'features/kubernetes/troubleshooting.md'
       - Software Templates:
           - Overview: 'features/software-templates/index.md'
