@@ -12,6 +12,7 @@ jobs:
       needs_release: ${{ steps.release_check.outputs.needs_release }}
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [16.x, 18.x]
 
