@@ -311,14 +311,14 @@ export class IncrementalIngestionDatabaseManager {
         .join('search', 'search.entity_id', 'final_entities.entity_id')
         .whereNotIn(
           'entity_ref',
-          tx('ingestion.ingestion_marks')
+          tx('ingestion_marks')
             .join(
-              'ingestion.ingestion_mark_entities',
-              'ingestion.ingestion_marks.id',
-              'ingestion.ingestion_mark_entities.ingestion_mark_id',
+              'ingestion_mark_entities',
+              'ingestion_marks.id',
+              'ingestion_mark_entities.ingestion_mark_id',
             )
-            .select('ingestion.ingestion_mark_entities.ref')
-            .where('ingestion.ingestion_marks.ingestion_id', ingestionId),
+            .select('ingestion_mark_entities.ref')
+            .where('ingestion_marks.ingestion_id', ingestionId),
         )
         .andWhere(
           'search.key',
@@ -463,7 +463,7 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Starts the cancel process for the current ingestion.
+   * Starts the cancel process for the current
    * @param ingestionId - string
    * @param message - string (optional)
    */
@@ -478,7 +478,7 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Completes the cancel process and triggers a new ingestion.
+   * Completes the cancel process and triggers a new
    * @param ingestionId - string
    */
   async setProviderCanceled(ingestionId: string) {
