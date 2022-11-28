@@ -463,7 +463,7 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Starts the cancel process for the current
+   * Starts the cancel process for the current ingestion.
    * @param ingestionId - string
    * @param message - string (optional)
    */
@@ -478,7 +478,7 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Completes the cancel process and triggers a new
+   * Completes the cancel process and triggers a new ingestion.
    * @param ingestionId - string
    */
   async setProviderCanceled(ingestionId: string) {
