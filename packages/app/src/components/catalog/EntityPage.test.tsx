@@ -19,7 +19,9 @@ import {
   EntityProvider,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogPlugin } from '@internal/plugin-catalog-customized';
 import { githubActionsApiRef } from '@backstage/plugin-github-actions';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
@@ -70,9 +72,15 @@ describe('EntityPage Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+            '/catalog': catalogPlugin.routes.catalogIndex,
+          },
+        },
       );
 
-      expect(rendered.getByText('ExampleComponent')).toBeInTheDocument();
+      expect(rendered.getAllByText('ExampleComponent')).toHaveLength(2);
 
       await expect(
         rendered.findByText('No Workflow Data'),

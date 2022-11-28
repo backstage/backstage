@@ -21,6 +21,7 @@
     "@backstage/plugin-azure-devops": "workspace:^",
     "@backstage/plugin-azure-sites": "workspace:^",
     "@backstage/plugin-badges": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-graph": "workspace:^",
     "@backstage/plugin-catalog-import": "workspace:^",
