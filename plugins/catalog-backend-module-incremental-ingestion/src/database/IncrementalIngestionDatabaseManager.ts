@@ -114,6 +114,25 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
+   * Finds the last ingestion record for the named provider.
+   * @param provider - string
+   * @returns IngestionRecord | undefined
+   */
+  async getPreviousIngestionRecord(provider: string) {
+    return await this.client.transaction(async tx => {
+      const record = await tx<IngestionRecord>('ingestions')
+        .where('provider_name', provider)
+        .andWhereNot('completion_ticket', 'open')
+        .first();
+      if (!record) {
+        // This is the first time this entity provider has run. Return the current record.
+        return await this.getCurrentIngestionRecord(provider);
+      }
+      return record;
+    });
+  }
+
+  /**
    * Removes all entries from `ingestion_marks_entities`, `ingestion_marks`, and `ingestions`
    * for prior ingestions that completed (i.e., have a `completion_ticket` value other than 'open').
    * @param provider - string
@@ -286,16 +305,24 @@ export class IncrementalIngestionDatabaseManager {
    * @returns All entities to remove for this burst.
    */
   async computeRemoved(provider: string, ingestionId: string) {
+    const previousIngestion = (await this.getPreviousIngestionRecord(
+      provider,
+    )) as IngestionRecord;
     return await this.client.transaction(async tx => {
-      const rows = await tx('final_entities')
-        .count({ total: '*' })
-        .join('search', 'search.entity_id', 'final_entities.entity_id')
-        .where(
-          'search.key',
-          `metadata.annotations.${INCREMENTAL_ENTITY_PROVIDER_ANNOTATION}`,
-        )
-        .andWhere('search.value', provider);
-      const total = rows.reduce((acc, cur) => acc + (cur.total as number), 0);
+      let total = 0;
+      if (previousIngestion.id !== ingestionId) {
+        const rows = await tx('ingestion_mark_entities')
+          .count({ total: '*' })
+          .join(
+            'ingestion_marks',
+            'ingestion_marks.id',
+            'ingestion_mark_entities.ingestion_mark_id',
+          )
+          .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
+          .where('ingestions.id', previousIngestion.id);
+
+        total = rows.reduce((acc, cur) => acc + (cur.total as number), 0);
+      }
       const removed: { entity: string; ref: string }[] = await tx(
         'final_entities',
       )
