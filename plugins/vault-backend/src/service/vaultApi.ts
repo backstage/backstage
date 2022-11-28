@@ -127,7 +127,7 @@ export class VaultClient implements VaultApi {
     const secrets: VaultSecret[] = [];
 
     await Promise.all(
-      result.data.keys.map(async secret => {
+      Object.keys(result.data).map(async secret => {
         if (secret.endsWith('/')) {
           secrets.push(
             ...(await this.limit(() =>
