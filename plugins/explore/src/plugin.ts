@@ -16,21 +16,43 @@
 
 import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import { catalogEntityRouteRef, exploreRouteRef } from './routes';
-import { exampleTools } from './util/examples';
-import { createApiFactory, createPlugin } from '@backstage/core-plugin-api';
+import {
+  createApiFactory,
+  createPlugin,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
+import { ExploreClient, exploreApiRef } from './api';
 
 /** @public */
 export const explorePlugin = createPlugin({
   id: 'explore',
   apis: [
-    // Register a default for exploreToolsConfigRef, you may want to override
-    // the API locally in your app.
+    createApiFactory({
+      api: exploreApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new ExploreClient({ discoveryApi, fetchApi }),
+    }),
+    /**
+     * @deprecated Use ExploreApi from `@backstage/plugin-explore` instead
+     *
+     * Register a default for exploreToolsConfigRef, you may want to override
+     * the API locally in your app.
+     */
     createApiFactory({
       api: exploreToolsConfigRef,
-      deps: {},
-      factory: () => ({
+      deps: {
+        exploreApi: exploreApiRef,
+      },
+      factory: ({ exploreApi }) => ({
         async getTools() {
-          return exampleTools;
+          // TODO: Can we make this backwards compatible so it works off the static frontend example tools?
+          // return exampleTools;
+          return (await exploreApi.getTools()).tools;
         },
       }),
     }),

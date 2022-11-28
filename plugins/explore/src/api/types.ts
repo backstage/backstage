@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin for building an exploration page of your software ecosystem
- *
- * @packageDocumentation
- */
+import { createApiRef } from '@backstage/core-plugin-api';
+import {
+  GetExploreToolsRequest,
+  GetExploreToolsResponse,
+} from '@backstage/plugin-explore-common';
 
-export * from './api';
-export * from './components';
-export * from './extensions';
-export { explorePlugin, explorePlugin as plugin } from './plugin';
-export * from './routes';
+/**
+ * Interface for the explore plugin.
+ *
+ * @public
+ */
+export interface ExploreApi {
+  /**
+   * Returns a list of explore tools.
+   *
+   * @param request - The The request query options
+   */
+  getTools(request?: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
+}
+
+export const exploreApiRef = createApiRef<ExploreApi>({
+  id: 'plugin.explore.service',
+});
