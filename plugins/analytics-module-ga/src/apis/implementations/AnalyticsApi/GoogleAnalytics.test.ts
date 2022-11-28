@@ -152,6 +152,99 @@ describe('GoogleAnalytics', () => {
       });
     });
 
+    it('captures virtual pageviews', () => {
+      const config = new ConfigReader({
+        app: {
+          analytics: {
+            ga: {
+              trackingId,
+              testMode: true,
+              virtualSearchPageView: { mode: 'only' },
+            },
+          },
+        },
+      });
+      const api = GoogleAnalytics.fromConfig(config);
+      api.captureEvent({
+        action: 'search',
+        subject: 'test search',
+        context,
+      });
+
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/search?query=test search',
+      });
+    });
+
+    it('captures virtual pageviews alongside search events', () => {
+      const config = new ConfigReader({
+        app: {
+          analytics: {
+            ga: {
+              trackingId,
+              testMode: true,
+              virtualSearchPageView: { mode: 'both' },
+            },
+          },
+        },
+      });
+      const api = GoogleAnalytics.fromConfig(config);
+      api.captureEvent({
+        action: 'search',
+        subject: 'test search',
+        context,
+      });
+
+      const [pageviewCommand, pageViewData] = ReactGA.testModeAPI.calls[1];
+      expect(pageviewCommand).toBe('send');
+      expect(pageViewData).toMatchObject({
+        hitType: 'pageview',
+        page: '/search?query=test search',
+      });
+      const [searchCommand, searchData] = ReactGA.testModeAPI.calls[2];
+      expect(searchCommand).toBe('send');
+      expect(searchData).toMatchObject({
+        hitType: 'event',
+        eventCategory: context.extension,
+        eventAction: 'search',
+        eventLabel: 'test search',
+      });
+    });
+
+    it('captures virtual pageviews on custom route with custom query param', () => {
+      const config = new ConfigReader({
+        app: {
+          analytics: {
+            ga: {
+              trackingId,
+              testMode: true,
+              virtualSearchPageView: {
+                mode: 'only',
+                mountPath: '/custom',
+                queryParam: 'term',
+              },
+            },
+          },
+        },
+      });
+      const api = GoogleAnalytics.fromConfig(config);
+      api.captureEvent({
+        action: 'search',
+        subject: 'test search',
+        context,
+      });
+
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/custom?term=test search',
+      });
+    });
+
     it('captures configured custom dimensions/metrics on events', () => {
       const api = GoogleAnalytics.fromConfig(advancedConfig);
 
