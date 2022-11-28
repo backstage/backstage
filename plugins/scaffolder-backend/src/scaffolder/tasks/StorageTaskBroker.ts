@@ -15,7 +15,6 @@
  */
 
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { AbortController } from 'node-abort-controller';
 import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';

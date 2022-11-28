@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AbortSignal } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
