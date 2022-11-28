@@ -19,6 +19,10 @@ import {
   createRouteRef,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
+import {
+  CostInsightsInputPluginOptions,
+  CostInsightsPluginOptions,
+} from './options';
 
 export const rootRouteRef = createRouteRef({
   id: 'cost-insights',
@@ -41,6 +45,14 @@ export const costInsightsPlugin = createPlugin({
     growthAlerts: projectGrowthAlertRef,
     unlabeledDataflowAlerts: unlabeledDataflowAlertRef,
   },
+  __experimentalConfigure(
+    options?: CostInsightsInputPluginOptions,
+  ): CostInsightsPluginOptions {
+    const defaultOptions = {
+      hideTrendLine: false,
+    };
+    return { ...defaultOptions, ...options };
+  },
 });
 
 /** @public */
@@ -49,6 +61,20 @@ export const CostInsightsPage = costInsightsPlugin.provide(
     name: 'CostInsightsPage',
     component: () =>
       import('./components/CostInsightsPage').then(m => m.CostInsightsPage),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * An extension for displaying costs on an entity page.
+ *
+ * @public
+ */
+export const EntityCostInsightsContent = costInsightsPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityCostInsightsContent',
+    component: () =>
+      import('./components/EntityCosts').then(m => m.EntityCosts),
     mountPoint: rootRouteRef,
   }),
 );

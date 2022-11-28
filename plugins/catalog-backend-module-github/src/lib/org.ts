@@ -17,6 +17,8 @@
 import {
   DEFAULT_NAMESPACE,
   GroupEntity,
+  parseEntityRef,
+  stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
 
@@ -65,14 +67,20 @@ export function assignGroupsToUsers(
         group.metadata.namespace !== DEFAULT_NAMESPACE
           ? `${group.metadata.namespace}/${group.metadata.name}`
           : group.metadata.name;
-      return [groupKey, group.spec.members || []];
+      // Fully qualify member refs so they can be keyed off of since they may contain namespace prefixes
+      return [
+        groupKey,
+        group.spec.members?.map(m =>
+          stringifyEntityRef(parseEntityRef(m, { defaultKind: 'user' })),
+        ) || [],
+      ];
     }),
   );
 
-  const usersByName = new Map(users.map(u => [u.metadata.name, u]));
-  for (const [groupName, userNames] of groupMemberUsers.entries()) {
-    for (const userName of userNames) {
-      const user = usersByName.get(userName);
+  const usersByRef = new Map(users.map(u => [stringifyEntityRef(u), u]));
+  for (const [groupName, userRefs] of groupMemberUsers.entries()) {
+    for (const ref of userRefs) {
+      const user = usersByRef.get(ref);
       if (user && !user.spec.memberOf?.includes(groupName)) {
         if (!user.spec.memberOf) {
           user.spec.memberOf = [];

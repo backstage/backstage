@@ -17,7 +17,7 @@
 import { AuthenticationError } from '@backstage/errors';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
 import { AuthHandler } from '../types';
-import { GcpIapResult, IAP_JWT_HEADER } from './types';
+import { GcpIapResult } from './types';
 
 export function createTokenValidator(
   audience: string,
@@ -52,9 +52,7 @@ export async function parseRequestToken(
   tokenValidator: (token: string) => Promise<TokenPayload>,
 ): Promise<GcpIapResult> {
   if (typeof jwtToken !== 'string' || !jwtToken) {
-    throw new AuthenticationError(
-      `Missing Google IAP header: ${IAP_JWT_HEADER}`,
-    );
+    throw new AuthenticationError('Missing Google IAP header');
   }
 
   let payload: TokenPayload;

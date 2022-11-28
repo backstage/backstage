@@ -34,6 +34,7 @@ import { GroupListPickerButton } from './GroupListPickerButton';
  * @public
  */
 export type GroupListPickerProps = {
+  defaultValue?: string;
   placeholder?: string;
   groupTypes?: Array<string>;
   onChange: (value: GroupEntity | undefined) => void;
@@ -43,9 +44,9 @@ export type GroupListPickerProps = {
 export const GroupListPicker = (props: GroupListPickerProps) => {
   const catalogApi = useApi(catalogApiRef);
 
-  const { onChange, groupTypes, placeholder = '' } = props;
+  const { onChange, groupTypes, placeholder = '', defaultValue = '' } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const [inputValue, setInputValue] = React.useState('');
+  const [inputValue, setInputValue] = React.useState(defaultValue);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -75,6 +76,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
   const handleChange = useCallback(
     (_, v: GroupEntity | null) => {
       onChange(v ?? undefined);
+      setAnchorEl(null);
     },
     [onChange],
   );
@@ -108,6 +110,8 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           renderInput={params => (
             <TextField
               {...params}
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus
               placeholder={placeholder}
               variant="outlined"
             />

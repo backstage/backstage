@@ -63,9 +63,13 @@ export function parseEntityFilterString(
     const equalsIndex = statement.indexOf('=');
 
     const key =
-      equalsIndex === -1 ? statement : statement.substr(0, equalsIndex).trim();
+      equalsIndex === -1
+        ? statement
+        : statement.substring(0, equalsIndex).trim();
     const value =
-      equalsIndex === -1 ? undefined : statement.substr(equalsIndex + 1).trim();
+      equalsIndex === -1
+        ? undefined
+        : statement.substring(equalsIndex + 1).trim();
     if (!key) {
       throw new InputError(
         `Invalid filter, '${statement}' is not a valid statement (expected a string on the form a=b or a= or a)`,

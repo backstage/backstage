@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { ApiProvider } from '@backstage/core-app-api';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { SelectedKindsFilter } from './SelectedKindsFilter';
@@ -42,37 +43,37 @@ const apis = TestApiRegistry.from(
 
 describe('<SelectedKindsFilter/>', () => {
   it('should not explode while loading', async () => {
-    const rendered = await renderWithEffects(
+    const { baseElement } = await renderWithEffects(
       <ApiProvider apis={apis}>
         <SelectedKindsFilter value={['api', 'component']} onChange={() => {}} />
       </ApiProvider>,
     );
-    expect(rendered.baseElement).toBeInTheDocument();
+    expect(baseElement).toBeInTheDocument();
   });
 
   it('should render current value', async () => {
-    const rendered = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <SelectedKindsFilter value={['api', 'component']} onChange={() => {}} />
       </ApiProvider>,
     );
 
-    expect(rendered.getByText('API')).toBeInTheDocument();
-    expect(rendered.getByText('Component')).toBeInTheDocument();
+    expect(screen.getByText('API')).toBeInTheDocument();
+    expect(screen.getByText('Component')).toBeInTheDocument();
   });
 
   it('should select value', async () => {
     const onChange = jest.fn();
-    const { getByLabelText, getByText } = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <SelectedKindsFilter value={['api', 'component']} onChange={onChange} />
       </ApiProvider>,
     );
 
-    await userEvent.click(getByLabelText('Open'));
-    await waitFor(() => expect(getByText('System')).toBeInTheDocument());
+    await userEvent.click(screen.getByLabelText('Open'));
+    await waitFor(() => expect(screen.getByText('System')).toBeInTheDocument());
 
-    await userEvent.click(getByText('System'));
+    await userEvent.click(screen.getByText('System'));
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith(['api', 'component', 'system']);
@@ -81,7 +82,7 @@ describe('<SelectedKindsFilter/>', () => {
 
   it('should return undefined if all values are selected', async () => {
     const onChange = jest.fn();
-    const { getByLabelText, getByText } = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <SelectedKindsFilter
           value={['api', 'component', 'system', 'domain']}
@@ -89,11 +90,13 @@ describe('<SelectedKindsFilter/>', () => {
         />
       </ApiProvider>,
     );
-    await userEvent.click(getByLabelText('Open'));
+    await userEvent.click(screen.getByLabelText('Open'));
 
-    await waitFor(() => expect(getByText('Resource')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText('Resource')).toBeInTheDocument(),
+    );
 
-    await userEvent.click(getByText('Resource'));
+    await userEvent.click(screen.getByText('Resource'));
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith(undefined);
@@ -102,13 +105,13 @@ describe('<SelectedKindsFilter/>', () => {
 
   it('should return all values when cleared', async () => {
     const onChange = jest.fn();
-    const { getByRole } = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <SelectedKindsFilter value={[]} onChange={onChange} />
       </ApiProvider>,
     );
 
-    await userEvent.click(getByRole('combobox'));
+    await userEvent.click(screen.getByRole('combobox'));
     await userEvent.tab();
 
     await waitFor(() => {

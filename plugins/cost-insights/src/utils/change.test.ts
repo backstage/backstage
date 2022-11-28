@@ -63,7 +63,7 @@ describe.each`
     expected: GrowthType;
   }) => {
     it(`should display ${GrowthMap[expected]}`, () => {
-      expect(growthOf({ ratio, amount })).toBe(expected);
+      expect(growthOf({ ratio, amount }, EngineerThreshold)).toBe(expected);
     });
   },
 );

@@ -24,10 +24,12 @@ package.
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-bitbucket-cloud
 ```
 
+### Installation without Events Support
+
 And then add the entity provider to your catalog builder:
 
 ```diff
-  // In packages/backend/src/plugins/catalog.ts
+// packages/backend/src/plugins/catalog.ts
 + import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
 
   export default async function createPlugin(
@@ -37,17 +39,69 @@ And then add the entity provider to your catalog builder:
 +   builder.addEntityProvider(
 +     BitbucketCloudEntityProvider.fromConfig(env.config, {
 +       logger: env.logger,
-+       // optional: alternatively, configure via app-config.yaml
-+       schedule: env.scheduler.createScheduledTaskRunner({
-+         frequency: { minutes: 30 },
-+         timeout: { minutes: 3 },
-+       }),
++       scheduler: env.scheduler,
 +     }),
 +   );
 
     // [...]
   }
 ```
+
+Alternatively to the config-based schedule, you can use
+
+```diff
+-       scheduler: env.scheduler,
++       schedule: env.scheduler.createScheduledTaskRunner({
++         frequency: { minutes: 30 },
++         timeout: { minutes: 3 },
++       }),
+```
+
+### Installation with Events Support
+
+Please follow the installation instructions at
+
+- https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md
+- https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md
+
+Additionally, you need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Set up your provider
+
+```diff
+// packages/backend/src/plugins/catalogEventBasedProviders.ts
++import { CatalogClient } from '@backstage/catalog-client';
++import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
+ import { EntityProvider } from '@backstage/plugin-catalog-node';
+ import { EventSubscriber } from '@backstage/plugin-events-node';
+ import { PluginEnvironment } from '../types';
+
+ export default async function createCatalogEventBasedProviders(
+-  _: PluginEnvironment,
++  env: PluginEnvironment,
+ ): Promise<Array<EntityProvider & EventSubscriber>> {
+   const providers: Array<
+     (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
+   > = [];
+-  // add your event-based entity providers here
++  providers.push(
++    BitbucketCloudEntityProvider.fromConfig(env.config, {
++      catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
++      logger: env.logger,
++      scheduler: env.scheduler,
++      tokenManager: env.tokenManager,
++    }),
++  );
+   return providers.flat();
+ }
+```
+
+**Attention:**
+`catalogApi` and `tokenManager` are required at this variant
+compared to the one without events support.
 
 ## Configuration
 

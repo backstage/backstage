@@ -80,8 +80,8 @@ import {
   TextSize,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import {
+  SettingsLayout,
   UserSettingsPage,
-  UserSettingsTab,
 } from '@backstage/plugin-user-settings';
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
@@ -267,9 +267,9 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />}>
-      <UserSettingsTab path="/advanced" title="Advanced">
+      <SettingsLayout.Route path="/advanced" title="Advanced">
         <AdvancedSettings />
-      </UserSettingsTab>
+      </SettingsLayout.Route>
     </Route>
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />

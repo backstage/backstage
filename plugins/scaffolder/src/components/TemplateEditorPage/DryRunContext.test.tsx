@@ -25,7 +25,7 @@ describe('base64EncodeContent', () => {
   it('encodes text files', () => {
     expect(base64EncodeContent('abc')).toBe('YWJj');
     expect(base64EncodeContent('abc'.repeat(1000000))).toBe(
-      btoa('<file too large>'),
+      window.btoa('<file too large>'),
     );
   });
 
@@ -38,7 +38,7 @@ describe('base64EncodeContent', () => {
     );
     // Triggers size check
     expect(base64EncodeContent('😅'.repeat(1000000))).toBe(
-      btoa('<file too large>'),
+      window.btoa('<file too large>'),
     );
   });
 });

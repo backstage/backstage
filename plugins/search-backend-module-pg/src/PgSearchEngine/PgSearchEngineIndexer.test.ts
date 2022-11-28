@@ -53,7 +53,7 @@ describe('PgSearchEngineIndexer', () => {
       },
     ];
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
@@ -73,7 +73,7 @@ describe('PgSearchEngineIndexer', () => {
       location: `location-${i}`,
     }));
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
@@ -92,7 +92,7 @@ describe('PgSearchEngineIndexer', () => {
     ];
 
     database.prepareInsert.mockRejectedValueOnce(expectedError);
-    const result = await TestPipeline.withSubject(indexer)
+    const result = await TestPipeline.fromIndexer(indexer)
       .withDocuments(documents)
       .execute();
 
@@ -114,7 +114,7 @@ describe('PgSearchEngineIndexer', () => {
     ];
 
     database.insertDocuments.mockRejectedValueOnce(expectedError);
-    const result = await TestPipeline.withSubject(indexer)
+    const result = await TestPipeline.fromIndexer(indexer)
       .withDocuments(documents)
       .execute();
 
@@ -136,7 +136,7 @@ describe('PgSearchEngineIndexer', () => {
     ];
 
     database.completeInsert.mockRejectedValueOnce(expectedError);
-    const result = await TestPipeline.withSubject(indexer)
+    const result = await TestPipeline.fromIndexer(indexer)
       .withDocuments(documents)
       .execute();
 

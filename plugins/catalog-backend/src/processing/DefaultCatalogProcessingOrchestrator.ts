@@ -32,10 +32,10 @@ import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import { Logger } from 'winston';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
-  LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import {

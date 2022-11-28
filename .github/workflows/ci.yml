@@ -33,7 +33,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.7
+        uses: backstage/actions/yarn-install@v0.5.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -63,9 +63,12 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.7
+        uses: backstage/actions/yarn-install@v0.5.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+      - name: verify yarn dependency duplicates
+        run: node scripts/verify-lockfile-duplicates.js
 
       - name: verify changesets
         run: node scripts/verify-changesets.js
@@ -178,7 +181,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.7
+        uses: backstage/actions/yarn-install@v0.5.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

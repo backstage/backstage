@@ -34,26 +34,10 @@ export type BatchSearchEngineOptions = {
 export abstract class BatchSearchEngineIndexer extends Writable {
   private batchSize: number;
   private currentBatch: IndexableDocument[] = [];
-  private initialized: Promise<undefined | Error>;
 
   constructor(options: BatchSearchEngineOptions) {
     super({ objectMode: true });
     this.batchSize = options.batchSize;
-
-    // @todo Once node v15 is minimum, convert to _construct implementation.
-    this.initialized = new Promise(done => {
-      // Necessary to allow concrete implementation classes to construct
-      // themselves before calling their initialize() methods.
-      setImmediate(async () => {
-        try {
-          await this.initialize();
-          done(undefined);
-        } catch (e) {
-          assertError(e);
-          done(e);
-        }
-      });
-    });
   }
 
   /**
@@ -74,6 +58,20 @@ export abstract class BatchSearchEngineIndexer extends Writable {
   public abstract finalize(): Promise<void>;
 
   /**
+   * Encapsulates initialization logic.
+   * @internal
+   */
+  async _construct(done: (error?: Error | null | undefined) => void) {
+    try {
+      await this.initialize();
+      done();
+    } catch (e) {
+      assertError(e);
+      done(e);
+    }
+  }
+
+  /**
    * Encapsulates batch stream write logic.
    * @internal
    */
@@ -82,13 +80,6 @@ export abstract class BatchSearchEngineIndexer extends Writable {
     _e: any,
     done: (error?: Error | null) => void,
   ) {
-    // Wait for init before proceeding. Throw error if initialization failed.
-    const maybeError = await this.initialized;
-    if (maybeError) {
-      done(maybeError);
-      return;
-    }
-
     this.currentBatch.push(doc);
     if (this.currentBatch.length < this.batchSize) {
       done();

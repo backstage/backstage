@@ -150,8 +150,9 @@ describe('GitlabUrlReader', () => {
         treeResponseFactory,
       });
 
-      const data = await reader.read(url);
-      const res = await JSON.parse(data.toString('utf-8'));
+      const { buffer } = await reader.readUrl(url);
+      const fromStream = await buffer();
+      const res = await JSON.parse(fromStream.toString());
       expect(res).toEqual(response);
     });
 
@@ -169,7 +170,7 @@ describe('GitlabUrlReader', () => {
           logger,
           treeResponseFactory,
         });
-        await reader.read(url);
+        await reader.readUrl(url);
       }).rejects.toThrow(error);
     });
   });
@@ -571,6 +572,88 @@ describe('GitlabUrlReader', () => {
           { etag: 'sha123abc' },
         ),
       ).rejects.toThrow(NotModifiedError);
+    });
+  });
+
+  describe('getGitlabFetchUrl', () => {
+    beforeEach(() => {
+      worker.use(
+        rest.get(
+          '*/api/v4/projects/group%2Fsubgroup%2Fproject',
+          (_, res, ctx) => res(ctx.status(200), ctx.json({ id: 12345 })),
+        ),
+      );
+    });
+    it('should fall back to getGitLabFileFetchUrl for blob urls', async () => {
+      await expect(
+        (gitlabProcessor as any).getGitlabFetchUrl(
+          'https://gitlab.com/group/subgroup/project/-/blob/branch/my/path/to/file.yaml',
+        ),
+      ).resolves.toEqual(
+        'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+      );
+    });
+    it('should work for job artifact urls', async () => {
+      await expect(
+        (gitlabProcessor as any).getGitlabFetchUrl(
+          'https://gitlab.com/group/subgroup/project/-/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+        ),
+      ).resolves.toEqual(
+        'https://gitlab.com/api/v4/projects/12345/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+      );
+    });
+    it('should fail on unfamiliar or non-Gitlab urls', async () => {
+      await expect(
+        (gitlabProcessor as any).getGitlabFetchUrl(
+          'https://gitlab.com/some/random/endpoint',
+        ),
+      ).rejects.toThrow('Please provide full path to yaml file from GitLab');
+    });
+  });
+
+  describe('getGitlabArtifactFetchUrl', () => {
+    beforeEach(() => {
+      worker.use(
+        rest.get(
+          '*/api/v4/projects/group%2Fsubgroup%2Fproject',
+          (_, res, ctx) => res(ctx.status(200), ctx.json({ id: 12345 })),
+        ),
+      );
+      worker.use(
+        rest.get(
+          '*/api/v4/projects/groupA%2Fsubgroup%2Fproject',
+          (_, res, ctx) => res(ctx.status(404)),
+        ),
+      );
+    });
+    it('should reject urls that are not for the job artifacts API', async () => {
+      await expect(
+        (gitlabProcessor as any).getGitlabArtifactFetchUrl(
+          new URL('https://gitlab.com/some/url'),
+        ),
+      ).rejects.toThrow('Unable to process url as an GitLab artifact');
+    });
+    it('should work for job artifact urls', async () => {
+      await expect(
+        (gitlabProcessor as any).getGitlabArtifactFetchUrl(
+          new URL(
+            'https://gitlab.com/group/subgroup/project/-/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+          ),
+        ),
+      ).resolves.toEqual(
+        new URL(
+          'https://gitlab.com/api/v4/projects/12345/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+        ),
+      );
+    });
+    it('errors in mapping the project ID should be captured', async () => {
+      await expect(
+        (gitlabProcessor as any).getGitlabArtifactFetchUrl(
+          new URL(
+            'https://gitlab.com/groupA/subgroup/project/-/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+          ),
+        ),
+      ).rejects.toThrow(/^Unable to translate GitLab artifact URL:/);
     });
   });
 });

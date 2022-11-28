@@ -1,5 +1,29 @@
 # @backstage/core-plugin-api
 
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/version-bridge@1.0.2
+
+## 1.1.0
+
+### Minor Changes
+
+- a228f113d0: The app `Router` component now accepts an optional `basename` property.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/version-bridge@1.0.2
+  - @backstage/types@1.0.1
+  - @backstage/config@1.0.4
+
 ## 1.1.0-next.0
 
 ### Minor Changes

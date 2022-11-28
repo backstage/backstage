@@ -30,7 +30,8 @@ import {
   MapLoadingToProps,
 } from '../../hooks';
 import { DefaultLoadingAction } from '../../utils/loading';
-import { Alert, AlertOptions, AlertStatus, Maybe } from '../../types';
+import { Alert, AlertOptions, AlertStatus } from '../../types';
+import { Maybe } from '@backstage/plugin-cost-insights-common';
 import {
   isStatusSnoozed,
   isStatusAccepted,

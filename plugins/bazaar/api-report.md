@@ -17,6 +17,7 @@ export const BazaarOverviewCard: (
 export type BazaarOverviewCardProps = {
   order: 'latest' | 'random';
   fullWidth?: boolean;
+  fullHeight?: boolean;
 };
 
 // @public (undocumented)

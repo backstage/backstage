@@ -17,13 +17,16 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { BarChartLegend } from './BarChartLegend';
+import { MockConfigProvider } from '../../testUtils';
 
 describe('<BarChartLegend />', () => {
   it(`Should display the correct cost start and end`, async () => {
     const rendered = await renderInTestApp(
-      <BarChartLegend costStart={1000} costEnd={5000} />,
+      <MockConfigProvider>
+        <BarChartLegend costStart={1000} costEnd={5000} />,
+      </MockConfigProvider>,
     );
     expect(rendered.getByText(/\$1,000/)).toBeInTheDocument();
-    expect(rendered.queryByText(/\$5,000/)).toBeInTheDocument();
+    expect(rendered.getByText(/\$5,000/)).toBeInTheDocument();
   });
 });

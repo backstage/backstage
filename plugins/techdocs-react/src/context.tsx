@@ -33,7 +33,11 @@ import {
   createVersionedValueMap,
 } from '@backstage/version-bridge';
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  AnalyticsContext,
+  configApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 
 import { techdocsApiRef } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
@@ -141,9 +145,13 @@ export const TechDocsReaderPageProvider = memo(
     const versionedValue = createVersionedValueMap({ 1: value });
 
     return (
-      <TechDocsReaderPageContext.Provider value={versionedValue}>
-        {children instanceof Function ? children(value) : children}
-      </TechDocsReaderPageContext.Provider>
+      <AnalyticsContext
+        attributes={{ entityRef: stringifyEntityRef(entityRef) }}
+      >
+        <TechDocsReaderPageContext.Provider value={versionedValue}>
+          {children instanceof Function ? children(value) : children}
+        </TechDocsReaderPageContext.Provider>
+      </AnalyticsContext>
     );
   },
   (prevProps, nextProps) => {

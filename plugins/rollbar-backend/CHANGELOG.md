@@ -1,5 +1,22 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.36-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/config@1.0.5-next.0
+
+## 0.1.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/config@1.0.4
+
 ## 0.1.35-next.1
 
 ### Patch Changes

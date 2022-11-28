@@ -11,7 +11,7 @@ All packages need to be installed and built before running the test. In a fresh 
 ```sh
 yarn install
 yarn tsc
-yarn build
+yarn build:all
 ```
 
 Once those tasks have completed, you can now run the test using `yarn e2e-test run`.

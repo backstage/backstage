@@ -62,14 +62,16 @@ export const transforms = (options: TransformOptions): Transforms => {
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'typescript',
-                tsx: true,
+                tsx: !isBackend,
                 dynamicImport: true,
               },
               transform: {
-                react: {
-                  runtime: 'automatic',
-                  refresh: isDev,
-                },
+                react: isBackend
+                  ? undefined
+                  : {
+                      runtime: 'automatic',
+                      refresh: isDev,
+                    },
               },
             },
           },
@@ -88,14 +90,16 @@ export const transforms = (options: TransformOptions): Transforms => {
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',
-                jsx: true,
+                jsx: !isBackend,
                 dynamicImport: true,
               },
               transform: {
-                react: {
-                  runtime: 'automatic',
-                  refresh: isDev,
-                },
+                react: isBackend
+                  ? undefined
+                  : {
+                      runtime: 'automatic',
+                      refresh: isDev,
+                    },
               },
             },
           },
@@ -119,7 +123,7 @@ export const transforms = (options: TransformOptions): Transforms => {
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',
-                jsx: true,
+                jsx: !isBackend,
                 dynamicImport: true,
               },
             },
@@ -188,11 +192,13 @@ export const transforms = (options: TransformOptions): Transforms => {
   const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
-    plugins.push(
-      new ReactRefreshPlugin({
-        overlay: { sockProtocol: 'ws' },
-      }),
-    );
+    if (!isBackend) {
+      plugins.push(
+        new ReactRefreshPlugin({
+          overlay: { sockProtocol: 'ws' },
+        }),
+      );
+    }
   } else {
     plugins.push(
       new MiniCssExtractPlugin({

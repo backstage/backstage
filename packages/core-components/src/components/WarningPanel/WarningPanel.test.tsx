@@ -18,7 +18,6 @@ import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import Typography from '@material-ui/core/Typography';
-
 import { WarningPanel, WarningProps } from './WarningPanel';
 
 const propsTitle: WarningProps = { title: 'Mock title' };
@@ -41,7 +40,7 @@ describe('<WarningPanel />', () => {
 
   it('renders title', async () => {
     await renderInTestApp(<WarningPanel {...propsTitleMessage} />);
-    const expandIcon = await screen.getByText('Warning: Mock title');
+    const expandIcon = screen.getByText('Warning: Mock title');
     fireEvent.click(expandIcon);
     expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
     expect(screen.getByText('Some more info')).toBeInTheDocument();

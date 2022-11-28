@@ -1,5 +1,28 @@
 # @backstage/backend-app-api
 
+## 0.2.4-next.0
+
+### Patch Changes
+
+- d6dbf1792b: Added `lifecycleFactory` implementation.
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/plugin-permission-node@0.7.2-next.0
+  - @backstage/backend-plugin-api@0.1.5-next.0
+  - @backstage/backend-tasks@0.3.8-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-permission-node@0.7.1
+  - @backstage/errors@1.1.3
+
 ## 0.2.3-next.1
 
 ### Patch Changes

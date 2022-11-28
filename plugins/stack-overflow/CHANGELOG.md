@@ -1,5 +1,31 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/plugin-home@0.4.28-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.1.2-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- e32d5643e3: `StackOverflowSearchResultListItem` now accept optional rank property to be able to capture rank analytics data.
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/plugin-home@0.4.27
+  - @backstage/config@1.0.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.1.1
+
 ## 0.1.7-next.1
 
 ### Patch Changes

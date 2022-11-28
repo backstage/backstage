@@ -44,5 +44,6 @@ export type StackOverflowQuestionsRequestParams = {
 export const StackOverflowSearchResultListItem: (props: {
   result: any;
   icon?: ReactNode;
+  rank?: number | undefined;
 }) => JSX.Element;
 ```

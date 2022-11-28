@@ -23,6 +23,8 @@ import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import {
+  EntitiesBatchRequest,
+  EntitiesBatchResponse,
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
@@ -235,6 +237,38 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       entities,
       pageInfo,
     };
+  }
+
+  async entitiesBatch(
+    request: EntitiesBatchRequest,
+  ): Promise<EntitiesBatchResponse> {
+    const lookup = new Map<string, Entity>();
+
+    for (const chunk of lodash.chunk(request.entityRefs, 200)) {
+      let query = this.database<DbFinalEntitiesRow>('final_entities')
+        .innerJoin<DbRefreshStateRow>('refresh_state', {
+          'refresh_state.entity_id': 'final_entities.entity_id',
+        })
+        .select({
+          entityRef: 'refresh_state.entity_ref',
+          entity: 'final_entities.final_entity',
+        })
+        .whereIn('refresh_state.entity_ref', chunk);
+      if (request?.filter) {
+        query = parseFilter(request.filter, query, this.database);
+      }
+      for (const row of await query) {
+        lookup.set(row.entityRef, row.entity ? JSON.parse(row.entity) : null);
+      }
+    }
+
+    let items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
+
+    if (request.fields) {
+      items = items.map(e => e && request.fields!(e));
+    }
+
+    return { items };
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
