@@ -228,7 +228,7 @@ describe('DefaultCatalogRulesEnforcer', () => {
             rules: [
               {
                 allow: ['Component'],
-                locations: [{ type: 'url', match: 'https://github.com/b/*' }],
+                locations: [{ type: 'url', match: 'https://github.com/b/**' }],
               },
             ],
           },

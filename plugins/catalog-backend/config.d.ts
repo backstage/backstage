@@ -48,7 +48,7 @@ export interface Config {
        *  { "type": "url", "match": "https://github.com/a/*}
        *
        */
-      location?: Array<{
+      locations?: Array<{
         /**
          * The type of location, e.g. "url".
          */
@@ -59,8 +59,8 @@ export interface Config {
          */
         target?: string;
         /**
-         * The target Regex of the location, e.g.
-         * "https://github.com/org/*.
+         * The pattern allowed for the location, e.g.
+         * "https://github.com/org/*\/blob/master/*.yaml.
          */
         match?: string;
       }>;

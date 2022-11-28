@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import path from 'path';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
+import minimatch from 'minimatch';
 
 /**
  * Rules to apply to catalog entities.
@@ -172,7 +173,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       if (matcher.target && matcher.target !== location?.target) {
         continue;
       }
-      if (matcher.match && !location?.target.match(matcher.match)) {
+      if (matcher.match && !minimatch(location?.target, matcher.match, { nocase: true })) {
         continue;
       }
       return true;
