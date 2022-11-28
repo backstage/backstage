@@ -96,21 +96,14 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     if (config.has('catalog.rules')) {
       const globalRules = config
         .getConfigArray('catalog.rules')
-        .map(ruleConfig => {
-          const rule: CatalogRule = {
-            allow: ruleConfig.getStringArray('allow').map(kind => ({ kind })),
-          };
-
-          const locConf = ruleConfig.getOptionalConfigArray('locations');
-          if (locConf)
-            rule.locations = locConf.map(locationConfig => ({
+        .map(ruleConf => ({
+            allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
+            locations: ruleConf.getOptionalConfigArray('locations')?.map(locationConfig => ({
               match: locationConfig.getOptionalString('match'),
               type: locationConfig.getString('type'),
-              target: locationConfig.getOptionalString('target'),
-            }));
-
-          return rule;
-        });
+              target: locationConfig.getOptionalString('target')
+            }))
+          }));
       rules.push(...globalRules);
     } else {
       rules.push(...DefaultCatalogRulesEnforcer.defaultRules);
