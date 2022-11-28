@@ -100,11 +100,19 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
           allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
           locations: ruleConf
             .getOptionalConfigArray('locations')
-            ?.map(locationConfig => ({
-              match: locationConfig.getOptionalString('match'),
-              type: locationConfig.getString('type'),
-              target: locationConfig.getOptionalString('target'),
-            })),
+            ?.map(locationConfig => {
+              const location = {
+                match: locationConfig.getOptionalString('match'),
+                type: locationConfig.getString('type'),
+                target: locationConfig.getOptionalString('target'),
+              };
+              if (location.match && location.target) {
+                throw new Error(
+                  'A catalog rule location cannot have both target and match values',
+                );
+              }
+              return location;
+            }),
         }));
       rules.push(...globalRules);
     } else {

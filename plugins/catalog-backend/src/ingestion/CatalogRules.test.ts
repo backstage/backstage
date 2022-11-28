@@ -54,6 +54,28 @@ const location: Record<string, LocationSpec> = {
 };
 
 describe('DefaultCatalogRulesEnforcer', () => {
+  it('should throw an error if both match and target are used', () => {
+    expect(() =>
+      DefaultCatalogRulesEnforcer.fromConfig(
+        new ConfigReader({
+          catalog: {
+            rules: [
+              {
+                allow: ['Component'],
+                locations: [
+                  {
+                    type: 'url',
+                    match: 'https://github.com/b/**',
+                    target: 'https://github.com/a/b/blob/master/w.yaml',
+                  },
+                ],
+              },
+            ],
+          },
+        }),
+      ),
+    ).toThrow(/cannot have both target and match values/i);
+  });
   it('should deny by default', () => {
     const enforcer = new DefaultCatalogRulesEnforcer([]);
     expect(enforcer.isAllowed(entity.user, location.x)).toBe(false);
