@@ -32,8 +32,8 @@ type Options = {
 };
 
 export const webLibraryPlugin = createFactory<Options>({
-  name: 'web-library-plugin',
-  description: 'A new web-library plugin',
+  name: 'web-library-package',
+  description: 'A new web-library package',
   optionsDiscovery: async () => ({
     codeOwnersPath: await getCodeownersFilePath(paths.targetRoot),
   }),
@@ -47,7 +47,7 @@ export const webLibraryPlugin = createFactory<Options>({
     const extensionName = `${upperFirst(camelCase(id))}Page`;
 
     Task.log();
-    Task.log(`Creating web-library plugin ${chalk.cyan(name)}`);
+    Task.log(`Creating web-library package ${chalk.cyan(name)}`);
 
     const targetDir = ctx.isMonoRepo
       ? paths.resolveTargetRoot('plugins', id)
@@ -55,7 +55,7 @@ export const webLibraryPlugin = createFactory<Options>({
 
     await executePluginPackageTemplate(ctx, {
       targetDir,
-      templateName: 'default-web-library-plugin',
+      templateName: 'web-library-package',
       values: {
         id,
         name,
