@@ -244,10 +244,13 @@ techdocs:
     type: 'awsS3'
     awsS3:
       bucketName: 'name-of-techdocs-storage-bucket'
+      accountId: '123456789012'
       region: ${AWS_REGION}
-      credentials:
-        accessKeyId: ${AWS_ACCESS_KEY_ID}
-        secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+aws:
+  accounts:
+    - accountId: '123456789012'
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 ```
 
 Refer to the

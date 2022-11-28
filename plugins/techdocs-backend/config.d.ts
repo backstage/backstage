@@ -82,8 +82,22 @@ export interface Config {
            */
           awsS3?: {
             /**
+             * (Optional) The AWS account ID where the storage bucket is located.
+             * Credentials for the account ID will be sourced from the 'aws' app config section.
+             * See the
+             * [integration-aws-node package](https://github.com/backstage/backstage/blob/master/packages/integration-aws-node/README.md)
+             * for details on how to configure the credentials in the app config.
+             * If account ID is not set and no credentials are set, environment variables or aws config file will be used to authenticate.
+             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+             * @visibility secret
+             */
+            accountId?: string;
+            /**
              * (Optional) Credentials used to access a storage bucket.
-             * If not set, environment variables or aws config file will be used to authenticate.
+             * This section is now deprecated. Configuring the account ID is now preferred, with credentials in the 'aws'
+             * app config section.
+             * If not set and no account ID is set, environment variables or aws config file will be used to authenticate.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
              * @visibility secret

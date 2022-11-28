@@ -4135,7 +4135,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-aws-node@workspace:packages/integration-aws-node":
+"@backstage/integration-aws-node@workspace:^, @backstage/integration-aws-node@workspace:packages/integration-aws-node":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-aws-node@workspace:packages/integration-aws-node"
   dependencies:
@@ -8142,6 +8142,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/integration-aws-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@google-cloud/storage": ^6.0.0
     "@trendyol-js/openstack-swift-sdk": ^0.0.5
