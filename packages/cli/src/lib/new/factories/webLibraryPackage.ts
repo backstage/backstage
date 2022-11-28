@@ -31,7 +31,7 @@ type Options = {
   codeOwnersPath?: string;
 };
 
-export const webLibraryPlugin = createFactory<Options>({
+export const webLibraryPackage = createFactory<Options>({
   name: 'web-library-package',
   description: 'A new web-library package',
   optionsDiscovery: async () => ({

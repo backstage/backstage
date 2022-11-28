@@ -16,6 +16,6 @@
 
 export { frontendPlugin } from './frontendPlugin';
 export { backendPlugin } from './backendPlugin';
-export { webLibraryPlugin } from './webLibraryPlugin';
+export { webLibraryPackage } from './webLibraryPackage';
 export { pluginCommon } from './pluginCommon';
 export { scaffolderModule } from './scaffolderModule';
