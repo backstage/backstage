@@ -43,7 +43,7 @@
     "@aws-sdk/credential-providers": "^3.208.0",
     "@aws-sdk/lib-storage": "^3.208.0",
     "@aws-sdk/types": "^3.208.0",
-    "@azure/identity": "^2.1.0",
+    "@azure/identity": "^3.0.0",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-common": "workspace:^",
     "@backstage/catalog-model": "workspace:^",

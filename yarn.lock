@@ -1923,9 +1923,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/identity@npm:^2.0.4, @azure/identity@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@azure/identity@npm:2.1.0"
+"@azure/identity@npm:^3.0.0":
+  version: 3.1.1
+  resolution: "@azure/identity@npm:3.1.1"
   dependencies:
     "@azure/abort-controller": ^1.0.0
     "@azure/core-auth": ^1.3.0
@@ -1936,14 +1936,14 @@ __metadata:
     "@azure/logger": ^1.0.0
     "@azure/msal-browser": ^2.26.0
     "@azure/msal-common": ^7.0.0
-    "@azure/msal-node": ^1.10.0
+    "@azure/msal-node": ^1.14.2
     events: ^3.0.0
     jws: ^4.0.0
     open: ^8.0.0
     stoppable: ^1.1.0
     tslib: ^2.2.0
     uuid: ^8.3.0
-  checksum: 1f29f1fd46c51f226da06e6e70f113d50f5ef0dd163e2ba1b8bc35cadcf98ccd829bff3d2bf4d90641c369e5d6b74b344f17abec10f2ae9469a74aeb9415d6d4
+  checksum: af03ccec60fd44038f8943aab3b708238a39decc25cb286dea4001109e8e76f89d4dca9aef9c3ab498e0eb267b73f5ddffbc3edb5feb61f4cd17a4a8cb3bb978
   languageName: node
   linkType: hard
 
@@ -2000,14 +2000,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-node@npm:^1.10.0":
-  version: 1.11.0
-  resolution: "@azure/msal-node@npm:1.11.0"
+"@azure/msal-common@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@azure/msal-common@npm:9.0.0"
+  checksum: e4b1fcff3a95a019761e62b6a3a7a8a5a67905826771ed262b8741efa719afb992db213b74b1000b1fee6faf8041189045fd32beb9d0e69961a7ee0980539546
+  languageName: node
+  linkType: hard
+
+"@azure/msal-node@npm:^1.14.2":
+  version: 1.14.4
+  resolution: "@azure/msal-node@npm:1.14.4"
   dependencies:
-    "@azure/msal-common": ^7.1.0
+    "@azure/msal-common": ^9.0.0
     jsonwebtoken: ^8.5.1
     uuid: ^8.3.0
-  checksum: b7fff0e756e9f3ba351ddbfd097a7885bc14e735f80d504f2e309c251a333c6a2f8755b0d462e5aee386439530d659c2d0d71c1345b7d3f85e87cc5b4f21299e
+  checksum: 320205cae1087de4242f1a525dd732de1ecc0498f1fd660492d4f99f0253f5b52d10d6d635adbe3f63770cc9fba26676aa9714e86ddab8ce3754d89a16b3b983
   languageName: node
   linkType: hard
 
@@ -4844,7 +4851,7 @@ __metadata:
   dependencies:
     "@azure/arm-appservice": ^13.0.1
     "@azure/arm-resourcegraph": ^4.2.1
-    "@azure/identity": ^2.1.0
+    "@azure/identity": ^3.0.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -5307,7 +5314,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-msgraph@workspace:plugins/catalog-backend-module-msgraph"
   dependencies:
-    "@azure/identity": ^2.1.0
+    "@azure/identity": ^3.0.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
@@ -6819,7 +6826,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-kubernetes-backend@workspace:plugins/kubernetes-backend"
   dependencies:
-    "@azure/identity": ^2.0.4
+    "@azure/identity": ^3.0.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
@@ -8269,7 +8276,7 @@ __metadata:
     "@aws-sdk/credential-providers": ^3.208.0
     "@aws-sdk/lib-storage": ^3.208.0
     "@aws-sdk/types": ^3.208.0
-    "@azure/identity": ^2.1.0
+    "@azure/identity": ^3.0.0
     "@azure/storage-blob": ^12.5.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
