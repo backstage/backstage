@@ -39,6 +39,10 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.208.0",
+    "@aws-sdk/credential-providers": "^3.208.0",
+    "@aws-sdk/lib-storage": "^3.208.0",
+    "@aws-sdk/types": "^3.208.0",
     "@azure/identity": "^2.1.0",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-common": "workspace:^",
@@ -50,7 +54,6 @@
     "@google-cloud/storage": "^6.0.0",
     "@trendyol-js/openstack-swift-sdk": "^0.0.5",
     "@types/express": "^4.17.6",
-    "aws-sdk": "^2.840.0",
     "express": "^4.17.1",
     "fs-extra": "10.1.0",
     "git-url-parse": "^13.0.0",
@@ -70,6 +73,7 @@
     "@types/mock-fs": "^4.13.0",
     "@types/recursive-readdir": "^2.2.0",
     "@types/supertest": "^2.0.8",
+    "aws-sdk-client-mock": "^2.0.0",
     "supertest": "^6.1.3"
   }
 }
