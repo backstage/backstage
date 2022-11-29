@@ -26,7 +26,7 @@ export type KubernetesObjectTypes =
    | 'customresources'
 ```
 
-- Ensure that the kubernetes resources in your cluster have a label that an entity in your catalog can use via label selector annotation. Workloads and custom endpoints make use of an entityRef field in the request, that entity ref should have an annotation like:
+- Ensure that the kubernetes resources in your cluster have a label that an entity in your catalog can use via label selector annotation. Workloads and custom endpoints make use of an entity reference field in the request, that entity reference should have an annotation like:
 
 ```
 metadata:
@@ -40,7 +40,7 @@ that should correspond to the label you provide your kubernetes resource when cr
 
 ## How do the endpoints work prior to the permission framework integration?
 
-By default, Backstage endpoints are not protected, and all actions are available to anyone. The same is true for the Kubernetes plugin endpoints provided you have properly configured the clusterlocator stanza in your [app-config](../../app-config.yaml). By default if a user attempts to make a call to any of the following endpoints:
+By default, Backstage endpoints are not protected, and all actions are available to anyone. The same is true for the Kubernetes plugin endpoints provided you have properly configured the cluster locator stanza in your [app-config](../../app-config.yaml). By default if a user attempts to make a call to any of the following endpoints:
 
 - api/kubernetes/resources/workloads/query
 - api/kubernetes/resources/custom/query
@@ -94,7 +94,7 @@ then you are returned a response like:
 }
 ```
 
-\*Note that here we are querying a cluster that has two resouces, a pod and a deployment running
+\*Note that here we are querying a cluster that has two resources, a pod and a deployment running
 
 ### api/kubernetes/clusters
 
@@ -223,7 +223,7 @@ catalog:
             target: ../../kubernetes.yaml
 ```
 
-We assume you have already created some resource in the cluster you have configured with the label app=backstage. If you havent you can create a pod using a yaml like the one listed below and you can apply it in your terminal using kubectl apply -f pod.yaml:
+We assume you have already created some resource in the cluster you have configured with the label app=backstage. If you have not you can create a pod using a yaml like the one listed below and you can apply it in your terminal using kubectl apply -f pod.yaml:
 
 pod.yaml
 
@@ -242,7 +242,7 @@ spec:
 
 Now that you have these entities set up you can make a sample policy under packages/backend/src/plugins/permission.ts
 
-After creating the policy class like in the examples above make sure to set the policy in the createRouter method at the bottom of the file. Change the value of policy in that method call to the name of the policy you just created.
+After creating the policy class like in the examples above make sure to set the policy at the bottom of the file. Change the value of policy in that method call to the name of the policy you just created.
 
 Before:
 
