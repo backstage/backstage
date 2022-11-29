@@ -1,5 +1,6 @@
 abc
 accessors
+ACLs
 addon
 addons
 ADRs
@@ -32,6 +33,7 @@ boolean
 Brex
 builtins
 callout
+CDNs
 Chai
 changeset
 changesets
@@ -165,6 +167,7 @@ JWTs
 Kaewkasi
 Keyv
 Knex
+KPIs
 kubectl
 kubernetes
 kubernetes
@@ -349,6 +352,7 @@ templater
 Templater
 templaters
 Templaters
+TFRecord
 theia
 thumbsup
 todo
@@ -366,6 +370,7 @@ transpiled
 transpiler
 transpilers
 truthy
+TSDoc
 typeahead
 ui
 unbreak
@@ -394,6 +399,7 @@ widget's
 winston
 www
 WWW
+XCMetrics
 XML
 xyz
 yaml

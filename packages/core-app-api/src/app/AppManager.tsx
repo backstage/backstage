@@ -463,7 +463,7 @@ export class AppManager implements BackstageApp {
         }
 
         return (
-          <RouterComponent>
+          <RouterComponent basename={basePath}>
             <RouteTracker routeObjects={routeObjects} />
             {children}
           </RouterComponent>
@@ -472,7 +472,7 @@ export class AppManager implements BackstageApp {
 
       if (isReactRouterBeta()) {
         return (
-          <RouterComponent basename={basePath}>
+          <RouterComponent>
             <RouteTracker routeObjects={routeObjects} />
             <SignInPageWrapper component={SignInPageComponent}>
               <Routes>
@@ -484,7 +484,7 @@ export class AppManager implements BackstageApp {
       }
 
       return (
-        <RouterComponent>
+        <RouterComponent basename={basePath}>
           <RouteTracker routeObjects={routeObjects} />
           <SignInPageWrapper component={SignInPageComponent}>
             <>{children}</>
