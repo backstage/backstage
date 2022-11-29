@@ -91,15 +91,29 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
     searchBarRef?.current?.focus();
   });
 
-  const handleSearchResultClick = useCallback(() => {
-    toggleModal();
+  const isOpenNewTabOrWindow = (
+    event: React.MouseEvent | React.KeyboardEvent,
+  ): boolean =>
+    // open new tab (linux or windows)
+    event.ctrlKey === true ||
+    // open new wab (macos)
+    event.metaKey === true ||
+    // open new window
+    event.shiftKey === true ||
+    // open new tab (middle/wheel click)
+    ('button' in event ? event.button === 1 : false);
+
+  const handleSearchResultClick = useCallback((event) => {
+    if (!isOpenNewTabOrWindow(event)) {
+      toggleModal();
+    }
     setTimeout(focusContent, transitions.duration.leavingScreen);
   }, [toggleModal, focusContent, transitions]);
 
   const handleSearchBarKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (e.key === 'Enter') {
-        handleSearchResultClick();
+        handleSearchResultClick(e);
         navigate(searchPagePath);
       }
     },

@@ -39,6 +39,7 @@ import {
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
+import { isOpenNewTabOrWindow } from '../util';
 
 /**
  * @public
@@ -106,8 +107,10 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
     searchBarRef?.current?.focus();
   });
 
-  const handleSearchResultClick = useCallback(() => {
-    toggleModal();
+  const handleSearchResultClick = useCallback((event) => {
+    if (!isOpenNewTabOrWindow(event)) {
+      toggleModal();
+    }
     setTimeout(focusContent, transitions.duration.leavingScreen);
   }, [toggleModal, focusContent, transitions]);
 
@@ -115,7 +118,7 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
     (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (e.key === 'Enter') {
         navigate(searchPagePath);
-        handleSearchResultClick();
+        handleSearchResultClick(e);
       }
     },
     [navigate, handleSearchResultClick, searchPagePath],
