@@ -68,6 +68,7 @@ const POD_METRICS_FIXTURE = {
 describe('KubernetesFetcher', () => {
   describe('fetchObjectsForService', () => {
     let sut: KubernetesClientBasedFetcher;
+    const logger = getVoidLogger();
     const worker = setupServer();
     setupRequestMockHandlers(worker);
 
@@ -171,7 +172,7 @@ describe('KubernetesFetcher', () => {
     beforeEach(() => {
       sut = new KubernetesClientBasedFetcher({
         kubernetesClientProvider: new KubernetesClientProvider(),
-        logger: getVoidLogger(),
+        logger,
       });
     });
 
@@ -341,7 +342,8 @@ describe('KubernetesFetcher', () => {
         },
       );
     });
-    it('should return pods, unauthorized error', async () => {
+    it('should return pods and unauthorized error, logging a warning', async () => {
+      const warn = jest.spyOn(logger, 'warn');
       worker.use(
         rest.get('http://localhost:9999/api/v1/pods', (req, res, ctx) =>
           res(
@@ -391,6 +393,9 @@ describe('KubernetesFetcher', () => {
           },
         ],
       });
+      expect(warn).toHaveBeenCalledWith(
+        'statusCode=401 for resource /api/v1/services body=[{"kind":"Status","apiVersion":"v1","code":401}]',
+      );
     });
     // they're in testErrorResponse
     // eslint-disable-next-line jest/expect-expect
