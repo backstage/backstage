@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog
 
+## 1.6.2-next.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- ca04d97b09: Handle refresh entity error in `AboutCard`.
+- a19cffbeed: Update search links to only have header as linkable text
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/plugin-search-react@1.2.2-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-react@1.2.2-next.1
+  - @backstage/integration-react@1.1.7-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.9-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
 ## 1.6.2-next.0
 
 ### Patch Changes

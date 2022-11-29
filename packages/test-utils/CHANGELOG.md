@@ -1,5 +1,21 @@
 # @backstage/test-utils
 
+## 1.2.3-next.1
+
+### Patch Changes
+
+- 5e238ed56a: The test utility for the plugin context called `MockPluginProvider` has been created. It will be handy in the cases when you use
+  `__experimentalConfigure` in your plugin. It is experimental and exported through `@backstage/test-utils/alpha`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.2.1-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-permission-react@0.4.8-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
 ## 1.2.3-next.0
 
 ### Patch Changes

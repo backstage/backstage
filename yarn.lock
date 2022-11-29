@@ -8540,7 +8540,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/version-bridge@^1.0.1, @backstage/version-bridge@^1.0.2, @backstage/version-bridge@workspace:^, @backstage/version-bridge@workspace:packages/version-bridge":
+"@backstage/version-bridge@npm:^1.0.1, @backstage/version-bridge@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@backstage/version-bridge@npm:1.0.2"
+  peerDependencies:
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0
+  checksum: b45cbf5340afb7896d6baa2a650ee21e9a63743ee589d07a30139a6e035e7e5f996a5b9fa08f5db2ccdd95db288c4b4e73b17e419f7569e061065fd362f38e75
+  languageName: node
+  linkType: hard
+
+"@backstage/version-bridge@workspace:^, @backstage/version-bridge@workspace:packages/version-bridge":
   version: 0.0.0-use.local
   resolution: "@backstage/version-bridge@workspace:packages/version-bridge"
   dependencies:

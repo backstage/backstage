@@ -1,5 +1,33 @@
 # @backstage/backend-common
 
+## 0.17.0-next.1
+
+### Minor Changes
+
+- de8a975911: Changed to use native `AbortController` and `AbortSignal` from Node.js, instead
+  of the one from `node-abort-controller`. This is possible now that the minimum
+  supported Node.js version of the project is 16.
+
+  Note that their interfaces are very slightly different, but typically not in a
+  way that matters to consumers. If you see any typescript errors as a direct
+  result from this, they are compatible with each other in the ways that we
+  interact with them, and should be possible to type-cast across without ill
+  effects.
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- 1f2b2de3fe: exported KubernetesContainerRunner, KubernetesContainerRunnerOptions, KubernetesContainerRunnerMountBase
+- 6b82598bd8: Added the ability to understand Job Artifact URLs to the GitLab integration
+- 8646067e07: Fixed `SingleHostDiscovery` so that it properly handles single-string `backend.listen` configurations such as `:80`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config-loader@1.1.7-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/errors@1.1.4-next.1
+
 ## 0.16.1-next.0
 
 ### Patch Changes
