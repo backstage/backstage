@@ -8,7 +8,7 @@ import express from 'express';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
-// @public (undocumented)
+// @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
