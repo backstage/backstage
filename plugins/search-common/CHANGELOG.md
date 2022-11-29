@@ -1,5 +1,13 @@
 # @backstage/plugin-search-common
 
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
 ## 1.1.2-next.0
 
 ### Patch Changes

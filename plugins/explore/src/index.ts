@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export * from './api';
 export * from './components';
 export * from './extensions';
 export { explorePlugin, explorePlugin as plugin } from './plugin';

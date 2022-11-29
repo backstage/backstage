@@ -5,10 +5,19 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default as default_2 } from 'react';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { DomainEntity } from '@backstage/catalog-model';
+import { ExploreToolsConfig } from '@backstage/plugin-explore-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
+import { GetExploreToolsRequest } from '@backstage/plugin-explore-common';
+import { GetExploreToolsResponse } from '@backstage/plugin-explore-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
+import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core';
 
@@ -29,6 +38,29 @@ export const DomainCard: (props: { entity: DomainEntity }) => JSX.Element;
 export const DomainExplorerContent: (props: {
   title?: string | undefined;
 }) => JSX.Element;
+
+// @public
+export interface ExploreApi {
+  getTools(request?: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
+}
+
+// @public (undocumented)
+export const exploreApiRef: ApiRef<ExploreApi>;
+
+// @public
+export class ExploreClient implements ExploreApi {
+  constructor({
+    discoveryApi,
+    fetchApi,
+    exploreToolsConfig,
+  }: {
+    discoveryApi: DiscoveryApi;
+    fetchApi: FetchApi;
+    exploreToolsConfig?: ExploreToolsConfig;
+  });
+  // (undocumented)
+  getTools(request?: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
+}
 
 // @public
 export const ExploreLayout: {
@@ -91,4 +123,21 @@ export type SubRoute = {
 export const ToolExplorerContent: (props: {
   title?: string | undefined;
 }) => JSX.Element;
+
+// @public (undocumented)
+export function ToolSearchResultListItem(
+  props: ToolSearchResultListItemProps,
+): JSX.Element;
+
+// @public
+export interface ToolSearchResultListItemProps {
+  // (undocumented)
+  highlight?: ResultHighlight;
+  // (undocumented)
+  icon?: ReactNode;
+  // (undocumented)
+  rank?: number;
+  // (undocumented)
+  result: IndexableDocument;
+}
 ```

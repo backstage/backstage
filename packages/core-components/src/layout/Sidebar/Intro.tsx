@@ -151,7 +151,7 @@ export function SidebarIntro(_props: {}) {
     starredItemsDismissed: false,
     recentlyViewedItemsDismissed: false,
   };
-  const [dismissedIntro, setDismissedIntro] =
+  const { value: dismissedIntro, set: setDismissedIntro } =
     useLocalStorageValue<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE);
 
   const { starredItemsDismissed, recentlyViewedItemsDismissed } =

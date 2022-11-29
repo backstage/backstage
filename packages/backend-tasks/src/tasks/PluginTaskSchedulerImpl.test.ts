@@ -18,7 +18,6 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Duration } from 'luxon';
-import { AbortSignal } from 'node-abort-controller';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import {
   parseDuration,

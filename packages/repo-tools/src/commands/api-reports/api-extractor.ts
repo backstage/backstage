@@ -39,9 +39,19 @@ import {
   DocNode,
   IDocNodeContainerParameters,
   TSDocTagSyntaxKind,
+  TSDocConfiguration,
+  Standardization,
+  DocBlockTag,
+  DocPlainText,
+  DocLinkTag,
 } from '@microsoft/tsdoc';
 import { TSDocConfigFile } from '@microsoft/tsdoc-config';
-import { ApiPackage, ApiModel, ApiItem } from '@microsoft/api-extractor-model';
+import {
+  ApiPackage,
+  ApiModel,
+  ApiItem,
+  ApiItemKind,
+} from '@microsoft/api-extractor-model';
 import {
   IMarkdownDocumenterOptions,
   MarkdownDocumenter,
@@ -334,7 +344,12 @@ export async function getTsDocConfig() {
     tagName: '@ignore',
     syntaxKind: TSDocTagSyntaxKind.ModifierTag,
   });
+  tsdocConfigFile.addTagDefinition({
+    tagName: '@config',
+    syntaxKind: TSDocTagSyntaxKind.BlockTag,
+  });
   tsdocConfigFile.setSupportForTag('@ignore', true);
+  tsdocConfigFile.setSupportForTag('@config', true);
   return tsdocConfigFile;
 }
 
@@ -827,6 +842,16 @@ export async function buildDocs({
     }
   }
 
+  // This class only propose is to have a different kind and be able to render links with backticks
+  class DocCodeSpanLink extends DocLinkTag {
+    static kind = 'DocCodeSpanLink';
+
+    /** @override */
+    public get kind(): string {
+      return DocCodeSpanLink.kind;
+    }
+  }
+
   // This is where we actually write the markdown and where we can hook
   // in the rendering of our own nodes.
   class CustomCustomMarkdownEmitter extends CustomMarkdownEmitter {
@@ -845,7 +870,7 @@ export async function buildDocs({
     /** @override */
     protected writeNode(
       docNode: DocNode,
-      context: IMarkdownEmitterContext,
+      context: IMarkdownEmitterContext<ICustomMarkdownEmitterOptions>,
       docNodeSiblings: boolean,
     ): void {
       switch (docNode.kind) {
@@ -859,6 +884,32 @@ export async function buildDocs({
           }
           context.writer.writeLine('---');
           context.writer.writeLine();
+          break;
+        }
+        case 'BlockTag': {
+          const node = docNode as DocBlockTag;
+          if (node.tagName === '@config') {
+            context.writer.writeLine('## Related config ');
+          }
+          break;
+        }
+        case DocCodeSpanLink.kind: {
+          const node = docNode as DocLinkTag;
+          if (node.codeDestination) {
+            // TODO @sarabadu understand if we need `codeDestination` at all on this custom DocCodeSpanLink
+            super.writeLinkTagWithCodeDestination(node, context);
+          } else if (node.urlDestination) {
+            const linkText =
+              node.linkText !== undefined ? node.linkText : node.urlDestination;
+            const encodedLinkText = this.getEscapedText(
+              linkText.replace(/\s+/g, ' '),
+            );
+            context.writer.write('[');
+            context.writer.write(`\`${encodedLinkText}\``);
+            context.writer.write(`](${node.urlDestination})`);
+          } else if (node.linkText) {
+            this.writePlainText(node.linkText, context);
+          }
           break;
         }
         default:
@@ -884,15 +935,35 @@ export async function buildDocs({
       super(options);
 
       // It's a strict model, we gotta register the allowed usage of our new node
-      this._tsdocConfiguration.docNodeManager.registerDocNodes(
-        '@backstage/docs',
-        [{ docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter }],
-      );
-      this._tsdocConfiguration.docNodeManager.registerAllowableChildren(
-        'Paragraph',
-        [DocFrontMatter.kind],
-      );
+      (
+        this._tsdocConfiguration as TSDocConfiguration
+      ).docNodeManager.registerDocNodes('@backstage/docs', [
+        { docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter },
+      ]);
+      (
+        this._tsdocConfiguration as TSDocConfiguration
+      ).docNodeManager.registerDocNodes('@backstage/docs', [
+        { docNodeKind: DocCodeSpanLink.kind, constructor: DocCodeSpanLink },
+      ]);
+      (
+        this._tsdocConfiguration as TSDocConfiguration
+      ).docNodeManager.registerAllowableChildren('Paragraph', [
+        DocFrontMatter.kind,
+        DocCodeSpanLink.kind,
+      ]);
 
+      const def = {
+        tagName: '@config',
+        syntaxKind: TSDocTagSyntaxKind.BlockTag,
+        tagNameWithUpperCase: '@CONFIG',
+        standardization: Standardization.Extended,
+        allowMultiple: false,
+      };
+      (this._tsdocConfiguration as TSDocConfiguration).addTagDefinition(def);
+      (this._tsdocConfiguration as TSDocConfiguration).setSupportForTag(
+        def,
+        true,
+      );
       this._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
     }
 
@@ -941,8 +1012,40 @@ export async function buildDocs({
         }),
       );
 
-      // Now write the actual breadcrumbs
-      super._writeBreadcrumb(output, apiItem);
+      const configuration: TSDocConfiguration = this._tsdocConfiguration;
+
+      output.appendNodeInParagraph(
+        new DocLinkTag({
+          configuration,
+          tagName: '@link',
+          linkText: 'Home',
+          urlDestination: this._getLinkFilenameForApiItem(this._apiModel),
+        }),
+      );
+
+      for (const hierarchyItem of apiItem.getHierarchy()) {
+        switch (hierarchyItem.kind) {
+          case ApiItemKind.Model:
+          case ApiItemKind.EntryPoint:
+            // We don't show the model as part of the breadcrumb because it is the root-level container.
+            // We don't show the entry point because today API Extractor doesn't support multiple entry points;
+            // this may change in the future.
+            break;
+          default:
+            output.appendNodesInParagraph([
+              new DocPlainText({
+                configuration,
+                text: ' > ',
+              }),
+              new DocCodeSpanLink({
+                configuration,
+                tagName: '@link',
+                linkText: hierarchyItem.displayName,
+                urlDestination: this._getLinkFilenameForApiItem(hierarchyItem),
+              }),
+            ]);
+        }
+      }
 
       // We wanna ignore the header that always gets written after the breadcrumb
       // This otherwise becomes more or less a duplicate of the title in the front matter
