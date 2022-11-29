@@ -18,8 +18,7 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { buildBundle } from '../../lib/bundler';
 import { getEnvironmentParallelism } from '../../lib/parallel';
-import { loadCliConfig } from '../../lib/config';
-import { CliConfigOptions } from '@backstage/config-loader/src/lib/cli';
+import { loadCliConfig, CliConfigOptions } from '../../lib/config';
 
 interface BuildAppOptions {
   targetDir: string;

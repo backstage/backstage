@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { execSync, spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import EventEmitter from 'events';
-import mock from 'mock-fs';
 import fetch from 'node-fetch';
 import path from 'path';
+import getPort from 'get-port';
 
 const executeCommand = (
   command: string,
@@ -48,6 +48,11 @@ const executeCommand = (
     proc.stderr?.on('data', data => {
       stderr.push(Buffer.from(data));
     });
+
+    /**
+     * Set an interval to check if we should kill the process.
+     * This was the easiest way I could think of of testing across two processes.
+     */
     let intervalId: NodeJS.Timer | undefined = undefined;
     if (eventConfig) {
       intervalId = setInterval(() => {
@@ -62,8 +67,7 @@ const executeCommand = (
       }, 1000);
     }
 
-    events?.on('stop', signal => {
-      console.log(signal);
+    const clearEventInterval = () => {
       if (intervalId) {
         try {
           clearInterval(intervalId);
@@ -71,27 +75,22 @@ const executeCommand = (
           console.error(err);
         }
       }
+    };
+
+    /**
+     * Need a way to kill the process from another process.
+     */
+    events?.on('stop', signal => {
+      clearEventInterval();
       proc.kill(signal);
     });
 
     proc.on('error', (...errorArgs) => {
-      if (intervalId) {
-        try {
-          clearInterval(intervalId);
-        } catch (err) {
-          console.error(err);
-        }
-      }
+      clearEventInterval();
       reject(errorArgs);
     });
     proc.on('exit', code => {
-      if (intervalId) {
-        try {
-          clearInterval(intervalId);
-        } catch (err) {
-          console.error(err);
-        }
-      }
+      clearEventInterval();
       resolve({
         exit: code ?? 0,
         stdout: Buffer.concat(stdout).toString('utf8'),
@@ -101,43 +100,41 @@ const executeCommand = (
   });
 };
 
-const timeout = 40000;
+const timeout = 100000;
 
+// Builds initially (with no cache) take a loooong time.
 jest.setTimeout(timeout * 2);
+
+const testProjectDir = path.resolve(
+  __dirname,
+  '__fixtures__/test-project/packages/app',
+);
 
 describe('end-to-end', () => {
   const entryPoint = path.resolve(__dirname, '../bin/backstage-cli');
 
-  it.skip('shows help text', async () => {
-    const proc = await executeCommand(entryPoint, ['--help']);
-    expect(proc.stdout).toContain('Usage: backstage-cli [options]');
-    expect(proc.exit).toEqual(0);
-  });
-
   it('builds frontend with correct url overrides', async () => {
-    const cwd = path.resolve(__dirname, 'test-project/packages/app');
     const buildProc = await executeCommand(
       entryPoint,
       ['package', 'build', '--public-path', '/test', '--backend-url', '/api'],
       {
-        cwd,
+        cwd: testProjectDir,
       },
     );
     expect(buildProc.stderr).toContain(
       'Loaded config from app-config.yaml, cli',
     );
 
-    console.log(buildProc.stderr, buildProc.stdout);
-
     expect(buildProc.exit).toEqual(0);
   });
 
   it('starts frontend on correct url', async () => {
-    const cwd = path.resolve(__dirname, 'test-project/packages/app');
-
     const startEmitter = new EventEmitter();
+    const frontendPort = await getPort();
     startEmitter.on('hit', async () => {
-      const response = await fetch('http://localhost:3000/test/catalog');
+      const response = await fetch(
+        `http://localhost:3000/${frontendPort}/catalog`,
+      );
       const text = await response.text();
       startEmitter.emit('stop', 'SIGINT');
       expect(response.status).toBe(200);
@@ -147,7 +144,12 @@ describe('end-to-end', () => {
       entryPoint,
       ['package', 'start'],
       {
-        cwd,
+        cwd: testProjectDir,
+        env: {
+          ...process.env,
+          PORT: `${frontendPort}`,
+          BACKEND_PORT: `${await getPort()}`,
+        },
       },
       startEmitter,
       {

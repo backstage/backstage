@@ -19,11 +19,17 @@ import {
   loadConfig,
   loadConfigSchema,
 } from '@backstage/config-loader';
-import { ConfigReader } from '@backstage/config';
+import { AppConfig, ConfigReader } from '@backstage/config';
 import { paths } from './paths';
 import { isValidUrl } from './urls';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './monorepo';
+import { JsonObject } from '@backstage/types';
+
+export type CliConfigOptions = {
+  publicPath?: string;
+  backendUrl?: string;
+};
 
 type Options = {
   args: string[];
@@ -32,11 +38,36 @@ type Options = {
   withFilteredKeys?: boolean;
   withDeprecatedKeys?: boolean;
   fullVisibility?: boolean;
-  cliOptions?: {
-    publicPath?: string;
-    backendUrl?: string;
-  };
+  cliOptions?: CliConfigOptions;
 };
+
+/**
+ * Read specific parameters from the CLI and add them to the build config.
+ * @param opts CLI passed parameters.
+ * @returns Array of config, empty if there is no relevant passed in cli options.
+ *
+ * @public
+ */
+export function readCliConfig(opts?: CliConfigOptions): AppConfig[] {
+  if (!opts || Object.keys(opts).length === 0) return [];
+  const data: JsonObject = {};
+
+  if (opts.publicPath) {
+    data.app = {
+      baseUrl: opts.publicPath,
+    };
+  }
+
+  if (opts.backendUrl) {
+    data.backend = {
+      baseUrl: opts.backendUrl,
+    };
+  }
+
+  if (Object.keys(data).length === 0) return [];
+
+  return [{ data, context: 'cli' }];
+}
 
 export async function loadCliConfig(options: Options) {
   const configTargets: ConfigTarget[] = [];
@@ -76,14 +107,18 @@ export async function loadCliConfig(options: Options) {
     packagePaths: [paths.resolveTargetRoot('package.json')],
   });
 
+  const cliConfigs = readCliConfig(options.cliOptions);
+
   const { appConfigs } = await loadConfig({
     experimentalEnvFunc: options.mockEnv
       ? async name => process.env[name] || 'x'
       : undefined,
-    cliOptions: options.cliOptions,
     configRoot: paths.targetRoot,
     configTargets: configTargets,
   });
+
+  // Add the cliConfigs to the end of the appConfigs array for final overriding.
+  appConfigs.push(...cliConfigs);
 
   // printing to stderr to not clobber stdout in case the cli command
   // outputs structured data (e.g. as config:schema does)

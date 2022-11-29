@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readCliConfig } from './cli';
+import { readCliConfig } from './config';
 
 describe('readCliConfig', () => {
   it('should return empty config for empty cli', () => {

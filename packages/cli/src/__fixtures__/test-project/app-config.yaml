@@ -1,0 +1,6 @@
+app:
+  baseUrl: http://localhost:${PORT}/test
+  title: test
+
+backend:
+  baseUrl: http://localhost:${BACKEND_PORT}

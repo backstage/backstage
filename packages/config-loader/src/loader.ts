@@ -28,7 +28,6 @@ import {
   readEnvConfig,
 } from './lib';
 import fetch from 'node-fetch';
-import { CliConfigOptions, readCliConfig } from './lib/cli';
 
 /** @public */
 export type ConfigTarget = { path: string } | { url: string };
@@ -82,11 +81,6 @@ export type LoadConfigOptions = {
    * An optional configuration that enables watching of config files.
    */
   watch?: LoadConfigOptionsWatch;
-
-  /**
-   * New options from the CLI that affect the build config.
-   */
-  cliOptions?: CliConfigOptions;
 };
 
 /**
@@ -236,8 +230,6 @@ export async function loadConfig(
     }
   }
 
-  const cliConfigs = readCliConfig(options.cliOptions);
-
   const envConfigs = readEnvConfig(process.env);
 
   const watchConfigFile = (watchProp: LoadConfigOptionsWatch) => {
@@ -326,7 +318,7 @@ export async function loadConfig(
 
   return {
     appConfigs: remote
-      ? [...remoteConfigs, ...fileConfigs, ...envConfigs, ...cliConfigs]
-      : [...fileConfigs, ...envConfigs, ...cliConfigs],
+      ? [...remoteConfigs, ...fileConfigs, ...envConfigs]
+      : [...fileConfigs, ...envConfigs],
   };
 }

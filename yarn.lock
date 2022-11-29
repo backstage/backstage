@@ -3653,7 +3653,6 @@ __metadata:
     chalk: ^4.0.0
     chokidar: ^3.3.1
     commander: ^9.1.0
-    cross-fetch: ^3.1.5
     css-loader: ^6.5.1
     del: ^6.0.0
     diff: ^5.0.0
@@ -3673,6 +3672,7 @@ __metadata:
     express: ^4.17.1
     fork-ts-checker-webpack-plugin: ^7.0.0-alpha.8
     fs-extra: 10.1.0
+    get-port: ^6.1.2
     glob: ^7.1.7
     global-agent: ^3.0.0
     handlebars: ^4.7.3

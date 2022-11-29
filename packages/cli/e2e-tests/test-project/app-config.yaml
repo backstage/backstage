@@ -1,6 +1,0 @@
-app:
-  baseUrl: http://localhost:3000/test
-  title: test
-
-backend:
-  baseUrl: http://localhost:7007
