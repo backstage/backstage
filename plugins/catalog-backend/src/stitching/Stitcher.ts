@@ -22,7 +22,6 @@ import {
 } from '@backstage/catalog-model';
 import { SerializedError, stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';
-import { uniqBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import {
@@ -81,50 +80,43 @@ export class Stitcher {
     // one row (except in abnormal cases where the stitch was invoked for
     // something that didn't exist at all, in which case it's zero rows).
     // The join with the temporary incoming_references still gives one row.
-    // The only result set "expanding" join is the one with relations, so
-    // the output should be at least one row (if zero or one relations were
-    // found), or at most the same number of rows as relations.
-    const result: Array<{
-      entityId: string;
-      processedEntity?: string;
-      errors: string;
-      incomingReferenceCount: string | number;
-      previousHash?: string;
-      relationType?: string;
-      relationTarget?: string;
-    }> = await this.database
-      .with('incoming_references', function incomingReferences(builder) {
-        return builder
-          .from('refresh_state_references')
-          .where({ target_entity_ref: entityRef })
-          .count({ count: '*' });
-      })
-      .select({
-        entityId: 'refresh_state.entity_id',
-        processedEntity: 'refresh_state.processed_entity',
-        errors: 'refresh_state.errors',
-        incomingReferenceCount: 'incoming_references.count',
-        previousHash: 'final_entities.hash',
-        relationType: 'relations.type',
-        relationTarget: 'relations.target_entity_ref',
-      })
-      .from('refresh_state')
-      .where({ 'refresh_state.entity_ref': entityRef })
-      .crossJoin(this.database.raw('incoming_references'))
-      .leftOuterJoin('final_entities', {
-        'final_entities.entity_id': 'refresh_state.entity_id',
-      })
-      .leftOuterJoin('relations', {
-        'relations.source_entity_ref': 'refresh_state.entity_ref',
-      })
-      .orderBy('relationType', 'asc')
-      .orderBy('relationTarget', 'asc');
+    const [processedResult, relationsResult] = await Promise.all([
+      this.database
+        .with('incoming_references', function incomingReferences(builder) {
+          return builder
+            .from('refresh_state_references')
+            .where({ target_entity_ref: entityRef })
+            .count({ count: '*' });
+        })
+        .select({
+          entityId: 'refresh_state.entity_id',
+          processedEntity: 'refresh_state.processed_entity',
+          errors: 'refresh_state.errors',
+          incomingReferenceCount: 'incoming_references.count',
+          previousHash: 'final_entities.hash',
+        })
+        .from('refresh_state')
+        .where({ 'refresh_state.entity_ref': entityRef })
+        .crossJoin(this.database.raw('incoming_references'))
+        .leftOuterJoin('final_entities', {
+          'final_entities.entity_id': 'refresh_state.entity_id',
+        }),
+      this.database
+        .distinct({
+          relationType: 'type',
+          relationTarget: 'target_entity_ref',
+        })
+        .from('relations')
+        .where({ source_entity_ref: entityRef })
+        .orderBy('relationType', 'asc')
+        .orderBy('relationTarget', 'asc'),
+    ]);
 
     // If there were no rows returned, it would mean that there was no
     // matching row even in the refresh_state. This can happen for example
     // if we emit a relation to something that hasn't been ingested yet.
     // It's safe to ignore this stitch attempt in that case.
-    if (!result.length) {
+    if (!processedResult.length) {
       this.logger.error(
         `Unable to stitch ${entityRef}, item does not exist in refresh state table`,
       );
@@ -137,7 +129,7 @@ export class Stitcher {
       errors,
       incomingReferenceCount,
       previousHash,
-    } = result[0];
+    } = processedResult[0];
 
     // If there was no processed entity in place, the target hasn't been
     // through the processing steps yet. It's safe to ignore this stitch
@@ -177,11 +169,7 @@ export class Stitcher {
 
     // TODO: entityRef is lower case and should be uppercase in the final
     // result
-    const uniqueRelationRows = uniqBy(
-      result,
-      r => `${r.relationType}:${r.relationTarget}`,
-    );
-    entity.relations = uniqueRelationRows
+    entity.relations = relationsResult
       .filter(row => row.relationType /* exclude null row, if relevant */)
       .map<EntityRelation>(row => ({
         type: row.relationType!,

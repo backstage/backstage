@@ -21,7 +21,7 @@ import {
   CatalogProcessor,
   LocationSpec,
 } from '@backstage/plugin-catalog-backend';
-import { bundleOpenApiSpecification } from './lib';
+import { bundleFileWithRefs } from './lib';
 import { Logger } from 'winston';
 
 /**
@@ -84,7 +84,7 @@ export class OpenApiRefProcessor implements CatalogProcessor {
 
     this.logger.debug(`Bundling OpenAPI specification from ${location.target}`);
     try {
-      const bundledSpec = await bundleOpenApiSpecification(
+      const bundledSpec = await bundleFileWithRefs(
         definition.toString(),
         location.target,
         this.reader.read,

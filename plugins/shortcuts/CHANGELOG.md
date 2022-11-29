@@ -1,5 +1,17 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.3.3
 
 ### Patch Changes

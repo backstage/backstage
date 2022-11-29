@@ -30,12 +30,6 @@ import {
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
 import { NotAllowedError } from '@backstage/errors';
 
-if (!Promise.any) {
-  (async () => {
-    await import('promise-any-polyfill');
-  })();
-}
-
 export class JenkinsApiImpl {
   private static readonly lastBuildTreeSpec = `lastBuild[
                     number,

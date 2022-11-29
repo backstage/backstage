@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.0.7-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 8536e7c281: Use `app.title` from `app-config.yaml` when creating new Documentation Feedback issue. `Backstage` is the default value.
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.0.7-next.0
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/integration-react@1.1.7-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/theme@0.2.16
+
 ## 1.0.6
 
 ### Patch Changes

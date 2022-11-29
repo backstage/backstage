@@ -47,13 +47,17 @@ export const StackOverflowSearchResultListItem = (
   };
 
   return (
-    <Link to={location} noTrack onClick={handleClick}>
+    <>
       <ListItem alignItems="center">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <Box flexWrap="wrap">
           <ListItemText
             primaryTypographyProps={{ variant: 'h6' }}
-            primary={_unescape(title)}
+            primary={
+              <Link to={location} noTrack onClick={handleClick}>
+                {_unescape(title)}
+              </Link>
+            }
             secondary={`Author: ${text}`}
           />
           <Chip label={`Answer(s): ${answers}`} size="small" />
@@ -64,6 +68,6 @@ export const StackOverflowSearchResultListItem = (
         </Box>
       </ListItem>
       <Divider />
-    </Link>
+    </>
   );
 };

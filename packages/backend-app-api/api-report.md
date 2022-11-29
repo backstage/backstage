@@ -4,6 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackendLifecycle } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
@@ -65,6 +66,11 @@ export const httpRouterFactory: (
 export type HttpRouterFactoryOptions = {
   indexPlugin?: string;
 };
+
+// @public
+export const lifecycleFactory: (
+  options?: undefined,
+) => ServiceFactory<BackendLifecycle>;
 
 // @public (undocumented)
 export const loggerFactory: (options?: undefined) => ServiceFactory<Logger>;

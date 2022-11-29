@@ -31,6 +31,7 @@ import {
 } from '@backstage/test-utils';
 import { CatalogKindHeader } from './CatalogKindHeader';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import pluralize from 'pluralize';
 
 const entities: Entity[] = [
   {
@@ -96,7 +97,7 @@ describe('<CatalogKindHeader />', () => {
 
     entities.map(entity => {
       expect(
-        screen.getByRole('option', { name: `${entity.kind}s` }),
+        screen.getByRole('option', { name: `${pluralize(entity.kind)}` }),
       ).toBeInTheDocument();
     });
   });

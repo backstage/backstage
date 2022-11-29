@@ -17,7 +17,8 @@
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { Logger } from 'winston';
-import express, { Router } from 'express';
+import express from 'express';
+import Router from 'express-promise-router';
 import { VaultClient } from './vaultApi';
 import { TaskRunner, PluginTaskScheduler } from '@backstage/backend-tasks';
 import { errorHandler } from '@backstage/backend-common';

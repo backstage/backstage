@@ -28,6 +28,7 @@ import {
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 import { filterKinds, useAllKinds } from '@backstage/plugin-catalog-react/src/utils';
+import pluralize from 'pluralize';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -100,7 +101,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
     >
       {Object.keys(options).map(kind => (
         <MenuItem value={kind} key={kind}>
-          {`${options[kind]}s`}
+          {`${pluralize(options[kind])}`}
         </MenuItem>
       ))}
     </Select>

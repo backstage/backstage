@@ -37,6 +37,35 @@ export type TestPipelineResult = {
 
 /**
  * Test utility for Backstage Search collators, decorators, and indexers.
+ *
+ * @example
+ * An example test checking that a collator provides expected documents.
+ * ```
+ * it('provides expected documents', async () => {
+ *   const testSubject = await yourCollatorFactory.getCollator();
+ *   const pipeline = TestPipeline.fromCollator(testSubject);
+ *
+ *   const { documents } = await pipeline.execute();
+ *
+ *   expect(documents).toHaveLength(2);
+ * })
+ * ```
+ *
+ * @example
+ * An example test checking that a decorator behaves as expected.
+ * ```
+ * it('filters private documents', async () => {
+ *   const testSubject = await yourDecoratorFactory.getDecorator();
+ *   const pipeline = TestPipeline
+ *     .fromDecorator(testSubject)
+ *     .withDocuments([{ title: 'Private', location: '/private', text: '' }]);
+ *
+ *   const { documents } = await pipeline.execute();
+ *
+ *   expect(documents).toHaveLength(0);
+ * })
+ * ```
+ *
  * @public
  */
 export class TestPipeline {
@@ -60,6 +89,9 @@ export class TestPipeline {
 
   /**
    * Provide the collator, decorator, or indexer to be tested.
+   *
+   * @deprecated Use `fromCollator`, `fromDecorator` or `fromIndexer` static
+   *   methods to create a test pipeline instead.
    */
   static withSubject(subject: Readable | Transform | Writable) {
     if (subject instanceof Transform) {
@@ -77,6 +109,51 @@ export class TestPipeline {
     throw new Error(
       'Unknown test subject: are you passing a readable, writable, or transform stream?',
     );
+  }
+
+  /**
+   * Create a test pipeline given a collator you want to test.
+   */
+  static fromCollator(collator: Readable) {
+    return new TestPipeline({ collator });
+  }
+
+  /**
+   * Add a collator to the test pipeline.
+   */
+  withCollator(collator: Readable): this {
+    this.collator = collator;
+    return this;
+  }
+
+  /**
+   * Create a test pipeline given a decorator you want to test.
+   */
+  static fromDecorator(decorator: Transform) {
+    return new TestPipeline({ decorator });
+  }
+
+  /**
+   * Add a decorator to the test pipeline.
+   */
+  withDecorator(decorator: Transform): this {
+    this.decorator = decorator;
+    return this;
+  }
+
+  /**
+   * Create a test pipeline given an indexer you want to test.
+   */
+  static fromIndexer(indexer: Writable) {
+    return new TestPipeline({ indexer });
+  }
+
+  /**
+   * Add an indexer to the test pipeline.
+   */
+  withIndexer(indexer: Writable): this {
+    this.indexer = indexer;
+    return this;
   }
 
   /**

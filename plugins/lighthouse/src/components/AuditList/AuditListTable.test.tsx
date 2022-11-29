@@ -76,7 +76,7 @@ describe('AuditListTable', () => {
     if (!website)
       throw new Error('https://anchor.fm must be present in fixture');
     expect(
-      rendered.queryByText(formatTime(website.lastAudit.timeCreated)),
+      rendered.getByText(formatTime(website.lastAudit.timeCreated)),
     ).toBeInTheDocument();
   });
 

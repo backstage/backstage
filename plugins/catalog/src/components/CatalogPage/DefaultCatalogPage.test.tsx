@@ -23,21 +23,20 @@ import {
 } from '@backstage/catalog-model';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
-  createPlugin,
   IdentityApi,
   identityApiRef,
-  PluginProvider,
   ProfileInfo,
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   entityRouteRef,
-  starredEntitiesApiRef,
   MockStarredEntitiesApi,
+  starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import {
   mockBreakpoint,
+  MockPluginProvider,
   MockStorageApi,
   renderWithEffects,
   TestApiProvider,
@@ -135,22 +134,6 @@ describe('DefaultCatalogPage', () => {
   };
   const storageApi = MockStorageApi.create();
 
-  type TestInputPluginOptions = {
-    'key-1': string;
-  };
-
-  type TestPluginOptions = {
-    'key-1': string;
-    'key-2': string;
-  };
-
-  const plugin = createPlugin({
-    id: 'my-plugin',
-    __experimentalConfigure(_: TestInputPluginOptions): TestPluginOptions {
-      return { 'key-1': 'value-1', 'key-2': 'value-2' };
-    },
-  });
-
   const renderWrapped = (children: React.ReactNode) =>
     renderWithEffects(
       wrapInTestApp(
@@ -162,7 +145,7 @@ describe('DefaultCatalogPage', () => {
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           ]}
         >
-          <PluginProvider plugin={plugin}>{children}</PluginProvider>
+          <MockPluginProvider>{children}</MockPluginProvider>
         </TestApiProvider>,
         {
           mountedRoutes: {

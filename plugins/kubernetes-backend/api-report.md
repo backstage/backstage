@@ -22,6 +22,7 @@ import { Logger } from 'winston';
 import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
@@ -142,6 +143,9 @@ export class GoogleServiceAccountAuthTranslator
   ): Promise<GKEClusterDetails>;
 }
 
+// @alpha
+export const HEADER_KUBERNETES_CLUSTER: string;
+
 // @alpha (undocumented)
 export interface KubernetesAuthTranslator {
   // (undocumented)
@@ -188,10 +192,16 @@ export class KubernetesBuilder {
     options: KubernetesObjectsProviderOptions,
   ): KubernetesObjectsProvider;
   // (undocumented)
+  protected buildProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesProxy;
+  // (undocumented)
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
+    proxy: KubernetesProxy,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
@@ -207,7 +217,22 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ): Promise<ClusterDetails[]>;
   // (undocumented)
+  protected getClusterSupplier(): KubernetesClustersSupplier;
+  // (undocumented)
+  protected getFetcher(): KubernetesFetcher;
+  // (undocumented)
+  protected getObjectsProvider(
+    options: KubernetesObjectsProviderOptions,
+  ): KubernetesObjectsProvider;
+  // (undocumented)
   protected getObjectTypesToFetch(): ObjectToFetch[] | undefined;
+  // (undocumented)
+  protected getProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesProxy;
+  // (undocumented)
+  protected getServiceLocator(): KubernetesServiceLocator;
   // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
   // (undocumented)
@@ -219,6 +244,8 @@ export class KubernetesBuilder {
   // (undocumented)
   setObjectsProvider(objectsProvider?: KubernetesObjectsProvider): this;
   // (undocumented)
+  setProxy(proxy?: KubernetesProxy): this;
+  // (undocumented)
   setServiceLocator(serviceLocator?: KubernetesServiceLocator): this;
 }
 
@@ -228,6 +255,7 @@ export type KubernetesBuilderReturn = Promise<{
   clusterSupplier: KubernetesClustersSupplier;
   customResources: CustomResource[];
   fetcher: KubernetesFetcher;
+  proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
 }>;
@@ -321,6 +349,13 @@ export type KubernetesObjectTypes =
   | 'customresources'
   | 'statefulsets'
   | 'daemonsets';
+
+// @alpha
+export class KubernetesProxy {
+  constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
+  // (undocumented)
+  createRequestHandler(): RequestHandler;
+}
 
 // @alpha
 export interface KubernetesServiceLocator {

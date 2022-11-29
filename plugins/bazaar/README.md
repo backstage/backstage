@@ -80,13 +80,13 @@ export const homePage = (
 +       </Grid>
 
 +       <Grid item xs={12} >
-+         <BazaarOverviewCard order='random' fullWidth />
++         <BazaarOverviewCard order='random' fullWidth fullHeight />
 +       </Grid>
 
         {/* ...other homepage items */}
 ```
 
-The property `fullWidth` is optional and can be used to adjust the card to fit a grid with column width 12.
+The properties `fullHeight` and `fullWidth` are optional and can be used to adjust the cards styling.
 
 ## How does the Bazaar work?
 
@@ -106,7 +106,7 @@ To add a project to the bazaar, simply click on the `add-project` button and fil
 
 The following fields are mandatory:
 
-- name - name of the project on URL safe format
+- title - title of the project
 - description - present your idea and what skills you are looking for
 - status - whether or not the project has started
 - size - small, medium or large

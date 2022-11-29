@@ -12,6 +12,7 @@ jobs:
       needs_release: ${{ steps.release_check.outputs.needs_release }}
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [16.x, 18.x]
 
@@ -67,7 +68,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.7
+        uses: backstage/actions/yarn-install@v0.5.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -145,7 +146,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.7
+        uses: backstage/actions/yarn-install@v0.5.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

@@ -17,7 +17,7 @@
 import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CostGrowth } from './CostGrowth';
-import { Currency, CurrencyType, Duration } from '../../types';
+import { ChangeThreshold, Currency, CurrencyType, Duration } from '../../types';
 import { findAlways } from '../../utils/assert';
 import { MockConfigProvider, MockCurrencyProvider } from '../../testUtils';
 import { defaultCurrencies } from '../../utils/currency';
@@ -33,11 +33,16 @@ const MockContext = ({
   children,
   currency,
   engineerCost,
+  engineerThreshold,
 }: PropsWithChildren<{
   currency: Currency;
   engineerCost: number;
+  engineerThreshold?: number;
 }>) => (
-  <MockConfigProvider engineerCost={engineerCost}>
+  <MockConfigProvider
+    engineerCost={engineerCost}
+    engineerThreshold={engineerThreshold ?? 0.5}
+  >
     <MockCurrencyProvider currency={currency}>{children}</MockCurrencyProvider>
   </MockConfigProvider>
 );
@@ -98,6 +103,33 @@ describe.each`
   it(`formats ${carbon.unit}s correctly for ${expected}`, async () => {
     const { getByText } = await renderInTestApp(
       <MockContext engineerCost={engineerCost} currency={carbon}>
+        <CostGrowth change={{ ratio, amount }} duration={Duration.P30D} />
+      </MockContext>,
+    );
+    expect(getByText(expected)).toBeInTheDocument();
+  });
+});
+
+describe.each`
+  ratio                    | amount     | threshold   | expected
+  ${0}                     | ${0}       | ${0}        | ${'less than an engineer'}
+  ${0}                     | ${0}       | ${200}      | ${'Negligible'}
+  ${ChangeThreshold.lower} | ${0.5}     | ${0}        | ${'less than an engineer'}
+  ${ChangeThreshold.lower} | ${0.5}     | ${0.5}      | ${'Negligible'}
+  ${ChangeThreshold.upper} | ${0.5}     | ${0.000001} | ${'less than an engineer'}
+  ${ChangeThreshold.upper} | ${0.5}     | ${0.5}      | ${'Negligible'}
+  ${3}                     | ${500_000} | ${0}        | ${`300% or ~30 engineers`}
+  ${3}                     | ${500_000} | ${0.5}      | ${`300% or ~30 engineers`}
+  ${3}                     | ${500_000} | ${29}       | ${'300% or ~30 engineers'}
+  ${3}                     | ${500_000} | ${30}       | ${'Negligible'}
+`('<CostGrowth />', ({ ratio, amount, threshold, expected }) => {
+  it(`should display the correct difference the threshold is different. ratio: ${ratio} threshold:${threshold} expected:${expected}`, async () => {
+    const { getByText } = await renderInTestApp(
+      <MockContext
+        engineerCost={200_000}
+        engineerThreshold={threshold}
+        currency={engineers}
+      >
         <CostGrowth change={{ ratio, amount }} duration={Duration.P30D} />
       </MockContext>,
     );

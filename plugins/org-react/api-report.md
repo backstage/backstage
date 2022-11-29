@@ -12,6 +12,7 @@ export const GroupListPicker: (props: GroupListPickerProps) => JSX.Element;
 
 // @public
 export type GroupListPickerProps = {
+  defaultValue?: string;
   placeholder?: string;
   groupTypes?: Array<string>;
   onChange: (value: GroupEntity | undefined) => void;

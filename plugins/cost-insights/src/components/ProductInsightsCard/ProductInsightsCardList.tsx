@@ -17,7 +17,8 @@
 import React from 'react';
 import { Box, CircularProgress, Collapse } from '@material-ui/core';
 import { ProductInsightsCard } from './ProductInsightsCard';
-import { Duration, Entity, Product } from '../../types';
+import { Duration } from '../../types';
+import { Entity, Product } from '@backstage/plugin-cost-insights-common';
 import { ProductState } from '../../utils/loading';
 
 type ProductInsightsCardListProps = {

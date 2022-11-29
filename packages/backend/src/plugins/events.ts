@@ -27,14 +27,12 @@ export default async function createPlugin(
   subscribers: EventSubscriber[],
 ): Promise<Router> {
   const eventsRouter = Router();
-  const httpRouter = Router();
-  eventsRouter.use('/http', httpRouter);
 
   const http = HttpPostIngressEventPublisher.fromConfig({
     config: env.config,
     logger: env.logger,
-    router: httpRouter,
   });
+  http.bind(eventsRouter);
 
   await new EventsBackend(env.logger)
     .addPublishers(http)
