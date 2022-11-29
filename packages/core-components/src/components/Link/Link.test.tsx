@@ -21,11 +21,9 @@ import {
   TestApiProvider,
   wrapInTestApp,
 } from '@backstage/test-utils';
-import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
-import { isExternalUri, Link, useResolvedPath } from './Link';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
+import { isExternalUri, Link } from './Link';
 import { Route, Routes } from 'react-router';
-import { renderHook, WrapperComponent } from '@testing-library/react-hooks';
-import { ConfigReader } from '@backstage/config';
 
 describe('<Link />', () => {
   it('navigates using react-router', async () => {
@@ -130,47 +128,6 @@ describe('<Link />', () => {
       [false, '/path/to/something#fragment'],
     ])('should be %p when %p', (expected, uri) => {
       expect(isExternalUri(uri)).toBe(expected);
-    });
-  });
-
-  describe('useResolvedPath', () => {
-    const wrapper: WrapperComponent<{}> = ({ children }) => {
-      const configApi = new ConfigReader({
-        app: { baseUrl: 'http://localhost:3000/example' },
-      });
-      return (
-        <TestApiProvider apis={[[configApiRef, configApi]]}>
-          {children}
-        </TestApiProvider>
-      );
-    };
-
-    describe('concatenate base path', () => {
-      it('when uri is internal and does not start with base path', () => {
-        const path = '/catalog/default/component/artist-lookup';
-        const { result } = renderHook(() => useResolvedPath(path), {
-          wrapper,
-        });
-        expect(result.current).toBe('/example'.concat(path));
-      });
-    });
-
-    describe('does not concatenate base path', () => {
-      it('when uri is external', () => {
-        const path = 'https://stackoverflow.com/questions/1/example';
-        const { result } = renderHook(() => useResolvedPath(path), {
-          wrapper,
-        });
-        expect(result.current).toBe(path);
-      });
-
-      it('when uri already starts with base path', () => {
-        const path = '/example/catalog/default/component/artist-lookup';
-        const { result } = renderHook(() => useResolvedPath(path), {
-          wrapper,
-        });
-        expect(result.current).toBe(path);
-      });
     });
   });
 });
