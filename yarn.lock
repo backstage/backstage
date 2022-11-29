@@ -7462,7 +7462,7 @@ __metadata:
     "@react-hookz/web": ^19.0.0
     "@rjsf/core": ^3.2.1
     "@rjsf/core-v5": "npm:@rjsf/core@^5.0.0-beta.12"
-    "@rjsf/material-ui": ^3.2.1
+    "@rjsf/material-ui": ^4.0.0
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@^5.0.0-beta.12"
     "@rjsf/utils": ^5.0.0-beta.12
     "@rjsf/validator-ajv8": ^5.0.0-beta.12
@@ -12486,15 +12486,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/material-ui@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "@rjsf/material-ui@npm:3.2.1"
+"@rjsf/material-ui@npm:^4.0.0":
+  version: 4.2.3
+  resolution: "@rjsf/material-ui@npm:4.2.3"
   peerDependencies:
-    "@material-ui/core": ^4.2.0
-    "@material-ui/icons": ^4.2.1
-    "@rjsf/core": ^3.0.0
-    react: ">=16"
-  checksum: bd25cd9f2e2d568c653755e7268fe3e53279e1ae675e39bccd85f65557623d2052b706763e017a949f897751e25a16d0f2c8b995508bb56907be6786b09e2b1e
+    "@emotion/react": ^11.7.0
+    "@emotion/styled": ^11.6.0
+    "@material-ui/core": ^4.12.3
+    "@material-ui/icons": ^4.11.2
+    "@mui/icons-material": ^5.2.0
+    "@mui/material": ^5.2.2
+    "@rjsf/core": ^4.0.1
+    "@types/react": ^16.8.6 || ^17.0.0
+    react: ^16.8.0 || ^17.0.0
+    react-dom: ^16.8.0 || ^17.0.0
+  peerDependenciesMeta:
+    "@emotion/react":
+      optional: true
+    "@emotion/styled":
+      optional: true
+    "@material-ui/core":
+      optional: true
+    "@material-ui/icons":
+      optional: true
+    "@mui/icons-material":
+      optional: true
+    "@mui/material":
+      optional: true
+  checksum: 8c07a05145d0867157b3b9a2a219220989911327c9c6c70736a2c2c60b589b0978110f5c38a8e74d3fc6ecb4940de7605f82d49ea7fff4697fec80045e71c131
   languageName: node
   linkType: hard
 
