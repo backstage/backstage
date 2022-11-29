@@ -7460,7 +7460,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
     "@react-hookz/web": ^19.0.0
-    "@rjsf/core": ^3.2.1
+    "@rjsf/core": ^4.0.0
     "@rjsf/core-v5": "npm:@rjsf/core@^5.0.0-beta.12"
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@^5.0.0-beta.12"
@@ -12454,9 +12454,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/core@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "@rjsf/core@npm:3.2.1"
+"@rjsf/core@npm:^4.0.0":
+  version: 4.2.3
+  resolution: "@rjsf/core@npm:4.2.3"
   dependencies:
     "@types/json-schema": ^7.0.7
     ajv: ^6.7.0
@@ -12464,12 +12464,13 @@ __metadata:
     json-schema-merge-allof: ^0.6.0
     jsonpointer: ^5.0.0
     lodash: ^4.17.15
+    lodash-es: ^4.17.15
     nanoid: ^3.1.23
     prop-types: ^15.7.2
-    react-is: ^16.9.0
+    react-is: 16.9.0
   peerDependencies:
-    react: ">=16"
-  checksum: 2142d4a31229ea242b79aca4ed93e2fe89e75f15ce93111457c3017d3ab295cae8f53e4dd870c619afa571959d00f46b3c19085c6a336f522c891fc07ecc46f1
+    react: ">=16 || >=17"
+  checksum: a68a075b918e75ffd7e408a782e38a90f33f1519c238493d4be181e15e569a060c1a0ab80047851175913d231498e9af3fca814e0f563d20de97139ddec0acc0
   languageName: node
   linkType: hard
 
@@ -32645,7 +32646,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.10.2, react-is@npm:^16.12.0, react-is@npm:^16.13.1, react-is@npm:^16.7.0, react-is@npm:^16.8.0, react-is@npm:^16.8.6, react-is@npm:^16.9.0":
+"react-is@npm:16.9.0":
+  version: 16.9.0
+  resolution: "react-is@npm:16.9.0"
+  checksum: 7a137450539af42d342082b985c518c92af1664f3f8b06835398d902e33a6c4e9ab8d7897db3941fd692ef3af1ac81cfc3861b8a4f830ecbfd210a23e1e80914
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^16.10.2, react-is@npm:^16.12.0, react-is@npm:^16.13.1, react-is@npm:^16.7.0, react-is@npm:^16.8.0, react-is@npm:^16.8.6":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
