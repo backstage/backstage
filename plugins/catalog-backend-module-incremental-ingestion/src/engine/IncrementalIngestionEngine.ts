@@ -15,11 +15,7 @@
  */
 
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
-import {
-  INCREMENTAL_ENTITY_PROVIDER_ANNOTATION,
-  IterationEngine,
-  IterationEngineOptions,
-} from '../types';
+import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import type { AbortSignal } from 'node-abort-controller';
 import { performance } from 'perf_hooks';
@@ -271,8 +267,6 @@ export class IncrementalIngestionEngine implements IterationEngine {
             ...deferred.entity.metadata,
             annotations: {
               ...deferred.entity.metadata.annotations,
-              [INCREMENTAL_ENTITY_PROVIDER_ANNOTATION]:
-                this.options.provider.getProviderName(),
             },
           },
         },

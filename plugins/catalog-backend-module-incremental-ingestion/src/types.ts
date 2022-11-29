@@ -33,14 +33,6 @@ import type { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
 
 /**
- * Entity annotation containing the incremental entity provider.
- *
- * @public
- */
-export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION =
-  'backstage.io/incremental-provider-name';
-
-/**
  * Ingest entities into the catalog in bite-sized chunks.
  *
  * A Normal `EntityProvider` allows you to introduce entities into the
