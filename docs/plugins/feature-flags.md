@@ -51,6 +51,7 @@ import { FeatureFlagged } from '@backstage/core-app-api'
   <PreviousFeatureComponent />
 </FeatureFlagged>
 ```
+
 ## Evaluating Feature Flag State
 
 It is also possible to test the feature flag state using the [FeatureFlags Api](https://backstage.io/docs/reference/core-plugin-api.featureflagsapi).
