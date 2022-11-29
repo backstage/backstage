@@ -22,6 +22,7 @@ import { topPods } from '@kubernetes/client-node';
 import { MockedRequest, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import mockFs from 'mock-fs';
 
 jest.mock('@kubernetes/client-node', () => ({
   ...jest.requireActual('@kubernetes/client-node'),
@@ -478,6 +479,73 @@ describe('KubernetesFetcher', () => {
             ],
           },
         ],
+      });
+    });
+    describe('Backstage running on k8s', () => {
+      const initialHost = process.env.KUBERNETES_SERVICE_HOST;
+      const initialPort = process.env.KUBERNETES_SERVICE_PORT;
+      afterEach(() => {
+        process.env.KUBERNETES_SERVICE_HOST = initialHost;
+        process.env.KUBERNETES_SERVICE_PORT = initialPort;
+        mockFs.restore();
+      });
+      it('makes in-cluster requests when cluster details has no token', async () => {
+        process.env.KUBERNETES_SERVICE_HOST = '10.10.10.10';
+        process.env.KUBERNETES_SERVICE_PORT = '443';
+        mockFs({
+          '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt': '',
+          '/var/run/secrets/kubernetes.io/serviceaccount/token':
+            'allowed-token',
+        });
+        worker.use(
+          rest.get('https://10.10.10.10/api/v1/pods', (req, res, ctx) =>
+            req.headers.get('Authorization') === 'Bearer allowed-token'
+              ? res(
+                  ctx.json({
+                    items: [
+                      { metadata: { name: 'pod-name', labels: labels(req) } },
+                    ],
+                  }),
+                )
+              : res(ctx.status(403)),
+          ),
+        );
+
+        const result = await sut.fetchObjectsForService({
+          serviceId: 'some-service',
+          clusterDetails: {
+            name: 'overridden-to-in-cluster',
+            url: 'http://ignored',
+            authProvider: 'serviceAccount',
+          },
+          objectTypesToFetch: new Set<ObjectToFetch>([
+            {
+              group: '',
+              apiVersion: 'v1',
+              plural: 'pods',
+              objectType: 'pods',
+            },
+          ]),
+          labelSelector: '',
+          customResources: [],
+        });
+
+        expect(result).toStrictEqual({
+          errors: [],
+          responses: [
+            {
+              type: 'pods',
+              resources: [
+                {
+                  metadata: {
+                    name: 'pod-name',
+                    labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  },
+                },
+              ],
+            },
+          ],
+        });
       });
     });
   });
