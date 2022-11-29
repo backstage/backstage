@@ -1,5 +1,20 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.29-next.1
+
+### Patch Changes
+
+- cfe2b98fbe: Remove unnecessary dependency promise-any-polyfill
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-jenkins-common@0.1.11-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
 ## 0.1.29-next.0
 
 ### Patch Changes

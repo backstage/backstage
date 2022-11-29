@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-node
 
+## 1.4.3-next.1
+
+### Patch Changes
+
+- 0a61aab172: Bump dependency @azure/identity to next minor
+- 37931c33ce: Upgrade to AWS SDK for Javascript v3
+
+  Techdocs support for AWS S3 now requires defining the AWS region to connect to.
+  If `techdocs.publisher.awsS3.region` is missing from the config, the AWS environment variable `AWS_REGION` will be used.
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
 ## 1.4.3-next.0
 
 ### Patch Changes

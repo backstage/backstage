@@ -1,5 +1,22 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.1-next.1
+
+### Patch Changes
+
+- d379b6f070: Internal refactor to avoid usage of deprecated symbols
+- f97c7fd1f7: added an optional config entry `costInsights.engineerThreshold` to allow users to control the threshold value for the 'negligible' change in costs.
+- a5ecdb99f0: Making a possibility to hide a trending line in a cost insights plugin
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/test-utils@1.2.3-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/plugin-catalog-react@1.2.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.12.1-next.0
 
 ### Patch Changes

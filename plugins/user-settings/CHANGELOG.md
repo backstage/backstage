@@ -1,5 +1,18 @@
 # @backstage/plugin-user-settings
 
+## 0.6.0-next.1
+
+### Patch Changes
+
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.2.1-next.1
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+
 ## 0.6.0-next.0
 
 ### Minor Changes
