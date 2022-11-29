@@ -30,10 +30,6 @@ export type EntityIteratorResult<T> =
       cursor?: T;
     };
 
-// @public
-export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION =
-  'backstage.io/incremental-provider-name';
-
 // @public (undocumented)
 export class IncrementalCatalogBuilder {
   // (undocumented)
