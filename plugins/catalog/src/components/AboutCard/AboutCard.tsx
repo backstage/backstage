@@ -139,8 +139,15 @@ export function AboutCard(props: AboutCardProps) {
   const allowRefresh =
     entityLocation?.startsWith('url:') || entityLocation?.startsWith('file:');
   const refreshEntity = useCallback(async () => {
-    await catalogApi.refreshEntity(stringifyEntityRef(entity));
-    alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
+    try {
+      await catalogApi.refreshEntity(stringifyEntityRef(entity));
+      alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
+    } catch (e) {
+      alertApi.post({
+        message: `Failed to schedule refresh: ${e.message}`,
+        severity: 'error',
+      });
+    }
   }, [catalogApi, alertApi, entity]);
 
   return (
