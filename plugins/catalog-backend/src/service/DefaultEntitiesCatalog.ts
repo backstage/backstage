@@ -404,7 +404,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       const dbQuery = db<DbSearchRow>('search')
         .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
         .where('search.key', facet.toLocaleLowerCase('en-US'))
-        .count('search.entity_id as count')
+        .count('search.entity_id', { as: 'count' })
         .select({ value: 'search.original_value' })
         .groupBy('search.original_value');
 
