@@ -23,6 +23,7 @@ If you have a private stack overflow instance you will need to supply an API key
 stackoverflow:
   baseUrl: https://api.stackexchange.com/2.2 # alternative: your internal stack overflow instance
   apiKey: $STACK_OVERFLOW_API_KEY
+  apiAccessToken: $STACK_OVERFLOW_API_ACCESS_TOKEN
 ```
 
 ## Areas of Responsibility
