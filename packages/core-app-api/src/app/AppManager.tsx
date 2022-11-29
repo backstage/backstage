@@ -332,6 +332,7 @@ export class AppManager implements BackstageApp {
                 routeParents={routing.parents}
                 routeObjects={routing.objects}
                 routeBindings={routeBindings}
+                basePath={getBasePath(loadedConfig.api)}
               >
                 <InternalAppContext.Provider
                   value={{ routeObjects: routing.objects }}
@@ -416,7 +417,7 @@ export class AppManager implements BackstageApp {
         }
 
         return (
-          <RouterComponent basename={basePath}>
+          <RouterComponent>
             <RouteTracker routeObjects={routeObjects} />
             {children}
           </RouterComponent>
@@ -437,7 +438,7 @@ export class AppManager implements BackstageApp {
       }
 
       return (
-        <RouterComponent basename={basePath}>
+        <RouterComponent>
           <RouteTracker routeObjects={routeObjects} />
           <SignInPageWrapper component={SignInPageComponent}>
             <>{children}</>

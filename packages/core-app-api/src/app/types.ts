@@ -60,10 +60,6 @@ export type ErrorBoundaryFallbackProps = {
   resetError: () => void;
 };
 
-export type RouterProps = {
-  basename: string;
-};
-
 /**
  * A set of replaceable core components that are part of every Backstage app.
  *
