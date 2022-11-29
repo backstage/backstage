@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-incremental-ingestion': minor
+'@backstage/plugin-catalog-backend-module-incremental-ingestion': patch
 ---
 
 Make incremental providers more resilient to failures
