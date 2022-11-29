@@ -61,10 +61,10 @@ type expandableNavigationLocalStorage = {
  */
 export const ExpandableNavigationAddon = () => {
   const defaultValue = { expandAllNestedNavs: false };
-  const [expanded, setExpanded] =
+  const { value: expanded, set: setExpanded } =
     useLocalStorageValue<expandableNavigationLocalStorage>(
       EXPANDABLE_NAVIGATION_LOCAL_STORAGE,
-      defaultValue,
+      { defaultValue },
     );
   const [hasNavSubLevels, setHasNavSubLevels] = useState<boolean>(false);
 
