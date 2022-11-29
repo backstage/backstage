@@ -8,7 +8,7 @@ description: An example of Kubernetes plugin endpoint responses when integrated 
 
 This permission framework integration with the kubernetes plugin assumes you have already done the following:
 
-- Ensure that your backstage app has enabled the permission framework. See the "[getting started](./getting-started.md)" permission documentation for Backstage integrators.
+- Ensure that your backstage app has enabled the permission framework. See the "[getting started](../../permissions/getting-started.md)" permission documentation for Backstage integrators.
 - Ensure that you have a kubernetes resource in the cluster you are using. Our current implementation recognizes the types of resources shown below:
 
 ```
@@ -40,7 +40,7 @@ that should correspond to the label you provide your kubernetes resource when cr
 
 ## How do the endpoints work prior to the permission framework integration?
 
-By default, Backstage endpoints are not protected, and all actions are available to anyone. The same is true for the Kubernetes plugin endpoints provided you have properly configured the cluster locator stanza in your [app-config](../../app-config.yaml). By default if a user attempts to make a call to any of the following endpoints:
+By default, Backstage endpoints are not protected, and all actions are available to anyone. The same is true for the Kubernetes plugin endpoints provided you have properly configured the cluster locator stanza in your [app-config](https://github.com/backstage/backstage/blob/master/app-config.yaml). By default if a user attempts to make a call to any of the following endpoints:
 
 - api/kubernetes/resources/workloads/query
 - api/kubernetes/resources/custom/query
