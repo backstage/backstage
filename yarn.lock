@@ -33,14 +33,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/explorer@npm:^1.1.1":
-  version: 1.2.0
-  resolution: "@apollo/explorer@npm:1.2.0"
+"@apollo/explorer@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "@apollo/explorer@npm:2.0.1"
   dependencies:
     "@types/whatwg-mimetype": ^3.0.0
     graphql-ws: ^5.9.0
     subscriptions-transport-ws: ^0.11.0
     whatwg-mimetype: ^3.0.0
+    zen-observable-ts: ^1.1.0
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -52,7 +53,7 @@ __metadata:
       optional: true
     use-deep-compare-effect:
       optional: true
-  checksum: 67cf0b5e8a23abb71ad1e68266529b8e8e1ce66652208c9942c554f21148364fd49afa5e619ecfddf611dd19067aa81ab8b2e828944122dfdc81e79a27ccf37c
+  checksum: 3da2176882098fcda8f0188985c621b3291cfd11398a0f183276bb92494423cd8d196ba1546ec74449621d220eff20c859698171c6978ce208f7d5599bb200c4
   languageName: node
   linkType: hard
 
@@ -4481,7 +4482,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-apollo-explorer@workspace:plugins/apollo-explorer"
   dependencies:
-    "@apollo/explorer": ^1.1.1
+    "@apollo/explorer": ^2.0.0
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
@@ -38729,17 +38730,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"zen-observable-ts@npm:^1.1.0":
+  version: 1.2.5
+  resolution: "zen-observable-ts@npm:1.2.5"
+  dependencies:
+    zen-observable: 0.8.15
+  checksum: 3b707b7a0239a9bc40f73ba71b27733a689a957c1f364fabb9fa9cbd7d04b7c2faf0d517bf17004e3ed3f4330ac613e84c0d32313e450ddaa046f3350af44541
+  languageName: node
+  linkType: hard
+
+"zen-observable@npm:0.8.15, zen-observable@npm:^0.8.15":
+  version: 0.8.15
+  resolution: "zen-observable@npm:0.8.15"
+  checksum: b7289084bc1fc74a559b7259faa23d3214b14b538a8843d2b001a35e27147833f4107590b1b44bf5bc7f6dfe6f488660d3a3725f268e09b3925b3476153b7821
+  languageName: node
+  linkType: hard
+
 "zen-observable@npm:^0.10.0":
   version: 0.10.0
   resolution: "zen-observable@npm:0.10.0"
   checksum: cee4e8902fcf4ed49f96937e9bc30b980ad3311b85e94b836c77f787163c98f19c65d2d8ac80990e8ecf4c1497d84821d58580d5ee20015f55516de146e8b7af
-  languageName: node
-  linkType: hard
-
-"zen-observable@npm:^0.8.15":
-  version: 0.8.15
-  resolution: "zen-observable@npm:0.8.15"
-  checksum: b7289084bc1fc74a559b7259faa23d3214b14b538a8843d2b001a35e27147833f4107590b1b44bf5bc7f6dfe6f488660d3a3725f268e09b3925b3476153b7821
   languageName: node
   linkType: hard
 
