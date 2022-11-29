@@ -15,10 +15,20 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
+import MTable, {
+  Column,
+  Icons,
+  MaterialTableProps,
+  MTableBody,
+  MTableHeader,
+  MTableToolbar,
+  Options,
+} from '@material-table/core';
+
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
@@ -34,15 +44,6 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { isEqual, transform } from 'lodash';
-import MTable, {
-  Column,
-  Icons,
-  MaterialTableProps,
-  MTableBody,
-  MTableHeader,
-  MTableToolbar,
-  Options,
-} from '@material-table/core';
 import React, {
   forwardRef,
   MutableRefObject,
@@ -51,6 +52,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { Select } from '../Select';
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 
@@ -151,6 +153,32 @@ const useFilterStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageTableFiltersContainer' },
 );
 
+const useSelectToolbarStyles = makeStyles<BackstageTheme>(
+  () => ({
+    root: {
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      flexDirection: 'row-reverse',
+      justifyContent: 'space-between',
+      paddingRight: 8,
+    },
+    title: {
+      fontWeight: 'bold',
+      fontSize: 18,
+      whiteSpace: 'nowrap',
+    },
+    selectContainer: {
+      minWidth: 200,
+      marginBottom: 8,
+    },
+    tableToolbarContainer: {
+      flex: 1,
+    },
+  }),
+  { name: 'BackstageSelectToolbar' },
+);
+
 export type TableClassKey = 'root';
 
 const useTableStyles = makeStyles<BackstageTheme>(
@@ -237,6 +265,7 @@ export interface TableProps<T extends object = {}>
   initialState?: TableState;
   emptyContent?: ReactNode;
   onStateChange?: (state: TableState) => any;
+  selectProps?: SelectProps;
 }
 
 export function TableToolbar(toolbarProps: {
@@ -246,6 +275,7 @@ export function TableToolbar(toolbarProps: {
   toggleFilters: () => void;
   hasFilters: boolean;
   selectedFiltersLength: number;
+  selectProps?: SelectProps;
 }) {
   const {
     toolbarRef,
@@ -253,6 +283,7 @@ export function TableToolbar(toolbarProps: {
     hasFilters,
     selectedFiltersLength,
     toggleFilters,
+    selectProps,
   } = toolbarProps;
   const filtersClasses = useFilterStyles();
   const onSearchChanged = useCallback(
@@ -262,6 +293,8 @@ export function TableToolbar(toolbarProps: {
     },
     [toolbarProps, setSearch],
   );
+
+  const selectToolbarStyles = useSelectToolbarStyles();
 
   if (hasFilters) {
     return (
@@ -282,6 +315,22 @@ export function TableToolbar(toolbarProps: {
       </div>
     );
   }
+
+  if (selectProps)
+    return (
+      <div className={selectToolbarStyles.root}>
+        <div className={selectToolbarStyles.selectContainer}>
+          <Select {...toolbarProps.selectProps} />
+        </div>
+        <div className={selectToolbarStyles.tableToolbarContainer}>
+          <StyledMTableToolbar
+            {...toolbarProps}
+            ref={toolbarRef}
+            onSearchChanged={onSearchChanged}
+          />
+        </div>
+      </div>
+    );
 
   return (
     <StyledMTableToolbar
@@ -307,6 +356,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     emptyContent,
     onStateChange,
     components,
+    selectProps,
     ...restProps
   } = props;
   const tableClasses = useTableStyles();
@@ -458,10 +508,11 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
           selectedFiltersLength={selectedFiltersLength}
           toggleFilters={toggleFilters}
           {...toolbarProps}
+          selectProps={selectProps}
         />
       );
     },
-    [toggleFilters, hasFilters, selectedFiltersLength, setSearch],
+    [toggleFilters, hasFilters, selectedFiltersLength, setSearch, selectProps],
   );
 
   const hasNoRows = typeof data !== 'function' && data.length === 0;
