@@ -1,6 +1,5 @@
 abc
 accessors
-ACLs
 addon
 addons
 ADRs
@@ -19,14 +18,12 @@ automations
 autoscaling
 Autoscaling
 autoselect
-authProvider
 Avro
 backend's
 backported
 backporting
 Bigtable
 Billett
-birth_date
 bitbucket
 Bitrise
 Blackbox
@@ -48,7 +45,6 @@ cli
 cloudbuild
 Cloudflare
 Cloudformation
-clusterName
 cncf
 Cobertura
 codeblocks
@@ -69,9 +65,6 @@ configs
 const
 cookiecutter
 Corti
-createApp
-createPlugin
-createTheme
 cron
 cronjobs
 crontab
@@ -115,7 +108,6 @@ etag
 Expedia
 facto
 failover
-family_name
 Fargate
 Figma
 firehydrant
@@ -142,7 +134,6 @@ graphviz
 Hackathons
 haproxy
 hardcoded
-headerLinks
 Helidon
 Heroku
 hoc
@@ -166,6 +157,7 @@ JaCoCo
 JavaScript
 jenkins
 Jira
+JWTs
 jq
 js
 json
@@ -263,15 +255,12 @@ Platformize
 Podman
 postgres
 postpack
-postTransfomers
 pre
 prebaked
 preconfigured
 prepack
 Preprarer
 productional
-projectId
-projectKey
 Protobuf
 proxying
 Proxying
@@ -345,7 +334,6 @@ subheader
 subheaders
 subkey
 subroutes
-subscription_id
 subtree
 superfences
 Superfences
@@ -364,7 +352,6 @@ templater
 Templater
 templaters
 Templaters
-TFRecord
 theia
 thumbsup
 todo
@@ -382,7 +369,6 @@ transpiled
 transpiler
 transpilers
 truthy
-TSDoc
 typeahead
 ui
 unbreak
@@ -394,10 +380,7 @@ unregistration
 untracked
 upsert
 upvote
-URI
-URI's
 URIs
-url
 URLs
 utils
 Valentina
