@@ -3989,7 +3989,7 @@ __metadata:
     qs: ^6.9.4
     rc-progress: 3.4.1
     react-helmet: 6.1.0
-    react-hook-form: ^7.12.2
+    react-hook-form: ^7.13.0
     react-markdown: ^8.0.0
     react-sparklines: ^1.7.0
     react-syntax-highlighter: ^15.4.5
@@ -5363,7 +5363,7 @@ __metadata:
     js-base64: ^3.6.0
     lodash: ^4.17.21
     msw: ^0.49.0
-    react-hook-form: ^7.12.2
+    react-hook-form: ^7.13.0
     react-use: ^17.2.4
     yaml: ^2.0.0
   peerDependencies:
@@ -7701,7 +7701,7 @@ __metadata:
     "@types/zen-observable": ^0.8.2
     cross-fetch: ^3.1.5
     msw: ^0.49.0
-    react-hook-form: ^7.12.2
+    react-hook-form: ^7.13.0
     react-use: ^17.2.4
     uuid: ^8.3.2
     zen-observable: ^0.9.0
@@ -32504,11 +32504,11 @@ __metadata:
   linkType: hard
 
 "react-hook-form@npm:^7.12.2, react-hook-form@npm:^7.13.0":
-  version: 7.32.2
-  resolution: "react-hook-form@npm:7.32.2"
+  version: 7.39.7
+  resolution: "react-hook-form@npm:7.39.7"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
-  checksum: abe8ba146c313d206f99a01260457bc72af03b2c73d7bd4be5af11598140ec45ef1ef37bac64b80c4dbc298d6aa21af4caa259a133f305a04ddf583faa18e7d0
+  checksum: b748e19ef768f8a42aeb9069234f3a7303038b9e16c143f48001edccc4ea92be6ca642c48d6efdbdf936ea4eed1b8da5ce8dd8529aeacca238d00e292e206126
   languageName: node
   linkType: hard
 
