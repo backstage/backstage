@@ -424,6 +424,40 @@ describe('KubernetesFetcher', () => {
         },
       );
     });
+    it('fails on a network error', async () => {
+      worker.use(
+        rest.get('http://badurl.does.not.exist/api/v1/pods', (_, res) =>
+          res.networkError('getaddrinfo ENOTFOUND badurl.does.not.exist'),
+        ),
+        rest.get(
+          'http://badurl.does.not.exist/api/v1/services',
+          (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'service-name' } }],
+              }),
+            ),
+        ),
+      );
+
+      const result = sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://badurl.does.not.exist',
+          serviceAccountToken: 'token',
+          authProvider: 'serviceAccount',
+        },
+        objectTypesToFetch: OBJECTS_TO_FETCH,
+        labelSelector: '',
+        customResources: [],
+      });
+
+      await expect(result).rejects.toThrow(
+        'getaddrinfo ENOTFOUND badurl.does.not.exist',
+      );
+    });
     it('should respect labelSelector', async () => {
       worker.use(
         rest.get('http://localhost:9999/api/v1/pods', (req, res, ctx) =>
