@@ -31,6 +31,7 @@ import StorefrontIcon from '@material-ui/icons/Storefront';
 
 /** @public */
 export type BazaarOverviewCardProps = {
+  title?: string;
   order: 'latest' | 'random';
   fullWidth?: boolean;
   fullHeight?: boolean;
@@ -51,10 +52,13 @@ const getUnlinkedCatalogEntities = (
 
 /** @public */
 export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
-  const { order, fullWidth = false, fullHeight = false } = props;
+  const { title, order, fullWidth = false, fullHeight = false } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const root = useRouteRef(bazaarPlugin.routes.root);
+
+  const defaultTitle =
+    order === 'latest' ? 'Bazaar Latest Projects' : 'Bazaar Random Projects';
 
   const bazaarLink = {
     title: 'Go to Bazaar',
@@ -127,9 +131,7 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
 
   return (
     <InfoCard
-      title={
-        order === 'latest' ? 'Bazaar Latest Projects' : 'Bazaar Random Projects'
-      }
+      title={title ?? defaultTitle}
       action={
         <IconButton>
           <Link to={bazaarLink.link} title={bazaarLink.title}>
