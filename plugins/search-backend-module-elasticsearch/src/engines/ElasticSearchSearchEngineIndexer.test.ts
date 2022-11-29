@@ -176,6 +176,26 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     expect(deleteSpy).toHaveBeenCalled();
   });
 
+  it('handles when no documents are received', async () => {
+    await TestPipeline.fromIndexer(indexer).withDocuments([]).execute();
+
+    // Older indices should have been queried for.
+    expect(catSpy).toHaveBeenCalled();
+
+    // A new index should have been created.
+    const createdIndex = createSpy.mock.calls[0][0].path.slice(1);
+    expect(createdIndex).toContain('some-type-index__');
+
+    // No documents should have been sent
+    expect(bulkSpy).not.toHaveBeenCalled();
+
+    // Alias should not have been rotated.
+    expect(aliasesSpy).not.toHaveBeenCalled();
+
+    // Old index should not be cleaned up.
+    expect(deleteSpy).not.toHaveBeenCalled();
+  });
+
   it('handles bulk and batching during indexing', async () => {
     const documents = range(550).map(i => ({
       title: `Hello World ${i}`,
