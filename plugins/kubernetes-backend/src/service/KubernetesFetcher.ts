@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { topPods } from '@kubernetes/client-node';
+import {
+  Cluster,
+  KubeConfig,
+  User,
+  bufferFromFileOrString,
+  topPods,
+} from '@kubernetes/client-node';
 import lodash, { Dictionary } from 'lodash';
 import { Logger } from 'winston';
 import {
@@ -32,6 +38,9 @@ import {
   PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
+import fetch, { Headers, RequestInit } from 'node-fetch';
+import * as https from 'https';
+import fs from 'fs-extra';
 
 export interface KubernetesClientBasedFetcherOptions {
   kubernetesClientProvider: KubernetesClientProvider;
@@ -149,50 +158,82 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     labelSelector: string,
     objectType: KubernetesObjectTypes,
     namespace?: string,
-  ): Promise<FetchResponse> {
-    const customObjects =
-      this.kubernetesClientProvider.getCustomObjectsClient(clusterDetails);
-
-    customObjects.addInterceptor((requestOptions: any) => {
-      requestOptions.uri = requestOptions.uri.replace('/apis//v1/', '/api/v1/');
-    });
-
+  ): Promise<FetchResult> {
+    const { group, apiVersion, plural } = resource;
+    const encode = (s: string) => encodeURIComponent(s);
+    let resourcePath = group
+      ? `/apis/${encode(group)}/${encode(apiVersion)}`
+      : `/api/${encode(apiVersion)}`;
     if (namespace) {
-      return customObjects
-        .listNamespacedCustomObject(
-          resource.group,
-          resource.apiVersion,
-          namespace,
-          resource.plural,
-          '',
-          false,
-          '',
-          '',
-          labelSelector,
-        )
-        .then(r => {
+      resourcePath += `/namespaces/${encode(namespace)}`;
+    }
+    resourcePath += `/${encode(plural)}`;
+
+    const headers: Headers = new Headers({
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    });
+    const fetchOptions: RequestInit = {
+      method: 'GET',
+    };
+    let token: Buffer | string;
+    let url: URL;
+    if (clusterDetails.serviceAccountToken) {
+      url = new URL(`${clusterDetails.url}${resourcePath}`);
+
+      if (url.protocol === 'https:') {
+        fetchOptions.agent = new https.Agent({
+          ca:
+            bufferFromFileOrString(
+              clusterDetails.caFile,
+              clusterDetails.caData,
+            ) ?? undefined,
+          rejectUnauthorized: !clusterDetails.skipTLSVerify,
+        });
+      }
+
+      token = clusterDetails.serviceAccountToken;
+    } else {
+      const kc = new KubeConfig();
+      kc.loadFromCluster();
+      // loadFromCluster never fails (unless an exception is thrown) and is
+      // guaranteed to populate the cluster/user/context correctly
+      const cluster = kc.getCurrentCluster() as Cluster;
+      const user = kc.getCurrentUser() as User;
+      url = new URL(`${cluster.server}${resourcePath}`);
+
+      if (url.protocol === 'https:') {
+        fetchOptions.agent = new https.Agent({
+          ca: fs.readFileSync(cluster.caFile as string),
+        });
+      }
+
+      token = fs.readFileSync(user.authProvider.config.tokenFile);
+    }
+
+    headers.set('Authorization', `Bearer ${token}`);
+    fetchOptions.headers = headers;
+    url.search = `labelSelector=${labelSelector}`;
+
+    return fetch(url.toString(), fetchOptions).then(r => {
+      return r.json().then(j => {
+        if (r.ok) {
           return {
             type: objectType,
-            resources: (r.body as any).items,
+            resources: j.items,
           };
-        });
-    }
-    return customObjects
-      .listClusterCustomObject(
-        resource.group,
-        resource.apiVersion,
-        resource.plural,
-        '',
-        false,
-        '',
-        '',
-        labelSelector,
-      )
-      .then(r => {
+        }
+        this.logger.warn(
+          `statusCode=${
+            r.status
+          } for resource ${resourcePath} body=[${JSON.stringify(j)}]`,
+        );
         return {
-          type: objectType,
-          resources: (r.body as any).items,
+          errorType: statusCodeToErrorType(r.status),
+          statusCode: r.status,
+          resourcePath,
         };
       });
+    });
   }
 }
