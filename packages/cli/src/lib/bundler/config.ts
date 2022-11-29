@@ -36,12 +36,10 @@ import { runPlain } from '../run';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import pickBy from 'lodash/pickBy';
 
-const NO_OP_URL = 'http://test-site-asdf.org';
-
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
   try {
-    return new URL(baseUrl, NO_OP_URL);
+    return new URL(baseUrl);
   } catch (error) {
     throw new Error(`Invalid app.baseUrl, ${error}`);
   }
@@ -90,7 +88,7 @@ export async function createConfig(
   const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
-  const validBaseUrl = new URL(baseUrl, NO_OP_URL);
+  const validBaseUrl = new URL(baseUrl);
   const publicPath = validBaseUrl.pathname.replace(/\/$/, '');
   if (checksEnabled) {
     plugins.push(
