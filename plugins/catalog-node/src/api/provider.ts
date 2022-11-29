@@ -17,16 +17,26 @@
 import { DeferredEntity } from '../processing';
 
 /**
- * @public
  * A 'full' mutation replaces all existing entities created by this entity provider with new ones.
  * A 'delta' mutation can both add and remove entities provided by this provider. Previously provided
  * entities from a 'full' mutation are not removed.
+ *
+ * @public
  */
 export type EntityProviderMutation =
-  | { type: 'full'; entities: DeferredEntity[] }
-  | { type: 'delta'; added: DeferredEntity[]; removed: DeferredEntity[] };
+  | {
+      type: 'full';
+      entities: DeferredEntity[];
+    }
+  | {
+      type: 'delta';
+      added: DeferredEntity[];
+      removed: (DeferredEntity | { entityRef: string; locationKey?: string })[];
+    };
 
 /**
+ * The options given to an entity refresh operation.
+ *
  * @public
  */
 export type EntityProviderRefreshOptions = {
@@ -34,30 +44,38 @@ export type EntityProviderRefreshOptions = {
 };
 
 /**
- * The EntityProviderConnection is the connection between the catalog and the entity provider.
- * The EntityProvider use this connection to add and remove entities from the catalog.
+ * The connection between the catalog and the entity provider.
+ * Entity providers use this connection to add and remove entities from the catalog.
+ *
  * @public
  */
 export interface EntityProviderConnection {
   /**
-   * Applies either a full or delta update to the catalog engine.
+   * Applies either a full or a delta update to the catalog engine.
    */
   applyMutation(mutation: EntityProviderMutation): Promise<void>;
 
   /**
-   * Schedules a refresh on all of the entities that has a matching refresh key associated with the provided keys.
+   * Schedules a refresh on all of the entities that have a matching refresh key associated with the provided keys.
    */
   refresh(options: EntityProviderRefreshOptions): Promise<void>;
 }
 
 /**
- * An EntityProvider is able to provide entities to the catalog.
+ * An entity provider is able to provide entities to the catalog.
  * See https://backstage.io/docs/features/software-catalog/life-of-an-entity for more details.
+ *
  * @public
  */
 export interface EntityProvider {
-  /** Unique provider name used internally for caching. */
+  /**
+   * The name of the provider, which must be unique for all providers that are
+   * active in a catalog, and stable over time since emitted entities are
+   * related to the provider by this name.
+   */
   getProviderName(): string;
-  /** Connect is called upon initialization by the catalog engine. */
+  /**
+   * Called upon initialization by the catalog engine.
+   */
   connect(connection: EntityProviderConnection): Promise<void>;
 }
