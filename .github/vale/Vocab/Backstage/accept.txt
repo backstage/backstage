@@ -32,7 +32,6 @@ boolean
 Brex
 builtins
 callout
-CDNs
 Chai
 changeset
 changesets
@@ -157,7 +156,6 @@ JaCoCo
 JavaScript
 jenkins
 Jira
-JWTs
 jq
 js
 json
@@ -167,7 +165,6 @@ JWTs
 Kaewkasi
 Keyv
 Knex
-KPIs
 kubectl
 kubernetes
 kubernetes
@@ -397,7 +394,6 @@ widget's
 winston
 www
 WWW
-XCMetrics
 XML
 xyz
 yaml

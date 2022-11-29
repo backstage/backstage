@@ -116,7 +116,7 @@ function getBasePath(configApi: Config) {
 function readBasePath(configApi: ConfigApi) {
   let { pathname } = new URL(
     configApi.getOptionalString('app.baseUrl') ?? '/',
-    document.location.origin, // baseUrl can be specified as just a path
+    'http://dummy.dev', // baseUrl can be specified as just a path
   );
   pathname = pathname.replace(/\/*$/, '');
   return pathname;
