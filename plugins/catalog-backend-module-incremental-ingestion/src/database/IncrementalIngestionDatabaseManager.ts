@@ -16,10 +16,9 @@
 
 import { Knex } from 'knex';
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { Duration } from 'luxon';
 import { v4 } from 'uuid';
-import { INCREMENTAL_ENTITY_PROVIDER_ANNOTATION } from '../types';
 import {
   IngestionRecord,
   IngestionRecordUpdate,
@@ -120,15 +119,10 @@ export class IncrementalIngestionDatabaseManager {
    */
   async getPreviousIngestionRecord(provider: string) {
     return await this.client.transaction(async tx => {
-      const record = await tx<IngestionRecord>('ingestions')
+      return await tx<IngestionRecord>('ingestions')
         .where('provider_name', provider)
         .andWhereNot('completion_ticket', 'open')
         .first();
-      if (!record) {
-        // This is the first time this entity provider has run. Return the current record.
-        return await this.getCurrentIngestionRecord(provider);
-      }
-      return record;
     });
   }
 
@@ -304,15 +298,12 @@ export class IncrementalIngestionDatabaseManager {
    * @param ingestionId - string
    * @returns All entities to remove for this burst.
    */
-  async computeRemoved(provider: string, ingestionId: string) {
-    const previousIngestion = (await this.getPreviousIngestionRecord(
-      provider,
-    )) as IngestionRecord;
+  async computeRemoved(provider: string) {
+    const previousIngestion = await this.getPreviousIngestionRecord(provider);
     return await this.client.transaction(async tx => {
-      let total = 0;
-      if (previousIngestion.id !== ingestionId) {
-        const rows = await tx('ingestion_mark_entities')
-          .count({ total: '*' })
+      if (previousIngestion) {
+        const rows: { ref: string }[] = await tx('ingestion_mark_entities')
+          .select('ingestion_mark_entities.ref')
           .join(
             'ingestion_marks',
             'ingestion_marks.id',
@@ -321,43 +312,23 @@ export class IncrementalIngestionDatabaseManager {
           .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
           .where('ingestions.id', previousIngestion.id);
 
-        total = rows.reduce((acc, cur) => acc + (cur.total as number), 0);
+        const removed: DeferredEntity[] = rows.map(e => {
+          const parsed = parseEntityRef(e.ref);
+          const entity = {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: parsed.kind,
+            metadata: {
+              name: parsed.name,
+              namespace: parsed.namespace,
+            },
+          };
+          return { entity };
+        });
+        const total = rows.length ?? 0;
+        return { removed, total };
       }
-      const removed: { entity: string; ref: string }[] = await tx(
-        'final_entities',
-      )
-        .select(
-          tx.ref('final_entity').as('entity'),
-          tx.ref('refresh_state.entity_ref').as('ref'),
-        )
-        .join(
-          'refresh_state',
-          'refresh_state.entity_id',
-          'final_entities.entity_id',
-        )
-        .join('search', 'search.entity_id', 'final_entities.entity_id')
-        .whereNotIn(
-          'entity_ref',
-          tx('ingestion_marks')
-            .join(
-              'ingestion_mark_entities',
-              'ingestion_marks.id',
-              'ingestion_mark_entities.ingestion_mark_id',
-            )
-            .select('ingestion_mark_entities.ref')
-            .where('ingestion_marks.ingestion_id', ingestionId),
-        )
-        .andWhere(
-          'search.key',
-          `metadata.annotations.${INCREMENTAL_ENTITY_PROVIDER_ANNOTATION}`,
-        )
-        .andWhere('search.value', provider);
-      return {
-        total,
-        removed: removed.map(entity => {
-          return { entity: JSON.parse(entity.entity) };
-        }),
-      };
+
+      return { removed: [], total: 0 };
     });
   }
 
@@ -585,12 +556,26 @@ export class IncrementalIngestionDatabaseManager {
    * @param entities - DeferredEntity[]
    */
   async createMarkEntities(markId: string, entities: DeferredEntity[]) {
+    const refs = entities.map(e => stringifyEntityRef(e.entity));
+
     await this.client.transaction(async tx => {
+      const existingRefs = (
+        await tx<{ ref: string }>('ingestion_mark_entities')
+          .select('ref')
+          .whereIn('ref', refs)
+      ).map(e => e.ref);
+
+      const newRefs = refs.filter(e => !existingRefs.includes(e));
+
+      await tx('ingestion_mark_entities')
+        .update('ingestion_mark_id', markId)
+        .whereIn('ref', existingRefs);
+
       await tx('ingestion_mark_entities').insert(
-        entities.map(entity => ({
+        newRefs.map(ref => ({
           id: v4(),
           ingestion_mark_id: markId,
-          ref: stringifyEntityRef(entity.entity),
+          ref,
         })),
       );
     });

@@ -286,9 +286,8 @@ export class IncrementalIngestionEngine implements IterationEngine {
       );
       const result = await this.manager.computeRemoved(
         this.options.provider.getProviderName(),
-        id,
       );
-      const total = result.total + added.length;
+      const { total } = result;
       const percentRemoved =
         total > 0 ? (result.removed.length / total) * 100 : 0;
       if (percentRemoved <= REMOVAL_THRESHOLD) {
