@@ -24,7 +24,13 @@ const anyEnv = (process.env = { ...process.env }) as any;
 describe('DevAppBuilder', () => {
   it('should be able to render a component in a dev app', async () => {
     anyEnv.APP_CONFIG = [
-      { context: 'test', data: { app: { title: 'Test App' } } },
+      {
+        context: 'test',
+        data: {
+          app: { title: 'Test App', baseUrl: 'http://localhost:3000' },
+          backend: { baseUrl: 'http://localhost:7007' },
+        },
+      },
     ];
 
     const MyComponent = () => {
