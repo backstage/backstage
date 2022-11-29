@@ -45,5 +45,7 @@ export function readCliConfig(opts?: CliConfigOptions): AppConfig[] {
     };
   }
 
+  if (Object.keys(data).length === 0) return [];
+
   return [{ data, context: 'cli' }];
 }

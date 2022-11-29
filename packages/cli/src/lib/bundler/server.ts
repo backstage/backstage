@@ -62,7 +62,7 @@ export async function serveBundle(options: ServeOptions) {
         disableDotRule: true,
 
         // The index needs to be rewritten relative to the new public path, including subroutes.
-        index: config.output?.publicPath ?? '/index.html',
+        index: `${config.output?.publicPath}index.html`,
       },
       https:
         url.protocol === 'https:'

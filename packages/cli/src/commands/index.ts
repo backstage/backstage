@@ -135,6 +135,14 @@ export function registerScriptCommand(program: Command) {
       'If bundle stats are available, write them to the output directory. Applies to app packages only.',
     )
     .option(
+      '--public-path <path>',
+      'Public path for hosting the website on, can be relative.',
+    )
+    .option(
+      '--backend-url <url>',
+      'Backend url, expects just the origin or sub-route. Do not include /api. Can be relative.',
+    )
+    .option(
       '--config <path>',
       'Config files to load instead of app-config.yaml. Applies to app packages only.',
       (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),

@@ -29,6 +29,7 @@ export async function command(opts: OptionValues): Promise<void> {
       targetDir: paths.targetDir,
       configPaths: opts.config as string[],
       writeStats: Boolean(opts.stats),
+      cliOptions: opts,
     });
   }
   if (role === 'backend') {
