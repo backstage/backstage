@@ -22,11 +22,7 @@ import {
 } from '@backstage/backend-tasks';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  Entity,
-  LocationEntity,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, LocationEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
   EntityProviderConnection,
@@ -458,7 +454,6 @@ describe('BitbucketCloudEntityProvider', () => {
           items: [keptModule, removedModule],
         };
       },
-      refreshEntity: jest.fn(),
     };
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
       catalogApi: catalogApi as any as CatalogApi,
@@ -557,11 +552,12 @@ describe('BitbucketCloudEntityProvider', () => {
       },
     ];
 
-    expect(catalogApi.refreshEntity).toHaveBeenCalledTimes(1);
-    expect(catalogApi.refreshEntity).toHaveBeenCalledWith(
-      stringifyEntityRef(keptModule),
-      { token: 'fake-token' },
-    );
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+      keys: [
+        'url:https://bitbucket.org/test-ws/test-repo/src/main/kept-module/catalog-custom.yaml',
+      ],
+    });
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'delta',
