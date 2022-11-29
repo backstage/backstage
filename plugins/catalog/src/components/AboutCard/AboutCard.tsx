@@ -26,7 +26,12 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  errorApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
@@ -90,6 +95,7 @@ export function AboutCard(props: AboutCardProps) {
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
+  const errorApi = useApi(errorApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
 
   const entitySourceLocation = getEntitySourceLocation(
@@ -143,12 +149,9 @@ export function AboutCard(props: AboutCardProps) {
       await catalogApi.refreshEntity(stringifyEntityRef(entity));
       alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
     } catch (e) {
-      alertApi.post({
-        message: `Failed to schedule refresh: ${e.message}`,
-        severity: 'error',
-      });
+      errorApi.post(e);
     }
-  }, [catalogApi, alertApi, entity]);
+  }, [catalogApi, alertApi, errorApi, entity]);
 
   return (
     <Card className={cardClass}>
