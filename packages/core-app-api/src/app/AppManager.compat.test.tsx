@@ -81,7 +81,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
         configLoader: async () => [
           {
             context: 'test',
-            data: { app: { baseUrl: 'http://localhost/foo' } },
+            data: {
+              app: { baseUrl: 'http://localhost/foo' },
+              backend: { baseUrl: 'http://localhost' },
+            },
           },
         ],
         bindRoutes: () => {},

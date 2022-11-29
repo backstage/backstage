@@ -62,7 +62,10 @@ describe('AppManager', () => {
       configLoader: async () => [
         {
           context: 'test',
-          data: { app: { baseUrl: 'http://localhost/foo' } },
+          data: {
+            app: { baseUrl: 'http://localhost/foo' },
+            backend: { baseUrl: 'http://localhost' },
+          },
         },
       ],
     });
@@ -94,7 +97,10 @@ describe('AppManager', () => {
       configLoader: async () => [
         {
           context: 'test',
-          data: { app: { baseUrl: 'http://localhost/foo' } },
+          data: {
+            app: { baseUrl: 'http://localhost/foo' },
+            backend: { baseUrl: 'http://localhost' },
+          },
         },
       ],
     });
