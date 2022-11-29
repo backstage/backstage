@@ -35,6 +35,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   private store: DatabaseStore;
   private type: string;
   private tx: Knex.Transaction | undefined;
+  private numRecords = 0;
 
   constructor(options: PgSearchEngineIndexerOptions) {
     super({ batchSize: options.batchSize });
@@ -56,6 +57,8 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   }
 
   async index(documents: IndexableDocument[]): Promise<void> {
+    this.numRecords += documents.length;
+
     try {
       await this.store.insertDocuments(this.tx!, this.type, documents);
     } catch (e) {
@@ -67,6 +70,17 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   }
 
   async finalize(): Promise<void> {
+    // If no documents were indexed, rollback the transaction, log a warning,
+    // and do not continue. This ensures that collators that return empty sets
+    // of documents do not cause the index to be deleted.
+    if (this.numRecords === 0) {
+      this.logger.warn(
+        `Index for ${this.type} was not replaced: indexer received 0 documents`,
+      );
+      this.tx!.rollback!();
+      return;
+    }
+
     // Attempt to complete and commit the transaction.
     try {
       await this.store.completeInsert(this.tx!, this.type);
