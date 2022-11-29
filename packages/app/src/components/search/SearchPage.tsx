@@ -41,6 +41,8 @@ import {
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
 import React from 'react';
+import { ToolSearchResultListItem } from '@backstage/plugin-explore';
+import BuildIcon from '@material-ui/icons/Build';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
@@ -149,6 +151,16 @@ const SearchPage = () => {
                         return (
                           <TechDocsSearchResultListItem
                             icon={<DocsIcon />}
+                            key={document.location}
+                            result={document}
+                            highlight={highlight}
+                            rank={rank}
+                          />
+                        );
+                      case 'tools':
+                        return (
+                          <ToolSearchResultListItem
+                            icon={<BuildIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}

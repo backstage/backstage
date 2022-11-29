@@ -32,7 +32,8 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-explore-common": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

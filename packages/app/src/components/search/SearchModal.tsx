@@ -25,6 +25,7 @@ import {
   Paper,
   useTheme,
 } from '@material-ui/core';
+import BuildIcon from '@material-ui/icons/Build';
 import LaunchIcon from '@material-ui/icons/Launch';
 import {
   CatalogIcon,
@@ -38,6 +39,7 @@ import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { ToolSearchResultListItem } from '@backstage/plugin-explore';
 import { searchPlugin, SearchType } from '@backstage/plugin-search';
 import {
   DefaultResultListItem,
@@ -109,6 +111,10 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                 {
                   value: 'techdocs',
                   name: 'Documentation',
+                },
+                {
+                  value: 'tools',
+                  name: 'Tools',
                 },
               ]}
             />
@@ -202,6 +208,17 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                         resultItem = (
                           <TechDocsSearchResultListItem
                             icon={<DocsIcon />}
+                            key={document.location}
+                            result={document}
+                            highlight={highlight}
+                            rank={rank}
+                          />
+                        );
+                        break;
+                      case 'tools':
+                        resultItem = (
+                          <ToolSearchResultListItem
+                            icon={<BuildIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}

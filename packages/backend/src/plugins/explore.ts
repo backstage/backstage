@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin for building an exploration page of your software ecosystem
- *
- * @packageDocumentation
- */
+import {
+  createRouter,
+  exampleTools,
+  StaticExploreToolProvider,
+} from '@backstage/plugin-explore-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
-export * from './api';
-export * from './components';
-export * from './extensions';
-export { explorePlugin, explorePlugin as plugin } from './plugin';
-export * from './routes';
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    toolProvider: StaticExploreToolProvider.fromData(exampleTools),
+  });
+}
