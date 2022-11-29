@@ -154,46 +154,53 @@ function useConfigLoader(
     };
   }
 
-  let configReader = ConfigReader.fromConfigs(config.value ?? []);
-
-  const resolveRelativeUrl = (relativeUrl: string) =>
-    new URL(relativeUrl, document.location.origin).href;
-
-  const getRelativeUrl = (fullUrl: string) => {
-    const url = new URL(fullUrl);
-    return fullUrl.replace(url.origin, '');
-  };
+  let configReader;
 
   /**
-   * We only want to override the URLs with the document origin when the URLs match
-   *  and are defined. We use getOptionalString here to not throw when the app.baseUrl
-   *  and backend.baseUrl are not defined. If they are defined but not well formatted URLs
-   *  the above getRelativeUrl() method will throw.
+   * config.value can be undefined or empty. If it's either, don't bother overriding anything.
    */
-  if (
-    configReader.getOptionalString('app.baseUrl') &&
-    configReader.getOptionalString('backend.baseUrl') &&
-    configReader.getOptionalString('app.baseUrl') ===
-      configReader.getOptionalString('backend.baseUrl')
-  ) {
-    config.value?.push({
-      data: {
-        app: {
-          baseUrl: resolveRelativeUrl(
-            getRelativeUrl(configReader.getString('app.baseUrl')),
-          ),
-        },
-        backend: {
-          baseUrl: resolveRelativeUrl(
-            getRelativeUrl(configReader.getString('backend.baseUrl')),
-          ),
-        },
-      },
-      context: 'relative-resolver',
-    });
-  }
+  if (config.value?.length) {
+    configReader = ConfigReader.fromConfigs(config.value);
 
-  configReader = ConfigReader.fromConfigs(config.value ?? []);
+    const resolveRelativeUrl = (relativeUrl: string) =>
+      new URL(relativeUrl, document.location.origin).href;
+
+    const getRelativeUrl = (fullUrl: string) => {
+      const url = new URL(fullUrl);
+      return fullUrl.replace(url.origin, '');
+    };
+
+    const getOrigin = (url: string) => new URL(url).origin;
+
+    const appBaseUrl = configReader.getString('app.baseUrl');
+    const backendBaseUrl = configReader.getString('backend.baseUrl');
+    const appOrigin = getOrigin(appBaseUrl);
+    const backendOrigin = getOrigin(backendBaseUrl);
+
+    /**
+     * We only want to override the URLs with the document origin when the URLs match
+     *  and are defined. We use getOptionalString here to not throw when the app.baseUrl
+     *  and backend.baseUrl are not defined. If they are defined but not well formatted URLs
+     *  the above getRelativeUrl() method will throw.
+     */
+    if (appOrigin === backendOrigin) {
+      config.value.push({
+        data: {
+          app: {
+            baseUrl: resolveRelativeUrl(getRelativeUrl(appBaseUrl)),
+          },
+          backend: {
+            baseUrl: resolveRelativeUrl(getRelativeUrl(backendBaseUrl)),
+          },
+        },
+        context: 'relative-resolver',
+      });
+    }
+
+    configReader = ConfigReader.fromConfigs(config.value);
+  } else {
+    configReader = ConfigReader.fromConfigs([]);
+  }
 
   return { api: configReader };
 }
