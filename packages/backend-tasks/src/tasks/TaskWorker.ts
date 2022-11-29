@@ -18,7 +18,6 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
-import { AbortSignal } from 'node-abort-controller';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';

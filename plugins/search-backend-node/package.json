@@ -33,7 +33,6 @@
     "lodash": "^4.17.21",
     "lunr": "^2.3.9",
     "ndjson": "^2.0.0",
-    "node-abort-controller": "^3.0.1",
     "uuid": "^8.3.2",
     "winston": "^3.2.1"
   },

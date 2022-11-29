@@ -17,7 +17,6 @@
 import { ConflictError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { DateTime, Duration } from 'luxon';
-import { AbortController, AbortSignal } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { TaskFunction, TaskSettingsV2 } from './types';
 import { delegateAbortController, sleep } from './util';
