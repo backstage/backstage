@@ -25,10 +25,9 @@ import {
 } from '@material-ui/core';
 import {
   EntityKindFilter,
-  filterKinds,
-  useAllKinds,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
+import { filterKinds, useAllKinds } from '@backstage/plugin-catalog-react/src/utils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

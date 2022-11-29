@@ -20,7 +20,6 @@ import { catalogApiRef } from '../api';
 
 /**
  * Fetch and return all availible kinds.
- * @internal
  */
 export function useAllKinds(): {
   loading: boolean;
@@ -45,8 +44,6 @@ export function useAllKinds(): {
 
 /**
  * Filter and capitalize accessible kinds.
- *
- * @internal
  */
 export function filterKinds(
   allKinds: string[],

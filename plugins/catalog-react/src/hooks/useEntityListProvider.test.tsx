@@ -166,7 +166,7 @@ describe('<EntityListProvider />', () => {
         location: `/catalog?${query}`,
       },
     });
-    await waitFor(() => !!result.current.queryParameters);
+    await act(() => waitFor(() => !!result.current.queryParameters));
     expect(result.current.queryParameters).toEqual({
       kind: 'component',
       type: 'service',
