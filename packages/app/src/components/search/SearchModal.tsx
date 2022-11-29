@@ -80,13 +80,29 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
   const { focusContent } = useContent();
   const { transitions } = useTheme();
 
-  const handleResultClick = () => {
-    toggleModal();
+  const isOpenNewTabOrWindow = (
+    event: React.MouseEvent | React.KeyboardEvent,
+  ): boolean =>
+    // open new tab (linux or windows)
+    event.ctrlKey === true ||
+    // open new wab (macos)
+    event.metaKey === true ||
+    // open new window
+    event.shiftKey === true ||
+    // open new tab (middle/wheel click)
+    ('button' in event ? event.button === 1 : false);
+
+  const handleResultClick = (
+    event: React.MouseEvent | React.KeyboardEvent,
+  ): void => {
+    if (!isOpenNewTabOrWindow(event)) {
+      toggleModal();
+    }
     setTimeout(focusContent, transitions.duration.leavingScreen);
   };
 
-  const handleKeyPress = () => {
-    handleResultClick();
+  const handleKeyPress = (event: React.KeyboardEvent): void => {
+    handleResultClick(event);
   };
 
   return (
@@ -163,13 +179,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
             >
               <Grid item>
                 <Link
-                  onClick={() => {
-                    toggleModal();
-                    setTimeout(
-                      focusContent,
-                      transitions.duration.leavingScreen,
-                    );
-                  }}
+                  onClick={handleResultClick}
                   to={`${getSearchLink()}?query=${term}`}
                 >
                   <span className={classes.viewResultsLink}>

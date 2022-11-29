@@ -39,6 +39,7 @@ import {
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
+import { isOpenNewTabOrWindow } from '../util';
 
 /**
  * @public
@@ -100,13 +101,17 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
   const { focusContent } = useContent();
   const { transitions } = useTheme();
 
-  const handleResultClick = () => {
-    toggleModal();
+  const handleResultClick = (
+    event: React.MouseEvent | React.KeyboardEvent,
+  ): void => {
+    if (!isOpenNewTabOrWindow(event)) {
+      toggleModal();
+    }
     setTimeout(focusContent, transitions.duration.leavingScreen);
   };
 
-  const handleKeyPress = () => {
-    handleResultClick();
+  const handleKeyPress = (event: React.KeyboardEvent): void => {
+    handleResultClick(event);
   };
 
   return (
@@ -125,10 +130,7 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
         >
           <Grid item>
             <Link
-              onClick={() => {
-                toggleModal();
-                setTimeout(focusContent, transitions.duration.leavingScreen);
-              }}
+              onClick={handleResultClick}
               to={`${getSearchLink()}?query=${term}`}
             >
               <span className={classes.viewResultsLink}>View Full Results</span>
