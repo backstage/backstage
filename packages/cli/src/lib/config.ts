@@ -32,6 +32,10 @@ type Options = {
   withFilteredKeys?: boolean;
   withDeprecatedKeys?: boolean;
   fullVisibility?: boolean;
+  cliOptions?: {
+    publicPath?: string;
+    backendUrl?: string;
+  };
 };
 
 export async function loadCliConfig(options: Options) {
@@ -76,6 +80,7 @@ export async function loadCliConfig(options: Options) {
     experimentalEnvFunc: options.mockEnv
       ? async name => process.env[name] || 'x'
       : undefined,
+    cliOptions: options.cliOptions,
     configRoot: paths.targetRoot,
     configTargets: configTargets,
   });

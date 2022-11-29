@@ -19,15 +19,17 @@ import { resolve as resolvePath } from 'path';
 import { buildBundle } from '../../lib/bundler';
 import { getEnvironmentParallelism } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
+import { CliConfigOptions } from '@backstage/config-loader/src/lib/cli';
 
 interface BuildAppOptions {
   targetDir: string;
   writeStats: boolean;
+  cliOptions?: CliConfigOptions;
   configPaths: string[];
 }
 
 export async function buildFrontend(options: BuildAppOptions) {
-  const { targetDir, writeStats, configPaths } = options;
+  const { targetDir, writeStats, configPaths, cliOptions } = options;
   const { name } = await fs.readJson(resolvePath(targetDir, 'package.json'));
   await buildBundle({
     targetDir,
@@ -37,6 +39,7 @@ export async function buildFrontend(options: BuildAppOptions) {
     ...(await loadCliConfig({
       args: configPaths,
       fromPackage: name,
+      cliOptions,
     })),
   });
 }

@@ -116,7 +116,7 @@ function getBasePath(configApi: Config) {
 function readBasePath(configApi: ConfigApi) {
   let { pathname } = new URL(
     configApi.getOptionalString('app.baseUrl') ?? '/',
-    'http://dummy.dev', // baseUrl can be specified as just a path
+    document.location.origin, // baseUrl can be specified as just a path
   );
   pathname = pathname.replace(/\/*$/, '');
   return pathname;
@@ -332,7 +332,6 @@ export class AppManager implements BackstageApp {
                 routeParents={routing.parents}
                 routeObjects={routing.objects}
                 routeBindings={routeBindings}
-                basePath={getBasePath(loadedConfig.api)}
               >
                 <InternalAppContext.Provider
                   value={{ routeObjects: routing.objects }}
@@ -426,7 +425,7 @@ export class AppManager implements BackstageApp {
 
       if (isReactRouterBeta()) {
         return (
-          <RouterComponent>
+          <RouterComponent basename={basePath}>
             <RouteTracker routeObjects={routeObjects} />
             <SignInPageWrapper component={SignInPageComponent}>
               <Routes>
