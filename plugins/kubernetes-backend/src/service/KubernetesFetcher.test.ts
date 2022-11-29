@@ -18,7 +18,6 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { ObjectToFetch } from '../types/types';
-import { topPods } from '@kubernetes/client-node';
 import {
   MockedRequest,
   RestContext,
@@ -29,11 +28,6 @@ import {
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import mockFs from 'mock-fs';
-
-jest.mock('@kubernetes/client-node', () => ({
-  ...jest.requireActual('@kubernetes/client-node'),
-  topPods: jest.fn(),
-}));
 
 const OBJECTS_TO_FETCH = new Set<ObjectToFetch>([
   {
@@ -50,67 +44,69 @@ const OBJECTS_TO_FETCH = new Set<ObjectToFetch>([
   },
 ]);
 
-const POD_METRICS_FIXTURE = {
-  containers: [],
-  cpu: {
-    currentUsage: 100,
-    limitTotal: 102,
-    requestTotal: 101,
+const POD_METRICS_FIXTURE = [
+  {
+    type: 'podstatus',
+    resources: [
+      {
+        CPU: { CurrentUsage: 0, LimitTotal: 1, RequestTotal: 0.5 },
+        Memory: {
+          CurrentUsage: 0,
+          LimitTotal: 1000000000n,
+          RequestTotal: 512000000n,
+        },
+      },
+    ],
   },
-  memory: {
-    currentUsage: '1000',
-    limitTotal: '1002',
-    requestTotal: '1001',
-  },
-  pod: {},
-};
+];
 
 describe('KubernetesFetcher', () => {
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
+
+  const labels = (req: MockedRequest): object => {
+    const selectorParam = req.url.searchParams.get('labelSelector');
+    if (selectorParam) {
+      const [key, value] = selectorParam.split('=');
+      return { [key]: value };
+    }
+    return {};
+  };
+  const checkToken = (
+    req: MockedRequest,
+    ctx: RestContext,
+    token: string,
+  ): ResponseTransformer => {
+    switch (req.headers.get('Authorization')) {
+      case `Bearer ${token}`:
+        return ctx.status(200);
+      default:
+        return compose(
+          ctx.status(401),
+          ctx.json({
+            kind: 'Status',
+            apiVersion: 'v1',
+            code: 401,
+          }),
+        );
+    }
+  };
+  const withLabels = <T extends { items: { metadata: object }[] }>(
+    req: MockedRequest,
+    ctx: RestContext,
+    body: T,
+  ): ResponseTransformer =>
+    ctx.json({
+      ...body,
+      items: body.items.map(item => ({
+        ...item,
+        metadata: { ...item.metadata, labels: labels(req) },
+      })),
+    });
+
   describe('fetchObjectsForService', () => {
     let sut: KubernetesClientBasedFetcher;
     const logger = getVoidLogger();
-    const worker = setupServer();
-    setupRequestMockHandlers(worker);
-
-    const labels = (req: MockedRequest): object => {
-      const selectorParam = req.url.searchParams.get('labelSelector');
-      if (selectorParam) {
-        const [key, value] = selectorParam.split('=');
-        return { [key]: value };
-      }
-      return {};
-    };
-    const checkToken = (
-      req: MockedRequest,
-      ctx: RestContext,
-      token: string,
-    ): ResponseTransformer => {
-      switch (req.headers.get('Authorization')) {
-        case `Bearer ${token}`:
-          return ctx.status(200);
-        default:
-          return compose(
-            ctx.status(401),
-            ctx.json({
-              kind: 'Status',
-              apiVersion: 'v1',
-              code: 401,
-            }),
-          );
-      }
-    };
-    const withLabels = (
-      req: MockedRequest,
-      ctx: RestContext,
-      body: { items: { metadata: object }[] },
-    ): ResponseTransformer =>
-      ctx.json({
-        ...body,
-        items: body.items.map(item => ({
-          ...item,
-          metadata: { ...item.metadata, labels: labels(req) },
-        })),
-      });
 
     const testErrorResponse = async (
       errorResponse: any,
@@ -611,9 +607,7 @@ describe('KubernetesFetcher', () => {
             res(
               checkToken(req, ctx, 'allowed-token'),
               withLabels(req, ctx, {
-                items: [
-                  { metadata: { name: 'pod-name', labels: labels(req) } },
-                ],
+                items: [{ metadata: { name: 'pod-name' } }],
               }),
             ),
           ),
@@ -659,25 +653,63 @@ describe('KubernetesFetcher', () => {
   });
 
   describe('fetchPodMetricsByNamespaces', () => {
-    let kubernetesClientProvider: any;
     let sut: KubernetesClientBasedFetcher;
 
     beforeEach(() => {
-      jest.resetAllMocks();
-
-      kubernetesClientProvider = {
-        getMetricsClient: jest.fn(),
-        getCoreClientByClusterDetails: jest.fn(),
-      };
-
       sut = new KubernetesClientBasedFetcher({
-        kubernetesClientProvider,
+        kubernetesClientProvider: new KubernetesClientProvider(),
         logger: getVoidLogger(),
       });
     });
 
     it('should return pod metrics', async () => {
-      (topPods as jest.Mock).mockResolvedValue(POD_METRICS_FIXTURE);
+      worker.use(
+        rest.get(
+          'http://localhost:9999/api/v1/namespaces/:namespace/pods',
+          (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [
+                  {
+                    metadata: { name: 'pod-name' },
+                    spec: {
+                      containers: [
+                        {
+                          name: 'container-name',
+                          resources: {
+                            requests: { cpu: '500m', memory: '512M' },
+                            limits: { cpu: '1000m', memory: '1G' },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              }),
+            ),
+        ),
+        rest.get(
+          'http://localhost:9999/apis/metrics.k8s.io/v1beta1/namespaces/:namespace/pods',
+          (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [
+                  {
+                    metadata: { name: 'pod-name' },
+                    containers: [
+                      {
+                        name: 'container-name',
+                        usage: { cpu: '0', memory: '0' },
+                      },
+                    ],
+                  },
+                ],
+              }),
+            ),
+        ),
+      );
 
       const result = await sut.fetchPodMetricsByNamespaces(
         {
@@ -686,36 +718,85 @@ describe('KubernetesFetcher', () => {
           serviceAccountToken: 'token',
           authProvider: 'serviceAccount',
         },
-        new Set(['ns-a', 'ns-b']),
+        new Set(['ns-a']),
       );
-      expect(result).toStrictEqual({
+      expect(result).toMatchObject({
         errors: [],
-        responses: [
-          {
-            type: 'podstatus',
-            resources: POD_METRICS_FIXTURE,
-          },
-          {
-            type: 'podstatus',
-            resources: POD_METRICS_FIXTURE,
-          },
-        ],
+        responses: POD_METRICS_FIXTURE,
       });
     });
     it('should return pod metrics and error', async () => {
-      const topPodsMock = topPods as jest.Mock;
-      topPodsMock
-        .mockResolvedValueOnce(POD_METRICS_FIXTURE)
-        .mockRejectedValueOnce({
-          response: {
-            statusCode: 404,
-            request: {
-              uri: {
-                pathname: '/some/path',
-              },
-            },
-          },
-        });
+      worker.use(
+        rest.get(
+          'http://localhost:9999/api/v1/namespaces/ns-a/pods',
+          (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [
+                  {
+                    metadata: { name: 'pod-name' },
+                    spec: {
+                      containers: [
+                        {
+                          name: 'container-name',
+                          resources: {
+                            requests: { cpu: '500m', memory: '512M' },
+                            limits: { cpu: '1000m', memory: '1G' },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              }),
+            ),
+        ),
+        rest.get(
+          'http://localhost:9999/apis/metrics.k8s.io/v1beta1/namespaces/ns-a/pods',
+          (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [
+                  {
+                    metadata: { name: 'pod-name' },
+                    containers: [
+                      {
+                        name: 'container-name',
+                        usage: { cpu: '0', memory: '0' },
+                      },
+                    ],
+                  },
+                ],
+              }),
+            ),
+        ),
+        rest.get(
+          'http://localhost:9999/api/v1/namespaces/ns-b/pods',
+          (_, res, ctx) =>
+            res(
+              ctx.status(404),
+              ctx.json({
+                kind: 'Status',
+                apiVersion: 'v1',
+                code: 404,
+              }),
+            ),
+        ),
+        rest.get(
+          'http://localhost:9999/apis/metrics.k8s.io/v1beta1/namespaces/ns-b/pods',
+          (_, res, ctx) =>
+            res(
+              ctx.status(404),
+              ctx.json({
+                kind: 'Status',
+                apiVersion: 'v1',
+                code: 404,
+              }),
+            ),
+        ),
+      );
 
       const result = await sut.fetchPodMetricsByNamespaces(
         {
@@ -726,21 +807,15 @@ describe('KubernetesFetcher', () => {
         },
         new Set(['ns-a', 'ns-b']),
       );
-      expect(result).toStrictEqual({
-        errors: [
-          {
-            errorType: 'NOT_FOUND',
-            resourcePath: '/some/path',
-            statusCode: 404,
-          },
-        ],
-        responses: [
-          {
-            type: 'podstatus',
-            resources: POD_METRICS_FIXTURE,
-          },
-        ],
-      });
+
+      expect(result.errors).toStrictEqual([
+        {
+          errorType: 'NOT_FOUND',
+          resourcePath: '/apis/metrics.k8s.io/v1beta1/namespaces/ns-b/pods',
+          statusCode: 404,
+        },
+      ]);
+      expect(result.responses).toMatchObject(POD_METRICS_FIXTURE);
     });
   });
 });
