@@ -87,7 +87,9 @@ export class StackOverflowQuestionsCollatorFactory
     options: StackOverflowQuestionsCollatorFactoryOptions,
   ) {
     const apiKey = config.getOptionalString('stackoverflow.apiKey');
-    const apiAccessToken = config.getOptionalString('stackoverflow.apiAccessToken');
+    const apiAccessToken = config.getOptionalString(
+      'stackoverflow.apiAccessToken',
+    );
     const baseUrl =
       config.getOptionalString('stackoverflow.baseUrl') ||
       'https://api.stackexchange.com/2.2';
@@ -143,11 +145,13 @@ export class StackOverflowQuestionsCollatorFactory
       }
       const res = await fetch(
         `${this.baseUrl}/questions${params}${apiKeyParam}&page=${page}`,
-        this.apiAccessToken ? {
-          headers: {
-            'X-API-Access-Token': this.apiAccessToken,
-          },
-        } : undefined,
+        this.apiAccessToken
+          ? {
+              headers: {
+                'X-API-Access-Token': this.apiAccessToken,
+              },
+            }
+          : undefined,
       );
 
       const data = await res.json();
