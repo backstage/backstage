@@ -231,7 +231,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
         },
         restrictedImports: [
           {
-            // Importing the entire MUI icons packages kills build performance as the list of icons is huge.
+            // Importing the entire MUI icons packages impedes build performance as the list of icons is huge.
             name: '@material-ui/icons',
             message: "Please import '@material-ui/icons/<Icon>' instead.",
           },

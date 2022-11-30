@@ -29,7 +29,7 @@ We started by creating a fork from React Native’s open source project, applyin
 
 The Backstage Upgrade Helper tool enables adopters to easily upgrade their Backstage app by using the power of git to create a diff between different versions.
 
-Whenever a new version of Backstage is released, the Helper scaffolds a new dummy Backstage app using the `backstage-create-app` cli utility and checks all the generated files in a specific git branch. After the branch is generated, it gets compared with all the existing ones, which results in generating specific git patches stored in specific files. By selecting the version of the current Backstage release together with the version you want to upgrade to, the UI knows which patch file needs to be picked up.
+Whenever a new version of Backstage is released, the Helper scaffolds a new sample Backstage app using the `backstage-create-app` cli utility and checks all the generated files in a specific git branch. After the branch is generated, it gets compared with all the existing ones, which results in generating specific git patches stored in specific files. By selecting the version of the current Backstage release together with the version you want to upgrade to, the UI knows which patch file needs to be picked up.
 
 So, now you can update your Backstage application in three steps rather than manually reading the changelogs of all the Backstage modules in reverse order.
 

@@ -912,7 +912,7 @@
 
 ### Patch Changes
 
-- 5aa4ceea6: Make sure to provide dummy routes for all external routes of plugins given to DevApp
+- 5aa4ceea6: Make sure to provide sample routes for all external routes of plugins given to DevApp
 - Updated dependencies [3a58084b6]
 - Updated dependencies [e799e74d4]
 - Updated dependencies [dc12852c9]
