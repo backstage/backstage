@@ -38784,11 +38784,11 @@ __metadata:
   linkType: hard
 
 "zod-to-json-schema@npm:^3.18.1":
-  version: 3.19.1
-  resolution: "zod-to-json-schema@npm:3.19.1"
+  version: 3.19.2
+  resolution: "zod-to-json-schema@npm:3.19.2"
   peerDependencies:
     zod: ^3.19.0
-  checksum: 22c07668e3c28c9d7c9bd3ad04a354ea017b6fc8b4df77ed29d11e42c4c03181612319db374932a1f8b5c37ef861157938dced9d848cad5281ee1540a156995c
+  checksum: 3bcc6cbdaa30e78502a12ae04fdd8e57e42715afb9bb8dd2cb249fa9fe4bc7857580cac6bbfa3d4d9375fdfeb946661763a3e6365fd60cac962daacaf4b61554
   languageName: node
   linkType: hard
 
