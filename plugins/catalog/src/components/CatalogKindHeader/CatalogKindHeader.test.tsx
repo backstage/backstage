@@ -169,7 +169,7 @@ describe('<CatalogKindHeader />', () => {
     await waitFor(() =>
       expect(updateFilters).toHaveBeenLastCalledWith({
         kind: new EntityKindFilter('template'),
-      })
+      }),
     );
   });
 
