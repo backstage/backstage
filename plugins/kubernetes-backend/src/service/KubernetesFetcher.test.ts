@@ -16,7 +16,6 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { ObjectToFetch } from '../types/types';
 import {
   MockedRequest,
@@ -167,7 +166,6 @@ describe('KubernetesFetcher', () => {
 
     beforeEach(() => {
       sut = new KubernetesClientBasedFetcher({
-        kubernetesClientProvider: new KubernetesClientProvider(),
         logger,
       });
     });
@@ -827,7 +825,6 @@ describe('KubernetesFetcher', () => {
 
     beforeEach(() => {
       sut = new KubernetesClientBasedFetcher({
-        kubernetesClientProvider: new KubernetesClientProvider(),
         logger: getVoidLogger(),
       });
     });
