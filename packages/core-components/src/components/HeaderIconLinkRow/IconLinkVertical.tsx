@@ -82,7 +82,11 @@ export function IconLinkVertical({
     return (
       <Box title={title} className={classnames(classes.link, classes.disabled)}>
         {icon}
-        <Typography variant="body2" component="span" className={classes.label}>
+        <Typography
+          variant="caption"
+          component="span"
+          className={classes.label}
+        >
           {label}
         </Typography>
       </Box>
@@ -97,7 +101,7 @@ export function IconLinkVertical({
       onClick={onClick}
     >
       {icon}
-      <Typography variant="body2" component="span" className={classes.label}>
+      <Typography variant="caption" component="span" className={classes.label}>
         {label}
       </Typography>
     </Link>
