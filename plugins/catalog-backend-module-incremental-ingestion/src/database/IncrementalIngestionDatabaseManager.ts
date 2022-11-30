@@ -16,7 +16,7 @@
 
 import { Knex } from 'knex';
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Duration } from 'luxon';
 import { v4 } from 'uuid';
 import {
@@ -312,17 +312,8 @@ export class IncrementalIngestionDatabaseManager {
           .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
           .where('ingestions.id', previousIngestion.id);
 
-        const removed: DeferredEntity[] = rows.map(e => {
-          const parsed = parseEntityRef(e.ref);
-          const entity = {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: parsed.kind,
-            metadata: {
-              name: parsed.name,
-              namespace: parsed.namespace,
-            },
-          };
-          return { entity };
+        const removed: { entityRef: string }[] = rows.map(e => {
+          return { entityRef: e.ref };
         });
         const total = rows.length ?? 0;
         return { removed, total };

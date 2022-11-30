@@ -271,7 +271,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
         },
       })) ?? [];
 
-    const removed: DeferredEntity[] = [];
+    const removed: { entityRef: string }[] = [];
 
     if (done) {
       this.options.logger.info(
