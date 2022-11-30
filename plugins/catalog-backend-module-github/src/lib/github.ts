@@ -68,6 +68,7 @@ export type GithubUser = {
  * @public
  */
 export type GithubTeam = {
+  id: string;
   slug: string;
   combinedSlug: string;
   name?: string;
@@ -182,6 +183,7 @@ export async function getOrganizationTeams(
         teams(first: 100, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
+            id
             slug
             combinedSlug
             name

@@ -5,6 +5,7 @@
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-backend';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
@@ -188,6 +189,8 @@ export class GithubOrgEntityProvider
     githubCredentialsProvider?: GithubCredentialsProvider;
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
+    catalogApi?: CatalogApi;
+    tokenManager?: TokenManager;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -210,12 +213,16 @@ export type GitHubOrgEntityProviderOptions = GithubOrgEntityProviderOptions;
 
 // @public
 export interface GithubOrgEntityProviderOptions {
+  // (undocumented)
+  catalogApi?: CatalogApi;
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
   logger: Logger;
   orgUrl: string;
   schedule?: 'manual' | TaskRunner;
   teamTransformer?: TeamTransformer;
+  // (undocumented)
+  tokenManager?: TokenManager;
   userTransformer?: UserTransformer;
 }
 
@@ -246,6 +253,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 
 // @public
 export type GithubTeam = {
+  id: string;
   slug: string;
   combinedSlug: string;
   name?: string;

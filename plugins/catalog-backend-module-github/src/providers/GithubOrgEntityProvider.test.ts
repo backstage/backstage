@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, TokenManager } from '@backstage/backend-common';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { CatalogApi } from '@backstage/catalog-client';
 import {
   GithubCredentialsProvider,
   GithubIntegrationConfig,
@@ -27,8 +28,19 @@ import {
   GithubOrgEntityProvider,
   withLocations,
 } from './GithubOrgEntityProvider';
+import { cloneDeep } from 'lodash';
 
 jest.mock('@octokit/graphql');
+const tokenManager: jest.Mocked<TokenManager> = {
+  getToken: jest.fn(),
+  authenticate: jest.fn(),
+};
+
+const mockCatalogApi = {
+  getEntityByRef: jest.fn(),
+  getEntities: jest.fn(),
+};
+const catalogApi = mockCatalogApi as Partial<CatalogApi> as CatalogApi;
 
 describe('GithubOrgEntityProvider', () => {
   describe('read', () => {
@@ -261,6 +273,7 @@ describe('GithubOrgEntityProvider', () => {
       const githubCredentialsProvider: GithubCredentialsProvider = {
         getCredentials: mockGetCredentials,
       };
+      tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
 
       const entityProvider = new GithubOrgEntityProvider({
         id: 'my-id',
@@ -268,6 +281,8 @@ describe('GithubOrgEntityProvider', () => {
         orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        tokenManager,
+        catalogApi,
       });
 
       entityProvider.connect(entityProviderConnection);
@@ -348,12 +363,16 @@ describe('GithubOrgEntityProvider', () => {
         getCredentials: mockGetCredentials,
       };
 
+      tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
+
       const entityProvider = new GithubOrgEntityProvider({
         id: 'my-id',
         githubCredentialsProvider,
-        orgUrl: 'https://github.com/test-org',
+        orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        tokenManager,
+        catalogApi,
       });
 
       entityProvider.connect(entityProviderConnection);
@@ -434,12 +453,15 @@ describe('GithubOrgEntityProvider', () => {
         getCredentials: mockGetCredentials,
       };
 
+      tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
       const entityProvider = new GithubOrgEntityProvider({
         id: 'my-id',
         githubCredentialsProvider,
-        orgUrl: 'https://github.com/test-org',
+        orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        tokenManager,
+        catalogApi,
       });
 
       entityProvider.connect(entityProviderConnection);
@@ -525,12 +547,15 @@ describe('GithubOrgEntityProvider', () => {
         getCredentials: mockGetCredentials,
       };
 
+      tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
       const entityProvider = new GithubOrgEntityProvider({
         id: 'my-id',
         githubCredentialsProvider,
-        orgUrl: 'https://github.com/test-org',
+        orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        tokenManager,
+        catalogApi,
       });
 
       entityProvider.connect(entityProviderConnection);
@@ -593,6 +618,456 @@ describe('GithubOrgEntityProvider', () => {
           },
         ],
         added: [],
+      });
+    });
+
+    it('should apply delta on receive a edited team', async () => {
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const logger = getVoidLogger();
+      const gitHubConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
+
+      const entityProvider = new GithubOrgEntityProvider({
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+        tokenManager,
+        catalogApi,
+      });
+      entityProvider.connect(entityProviderConnection);
+
+      const event: EventParams = {
+        topic: 'github.team',
+        eventPayload: {
+          action: 'edited',
+          changes: {
+            name: {
+              from: 'mygroup',
+            },
+          },
+          team: {
+            node_id: 'xpto',
+            name: 'New Team',
+            slug: 'new-team',
+            description: 'description from the new team',
+            html_url: 'https://github.com/orgs/test-org/teams/new-team',
+            parent: {
+              slug: 'father-team',
+            },
+          },
+          organization: {
+            login: 'test-org',
+          },
+        },
+      };
+
+      const entity: GroupEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/mygroup"',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/mygroup"',
+          },
+          name: 'mygroup',
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['user-1'],
+        },
+      };
+
+      const expectedEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          description: 'description from the new team',
+          annotations: {
+            'backstage.io/edit-url':
+              'https://github.com/orgs/test-org/teams/new-team/edit',
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'github.com/team-slug': 'test-org/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['user-1'],
+          profile: {
+            displayName: 'New Team',
+          },
+        },
+      };
+
+      mockCatalogApi.getEntities.mockResolvedValue({
+        items: [cloneDeep(entity)],
+      });
+      await entityProvider.onEvent(event);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        type: 'delta',
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: entity,
+          },
+        ],
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: expectedEntity,
+          },
+        ],
+      });
+    });
+
+    it('should apply delta on receive a membership added', async () => {
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const logger = getVoidLogger();
+      const gitHubConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
+
+      const entityProvider = new GithubOrgEntityProvider({
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+        tokenManager,
+        catalogApi,
+      });
+
+      entityProvider.connect(entityProviderConnection);
+
+      const event: EventParams = {
+        topic: 'github.membership',
+        eventPayload: {
+          action: 'added',
+          team: {
+            name: 'New Team',
+            slug: 'new-team',
+            description: 'description from the new team',
+            html_url: 'https://github.com/orgs/test-org/teams/new-team',
+            parent: {
+              slug: 'father-team',
+            },
+          },
+          member: {
+            login: 'githubuser',
+          },
+          organization: {
+            login: 'test-org',
+          },
+        },
+      };
+
+      const groupEntity: GroupEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['user-1'],
+        },
+      };
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: [],
+        },
+      };
+
+      const expectedGroupEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['user-1', 'githubuser'],
+        },
+      };
+
+      const expectedUserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+
+      mockCatalogApi.getEntityByRef
+        .mockResolvedValueOnce(cloneDeep(groupEntity))
+        .mockResolvedValueOnce(cloneDeep(userEntity));
+
+      await entityProvider.onEvent(event);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        type: 'delta',
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: groupEntity,
+          },
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: expectedGroupEntity,
+          },
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: expectedUserEntity,
+          },
+        ],
+      });
+    });
+
+    it('should apply delta on receive a membership removed', async () => {
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const logger = getVoidLogger();
+      const gitHubConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
+
+      const entityProvider = new GithubOrgEntityProvider({
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+        tokenManager,
+        catalogApi,
+      });
+
+      entityProvider.connect(entityProviderConnection);
+
+      const event: EventParams = {
+        topic: 'github.membership',
+        eventPayload: {
+          action: 'removed',
+          team: {
+            name: 'New Team',
+            slug: 'new-team',
+            description: 'description from the new team',
+            html_url: 'https://github.com/orgs/test-org/teams/new-team',
+            parent: {
+              slug: 'father-team',
+            },
+          },
+          member: {
+            login: 'githubuser',
+          },
+          organization: {
+            login: 'test-org',
+          },
+        },
+      };
+
+      const groupEntity: GroupEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['user-1', 'githubuser'],
+        },
+      };
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+
+      const expectedGroupEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['user-1'],
+        },
+      };
+
+      const expectedUserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: [],
+        },
+      };
+
+      mockCatalogApi.getEntityByRef
+        .mockResolvedValueOnce(cloneDeep(groupEntity))
+        .mockResolvedValueOnce(cloneDeep(userEntity));
+
+      await entityProvider.onEvent(event);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        type: 'delta',
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: groupEntity,
+          },
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: expectedGroupEntity,
+          },
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: expectedUserEntity,
+          },
+        ],
       });
     });
   });

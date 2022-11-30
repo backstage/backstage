@@ -88,6 +88,7 @@ export const defaultOrganizationTeamTransformer: TeamTransformer =
   async team => {
     const annotations: { [annotationName: string]: string } = {
       'github.com/team-slug': team.combinedSlug,
+      'github.com/node-id': team.id,
     };
 
     if (team.editTeamUrl) {
