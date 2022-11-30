@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import fs from 'fs';
 import { execFile as execFileCb } from 'child_process';
 import { promisify } from 'util';
@@ -281,30 +282,25 @@ The following package(s) are private and do not need a changeset:
   return output;
 }
 
-// async function main() {
-//   const [diffRef = 'origin/master'] = process.argv.slice(2);
-//   const changedFiles = await listChangedFiles(diffRef);
-//   const packages = await listPackages();
+export default async() => {
+  const [diffRef = 'origin/master'] = process.argv.slice(2);
+  const changedFiles = await listChangedFiles(diffRef);
+  const packages = await listPackages();
 
-//   const changesets = await loadChangesets(changedFiles);
-//   const changedPackages = await listChangedPackages(changedFiles, packages);
+  const changesets = await loadChangesets(changedFiles);
+  const changedPackages = await listChangedPackages(changedFiles, packages);
 
-//   process.stderr.write(
-//     JSON.stringify(
-//       {
-//         changesets,
-//         changedPackages,
-//       },
-//       null,
-//       2,
-//     ),
-//   );
+  process.stderr.write(
+    JSON.stringify(
+      {
+        changesets,
+        changedPackages,
+      },
+      null,
+      2,
+    ),
+  );
 
-//   const summary = formatSummary(changedPackages, changesets);
-//   process.stdout.write(summary);
-// }
-
-// main().catch(error => {
-//   console.error(error.stack);
-//   process.exit(1);
-// });
+  const summary = formatSummary(changedPackages, changesets);
+  process.stdout.write(summary);
+}
