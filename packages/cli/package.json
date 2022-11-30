@@ -96,7 +96,7 @@
     "json-schema": "^0.4.0",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.4.2",
-    "minimatch": "5.1.0",
+    "minimatch": "^5.1.1",
     "node-fetch": "^2.6.7",
     "node-libs-browser": "^2.2.1",
     "npm-packlist": "^5.0.0",
