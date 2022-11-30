@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { GithubCredentialType } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import {
@@ -24,6 +24,10 @@ import {
   TransformerContext,
   UserTransformer,
 } from './defaultTransformers';
+import { withLocations } from '../providers/GithubOrgEntityProvider';
+
+import { DeferredEntity } from '@backstage/plugin-catalog-backend';
+import { merge, omit } from 'lodash';
 
 // Graphql types
 
@@ -351,6 +355,7 @@ export async function getTeamMembers(
  *
  * @param client - The octokit client
  * @param query - The query to execute
+ * @param org - The slug of the org to read
  * @param connection - A function that, given the response, picks out the actual
  *                   Connection object that's being iterated
  * @param transformer - A function that, given one of the nodes in the Connection,
@@ -407,4 +412,65 @@ export async function queryWithPaging<
   }
 
   return result;
+}
+
+export type DeferredEntitiesBuilder = (
+  org: string,
+  entities: Entity[],
+) => { added: DeferredEntity[]; removed: DeferredEntity[] };
+
+export type EntityUpdateOperation = (
+  user: UserEntity,
+  group: GroupEntity,
+) => { user: UserEntity; group: GroupEntity };
+
+export const createAddEntitiesOperation =
+  (id: string, host: string) => (org: string, entities: Entity[]) => ({
+    removed: [],
+    added: entities.map(entity => ({
+      locationKey: `github-org-provider:${id}`,
+      entity: withLocations(`https://${host}`, org, entity),
+    })),
+  });
+export const createRemoveEntitiesOperation =
+  (id: string, host: string) => (org: string, entities: Entity[]) => ({
+    added: [],
+    removed: entities.map(entity => ({
+      locationKey: `github-org-provider:${id}`,
+      entity: withLocations(`https://${host}`, org, entity),
+    })),
+  });
+export const createReplaceEntitiesOperation =
+  (id: string, host: string) => (org: string, entities: Entity[]) => {
+    const entitiesToReplace = entities.map(entity => ({
+      locationKey: `github-org-provider:${id}`,
+      entity: withLocations(`https://${host}`, org, entity),
+    }));
+
+    return {
+      removed: entitiesToReplace,
+      added: entitiesToReplace,
+    };
+  };
+
+export function removeUserFromGroup(user: UserEntity, group: GroupEntity) {
+  return {
+    group: merge(omit(group, 'spec.members'), {
+      spec: {
+        members: group?.spec?.members?.filter(m => m !== user.metadata.name),
+      },
+    }),
+
+    user: merge(omit(user, 'spec.memberOf'), {
+      spec: {
+        memberOf: user?.spec?.memberOf?.filter(m => m !== group.metadata.name),
+      },
+    }),
+  };
+}
+
+export function addUserToGroup(user: UserEntity, group: GroupEntity) {
+  group.spec?.members?.push(user.metadata.name);
+  user.spec?.memberOf?.push(group.metadata.name);
+  return { group, user };
 }

@@ -34,7 +34,6 @@ import {
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import {
-  DeferredEntity,
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-backend';
@@ -62,12 +61,17 @@ import {
   GithubTeam,
   parseGithubOrgUrl,
 } from '../lib';
-import { TeamTransformer, UserTransformer } from '../lib/defaultTransformers';
+import { TeamTransformer, UserTransformer } from '../lib';
+import {
+  addUserToGroup,
+  removeUserFromGroup,
+  createAddEntitiesOperation,
+  createRemoveEntitiesOperation,
+  createReplaceEntitiesOperation,
+  DeferredEntitiesBuilder,
+  EntityUpdateOperation,
+} from '../lib/github';
 
-type DeltaOperationFactory = (
-  org: string,
-  entities: Entity[],
-) => { added: DeferredEntity[]; removed: DeferredEntity[] };
 /**
  * Options for {@link GithubOrgEntityProvider}.
  *
@@ -127,7 +131,6 @@ export interface GithubOrgEntityProviderOptions {
   tokenManager?: TokenManager;
 }
 
-// TODO: Consider supporting an (optional) webhook that reacts on org changes
 /**
  * Ingests org data (users and groups) from GitHub.
  *
@@ -264,77 +267,71 @@ export class GithubOrgEntityProvider
     logger.debug(`Received event from ${params.topic}`);
 
     if (!this.canHandleEvents()) {
-      logger.debug(`Skiping event ${params.topic}`);
+      logger.debug(`Skipping event ${params.topic}`);
       return;
     }
 
-    const addEntities: DeltaOperationFactory = (org, entities) => ({
-      removed: [],
-      added: entities.map(entity => ({
-        locationKey: `github-org-provider:${this.options.id}`,
-        entity: withLocations(
-          `https://${this.options.gitHubConfig.host}`,
-          org,
-          entity,
-        ),
-      })),
-    });
-    const removeEntities: DeltaOperationFactory = (org, entities) => ({
-      added: [],
-      removed: entities.map(entity => ({
-        locationKey: `github-org-provider:${this.options.id}`,
-        entity: withLocations(
-          `https://${this.options.gitHubConfig.host}`,
-          org,
-          entity,
-        ),
-      })),
-    });
+    const addEntitiesOperation = createAddEntitiesOperation(
+      this.options.id,
+      this.options.gitHubConfig.host,
+    );
+    const removeEntitiesOperation = createRemoveEntitiesOperation(
+      this.options.id,
+      this.options.gitHubConfig.host,
+    );
+    const replaceEntitiesOperation = createReplaceEntitiesOperation(
+      this.options.id,
+      this.options.gitHubConfig.host,
+    );
 
-    const replaceEntities: DeltaOperationFactory = (org, entities) => {
-      const entitiesToReplace = entities.map(entity => ({
-        locationKey: `github-org-provider:${this.options.id}`,
-        entity: withLocations(
-          `https://${this.options.gitHubConfig.host}`,
-          org,
-          entity,
-        ),
-      }));
-
-      return {
-        removed: entitiesToReplace,
-        added: entitiesToReplace,
-      };
-    };
-
-    // handle change users in the org https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#organization
+    // handle change users in the org
+    // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#organization
     if (params.topic.includes('organization')) {
       const orgEvent = params.eventPayload as OrganizationEvent;
 
-      if (orgEvent.action === 'member_added') {
-        await this.onMemberChangeInOrganization(orgEvent, addEntities);
-      } else if (orgEvent.action === 'member_removed') {
-        await this.onMemberChangeInOrganization(orgEvent, removeEntities);
+      if (
+        orgEvent.action === 'member_added' ||
+        orgEvent.action === 'member_removed'
+      ) {
+        const createDeltaOperation =
+          orgEvent.action === 'member_added'
+            ? addEntitiesOperation
+            : removeEntitiesOperation;
+        await this.onMemberChangeInOrganization(orgEvent, createDeltaOperation);
       }
     }
 
-    // handle change teams in the org https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#team
+    // handle change teams in the org
+    // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#team
     if (params.topic.includes('team')) {
       const teamEvent = params.eventPayload as TeamEvent;
-
-      if (teamEvent.action === 'created') {
-        await this.onTeamDeltaChangeInOrganization(teamEvent, addEntities);
-      } else if (teamEvent.action === 'deleted') {
-        await this.onTeamDeltaChangeInOrganization(teamEvent, removeEntities);
+      if (teamEvent.action === 'created' || teamEvent.action === 'deleted') {
+        const createDeltaOperation =
+          teamEvent.action === 'created'
+            ? addEntitiesOperation
+            : removeEntitiesOperation;
+        await this.onTeamChangeInOrganization(teamEvent, createDeltaOperation);
       } else if (teamEvent.action === 'edited') {
-        await this.onTeamEditedInOrganization(teamEvent, replaceEntities);
+        await this.onTeamEditedInOrganization(
+          teamEvent,
+          replaceEntitiesOperation,
+        );
       }
     }
 
-    // handle change membership in the org https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#membership
+    // handle change membership in the org
+    // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#membership
     if (params.topic.includes('membership')) {
       const membershipEvent = params.eventPayload as MembershipEvent;
-      await this.onMemberChangeToTeam(membershipEvent, replaceEntities);
+      const updateOperation =
+        membershipEvent.action === 'added'
+          ? addUserToGroup
+          : removeUserFromGroup;
+      await this.onMemberChangeToTeam(
+        membershipEvent,
+        replaceEntitiesOperation,
+        updateOperation,
+      );
     }
 
     return;
@@ -361,9 +358,9 @@ export class GithubOrgEntityProvider
     return false;
   }
 
-  private async onTeamDeltaChangeInOrganization(
+  private async onTeamChangeInOrganization(
     event: TeamEvent,
-    createDeltaOperation: DeltaOperationFactory,
+    createDeltaOperation: DeferredEntitiesBuilder,
   ) {
     if (!this.connection) {
       throw new Error('Not initialized');
@@ -411,7 +408,7 @@ export class GithubOrgEntityProvider
 
   private async onTeamEditedInOrganization(
     event: TeamEditedEvent,
-    createDeltaOperation: DeltaOperationFactory,
+    createDeltaOperation: DeferredEntitiesBuilder,
   ) {
     if (!this.connection) {
       throw new Error('Not initialized');
@@ -478,7 +475,7 @@ export class GithubOrgEntityProvider
 
   private async onMemberChangeInOrganization(
     event: OrganizationMemberAddedEvent | OrganizationMemberRemovedEvent,
-    createDeltaOperation: DeltaOperationFactory,
+    createDeltaOperation: DeferredEntitiesBuilder,
   ) {
     if (!this.connection) {
       throw new Error('Not initialized');
@@ -522,7 +519,8 @@ export class GithubOrgEntityProvider
 
   private async onMemberChangeToTeam(
     event: MembershipEvent,
-    createDeltaOperation: DeltaOperationFactory,
+    createDeltaOperation: DeferredEntitiesBuilder,
+    updateEntities: EntityUpdateOperation,
   ) {
     if (!this.connection) {
       throw new Error('Not initialized');
@@ -535,6 +533,7 @@ export class GithubOrgEntityProvider
       return;
     }
     const teamSlug = event.team.slug;
+    const userSlug = event.member.login;
 
     const { token } = await this.options.tokenManager!.getToken();
     const org = event.organization.login;
@@ -549,7 +548,7 @@ export class GithubOrgEntityProvider
 
     if (!group) {
       this.options.logger.debug(
-        `Skipping event because couldn't found group ':${event.team.slug} for namespace ${DEFAULT_NAMESPACE}`,
+        `Skipping event because couldn't found group ':${teamSlug} for namespace ${DEFAULT_NAMESPACE}`,
       );
       return;
     }
@@ -558,7 +557,7 @@ export class GithubOrgEntityProvider
       {
         kind: 'User',
         namespace: DEFAULT_NAMESPACE,
-        name: event.member.login,
+        name: userSlug,
       },
       { token },
     )) as UserEntity;
@@ -567,7 +566,7 @@ export class GithubOrgEntityProvider
 
     if (!user) {
       this.options.logger.debug(
-        `Skipping event because couldn't found user ':${event.member.login} for namespace ${DEFAULT_NAMESPACE}`,
+        `Skipping event because couldn't found user ':${userSlug} for namespace ${DEFAULT_NAMESPACE}`,
       );
       return;
     }
@@ -575,24 +574,9 @@ export class GithubOrgEntityProvider
 
     const { removed } = createDeltaOperation(org, [group, user]);
 
-    if (event.action === 'added') {
-      group.spec?.members?.push(event.member.login);
-      user.spec?.memberOf?.push(event.team.slug);
-    } else {
-      group = merge(omit(group, 'spec.members'), {
-        spec: {
-          members: group?.spec?.members?.filter(m => m !== event.member.login),
-        },
-      });
+    const result = updateEntities(user, group);
 
-      user = merge(omit(user, 'spec.memberOf'), {
-        spec: {
-          memberOf: user?.spec?.memberOf?.filter(m => m !== teamSlug),
-        },
-      });
-    }
-
-    const { added } = createDeltaOperation(org, [group, user]);
+    const { added } = createDeltaOperation(org, [result.group, result.user]);
     await this.connection.applyMutation({
       type: 'delta',
       removed,
