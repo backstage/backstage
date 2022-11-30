@@ -22,8 +22,6 @@ import { Duration, DurationObjectUnits } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
 
-const REMOVAL_THRESHOLD = 5;
-
 export class IncrementalIngestionEngine implements IterationEngine {
   private readonly restLength: Duration;
   private readonly backoff: DurationObjectUnits[];
@@ -279,26 +277,46 @@ export class IncrementalIngestionEngine implements IterationEngine {
       );
       const result = await this.manager.computeRemoved(
         this.options.provider.getProviderName(),
+        id,
       );
+
       const { total } = result;
-      const percentRemoved =
-        total > 0 ? (result.removed.length / total) * 100 : 0;
-      if (percentRemoved <= REMOVAL_THRESHOLD) {
-        this.options.logger.info(
-          `incremental-engine: Ingestion '${id}': Removing ${result.removed.length} entities that have no matching assets`,
-        );
+
+      let doRemoval = true;
+      if (this.options.rejectEmptyEntityCollections) {
+        if (total === 0) {
+          this.options.logger.error(
+            `incremental-engine: Ingestion '${id}': Rejecting empty entity collection!`,
+          );
+          doRemoval = false;
+        }
+      }
+
+      if (this.options.removalThreshold) {
+        // If the total entities upserted in this ingestion is 0, then
+        // 100% of entities are stale and marked for removal.
+        const percentRemoved =
+          total > 0 ? (result.removed.length / total) * 100 : 100;
+        if (percentRemoved <= this.options.removalThreshold) {
+          this.options.logger.info(
+            `incremental-engine: Ingestion '${id}': Removing ${result.removed.length} entities that have no matching assets`,
+          );
+        } else {
+          const notice = `Attempted to remove ${percentRemoved}% of matching entities!`;
+          this.options.logger.error(
+            `incremental-engine: Ingestion '${id}': ${notice}`,
+          );
+          await this.manager.updateIngestionRecordById({
+            ingestionId: id,
+            update: {
+              last_error: `REMOVAL_THRESHOLD exceeded on ingestion mark ${markId}: ${notice}`,
+            },
+          });
+          doRemoval = false;
+        }
+      }
+      if (doRemoval) {
         removed.push(...result.removed);
-      } else {
-        const notice = `Attempted to remove ${percentRemoved}% of ${total} matching entities!`;
-        this.options.logger.error(
-          `incremental-engine: Ingestion '${id}': ${notice}`,
-        );
-        await this.manager.updateIngestionRecordById({
-          ingestionId: id,
-          update: {
-            last_error: `REMOVAL_THRESHOLD exceeded on ingestion mark ${markId}: ${notice}`,
-          },
-        });
       }
     }
 

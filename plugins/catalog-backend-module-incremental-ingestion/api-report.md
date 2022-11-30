@@ -62,6 +62,8 @@ export interface IncrementalEntityProviderOptions {
   backoff?: DurationObjectUnits[];
   burstInterval: DurationObjectUnits;
   burstLength: DurationObjectUnits;
+  rejectEmptyEntityCollections?: boolean;
+  removalThreshold?: number;
   restLength: DurationObjectUnits;
 }
 

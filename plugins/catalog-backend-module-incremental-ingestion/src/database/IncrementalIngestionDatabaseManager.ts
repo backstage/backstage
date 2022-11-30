@@ -298,11 +298,24 @@ export class IncrementalIngestionDatabaseManager {
    * @param ingestionId - string
    * @returns All entities to remove for this burst.
    */
-  async computeRemoved(provider: string) {
+  async computeRemoved(provider: string, providerId: string) {
     const previousIngestion = await this.getPreviousIngestionRecord(provider);
     return await this.client.transaction(async tx => {
+      const count = await tx('ingestion_mark_entities')
+        .count({ total: 'ingestion_mark_entities.ref' })
+        .join(
+          'ingestion_marks',
+          'ingestion_marks.id',
+          'ingestion_mark_entities.ingestion_mark_id',
+        )
+        .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
+        .where('ingestions.id', providerId);
+
+      const total = count.reduce((acc, cur) => acc + (cur.total as number), 0);
+
+      const removed: { entityRef: string }[] = [];
       if (previousIngestion) {
-        const rows: { ref: string }[] = await tx('ingestion_mark_entities')
+        const stale: { ref: string }[] = await tx('ingestion_mark_entities')
           .select('ingestion_mark_entities.ref')
           .join(
             'ingestion_marks',
@@ -312,14 +325,14 @@ export class IncrementalIngestionDatabaseManager {
           .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
           .where('ingestions.id', previousIngestion.id);
 
-        const removed: { entityRef: string }[] = rows.map(e => {
-          return { entityRef: e.ref };
-        });
-        const total = rows.length ?? 0;
-        return { removed, total };
+        removed.push(
+          ...stale.map(e => {
+            return { entityRef: e.ref };
+          }),
+        );
       }
 
-      return { removed: [], total: 0 };
+      return { total, removed };
     });
   }
 

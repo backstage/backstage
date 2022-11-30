@@ -122,6 +122,22 @@ export interface IncrementalEntityProviderOptions {
    * `[{ minutes: 1}, { minutes: 5}, {minutes: 30 }, { hours: 3 }]`
    */
   backoff?: DurationObjectUnits[];
+
+  /**
+   * If an error occurs at a data source that results in a large
+   * number of assets being inadvertently removed, it will result in
+   * Backstage removing all associated entities. To avoid that, set
+   * a percentage of entities past which removal will be disallowed.
+   */
+  removalThreshold?: number;
+
+  /**
+   * Similar to the removalThreshold, this option prevents removals
+   * in circumstances where a data source has improperly returned 0
+   * assets. If set to `true`, Backstage will reject removals when
+   * that happens.
+   */
+  rejectEmptyEntityCollections?: boolean;
 }
 
 /** @public */
@@ -146,4 +162,6 @@ export interface IterationEngineOptions {
   restLength: DurationObjectUnits;
   ready: Promise<void>;
   backoff?: IncrementalEntityProviderOptions['backoff'];
+  removalThreshold?: number;
+  rejectEmptyEntityCollections?: boolean;
 }
