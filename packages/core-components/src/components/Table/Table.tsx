@@ -320,6 +320,7 @@ export function TableToolbar(toolbarProps: {
     return (
       <div className={selectToolbarStyles.root}>
         <div className={selectToolbarStyles.selectContainer}>
+          {/* @ts-ignore */}
           <Select {...toolbarProps.selectProps} />
         </div>
         <div className={selectToolbarStyles.tableToolbarContainer}>
