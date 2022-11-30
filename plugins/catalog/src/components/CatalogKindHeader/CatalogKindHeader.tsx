@@ -59,7 +59,10 @@ export interface CatalogKindHeaderProps {
   initialFilter?: string;
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated
+ */
 export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   const { initialFilter = 'component', allowedKinds } = props;
   const classes = useStyles();
