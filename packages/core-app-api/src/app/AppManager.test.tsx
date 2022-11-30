@@ -572,52 +572,10 @@ describe('Integration Test', () => {
   });
 
   describe('relative url resolvers', () => {
-    const checkConfigValue = async (
-      data: object,
-      configString: string,
-      expectedValue: string,
-    ) => {
-      const app = new AppManager({
-        apis: [],
-        defaultApis: [],
-        themes: [
-          {
-            id: 'light',
-            title: 'Light Theme',
-            variant: 'light',
-            Provider: ({ children }) => <>{children}</>,
-          },
-        ],
-        icons,
-        plugins: [],
-        components,
-        configLoader: async () => [
-          {
-            context: 'test',
-            data,
-          },
-        ],
-      });
-
-      const Provider = app.getProvider();
-      const ConfigDisplay = () => {
-        const apiHolder = useApiHolder();
-        const config = apiHolder.get(configApiRef);
-        return <span>{config?.getString(configString)}</span>;
-      };
-
-      const dom = await renderWithEffects(
-        <Provider>
-          <ConfigDisplay />
-        </Provider>,
-      );
-
-      // Verify that the backend.baseUrl is set correctly by the AppManager.
-      expect(dom.getByText(expectedValue)).toBeTruthy();
-    };
-    [
-      {
-        data: {
+    it.each([
+      [
+        [document.location.href, document.location.href],
+        {
           backend: {
             baseUrl: 'http://localhost:8008/',
           },
@@ -625,29 +583,13 @@ describe('Integration Test', () => {
             baseUrl: 'http://localhost:8008/',
           },
         },
-        paths: ['app.baseUrl', 'backend.baseUrl'],
-      },
-      {
-        data: {
-          backend: {
-            baseUrl: 'http://test.com/',
-          },
-          app: {
-            baseUrl: 'http://test.com/',
-          },
-        },
-        paths: ['app.baseUrl', 'backend.baseUrl'],
-      },
-    ].forEach(item => {
-      item.paths.forEach(path => {
-        it('should force the urls to be relative when they are the same', async () => {
-          await checkConfigValue(item.data, path, 'http://localhost/');
-        });
-      });
-    });
-    [
-      {
-        data: {
+      ],
+      [
+        [
+          `${document.location.origin}/backstage`,
+          `${document.location.origin}/backstage`,
+        ],
+        {
           backend: {
             baseUrl: 'http://test.com/backstage',
           },
@@ -655,65 +597,84 @@ describe('Integration Test', () => {
             baseUrl: 'http://test.com/backstage',
           },
         },
-        paths: ['app.baseUrl', 'backend.baseUrl'],
-      },
-    ].forEach(item => {
-      item.paths.forEach(path => {
-        it('should force the urls to be relative when they are the same AND keep path values', async () => {
-          await checkConfigValue(item.data, path, 'http://localhost/backstage');
-        });
-      });
-    });
-    [
-      {
-        data: {
+      ],
+      [
+        [
+          `${document.location.origin}/backstage/instance`,
+          `${document.location.origin}/backstage/instance`,
+        ],
+        {
           backend: {
-            baseUrl: 'http://test.com/backstage/my-instance',
+            baseUrl: 'http://test.com/backstage/instance',
           },
           app: {
-            baseUrl: 'http://test.com/backstage/my-instance',
+            baseUrl: 'http://test.com/backstage/instance',
           },
         },
-        paths: ['app.baseUrl', 'backend.baseUrl'],
-      },
-    ].forEach(item => {
-      item.paths.forEach(path => {
-        it('should force the urls to be relative when they are the same AND keep nested path values', async () => {
-          await checkConfigValue(
-            item.data,
-            path,
-            'http://localhost/backstage/my-instance',
-          );
-        });
-      });
-    });
-    [
-      {
-        data: {
+      ],
+      [
+        [
+          `http://test-front.com/backstage/instance`,
+          `http://test.com/backstage/instance`,
+        ],
+        {
           backend: {
-            baseUrl: 'https://google.com',
+            baseUrl: 'http://test.com/backstage/instance',
           },
           app: {
-            baseUrl: 'https://bing.com',
+            baseUrl: 'http://test-front.com/backstage/instance',
           },
         },
-        paths: ['app.baseUrl', 'backend.baseUrl'],
-      },
-    ].forEach(item => {
-      item.paths.forEach(path => {
-        it('should NOT change the origin when the relevant urls are absolute', async () => {
-          await checkConfigValue(
-            item.data,
-            path,
-            path
-              .split('.')
-              .reduce(
-                (o, i) => o[i] as { [key: string]: object },
-                item.data as { [key: string]: object },
-              ) as unknown as string,
-          );
+      ],
+    ])(
+      'should be %p when %p',
+      async ([expectedAppUrl, expectedBackendUrl], data) => {
+        const app = new AppManager({
+          apis: [],
+          defaultApis: [],
+          themes: [
+            {
+              id: 'light',
+              title: 'Light Theme',
+              variant: 'light',
+              Provider: ({ children }) => <>{children}</>,
+            },
+          ],
+          icons,
+          plugins: [],
+          components,
+          configLoader: async () => [
+            {
+              context: 'test',
+              data,
+            },
+          ],
         });
-      });
-    });
+
+        const Provider = app.getProvider();
+        const ConfigDisplay = ({ configString }: { configString: string }) => {
+          const apiHolder = useApiHolder();
+          const config = apiHolder.get(configApiRef);
+          return (
+            <span>
+              {configString}: {config?.getString(configString)}
+            </span>
+          );
+        };
+
+        const dom = await renderWithEffects(
+          <Provider>
+            <ConfigDisplay configString="app.baseUrl" />
+            <ConfigDisplay configString="backend.baseUrl" />
+          </Provider>,
+        );
+
+        expect(dom.getByText(`app.baseUrl: ${expectedAppUrl}`)).toBeTruthy();
+
+        expect(
+          dom.getByText(`backend.baseUrl: ${expectedBackendUrl}`),
+        ).toBeTruthy();
+      },
+    );
   });
 });

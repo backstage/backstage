@@ -83,7 +83,6 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
             context: 'test',
             data: {
               app: { baseUrl: 'http://localhost/foo' },
-              backend: { baseUrl: 'http://localhost' },
             },
           },
         ],

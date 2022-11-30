@@ -30,7 +30,6 @@ describe('App', () => {
               support: { url: 'http://localhost:7007/support' },
               baseUrl: 'http://localhost:3000',
             },
-            backend: { baseUrl: 'http://localhost:7007' },
             lighthouse: {
               baseUrl: 'http://localhost:3003',
             },

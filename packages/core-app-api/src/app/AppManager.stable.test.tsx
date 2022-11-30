@@ -64,7 +64,6 @@ describe('AppManager', () => {
           context: 'test',
           data: {
             app: { baseUrl: 'http://localhost/foo' },
-            backend: { baseUrl: 'http://localhost' },
           },
         },
       ],
@@ -99,7 +98,6 @@ describe('AppManager', () => {
           context: 'test',
           data: {
             app: { baseUrl: 'http://localhost/foo' },
-            backend: { baseUrl: 'http://localhost' },
           },
         },
       ],

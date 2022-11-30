@@ -27,8 +27,7 @@ describe('DevAppBuilder', () => {
       {
         context: 'test',
         data: {
-          app: { title: 'Test App', baseUrl: 'http://localhost:3000' },
-          backend: { baseUrl: 'http://localhost:7007' },
+          app: { title: 'Test App' },
         },
       },
     ];
