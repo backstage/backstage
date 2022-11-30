@@ -283,7 +283,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
       const { total } = result;
 
       let doRemoval = true;
-      if (this.options.rejectEmptyEntityCollections) {
+      if (this.options.rejectEmptySourceCollections) {
         if (total === 0) {
           this.options.logger.error(
             `incremental-engine: Ingestion '${id}': Rejecting empty entity collection!`,
@@ -292,12 +292,12 @@ export class IncrementalIngestionEngine implements IterationEngine {
         }
       }
 
-      if (this.options.removalThreshold) {
+      if (this.options.rejectRemovalsAbovePercentage) {
         // If the total entities upserted in this ingestion is 0, then
         // 100% of entities are stale and marked for removal.
         const percentRemoved =
           total > 0 ? (result.removed.length / total) * 100 : 100;
-        if (percentRemoved <= this.options.removalThreshold) {
+        if (percentRemoved <= this.options.rejectRemovalsAbovePercentage) {
           this.options.logger.info(
             `incremental-engine: Ingestion '${id}': Removing ${result.removed.length} entities that have no matching assets`,
           );

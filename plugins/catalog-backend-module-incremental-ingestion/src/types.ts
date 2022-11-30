@@ -129,15 +129,15 @@ export interface IncrementalEntityProviderOptions {
    * Backstage removing all associated entities. To avoid that, set
    * a percentage of entities past which removal will be disallowed.
    */
-  removalThreshold?: number;
+  rejectRemovalsAbovePercentage?: number;
 
   /**
-   * Similar to the removalThreshold, this option prevents removals
-   * in circumstances where a data source has improperly returned 0
-   * assets. If set to `true`, Backstage will reject removals when
-   * that happens.
+   * Similar to the rejectRemovalsAbovePercentage, this option
+   * prevents removals in circumstances where a data source has
+   * improperly returned 0 assets. If set to `true`, Backstage will
+   * reject removals when that happens.
    */
-  rejectEmptyEntityCollections?: boolean;
+  rejectEmptySourceCollections?: boolean;
 }
 
 /** @public */
@@ -162,6 +162,6 @@ export interface IterationEngineOptions {
   restLength: DurationObjectUnits;
   ready: Promise<void>;
   backoff?: IncrementalEntityProviderOptions['backoff'];
-  removalThreshold?: number;
-  rejectEmptyEntityCollections?: boolean;
+  rejectRemovalsAbovePercentage?: number;
+  rejectEmptySourceCollections?: boolean;
 }
