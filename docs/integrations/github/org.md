@@ -165,6 +165,10 @@ There is also a `defaultUserTransformer` and `defaultOrganizationTeamTransformer
 You could use these and simply decorate the response from the default
 transformation if you only need to change a few properties.
 
+**Attention:**
+When you use the Events Support with a `TeamTransformer`, you need to ensure your entity will have the
+annotation `github.com/node-id` with the value from `team.id`. Without this, the `team.edit` event could fail to update
+
 ### Resolving GitHub users via organization email
 
 When you authenticate users you should resolve them to an entity within the
