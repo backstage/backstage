@@ -61,7 +61,7 @@ const columns: TableColumn[] = [
 type SentryIssuesTableProps = {
   sentryIssues: SentryIssue[];
   statsFor: '24h' | '14d' | '';
-  tableOptions: Options<never>;
+  tableOptions: Options<{}>;
 };
 
 const SentryIssuesTable = (props: SentryIssuesTableProps) => {

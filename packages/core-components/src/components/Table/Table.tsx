@@ -54,7 +54,7 @@ import React, {
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 
-const tableIcons: Icons = {
+const tableIcons: Icons<any> = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
   Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
@@ -207,7 +207,7 @@ function removeDefaultValues(state: any, defaultState: any): any {
   });
 }
 
-const defaultInitialState = {
+const defaultInitialState: TableState = {
   search: '',
   filtersOpen: false,
   filters: {},
@@ -313,7 +313,10 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
   const theme = useTheme<BackstageTheme>();
 
-  const calculatedInitialState = { ...defaultInitialState, ...initialState };
+  const calculatedInitialState: TableState = {
+    ...defaultInitialState,
+    ...initialState,
+  };
 
   const [filtersOpen, setFiltersOpen] = useState(
     calculatedInitialState.filtersOpen,

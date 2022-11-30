@@ -54,7 +54,7 @@ describe('BuildList', () => {
 
     await userEvent.click(
       (
-        await rendered.findAllByLabelText('Detail panel visiblity toggle')
+        await rendered.findAllByLabelText('Detail panel visibility toggle')
       )[0],
     );
     expect(await rendered.findByText('BuildDetails')).toBeInTheDocument();

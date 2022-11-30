@@ -36,7 +36,7 @@ import { Options } from '@material-table/core';
 export const SentryIssuesWidget = (props: {
   entity: Entity;
   statsFor: '24h' | '14d' | '';
-  tableOptions: Options<never>;
+  tableOptions: Options<{}>;
   variant?: InfoCardVariants;
   query?: string;
 }) => {

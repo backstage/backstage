@@ -26,7 +26,7 @@ import { Options } from '@material-table/core';
 /** @public */
 export type SentryPageProps = {
   statsFor?: '24h' | '14d' | '';
-  tableOptions?: Options<never>;
+  tableOptions?: Options<{}>;
 };
 
 /** @public */
@@ -39,7 +39,7 @@ export const EntitySentryContent = sentryPlugin.provide(
         ({ SentryIssuesWidget }) => {
           const SentryPage = (props: SentryPageProps) => {
             const { entity } = useEntity();
-            const defaultOptions: Options<never> = {
+            const defaultOptions: Options<{}> = {
               padding: 'dense',
               paging: true,
               search: false,

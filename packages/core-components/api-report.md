@@ -1354,7 +1354,7 @@ export function Table<T extends object = {}>(props: TableProps<T>): JSX.Element;
 // @public (undocumented)
 export namespace Table {
   var // (undocumented)
-    icons: Readonly<Icons>;
+    icons: Readonly<Icons<any>>;
 }
 
 // Warning: (ae-missing-release-tag) "TableClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

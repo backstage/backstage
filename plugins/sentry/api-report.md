@@ -118,7 +118,7 @@ export type SentryIssueMetadata = {
 export const SentryIssuesWidget: (props: {
   entity: Entity;
   statsFor: '24h' | '14d' | '';
-  tableOptions: Options<never>;
+  tableOptions: Options<{}>;
   variant?: InfoCardVariants;
   query?: string;
 }) => JSX.Element;
@@ -126,7 +126,7 @@ export const SentryIssuesWidget: (props: {
 // @public (undocumented)
 export type SentryPageProps = {
   statsFor?: '24h' | '14d' | '';
-  tableOptions?: Options<never>;
+  tableOptions?: Options<{}>;
 };
 
 // @public (undocumented)
