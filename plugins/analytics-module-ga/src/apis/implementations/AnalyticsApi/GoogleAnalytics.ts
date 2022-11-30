@@ -167,9 +167,15 @@ export class GoogleAnalytics implements AnalyticsApi {
     }
 
     if (this.virtualSearchPageView.mode !== 'disabled' && action === 'search') {
-      const { mountPath, queryParam } = this.virtualSearchPageView;
+      const { mountPath, searchQuery, categoryQuery } =
+        this.virtualSearchPageView;
+      const params = new URLSearchParams();
+      params.set(searchQuery, subject);
+      if (categoryQuery) {
+        params.set(categoryQuery, context.searchTypes?.toString() ?? '');
+      }
       this.capture.pageview(
-        `${mountPath}?${queryParam}=${subject}`,
+        `${mountPath}?${params.toString()}`,
         customMetadata,
       );
       if (this.virtualSearchPageView.mode === 'only') {

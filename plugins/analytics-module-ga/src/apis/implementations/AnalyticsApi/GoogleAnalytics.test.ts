@@ -25,6 +25,7 @@ describe('GoogleAnalytics', () => {
     pluginId: 'some-plugin',
     routeRef: 'unknown',
     releaseNum: 1337,
+    searchTypes: 'test category',
   };
   const trackingId = 'UA-000000-0';
   const basicValidConfig = new ConfigReader({
@@ -175,7 +176,7 @@ describe('GoogleAnalytics', () => {
       expect(command).toBe('send');
       expect(data).toMatchObject({
         hitType: 'pageview',
-        page: '/search?query=test search',
+        page: '/search?query=test+search',
       });
       expect(ReactGA.testModeAPI.calls).toHaveLength(2);
     });
@@ -203,7 +204,7 @@ describe('GoogleAnalytics', () => {
       expect(pageviewCommand).toBe('send');
       expect(pageViewData).toMatchObject({
         hitType: 'pageview',
-        page: '/search?query=test search',
+        page: '/search?query=test+search',
       });
       const [searchCommand, searchData] = ReactGA.testModeAPI.calls[2];
       expect(searchCommand).toBe('send');
@@ -215,7 +216,7 @@ describe('GoogleAnalytics', () => {
       });
     });
 
-    it('captures virtual pageviews on custom route with custom query param', () => {
+    it('captures virtual pageviews on custom route with custom search query and custom category', () => {
       const config = new ConfigReader({
         app: {
           analytics: {
@@ -225,7 +226,8 @@ describe('GoogleAnalytics', () => {
               virtualSearchPageView: {
                 mode: 'only',
                 mountPath: '/custom',
-                queryParam: 'term',
+                searchQuery: 'term',
+                categoryQuery: 'sc',
               },
             },
           },
@@ -242,7 +244,7 @@ describe('GoogleAnalytics', () => {
       expect(command).toBe('send');
       expect(data).toMatchObject({
         hitType: 'pageview',
-        page: '/custom?term=test search',
+        page: '/custom?term=test+search&sc=test+category',
       });
     });
 

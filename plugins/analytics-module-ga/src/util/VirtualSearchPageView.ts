@@ -20,7 +20,8 @@ type VirtualSearchPageViewType = 'disabled' | 'only' | 'both';
 export type VirtualSearchPageViewConfig = {
   mode: VirtualSearchPageViewType;
   mountPath: string;
-  queryParam: string;
+  searchQuery: string;
+  categoryQuery?: string;
 };
 
 function isVirtualSearchPageViewType(
@@ -38,6 +39,7 @@ export function parseVirtualSearchPageViewConfig(
       ? vspvModeString
       : 'disabled',
     mountPath: config?.getOptionalString('mountPath') ?? '/search',
-    queryParam: config?.getOptionalString('queryParam') ?? 'query',
+    searchQuery: config?.getOptionalString('searchQuery') ?? 'query',
+    categoryQuery: config?.getOptionalString('categoryQuery'),
   };
 }

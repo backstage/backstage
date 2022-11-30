@@ -181,7 +181,8 @@ app:
       virtualSearchPageView:
         mode: only # Defaults to 'disabled'
         mountPath: /virtual-search # Defaults to '/search'
-        queryParam: term # Defaults to 'query'
+        searchQuery: term # Defaults to 'query'
+        categoryQuery: sc # Omitted by default
 ```
 
 Available `mode`s are:
@@ -190,9 +191,10 @@ Available `mode`s are:
 - `only` - sends virtual pageviews _instead_ of `search` events
 - `both` - sends both virtual pageviews _and_ `search` events
 
-Virtual pageviews will be sent to the path specified in the `mountPath`, and the search term will be
-set as the value for query parameter `queryParam`, e.g. the example config above will result in
-virtual pageviews being sent to `/virtual-search?term=SearchTermHere`.
+Virtual pageviews will be sent to the path specified in the `mountPath`, the search term will be
+set as the value for query parameter `searchQuery` and category (if provided) will be set as the value for
+query parameter `categoryQuery`, e.g. the example config above will result in
+virtual pageviews being sent to `/virtual-search?term=SearchTermHere&sc=CategoryHere`.
 
 ### Debugging and Testing
 

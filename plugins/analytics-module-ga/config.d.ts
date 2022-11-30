@@ -72,11 +72,17 @@ export interface Config {
            */
           mountPath?: string;
           /**
-           * Specifies which query param is used in the virtual pageview URL.
+           * Specifies which query param is used for the term query in the virtual pageview URL.
            * Defaults to `query`.
            * @visibility frontend
            */
-          queryParam?: string;
+          searchQuery?: string;
+          /**
+           * Specifies which query param is used for the category query in the virtual pageview URL.
+           * Skipped by default.
+           * @visibility frontend
+           */
+          categoryQuery?: string;
         };
 
         /**
