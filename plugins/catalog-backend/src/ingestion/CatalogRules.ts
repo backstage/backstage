@@ -30,9 +30,9 @@ export type CatalogRule = {
     kind: string;
   }>;
   locations?: Array<{
-    target?: string;
+    exact?: string;
     type: string;
-    match?: string;
+    pattern?: string;
   }>;
 };
 
@@ -78,6 +78,10 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
    * catalog:
    *   rules:
    *   - allow: [Component, API]
+   *   - allow: [Template]
+   *     locations:
+   *       - type: url
+   *         pattern: https://github.com/org/*\/blob/master/template.yaml
    *
    *   locations:
    *   - type: url
@@ -102,13 +106,13 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
             .getOptionalConfigArray('locations')
             ?.map(locationConfig => {
               const location = {
-                match: locationConfig.getOptionalString('match'),
+                pattern: locationConfig.getOptionalString('pattern'),
                 type: locationConfig.getString('type'),
-                target: locationConfig.getOptionalString('target'),
+                exact: locationConfig.getOptionalString('exact'),
               };
-              if (location.match && location.target) {
+              if (location.pattern && location.exact) {
                 throw new Error(
-                  'A catalog rule location cannot have both target and match values',
+                  'A catalog rule location cannot have both exact and pattern values',
                 );
               }
               return location;
@@ -127,11 +131,11 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
             return [];
           }
           const type = locConf.getString('type');
-          const target = resolveTarget(type, locConf.getString('target'));
+          const exact = resolveTarget(type, locConf.getString('target'));
 
           return locConf.getConfigArray('rules').map(ruleConf => ({
             allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
-            locations: [{ type, target }],
+            locations: [{ type, exact }],
           }));
         });
 
@@ -163,7 +167,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
 
   private matchLocation(
     location: LocationSpec,
-    matchers?: { target?: string; type: string; match?: string }[],
+    matchers?: { exact?: string; type: string; pattern?: string }[],
   ): boolean {
     if (!matchers) {
       return true;
@@ -173,12 +177,12 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       if (matcher.type !== location?.type) {
         continue;
       }
-      if (matcher.target && matcher.target !== location?.target) {
+      if (matcher.exact && matcher.exact !== location?.target) {
         continue;
       }
       if (
-        matcher.match &&
-        !minimatch(location?.target, matcher.match, { nocase: true })
+        matcher.pattern &&
+        !minimatch(location?.target, matcher.pattern, { nocase: true })
       ) {
         continue;
       }

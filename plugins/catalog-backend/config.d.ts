@@ -42,11 +42,12 @@ export interface Config {
        * Limit this rule to a specific location
        *
        * Example with a fixed location
-       *  { "type": "url", "target": "https://github.com/a/b/blob/file.yaml}
+       *  { "type": "url", "exact": "https://github.com/a/b/blob/file.yaml"}
        *
        * Example using a Regex
-       *  { "type": "url", "match": "https://github.com/a/*}
+       *  { "type": "url", "pattern": "https://github.com/org/*\/blob/master/*.yaml"}
        *
+       * Using both exact and pattern will result in an error starting the application
        */
       locations?: Array<{
         /**
@@ -54,15 +55,15 @@ export interface Config {
          */
         type: string;
         /**
-         * The target URL of the location, e.g.
+         * The exact location, e.g.
          * "https://github.com/org/repo/blob/master/users.yaml".
          */
-        target?: string;
+        exact?: string;
         /**
          * The pattern allowed for the location, e.g.
          * "https://github.com/org/*\/blob/master/*.yaml.
          */
-        match?: string;
+        pattern?: string;
       }>;
     }>;
 

@@ -54,7 +54,7 @@ const location: Record<string, LocationSpec> = {
 };
 
 describe('DefaultCatalogRulesEnforcer', () => {
-  it('should throw an error if both match and target are used', () => {
+  it('should throw an error if both pattern and exact are used', () => {
     expect(() =>
       DefaultCatalogRulesEnforcer.fromConfig(
         new ConfigReader({
@@ -65,8 +65,8 @@ describe('DefaultCatalogRulesEnforcer', () => {
                 locations: [
                   {
                     type: 'url',
-                    match: 'https://github.com/b/**',
-                    target: 'https://github.com/a/b/blob/master/w.yaml',
+                    pattern: 'https://github.com/b/**',
+                    exact: 'https://github.com/a/b/blob/master/w.yaml',
                   },
                 ],
               },
@@ -74,7 +74,7 @@ describe('DefaultCatalogRulesEnforcer', () => {
           },
         }),
       ),
-    ).toThrow(/cannot have both target and match values/i);
+    ).toThrow(/cannot have both exact and pattern values/i);
   });
   it('should deny by default', () => {
     const enforcer = new DefaultCatalogRulesEnforcer([]);
@@ -250,7 +250,9 @@ describe('DefaultCatalogRulesEnforcer', () => {
             rules: [
               {
                 allow: ['Component'],
-                locations: [{ type: 'url', match: 'https://github.com/b/**' }],
+                locations: [
+                  { type: 'url', pattern: 'https://github.com/b/**' },
+                ],
               },
             ],
           },
