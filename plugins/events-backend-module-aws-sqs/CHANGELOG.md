@@ -1,5 +1,17 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.1.1-next.1
+
+### Patch Changes
+
+- dd008a10c1: Upgrade to AWS SDK for Javascript v3
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/backend-plugin-api@0.1.5-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-events-node@0.2.0-next.1
+
 ## 0.1.1-next.0
 
 ### Patch Changes

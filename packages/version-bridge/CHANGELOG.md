@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.3-next.0
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+
 ## 1.0.2
 
 ### Patch Changes

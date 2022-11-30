@@ -991,13 +991,7 @@ describe('Default Processing Database', () => {
             added: [],
             removed: [
               {
-                entity: {
-                  apiVersion: '1.0.0',
-                  metadata: {
-                    name: 'new-root',
-                  },
-                  kind: 'Location',
-                } as Entity,
+                entityRef: 'location:default/new-root',
                 locationKey: 'file:/tmp/foobar',
               },
             ],

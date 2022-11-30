@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AbortController } from 'node-abort-controller';
 import { AbortContext } from './AbortContext';
 import { RootContext } from './RootContext';
 

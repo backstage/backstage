@@ -20,8 +20,8 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
-import { Knex } from 'knex';
 import lodash from 'lodash';
+import { Knex } from 'knex';
 import {
   EntitiesBatchRequest,
   EntitiesBatchResponse,
@@ -91,12 +91,13 @@ function addCondition(
   db: Knex,
   filter: EntitiesSearchFilter,
   negate: boolean = false,
+  entityIdField = 'entity_id',
 ) {
   // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
   // make a lot of sense. However, it had abysmal performance on sqlite
   // when datasets grew large, so we're using IN instead.
   const matchQuery = db<DbSearchRow>('search')
-    .select('entity_id')
+    .select(entityIdField)
     .where({ key: filter.key.toLowerCase() })
     .andWhere(function keyFilter() {
       if (filter.values) {
@@ -111,7 +112,7 @@ function addCondition(
         }
       }
     });
-  queryBuilder.andWhere('entity_id', negate ? 'not in' : 'in', matchQuery);
+  queryBuilder.andWhere(entityIdField, negate ? 'not in' : 'in', matchQuery);
 }
 
 function isEntitiesSearchFilter(
@@ -137,25 +138,30 @@ function parseFilter(
   query: Knex.QueryBuilder,
   db: Knex,
   negate: boolean = false,
+  entityIdField = 'entity_id',
 ): Knex.QueryBuilder {
   if (isEntitiesSearchFilter(filter)) {
     return query.andWhere(function filterFunction() {
-      addCondition(this, db, filter, negate);
+      addCondition(this, db, filter, negate, entityIdField);
     });
   }
 
   if (isNegationEntityFilter(filter)) {
-    return parseFilter(filter.not, query, db, !negate);
+    return parseFilter(filter.not, query, db, !negate, entityIdField);
   }
 
   return query[negate ? 'andWhereNot' : 'andWhere'](function filterFunction() {
     if (isOrEntityFilter(filter)) {
       for (const subFilter of filter.anyOf ?? []) {
-        this.orWhere(subQuery => parseFilter(subFilter, subQuery, db));
+        this.orWhere(subQuery =>
+          parseFilter(subFilter, subQuery, db, false, entityIdField),
+        );
       }
     } else {
       for (const subFilter of filter.allOf ?? []) {
-        this.andWhere(subQuery => parseFilter(subFilter, subQuery, db));
+        this.andWhere(subQuery =>
+          parseFilter(subFilter, subQuery, db, false, entityIdField),
+        );
       }
     }
   });
@@ -190,7 +196,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     let rows = await entitiesQuery;
-
     let pageInfo: DbPageInfo;
     if (limit === undefined || rows.length <= limit) {
       pageInfo = { hasNextPage: false };
@@ -392,44 +397,26 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   }
 
   async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {
-    const { entities } = await this.entities({
-      filter: request.filter,
-      authorizationToken: request.authorizationToken,
-    });
-
     const facets: EntityFacetsResponse['facets'] = {};
+    const db = this.database;
 
     for (const facet of request.facets) {
-      const values = entities
-        .map(entity => {
-          // TODO(freben): Generalize this code to handle any field that may
-          // have dots in its key?
-          if (facet.startsWith('metadata.annotations.')) {
-            return entity.metadata.annotations?.[
-              facet.substring('metadata.annotations.'.length)
-            ];
-          } else if (facet.startsWith('metadata.labels.')) {
-            return entity.metadata.labels?.[
-              facet.substring('metadata.labels.'.length)
-            ];
-          }
-          return lodash.get(entity, facet);
-        })
-        .flatMap(field => {
-          if (typeof field === 'string') {
-            return [field];
-          } else if (Array.isArray(field)) {
-            return field.filter(i => typeof i === 'string');
-          }
-          return [];
-        })
-        .sort();
+      const dbQuery = db<DbSearchRow>('search')
+        .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
+        .where('search.key', facet.toLocaleLowerCase('en-US'))
+        .count('search.entity_id as count')
+        .select({ value: 'search.original_value' })
+        .groupBy('search.original_value');
 
-      const counts = lodash.countBy(values, lodash.identity);
+      if (request?.filter) {
+        parseFilter(request.filter, dbQuery, db, false, 'search.entity_id');
+      }
 
-      facets[facet] = Object.entries(counts).map(([value, count]) => ({
-        value,
-        count,
+      const result = await dbQuery;
+
+      facets[facet] = result.map(data => ({
+        value: String(data.value),
+        count: Number(data.count),
       }));
     }
 

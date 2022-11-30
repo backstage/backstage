@@ -1,5 +1,14 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.33-next.1
+
+### Patch Changes
+
+- 03843259b4: Documented the `createRouter` method.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/config@1.0.5-next.1
+
 ## 0.2.33-next.0
 
 ### Patch Changes

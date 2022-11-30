@@ -222,6 +222,19 @@ costInsights:
       rate: 3.5
 ```
 
+### Engineer Threshold (Optional; default 0.5)
+
+This threshold determines whether to show 'Negligible', or a percentage with a fraction of 'engineers' for cost savings or cost excess on top of the charts.  
+A threshold of 0.5 means that `Negligible` is shown when the difference in costs is lower than that fraction of engineers in that time frame,  
+and show `XX% or ~N engineers` when it's above the threshold.
+
+```yaml
+## ./app-config.yaml
+costInsights:
+  engineerCost: 200000
+  engineerThreshold: 0.5
+```
+
 ## Alerts
 
 The CostInsightsApi `getAlerts` method may return any type of alert or recommendation (called collectively "Action Items" in Cost Insights) that implements the [Alert type](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/types/Alert.ts). This allows you to deliver any alerts or recommendations specific to your infrastructure or company migrations.

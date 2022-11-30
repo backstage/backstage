@@ -1,5 +1,15 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.31-next.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/theme@0.2.16
+
 ## 0.3.31-next.0
 
 ### Patch Changes

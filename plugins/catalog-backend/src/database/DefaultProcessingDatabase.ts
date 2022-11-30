@@ -737,7 +737,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           deferred: e,
           hash: generateStableHash(e.entity),
         })),
-        toRemove: options.removed.map(e => stringifyEntityRef(e.entity)),
+        toRemove: options.removed.map(e => e.entityRef),
       };
     }
 

@@ -16,12 +16,11 @@
 
 import knexFactory, { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { AbortController } from 'node-abort-controller';
 import { delegateAbortController, nowPlus, sleep, validateId } from './util';
 
 class KnexBuilder {
   public build(client: string): Knex {
-    return knexFactory({ client });
+    return knexFactory({ client, useNullAsDefault: true });
   }
 }
 

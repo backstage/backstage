@@ -17,11 +17,7 @@
 import { TokenManager } from '@backstage/backend-common';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  Entity,
-  LocationEntity,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { LocationEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   BitbucketCloudIntegration,
@@ -44,7 +40,6 @@ import {
   BitbucketCloudEntityProviderConfig,
   readProviderConfigs,
 } from './BitbucketCloudEntityProviderConfig';
-import limiterFactory from 'p-limit';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 
@@ -273,9 +268,7 @@ export class BitbucketCloudEntityProvider
       ),
     );
 
-    const limiter = limiterFactory(10);
-
-    const stillExisting: Entity[] = [];
+    const stillExisting: LocationEntity[] = [];
     const removed: DeferredEntity[] = [];
     existing.forEach(item => {
       if (targets.find(value => value.fileUrl === item.spec.target)) {
@@ -288,22 +281,20 @@ export class BitbucketCloudEntityProvider
       }
     });
 
-    const promises: Promise<void>[] = stillExisting.map(entity =>
-      limiter(async () =>
-        this.catalogApi!.refreshEntity(stringifyEntityRef(entity), { token }),
-      ),
-    );
+    const promises: Promise<void>[] = [
+      this.connection.refresh({
+        keys: stillExisting.map(entity => `url:${entity.spec.target}`),
+      }),
+    ];
 
     if (added.length > 0 || removed.length > 0) {
       const connection = this.connection;
       promises.push(
-        limiter(async () =>
-          connection.applyMutation({
-            type: 'delta',
-            added: added,
-            removed: removed,
-          }),
-        ),
+        connection.applyMutation({
+          type: 'delta',
+          added: added,
+          removed: removed,
+        }),
       );
     }
 

@@ -1,5 +1,18 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.8-next.1
+
+### Patch Changes
+
+- a19cffbeed: Update search links to only have header as linkable text
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/plugin-home@0.4.28-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.1.2-next.1
+
 ## 0.1.8-next.0
 
 ### Patch Changes

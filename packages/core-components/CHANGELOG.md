@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.12.1-next.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+
 ## 0.12.1-next.0
 
 ### Patch Changes
