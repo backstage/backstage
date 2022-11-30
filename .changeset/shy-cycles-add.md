@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-graph': patch
 ---
 
-Set the default max depth in entity relations graph to a smaller value to provide better readability.
+Set the default `maxDepth` prop for `EntityRelationsGraph` to a smaller value to provide better readability.
