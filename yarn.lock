@@ -3613,7 +3613,7 @@ __metadata:
     "@rollup/plugin-commonjs": ^23.0.0
     "@rollup/plugin-json": ^5.0.0
     "@rollup/plugin-node-resolve": ^13.0.6
-    "@rollup/plugin-yaml": ^3.1.0
+    "@rollup/plugin-yaml": ^4.0.0
     "@spotify/eslint-config-base": ^14.0.0
     "@spotify/eslint-config-react": ^14.0.0
     "@spotify/eslint-config-typescript": ^14.0.0
@@ -12683,16 +12683,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-yaml@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@rollup/plugin-yaml@npm:3.1.0"
+"@rollup/plugin-yaml@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "@rollup/plugin-yaml@npm:4.0.1"
   dependencies:
-    "@rollup/pluginutils": ^3.1.0
-    js-yaml: ^3.14.0
-    tosource: ^1.0.0
+    "@rollup/pluginutils": ^5.0.1
+    js-yaml: ^4.1.0
+    tosource: ^2.0.0-alpha.3
   peerDependencies:
-    rollup: ^1.20.0 || ^2.0.0
-  checksum: be99aa097c480a24e6bedf85de2f8e21e287baf443155e7f2e765c939dda53f63cda674476f170b0397e3c69ce3bc825f0ad4041ac6fe25912480c27423e1b37
+    rollup: ^1.20.0||^2.0.0||^3.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: d48e248a9acd3110c889d745562e03e5a16e5861838c6b6d92701e59c0d4a24af374ee7bd81db0ab8e6d021cdb925c05bd7d30149e4e9a0fce4d899170a78857
   languageName: node
   linkType: hard
 
@@ -26263,7 +26266,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^3.10.0, js-yaml@npm:^3.13.0, js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.0, js-yaml@npm:^3.14.1, js-yaml@npm:^3.6.1, js-yaml@npm:^3.8.3":
+"js-yaml@npm:^3.10.0, js-yaml@npm:^3.13.0, js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.1, js-yaml@npm:^3.6.1, js-yaml@npm:^3.8.3":
   version: 3.14.1
   resolution: "js-yaml@npm:3.14.1"
   dependencies:
@@ -36450,10 +36453,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tosource@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "tosource@npm:1.0.0"
-  checksum: 683fc64700484cd749b6eed461c2d105e251df7caf886484ff824bcf1249e365210d65c4f2ca3ced30baa34ea7912c656984e084aaada669920b44e2437c1c05
+"tosource@npm:^2.0.0-alpha.3":
+  version: 2.0.0-alpha.3
+  resolution: "tosource@npm:2.0.0-alpha.3"
+  checksum: bc03a7571de8ed4306e6721283fa891f2adcab9dd80c46f6f177d4259b34bb192fe3a2cb3e1e2ce16f9db0bc7e534acfcb5478ab094b0ba255f98abfce6dab46
   languageName: node
   linkType: hard
 
