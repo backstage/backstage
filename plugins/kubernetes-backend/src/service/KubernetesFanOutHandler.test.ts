@@ -757,6 +757,27 @@ describe('getKubernetesObjectsByEntity', () => {
       ],
     });
   });
+  it('fails when fetcher rejects with a non-FetchError', async () => {
+    const nonFetchError = new Error('not a fetch error');
+    getClustersByEntity.mockResolvedValue({
+      clusters: [
+        {
+          name: 'test-cluster',
+          authProvider: 'serviceAccount',
+          skipMetricsLookup: true,
+        },
+      ],
+    });
+    fetchObjectsForService.mockRejectedValue(nonFetchError);
+
+    const sut = getKubernetesFanOutHandler([]);
+
+    const result = sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+    await expect(result).rejects.toThrow(nonFetchError);
+  });
   describe('with a real fetcher', () => {
     const worker = setupServer();
     setupRequestMockHandlers(worker);
