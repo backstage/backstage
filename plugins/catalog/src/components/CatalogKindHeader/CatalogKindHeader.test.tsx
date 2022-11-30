@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -135,6 +135,42 @@ describe('<CatalogKindHeader />', () => {
     expect(updateFilters).toHaveBeenCalledWith({
       kind: new EntityKindFilter('template'),
     });
+  });
+
+  it('responds to external queryParameters changes', async () => {
+    const updateFilters = jest.fn();
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { kind: ['components'] },
+          }}
+        >
+          <CatalogKindHeader />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: new EntityKindFilter('components'),
+    });
+    rendered.rerender(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { kind: ['template'] },
+          }}
+        >
+          <CatalogKindHeader />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        kind: new EntityKindFilter('template'),
+      })
+    );
   });
 
   it('limits kinds when allowedKinds is set', async () => {

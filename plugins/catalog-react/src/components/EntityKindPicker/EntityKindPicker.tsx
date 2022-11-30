@@ -44,6 +44,14 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
     queryParamKind ?? filters.kind?.value ?? opts.initialFilter,
   );
 
+  // Set selected kinds on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamKind) {
+      setSelectedKind(queryParamKind);
+    }
+  }, [queryParamKind]);
+
   // Set selected kind from filters; this happens when the kind filter is
   // updated from another component
   useEffect(() => {

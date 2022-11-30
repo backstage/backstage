@@ -76,6 +76,14 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
     queryParamKind ?? filters.kind?.value ?? initialFilter,
   );
 
+  // Set selected kinds on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamKind) {
+      setSelectedKind(queryParamKind);
+    }
+  }, [queryParamKind]);
+
   // Set selected kind from filters; this happens when the kind filter is
   // updated from another component
   useEffect(() => {
