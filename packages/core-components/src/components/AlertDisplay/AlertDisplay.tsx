@@ -42,7 +42,7 @@ export type AlertDisplayProps = {
 
 /** @public */
 export function AlertDisplay(props: AlertDisplayProps) {
-  const [messages, setMessages] = useState<Array<AlertMessage>>([]);
+  const [messages, setMessages] = useState<Array<Partial<AlertMessage>>>([]);
   const alertApi = useApi(alertApiRef);
 
   const { anchorOrigin = { vertical: 'top', horizontal: 'center' } } = props;
@@ -83,7 +83,7 @@ export function AlertDisplay(props: AlertDisplayProps) {
         severity={firstMessage.severity}
       >
         <span>
-          {firstMessage.message.toString()}
+          {`${firstMessage?.message}`}
           {messages.length > 1 && (
             <em>{` (${messages.length - 1} older ${pluralize(
               'message',
