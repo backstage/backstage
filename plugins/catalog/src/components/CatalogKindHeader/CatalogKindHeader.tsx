@@ -61,7 +61,7 @@ export interface CatalogKindHeaderProps {
 
 /**
  * @public
- * @deprecated
+ * @deprecated Might be removed in a future release.
  */
 export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   const { initialFilter = 'component', allowedKinds } = props;
