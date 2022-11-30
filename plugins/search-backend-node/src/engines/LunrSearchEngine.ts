@@ -238,6 +238,7 @@ export class LunrSearchEngine implements SearchEngine {
           }),
         },
       })),
+      numberOfResults: results.length,
       nextPageCursor,
       previousPageCursor,
     };

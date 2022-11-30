@@ -17,20 +17,34 @@
 import React, { useEffect } from 'react';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { useSearch } from '../../context';
+import usePrevious from 'react-use/lib/usePrevious';
 
 /**
  * Capture search event on term change.
  */
 export const TrackSearch = ({ children }: { children: React.ReactChild }) => {
+  const useHasChanged = (value: any) => {
+    const previousVal = usePrevious(value);
+    return previousVal !== value;
+  };
+
   const analytics = useAnalytics();
-  const { term } = useSearch();
+  const { term, result } = useSearch();
+
+  const numberOfResults = result.value?.numberOfResults ?? undefined;
+
+  // Stops the analtyics event from firing before the new search engine response is returned
+  const hasStartedLoading = useHasChanged(result.loading);
+  const hasFinishedLoading = hasStartedLoading && !result.loading;
 
   useEffect(() => {
-    if (term) {
-      // Capture analytics search event with search term provided as value
-      analytics.captureEvent('search', term);
+    if (term && hasFinishedLoading) {
+      // Capture analytics search event with search term and numberOfResults (provided as value)
+      analytics.captureEvent('search', term, {
+        value: numberOfResults,
+      });
     }
-  }, [analytics, term]);
+  }, [analytics, term, numberOfResults, hasFinishedLoading]);
 
   return <>{children}</>;
 };

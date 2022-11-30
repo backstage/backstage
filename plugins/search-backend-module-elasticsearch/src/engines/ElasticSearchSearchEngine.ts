@@ -335,6 +335,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         ),
         nextPageCursor,
         previousPageCursor,
+        numberOfResults: result.body.hits.total.value,
       };
     } catch (error) {
       if (error.meta?.body?.error?.type === 'index_not_found_exception') {
