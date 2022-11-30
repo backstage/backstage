@@ -82,7 +82,7 @@ async function getProjectConfig(targetPath, displayName) {
   let closestPkgJson = undefined;
   let currentPath = targetPath;
 
-  // Some sanity check to avoid infinite loop
+  // Some confidence check to avoid infinite loop
   for (let i = 0; i < 100; i++) {
     const packagePath = path.resolve(currentPath, 'package.json');
     const exists = fs.pathExistsSync(packagePath);

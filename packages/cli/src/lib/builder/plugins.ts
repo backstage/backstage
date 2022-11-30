@@ -114,7 +114,7 @@ export function forwardFileImports(options: ForwardFileImportsOptions): Plugin {
           return false;
         }
 
-        // Sanity check, dunno if this can happen
+        // Confidence check, dunno if this can happen
         if (!importer) {
           throw new Error(`Unknown importer of file module ${id}`);
         }
