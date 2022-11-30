@@ -29,6 +29,11 @@ import {
   QueryResponse,
   GithubUser,
   GithubTeam,
+  createAddEntitiesOperation,
+  createRemoveEntitiesOperation,
+  createReplaceEntitiesOperation,
+  removeUserFromGroup,
+  addUserToGroup,
 } from './github';
 import fetch from 'node-fetch';
 
@@ -565,6 +570,241 @@ describe('github', () => {
       await expect(
         getOrganizationRepositories(graphql, 'a', 'catalog-info.yaml'),
       ).resolves.toEqual(output);
+    });
+  });
+
+  describe('createAddEntitiesOperation', () => {
+    it('create a function to add deferred entities to a delta operation', () => {
+      const operation = createAddEntitiesOperation('my-id', 'host');
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+      expect(operation('org', [userEntity])).toEqual({
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+        removed: [],
+      });
+    });
+  });
+
+  describe('createRemoveEntitiesOperation', () => {
+    it('create a function to remove deferred entities to a delta operation', () => {
+      const operation = createRemoveEntitiesOperation('my-id', 'host');
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+      expect(operation('org', [userEntity])).toEqual({
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+        added: [],
+      });
+    });
+  });
+
+  describe('createReplaceEntitiesOperation', () => {
+    it('create a function to replace deferred entities to a delta operation', () => {
+      const operation = createReplaceEntitiesOperation('my-id', 'host');
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+      expect(operation('org', [userEntity])).toEqual({
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+      });
+    });
+  });
+
+  describe('removeUserFromGroup', () => {
+    it('should remove a user from the group', () => {
+      const groupEntity: GroupEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['user-1', 'githubuser'],
+        },
+      };
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+
+      const { user, group } = removeUserFromGroup(userEntity, groupEntity);
+
+      expect(user.spec.memberOf).toEqual([]);
+      expect(group.spec.members).toEqual(['user-1']);
+    });
+  });
+
+  describe('addUserToGroup', () => {
+    it('should add a user to the group', () => {
+      const groupEntity: GroupEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['user-1'],
+        },
+      };
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: [],
+        },
+      };
+
+      const { user, group } = addUserToGroup(userEntity, groupEntity);
+      expect(user.spec.memberOf).toEqual(['new-team']);
+      expect(group.spec.members).toEqual(['user-1', 'githubuser']);
+    });
+    it('should add a user to the group when the fields are not defined', () => {
+      const groupEntity: GroupEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+        },
+      };
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {},
+      };
+
+      const { user, group } = addUserToGroup(userEntity, groupEntity);
+
+      expect(user.spec.memberOf).toEqual(['new-team']);
+      expect(group.spec.members).toEqual(['githubuser']);
     });
   });
 });

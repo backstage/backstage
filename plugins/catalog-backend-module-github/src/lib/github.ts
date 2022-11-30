@@ -432,6 +432,7 @@ export const createAddEntitiesOperation =
       entity: withLocations(`https://${host}`, org, entity),
     })),
   });
+
 export const createRemoveEntitiesOperation =
   (id: string, host: string) => (org: string, entities: Entity[]) => ({
     added: [],
@@ -440,6 +441,7 @@ export const createRemoveEntitiesOperation =
       entity: withLocations(`https://${host}`, org, entity),
     })),
   });
+
 export const createReplaceEntitiesOperation =
   (id: string, host: string) => (org: string, entities: Entity[]) => {
     const entitiesToReplace = entities.map(entity => ({
@@ -470,6 +472,20 @@ export function removeUserFromGroup(user: UserEntity, group: GroupEntity) {
 }
 
 export function addUserToGroup(user: UserEntity, group: GroupEntity) {
+  if (!group.spec?.members) {
+    group.spec = {
+      ...group.spec,
+      members: [],
+    };
+  }
+
+  if (!user.spec?.memberOf) {
+    user.spec = {
+      ...user.spec,
+      memberOf: [],
+    };
+  }
+
   group.spec?.members?.push(user.metadata.name);
   user.spec?.memberOf?.push(group.metadata.name);
   return { group, user };
