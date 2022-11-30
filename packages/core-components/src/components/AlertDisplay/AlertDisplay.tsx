@@ -42,7 +42,7 @@ export type AlertDisplayProps = {
 
 /** @public */
 export function AlertDisplay(props: AlertDisplayProps) {
-  const [messages, setMessages] = useState<Array<Partial<AlertMessage>>>([]);
+  const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
 
   const { anchorOrigin = { vertical: 'top', horizontal: 'center' } } = props;
