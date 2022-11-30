@@ -76,6 +76,7 @@ Set up your provider
 
 ```diff
 // packages/backend/src/plugins/catalogEventBasedProviders.ts
++import { CatalogClient } from '@backstage/catalog-client';
 +import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
  import { EntityProvider } from '@backstage/plugin-catalog-node';
  import { EventSubscriber } from '@backstage/plugin-events-node';
@@ -93,6 +94,8 @@ Set up your provider
 +      id: 'production',
 +      orgUrl: 'https://github.com/backstage',
 +      logger: env.logger,
++      catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
++      tokenManager: env.tokenManager,
 +      schedule: env.scheduler.createScheduledTaskRunner({
 +        frequency: { minutes: 60 },
 +        timeout: { minutes: 15 },
@@ -103,10 +106,11 @@ Set up your provider
  }
 ```
 
-You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
-The webhook will need to be configured to forward `organizatio` and `team` events.
+**Attention:**
+`catalogApi` and `tokenManager` are required at this variant compared to the one without events support.
 
-**Please note that the event `team` with action `edited` and `removed_from_repository` will not be handled for this provider.**
+You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
+The webhook will need to be configured to forward `organization`,`team` and `membership` events.
 
 ## Configuration
 
