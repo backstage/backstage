@@ -152,7 +152,7 @@ describe('GoogleAnalytics', () => {
       });
     });
 
-    it('captures virtual pageviews', () => {
+    it('captures virtual pageviews instead of search events', () => {
       const config = new ConfigReader({
         app: {
           analytics: {
@@ -177,6 +177,7 @@ describe('GoogleAnalytics', () => {
         hitType: 'pageview',
         page: '/search?query=test search',
       });
+      expect(ReactGA.testModeAPI.calls).toHaveLength(2);
     });
 
     it('captures virtual pageviews alongside search events', () => {
