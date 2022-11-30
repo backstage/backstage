@@ -267,7 +267,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
             .select('refresh_state_references.source_entity_ref');
         });
       await this.database<DbRefreshStateRow>('refresh_state')
-        .update({ result_hash: 'child-was-deleted' })
+        .update({
+          result_hash: 'child-was-deleted',
+          next_update_at: this.database.fn.now(),
+        })
         .whereIn(
           'entity_id',
           results.map(key => key.entity_id),
@@ -276,6 +279,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       await this.database<DbRefreshStateRow>('refresh_state')
         .update({
           result_hash: 'child-was-deleted',
+          next_update_at: this.database.fn.now(),
         })
         .whereIn('entity_ref', function parents(builder) {
           return builder
