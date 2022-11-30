@@ -83,7 +83,7 @@ export function AlertDisplay(props: AlertDisplayProps) {
         severity={firstMessage.severity}
       >
         <span>
-          {firstMessage.message.toString()}
+          {String(firstMessage.message)}
           {messages.length > 1 && (
             <em>{` (${messages.length - 1} older ${pluralize(
               'message',
