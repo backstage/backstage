@@ -20,7 +20,11 @@ import { exitWithError } from '../lib/errors';
 
 export function registerCommands(program: Command) {
   program
-    .command('api-reports [path...]')
+    .command('api-reports')
+    .argument(
+      '[paths...]',
+      'path of package folder to extract API reports, `workspaces.packages` from root packages.json by default',
+    )
     .option('--ci', 'CI run checks that there is no changes on API reports')
     .option('--tsc', 'executes the tsc compilation before extracting the APIs')
     .option('--docs', 'generates the api documentation')
@@ -29,10 +33,6 @@ export function registerCommands(program: Command) {
       'continue processing packages after getting errors on selected packages',
       false,
     )
-    .option('--folders <folders...>', 'packages folder containers', [
-      'packages',
-      'plugins',
-    ])
     .option(
       '--omitMessages <messageCodes...>',
       'select some message code to be omited on the API Extractor (i.e ae-cyclic-inherit-doc)',

@@ -67,8 +67,14 @@ import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { paths as cliPaths } from '../../lib/paths';
 
-const tmpDir = resolvePath(
-  cliPaths.targetRoot,
+import g from 'glob';
+import isGlob from 'is-glob';
+
+import { promisify } from 'util';
+
+const glob = promisify(g);
+
+const tmpDir = cliPaths.resolveTargetRoot(
   './node_modules/.cache/api-extractor',
 );
 
@@ -220,11 +226,10 @@ ApiReportGenerator.generateReviewFileContent =
     });
   };
 
-async function resolvePackagePath(
+export async function resolvePackagePath(
   packagePath: string,
 ): Promise<string | undefined> {
-  const projectRoot = resolvePath(cliPaths.targetRoot);
-  const fullPackageDir = resolvePath(projectRoot, packagePath);
+  const fullPackageDir = cliPaths.resolveTargetRoot(packagePath);
 
   const stat = await fs.stat(fullPackageDir);
   if (!stat.isDirectory()) {
@@ -237,49 +242,29 @@ async function resolvePackagePath(
   } catch (_) {
     return undefined;
   }
-
-  return relativePath(projectRoot, fullPackageDir);
+  return relativePath(cliPaths.targetRoot, fullPackageDir);
 }
 
-export async function findSpecificPackageDirs(unresolvedPackageDirs: string[]) {
+export async function findPackageDirs(selectedPaths: string[]) {
   const packageDirs = new Array<string>();
+  for (const packageRoot of selectedPaths) {
+    const fullPath = cliPaths.resolveTargetRoot(packageRoot);
 
-  for (const unresolvedPackageDir of unresolvedPackageDirs) {
-    const packageDir = await resolvePackagePath(unresolvedPackageDir);
-    if (!packageDir) {
-      throw new Error(`'${unresolvedPackageDir}' is not a valid package path`);
-    }
-    packageDirs.push(packageDir);
-  }
-
-  if (packageDirs.length === 0) {
-    return undefined;
-  }
-
-  return packageDirs;
-}
-
-export async function findPackageDirs(packageRoots: string[]) {
-  const packageDirs = new Array<string>();
-  const projectRoot = resolvePath(cliPaths.targetRoot);
-
-  for (const packageRoot of packageRoots) {
-    const dirs = await fs.readdir(resolvePath(projectRoot, packageRoot));
+    // if the path contain any glob notation we resolve all the paths to process one by one
+    const dirs = isGlob(fullPath) ? await glob(fullPath) : [fullPath];
     for (const dir of dirs) {
-      const packageDir = await resolvePackagePath(join(packageRoot, dir));
+      const packageDir = await resolvePackagePath(dir);
       if (!packageDir) {
         continue;
       }
-
       packageDirs.push(packageDir);
     }
   }
-
   return packageDirs;
 }
 
 export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
-  const path = resolvePath(cliPaths.targetRoot, 'tsconfig.tmp.json');
+  const path = cliPaths.resolveTargetRoot('tsconfig.tmp.json');
 
   process.once('exit', () => {
     fs.removeSync(path);
@@ -380,8 +365,7 @@ export async function runApiExtraction({
   await fs.remove(outputDir);
 
   const entryPoints = packageDirs.map(packageDir => {
-    return resolvePath(
-      cliPaths.targetRoot,
+    return cliPaths.resolveTargetRoot(
       `./dist-types/${packageDir}/src/index.d.ts`,
     );
   });
@@ -404,9 +388,8 @@ export async function runApiExtraction({
       ? allowWarnings.includes(packageDir)
       : allowWarnings;
 
-    const projectFolder = resolvePath(cliPaths.targetRoot, packageDir);
-    const packageFolder = resolvePath(
-      cliPaths.targetRoot,
+    const projectFolder = cliPaths.resolveTargetRoot(packageDir);
+    const packageFolder = cliPaths.resolveTargetRoot(
       './dist-types',
       packageDir,
     );
@@ -1138,10 +1121,7 @@ export async function buildDocs({
   documenter.generateFiles();
 }
 
-export async function categorizePackageDirs(
-  projectRoot: string,
-  packageDirs: any[],
-) {
+export async function categorizePackageDirs(packageDirs: any[]) {
   const dirs = packageDirs.slice();
   const tsPackageDirs = new Array<string>();
   const cliPackageDirs = new Array<string>();
@@ -1157,7 +1137,7 @@ export async function categorizePackageDirs(
           }
 
           const pkgJson = await fs
-            .readJson(resolvePath(projectRoot, dir, 'package.json'))
+            .readJson(cliPaths.resolveTargetRoot(dir, 'package.json'))
             .catch(error => {
               if (error.code === 'ENOENT') {
                 return undefined;
@@ -1211,6 +1191,7 @@ function parseHelpPage(helpPageContent: string) {
 
   let options = new Array<string>();
   let commands = new Array<string>();
+  let commandArguments = new Array<string>();
 
   while (lines.length > 0) {
     while (lines.length > 0 && !lines[0].endsWith(':')) {
@@ -1235,6 +1216,8 @@ function parseHelpPage(helpPageContent: string) {
         options = sectionItems;
       } else if (sectionName?.toLocaleLowerCase('en-US') === 'commands:') {
         commands = sectionItems;
+      } else if (sectionName?.toLocaleLowerCase('en-US') === 'arguments:') {
+        commandArguments = sectionItems;
       } else {
         throw new Error(`Unknown CLI section: ${sectionName}`);
       }
@@ -1245,6 +1228,7 @@ function parseHelpPage(helpPageContent: string) {
     usage,
     options,
     commands,
+    commandArguments,
   };
 }
 
@@ -1256,6 +1240,7 @@ interface CliHelpPage {
   usage: string | undefined;
   options: string[];
   commands: string[];
+  commandArguments: string[];
 }
 
 async function exploreCliHelpPages(
@@ -1335,7 +1320,7 @@ export async function runCliExtraction({
 }: CliExtractionOptions) {
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
-    const fullDir = resolvePath(projectRoot, packageDir);
+    const fullDir = cliPaths.resolveTargetRoot(packageDir);
     const pkgJson = await fs.readJson(resolvePath(fullDir, 'package.json'));
 
     if (!pkgJson.bin) {

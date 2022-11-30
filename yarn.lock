@@ -8474,9 +8474,11 @@ __metadata:
     "@microsoft/api-extractor": ^7.23.0
     "@microsoft/api-extractor-model": ^7.17.2
     "@microsoft/tsdoc": 0.14.1
+    "@types/is-glob": ^4.0.2
     chalk: ^4.0.0
     commander: ^9.1.0
     fs-extra: 10.1.0
+    is-glob: ^4.0.3
     ts-node: ^10.0.0
   bin:
     backstage-repo-tools: bin/backstage-repo-tools
@@ -14198,6 +14200,13 @@ __metadata:
   dependencies:
     ci-info: ^3.1.0
   checksum: 7c1f1f16c1fa2134de7400d82766c83fa76057261ba890628af77a09382ebb92d945bb077b98cfcf3d40ab1469c9ffbd2278112867edbe57aa655f53547eb139
+  languageName: node
+  linkType: hard
+
+"@types/is-glob@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@types/is-glob@npm:4.0.2"
+  checksum: 50b0a52b6d179781b36bfce35155e1e0dc66b62e2943153d7d7c7079c40ba6236528a254de8be6c52ff9a7a351996887802efd7fd763da3e2121315e4ffe2edf
   languageName: node
   linkType: hard
 

@@ -40,7 +40,11 @@
     "chalk": "^4.0.0",
     "commander": "^9.1.0",
     "fs-extra": "10.1.0",
+    "is-glob": "^4.0.3",
     "ts-node": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/is-glob": "^4.0.2"
   },
   "files": [
     "bin",

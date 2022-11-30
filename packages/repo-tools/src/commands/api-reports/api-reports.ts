@@ -19,7 +19,6 @@ import { resolve as resolvePath } from 'path';
 import fs from 'fs-extra';
 import { spawnSync } from 'child_process';
 import {
-  findSpecificPackageDirs,
   createTemporaryTsConfig,
   findPackageDirs,
   categorizePackageDirs,
@@ -30,14 +29,6 @@ import {
 import { paths as cliPaths } from '../../lib/paths';
 
 export default async (paths: string[], opts: OptionValues) => {
-  console.log(opts);
-  console.log({
-    ownDir: cliPaths.ownDir,
-    ownRoot: cliPaths.ownRoot,
-    targetDir: cliPaths.targetDir,
-    targetRoot: cliPaths.targetRoot,
-    'process.cwd()': process.cwd(),
-  });
   const tmpDir = resolvePath(
     cliPaths.targetRoot,
     './node_modules/.cache/api-extractor',
@@ -47,25 +38,26 @@ export default async (paths: string[], opts: OptionValues) => {
   const isCiBuild = opts.ci;
   const isDocsBuild = opts.docs;
   const runTsc = opts.tsc;
-  const packageRoots = opts.folders;
+  const selectedPaths = paths.length ? paths : await getWorkspacePkgs();
   const allowWarnings: boolean | string[] = opts.allowWarnings;
   const omitMessages = opts.omitMessages;
 
-  const selectedPackageDirs = await findSpecificPackageDirs(paths);
+  const selectedPackageDirs = await findPackageDirs(selectedPaths);
 
-  if (selectedPackageDirs && isCiBuild) {
+  if (paths.length && isCiBuild) {
+    // TODO @sarabadu we can remove this validation to allow `/plugins/*` on CI??
     throw new Error(
       'Package path arguments are not supported together with the --ci flag',
     );
   }
-  if (!selectedPackageDirs && !isCiBuild && !isDocsBuild) {
+  if (!paths.length && !isCiBuild && !isDocsBuild) {
     console.log('');
     console.log(
       'TIP: You can generate api-reports for select packages by passing package paths:',
     );
     console.log('');
     console.log(
-      '       yarn build:api-reports packages/config packages/core-plugin-api',
+      '       yarn build:api-reports packages/config packages/core-plugin-api plugins/*',
     );
     console.log('');
   }
@@ -98,12 +90,8 @@ export default async (paths: string[], opts: OptionValues) => {
     }
   }
 
-  const packageDirs =
-    selectedPackageDirs ?? (await findPackageDirs(packageRoots));
-
   const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
-    projectRoot,
-    packageDirs,
+    selectedPackageDirs,
   );
 
   if (tsPackageDirs.length > 0) {
@@ -134,3 +122,15 @@ export default async (paths: string[], opts: OptionValues) => {
     });
   }
 };
+async function getWorkspacePkgs() {
+  const pkgJson = await fs
+    .readJson(cliPaths.resolveTargetRoot('package.json'))
+    .catch(error => {
+      if (error.code === 'ENOENT') {
+        return undefined;
+      }
+      throw error;
+    });
+  const workspaces = pkgJson?.workspaces?.packages;
+  return workspaces;
+}
