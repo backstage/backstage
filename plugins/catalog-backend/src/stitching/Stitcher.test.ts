@@ -115,13 +115,43 @@ describe('Stitcher', () => {
       const search = await db<DbSearchRow>('search');
       expect(search).toEqual(
         expect.arrayContaining([
-          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/other' },
-          { entity_id: 'my-id', key: 'apiversion', value: 'a' },
-          { entity_id: 'my-id', key: 'kind', value: 'k' },
-          { entity_id: 'my-id', key: 'metadata.name', value: 'n' },
-          { entity_id: 'my-id', key: 'metadata.namespace', value: 'ns' },
-          { entity_id: 'my-id', key: 'metadata.uid', value: 'my-id' },
-          { entity_id: 'my-id', key: 'spec.k', value: 'v' },
+          {
+            entity_id: 'my-id',
+            key: 'relations.looksat',
+            original_value: 'k:ns/other',
+            value: 'k:ns/other',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'apiversion',
+            original_value: 'a',
+            value: 'a',
+          },
+          { entity_id: 'my-id', key: 'kind', original_value: 'k', value: 'k' },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.name',
+            original_value: 'n',
+            value: 'n',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.namespace',
+            original_value: 'ns',
+            value: 'ns',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.uid',
+            original_value: 'my-id',
+            value: 'my-id',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'spec.k',
+            original_value: 'v',
+            value: 'v',
+          },
         ]),
       );
 
@@ -179,14 +209,49 @@ describe('Stitcher', () => {
 
       expect(await db<DbSearchRow>('search')).toEqual(
         expect.arrayContaining([
-          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/other' },
-          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/third' },
-          { entity_id: 'my-id', key: 'apiversion', value: 'a' },
-          { entity_id: 'my-id', key: 'kind', value: 'k' },
-          { entity_id: 'my-id', key: 'metadata.name', value: 'n' },
-          { entity_id: 'my-id', key: 'metadata.namespace', value: 'ns' },
-          { entity_id: 'my-id', key: 'metadata.uid', value: 'my-id' },
-          { entity_id: 'my-id', key: 'spec.k', value: 'v' },
+          {
+            entity_id: 'my-id',
+            key: 'relations.looksat',
+            original_value: 'k:ns/other',
+            value: 'k:ns/other',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'relations.looksat',
+            original_value: 'k:ns/third',
+            value: 'k:ns/third',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'apiversion',
+            original_value: 'a',
+            value: 'a',
+          },
+          { entity_id: 'my-id', key: 'kind', original_value: 'k', value: 'k' },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.name',
+            original_value: 'n',
+            value: 'n',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.namespace',
+            original_value: 'ns',
+            value: 'ns',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.uid',
+            original_value: 'my-id',
+            value: 'my-id',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'spec.k',
+            original_value: 'v',
+            value: 'v',
+          },
         ]),
       );
     },
