@@ -82,6 +82,10 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
    *     locations:
    *       - type: url
    *         pattern: https://github.com/org/*\/blob/master/template.yaml
+   *   - allow: [Location]
+   *     locations:
+   *       - type: url
+   *         pattern: https://github.com/org/repo/blob/master/location.yaml
    *
    *   locations:
    *   - type: url
