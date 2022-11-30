@@ -82,6 +82,7 @@ import { ApiRegistry } from '../apis/system/ApiRegistry';
 import { resolveRouteBindings } from './resolveRouteBindings';
 import { BackstageRouteObject } from '../routing/types';
 import { isReactRouterBeta } from './isReactRouterBeta';
+import { JsonObject } from '@backstage/types';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -155,12 +156,11 @@ function useConfigLoader(
   }
 
   let configReader;
-
   /**
    * config.value can be undefined or empty. If it's either, don't bother overriding anything.
    */
   if (config.value?.length) {
-    configReader = ConfigReader.fromConfigs(config.value);
+    const urlConfigReader = ConfigReader.fromConfigs(config.value);
 
     const resolveRelativeUrl = (relativeUrl: string) =>
       new URL(relativeUrl, document.location.origin).href;
@@ -172,32 +172,46 @@ function useConfigLoader(
 
     const getOrigin = (url: string) => new URL(url).origin;
 
-    const appBaseUrl = configReader.getString('app.baseUrl');
-    const backendBaseUrl = configReader.getString('backend.baseUrl');
-    const appOrigin = getOrigin(appBaseUrl);
-    const backendOrigin = getOrigin(backendBaseUrl);
+    const appBaseUrl = urlConfigReader.getOptionalString('app.baseUrl');
+    const backendBaseUrl = urlConfigReader.getOptionalString('backend.baseUrl');
+    let configs = config.value;
+    const relativeResolverConfig: { data: JsonObject; context: string } = {
+      data: {},
+      context: 'relative-resolver',
+    };
+    if (appBaseUrl && backendBaseUrl) {
+      const appOrigin = getOrigin(appBaseUrl);
+      const backendOrigin = getOrigin(backendBaseUrl);
 
-    /**
-     * We only want to override the URLs with the document origin when the URLs match
-     *  and are defined. We use getOptionalString here to not throw when the app.baseUrl
-     *  and backend.baseUrl are not defined. If they are defined but not well formatted URLs
-     *  the above getRelativeUrl() method will throw.
-     */
-    if (appOrigin === backendOrigin) {
-      config.value.push({
-        data: {
-          app: {
-            baseUrl: resolveRelativeUrl(getRelativeUrl(appBaseUrl)),
-          },
-          backend: {
-            baseUrl: resolveRelativeUrl(getRelativeUrl(backendBaseUrl)),
-          },
-        },
-        context: 'relative-resolver',
-      });
+      /**
+       * We only want to override the URLs with the document origin when the URLs match
+       *  and are defined. We use getOptionalString here to not throw when the app.baseUrl
+       *  and backend.baseUrl are not defined. If they are defined but not well formatted URLs
+       *  the above getRelativeUrl() method will throw.
+       */
+      if (appOrigin === backendOrigin) {
+        relativeResolverConfig.data.backend = {
+          baseUrl: resolveRelativeUrl(getRelativeUrl(backendBaseUrl)),
+        };
+      }
     }
-
-    configReader = ConfigReader.fromConfigs(config.value);
+    if (appBaseUrl) {
+      /**
+       * Rewriting app.baseUrl to the current document should be a no-op. The
+       *  document hosting the app should always be the same url as the app
+       *  references.
+       */
+      relativeResolverConfig.data.app = {
+        baseUrl: resolveRelativeUrl(getRelativeUrl(appBaseUrl)),
+      };
+    }
+    /**
+     * Only add the relative config if there is actually data to add.
+     */
+    if (Object.keys(relativeResolverConfig.data).length) {
+      configs = configs.concat([relativeResolverConfig]);
+    }
+    configReader = ConfigReader.fromConfigs(configs);
   } else {
     configReader = ConfigReader.fromConfigs([]);
   }

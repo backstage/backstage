@@ -22,7 +22,8 @@ jest.mock('./config', () => ({
   configLoader: async () => [
     {
       data: {
-        app: { title: 'Test', baseUrl: 'http://localhost:3000' },
+        app: { title: 'Test' },
+        backend: { baseUrl: 'http://localhost:7007' },
         techdocs: {
           storageUrl: 'http://localhost:7007/api/techdocs/static/docs',
         },

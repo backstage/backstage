@@ -614,7 +614,7 @@ describe('Integration Test', () => {
       ],
       [
         [
-          `http://test-front.com/backstage/instance`,
+          `${document.location.origin}/backstage/instance`,
           `http://test.com/backstage/instance`,
         ],
         {
