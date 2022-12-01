@@ -17,7 +17,6 @@
 import {
   createPermission,
   ResourcePermission,
-  BasicPermission,
 } from '@backstage/plugin-permission-common';
 
 /**
@@ -39,13 +38,11 @@ export type KubernetesResourcePermission = ResourcePermission<
  * kubernetes resources.
  * @alpha
  */
-export const kubernetesClusterReadPermission: BasicPermission =
-  createPermission({
-    name: 'kubernetes.clusters',
-    attributes: {
-      action: 'read',
-    },
-  });
+export const kubernetesClusterReadPermission = createPermission({
+  name: 'kubernetes.clusters.read',
+  attributes: { action: 'read' },
+  resourceType: RESOURCE_TYPE_KUBERNETES_RESOURCE,
+});
 
 /**
  * This permission is used to authorize actions that involve reading one or more

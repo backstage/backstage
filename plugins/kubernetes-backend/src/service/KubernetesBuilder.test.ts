@@ -99,7 +99,7 @@ describe('KubernetesBuilder', () => {
 
   describe('get /clusters', () => {
     it('happy path: lists clusters', async () => {
-      permissions.authorize.mockReturnValue(
+      permissions.authorizeConditional.mockReturnValue(
         Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
       );
 
@@ -121,7 +121,7 @@ describe('KubernetesBuilder', () => {
     });
 
     it('not allowed error: Get a 403 response if Permission Policy is in place that blocks endpoint', async () => {
-      permissions.authorize.mockReturnValue(
+      permissions.authorizeConditional.mockReturnValue(
         Promise.resolve([{ result: AuthorizeResult.DENY }]),
       );
       const response = await request(app).get('/clusters');
