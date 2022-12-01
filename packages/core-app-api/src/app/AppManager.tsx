@@ -21,8 +21,8 @@ import React, {
   PropsWithChildren,
   ReactElement,
   useContext,
-  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -230,6 +230,7 @@ export class AppManager implements BackstageApp {
     let routesHaveBeenValidated = false;
 
     const Provider = ({ children }: PropsWithChildren<{}>) => {
+      const needsFeatureFlagRegistrationRef = useRef(true);
       const appThemeApi = useMemo(
         () => AppThemeSelector.createWithStorage(this.themes),
         [],
@@ -284,10 +285,21 @@ export class AppManager implements BackstageApp {
         this.configApi = api;
       }
 
-      useEffect(() => {
-        if (hasConfigApi) {
-          const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+      if ('node' in loadedConfig) {
+        // Loading or error
+        return loadedConfig.node;
+      }
 
+      // We can't register feature flags just after the element traversal, because the
+      // config API isn't available yet and implementations frequently depend on it.
+      // Instead we make it happen immediately, to make sure all flags are available
+      // for the first render.
+      if (hasConfigApi && needsFeatureFlagRegistrationRef.current) {
+        needsFeatureFlagRegistrationRef.current = false;
+
+        const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+
+        if (featureFlagsApi) {
           for (const plugin of this.plugins.values()) {
             if ('getFeatureFlags' in plugin) {
               for (const flag of plugin.getFeatureFlags()) {
@@ -314,11 +326,6 @@ export class AppManager implements BackstageApp {
             featureFlagsApi.registerFlag({ name, pluginId: '' });
           }
         }
-      }, [hasConfigApi, loadedConfig, featureFlags]);
-
-      if ('node' in loadedConfig) {
-        // Loading or error
-        return loadedConfig.node;
       }
 
       const { ThemeProvider = AppThemeProvider } = this.components;
