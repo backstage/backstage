@@ -2,4 +2,4 @@
 '@backstage/plugin-vault-backend': patch
 ---
 
-Added (optional) public link option to entity vault card in case base link is internal
+Added (optional) config `vault.publicUrl` as alternative to `vault.baseUrl` for `editUrl` and `showUrl` in case `vault.baseUrl` is internal
