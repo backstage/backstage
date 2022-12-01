@@ -14,7 +14,7 @@ Options:
 Commands:
   api-reports [options] [path...]
   type-deps
-  changeset-feedback [diffRef...]
+  changeset-feedback <diffRef>
   help [command]
 ```
 
@@ -33,7 +33,7 @@ Options:
 ### `backstage-repo-tools changeset-feedback`
 
 ```
-Usage: backstage-repo-tools changeset-feedback [options] [diffRef...]
+Usage: backstage-repo-tools changeset-feedback [options] <diffRef>
 
 Options:
   -h, --help
