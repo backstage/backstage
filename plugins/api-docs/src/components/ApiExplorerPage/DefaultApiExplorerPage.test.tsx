@@ -126,11 +126,9 @@ describe('DefaultApiExplorerPage', () => {
   });
 
   it('should render the default column of the grid', async () => {
-    const { getAllByRole } = renderWrapped(<DefaultApiExplorerPage />);
+    const { getAllByTestId } = renderWrapped(<DefaultApiExplorerPage />);
 
-    const columnHeader = getAllByRole('button').filter(
-      c => c.tagName === 'SPAN',
-    );
+    const columnHeader = getAllByTestId('mtableheader-sortlabel');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
     expect(columnHeaderLabels).toEqual([
@@ -141,7 +139,6 @@ describe('DefaultApiExplorerPage', () => {
       'Lifecycle',
       'Description',
       'Tags',
-      'Actions',
     ]);
   });
 
@@ -151,16 +148,14 @@ describe('DefaultApiExplorerPage', () => {
       { title: 'Bar', field: 'entity.bar' },
       { title: 'Baz', field: 'entity.spec.lifecycle' },
     ];
-    const { getAllByRole } = renderWrapped(
+    const { getAllByTestId } = renderWrapped(
       <DefaultApiExplorerPage columns={columns} />,
     );
 
-    const columnHeader = getAllByRole('button').filter(
-      c => c.tagName === 'SPAN',
-    );
+    const columnHeader = getAllByTestId('mtableheader-sortlabel');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz']);
   });
 
   it('should render the default actions of an item in the grid', async () => {

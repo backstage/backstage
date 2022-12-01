@@ -163,9 +163,7 @@ describe('DefaultCatalogPage', () => {
   it('should render the default column of the grid', async () => {
     await renderWrapped(<DefaultCatalogPage />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
+    const columnHeader = screen.getAllByTestId('mtableheader-sortlabel');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
     expect(columnHeaderLabels).toEqual([
@@ -176,7 +174,6 @@ describe('DefaultCatalogPage', () => {
       'Lifecycle',
       'Description',
       'Tags',
-      'Actions',
     ]);
   }, 20_000);
 
@@ -188,11 +185,9 @@ describe('DefaultCatalogPage', () => {
     ];
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
+    const columnHeader = screen.getAllByTestId('mtableheader-sortlabel');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz']);
   }, 20_000);
 
   it('should render the default actions of an item in the grid', async () => {

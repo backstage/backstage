@@ -108,12 +108,14 @@ describe('BitriseBuildsFetchComponent', () => {
       },
     });
 
-    const { getAllByText, getByText } = await renderInTestApp(
+    const { findAllByText, getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <BitriseBuildsTable appName="some-app-name" />,
       </ApiProvider>,
     );
-    expect(getAllByText(/1-20 of 400/).length).toEqual(2);
+    await expect(findAllByText(/1-20 of 400/)).resolves.toMatchObject({
+      length: 2,
+    });
     expect(getByText(/20 rows/)).toBeInTheDocument();
   });
 });

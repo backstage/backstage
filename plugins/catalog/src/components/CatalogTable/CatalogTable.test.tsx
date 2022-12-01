@@ -189,7 +189,6 @@ describe('CatalogTable component', () => {
         'Lifecycle',
         'Description',
         'Tags',
-        'Actions',
       ],
     },
     {
@@ -202,7 +201,6 @@ describe('CatalogTable component', () => {
         'Lifecycle',
         'Description',
         'Tags',
-        'Actions',
       ],
     },
     {
@@ -215,14 +213,7 @@ describe('CatalogTable component', () => {
     },
     {
       kind: 'location',
-      expectedColumns: [
-        'Name',
-        'Type',
-        'Targets',
-        'Description',
-        'Tags',
-        'Actions',
-      ],
+      expectedColumns: ['Name', 'Type', 'Targets', 'Description', 'Tags'],
     },
     {
       kind: 'resource',
@@ -234,20 +225,19 @@ describe('CatalogTable component', () => {
         'Lifecycle',
         'Description',
         'Tags',
-        'Actions',
       ],
     },
     {
       kind: 'system',
-      expectedColumns: ['Name', 'Owner', 'Description', 'Tags', 'Actions'],
+      expectedColumns: ['Name', 'Owner', 'Description', 'Tags'],
     },
     {
       kind: 'template',
-      expectedColumns: ['Name', 'Type', 'Description', 'Tags', 'Actions'],
+      expectedColumns: ['Name', 'Type', 'Description', 'Tags'],
     },
     {
       kind: 'user',
-      expectedColumns: ['Name', 'Description', 'Tags', 'Actions'],
+      expectedColumns: ['Name', 'Description', 'Tags'],
     },
     {
       kind: 'custom',
@@ -259,7 +249,6 @@ describe('CatalogTable component', () => {
         'Lifecycle',
         'Description',
         'Tags',
-        'Actions',
       ],
     },
     {
@@ -272,7 +261,6 @@ describe('CatalogTable component', () => {
         'Lifecycle',
         'Description',
         'Tags',
-        'Actions',
       ],
     },
   ])(
@@ -298,9 +286,7 @@ describe('CatalogTable component', () => {
         },
       );
 
-      const columnHeader = screen
-        .getAllByRole('button')
-        .filter(c => c.tagName === 'SPAN');
+      const columnHeader = screen.getAllByTestId('mtableheader-sortlabel');
       const columnHeaderLabels = columnHeader.map(c => c.textContent);
       expect(columnHeaderLabels).toEqual(expectedColumns);
     },
@@ -360,9 +346,7 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
+    const columnHeader = screen.getAllByTestId('mtableheader-sortlabel');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
     expect(columnHeaderLabels).toEqual(expectedColumns);
 
