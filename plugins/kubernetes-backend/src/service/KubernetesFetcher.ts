@@ -15,6 +15,7 @@
  */
 
 import {
+  Config,
   Cluster,
   CoreV1Api,
   KubeConfig,
@@ -187,10 +188,19 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     }
     resourcePath += `/${encode(plural)}`;
 
-    const [url, requestInit]: [URL, RequestInit] =
-      clusterDetails.serviceAccountToken
-        ? this.fetchArgsFromClusterDetails(clusterDetails)
-        : this.fetchArgsInCluster();
+    let url: URL;
+    let requestInit: RequestInit;
+    if (clusterDetails.serviceAccountToken) {
+      [url, requestInit] = this.fetchArgsFromClusterDetails(clusterDetails);
+    } else if (fs.pathExistsSync(Config.SERVICEACCOUNT_TOKEN_PATH)) {
+      [url, requestInit] = this.fetchArgsInCluster();
+    } else {
+      return Promise.reject(
+        new Error(
+          `no bearer token for cluster '${clusterDetails.name}' and not running in Kubernetes`,
+        ),
+      );
+    }
 
     url.pathname = resourcePath;
     if (labelSelector) {

@@ -754,6 +754,24 @@ describe('KubernetesFetcher', () => {
         ],
       });
     });
+    describe('Backstage not running on k8s', () => {
+      it('fails if cluster details has no token', () => {
+        const result = sut.fetchObjectsForService({
+          serviceId: 'some-service',
+          clusterDetails: {
+            name: 'unauthenticated-cluster',
+            url: 'http://ignored',
+            authProvider: 'serviceAccount',
+          },
+          objectTypesToFetch: OBJECTS_TO_FETCH,
+          labelSelector: '',
+          customResources: [],
+        });
+        return expect(result).rejects.toThrow(
+          "no bearer token for cluster 'unauthenticated-cluster' and not running in Kubernetes",
+        );
+      });
+    });
     describe('Backstage running on k8s', () => {
       const initialHost = process.env.KUBERNETES_SERVICE_HOST;
       const initialPort = process.env.KUBERNETES_SERVICE_PORT;
