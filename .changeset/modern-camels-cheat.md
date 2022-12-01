@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Remove `CatalogKindHeader` from `DefaultCatalogPage`. Deprecate `CatalogKindHeader`.
+Removed `CatalogKindHeader` from `DefaultCatalogPage`. Deprecated `CatalogKindHeader` in favour of `EntityKindPicker`.
