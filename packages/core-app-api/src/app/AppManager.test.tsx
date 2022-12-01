@@ -34,9 +34,11 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
+  useApi,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
+import { FeatureFlagged } from '../routing/FeatureFlagged';
 
 describe('Integration Test', () => {
   const noOpAnalyticsApi = createApiFactory(
@@ -413,6 +415,82 @@ describe('Integration Test', () => {
       name: 'old-feature-flag',
       pluginId: 'old-test',
     });
+  });
+
+  it('should prevent duplicate feature flags from being rendered', async () => {
+    const p1 = createPlugin({
+      id: 'p1',
+      featureFlags: [{ name: 'show-p1-feature' }],
+    });
+    const p2 = createPlugin({
+      id: 'p2',
+      featureFlags: [{ name: 'show-p2-feature' }],
+    });
+
+    const storageFlags = new LocalStorageFeatureFlags();
+    jest.spyOn(storageFlags, 'registerFlag');
+
+    const apis = [
+      noOpAnalyticsApi,
+      createApiFactory({
+        api: featureFlagsApiRef,
+        deps: { configApi: configApiRef },
+        factory() {
+          return storageFlags;
+        },
+      }),
+    ];
+
+    const app = new AppManager({
+      apis,
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          Provider: ({ children }) => <>{children}</>,
+        },
+      ],
+      icons,
+      plugins: [p1, p2],
+      components,
+      configLoader: async () => [],
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
+        });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    function FeatureFlags() {
+      const featureFlags = useApi(featureFlagsApiRef);
+      return (
+        <div>Flags: {featureFlags.getRegisteredFlags().map(f => f.name)}</div>
+      );
+    }
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <FeatureFlagged with="show-p1-feature">
+            <div>My feature behind a flag</div>
+          </FeatureFlagged>
+          <FeatureFlagged with="show-p2-feature">
+            <div>My feature behind a flag</div>
+          </FeatureFlagged>
+          <FeatureFlags />
+        </Router>
+      </Provider>,
+    );
+
+    // we need this test to mimic adding `featureFlags` to a plugin while also passing the value in to a <FeatureFlagged /> component
+
+    // the added code should prevent duplicates from being added.
   });
 
   it('should track route changes via analytics api', async () => {
