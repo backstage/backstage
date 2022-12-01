@@ -33,6 +33,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/integration": "workspace:^",
@@ -47,6 +48,7 @@
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
+    "htmlparser2": "^6.1.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-router": "6.0.0-beta.0 || ^6.3.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
