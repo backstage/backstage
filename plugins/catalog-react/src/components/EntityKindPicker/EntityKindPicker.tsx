@@ -20,7 +20,7 @@ import { Box } from '@material-ui/core';
 import React, { useEffect, useMemo, useState } from 'react';
 import { EntityKindFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
-import { filterKinds, useAllKinds } from '../../utils/kindFilterUtils';
+import { filterKinds, useAllKinds } from './kindFilterUtils';
 
 function useEntityKindFilter(opts: { initialFilter: string }): {
   loading: boolean;

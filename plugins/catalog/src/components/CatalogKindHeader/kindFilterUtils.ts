@@ -15,8 +15,8 @@
  */
 
 import { useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
-import { catalogApiRef } from '../api';
 
 /**
  * Fetch and return all availible kinds.

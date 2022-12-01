@@ -27,11 +27,8 @@ import {
   EntityKindFilter,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
-import {
-  filterKinds,
-  useAllKinds,
-} from '@backstage/plugin-catalog-react/src/utils';
 import pluralize from 'pluralize';
+import { filterKinds, useAllKinds } from './kindFilterUtils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
