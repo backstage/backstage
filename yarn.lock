@@ -8130,6 +8130,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib"
   dependencies:
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
@@ -8155,6 +8156,7 @@ __metadata:
     msw: ^0.49.0
     react-use: ^17.2.4
   peerDependencies:
+    htmlparser2: ^6.1.0
     react: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
