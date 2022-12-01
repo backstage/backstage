@@ -31,7 +31,7 @@ import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 
 describe('DefaultEntitiesCatalog', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
   const stitch = jest.fn();
   const stitcher: Stitcher = { stitch } as any;

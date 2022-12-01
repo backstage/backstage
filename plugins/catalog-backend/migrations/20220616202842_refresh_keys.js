@@ -23,14 +23,14 @@ exports.up = async function up(knex) {
       'This table contains relations between entities and keys to trigger refreshes with',
     );
     table
-      .text('entity_id')
+      .string('entity_id')
       .notNullable()
       .references('entity_id')
       .inTable('refresh_state')
       .onDelete('CASCADE')
       .comment('A reference to the entity that the refresh key is tied to');
     table
-      .text('key')
+      .string('key')
       .notNullable()
       .comment(
         'A reference to a key which should be used to trigger a refresh on this entity',

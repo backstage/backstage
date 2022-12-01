@@ -59,7 +59,7 @@ exports.up = async function up(knex) {
             'An opaque string that changes for each update operation to any part of the entity, including metadata.',
           );
         table
-          .string('generation')
+          .integer('generation')
           .notNullable()
           .unsigned()
           .comment(
