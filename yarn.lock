@@ -3617,7 +3617,6 @@ __metadata:
     "@spotify/eslint-config-base": ^14.0.0
     "@spotify/eslint-config-react": ^14.0.0
     "@spotify/eslint-config-typescript": ^14.0.0
-    "@sucrase/jest-plugin": ^2.1.1
     "@sucrase/webpack-loader": ^2.0.0
     "@svgr/plugin-jsx": 6.5.x
     "@svgr/plugin-svgo": 6.5.x
@@ -12925,15 +12924,6 @@ __metadata:
   peerDependencies:
     prettier: 2.x
   checksum: 07fb33ff3bb4678ab3bfe2f6f5da2cfb366de427c544e94178f5f8c75b3708282f7ea1a4344404e4ad1bbc5b38fccfde10795528cdfe7f61a8afed62076f8fe9
-  languageName: node
-  linkType: hard
-
-"@sucrase/jest-plugin@npm:^2.1.1":
-  version: 2.2.1
-  resolution: "@sucrase/jest-plugin@npm:2.2.1"
-  dependencies:
-    sucrase: ^3.18.0
-  checksum: 818627b40392875107722530af1a58f195d7166a5c5149db425db8ac3ff741b39d1c722a09dfbe7b686c87002616da7ef3c861dbe6f6f5390f3ca8f08c2a975a
   languageName: node
   linkType: hard
 
@@ -35766,7 +35756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sucrase@npm:^3.18.0, sucrase@npm:^3.20.2":
+"sucrase@npm:^3.20.2":
   version: 3.29.0
   resolution: "sucrase@npm:3.29.0"
   dependencies:
