@@ -207,6 +207,7 @@ export class Stitcher {
       .update({
         final_entity: JSON.stringify(entity),
         hash,
+        last_updated_at: this.database.fn.now(),
       })
       .where('entity_id', entityId)
       .where('stitch_ticket', ticket)
