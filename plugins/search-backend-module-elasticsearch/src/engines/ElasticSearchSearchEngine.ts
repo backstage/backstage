@@ -266,19 +266,41 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     // Attempt cleanup upon failure.
     indexer.on('error', async e => {
       this.logger.error(`Failed to index documents for type ${type}`, e);
-      try {
-        const response = await this.elasticSearchClientWrapper.indexExists({
-          index: indexer.indexName,
-        });
-        const indexCreated = response.body;
-        if (indexCreated) {
-          this.logger.info(`Removing created index ${indexer.indexName}`);
-          await this.elasticSearchClientWrapper.deleteIndex({
-            index: indexer.indexName,
-          });
+      let cleanupError: Error | undefined;
+
+      // In some cases, a failure may have occurred before the indexer was able
+      // to complete initialization. Try up to 5 times to remove the dangling
+      // index.
+      await new Promise<void>(async done => {
+        const maxAttempts = 5;
+        let attempts = 0;
+
+        while (attempts < maxAttempts) {
+          try {
+            await this.elasticSearchClientWrapper.deleteIndex({
+              index: indexer.indexName,
+            });
+
+            attempts = maxAttempts;
+            cleanupError = undefined;
+            done();
+          } catch (err) {
+            cleanupError = err;
+          }
+
+          // Wait 1 second between retries.
+          await new Promise(okay => setTimeout(okay, 1000));
+
+          attempts++;
         }
-      } catch (error) {
-        this.logger.error(`Unable to clean up elastic index: ${error}`);
+      });
+
+      if (cleanupError) {
+        this.logger.error(
+          `Unable to clean up elastic index ${indexer.indexName}: ${cleanupError}`,
+        );
+      } else {
+        this.logger.info(`Removed partial, failed index ${indexer.indexName}`);
       }
     });
 
