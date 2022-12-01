@@ -21,9 +21,9 @@ export type {
   AwsIntegrationDefaultAccountConfig,
   AwsIntegrationMainAccountConfig,
 } from './config';
-export { DefaultAwsCredentialsProvider } from './DefaultAwsCredentialsProvider';
+export { DefaultAwsCredentialsManager } from './DefaultAwsCredentialsManager';
 export type {
-  AwsCredentials,
-  AwsCredentialsProvider,
-  AwsCredentialsProviderOptions,
+  AwsCredentialsManager,
+  AwsCredentialProvider,
+  AwsCredentialProviderOptions,
 } from './types';

@@ -17,8 +17,8 @@ import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, ForwardedError } from '@backstage/errors';
 import {
-  AwsCredentialsProvider,
-  DefaultAwsCredentialsProvider,
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
 import {
   GetObjectCommand,
@@ -136,9 +136,9 @@ export class AwsS3Publish implements PublisherBase {
     const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
-    const credsProvider = DefaultAwsCredentialsProvider.fromConfig(config);
-    const credentials = await AwsS3Publish.buildCredentials(
-      credsProvider,
+    const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+    const sdkCredentialProvider = await AwsS3Publish.buildCredentials(
+      credsManager,
       accountId,
       credentialsConfig,
       region,
@@ -158,7 +158,7 @@ export class AwsS3Publish implements PublisherBase {
 
     const storageClient = new S3Client({
       customUserAgent: 'backstage-aws-techdocs-s3-publisher',
-      credentialDefaultProvider: () => credentials,
+      credentialDefaultProvider: () => sdkCredentialProvider,
       ...(region && { region }),
       ...(endpoint && { endpoint }),
       ...(s3ForcePathStyle && { s3ForcePathStyle }),
@@ -192,20 +192,21 @@ export class AwsS3Publish implements PublisherBase {
   }
 
   private static async buildCredentials(
-    credsProvider: AwsCredentialsProvider,
+    credsManager: AwsCredentialsManager,
     accountId?: string,
     config?: Config,
     region?: string,
   ): Promise<AwsCredentialIdentityProvider> {
     // Pull credentials for the specified account ID from the 'aws' config section
     if (accountId) {
-      return (await credsProvider.getCredentials({ accountId })).provider;
+      return (await credsManager.getCredentialProvider({ accountId }))
+        .sdkCredentialProvider;
     }
 
     // Fall back to the default credential chain if neither account ID
     // nor explicit credentials are provided
     if (!config) {
-      return (await credsProvider.getCredentials()).provider;
+      return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
     }
 
     // Pull credentials from the techdocs config section (deprecated)
@@ -214,7 +215,7 @@ export class AwsS3Publish implements PublisherBase {
     const explicitCredentials: AwsCredentialIdentityProvider =
       accessKeyId && secretAccessKey
         ? AwsS3Publish.buildStaticCredentials(accessKeyId, secretAccessKey)
-        : (await credsProvider.getCredentials()).provider;
+        : (await credsManager.getCredentialProvider()).sdkCredentialProvider;
 
     const roleArn = config.getOptionalString('roleArn');
     if (roleArn) {

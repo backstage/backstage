@@ -7,22 +7,24 @@ import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { Config } from '@backstage/config';
 
 // @public
-export type AwsCredentials = {
+export type AwsCredentialProvider = {
   accountId?: string;
   stsRegion?: string;
-  provider: AwsCredentialIdentityProvider;
+  sdkCredentialProvider: AwsCredentialIdentityProvider;
 };
 
 // @public
-export interface AwsCredentialsProvider {
-  getCredentials(opts?: AwsCredentialsProviderOptions): Promise<AwsCredentials>;
-}
-
-// @public
-export type AwsCredentialsProviderOptions = {
+export type AwsCredentialProviderOptions = {
   accountId?: string;
   arn?: string;
 };
+
+// @public
+export interface AwsCredentialsManager {
+  getCredentialProvider(
+    opts?: AwsCredentialProviderOptions,
+  ): Promise<AwsCredentialProvider>;
+}
 
 // @public
 export type AwsIntegrationAccountConfig = {
@@ -60,10 +62,12 @@ export type AwsIntegrationMainAccountConfig = {
 };
 
 // @public
-export class DefaultAwsCredentialsProvider implements AwsCredentialsProvider {
+export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
   // (undocumented)
-  static fromConfig(config: Config): DefaultAwsCredentialsProvider;
-  getCredentials(opts?: AwsCredentialsProviderOptions): Promise<AwsCredentials>;
+  static fromConfig(config: Config): DefaultAwsCredentialsManager;
+  getCredentialProvider(
+    opts?: AwsCredentialProviderOptions,
+  ): Promise<AwsCredentialProvider>;
 }
 
 // @public

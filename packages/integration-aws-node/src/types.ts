@@ -20,10 +20,19 @@ import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
  *
  * @public
  */
-export type AwsCredentials = {
+export type AwsCredentialProvider = {
+  /**
+   * The AWS account ID of these credentials
+   */
   accountId?: string;
+  /**
+   * The STS region used with these credentials
+   */
   stsRegion?: string;
-  provider: AwsCredentialIdentityProvider;
+  /**
+   * The credential identity provider to use when creating AWS SDK for Javascript V3 clients
+   */
+  sdkCredentialProvider: AwsCredentialIdentityProvider;
 };
 
 /**
@@ -31,7 +40,7 @@ export type AwsCredentials = {
  *
  * @public
  */
-export type AwsCredentialsProviderOptions = {
+export type AwsCredentialProviderOptions = {
   /**
    * The AWS account ID, e.g. '0123456789012'
    */
@@ -49,9 +58,11 @@ export type AwsCredentialsProviderOptions = {
  *
  * @public
  */
-export interface AwsCredentialsProvider {
+export interface AwsCredentialsManager {
   /**
    * Get credentials for an AWS account.
    */
-  getCredentials(opts?: AwsCredentialsProviderOptions): Promise<AwsCredentials>;
+  getCredentialProvider(
+    opts?: AwsCredentialProviderOptions,
+  ): Promise<AwsCredentialProvider>;
 }

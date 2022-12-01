@@ -28,9 +28,9 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
-  AwsCredentials,
-  AwsCredentialsProviderOptions,
-  DefaultAwsCredentialsProvider,
+  AwsCredentialProvider,
+  AwsCredentialProviderOptions,
+  DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
 import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import express from 'express';
@@ -45,9 +45,9 @@ import { Readable } from 'stream';
 const env = process.env;
 let s3Mock: AwsClientStub<S3Client>;
 
-function getMockCredentials(): Promise<AwsCredentials> {
+function getMockCredentialProvider(): Promise<AwsCredentialProvider> {
   return Promise.resolve({
-    provider: async () => {
+    sdkCredentialProvider: async () => {
       return Promise.resolve({
         accessKeyId: 'MY_ACCESS_KEY_ID',
         secretAccessKey: 'MY_SECRET_ACCESS_KEY',
@@ -55,9 +55,9 @@ function getMockCredentials(): Promise<AwsCredentials> {
     },
   });
 }
-const credsProviderMock = jest.spyOn(
-  DefaultAwsCredentialsProvider.prototype,
-  'getCredentials',
+const getCredProviderMock = jest.spyOn(
+  DefaultAwsCredentialsManager.prototype,
+  'getCredentialProvider',
 );
 
 const getEntityRootDir = (entity: Entity) => {
@@ -178,8 +178,8 @@ describe('AwsS3Publish', () => {
     process.env.AWS_REGION = 'us-west-2';
 
     jest.resetAllMocks();
-    credsProviderMock.mockImplementation((_?: AwsCredentialsProviderOptions) =>
-      getMockCredentials(),
+    getCredProviderMock.mockImplementation((_?: AwsCredentialProviderOptions) =>
+      getMockCredentialProvider(),
     );
 
     mockFs({
@@ -249,10 +249,10 @@ describe('AwsS3Publish', () => {
   describe('buildCredentials', () => {
     it('should retrieve credentials for a specific account ID', async () => {
       await createPublisherFromConfig();
-      expect(credsProviderMock).toHaveBeenCalledWith({
+      expect(getCredProviderMock).toHaveBeenCalledWith({
         accountId: '111111111111',
       });
-      expect(credsProviderMock).toHaveBeenCalledTimes(1);
+      expect(getCredProviderMock).toHaveBeenCalledTimes(1);
     });
 
     it('should retrieve default credentials when no config is present', async () => {
@@ -268,8 +268,8 @@ describe('AwsS3Publish', () => {
       });
 
       await AwsS3Publish.fromConfig(mockConfig, logger);
-      expect(credsProviderMock).toHaveBeenCalledWith();
-      expect(credsProviderMock).toHaveBeenCalledTimes(1);
+      expect(getCredProviderMock).toHaveBeenCalledWith();
+      expect(getCredProviderMock).toHaveBeenCalledTimes(1);
     });
 
     it('should fall back to deprecated method of retrieving credentials', async () => {
@@ -290,7 +290,7 @@ describe('AwsS3Publish', () => {
       });
 
       await AwsS3Publish.fromConfig(mockConfig, logger);
-      expect(credsProviderMock).toHaveBeenCalledTimes(0);
+      expect(getCredProviderMock).toHaveBeenCalledTimes(0);
     });
   });
 

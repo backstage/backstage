@@ -11,7 +11,7 @@ Backstage app config.
 Users can configure IAM user credentials, IAM roles, and profile names
 for their AWS accounts in their Backstage config.
 
-If the AWS integration configuration is missing, the credentials provider
+If the AWS integration configuration is missing, the credentials manager
 from this package will fall back to the AWS SDK default credentials chain for
 resources in the main AWS account.
 The default credentials chain for Node resolves credentials in the
@@ -79,32 +79,35 @@ aws:
 ## Integrate new plugins
 
 Backend plugins can provide an AWS ARN or account ID to this library in order to
-retrieve a credentials provider for the relevant account that can be fed directly
+retrieve a credential provider for the relevant account that can be fed directly
 to an AWS SDK client.
 The AWS SDK for Javascript V3 must be used.
 
 ```typescript
-const awsCredentialsProvider = DefaultAwsCredentialsProvider.fromConfig(config);
+const awsCredentialsManager = DefaultAwsCredentialsManager.fromConfig(config);
 
 // provide the account ID explicitly
-const creds = await awsCredentialsProvider.getCredentials({ accountId });
+const credProvider = await awsCredentialsManager.getCredentialProvider({
+  accountId,
+});
 // OR extract the account ID from the ARN
-const creds = await awsCredentialsProvider.getCredentials({ arn });
+const credProvider = await awsCredentialsManager.getCredentialProvider({ arn });
 // OR provide neither to get main account's credentials
-const creds = await awsCredentialsProvider.getCredentials({});
+const credProvider = await awsCredentialsManager.getCredentialProvider({});
 
-// Example constructing an AWS Proton client with the returned credentials provider
+// Example constructing an AWS Proton client with the returned credential provider
 const client = new ProtonClient({
   region,
-  credentialDefaultProvider: () => creds.provider,
+  credentialDefaultProvider: () => credProvider.sdkCredentialProvider,
 });
 ```
 
-Depending on the nature of your plguin, you may either have the user specify the
+Depending on the nature of your plugin, you may either have the user specify the
 relevant ARN or account ID in a catalog entity annotation or in the static Backstage
 app configuration for your plugin.
 
-For example, you can create a new catalog entity annotation for your plugin:
+For example, you can create a new catalog entity annotation for your plugin containing
+either an AWS account ID or ARN:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -117,7 +120,7 @@ metadata:
     my-other-plugin.io/aws-dynamodb-table: 'arn:aws:dynamodb:us-east-2:123456789012:table/example-table'
 ```
 
-In your plugin, read the annotation value so that you can retrieve the credentials provider:
+In your plugin, read the annotation value so that you can retrieve the credential provider:
 
 ```typescript
 const MY_AWS_ACCOUNT_ID_ANNOTATION = 'my-plugin.io/aws-account-id';
@@ -126,7 +129,7 @@ const getAwsAccountId = (entity: Entity) =>
   entity.metadata.annotations?.[MY_AWS_ACCOUNT_ID_ANNOTATION]);
 ```
 
-Alternatively, you can create a new configuration field for your plugin:
+Alternatively, you can create a new Backstage app configuration field for your plugin:
 
 ```yaml
 # app-config.yaml
@@ -138,18 +141,20 @@ my-other-plugin:
   awsDynamoDbTable: 'arn:aws:dynamodb:us-east-2:123456789012:table/example-table'
 ```
 
-In your plugin, read the configuration value so that you can retrieve the credentials provider:
+In your plugin, read the configuration value so that you can retrieve the credential provider:
 
 ```typescript
 // Read an account ID from your plugin's configuration
-const awsCredentialsProvider = DefaultAwsCredentialsProvider.fromConfig(config);
-const accountId = config.getString('my-plugin.awsAccountId');
-const creds = await awsCredentialsProvider.getCredentials({ accountId });
+const awsCredentialsManager = DefaultAwsCredentialsManager.fromConfig(config);
+const accountId = config.getOptionalString('my-plugin.awsAccountId');
+const credProvider = await awsCredentialsManager.getCredentialProvider({
+  accountId,
+});
 
 // Or, read an AWS ARN from your plugin's configuration
-const awsCredentialsProvider = DefaultAwsCredentialsProvider.fromConfig(config);
+const awsCredentialsManager = DefaultAwsCredentialsManager.fromConfig(config);
 const arn = config.getString('my-other-plugin.awsDynamoDbTable');
-const creds = await awsCredentialsProvider.getCredentials({ arn });
+const credProvider = await awsCredentialsManager.getCredentialProvider({ arn });
 ```
 
 ## Links

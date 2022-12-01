@@ -21,9 +21,9 @@ import {
   AwsIntegrationMainAccountConfig,
 } from './config';
 import {
-  AwsCredentials,
-  AwsCredentialsProvider,
-  AwsCredentialsProviderOptions,
+  AwsCredentialsManager,
+  AwsCredentialProvider,
+  AwsCredentialProviderOptions,
 } from './types';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import {
@@ -36,20 +36,20 @@ import { parse } from '@aws-sdk/util-arn-parser';
 import { Config } from '@backstage/config';
 
 /**
- * Retrieves the account ID for the given credentials provider from STS.
+ * Retrieves the account ID for the given credential provider from STS.
  */
-async function fillInAccountId(creds: AwsCredentials) {
-  if (creds.accountId) {
+async function fillInAccountId(credProvider: AwsCredentialProvider) {
+  if (credProvider.accountId) {
     return;
   }
 
   const client = new STSClient({
-    region: creds.stsRegion,
-    customUserAgent: 'backstage-aws-credentials-provider',
-    credentialDefaultProvider: () => creds.provider,
+    region: credProvider.stsRegion,
+    customUserAgent: 'backstage-aws-credentials-manager',
+    credentialDefaultProvider: () => credProvider.sdkCredentialProvider,
   });
   const resp = await client.send(new GetCallerIdentityCommand({}));
-  creds.accountId = resp.Account!;
+  credProvider.accountId = resp.Account!;
 }
 
 function getStaticCredentials(
@@ -72,7 +72,7 @@ function getProfileCredentials(
     profile,
     clientConfig: {
       region,
-      customUserAgent: 'backstage-aws-credentials-provider',
+      customUserAgent: 'backstage-aws-credentials-manager',
     },
   });
 }
@@ -91,9 +91,9 @@ function getDefaultCredentialsChain(): AwsCredentialIdentityProvider {
  * 4. Profile creds
  * 5. Default AWS SDK creds chain
  */
-function getAccountCredentialsProvider(
+function getSdkCredentialProvider(
   config: AwsIntegrationAccountConfig,
-  mainAccountCreds: AwsCredentialIdentityProvider,
+  mainAccountCredProvider: AwsCredentialIdentityProvider,
 ): AwsCredentialIdentityProvider {
   if (config.roleName) {
     const region = config.region ?? 'us-east-1';
@@ -102,7 +102,7 @@ function getAccountCredentialsProvider(
     return fromTemporaryCredentials({
       masterCredentials: config.accessKeyId
         ? getStaticCredentials(config.accessKeyId!, config.secretAccessKey!)
-        : mainAccountCreds,
+        : mainAccountCredProvider,
       params: {
         RoleArn: `arn:${partition}:iam::${config.accountId}:role/${config.roleName}`,
         RoleSessionName: 'backstage',
@@ -110,7 +110,7 @@ function getAccountCredentialsProvider(
       },
       clientConfig: {
         region,
-        customUserAgent: 'backstage-aws-credentials-provider',
+        customUserAgent: 'backstage-aws-credentials-manager',
       },
     });
   }
@@ -134,7 +134,7 @@ function getAccountCredentialsProvider(
  * 2. Profile creds
  * 3. Default AWS SDK creds chain
  */
-function getMainAccountCredentialsProvider(
+function getMainAccountSdkCredentialProvider(
   config: AwsIntegrationMainAccountConfig,
 ): AwsCredentialIdentityProvider {
   if (config.accessKeyId) {
@@ -153,8 +153,8 @@ function getMainAccountCredentialsProvider(
  *
  * @public
  */
-export class DefaultAwsCredentialsProvider implements AwsCredentialsProvider {
-  static fromConfig(config: Config): DefaultAwsCredentialsProvider {
+export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
+  static fromConfig(config: Config): DefaultAwsCredentialsManager {
     const awsConfig = config.has('aws')
       ? readAwsIntegrationConfig(config.getConfig('aws'))
       : {
@@ -163,63 +163,66 @@ export class DefaultAwsCredentialsProvider implements AwsCredentialsProvider {
           accountDefaults: {},
         };
 
-    const mainAccountProvider = getMainAccountCredentialsProvider(
+    const mainAccountSdkCredProvider = getMainAccountSdkCredentialProvider(
       awsConfig.mainAccount,
     );
-    const mainAccountCreds: AwsCredentials = {
-      provider: mainAccountProvider,
+    const mainAccountCredProvider: AwsCredentialProvider = {
+      sdkCredentialProvider: mainAccountSdkCredProvider,
     };
 
-    const accountCreds = new Map<string, AwsCredentials>();
+    const accountCredProviders = new Map<string, AwsCredentialProvider>();
     for (const accountConfig of awsConfig.accounts) {
-      const provider = getAccountCredentialsProvider(
+      const sdkCredentialProvider = getSdkCredentialProvider(
         accountConfig,
-        mainAccountCreds.provider,
+        mainAccountSdkCredProvider,
       );
-      accountCreds.set(accountConfig.accountId, {
+      accountCredProviders.set(accountConfig.accountId, {
         accountId: accountConfig.accountId,
         stsRegion: accountConfig.region,
-        provider,
+        sdkCredentialProvider,
       });
     }
 
-    return new DefaultAwsCredentialsProvider(
-      accountCreds,
+    return new DefaultAwsCredentialsManager(
+      accountCredProviders,
       awsConfig.accountDefaults,
-      mainAccountCreds,
+      mainAccountCredProvider,
     );
   }
 
   private constructor(
-    private readonly accountCredentials: Map<string, AwsCredentials>,
+    private readonly accountCredentialProviders: Map<
+      string,
+      AwsCredentialProvider
+    >,
     private readonly accountDefaults: AwsIntegrationDefaultAccountConfig,
-    private readonly mainAccountCredentials: AwsCredentials,
+    private readonly mainAccountCredentialProvider: AwsCredentialProvider,
   ) {}
 
   /**
-   * Returns {@link AwsCredentials} for a given AWS account.
+   * Returns an {@link AwsCredentialProvider} for a given AWS account.
    *
    * @example
    * ```ts
-   * const { provider } = await getCredentials({
+   * const { provider } = await getCredentialProvider({
    *   accountId: '0123456789012',
    * })
    *
-   * const { provider } = await getCredentials({
+   * const { provider } = await getCredentialProvider({
    *   arn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service'
    * })
    * ```
    *
    * @param opts - the AWS account ID or AWS resource ARN
-   * @returns A promise of {@link AwsCredentials}.
+   * @returns A promise of {@link AwsCredentialProvider}.
    */
-  async getCredentials(
-    opts?: AwsCredentialsProviderOptions,
-  ): Promise<AwsCredentials> {
+  async getCredentialProvider(
+    opts?: AwsCredentialProviderOptions,
+  ): Promise<AwsCredentialProvider> {
     // If no options provided, fall back to the main account
     if (!opts) {
-      await fillInAccountId(this.mainAccountCredentials);
-      return this.mainAccountCredentials;
+      await fillInAccountId(this.mainAccountCredentialProvider);
+      return this.mainAccountCredentialProvider;
     }
 
     // Determine the account ID: either explicitly provided or extracted from the provided ARN
@@ -232,13 +235,13 @@ export class DefaultAwsCredentialsProvider implements AwsCredentialsProvider {
     // If the account ID was not provided (explicitly or in the ARN),
     // fall back to the main account
     if (!accountId) {
-      await fillInAccountId(this.mainAccountCredentials);
-      return this.mainAccountCredentials;
+      await fillInAccountId(this.mainAccountCredentialProvider);
+      return this.mainAccountCredentialProvider;
     }
 
     // Return a cached provider if available
-    if (this.accountCredentials.has(accountId)) {
-      return this.accountCredentials.get(accountId)!;
+    if (this.accountCredentialProviders.has(accountId)) {
+      return this.accountCredentialProviders.get(accountId)!;
     }
 
     // First, fall back to using the account defaults
@@ -250,20 +253,23 @@ export class DefaultAwsCredentialsProvider implements AwsCredentialsProvider {
         region: this.accountDefaults.region,
         externalId: this.accountDefaults.externalId,
       };
-      const provider = getAccountCredentialsProvider(
+      const sdkCredentialProvider = getSdkCredentialProvider(
         config,
-        this.mainAccountCredentials.provider,
+        this.mainAccountCredentialProvider.sdkCredentialProvider,
       );
-      const creds: AwsCredentials = { accountId, provider };
-      this.accountCredentials.set(accountId, creds);
-      return creds;
+      const credProvider: AwsCredentialProvider = {
+        accountId,
+        sdkCredentialProvider,
+      };
+      this.accountCredentialProviders.set(accountId, credProvider);
+      return credProvider;
     }
 
     // Then, fall back to using the main account, but only
     // if the account requested matches the main account ID
-    await fillInAccountId(this.mainAccountCredentials);
-    if (accountId === this.mainAccountCredentials.accountId) {
-      return this.mainAccountCredentials;
+    await fillInAccountId(this.mainAccountCredentialProvider);
+    if (accountId === this.mainAccountCredentialProvider.accountId) {
+      return this.mainAccountCredentialProvider;
     }
 
     // Otherwise, the account needs to be explicitly configured in Backstage

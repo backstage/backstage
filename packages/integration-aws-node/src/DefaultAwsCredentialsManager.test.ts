@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DefaultAwsCredentialsProvider } from './DefaultAwsCredentialsProvider';
+import { DefaultAwsCredentialsManager } from './DefaultAwsCredentialsManager';
 import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import {
@@ -31,7 +31,7 @@ let config: Config;
 
 jest.mock('fs', () => ({ promises: { readFile: jest.fn() } }));
 
-describe('DefaultAwsCredentialsProvider', () => {
+describe('DefaultAwsCredentialsManager', () => {
   beforeEach(() => {
     process.env = { ...env };
     jest.resetAllMocks();
@@ -145,16 +145,16 @@ describe('DefaultAwsCredentialsProvider', () => {
     process.env = env;
   });
 
-  describe('#getCredentials', () => {
+  describe('#getCredentialProvider', () => {
     it('retrieves assume-role creds for the given account ID and caches the provider', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '111111111111',
       });
 
-      expect(awsCredentials.accountId).toEqual('111111111111');
+      expect(awsCredentialProvider.accountId).toEqual('111111111111');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_1',
         secretAccessKey: 'SECRET_ACCESS_KEY_1',
@@ -162,23 +162,23 @@ describe('DefaultAwsCredentialsProvider', () => {
         expiration: new Date('2022-01-01'),
       });
 
-      const awsCredentials2 = await provider.getCredentials({
+      const awsCredentialProvider2 = await provider.getCredentialProvider({
         accountId: '111111111111',
       });
 
-      expect(awsCredentials).toBe(awsCredentials2);
+      expect(awsCredentialProvider).toBe(awsCredentialProvider2);
       expect(stsMock).toHaveReceivedCommandTimes(AssumeRoleCommand, 1);
     });
 
     it('retrieves assume-role creds in another partition for the given account ID', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '222222222222',
       });
 
-      expect(awsCredentials.accountId).toEqual('222222222222');
+      expect(awsCredentialProvider.accountId).toEqual('222222222222');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_2',
         secretAccessKey: 'SECRET_ACCESS_KEY_2',
@@ -188,14 +188,14 @@ describe('DefaultAwsCredentialsProvider', () => {
     });
 
     it('retrieves assume-role creds for an account using the account defaults', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '999999999999',
       });
 
-      expect(awsCredentials.accountId).toEqual('999999999999');
+      expect(awsCredentialProvider.accountId).toEqual('999999999999');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_9',
         secretAccessKey: 'SECRET_ACCESS_KEY_9',
@@ -205,14 +205,14 @@ describe('DefaultAwsCredentialsProvider', () => {
     });
 
     it('retrieves static creds for the given account ID', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '333333333333',
       });
 
-      expect(awsCredentials.accountId).toEqual('333333333333');
+      expect(awsCredentialProvider.accountId).toEqual('333333333333');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'my-access-key',
         secretAccessKey: 'my-secret-access-key',
@@ -228,14 +228,14 @@ describe('DefaultAwsCredentialsProvider', () => {
           },
         },
       });
-      const provider = DefaultAwsCredentialsProvider.fromConfig(minConfig);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '123456789012',
       });
 
-      expect(awsCredentials.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'GHI',
         secretAccessKey: 'JKL',
@@ -251,23 +251,23 @@ describe('DefaultAwsCredentialsProvider', () => {
           },
         },
       });
-      const provider = DefaultAwsCredentialsProvider.fromConfig(minConfig);
-      const awsCredentials1 = await provider.getCredentials({});
-      const awsCredentials2 = await provider.getCredentials({});
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider1 = await provider.getCredentialProvider({});
+      const awsCredentialProvider2 = await provider.getCredentialProvider({});
 
-      expect(awsCredentials1).toBe(awsCredentials2);
+      expect(awsCredentialProvider1).toBe(awsCredentialProvider2);
       expect(stsMock).toHaveReceivedCommandTimes(GetCallerIdentityCommand, 1);
     });
 
     it('retrieves the ini provider chain for the given account ID', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '555555555555',
       });
 
-      expect(awsCredentials.accountId).toEqual('555555555555');
+      expect(awsCredentialProvider.accountId).toEqual('555555555555');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_9',
         secretAccessKey: 'SECRET_ACCESS_KEY_9',
@@ -275,14 +275,14 @@ describe('DefaultAwsCredentialsProvider', () => {
     });
 
     it('retrieves the default cred provider chain for the given account ID', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '444444444444',
       });
 
-      expect(awsCredentials.accountId).toEqual('444444444444');
+      expect(awsCredentialProvider.accountId).toEqual('444444444444');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_10',
         secretAccessKey: 'SECRET_ACCESS_KEY_10',
@@ -299,14 +299,14 @@ describe('DefaultAwsCredentialsProvider', () => {
           },
         },
       });
-      const provider = DefaultAwsCredentialsProvider.fromConfig(minConfig);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '123456789012',
       });
 
-      expect(awsCredentials.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_9',
         secretAccessKey: 'SECRET_ACCESS_KEY_9',
@@ -317,14 +317,14 @@ describe('DefaultAwsCredentialsProvider', () => {
       const minConfig = new ConfigReader({
         aws: {},
       });
-      const provider = DefaultAwsCredentialsProvider.fromConfig(minConfig);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '123456789012',
       });
 
-      expect(awsCredentials.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_10',
         secretAccessKey: 'SECRET_ACCESS_KEY_10',
@@ -335,14 +335,14 @@ describe('DefaultAwsCredentialsProvider', () => {
 
     it('retrieves default cred provider chain from the main account when there is no AWS integration config', async () => {
       const minConfig = new ConfigReader({});
-      const provider = DefaultAwsCredentialsProvider.fromConfig(minConfig);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         accountId: '123456789012',
       });
 
-      expect(awsCredentials.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_10',
         secretAccessKey: 'SECRET_ACCESS_KEY_10',
@@ -352,14 +352,14 @@ describe('DefaultAwsCredentialsProvider', () => {
     });
 
     it('extracts the account ID from an ARN', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         arn: 'arn:aws:ecs:region:111111111111:service/cluster-name/service-name',
       });
 
-      expect(awsCredentials.accountId).toEqual('111111111111');
+      expect(awsCredentialProvider.accountId).toEqual('111111111111');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_1',
         secretAccessKey: 'SECRET_ACCESS_KEY_1',
@@ -369,14 +369,14 @@ describe('DefaultAwsCredentialsProvider', () => {
     });
 
     it('falls back to main account credentials when account ID cannot be extracted from the ARN', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials({
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
         arn: 'arn:aws:s3:::bucket_name',
       });
 
-      expect(awsCredentials.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'GHI',
         secretAccessKey: 'JKL',
@@ -384,12 +384,12 @@ describe('DefaultAwsCredentialsProvider', () => {
     });
 
     it('falls back to main account credentials when neither account ID nor ARN are provided', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials({});
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({});
 
-      expect(awsCredentials.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'GHI',
         secretAccessKey: 'JKL',
@@ -397,12 +397,12 @@ describe('DefaultAwsCredentialsProvider', () => {
     });
 
     it('falls back to main account credentials when no options are provided', async () => {
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      const awsCredentials = await provider.getCredentials();
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider();
 
-      expect(awsCredentials.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
 
-      const creds = await awsCredentials.provider();
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
         accessKeyId: 'GHI',
         secretAccessKey: 'JKL',
@@ -413,16 +413,16 @@ describe('DefaultAwsCredentialsProvider', () => {
       const minConfig = new ConfigReader({
         aws: {},
       });
-      const provider = DefaultAwsCredentialsProvider.fromConfig(minConfig);
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
       await expect(
-        provider.getCredentials({ accountId: '111222333444' }),
+        provider.getCredentialProvider({ accountId: '111222333444' }),
       ).rejects.toThrow(/no AWS integration that matches 111222333444/);
     });
 
     it('rejects main account that has invalid credentials', async () => {
       stsMock.on(GetCallerIdentityCommand).rejects('No credentials found');
-      const provider = DefaultAwsCredentialsProvider.fromConfig(config);
-      await expect(provider.getCredentials({})).rejects.toThrow(
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      await expect(provider.getCredentialProvider({})).rejects.toThrow(
         /No credentials found/,
       );
     });
