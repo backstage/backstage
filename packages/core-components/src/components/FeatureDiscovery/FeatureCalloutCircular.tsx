@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import Box from '@material-ui/core/Box';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -26,6 +26,7 @@ import React, {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
+
 import { usePortal } from './lib/usePortal';
 import { useShowCallout } from './lib/useShowCallout';
 
@@ -168,14 +169,14 @@ export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
 
   return (
     <>
-      <div className={classes.featureWrapper} ref={wrapperRef}>
+      <Box className={classes.featureWrapper} {...{ ref: wrapperRef }}>
         {children}
-      </div>
+      </Box>
       {createPortal(
-        <div className={classes.backdrop}>
+        <Box className={classes.backdrop}>
           <ClickAwayListener onClickAway={hide}>
             <>
-              <div
+              <Box
                 className={classes.dot}
                 data-testid="dot"
                 style={{
@@ -190,9 +191,9 @@ export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
                 role="button"
                 tabIndex={0}
               >
-                <div className={classes.pulseCircle} />
-              </div>
-              <div
+                <Box className={classes.pulseCircle} />
+              </Box>
+              <Box
                 className={classes.text}
                 data-testid="text"
                 style={{
@@ -205,10 +206,10 @@ export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
                   {title}
                 </Typography>
                 <Typography>{description}</Typography>
-              </div>
+              </Box>
             </>
           </ClickAwayListener>
-        </div>,
+        </Box>,
         portalElement,
       )}
     </>
