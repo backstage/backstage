@@ -281,25 +281,3 @@ The following package(s) are private and do not need a changeset:
 
   return output;
 }
-
-export default async (diffRef: string) => {
-  const changedFiles = await listChangedFiles(diffRef);
-  const packages = await listPackages();
-
-  const changesets = await loadChangesets(changedFiles);
-  const changedPackages = await listChangedPackages(changedFiles, packages);
-
-  process.stderr.write(
-    JSON.stringify(
-      {
-        changesets,
-        changedPackages,
-      },
-      null,
-      2,
-    ),
-  );
-
-  const summary = formatSummary(changedPackages, changesets);
-  process.stdout.write(summary);
-};
