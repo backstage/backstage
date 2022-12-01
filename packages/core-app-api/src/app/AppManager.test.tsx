@@ -21,7 +21,7 @@ import {
   withLogCollector,
 } from '@backstage/test-utils';
 import { render, screen } from '@testing-library/react';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
   configApiRef,
@@ -164,19 +164,20 @@ describe('Integration Test', () => {
   };
 
   const icons = {} as AppIcons;
+  const themes = [
+    {
+      id: 'light',
+      title: 'Light Theme',
+      variant: 'light' as const,
+      Provider: ({ children }: { children: ReactNode }) => <>{children}</>,
+    },
+  ];
 
   it('runs happy paths', async () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -224,14 +225,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -282,14 +276,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [
         createPlugin({
@@ -345,14 +332,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [
         createPlugin({
@@ -421,14 +401,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -482,14 +455,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -532,14 +498,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
