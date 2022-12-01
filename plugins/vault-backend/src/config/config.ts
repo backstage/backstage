@@ -28,6 +28,11 @@ export interface VaultConfig {
   baseUrl: string;
 
   /**
+   * The publicUrl for your Vault instance (Optional).
+   */
+  publicUrl?: string;
+
+  /**
    * The token used by Backstage to access Vault.
    */
   token: string;
