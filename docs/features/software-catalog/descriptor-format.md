@@ -360,7 +360,7 @@ Fields of a link are:
 _NOTE_: The `icon` field value is meant to be a semantic key that will map to a
 specific icon that may be provided by an icon library (e.g. `material-ui`
 icons). These keys should be a sequence of `[a-z0-9A-Z]`, possibly separated by
-one of `[-_.]`. Backstage may support some basic icons out of the box, but the
+one of `[-_.]`. Backstage may support some basic icons out of the box such as those [defined in app-defaults](https://github.com/backstage/backstage/blob/master/packages/app-defaults/src/defaults/icons.tsx), but the
 Backstage integrator will ultimately be left to provide the appropriate icon
 component mappings. A generic fallback icon would be provided if a mapping
 cannot be resolved.
