@@ -368,7 +368,13 @@ export class GithubOrgEntityProvider
 
     const organizationTeamTransformer =
       this.options.teamTransformer || defaultOrganizationTeamTransformer;
-    const { node_id: id, name, html_url: url, description, slug } = event.team;
+    const {
+      id: databaseId,
+      name,
+      html_url: url,
+      description,
+      slug,
+    } = event.team;
     const org = event.organization.login;
     const { headers } = await this.credentialsProvider.getCredentials({
       url: this.options.orgUrl,
@@ -380,7 +386,7 @@ export class GithubOrgEntityProvider
 
     const group = (await organizationTeamTransformer(
       {
-        id,
+        databaseId,
         name,
         slug,
         editTeamUrl: `${url}/edit`,
@@ -423,7 +429,7 @@ export class GithubOrgEntityProvider
         filter: [
           {
             kind: 'Group',
-            [`metadata.annotations.github.com/node-id`]: event.team.node_id,
+            [`metadata.annotations.github.com/team-id`]: `${event.team.id}`,
           },
         ],
         fields: ['apiVersion', 'kind', 'metadata', 'spec'],

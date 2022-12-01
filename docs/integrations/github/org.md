@@ -167,7 +167,7 @@ transformation if you only need to change a few properties.
 
 **Attention:**
 When you use the Events Support with a `TeamTransformer`, you need to ensure your entity will have the
-annotation `github.com/node-id` with the value from `team.id`. Without this, the `team.edit` event could fail to update
+annotation `github.com/team-id` with the value from `team.databaseId`. Without this, the `team.edit` event could fail to update
 
 ### Resolving GitHub users via organization email
 

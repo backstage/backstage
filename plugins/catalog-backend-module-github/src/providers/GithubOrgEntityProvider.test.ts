@@ -592,6 +592,7 @@ describe('GithubOrgEntityProvider', () => {
         eventPayload: {
           action: 'deleted',
           team: {
+            databaseId: 1,
             name: 'New Team',
             slug: 'new-team',
             description: 'description from the new team',

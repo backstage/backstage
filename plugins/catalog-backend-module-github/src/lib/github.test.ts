@@ -209,7 +209,7 @@ describe('github', () => {
             pageInfo: { hasNextPage: false },
             nodes: [
               {
-                id: 'node-id-1',
+                databaseId: 1,
                 slug: 'team',
                 combinedSlug: 'blah/team',
                 name: 'Team',
@@ -217,7 +217,7 @@ describe('github', () => {
                 avatarUrl: 'http://example.com/team.jpeg',
                 editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
                 parentTeam: {
-                  id: 'node-id-parent',
+                  databaseId: 2,
                   slug: 'parent',
                   combinedSlug: '',
                   members: [],
@@ -242,7 +242,7 @@ describe('github', () => {
               description: 'The one and only team',
               annotations: {
                 'github.com/team-slug': 'blah/team',
-                'github.com/node-id': 'node-id-1',
+                'github.com/team-id': '1',
                 'backstage.io/edit-url':
                   'http://example.com/orgs/blah/teams/team/edit',
               },
@@ -312,7 +312,7 @@ describe('github', () => {
             pageInfo: { hasNextPage: false },
             nodes: [
               {
-                id: 'node-id-1',
+                databaseId: 1,
                 slug: 'team',
                 combinedSlug: 'blah/team',
                 name: 'Team',
@@ -320,7 +320,7 @@ describe('github', () => {
                 avatarUrl: 'http://example.com/team.jpeg',
                 editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
                 parentTeam: {
-                  id: 'node-id-parent',
+                  databaseId: 3,
                   slug: 'parent',
                   combinedSlug: '',
                   members: [],
@@ -379,7 +379,7 @@ describe('github', () => {
             pageInfo: { hasNextPage: false },
             nodes: [
               {
-                id: 'node-id-1',
+                databaseId: 1,
                 slug: 'team',
                 combinedSlug: 'blah/team',
                 name: 'Team',
@@ -387,7 +387,7 @@ describe('github', () => {
                 avatarUrl: 'http://example.com/team.jpeg',
                 editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
                 parentTeam: {
-                  id: 'node-id-parent',
+                  databaseId: 3,
                   slug: 'parent',
                   combinedSlug: '',
                   members: [],
@@ -398,7 +398,7 @@ describe('github', () => {
                 },
               },
               {
-                id: 'node-id-2',
+                databaseId: 2,
                 slug: 'team',
                 combinedSlug: 'blah/team',
                 name: 'aa',
@@ -406,7 +406,7 @@ describe('github', () => {
                 avatarUrl: 'http://example.com/team.jpeg',
                 editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
                 parentTeam: {
-                  id: 'node-id-parent',
+                  databaseId: 3,
                   slug: 'parent',
                   combinedSlug: '',
                   members: [],
@@ -467,7 +467,7 @@ describe('github', () => {
       const input: QueryResponse = {
         organization: {
           team: {
-            id: 'node-id-1',
+            databaseId: 1,
             slug: '',
             combinedSlug: '',
             members: {
