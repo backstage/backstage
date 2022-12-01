@@ -61,7 +61,7 @@ export interface CatalogKindHeaderProps {
 
 /**
  * @public
-* @deprecated This component has been deprecated in favour of the EntityKindPicker in the list of filters. If you wish to keep this component long term make sure to raise an issue at github.com/backstage/backstage
+ * @deprecated This component has been deprecated in favour of the EntityKindPicker in the list of filters. If you wish to keep this component long term make sure to raise an issue at github.com/backstage/backstage
  */
 export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   const { initialFilter = 'component', allowedKinds } = props;
