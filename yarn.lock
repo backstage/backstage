@@ -3396,7 +3396,7 @@ __metadata:
     "@types/dockerode": ^3.3.0
     "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.3
-    "@types/http-errors": ^1.6.3
+    "@types/http-errors": ^2.0.0
     "@types/luxon": ^3.0.0
     "@types/minimist": ^1.2.0
     "@types/mock-fs": ^4.13.0
@@ -14151,10 +14151,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-errors@npm:^1.6.3":
-  version: 1.8.2
-  resolution: "@types/http-errors@npm:1.8.2"
-  checksum: ecc365eea98d7eca650d593e742571acc3003742f0dd0fbbb15b8fce286e0f7421644b4140fb9bf701bbb7f1b744aea3967ebe025f0f0811aa5ab2c3d40fe111
+"@types/http-errors@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "@types/http-errors@npm:2.0.1"
+  checksum: 3bb0c50b0a652e679a84c30cd0340d696c32ef6558518268c238840346c077f899315daaf1c26c09c57ddd5dc80510f2a7f46acd52bf949e339e35ed3ee9654f
   languageName: node
   linkType: hard
 
