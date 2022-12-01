@@ -282,8 +282,7 @@ The following package(s) are private and do not need a changeset:
   return output;
 }
 
-export default async() => {
-  const [diffRef = 'origin/master'] = process.argv.slice(2);
+export default async (diffRef: string) => {
   const changedFiles = await listChangedFiles(diffRef);
   const packages = await listPackages();
 
@@ -303,4 +302,4 @@ export default async() => {
 
   const summary = formatSummary(changedPackages, changesets);
   process.stdout.write(summary);
-}
+};
