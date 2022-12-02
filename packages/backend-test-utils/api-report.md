@@ -32,7 +32,7 @@ export interface TestBackendOptions<
   TExtensionPoints extends any[],
 > {
   // (undocumented)
-  autoStop?: boolean;
+  autoStop?: 'afterEach' | 'never';
   // (undocumented)
   extensionPoints?: readonly [
     ...{

@@ -51,7 +51,7 @@ export interface TestBackendOptions<
     },
   ];
   features?: BackendFeature[];
-  autoStop?: boolean;
+  autoStop?: 'afterEach' | 'never';
 }
 
 const defaultServiceFactories = [
@@ -71,7 +71,7 @@ export async function startTestBackend<
     services = [],
     extensionPoints = [],
     features = [],
-    autoStop = true,
+    autoStop = 'afterEach',
     ...otherOptions
   } = options;
 

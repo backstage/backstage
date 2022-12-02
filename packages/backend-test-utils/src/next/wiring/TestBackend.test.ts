@@ -117,7 +117,7 @@ describe('TestBackend', () => {
     const backend = await startTestBackend({
       services: [],
       features: [testModule()],
-      autoStop: false,
+      autoStop: 'never',
     });
 
     expect(shutdownSpy).not.toHaveBeenCalled();
