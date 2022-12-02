@@ -127,6 +127,17 @@ export const EntityLinksCard = catalogPlugin.provide(
 );
 
 /** @public */
+export const EntityPeekCard = catalogPlugin.provide(
+  createComponentExtension({
+    name: 'EntityLinksCard',
+    component: {
+      lazy: () =>
+        import('./components/EntityPeekCard').then(m => m.EntityPeekCard),
+    },
+  }),
+);
+
+/** @public */
 export const EntityHasSystemsCard: (props: HasSystemsCardProps) => JSX.Element =
   catalogPlugin.provide(
     createComponentExtension({

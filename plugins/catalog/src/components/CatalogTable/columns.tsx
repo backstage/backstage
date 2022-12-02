@@ -24,6 +24,7 @@ import { CatalogTableRow } from './types';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { JsonArray } from '@backstage/types';
+import { EntityPeekCard } from '../EntityPeekCard';
 
 // The columnFactories symbol is not directly exported, but through the
 // CatalogTable.columns field.
@@ -76,10 +77,7 @@ export const columnFactories = Object.freeze({
       title: 'Owner',
       field: 'resolved.ownedByRelationsTitle',
       render: ({ resolved }) => (
-        <EntityRefLinks
-          entityRefs={resolved.ownedByRelations}
-          defaultKind="group"
-        />
+        <EntityPeekCard entityRefs={resolved.ownedByRelations} />
       ),
     };
   },

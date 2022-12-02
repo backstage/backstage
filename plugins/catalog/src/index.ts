@@ -50,6 +50,7 @@ export {
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
   EntityLinksCard,
+  EntityPeekCard,
   RelatedEntitiesCard,
 } from './plugin';
 
