@@ -15,13 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import {
-  configServiceRef,
-  databaseServiceRef,
-  httpRouterServiceRef,
-  loggerServiceRef,
-  schedulerServiceRef,
-} from '@backstage/backend-plugin-api';
+import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
@@ -56,11 +50,11 @@ describe('bitbucketServerEntityProviderCatalogModule', () => {
         [catalogProcessingExtensionPoint, { addEntityProvider }],
       ],
       services: [
-        [configServiceRef, new ConfigReader({})],
-        [databaseServiceRef, database],
-        [httpRouterServiceRef, httpRouter],
-        [loggerServiceRef, getVoidLogger()],
-        [schedulerServiceRef, scheduler],
+        [coreServices.config, new ConfigReader({})],
+        [coreServices.database, database],
+        [coreServices.httpRouter, httpRouter],
+        [coreServices.logger, getVoidLogger()],
+        [coreServices.scheduler, scheduler],
       ],
       features: [
         incrementalIngestionEntityProviderCatalogModule({

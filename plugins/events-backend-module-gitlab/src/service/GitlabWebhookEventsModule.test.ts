@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { configServiceRef } from '@backstage/backend-plugin-api';
+import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -54,7 +54,7 @@ describe('gitlabWebhookEventsModule', () => {
 
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
-      services: [[configServiceRef, config]],
+      services: [[coreServices.config, config]],
       features: [gitlabWebhookEventsModule()],
     });
 

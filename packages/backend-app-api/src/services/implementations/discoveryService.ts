@@ -16,16 +16,15 @@
 
 import { SingleHostDiscovery } from '@backstage/backend-common';
 import {
-  configServiceRef,
+  coreServices,
   createServiceFactory,
-  discoveryServiceRef,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
 export const discoveryFactory = createServiceFactory({
-  service: discoveryServiceRef,
+  service: coreServices.discovery,
   deps: {
-    config: configServiceRef,
+    config: coreServices.config,
   },
   async factory({ config }) {
     const discovery = SingleHostDiscovery.fromConfig(config);
