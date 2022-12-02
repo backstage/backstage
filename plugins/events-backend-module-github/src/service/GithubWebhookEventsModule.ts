@@ -15,7 +15,7 @@
  */
 
 import {
-  configServiceRef,
+  coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node';
@@ -34,7 +34,7 @@ export const githubWebhookEventsModule = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        config: configServiceRef,
+        config: coreServices.config,
         events: eventsExtensionPoint,
       },
       async init({ config, events }) {

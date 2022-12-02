@@ -15,12 +15,8 @@
  */
 
 import {
-  configServiceRef,
+  coreServices,
   createBackendModule,
-  databaseServiceRef,
-  httpRouterServiceRef,
-  loggerServiceRef,
-  schedulerServiceRef,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import {
@@ -50,11 +46,11 @@ export const incrementalIngestionEntityProviderCatalogModule =
       env.registerInit({
         deps: {
           catalog: catalogProcessingExtensionPoint,
-          config: configServiceRef,
-          database: databaseServiceRef,
-          httpRouter: httpRouterServiceRef,
-          logger: loggerServiceRef,
-          scheduler: schedulerServiceRef,
+          config: coreServices.config,
+          database: coreServices.database,
+          httpRouter: coreServices.httpRouter,
+          logger: coreServices.logger,
+          scheduler: coreServices.scheduler,
         },
         async init({
           catalog,

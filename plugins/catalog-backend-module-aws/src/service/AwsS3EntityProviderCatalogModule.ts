@@ -15,11 +15,9 @@
  */
 
 import {
+  coreServices,
   createBackendModule,
   loggerToWinstonLogger,
-  configServiceRef,
-  loggerServiceRef,
-  schedulerServiceRef,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { AwsS3EntityProvider } from '../providers';
@@ -35,10 +33,10 @@ export const awsS3EntityProviderCatalogModule = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        config: configServiceRef,
+        config: coreServices.config,
         catalog: catalogProcessingExtensionPoint,
-        logger: loggerServiceRef,
-        scheduler: schedulerServiceRef,
+        logger: coreServices.logger,
+        scheduler: coreServices.scheduler,
       },
       async init({ config, catalog, logger, scheduler }) {
         catalog.addEntityProvider(
