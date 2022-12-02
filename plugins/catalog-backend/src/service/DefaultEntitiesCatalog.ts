@@ -210,7 +210,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       };
     }
 
-    let entities: Entity[] = rows.map(e => JSON.parse(e.final_entity!));
+    let entities: Entity[] = rows.map(e => {
+      const entityJson = JSON.parse(e.final_entity!);
+      if (e.last_updated_at) {
+        entityJson.metadata.annotations['backstage.io/last_updated-at'] =
+          e.last_updated_at;
+      }
+      return entityJson;
+    });
 
     if (request?.fields) {
       entities = entities.map(e => request.fields!(e));
@@ -263,7 +270,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         query = parseFilter(request.filter, query, this.database);
       }
       for (const row of await query) {
-        lookup.set(row.entityRef, row.entity ? JSON.parse(row.entity) : null);
+        const entityJson = JSON.parse(row.entity);
+        if (row.entity.last_updated_at) {
+          entityJson.metadata.annotations['backstage.io/last_updated-at'] =
+            row.entity.last_updated_at;
+        }
+        lookup.set(row.entityRef, row.entity ? entityJson : null);
       }
     }
 
@@ -373,13 +385,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .where('refresh_state.entity_ref', '=', rootRef)
       .select({
         entityJson: 'final_entities.final_entity',
+        last_updated_at: 'final_entities.last_updated_at',
       });
 
     if (!rootRow) {
       throw new NotFoundError(`No such entity ${rootRef}`);
     }
-
-    const rootEntity = JSON.parse(rootRow.entityJson) as Entity;
+    const entityJson = JSON.parse(rootRow.entityJson);
+    if (rootRow.last_updated_at) {
+      entityJson.metadata.annotations['backstage.io/last_updated-at'] =
+        rootRow.last_updated_at;
+    }
+    const rootEntity = entityJson as Entity;
     const seenEntityRefs = new Set<string>();
     const todo = new Array<Entity>();
     const items = new Array<{ entity: Entity; parentEntityRefs: string[] }>();
