@@ -44,7 +44,10 @@
     "ts-node": "^10.0.0"
   },
   "devDependencies": {
-    "@types/is-glob": "^4.0.2"
+    "@backstage/cli": "workspace:^",
+    "@types/is-glob": "^4.0.2",
+    "@types/mock-fs": "^4.13.0",
+    "mock-fs": "^5.1.0"
   },
   "files": [
     "bin",

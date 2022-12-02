@@ -65,7 +65,7 @@ import {
 } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
-import { paths as cliPaths } from '../../lib/paths';
+import { paths as cliPaths, resolvePackagePath } from '../../lib/paths';
 
 import g from 'glob';
 import isGlob from 'is-glob';
@@ -225,25 +225,6 @@ ApiReportGenerator.generateReviewFileContent =
       parser: 'markdown',
     });
   };
-
-export async function resolvePackagePath(
-  packagePath: string,
-): Promise<string | undefined> {
-  const fullPackageDir = cliPaths.resolveTargetRoot(packagePath);
-
-  const stat = await fs.stat(fullPackageDir);
-  if (!stat.isDirectory()) {
-    return undefined;
-  }
-
-  try {
-    const packageJsonPath = join(fullPackageDir, 'package.json');
-    await fs.access(packageJsonPath);
-  } catch (_) {
-    return undefined;
-  }
-  return relativePath(cliPaths.targetRoot, fullPackageDir);
-}
 
 export async function findPackageDirs(selectedPaths: string[]) {
   const packageDirs = new Array<string>();

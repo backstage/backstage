@@ -15,6 +15,29 @@
  */
 
 import { findPaths } from '@backstage/cli-common';
+import { relative as relativePath, join } from 'path';
+import fs from 'fs-extra';
 
 /* eslint-disable-next-line no-restricted-syntax */
 export const paths = findPaths(__dirname);
+
+export async function resolvePackagePath(
+  packagePath: string,
+): Promise<string | undefined> {
+  const fullPackageDir = paths.resolveTargetRoot(packagePath);
+
+  try {
+    const stat = await fs.stat(fullPackageDir);
+    if (!stat.isDirectory()) {
+      return undefined;
+    }
+
+    const packageJsonPath = join(fullPackageDir, 'package.json');
+
+    await fs.access(packageJsonPath);
+  } catch (e) {
+    console.log(`folder omitted: ${fullPackageDir}, cause: ${e}`);
+    return undefined;
+  }
+  return relativePath(paths.targetRoot, fullPackageDir);
+}
