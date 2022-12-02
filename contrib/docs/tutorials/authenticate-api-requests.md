@@ -8,6 +8,13 @@ API requests from frontend plugins include an authorization header with a Backst
 
 As techdocs HTML pages load assets without an Authorization header the code below also sets a token cookie when the user logs in (and when the token is about to expire).
 
+Add the `cookie-parser` service to `packages/backend`:
+
+```bash
+yarn --cwd packages/backend add cookie-parser@^1.4.5
+yarn --cwd packages/backend add --dev @types/cookie-parser
+```
+
 Create `packages/backend/src/authMiddleware.ts`:
 
 ```typescript
@@ -73,10 +80,10 @@ export const createAuthMiddleware = async (
           cookieDomain,
         });
       }
-      next();
     } catch (error) {
       res.status(401).send('Unauthorized');
     }
+    next();
   };
   return authMiddleware;
 };
@@ -86,7 +93,7 @@ export const createAuthMiddleware = async (
 // packages/backend/src/index.ts from a create-app deployment
 
 import { createAuthMiddleware } from './authMiddleware';
-
+import cookieParser from 'cookie-parser';
 // ...
 
 async function main() {
@@ -169,6 +176,8 @@ export async function setTokenCookie(url: string, identityApi: IdentityApi) {
   );
 }
 ```
+
+Edit `packages/app/src/App.tsx`
 
 ```typescript
 // required types and packages for example below
