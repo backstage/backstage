@@ -445,41 +445,14 @@ describe('Integration Test', () => {
       featureFlags: [{ name: 'show-p2-feature' }],
     });
 
-    const storageFlags = new LocalStorageFeatureFlags();
-    jest.spyOn(storageFlags, 'registerFlag');
-
-    const apis = [
-      noOpAnalyticsApi,
-      createApiFactory({
-        api: featureFlagsApiRef,
-        deps: { configApi: configApiRef },
-        factory() {
-          return storageFlags;
-        },
-      }),
-    ];
-
     const app = new AppManager({
-      apis,
+      apis: [],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [p1, p2],
       components,
       configLoader: async () => [],
-      bindRoutes: ({ bind }) => {
-        bind(plugin1.externalRoutes, {
-          extRouteRef1: plugin1RouteRef,
-          extRouteRef2: plugin2RouteRef,
-        });
-      },
     });
 
     const Provider = app.getProvider();
