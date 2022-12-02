@@ -56,6 +56,22 @@ describe('BitbucketRepoPicker', () => {
 
     expect(getAllByRole('textbox')).toHaveLength(1);
   });
+
+  it('renders a select if there is a list of allowed projects', async () => {
+    const allowedProjects = ['project1', 'project2'];
+    const { findByText } = render(
+      <BitbucketRepoPicker
+        onChange={jest.fn()}
+        rawErrors={[]}
+        state={{ host: 'bitbucket.org', repoName: 'repo' }}
+        allowedProjects={allowedProjects}
+      />,
+    );
+
+    expect(await findByText('project1')).toBeInTheDocument();
+    expect(await findByText('project2')).toBeInTheDocument();
+  });
+
   describe('workspace field', () => {
     it('calls onChange when the workspace changes', () => {
       const onChange = jest.fn();

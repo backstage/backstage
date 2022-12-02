@@ -23,14 +23,24 @@ import { RepoUrlPickerState } from './types';
 
 export const BitbucketRepoPicker = (props: {
   allowedOwners?: string[];
+  allowedProjects?: string[];
   onChange: (state: RepoUrlPickerState) => void;
   state: RepoUrlPickerState;
   rawErrors: string[];
 }) => {
-  const { allowedOwners = [], onChange, rawErrors, state } = props;
+  const {
+    allowedOwners = [],
+    allowedProjects = [],
+    onChange,
+    rawErrors,
+    state,
+  } = props;
   const { host, workspace, project } = state;
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners?.map(i => ({ label: i, value: i }))
+    : [];
+  const projectItems: SelectItem[] = allowedProjects
+    ? allowedProjects?.map(i => ({ label: i, value: i }))
     : [];
 
   useEffect(() => {
@@ -69,7 +79,7 @@ export const BitbucketRepoPicker = (props: {
             </>
           )}
           <FormHelperText>
-            The Organization that this repo will belong to
+            The Workspace that this repo will belong to
           </FormHelperText>
         </FormControl>
       )}
@@ -78,12 +88,27 @@ export const BitbucketRepoPicker = (props: {
         required
         error={rawErrors?.length > 0 && !project}
       >
-        <InputLabel htmlFor="projectInput">Project</InputLabel>
-        <Input
-          id="projectInput"
-          onChange={e => onChange({ project: e.target.value })}
-          value={project}
-        />
+        {allowedProjects?.length ? (
+          <Select
+            native
+            label="Allowed Projects"
+            onChange={s =>
+              onChange({ project: String(Array.isArray(s) ? s[0] : s) })
+            }
+            disabled={allowedProjects.length === 1}
+            selected={project}
+            items={projectItems}
+          />
+        ) : (
+          <>
+            <InputLabel htmlFor="projectInput">Project</InputLabel>
+            <Input
+              id="projectInput"
+              onChange={e => onChange({ project: e.target.value })}
+              value={project}
+            />
+          </>
+        )}
         <FormHelperText>
           The Project that this repo will belong to
         </FormHelperText>

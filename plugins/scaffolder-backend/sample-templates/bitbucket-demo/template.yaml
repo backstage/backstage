@@ -20,7 +20,15 @@ spec:
           ui:options:
             allowedHosts:
               - bitbucket.org
-              - server.bitbucket.com
+            allowedOwners:
+              - WORKSPACE1
+              - WORKSPACE2
+            allowedProjects:
+              - PROJECT1
+              - PROJECT2
+            allowedRepos:
+              - REPO1
+              - REPO2
     - title: Fill in some steps
       required:
         - name
