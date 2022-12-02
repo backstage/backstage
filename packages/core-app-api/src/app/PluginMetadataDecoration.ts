@@ -29,9 +29,9 @@ export class PluginMetadataExtender {
 
   constructor(private options: PluginDecorationOptions) {
     const { metadata } = this.options;
-    const { pluginOwners = [] } = metadata ?? {};
+    const { __experimentalPluginOwners = [] } = metadata ?? {};
 
-    this.matchers = pluginOwners.flatMap(rec =>
+    this.matchers = __experimentalPluginOwners.flatMap(rec =>
       Object.entries(rec).map(
         ([pkgNamePattern, owner]) =>
           [new RegExp(pkgNamePattern), owner] as const,
@@ -49,7 +49,7 @@ export class PluginMetadataExtender {
         this.matchOwner(pkgName) ?? pkgJson.backstage?.owner;
     }
 
-    this.options.metadata?.pluginInfoDecorator?.(info, pluginId);
+    this.options.metadata?.__experimentalPluginInfoDecorator?.(info, pluginId);
   };
 
   private matchOwner(pkgName: string): string | undefined {

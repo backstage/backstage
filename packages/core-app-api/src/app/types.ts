@@ -191,18 +191,18 @@ export type MetadataSpec = {
    * The package name (key) can contain wildcards and will be matched using
    * minimatch.
    */
-  pluginOwners?: Record<string, string>[];
+  __experimentalPluginOwners?: Record<string, string>[];
 
   /**
    * Decorate the PluginInfo part of a plugin
    */
-  pluginInfoDecorator?: (plugin: PluginInfo, id: string) => void;
+  __experimentalPluginInfoDecorator?: (plugin: PluginInfo, id: string) => void;
 
   /**
    * A map of entities to entity links. The default entity kind is Group, but
    * can be a full entity ref for another kind.
    */
-  entityLinks?: Record<string, EntityLink[]>;
+  __experimentalEntityLinks?: Record<string, EntityLink[]>;
 };
 
 /**
@@ -349,7 +349,7 @@ export type BackstageApp = {
    * Get additional entity links for a certain catalog entity. The default kind
    * is Group.
    */
-  getEntityLinks(entityRef: string): EntityLink[];
+  __experimentalGetEntityLinks?(entityRef: string): EntityLink[];
 };
 
 /**
@@ -382,6 +382,7 @@ export type AppContext = {
 
 /**
  * @private (undocumented)
+ * @internal
  */
 export type CompatiblePlugin =
   | BackstagePlugin<any, any>

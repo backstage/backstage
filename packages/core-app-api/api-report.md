@@ -26,6 +26,7 @@ import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigReader } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { EntityLink } from '@backstage/catalog-model';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
@@ -209,8 +210,7 @@ export type AppOptions = {
       >;
     }
   >;
-  pluginOwners?: Record<string, string>[];
-  pluginInfoDecorator?: (plugin: PluginInfo, id: string) => void;
+  metadata?: MetadataSpec;
   components: AppComponents;
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
@@ -264,6 +264,7 @@ export type BackstageApp = {
   getSystemIcon(key: string): IconComponent | undefined;
   getProvider(): ComponentType<{}>;
   getRouter(): ComponentType<{}>;
+  __experimentalGetEntityLinks?(entityRef: string): EntityLink[];
 };
 
 // @public
@@ -288,16 +289,6 @@ export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
   error: Error;
 };
-
-// @public
-export type CompatiblePlugin =
-  | BackstagePlugin<any, any>
-  | (Omit<BackstagePlugin<any, any>, 'getFeatureFlags'> & {
-      output(): Array<{
-        type: 'feature-flag';
-        name: string;
-      }>;
-    });
 
 export { ConfigReader };
 
@@ -417,6 +408,13 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   // (undocumented)
   save(options: FeatureFlagsSaveOptions): void;
 }
+
+// @public
+export type MetadataSpec = {
+  __experimentalPluginOwners?: Record<string, string>[];
+  __experimentalPluginInfoDecorator?: (plugin: PluginInfo, id: string) => void;
+  __experimentalEntityLinks?: Record<string, EntityLink[]>;
+};
 
 // @public
 export class MicrosoftAuth {

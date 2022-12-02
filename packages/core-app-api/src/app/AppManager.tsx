@@ -482,12 +482,12 @@ export class AppManager implements BackstageApp {
     return AppRouter;
   }
 
-  public getEntityLinks(entityRef: string): EntityLink[] {
-    const { entityLinks = {} } = this.metadata;
+  public __experimentalGetEntityLinks(entityRef: string): EntityLink[] {
+    const { __experimentalEntityLinks = {} } = this.metadata;
 
     const fullEntityRef = getFullEntityRef(entityRef);
 
-    return entityLinks[fullEntityRef] ?? [];
+    return __experimentalEntityLinks[fullEntityRef] ?? [];
   }
 
   private getApiHolder(): ApiHolder {
