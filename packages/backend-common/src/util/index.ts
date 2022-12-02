@@ -16,3 +16,8 @@
 
 export type { ContainerRunner, RunContainerOptions } from './ContainerRunner';
 export { DockerContainerRunner } from './DockerContainerRunner';
+export type {
+  KubernetesContainerRunnerOptions,
+  KubernetesContainerRunnerMountBase,
+} from './KubernetesContainerRunner';
+export { KubernetesContainerRunner } from './KubernetesContainerRunner';

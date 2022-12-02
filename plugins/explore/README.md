@@ -1,42 +1,105 @@
 # explore
 
 Welcome to the explore plugin!
+
 This plugin helps to visualize the domains and tools in your ecosystem.
 
-## Getting started
+## Setup
 
-To install the plugin, add and bind the route in `App.tsx`:
+The following sections will help you get the Explore plugin setup and running.
 
-```typescript
-import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
+### Backend
 
-...
+You need to setup the
+[Explore backend plugin](https://github.com/backstage/backstage/tree/master/plugins/explore-backend)
+before you move forward with any of these steps if you haven't already.
 
-bindRoutes({ bind }) {
-  ...
-  bind(explorePlugin.externalRoutes, {
-    catalogEntity: catalogPlugin.routes.catalogEntity,
-  });
-},
+### Installation
 
-...
+Install this plugin:
 
-<Route path="/explore" element={<ExplorePage />} />
+```bash
+# From your Backstage root directory
+yarn --cwd packages/app add @backstage/plugin-explore
 ```
 
-And add a link to the sidebar in `Root.tsx`:
+### Add the plugin to your `packages/app`
 
-```typescript
-import LayersIcon from '@material-ui/icons/Layers';
+Add the root page that the playlist plugin provides to your app. You can choose
+any path for the route, but we recommend the following:
+
+```diff
+// packages/app/src/App.tsx
++ import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
 
 ...
 
-<SidebarItem icon={LayersIcon} to="explore" text="Explore" />
+<FlatRoutes>
+  <Route path="/catalog" element={<CatalogIndexPage />} />
+  <Route path="/catalog/:namespace/:kind/:name" element={<CatalogEntityPage />}>
+    {entityPage}
+  </Route>
++  <Route path="/explore" element={<ExplorePage />} />
+  ...
+</FlatRoutes>
+```
+
+You may also want to add a link to the playlist page to your application
+sidebar:
+
+```diff
+// packages/app/src/components/Root/Root.tsx
++import LayersIcon from '@material-ui/icons/Layers';
+
+export const Root = ({ children }: PropsWithChildren<{}>) => (
+  <SidebarPage>
+    <Sidebar>
++      <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
+      ...
+    </Sidebar>
+```
+
+### Use search result list item for Explore Tools
+
+When you have your `packages/app/src/components/search/SearchPage.tsx` file
+ready to make modifications, add the following code snippet to add the
+`ToolSearchResultListItem` when the type of the search results are
+`tool`.
+
+```diff
++import { ToolSearchResultListItem } from '@backstage/plugin-explore';
+
+const SearchPage = () => {
+ ...
+  <SearchResult>
+    {({ results }) => (
+      <List>
+        {results.map(({ type, document, highlight, rank }) => {
+          switch (type) {
+            ...
++            case 'tools':
++              return (
++                <ToolSearchResultListItem
++                  icon={<BuildIcon />}
++                  key={document.location}
++                  result={document}
++                  highlight={highlight}
++                  rank={rank}
++                />
++              );
+          }
+        })}
+      </List>
+    )}
+    ...
+  </SearchResult>
+...
 ```
 
 ## Customization
 
-Create a custom explore page in `packages/app/src/components/explore/ExplorePage.tsx`.
+Create a custom explore page in
+`packages/app/src/components/explore/ExplorePage.tsx`.
 
 ```tsx
 import {
@@ -68,7 +131,7 @@ export const explorePage = <ExplorePage />;
 Now register the new explore page in `packages/app/src/App.tsx`.
 
 ```diff
-+ import { explorePage } from './components/explore/ExplorePage';
++import { explorePage } from './components/explore/ExplorePage';
 
 const routes = (
   <FlatRoutes>
@@ -78,40 +141,4 @@ const routes = (
 +    </Route>
   </FlatRoutes>
 );
-```
-
-## ToolExplorer Content Customization
-
-Override the `exploreToolsConfigRef` API in `/packages/app/src/apis.ts`.
-
-```tsx
-import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
-
-export const apis: AnyApiFactory[] = [
-  ...
-
-  createApiFactory({
-    api: exploreToolsConfigRef,
-    deps: {},
-    factory: () => ({
-        async getTools() {
-          return tools;
-        },
-      /*  e.g. tools = [
-            {
-              title: 'New Relic',
-              description:'new relic plugin,
-              url: '/newrelic',
-              image: 'https://i.imgur.com/L37ikrX.jpg',
-              tags: ['newrelic', 'proxy', 'nerdGraph'],
-            },
-          ]
-       */
-    }),
-  }),
-
-  ....
-
-];
-
 ```

@@ -71,5 +71,6 @@ export type DbFinalEntitiesRow = {
 export type DbSearchRow = {
   entity_id: string;
   key: string;
+  original_value: string | null;
   value: string | null;
 };

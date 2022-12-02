@@ -169,6 +169,33 @@ export const apis: AnyApiFactory[] = [
 ];
 ```
 
+### Enabling Site Search
+
+If you wish to see all of the search events in the [Site Search](https://support.google.com/analytics/answer/1012264)
+section of Google Analytics, you can enable sending virtual pageviews on every `search` event like so:
+
+```yaml
+app:
+  analytics:
+    ga:
+      virtualSearchPageView:
+        mode: only # Defaults to 'disabled'
+        mountPath: /virtual-search # Defaults to '/search'
+        searchQuery: term # Defaults to 'query'
+        categoryQuery: sc # Omitted by default
+```
+
+Available `mode`s are:
+
+- `disabled` - no virtual pageviews are sent, default behavior
+- `only` - sends virtual pageviews _instead_ of `search` events
+- `both` - sends both virtual pageviews _and_ `search` events
+
+Virtual pageviews will be sent to the path specified in the `mountPath`, the search term will be
+set as the value for query parameter `searchQuery` and category (if provided) will be set as the value for
+query parameter `categoryQuery`, e.g. the example config above will result in
+virtual pageviews being sent to `/virtual-search?term=SearchTermHere&sc=CategoryHere`.
+
 ### Debugging and Testing
 
 In pre-production environments, you may wish to set additional configurations

@@ -237,6 +237,7 @@ export type ConfigContextProps = {
   products: Product[];
   icons: Icon[];
   engineerCost: number;
+  engineerThreshold: number;
   currencies: Currency[];
 };
 

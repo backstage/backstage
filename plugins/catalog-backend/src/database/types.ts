@@ -81,7 +81,7 @@ export type ReplaceUnprocessedEntitiesOptions =
   | {
       sourceKey: string;
       added: DeferredEntity[];
-      removed: DeferredEntity[];
+      removed: { entityRef: string; locationKey?: string }[];
       type: 'delta';
     };
 

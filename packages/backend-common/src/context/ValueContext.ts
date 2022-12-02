@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AbortSignal } from 'node-abort-controller';
 import { Context } from './types';
 
 /**

@@ -345,11 +345,13 @@ Options:
   -i, --runInBand
   --runTestsByPath
   --runner
+  --seed
   --selectProjects
   --setupFiles
   --setupFilesAfterEnv
   --shard
   --showConfig
+  --showSeed
   --silent
   --skipFilter
   --snapshotSerializers
@@ -524,11 +526,13 @@ Options:
   -i, --runInBand
   --runTestsByPath
   --runner
+  --seed
   --selectProjects
   --setupFiles
   --setupFilesAfterEnv
   --shard
   --showConfig
+  --showSeed
   --silent
   --skipFilter
   --snapshotSerializers

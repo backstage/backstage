@@ -1,5 +1,15 @@
 # @backstage/core-plugin-api
 
+## 1.1.1-next.1
+
+### Patch Changes
+
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+
 ## 1.1.1-next.0
 
 ### Patch Changes

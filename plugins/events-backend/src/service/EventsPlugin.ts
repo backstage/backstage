@@ -15,10 +15,8 @@
  */
 
 import {
-  configServiceRef,
   createBackendPlugin,
-  httpRouterServiceRef,
-  loggerServiceRef,
+  coreServices,
   loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
 import {
@@ -89,9 +87,9 @@ export const eventsPlugin = createBackendPlugin({
 
     env.registerInit({
       deps: {
-        config: configServiceRef,
-        logger: loggerServiceRef,
-        router: httpRouterServiceRef,
+        config: coreServices.config,
+        logger: coreServices.logger,
+        router: coreServices.httpRouter,
       },
       async init({ config, logger, router }) {
         const winstonLogger = loggerToWinstonLogger(logger);

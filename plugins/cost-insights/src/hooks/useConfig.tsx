@@ -22,7 +22,7 @@ import React, {
   useState,
 } from 'react';
 import { Config as BackstageConfig } from '@backstage/config';
-import { Currency, Icon, Metric, Product } from '../types';
+import { Currency, EngineerThreshold, Icon, Metric, Product } from '../types';
 import { getIcon } from '../utils/navigation';
 import { validateCurrencies, validateMetrics } from '../utils/config';
 import { createCurrencyFormat, defaultCurrencies } from '../utils/currency';
@@ -70,6 +70,7 @@ export type ConfigContextProps = {
   products: Product[];
   icons: Icon[];
   engineerCost: number;
+  engineerThreshold: number;
   currencies: Currency[];
 };
 
@@ -83,6 +84,7 @@ const defaultState: ConfigContextProps = {
   products: [],
   icons: [],
   engineerCost: 0,
+  engineerThreshold: EngineerThreshold,
   currencies: defaultCurrencies,
 };
 
@@ -183,11 +185,19 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       return c.getNumber('costInsights.engineerCost');
     }
 
+    function getEngineerThreshold(): number {
+      return (
+        c.getOptionalNumber('costInsights.engineerThreshold') ??
+        defaultState.engineerThreshold
+      );
+    }
+
     function getConfig() {
       const baseCurrency = getBaseCurrency();
       const products = getProducts();
       const metrics = getMetrics();
       const engineerCost = getEngineerCost();
+      const engineerThreshold = getEngineerThreshold();
       const icons = getIcons();
       const currencies = getCurrencies();
 
@@ -200,6 +210,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
         metrics,
         products,
         engineerCost,
+        engineerThreshold,
         icons,
         currencies,
       }));

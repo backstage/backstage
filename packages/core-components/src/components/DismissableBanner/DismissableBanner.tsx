@@ -58,7 +58,7 @@ const useStyles = makeStyles(
       zIndex: 'unset',
     },
     icon: {
-      fontSize: 20,
+      fontSize: theme.typography.h6.fontSize,
     },
     content: {
       width: '100%',
