@@ -138,12 +138,6 @@ export type PluginInfo = {
    * field in package.json.
    */
   links: PluginInfoLink[];
-
-  /**
-   * Plugin role; will likely be frontend-plugin, frontend-plugin-module or
-   * common-library
-   */
-  role?: string;
 };
 
 /**

@@ -82,9 +82,6 @@ function parseMetadata(info: PluginInfo): void {
     info.version = pkgVersion;
   }
 
-  if (!info.role && pkgJson.backstage?.role) {
-    info.role = pkgJson.backstage.role;
-  }
   if (typeof pkgJson.homepage === 'string') {
     info.links.push({
       title: 'Package homepage',

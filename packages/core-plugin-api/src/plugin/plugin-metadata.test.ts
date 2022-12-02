@@ -23,7 +23,6 @@ describe('getPluginMetadata', () => {
     expect(metadata.links).toHaveLength(0);
     expect(metadata.ownerEntityRefs).toBeUndefined();
     expect(metadata.packageJson).toBeUndefined();
-    expect(metadata.role).toBeUndefined();
     expect(metadata.version).toBeUndefined();
   });
 
@@ -40,7 +39,6 @@ describe('getPluginMetadata', () => {
     expect(metadata.links).toHaveLength(0);
     expect(metadata.ownerEntityRefs).toBe('group:default/the-group');
     expect(metadata.packageJson).toBeUndefined();
-    expect(metadata.role).toBeUndefined();
     expect(metadata.version).toBeUndefined();
   });
 
@@ -50,7 +48,6 @@ describe('getPluginMetadata', () => {
     expect(metadata.links).toHaveLength(0);
     expect(metadata.ownerEntityRefs).toBeUndefined();
     expect(metadata.packageJson).toBeUndefined();
-    expect(metadata.role).toBeUndefined();
     expect(metadata.version).toBeUndefined();
   });
 
@@ -67,13 +64,12 @@ describe('getPluginMetadata', () => {
     expect(metadata.links).toHaveLength(0);
     expect(metadata.ownerEntityRefs).toBe('group:default/the-group');
     expect(metadata.packageJson).toBeUndefined();
-    expect(metadata.role).toBeUndefined();
     expect(metadata.version).toBeUndefined();
   });
 
   it('should handle static metadata, and no extender', async () => {
     const metadata = await getPluginMetadata(
-      { description: 'desc', role: 'cli' },
+      { description: 'desc' },
       'foo',
       undefined,
     );
@@ -81,13 +77,12 @@ describe('getPluginMetadata', () => {
     expect(metadata.links).toHaveLength(0);
     expect(metadata.ownerEntityRefs).toBeUndefined();
     expect(metadata.packageJson).toBeUndefined();
-    expect(metadata.role).toBe('cli');
     expect(metadata.version).toBeUndefined();
   });
 
   it('should handle static metadata, but with extender', async () => {
     const metadata = await getPluginMetadata(
-      { description: 'desc', role: 'cli' },
+      { description: 'desc' },
       'foo',
       async (info, pluginId) => {
         info.description = `${pluginId} thing`;
@@ -98,7 +93,6 @@ describe('getPluginMetadata', () => {
     expect(metadata.links).toHaveLength(0);
     expect(metadata.ownerEntityRefs).toBe('group:default/the-group');
     expect(metadata.packageJson).toBeUndefined();
-    expect(metadata.role).toBe('cli');
     expect(metadata.version).toBeUndefined();
   });
 
@@ -119,7 +113,6 @@ describe('getPluginMetadata', () => {
     expect(metadata.links).toHaveLength(0);
     expect(metadata.ownerEntityRefs).toBeUndefined();
     expect(metadata.packageJson).toStrictEqual(packageJson);
-    expect(metadata.role).toBe('cli');
     expect(metadata.version).toBeUndefined();
   });
 
@@ -143,7 +136,6 @@ describe('getPluginMetadata', () => {
     expect(metadata.links).toHaveLength(0);
     expect(metadata.ownerEntityRefs).toBe('group:default/the-group');
     expect(metadata.packageJson).toStrictEqual(packageJson);
-    expect(metadata.role).toBe('cli');
     expect(metadata.version).toBeUndefined();
   });
 });
