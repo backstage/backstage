@@ -488,7 +488,10 @@ describe('Integration Test', () => {
     function FeatureFlags() {
       const featureFlags = useApi(featureFlagsApiRef);
       return (
-        <div>Flags: {featureFlags.getRegisteredFlags().map(f => f.name)}</div>
+        <div>{`Flags: ${featureFlags
+          .getRegisteredFlags()
+          .map(f => f.name)
+          .join(',')}`}</div>
       );
     }
 
@@ -506,9 +509,9 @@ describe('Integration Test', () => {
       </Provider>,
     );
 
-    // we need this test to mimic adding `featureFlags` to a plugin while also passing the value in to a <FeatureFlagged /> component
-
-    // the added code should prevent duplicates from being added.
+    expect(
+      screen.getByText('Flags: show-p1-feature,show-p2-feature'),
+    ).toBeInTheDocument();
   });
 
   it('should track route changes via analytics api', async () => {
