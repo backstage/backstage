@@ -167,6 +167,7 @@ export interface ClusterDetails {
    */
   skipMetricsLookup?: boolean;
   caData?: string | undefined;
+  caFile?: string | undefined;
   /**
    * Specifies the link to the Kubernetes dashboard managing this cluster.
    * @remarks

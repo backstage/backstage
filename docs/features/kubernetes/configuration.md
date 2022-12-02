@@ -31,6 +31,7 @@ kubernetes:
           dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
           dashboardApp: standard
           caData: ${K8S_CONFIG_CA_DATA}
+          caFile: '' # local path to CA file
           customResources:
             - group: 'argoproj.io'
               apiVersion: 'v1alpha1'
@@ -248,8 +249,8 @@ kubernetes:
 ##### `clusters.\*.caData` (optional)
 
 Base64-encoded certificate authority bundle in PEM format. The Kubernetes client
-will verify that TLS certificate presented by the API server is signed by this
-CA.
+will verify that the TLS certificate presented by the API server is signed by
+this CA.
 
 This value could be obtained via inspecting the kubeconfig file (usually
 at `~/.kube/config`) under `clusters[*].cluster.certificate-authority-data`. For
@@ -264,6 +265,14 @@ gcloud container clusters describe <YOUR_CLUSTER_NAME> \
 See also
 https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud
 for complete docs about GKE without `gcloud`.
+
+##### `clusters.\*.caFile` (optional)
+
+Filesystem path (on the host where the Backstage process is running) to a
+certificate authority bundle in PEM format. The Kubernetes client will verify
+that the TLS certificate presented by the API server is signed by this CA. Note
+that only clusters defined in the app-config via the [`config`](#config)
+cluster locator method can be configured in this way.
 
 ##### `clusters.\*.customResources` (optional)
 

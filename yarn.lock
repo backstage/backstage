@@ -6742,6 +6742,7 @@ __metadata:
     http-proxy-middleware: ^2.0.6
     lodash: ^4.17.21
     luxon: ^3.0.0
+    mock-fs: ^5.2.0
     morgan: ^1.10.0
     msw: ^0.49.0
     node-fetch: ^2.6.7
@@ -29069,7 +29070,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mock-fs@npm:^5.1.0, mock-fs@npm:^5.1.1":
+"mock-fs@npm:^5.1.0, mock-fs@npm:^5.1.1, mock-fs@npm:^5.2.0":
   version: 5.2.0
   resolution: "mock-fs@npm:5.2.0"
   checksum: c25835247bd26fa4e0189addd61f98973f61a72741e4d2a5694b143a2069b84978443a7ac0fdb1a71aead99273ec22ff4e9c968de11bbd076db020264c5b8312

@@ -31,12 +31,13 @@ import { ClusterDetails } from '../types/types';
  */
 export class KubernetesClientProvider {
   // visible for testing
-  getKubeConfig(clusterDetails: ClusterDetails) {
+  getKubeConfig(clusterDetails: ClusterDetails): KubeConfig {
     const cluster: Cluster = {
       name: clusterDetails.name,
       server: clusterDetails.url,
       skipTLSVerify: clusterDetails.skipTLSVerify || false,
       caData: clusterDetails.caData,
+      caFile: clusterDetails.caFile,
     };
 
     // TODO configure
