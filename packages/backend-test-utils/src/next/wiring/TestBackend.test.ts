@@ -19,6 +19,7 @@ import {
   createExtensionPoint,
   createServiceFactory,
   createServiceRef,
+  lifecycleServiceRef,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from './TestBackend';
 
@@ -31,7 +32,7 @@ describe('TestBackend', () => {
     const extensionPoint3 = createExtensionPoint<Obj>({ id: 'b3' });
     const extensionPoint4 = createExtensionPoint<Obj>({ id: 'b4' });
     const extensionPoint5 = createExtensionPoint<Obj>({ id: 'b5' });
-    await startTestBackend({
+    const backend = await startTestBackend({
       services: [
         // @ts-expect-error
         [extensionPoint1, { a: 'a' }],
@@ -58,6 +59,7 @@ describe('TestBackend', () => {
       ],
     });
     expect(1).toBe(1);
+    await backend.stop();
   });
 
   it('should start the test backend', async () => {
@@ -87,11 +89,40 @@ describe('TestBackend', () => {
       },
     });
 
-    await startTestBackend({
+    const backend = await startTestBackend({
       services: [sf],
       features: [testModule()],
     });
 
     expect(testFn).toHaveBeenCalledWith('winning');
+    await backend.stop();
+  });
+
+  it('should stop the test backend', async () => {
+    const shutdownSpy = jest.fn();
+
+    const testModule = createBackendModule({
+      moduleId: 'test.module',
+      pluginId: 'test',
+      register(env) {
+        env.registerInit({
+          deps: {
+            lifecycle: lifecycleServiceRef,
+          },
+          async init({ lifecycle }) {
+            lifecycle.addShutdownHook({ fn: shutdownSpy });
+          },
+        });
+      },
+    });
+
+    const backend = await startTestBackend({
+      services: [],
+      features: [testModule()],
+    });
+
+    expect(shutdownSpy).not.toHaveBeenCalled();
+    await backend.stop();
+    expect(shutdownSpy).toHaveBeenCalled();
   });
 });

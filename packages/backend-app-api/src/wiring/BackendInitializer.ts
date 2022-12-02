@@ -17,8 +17,10 @@
 import {
   BackendFeature,
   ExtensionPoint,
+  lifecycleServiceRef,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
+import { BackendLifecycleImpl } from '../services/implementations/lifecycleService';
 import {
   BackendRegisterInit,
   ServiceHolder,
@@ -164,5 +166,25 @@ export class BackendInitializer {
     }
 
     return orderedRegisterInits;
+  }
+
+  async stop(): Promise<void> {
+    if (!this.#started) {
+      throw new Error('Backend has not started');
+    }
+    this.#started = false;
+
+    const lifecycleService = await this.#serviceHolder.get(
+      lifecycleServiceRef,
+      'root',
+    );
+
+    // TODO(Rugvip): :D
+    const lifecycle = (lifecycleService as any)?.lifecycle;
+    if (lifecycle instanceof BackendLifecycleImpl) {
+      await lifecycle.shutdown();
+    } else {
+      throw new Error('Unexpected lifecycle service implementation');
+    }
   }
 }

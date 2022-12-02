@@ -28,6 +28,7 @@ import { BackstageBackend } from './BackstageBackend';
 export interface Backend {
   add(feature: BackendFeature): void;
   start(): Promise<void>;
+  stop(): Promise<void>;
 }
 
 export interface BackendRegisterInit {
