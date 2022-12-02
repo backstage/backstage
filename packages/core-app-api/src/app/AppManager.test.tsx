@@ -34,6 +34,7 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
+  useApi,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
@@ -393,6 +394,44 @@ describe('Integration Test', () => {
       name: 'old-feature-flag',
       pluginId: 'old-test',
     });
+  });
+
+  it('feature flags should be available immediately', async () => {
+    const app = new AppManager({
+      apis: [
+        createApiFactory({
+          api: featureFlagsApiRef,
+          deps: { configApi: configApiRef },
+          factory() {
+            return new LocalStorageFeatureFlags();
+          },
+        }),
+      ],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [createPlugin({ id: 'test', featureFlags: [{ name: 'foo' }] })],
+      components,
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    const FeatureFlags = () => {
+      const featureFlags = useApi(featureFlagsApiRef).getRegisteredFlags();
+      return <div>Flags: {featureFlags.map(f => f.name).join(',')}</div>;
+    };
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <FeatureFlags />
+        </Router>
+      </Provider>,
+    );
+
+    expect(screen.getByText('Flags: foo')).toBeInTheDocument();
   });
 
   it('should track route changes via analytics api', async () => {
