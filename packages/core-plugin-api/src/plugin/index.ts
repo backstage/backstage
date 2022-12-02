@@ -23,7 +23,6 @@ export type {
   ExtendMetadata,
   Extension,
   FeatureFlagsHooks,
-  LazyLoadedPackageJson,
   PluginConfig,
   PluginFeatureFlagConfig,
   PluginConfigInfo,

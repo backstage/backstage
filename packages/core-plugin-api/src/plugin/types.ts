@@ -141,9 +141,10 @@ export type PluginInfo = {
 };
 
 /**
- * @public (undocumented)
+ * @private (undocumented)
+ * @internal
  */
-export type LazyLoadedPackageJson = () => Promise<{
+export type __ExperimentalLazyLoadedPackageJson = () => Promise<{
   default: Record<string, unknown>;
 }>;
 
@@ -155,10 +156,10 @@ export type PluginConfigInfo =
       ownerEntityRefs?: string | string[];
     })
   | (Omit<Partial<PluginInfo>, 'packageJson' | 'ownerEntityRefs'> & {
-      packageJson: LazyLoadedPackageJson;
+      packageJson: __ExperimentalLazyLoadedPackageJson;
       ownerEntityRefs?: string | string[];
     })
-  | LazyLoadedPackageJson;
+  | __ExperimentalLazyLoadedPackageJson;
 
 /**
  * Plugin descriptor type.
