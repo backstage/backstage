@@ -213,7 +213,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     let entities: Entity[] = rows.map(e => {
       const entityJson = JSON.parse(e.final_entity!);
       if (e.last_updated_at) {
-        entityJson.metadata.annotations['backstage.io/last_updated-at'] =
+        entityJson.metadata.annotations['backstage.io/last_updated_at'] =
           e.last_updated_at;
       }
       return entityJson;
@@ -272,7 +272,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       for (const row of await query) {
         const entityJson = JSON.parse(row.entity);
         if (row.entity.last_updated_at) {
-          entityJson.metadata.annotations['backstage.io/last_updated-at'] =
+          entityJson.metadata.annotations['backstage.io/last_updated_at'] =
             row.entity.last_updated_at;
         }
         lookup.set(row.entityRef, row.entity ? entityJson : null);
@@ -393,7 +393,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
     const entityJson = JSON.parse(rootRow.entityJson);
     if (rootRow.last_updated_at) {
-      entityJson.metadata.annotations['backstage.io/last_updated-at'] =
+      entityJson.metadata.annotations['backstage.io/last_updated_at'] =
         rootRow.last_updated_at;
     }
     const rootEntity = entityJson as Entity;

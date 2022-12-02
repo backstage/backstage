@@ -23,6 +23,7 @@ import {
 import { SerializedError, stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
+import { DateTime } from 'luxon';
 import { Logger } from 'winston';
 import {
   DbFinalEntitiesRow,
@@ -207,7 +208,7 @@ export class Stitcher {
       .update({
         final_entity: JSON.stringify(entity),
         hash,
-        last_updated_at: this.database.fn.now(),
+        last_updated_at: `${DateTime.now().toMillis()}`,
       })
       .where('entity_id', entityId)
       .where('stitch_ticket', ticket)

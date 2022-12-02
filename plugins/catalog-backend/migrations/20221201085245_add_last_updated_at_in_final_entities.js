@@ -16,7 +16,10 @@
 
 exports.up = async function up(knex) {
   await knex.schema.table('final_entities', table => {
-    table.timestamp('last_updated_at').nullable();
+    table
+      .bigint('last_updated_at')
+      .nullable()
+      .comment('The time when final_entity changed');
   });
 };
 
