@@ -179,7 +179,7 @@ export class BackendInitializer {
       'root',
     );
 
-    // TODO(Rugvip): :D
+    // TODO(Rugvip): Find a better way to do this
     const lifecycle = (lifecycleService as any)?.lifecycle;
     if (lifecycle instanceof BackendLifecycleImpl) {
       await lifecycle.shutdown();
