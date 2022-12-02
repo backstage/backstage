@@ -183,8 +183,12 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     expect(catSpy).toHaveBeenCalled();
 
     // A new index should have been created.
-    const createdIndex = createSpy.mock.calls[0][0].path.slice(1);
-    expect(createdIndex).toContain('some-type-index__');
+    expect(createSpy).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        path: expect.stringContaining('some-type-index__'),
+      }),
+    );
 
     // No documents should have been sent
     expect(bulkSpy).not.toHaveBeenCalled();
