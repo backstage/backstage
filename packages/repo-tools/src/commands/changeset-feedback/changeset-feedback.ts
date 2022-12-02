@@ -22,7 +22,7 @@ import {
   loadChangesets,
 } from './generate-changeset-feedback';
 
-export default async (diffRef: {changesetFeedback: string}) => {
+export default async (diffRef: { changesetFeedback: string }) => {
   const changedFiles = await listChangedFiles(diffRef.changesetFeedback);
   const packages = await listPackages();
 
