@@ -32,7 +32,7 @@ describe('TestBackend', () => {
     const extensionPoint3 = createExtensionPoint<Obj>({ id: 'b3' });
     const extensionPoint4 = createExtensionPoint<Obj>({ id: 'b4' });
     const extensionPoint5 = createExtensionPoint<Obj>({ id: 'b5' });
-    const backend = await startTestBackend({
+    await startTestBackend({
       services: [
         // @ts-expect-error
         [extensionPoint1, { a: 'a' }],
@@ -59,7 +59,6 @@ describe('TestBackend', () => {
       ],
     });
     expect(1).toBe(1);
-    await backend.stop();
   });
 
   it('should start the test backend', async () => {
@@ -89,13 +88,12 @@ describe('TestBackend', () => {
       },
     });
 
-    const backend = await startTestBackend({
+    await startTestBackend({
       services: [sf],
       features: [testModule()],
     });
 
     expect(testFn).toHaveBeenCalledWith('winning');
-    await backend.stop();
   });
 
   it('should stop the test backend', async () => {
@@ -119,6 +117,7 @@ describe('TestBackend', () => {
     const backend = await startTestBackend({
       services: [],
       features: [testModule()],
+      autoStop: false,
     });
 
     expect(shutdownSpy).not.toHaveBeenCalled();

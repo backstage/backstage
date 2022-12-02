@@ -170,7 +170,7 @@ export class BackendInitializer {
 
   async stop(): Promise<void> {
     if (!this.#started) {
-      throw new Error('Backend has not started');
+      return;
     }
     this.#started = false;
 
