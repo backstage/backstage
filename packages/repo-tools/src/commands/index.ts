@@ -35,7 +35,7 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
 
   program
-    .command('changeset-feedback diffRef')
+    .option('changeset-feedback <diffRef>', 'pass the default main branch', 'origin/master')
     .description('Ouputs the changeset-feedback')
     .action(
       lazy(() =>

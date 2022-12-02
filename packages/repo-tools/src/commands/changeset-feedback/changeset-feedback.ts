@@ -22,8 +22,8 @@ import {
   loadChangesets,
 } from './generate-changeset-feedback';
 
-export default async (diffRef: string = 'origin/master') => {
-  const changedFiles = await listChangedFiles(diffRef);
+export default async (diffRef: {changesetFeedback: string}) => {
+  const changedFiles = await listChangedFiles(diffRef.changesetFeedback);
   const packages = await listPackages();
 
   const changesets = await loadChangesets(changedFiles);

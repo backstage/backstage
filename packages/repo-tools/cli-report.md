@@ -9,13 +9,12 @@ Usage: backstage-repo-tools [options] [command]
 
 Options:
   -V, --version
+  changeset-feedback <diffRef>
   -h, --help
 
 Commands:
   api-reports [options] [path...]
   type-deps
-  changeset-feedback <diffRef>
-  help [command]
 ```
 
 ### `backstage-repo-tools api-reports`
@@ -27,15 +26,6 @@ Options:
   --ci
   --tsc
   --docs
-  -h, --help
-```
-
-### `backstage-repo-tools changeset-feedback`
-
-```
-Usage: backstage-repo-tools changeset-feedback [options] [diffRef]
-
-Options:
   -h, --help
 ```
 
