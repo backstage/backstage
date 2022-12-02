@@ -19,7 +19,7 @@ import {
   createExtensionPoint,
   createServiceFactory,
   createServiceRef,
-  lifecycleServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from './TestBackend';
 
@@ -105,7 +105,7 @@ describe('TestBackend', () => {
       register(env) {
         env.registerInit({
           deps: {
-            lifecycle: lifecycleServiceRef,
+            lifecycle: coreServices.lifecycle,
           },
           async init({ lifecycle }) {
             lifecycle.addShutdownHook({ fn: shutdownSpy });

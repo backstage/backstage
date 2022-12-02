@@ -17,7 +17,7 @@
 import {
   BackendFeature,
   ExtensionPoint,
-  lifecycleServiceRef,
+  coreServices,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../services/implementations/lifecycleService';
@@ -175,7 +175,7 @@ export class BackendInitializer {
     this.#started = false;
 
     const lifecycleService = await this.#serviceHolder.get(
-      lifecycleServiceRef,
+      coreServices.lifecycle,
       'root',
     );
 
