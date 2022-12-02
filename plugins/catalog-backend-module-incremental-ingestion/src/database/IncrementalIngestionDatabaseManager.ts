@@ -298,7 +298,7 @@ export class IncrementalIngestionDatabaseManager {
    * @param ingestionId - string
    * @returns All entities to remove for this burst.
    */
-  async computeRemoved(provider: string, providerId: string) {
+  async computeRemoved(provider: string, ingestionId: string) {
     const previousIngestion = await this.getPreviousIngestionRecord(provider);
     return await this.client.transaction(async tx => {
       const count = await tx('ingestion_mark_entities')
@@ -309,7 +309,7 @@ export class IncrementalIngestionDatabaseManager {
           'ingestion_mark_entities.ingestion_mark_id',
         )
         .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
-        .where('ingestions.id', providerId);
+        .where('ingestions.id', ingestionId);
 
       const total = count.reduce((acc, cur) => acc + (cur.total as number), 0);
 
@@ -563,17 +563,19 @@ export class IncrementalIngestionDatabaseManager {
     const refs = entities.map(e => stringifyEntityRef(e.entity));
 
     await this.client.transaction(async tx => {
-      const existingRefs = (
-        await tx<{ ref: string }>('ingestion_mark_entities')
-          .select('ref')
-          .whereIn('ref', refs)
-      ).map(e => e.ref);
+      const existingRefs = new Set(
+        ...(
+          await tx<{ ref: string }>('ingestion_mark_entities')
+            .select('ref')
+            .whereIn('ref', refs)
+        ).map(e => e.ref),
+      );
 
-      const newRefs = refs.filter(e => !existingRefs.includes(e));
+      const newRefs = refs.filter(e => !existingRefs.has(e));
 
       await tx('ingestion_mark_entities')
         .update('ingestion_mark_id', markId)
-        .whereIn('ref', existingRefs);
+        .whereIn('ref', Array.from(existingRefs));
 
       await tx('ingestion_mark_entities').insert(
         newRefs.map(ref => ({
