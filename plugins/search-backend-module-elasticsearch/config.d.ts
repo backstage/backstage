@@ -139,7 +139,7 @@ export interface Config {
     };*/
           }
         /**
-         *  AWS = In house hosting Open Search
+         *  Open Search = In house hosting Open Search
          */
           | {
             provider: 'opensearch';
