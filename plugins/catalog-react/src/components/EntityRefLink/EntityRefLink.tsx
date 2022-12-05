@@ -63,7 +63,6 @@ export type EntityRefLinkProps = {
 type PeekAheadPopoverProps = {
   popupState: PopupState;
   entityRef: CompoundEntityRef;
-  ref: ForwardedRef<any>;
 };
 
 const useStyles = makeStyles(() => {
@@ -82,7 +81,6 @@ const useStyles = makeStyles(() => {
 export const PeekAheadPopover = ({
   popupState,
   entityRef,
-  ref,
 }: PeekAheadPopoverProps) => {
   const catalogApi = useApi(catalogApiRef);
   const entityRoute = useRouteRef(entityRouteRef);
@@ -198,17 +196,15 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     );
 
     const link = (
-      <>
-        <Link
-          {...bindHover(popupState)}
-          {...linkProps}
-          ref={ref}
-          to={entityRoute(routeParams)}
-        >
-          {children}
-          {!children && (title ?? formattedEntityRefTitle)}
-        </Link>
-      </>
+      <Link
+        {...bindHover(popupState)}
+        {...linkProps}
+        ref={ref}
+        to={entityRoute(routeParams)}
+      >
+        {children}
+        {!children && (title ?? formattedEntityRefTitle)}
+      </Link>
     );
 
     return (
@@ -220,7 +216,6 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
         )}
 
         <PeekAheadPopover
-          ref={ref}
           popupState={popupState}
           entityRef={{ kind, namespace, name }}
         />
