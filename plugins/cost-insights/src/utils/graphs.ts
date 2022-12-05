@@ -16,7 +16,8 @@
 
 import { TooltipProps } from 'recharts';
 import { Payload } from 'recharts/types/component/DefaultTooltipContent';
-import { AlertCost, DataKey, Entity, ResourceData } from '../types';
+import { AlertCost, DataKey, ResourceData } from '../types';
+import { Entity } from '@backstage/plugin-cost-insights-common';
 import {
   currencyFormatter,
   dateFormatter,
