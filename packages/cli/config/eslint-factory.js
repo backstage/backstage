@@ -215,8 +215,20 @@ function createConfigForRole(dir, role, extraConfig = {}) {
         ...extraConfig,
         extends: [
           '@spotify/eslint-config-react',
+          'plugin:react/recommended',
           ...(extraConfig.extends ?? []),
         ],
+        rules: {
+          ...extraConfig.rules,
+          'react/forbid-elements': [
+            1,
+            {
+              forbid: [
+                { element: 'button', message: 'use MUI <Button> instead' },
+              ],
+            },
+          ],
+        },
         parserOptions: {
           ecmaFeatures: {
             jsx: true,
