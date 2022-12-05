@@ -50,7 +50,7 @@
     "swagger-ui-react": "^4.11.1"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^18.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-router": "6.0.0-beta.0 || ^6.3.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
