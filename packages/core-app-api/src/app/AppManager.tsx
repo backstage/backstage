@@ -322,8 +322,13 @@ export class AppManager implements BackstageApp {
 
           // Go through the featureFlags returned from the traversal and
           // register those now the configApi has been loaded
+          const registeredFlags = featureFlagsApi.getRegisteredFlags();
+          const flagNames = new Set(registeredFlags.map(f => f.name));
           for (const name of featureFlags) {
-            featureFlagsApi.registerFlag({ name, pluginId: '' });
+            // Prevents adding duplicate feature flags
+            if (!flagNames.has(name)) {
+              featureFlagsApi.registerFlag({ name, pluginId: '' });
+            }
           }
         }
       }

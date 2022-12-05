@@ -38,6 +38,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
+import { FeatureFlagged } from '../routing/FeatureFlagged';
 
 describe('Integration Test', () => {
   const noOpAnalyticsApi = createApiFactory(
@@ -432,6 +433,58 @@ describe('Integration Test', () => {
     );
 
     expect(screen.getByText('Flags: foo')).toBeInTheDocument();
+  });
+
+  it('should prevent duplicate feature flags from being rendered', async () => {
+    const p1 = createPlugin({
+      id: 'p1',
+      featureFlags: [{ name: 'show-p1-feature' }],
+    });
+    const p2 = createPlugin({
+      id: 'p2',
+      featureFlags: [{ name: 'show-p2-feature' }],
+    });
+
+    const app = new AppManager({
+      apis: [],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [p1, p2],
+      components,
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    function FeatureFlags() {
+      const featureFlags = useApi(featureFlagsApiRef);
+      return (
+        <div>{`Flags: ${featureFlags
+          .getRegisteredFlags()
+          .map(f => f.name)
+          .join(',')}`}</div>
+      );
+    }
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <FeatureFlagged with="show-p1-feature">
+            <div>My feature behind a flag</div>
+          </FeatureFlagged>
+          <FeatureFlagged with="show-p2-feature">
+            <div>My feature behind a flag</div>
+          </FeatureFlagged>
+          <FeatureFlags />
+        </Router>
+      </Provider>,
+    );
+
+    expect(
+      screen.getByText('Flags: show-p1-feature,show-p2-feature'),
+    ).toBeInTheDocument();
   });
 
   it('should track route changes via analytics api', async () => {
