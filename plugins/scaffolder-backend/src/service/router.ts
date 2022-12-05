@@ -258,6 +258,7 @@ export async function createRouter(
 
         const userIdentity = await identity.getIdentity({
           request: req,
+          optional: true,
         });
         const token = userIdentity?.token;
 
@@ -304,6 +305,7 @@ export async function createRouter(
 
       const callerIdentity = await identity.getIdentity({
         request: req,
+        optional: true,
       });
       const token = callerIdentity?.token;
       const userEntityRef = callerIdentity?.identity.userEntityRef;
@@ -512,6 +514,7 @@ export async function createRouter(
       const token = (
         await identity.getIdentity({
           request: req,
+          optional: true,
         })
       )?.token;
 

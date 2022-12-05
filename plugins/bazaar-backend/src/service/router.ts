@@ -55,7 +55,10 @@ export async function createRouter(
 
   router.put('/projects/:id/member/:userId', async (request, response) => {
     const { id, userId } = request.params;
-    const user = await identity.getIdentity({ request: request });
+    const user = await identity.getIdentity({
+      request: request,
+      optional: true,
+    });
 
     await dbHandler.addMember(
       parseInt(id, 10),

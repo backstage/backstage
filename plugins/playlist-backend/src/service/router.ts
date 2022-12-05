@@ -85,7 +85,7 @@ export async function createRouter(
       request.header('authorization'),
     );
 
-    const user = await identity.getIdentity({ request });
+    const user = await identity.getIdentity({ request, optional: true });
     if (!user) {
       throw new NotAllowedError('Unauthorized');
     }

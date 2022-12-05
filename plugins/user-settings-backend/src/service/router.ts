@@ -60,7 +60,10 @@ export async function createRouterInternal(options: {
    */
   const getUserEntityRef = async (req: Request): Promise<string> => {
     // throws an AuthenticationError in case the token exists but is invalid
-    const identity = await options.identity.getIdentity({ request: req });
+    const identity = await options.identity.getIdentity({
+      request: req,
+      optional: true,
+    });
     if (!identity) {
       throw new AuthenticationError(`Missing token in 'authorization' header`);
     }
