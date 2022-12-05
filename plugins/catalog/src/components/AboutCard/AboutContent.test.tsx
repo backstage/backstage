@@ -19,8 +19,8 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { AboutContent } from './AboutContent';
