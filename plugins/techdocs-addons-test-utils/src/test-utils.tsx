@@ -22,6 +22,8 @@ import { screen } from 'testing-library__dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Route } from 'react-router-dom';
 import { act, render } from '@testing-library/react';
+import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FlatRoutes } from '@backstage/core-app-api';
@@ -58,6 +60,10 @@ const searchApi = {
 const scmIntegrationsApi = {
   fromConfig: jest.fn().mockReturnValue({}),
 };
+
+const catalogApi: jest.Mocked<CatalogApi> = {
+  getEntityByRef: jest.fn(),
+} as any;
 
 /** @ignore */
 type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
@@ -198,6 +204,7 @@ export class TechDocsAddonTester {
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
       [scmIntegrationsApiRef, scmIntegrationsApi],
+      [catalogApiRef, catalogApi],
       ...this.options.apis,
     ];
 

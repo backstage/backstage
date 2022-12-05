@@ -21,7 +21,7 @@ spec:
     # Intentional no displayName for testing
     email: breanna-davison@example.com
     picture: https://avatars.dicebear.com/api/avataaars/breanna-davison@example.com.svg?background=%23fff
-  memberOf: [team-a]
+  memberOf: [team-a, team-not-exist]
 ---
 apiVersion: backstage.io/v1alpha1
 kind: User

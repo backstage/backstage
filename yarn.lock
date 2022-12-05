@@ -7189,6 +7189,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-playlist@workspace:plugins/playlist"
   dependencies:
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
@@ -8058,6 +8059,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils"
   dependencies:
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
@@ -8065,6 +8067,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-techdocs": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
@@ -8126,6 +8129,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib"
   dependencies:
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
@@ -8229,6 +8233,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs@workspace:plugins/techdocs"
   dependencies:
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"

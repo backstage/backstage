@@ -17,9 +17,10 @@ import React from 'react';
 import { act } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { CatalogApi } from '@backstage/catalog-client';
 
 import { lightTheme } from '@backstage/theme';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import { techdocsApiRef, techdocsStorageApiRef } from '../../../api';
@@ -66,6 +67,10 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
+const catalogApi: jest.Mocked<CatalogApi> = {
+  getEntityByRef: jest.fn(),
+} as any;
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <ThemeProvider theme={lightTheme}>
@@ -74,6 +79,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
           [scmIntegrationsApiRef, {}],
           [techdocsApiRef, techdocsApiMock],
           [techdocsStorageApiRef, techdocsStorageApiMock],
+          [catalogApiRef, catalogApi],
         ]}
       >
         {children}

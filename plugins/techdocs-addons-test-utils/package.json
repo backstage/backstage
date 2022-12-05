@@ -32,11 +32,13 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/plugin-techdocs": "workspace:^",
     "@backstage/plugin-techdocs-react": "workspace:^",

@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { entityRouteRef, catalogApiRef } from '@backstage/plugin-catalog-react';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
+import { CatalogApi } from '@backstage/catalog-client';
+import { ApiProvider } from '@backstage/core-app-api';
+
+const catalogApi: jest.Mocked<CatalogApi> = {
+  getEntityByRef: jest.fn(),
+} as any;
+
+const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 import { rootRouteRef } from '../../routes';
 import { PlaylistCard } from './PlaylistCard';
@@ -27,18 +35,20 @@ describe('<PlaylistCard/>', () => {
   it('renders playlist info', async () => {
     const rendered = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <PlaylistCard
-          playlist={{
-            id: 'id1',
-            name: 'playlist-1',
-            description: 'test description',
-            owner: 'group:default/some-owner',
-            public: true,
-            entities: 3,
-            followers: 2,
-            isFollowing: false,
-          }}
-        />
+        <ApiProvider apis={apis}>
+          <PlaylistCard
+            playlist={{
+              id: 'id1',
+              name: 'playlist-1',
+              description: 'test description',
+              owner: 'group:default/some-owner',
+              public: true,
+              entities: 3,
+              followers: 2,
+              isFollowing: false,
+            }}
+          />
+        </ApiProvider>
       </ThemeProvider>,
       {
         mountedRoutes: {

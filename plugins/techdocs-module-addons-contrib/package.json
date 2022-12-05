@@ -50,6 +50,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",

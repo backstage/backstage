@@ -47,6 +47,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import InfoIcon from '@material-ui/icons/Info';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
+import { Alert } from '@material-ui/lab';
 
 /**
  * Props for {@link EntityRefLink}.
@@ -77,13 +78,21 @@ export const PeekAheadPopover = ({
   popupState,
   entityRef,
 }: PeekAheadPopoverProps) => {
-  const catalogApi = useApi(catalogApiRef);
   const entityRoute = useRouteRef(entityRouteRef);
   const classes = useStyles();
+  const catalogApi = useApi(catalogApiRef);
 
-  const { value, loading, error } = useAsync(async () => {
+  const {
+    value: entity,
+    loading,
+    error,
+  } = useAsync(async () => {
     if (popupState.isOpen) {
-      return catalogApi.getEntityByRef(entityRef);
+      const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
+      if (!retrievedEntity) {
+        throw new Error(`${entityRef.name} was not found`);
+      }
+      return retrievedEntity;
     }
     return undefined;
   }, [popupState]);
@@ -115,25 +124,25 @@ export const PeekAheadPopover = ({
           </Typography>
           <Typography>{entityRef.kind}</Typography>
           <Typography variant="body2">
-            {error && error.message}
-            {value && (
+            {error && <Alert severity="warning">{error.message}</Alert>}
+            {entity && (
               <>
-                {value.metadata.description}
+                {entity.metadata.description}
                 <br />
                 <br />
-                {value.spec?.type}
+                {entity.spec?.type}
               </>
             )}
           </Typography>
         </CardContent>
         <CardActions>
-          {value &&
-            (isUserEntity(value) || isGroupEntity(value)) &&
-            value.spec.profile?.email && (
-              <Tooltip title={`Email ${value.spec.profile.email}`}>
+          {entity &&
+            (isUserEntity(entity) || isGroupEntity(entity)) &&
+            entity.spec.profile?.email && (
+              <Tooltip title={`Email ${entity.spec.profile.email}`}>
                 <Button
                   target="_blank"
-                  href={`mailto:${value.spec.profile.email}`}
+                  href={`mailto:${entity.spec.profile.email}`}
                   size="small"
                 >
                   <EmailIcon color="action" />
