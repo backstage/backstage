@@ -22,7 +22,7 @@ import {
   isUserEntity,
   isGroupEntity,
 } from '@backstage/catalog-model';
-import React, { ForwardedRef, forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
 import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps } from '@backstage/core-components';
