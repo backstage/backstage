@@ -29,6 +29,7 @@ import { TabPanel } from './TabPanel';
 import { StyledIcon } from './TabIcon';
 import { StyledTab } from './Tab';
 import { StyledTabs } from './TabBar';
+import Box from '@material-ui/core/Box';
 
 /* Props Types */
 
@@ -56,8 +57,8 @@ const useStyles = makeStyles<BackstageTheme>(
     appbar: {
       boxShadow: 'none',
       backgroundColor: theme.palette.background.paper,
-      paddingLeft: '10px',
-      paddingRight: '10px',
+      paddingLeft: theme.spacing(1.25),
+      paddingRight: theme.spacing(1.25),
     },
   }),
   { name: 'BackstageTabs' },
@@ -110,9 +111,9 @@ export function Tabs(props: TabsProps) {
   const currentIndex = navIndex === value[0] ? value[1] : false;
 
   return (
-    <div className={classes.root}>
+    <Box className={classes.root}>
       <AppBar ref={wrapper} className={classes.appbar} position="static">
-        <div>
+        <Box>
           <StyledTabs
             value={currentIndex}
             onChange={handleChange}
@@ -146,7 +147,7 @@ export function Tabs(props: TabsProps) {
               </StyledIcon>
             )}
           </StyledTabs>
-        </div>
+        </Box>
       </AppBar>
       {currentIndex !== false ? (
         chunkedTabs[navIndex].map((tab, index) => (
@@ -164,6 +165,6 @@ export function Tabs(props: TabsProps) {
           {chunkedTabs[value[0]][value[1]].content}
         </TabPanel>
       )}
-    </div>
+    </Box>
   );
 }

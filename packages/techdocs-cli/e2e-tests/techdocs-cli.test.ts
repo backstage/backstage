@@ -64,7 +64,7 @@ describe('end-to-end', () => {
 
   afterEach(async () => {
     // On Windows the pid of a spawned process may be wrong
-    // Because of this, we should be kill the MKDocs after the test
+    // Because of this, we should stop the MKDocs after the test
     // (e.g. https://github.com/nodejs/node/issues/4289#issuecomment-854270414)
     if (process.platform === 'win32') {
       const procs = await findProcess('name', 'mkdocs', true);

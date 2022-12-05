@@ -16,17 +16,15 @@
 
 import {
   createServiceFactory,
-  loggerServiceRef,
-  pluginMetadataServiceRef,
-  rootLoggerServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
 export const loggerFactory = createServiceFactory({
-  service: loggerServiceRef,
+  service: coreServices.logger,
   deps: {
-    rootLogger: rootLoggerServiceRef,
-    plugin: pluginMetadataServiceRef,
+    rootLogger: coreServices.rootLogger,
+    plugin: coreServices.pluginMetadata,
   },
   async factory({ rootLogger }) {
     return async ({ plugin }) => {

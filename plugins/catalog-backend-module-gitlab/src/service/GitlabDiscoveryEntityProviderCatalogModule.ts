@@ -17,9 +17,7 @@
 import {
   createBackendModule,
   loggerToWinstonLogger,
-  configServiceRef,
-  loggerServiceRef,
-  schedulerServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { GitlabDiscoveryEntityProvider } from '../providers';
@@ -35,10 +33,10 @@ export const gitlabDiscoveryEntityProviderCatalogModule = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        config: configServiceRef,
+        config: coreServices.config,
         catalog: catalogProcessingExtensionPoint,
-        logger: loggerServiceRef,
-        scheduler: schedulerServiceRef,
+        logger: coreServices.logger,
+        scheduler: coreServices.scheduler,
       },
       async init({ config, catalog, logger, scheduler }) {
         catalog.addEntityProvider(

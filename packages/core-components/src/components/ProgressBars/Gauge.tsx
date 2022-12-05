@@ -18,6 +18,7 @@ import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
 import React, { ReactNode, useEffect, useState } from 'react';
+import Box from '@material-ui/core/Box';
 
 /** @public */
 export type GaugeClassKey =
@@ -38,8 +39,8 @@ const useStyles = makeStyles<BackstageTheme>(
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -60%)',
-      fontSize: 45,
-      fontWeight: 'bold',
+      fontSize: theme.typography.pxToRem(45),
+      fontWeight: theme.typography.fontWeightBold,
       color: theme.palette.textContrast,
     },
     description: {
@@ -152,7 +153,7 @@ export function Gauge(props: GaugeProps) {
   }, [description, hoverRef]);
 
   return (
-    <div ref={setHoverRef} className={classes.root}>
+    <Box {...{ ref: setHoverRef }} className={classes.root}>
       <Circle
         strokeLinecap="butt"
         percent={asPercentage}
@@ -162,12 +163,12 @@ export function Gauge(props: GaugeProps) {
         className={classes.circle}
       />
       {description && isHovering ? (
-        <div className={classes.description}>{description}</div>
+        <Box className={classes.description}>{description}</Box>
       ) : (
-        <div className={classes.overlay}>
+        <Box className={classes.overlay}>
           {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

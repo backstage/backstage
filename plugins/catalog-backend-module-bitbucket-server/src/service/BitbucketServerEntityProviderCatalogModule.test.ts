@@ -16,11 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
-import {
-  configServiceRef,
-  loggerServiceRef,
-  schedulerServiceRef,
-} from '@backstage/backend-plugin-api';
+import { coreServices } from '@backstage/backend-plugin-api';
 import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
@@ -73,9 +69,9 @@ describe('bitbucketServerEntityProviderCatalogModule', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       services: [
-        [configServiceRef, config],
-        [loggerServiceRef, getVoidLogger()],
-        [schedulerServiceRef, scheduler],
+        [coreServices.config, config],
+        [coreServices.logger, getVoidLogger()],
+        [coreServices.scheduler, scheduler],
       ],
       features: [bitbucketServerEntityProviderCatalogModule()],
     });

@@ -33,7 +33,7 @@ const useStyles = makeStyles<BackstageTheme>(
       display: 'flex',
       justifyContent: 'center',
       backgroundColor: theme.palette.tabbar.indicator,
-      height: '4px',
+      height: theme.spacing(0.5),
     },
     flexContainer: {
       alignItems: 'center',

@@ -69,7 +69,7 @@ export function ToolSearchResultListItem(props: ToolSearchResultListItemProps) {
   };
 
   return (
-    <Link noTrack to={result.location} onClick={handleClick}>
+    <>
       <ListItem alignItems="flex-start">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <div className={classes.flexContainer}>
@@ -77,15 +77,17 @@ export function ToolSearchResultListItem(props: ToolSearchResultListItemProps) {
             className={classes.itemText}
             primaryTypographyProps={{ variant: 'h6' }}
             primary={
-              props.highlight?.fields.title ? (
-                <HighlightedSearchResultText
-                  text={props.highlight.fields.title}
-                  preTag={props.highlight.preTag}
-                  postTag={props.highlight.postTag}
-                />
-              ) : (
-                result.title
-              )
+              <Link noTrack to={result.location} onClick={handleClick}>
+                {props.highlight?.fields.title ? (
+                  <HighlightedSearchResultText
+                    text={props.highlight.fields.title}
+                    preTag={props.highlight.preTag}
+                    postTag={props.highlight.postTag}
+                  />
+                ) : (
+                  result.title
+                )}
+              </Link>
             }
             secondary={
               props.highlight?.fields.text ? (
@@ -108,6 +110,6 @@ export function ToolSearchResultListItem(props: ToolSearchResultListItemProps) {
         </div>
       </ListItem>
       <Divider component="li" />
-    </Link>
+    </>
   );
 }

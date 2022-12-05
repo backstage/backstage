@@ -23,6 +23,7 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { MatcherFunction } from '@testing-library/react';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import { PropsWithChildren } from 'react';
@@ -240,6 +241,9 @@ export type TestAppOptions = {
     [path: string]: RouteRef | ExternalRouteRef;
   };
 };
+
+// @public
+export const textContentMatcher: (text: string) => MatcherFunction;
 
 // @public
 export function withLogCollector(

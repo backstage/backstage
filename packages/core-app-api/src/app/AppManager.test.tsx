@@ -21,7 +21,7 @@ import {
   withLogCollector,
 } from '@backstage/test-utils';
 import { render, screen } from '@testing-library/react';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
   configApiRef,
@@ -34,6 +34,7 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
+  useApi,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
@@ -164,19 +165,20 @@ describe('Integration Test', () => {
   };
 
   const icons = {} as AppIcons;
+  const themes = [
+    {
+      id: 'light',
+      title: 'Light Theme',
+      variant: 'light' as const,
+      Provider: ({ children }: { children: ReactNode }) => <>{children}</>,
+    },
+  ];
 
   it('runs happy paths', async () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -224,14 +226,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -282,14 +277,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [
         createPlugin({
@@ -345,14 +333,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [
         createPlugin({
@@ -415,20 +396,51 @@ describe('Integration Test', () => {
     });
   });
 
+  it('feature flags should be available immediately', async () => {
+    const app = new AppManager({
+      apis: [
+        createApiFactory({
+          api: featureFlagsApiRef,
+          deps: { configApi: configApiRef },
+          factory() {
+            return new LocalStorageFeatureFlags();
+          },
+        }),
+      ],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [createPlugin({ id: 'test', featureFlags: [{ name: 'foo' }] })],
+      components,
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    const FeatureFlags = () => {
+      const featureFlags = useApi(featureFlagsApiRef).getRegisteredFlags();
+      return <div>Flags: {featureFlags.map(f => f.name).join(',')}</div>;
+    };
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <FeatureFlags />
+        </Router>
+      </Provider>,
+    );
+
+    expect(screen.getByText('Flags: foo')).toBeInTheDocument();
+  });
+
   it('should track route changes via analytics api', async () => {
     const mockAnalyticsApi = new MockAnalyticsApi();
     const apis = [createApiFactory(analyticsApiRef, mockAnalyticsApi)];
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -482,14 +494,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -532,14 +537,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,

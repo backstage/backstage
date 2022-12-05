@@ -55,7 +55,7 @@ describe('Features', () => {
 
     expect(getByTestId(TEST_IDS.info.info)).toMatchInlineSnapshot(`
       <div
-        class="MuiBox-root MuiBox-root-10"
+        class="MuiBox-root MuiBox-root-11"
         data-testid="grm--info"
       >
         <h6
@@ -72,7 +72,7 @@ describe('Features', () => {
           : The source control system where releases reside in a practical sense. Read more about
            
           <a
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover Link-externalLink-12 MuiTypography-colorPrimary"
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover Link-externalLink-13 MuiTypography-colorPrimary"
             href="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
             rel="noopener"
             target="_blank"
@@ -80,7 +80,7 @@ describe('Features', () => {
           >
             Git releases
             <span
-              class="Link-visuallyHidden-11"
+              class="MuiTypography-root Link-visuallyHidden-12 MuiTypography-body1"
             >
               , Opens in a new window
             </span>

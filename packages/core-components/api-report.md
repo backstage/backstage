@@ -52,10 +52,10 @@ import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
 
-// @public (undocumented)
+// @public
 export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
 
-// @public
+// @public (undocumented)
 export type AlertDisplayProps = {
   anchorOrigin?: {
     vertical: 'top' | 'bottom';
