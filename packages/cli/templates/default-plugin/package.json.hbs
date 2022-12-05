@@ -27,16 +27,14 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@backstage/core-components": "{{versionQuery '@backstage/core-components'}}",
     "@backstage/core-plugin-api": "{{versionQuery '@backstage/core-plugin-api'}}",
     "@backstage/theme": "{{versionQuery '@backstage/theme'}}",
     "@material-ui/core": "{{versionQuery '@material-ui/core' '4.12.2'}}",
     "@material-ui/icons": "{{versionQuery '@material-ui/icons' '4.9.1'}}",
     "@material-ui/lab": "{{versionQuery '@material-ui/lab' '4.0.0-alpha.57'}}",
-    "react-use": "{{versionQuery 'react-use' '17.2.4'}}"
-  },
-  "peerDependencies": {
+    "react-use": "{{versionQuery 'react-use' '17.2.4'}}",
     "react": "{{versionQuery 'react' '^16.13.1 || ^17.0.0'}}"
   },
   "devDependencies": {
