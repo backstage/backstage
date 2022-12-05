@@ -23,6 +23,19 @@ import pluralize from 'pluralize';
 import React, { useEffect, useState } from 'react';
 
 /**
+ * Properties for {@link AlertDisplay}
+ *
+ * @public
+ */
+export type AlertDisplayProps = {
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
+  transientTimeoutMs?: number;
+};
+
+/**
  * Displays alerts from {@link @backstage/core-plugin-api#AlertApi}
  *
  * @public
@@ -47,18 +60,6 @@ import React, { useEffect, useState } from 'react';
  * <AlertDisplay transientTimeoutMs={10000} />
  * ```
  */
-
-// TODO: improve on this and promote to a shared component for use by all apps.
-
-export type AlertDisplayProps = {
-  anchorOrigin?: {
-    vertical: 'top' | 'bottom';
-    horizontal: 'left' | 'center' | 'right';
-  };
-  transientTimeoutMs?: number;
-};
-
-/** @public */
 export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
