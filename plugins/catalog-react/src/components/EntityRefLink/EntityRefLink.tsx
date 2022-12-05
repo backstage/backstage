@@ -67,13 +67,8 @@ type PeekAheadPopoverProps = {
 
 const useStyles = makeStyles(() => {
   return {
-    popover: {
-      width: '80em',
-      minWidth: '80em',
-      maxWidth: '80em',
-    },
-    card: {
-      width: '100%',
+    popoverPaper: {
+      width: '20em',
     },
   };
 });
@@ -99,8 +94,10 @@ export const PeekAheadPopover = ({
 
   return (
     <HoverPopover
+      PaperProps={{
+        className: classes.popoverPaper,
+      }}
       {...bindPopover(popupState)}
-      className={classes.popover}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'center',
@@ -110,7 +107,7 @@ export const PeekAheadPopover = ({
         horizontal: 'center',
       }}
     >
-      <Card className={classes.card}>
+      <Card>
         <CardContent>
           <Typography gutterBottom>{entityRef.namespace}</Typography>
           <Typography variant="h5" component="div">
