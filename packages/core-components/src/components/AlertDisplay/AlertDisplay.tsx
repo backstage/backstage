@@ -19,7 +19,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
-import { useIsMounted } from '@react-hookz/web';
 import pluralize from 'pluralize';
 import React, { useEffect, useState } from 'react';
 
@@ -63,7 +62,6 @@ export type AlertDisplayProps = {
 export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
-  const isMounted = useIsMounted();
 
   const {
     anchorOrigin = { vertical: 'top', horizontal: 'center' },
@@ -81,23 +79,24 @@ export function AlertDisplay(props: AlertDisplayProps) {
     };
   }, [alertApi]);
 
+  const [firstMessage] = messages;
+
   useEffect(() => {
-    const [current] = messages;
-    if (current && current.display === 'transient') {
-      setTimeout(() => {
-        if (isMounted()) {
-          setMessages(msgs => msgs.filter(msg => msg !== current));
-        }
+    if (firstMessage && firstMessage.display === 'transient') {
+      const timeout = setTimeout(() => {
+        setMessages(msgs => {
+          const newMsgs = msgs.filter(msg => msg !== firstMessage);
+          return newMsgs.length === msgs.length ? msgs : newMsgs;
+        });
       }, timeoutMs);
+      return () => clearTimeout(timeout);
     }
     return undefined;
-  }, [messages, timeoutMs, isMounted]);
+  }, [firstMessage, timeoutMs]);
 
   if (messages.length === 0) {
     return null;
   }
-
-  const [firstMessage] = messages;
 
   const handleClose = () => {
     setMessages(msgs => msgs.filter(msg => msg !== firstMessage));
