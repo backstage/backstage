@@ -124,7 +124,7 @@ export class TaskWorker {
     return new Promise(resolve => {
       // "next" event emits when a task completes
       // https://github.com/sindresorhus/p-queue#next
-      this.taskQueue.on('next', () => {
+      this.taskQueue.once('next', () => {
         resolve();
       });
     });
