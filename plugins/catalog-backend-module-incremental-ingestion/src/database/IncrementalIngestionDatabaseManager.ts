@@ -563,19 +563,19 @@ export class IncrementalIngestionDatabaseManager {
     const refs = entities.map(e => stringifyEntityRef(e.entity));
 
     await this.client.transaction(async tx => {
-      const existingRefs = new Set(
-        ...(
-          await tx<{ ref: string }>('ingestion_mark_entities')
-            .select('ref')
-            .whereIn('ref', refs)
-        ).map(e => e.ref),
-      );
+      const existingRefsArray = (
+        await tx<{ ref: string }>('ingestion_mark_entities')
+          .select('ref')
+          .whereIn('ref', refs)
+      ).map(e => e.ref);
 
-      const newRefs = refs.filter(e => !existingRefs.has(e));
+      const existingRefsSet = new Set(existingRefsArray);
+
+      const newRefs = refs.filter(e => !existingRefsSet.has(e));
 
       await tx('ingestion_mark_entities')
         .update('ingestion_mark_id', markId)
-        .whereIn('ref', Array.from(existingRefs));
+        .whereIn('ref', existingRefsArray);
 
       await tx('ingestion_mark_entities').insert(
         newRefs.map(ref => ({
