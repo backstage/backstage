@@ -19,13 +19,34 @@ import {
   CompoundEntityRef,
   DEFAULT_NAMESPACE,
   parseEntityRef,
+  isUserEntity,
+  isGroupEntity,
 } from '@backstage/catalog-model';
-import React, { forwardRef } from 'react';
+import React, { ForwardedRef, forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
 import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { Tooltip } from '@material-ui/core';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  Button,
+  Tooltip,
+  Typography,
+  CardContent,
+  Card,
+  CardActions,
+  makeStyles,
+} from '@material-ui/core';
+import {
+  usePopupState,
+  bindPopover,
+  bindHover,
+  PopupState,
+} from 'material-ui-popup-state/hooks';
+import HoverPopover from 'material-ui-popup-state/HoverPopover';
+import EmailIcon from '@material-ui/icons/Email';
+import InfoIcon from '@material-ui/icons/Info';
+import useAsync from 'react-use/lib/useAsync';
+import { catalogApiRef } from '../../api';
 
 /**
  * Props for {@link EntityRefLink}.
@@ -39,6 +60,101 @@ export type EntityRefLinkProps = {
   children?: React.ReactNode;
 } & Omit<LinkProps, 'to'>;
 
+type PeekAheadPopoverProps = {
+  popupState: PopupState;
+  entityRef: CompoundEntityRef;
+  ref: ForwardedRef<any>;
+};
+
+const useStyles = makeStyles(() => {
+  return {
+    popover: {
+      width: '80em',
+      minWidth: '80em',
+      maxWidth: '80em',
+    },
+    card: {
+      width: '100%',
+    },
+  };
+});
+
+export const PeekAheadPopover = ({
+  popupState,
+  entityRef,
+  ref,
+}: PeekAheadPopoverProps) => {
+  const catalogApi = useApi(catalogApiRef);
+  const entityRoute = useRouteRef(entityRouteRef);
+  const classes = useStyles();
+
+  const { value, loading, error } = useAsync(async () => {
+    if (popupState.isOpen) {
+      return catalogApi.getEntityByRef(entityRef);
+    }
+    return undefined;
+  }, [popupState]);
+
+  if (loading) {
+    return null;
+  }
+
+  return (
+    <HoverPopover
+      {...bindPopover(popupState)}
+      className={classes.popover}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}
+    >
+      <Card className={classes.card}>
+        <CardContent>
+          <Typography gutterBottom>{entityRef.namespace}</Typography>
+          <Typography variant="h5" component="div">
+            {entityRef.name}
+          </Typography>
+          <Typography>{entityRef.kind}</Typography>
+          <Typography variant="body2">
+            {error && error.message}
+            {value && (
+              <>
+                {value.metadata.description}
+                <br />
+                <br />
+                {value.spec?.type}
+              </>
+            )}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          {value &&
+            (isUserEntity(value) || isGroupEntity(value)) &&
+            value.spec.profile?.email && (
+              <Tooltip title={`Email ${value.spec.profile.email}`}>
+                <Button
+                  target="_blank"
+                  href={`mailto:${value.spec.profile.email}`}
+                  size="small"
+                >
+                  <EmailIcon color="action" />
+                </Button>
+              </Tooltip>
+            )}
+          <Tooltip title="Show details">
+            <Link component="button" to={entityRoute(entityRef)}>
+              <InfoIcon color="action" />
+            </Link>
+          </Tooltip>
+        </CardActions>
+      </Card>
+    </HoverPopover>
+  );
+};
 /**
  * Shows a clickable link to an entity.
  *
@@ -48,6 +164,10 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
     const { entityRef, defaultKind, title, children, ...linkProps } = props;
     const entityRoute = useRouteRef(entityRouteRef);
+    const popupState = usePopupState({
+      variant: 'popover',
+      popupId: 'entity-peek-ahead',
+    });
 
     let kind;
     let namespace;
@@ -78,16 +198,33 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     );
 
     const link = (
-      <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
-        {children}
-        {!children && (title ?? formattedEntityRefTitle)}
-      </Link>
+      <>
+        <Link
+          {...bindHover(popupState)}
+          {...linkProps}
+          ref={ref}
+          to={entityRoute(routeParams)}
+        >
+          {children}
+          {!children && (title ?? formattedEntityRefTitle)}
+        </Link>
+      </>
     );
 
-    return title ? (
-      <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>
-    ) : (
-      link
+    return (
+      <>
+        {title ? (
+          <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>
+        ) : (
+          link
+        )}
+
+        <PeekAheadPopover
+          ref={ref}
+          popupState={popupState}
+          entityRef={{ kind, namespace, name }}
+        />
+      </>
     );
   },
 ) as (props: EntityRefLinkProps) => JSX.Element;
