@@ -60,7 +60,7 @@
     "@octokit/rest": "^19.0.3",
     "@spotify/prettier-config": "^14.0.0",
     "@techdocs/cli": "workspace:*",
-    "@types/node": "^16.11.26",
+    "@types/node": "^18.0.0",
     "@types/webpack": "^5.28.0",
     "command-exists": "^1.2.9",
     "concurrently": "^7.0.0",

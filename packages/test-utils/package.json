@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/node": "^16.11.26",
+    "@types/node": "^18.0.0",
     "msw": "^0.49.0"
   },
   "files": [
