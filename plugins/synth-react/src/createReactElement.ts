@@ -1,0 +1,88 @@
+/*
+ * Copyright 2022 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import React from 'react';
+import type { PSValue } from 'platformscript';
+import * as ps from 'platformscript';
+import { lookup } from './lookup';
+
+export function createReactComponent(type: any) {
+  return ps.fn(function* ({ arg, env, rest }) {
+    const $arg: PSValue = yield* env.eval(arg);
+    if (rest.type === 'map') {
+      // add key prop to each item in children array
+      for (const [key, value] of rest.value.entries()) {
+        if (
+          key.type === 'string' &&
+          key.value === 'children' &&
+          value.type === 'list'
+        ) {
+          let index = 0;
+          for (const item of value.value) {
+            if (item.type === 'map') {
+              let found;
+              for (const [propKey] of item.value.entries()) {
+                if (propKey.value === 'key') {
+                  found = true;
+                  break;
+                }
+              }
+              if (!found) {
+                item.value.set(
+                  { type: 'string', value: 'key' },
+                  { type: 'string', value: String(index) },
+                );
+              }
+            }
+            index++;
+          }
+        }
+      }
+    }
+    const $options = yield* env.eval(rest);
+
+    const props: Record<string, any> = {};
+    let children = [];
+
+    switch ($arg.type) {
+      case 'map':
+        for (const [key, value] of $arg.value.entries()) {
+          props[String(key.value)] = value.value;
+        }
+        if ($options.type === 'map') {
+          const key = lookup('key', $options);
+          if (!!key) {
+            props.key = key.value;
+          }
+          const _children = lookup('children', $options);
+          if (!!_children) {
+            if (_children.type === 'list') {
+              children = _children.value.map(value => value.value);
+            } else {
+              children = _children.value;
+            }
+          }
+        }
+        break;
+      case 'list':
+        children = $arg.value.map(value => value.value);
+        break;
+      default:
+        children = $arg.value;
+    }
+
+    return ps.external(React.createElement(type, props, children));
+  });
+}

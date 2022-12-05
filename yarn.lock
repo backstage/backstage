@@ -7950,7 +7950,9 @@ __metadata:
     "@types/node": "*"
     cross-fetch: ^3.1.5
     msw: ^0.49.0
+    platformscript: 1.0.0-alpha.6
     react-use: ^17.2.4
+    yaml: ^2.1.3
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown
@@ -31746,6 +31748,15 @@ __metadata:
   version: 0.4.1
   resolution: "pkginfo@npm:0.4.1"
   checksum: 0f13694f3682345647b7cb887fb6fe258df51b635f252324cd75eeb8181b4381cb8b9d91dc2d869849e857192b403bea65038d2f7c05b524eeae69ece5048209
+  languageName: node
+  linkType: hard
+
+"platformscript@npm:1.0.0-alpha.6":
+  version: 1.0.0-alpha.6
+  resolution: "platformscript@npm:1.0.0-alpha.6"
+  dependencies:
+    yaml-ast-parser: 0.0.43
+  checksum: f8c1d985a1e2a15cd48d6f10f62218603e4beaa59b946aff908a7c9163574da7bd61066d8b867d6a13237eb9ea65b0ae269b1eb200017f9d3805160f2faef809
   languageName: node
   linkType: hard
 

@@ -16,7 +16,6 @@
 import React from 'react';
 import { Typography, Grid } from '@material-ui/core';
 import {
-  InfoCard,
   Header,
   Page,
   Content,
@@ -24,7 +23,10 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core-components';
-import { ExampleFetchComponent } from '../ExampleFetchComponent';
+import myfile from './myfile.yaml';
+import { stringify } from 'yaml';
+
+const str = stringify(myfile);
 
 export const ExampleComponent = () => (
   <Page themeId="tool">
@@ -33,20 +35,11 @@ export const ExampleComponent = () => (
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
     <Content>
-      <ContentHeader title="Plugin title">
-        <SupportButton>A description of your plugin goes here.</SupportButton>
+      <ContentHeader title="Backstage Synth Playground">
+        <SupportButton>You can get help in Frontside Discord</SupportButton>
       </ContentHeader>
       <Grid container spacing={3} direction="column">
-        <Grid item>
-          <InfoCard title="Information card">
-            <Typography variant="body1">
-              All content should be wrapped in a card like this.
-            </Typography>
-          </InfoCard>
-        </Grid>
-        <Grid item>
-          <ExampleFetchComponent />
-        </Grid>
+        <Grid item>Main body</Grid>
       </Grid>
     </Content>
   </Page>
