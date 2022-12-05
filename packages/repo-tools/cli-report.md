@@ -12,7 +12,7 @@ Options:
   -h, --help
 
 Commands:
-  api-reports [options] [paths...]
+  api-reports [options]
   type-deps
   help [command]
 ```
@@ -20,14 +20,15 @@ Commands:
 ### `backstage-repo-tools api-reports`
 
 ```
-Usage: backstage-repo-tools api-reports [options] [paths...]
+Usage: backstage-repo-tools api-reports [options]
 
 Options:
+  -p --paths [paths...]
   --ci
   --tsc
   --docs
-  --allow-warnings [allowWarningsPaths...]
-  --omitMessages <messageCodes...>
+  -a, --allow-warnings [allowWarningsPaths...]
+  -o, --omit-messages <messageCodes...>
   -h, --help
 ```
 

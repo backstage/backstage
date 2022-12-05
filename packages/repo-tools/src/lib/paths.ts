@@ -18,6 +18,13 @@ import { findPaths } from '@backstage/cli-common';
 import { relative as relativePath, join } from 'path';
 import fs from 'fs-extra';
 
+import g from 'glob';
+import isGlob from 'is-glob';
+
+import { promisify } from 'util';
+
+const glob = promisify(g);
+
 /* eslint-disable-next-line no-restricted-syntax */
 export const paths = findPaths(__dirname);
 
@@ -40,4 +47,22 @@ export async function resolvePackagePath(
     return undefined;
   }
   return relativePath(paths.targetRoot, fullPackageDir);
+}
+
+export async function findPackageDirs(selectedPaths: string[] = []) {
+  const packageDirs = new Array<string>();
+  for (const packageRoot of selectedPaths) {
+    const fullPath = paths.resolveTargetRoot(packageRoot);
+
+    // if the path contain any glob notation we resolve all the paths to process one by one
+    const dirs = isGlob(fullPath) ? await glob(fullPath) : [fullPath];
+    for (const dir of dirs) {
+      const packageDir = await resolvePackagePath(dir);
+      if (!packageDir) {
+        continue;
+      }
+      packageDirs.push(packageDir);
+    }
+  }
+  return packageDirs;
 }

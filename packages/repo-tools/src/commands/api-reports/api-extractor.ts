@@ -65,14 +65,9 @@ import {
 } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
-import { paths as cliPaths, resolvePackagePath } from '../../lib/paths';
+import { paths as cliPaths } from '../../lib/paths';
 
-import g from 'glob';
-import isGlob from 'is-glob';
-
-import { promisify } from 'util';
-
-const glob = promisify(g);
+import minimatch from 'minimatch';
 
 const tmpDir = cliPaths.resolveTargetRoot(
   './node_modules/.cache/api-extractor',
@@ -226,24 +221,6 @@ ApiReportGenerator.generateReviewFileContent =
     });
   };
 
-export async function findPackageDirs(selectedPaths: string[]) {
-  const packageDirs = new Array<string>();
-  for (const packageRoot of selectedPaths) {
-    const fullPath = cliPaths.resolveTargetRoot(packageRoot);
-
-    // if the path contain any glob notation we resolve all the paths to process one by one
-    const dirs = isGlob(fullPath) ? await glob(fullPath) : [fullPath];
-    for (const dir of dirs) {
-      const packageDir = await resolvePackagePath(dir);
-      if (!packageDir) {
-        continue;
-      }
-      packageDirs.push(packageDir);
-    }
-  }
-  return packageDirs;
-}
-
 export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
   const path = cliPaths.resolveTargetRoot('tsconfig.tmp.json');
 
@@ -331,7 +308,7 @@ interface ApiExtractionOptions {
   outputDir: string;
   isLocalBuild: boolean;
   tsconfigFilePath: string;
-  allowWarnings: boolean | string[];
+  allowWarnings?: boolean | string[];
   omitMessages?: string[];
 }
 
@@ -340,7 +317,7 @@ export async function runApiExtraction({
   outputDir,
   isLocalBuild,
   tsconfigFilePath,
-  allowWarnings,
+  allowWarnings = false,
   omitMessages = [],
 }: ApiExtractionOptions) {
   await fs.remove(outputDir);
@@ -366,7 +343,7 @@ export async function runApiExtraction({
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
     const noBail = Array.isArray(allowWarnings)
-      ? allowWarnings.includes(packageDir)
+      ? allowWarnings.some(aw => aw === packageDir || minimatch(packageDir, aw))
       : allowWarnings;
 
     const projectFolder = cliPaths.resolveTargetRoot(packageDir);
@@ -514,6 +491,9 @@ export async function runApiExtraction({
     }
 
     const warningCountAfter = await countApiReportWarnings(projectFolder);
+    if (noBail) {
+      console.log(`Skipping warnings check for ${packageDir}`);
+    }
     if (warningCountAfter > 0 && !noBail) {
       throw new Error(
         `The API Report for ${packageDir} is not allowed to have warnings`,
@@ -1289,13 +1269,11 @@ function generateCliReport(name: string, models: CliModel[]): string {
 }
 
 interface CliExtractionOptions {
-  projectRoot: string;
   packageDirs: string[];
   isLocalBuild: boolean;
 }
 
 export async function runCliExtraction({
-  projectRoot,
   packageDirs,
   isLocalBuild,
 }: CliExtractionOptions) {
@@ -1344,7 +1322,7 @@ export async function runCliExtraction({
           console.log('');
           console.log(
             `The conflicting file is ${relativePath(
-              projectRoot,
+              cliPaths.targetRoot,
               reportPath,
             )}, expecting the following content:`,
           );

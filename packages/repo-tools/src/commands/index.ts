@@ -21,21 +21,21 @@ import { exitWithError } from '../lib/errors';
 export function registerCommands(program: Command) {
   program
     .command('api-reports')
-    .argument(
-      '[paths...]',
-      'path of package folder to extract API reports, `workspaces.packages` from root packages.json by default',
+    .option(
+      '-p --paths [paths...]',
+      'paths of package folder to extract API reports, `workspaces.packages` from root packages.json by default. Allows glob patterns and comma separated values',
     )
     .option('--ci', 'CI run checks that there is no changes on API reports')
     .option('--tsc', 'executes the tsc compilation before extracting the APIs')
     .option('--docs', 'generates the api documentation')
     .option(
-      '--allow-warnings [allowWarningsPaths...]',
-      'continue processing packages after getting errors on selected packages',
+      '-a, --allow-warnings [allowWarningsPaths...]',
+      'continue processing packages after getting errors on selected packages Allows glob patterns and comma separated values (i.e. packages/core,plugins/core-*)',
       false,
     )
     .option(
-      '--omitMessages <messageCodes...>',
-      'select some message code to be omited on the API Extractor (i.e ae-cyclic-inherit-doc)',
+      '-o, --omit-messages <messageCodes...>',
+      'select some message code to be omited on the API Extractor (comma separated values i.e ae-cyclic-inherit-doc,ae-missing-getter )',
     )
     .description('Generate an API report for selected packages')
     .action(
