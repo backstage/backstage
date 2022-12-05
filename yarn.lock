@@ -3443,7 +3443,7 @@ __metadata:
     request: ^2.88.2
     selfsigned: ^2.0.0
     stoppable: ^1.1.0
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     tar: ^6.1.12
     uuid: ^8.3.2
     winston: ^3.2.1
@@ -4234,7 +4234,7 @@ __metadata:
     marked: ^4.0.14
     msw: ^0.49.0
     node-fetch: ^2.6.5
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -4303,7 +4303,7 @@ __metadata:
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
     msw: ^0.49.0
-    supertest: ^6.1.6
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -4529,7 +4529,7 @@ __metadata:
     mock-fs: ^5.1.0
     msw: ^0.49.0
     node-fetch: ^2.6.7
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -4592,7 +4592,7 @@ __metadata:
     passport-oauth2: ^1.6.1
     passport-onelogin-oauth: ^0.0.1
     passport-saml: ^3.1.2
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     uuid: ^8.0.0
     winston: ^3.2.1
     yn: ^4.0.0
@@ -4635,7 +4635,7 @@ __metadata:
     mime-types: ^2.1.27
     msw: ^0.49.0
     p-limit: ^3.1.0
-    supertest: ^6.1.6
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -4758,7 +4758,7 @@ __metadata:
     cors: ^2.8.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -5237,7 +5237,7 @@ __metadata:
     node-fetch: ^2.6.7
     p-limit: ^3.0.2
     prom-client: ^14.0.1
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     uuid: ^8.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
@@ -5665,7 +5665,7 @@ __metadata:
     express-xml-bodyparser: ^0.3.0
     knex: ^2.0.0
     msw: ^0.49.0
-    supertest: ^6.1.6
+    supertest: ^6.2.4
     uuid: ^8.3.2
     winston: ^3.2.1
     xml2js: ^0.4.23
@@ -5884,7 +5884,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5898,7 +5898,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5912,7 +5912,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5928,7 +5928,7 @@ __metadata:
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@octokit/webhooks-methods": ^3.0.0
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5943,7 +5943,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5971,7 +5971,7 @@ __metadata:
     "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -6473,7 +6473,7 @@ __metadata:
     helmet: ^6.0.0
     msw: ^0.49.0
     reflect-metadata: ^0.1.13
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -6589,7 +6589,7 @@ __metadata:
     express-promise-router: ^4.1.0
     jenkins: ^1.0.0
     msw: ^0.49.0
-    supertest: ^6.1.6
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -6656,7 +6656,7 @@ __metadata:
     jest-when: ^3.1.0
     kafkajs: ^2.0.0
     lodash: ^4.17.21
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -6730,7 +6730,7 @@ __metadata:
     msw: ^0.49.0
     node-fetch: ^2.6.7
     stream-buffers: ^3.0.2
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -6974,7 +6974,7 @@ __metadata:
     express-promise-router: ^4.1.0
     msw: ^0.49.0
     node-fetch: ^2.6.7
-    supertest: ^6.1.6
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -7032,7 +7032,7 @@ __metadata:
     lodash: ^4.17.21
     msw: ^0.49.0
     node-fetch: ^2.6.7
-    supertest: ^6.1.6
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
     zod: ^3.11.6
@@ -7084,7 +7084,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     msw: ^0.49.0
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     zod: ^3.11.6
     zod-to-json-schema: ^3.18.1
   languageName: unknown
@@ -7151,7 +7151,7 @@ __metadata:
     knex: ^2.0.0
     msw: ^0.49.0
     node-fetch: ^2.6.7
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     uuid: ^8.2.0
     winston: ^3.2.1
     yn: ^4.0.0
@@ -7226,7 +7226,7 @@ __metadata:
     http-proxy-middleware: ^2.0.0
     morgan: ^1.10.0
     msw: ^0.49.0
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     uuid: ^8.0.0
     winston: ^3.2.1
     yaml: ^2.0.0
@@ -7255,7 +7255,7 @@ __metadata:
     morgan: ^1.10.0
     msw: ^0.49.0
     node-fetch: ^2.6.7
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -7410,7 +7410,7 @@ __metadata:
     octokit-plugin-create-pull-request: ^3.10.0
     p-limit: ^3.1.0
     prom-client: ^14.0.1
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     uuid: ^8.2.0
     vm2: ^3.9.11
     winston: ^3.2.1
@@ -7580,7 +7580,7 @@ __metadata:
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
     qs: ^6.10.1
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
     zod: ^3.11.6
@@ -7936,7 +7936,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     semver: ^7.3.5
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     uuid: ^8.3.2
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
@@ -8100,7 +8100,7 @@ __metadata:
     msw: ^0.49.0
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -8174,7 +8174,7 @@ __metadata:
     mock-fs: ^5.1.0
     p-limit: ^3.1.0
     recursive-readdir: ^2.2.2
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -8275,7 +8275,7 @@ __metadata:
     express-promise-router: ^4.1.0
     leasot: ^12.0.0
     msw: ^0.49.0
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -8327,7 +8327,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^2.0.0
-    supertest: ^6.1.3
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -8385,7 +8385,7 @@ __metadata:
     msw: ^0.49.0
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
-    supertest: ^6.1.6
+    supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^5.0.0
   languageName: unknown
@@ -10013,7 +10013,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     msw: ^0.49.0
-    supertest: ^6.1.6
+    supertest: ^6.2.4
     uuid: ^8.3.2
     winston: ^3.2.1
     yn: ^4.0.0
@@ -35797,7 +35797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supertest@npm:^6.1.3, supertest@npm:^6.1.6, supertest@npm:^6.2.4":
+"supertest@npm:^6.2.4":
   version: 6.2.4
   resolution: "supertest@npm:6.2.4"
   dependencies:
