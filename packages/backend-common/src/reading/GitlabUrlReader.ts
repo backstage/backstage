@@ -311,11 +311,7 @@ export class GitlabUrlReader implements UrlReader {
       `${
         pathToProject.origin
       }${relativePath}/api/v4/projects/${encodeURIComponent(project)}`,
-      {
-        headers: {
-          ...getGitLabRequestOptions(this.integration.config).headers,
-        },
-      },
+      getGitLabRequestOptions(this.integration.config),
     );
     const data = await result.json();
     if (!result.ok) {
