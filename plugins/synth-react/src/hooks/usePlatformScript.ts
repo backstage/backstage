@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import * as ps from 'platformscript';
 import { useAsync } from 'react-use';
-import type { PSValue } from 'platformscript';
+import { createPlatformScript, PSValue } from 'platformscript';
+import { PlatformScriptGlobalsContext } from '../contexts/PlatformScriptGlobalsContext';
 
 export function usePlatformScript(yaml: string) {
-  const platformscript = useMemo(() => {
-    return ps.createPlatformScript({ globals });
-  }, []);
+  const globals = useContext(PlatformScriptGlobalsContext);
 
-  const result = useAsync(async (): Promise<PSValue | undefined> => {
+  const platformscript = useMemo(() => {
+    return createPlatformScript(globals);
+  }, [globals]);
+
+  return useAsync(async (): Promise<PSValue> => {
     const program = ps.parse(yaml as string);
 
     const mod = await platformscript.eval(program);
 
     return mod.value;
   }, [yaml]);
-
-  return result;
 }

@@ -25,19 +25,27 @@ import { Grid } from '@material-ui/core';
 import React, { useState } from 'react';
 import { usePlatformScript } from '../../hooks/usePlatformScript';
 import { YAMLEditor } from '../YAMLEditor/YAMLEditor';
+import { Inspector } from 'react-inspector';
+import { ps2js } from 'platformscript';
 
 const EvalResult = ({ yaml }: { yaml: string }) => {
-  const result = usePlatformScript(yaml);
+  const result = usePlatformScript(yaml || 'false');
 
   if (result.loading) {
     return <>Loading...</>;
-  }
-
-  if (result.error) {
+  } else if (result.error) {
     return <>{result.error.message}</>;
+  } else if (result.value) {
+    if (result.value.type === 'external') {
+      if (React.isValidElement(result.value.value)) {
+        return result.value.value;
+      }
+      return <Inspector table data={result.value.value} />;
+    }
+    return <Inspector table data={ps2js(result.value)} />;
   }
 
-  return <>{result.value}</>;
+  return <></>;
 };
 
 export const SynthComponent = ({ yaml }: { yaml: string }) => {

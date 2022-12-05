@@ -13,15 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { synthPlugin, SynthPage } from '../src/plugin';
+import { createContext } from 'react';
+import { globals } from '../globals';
 
-createDevApp()
-  .registerPlugin(synthPlugin)
-  .addPage({
-    element: <SynthPage yaml="" />,
-    title: 'Synth Page',
-    path: '/synth-react',
-  })
-  .render();
+export const PlatformScriptGlobalsContext =
+  createContext<typeof globals>(globals);
