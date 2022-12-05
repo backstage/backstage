@@ -17,10 +17,8 @@
 import { errorHandler, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
-  configServiceRef,
+  coreServices,
   createBackendModule,
-  httpRouterServiceRef,
-  loggerServiceRef,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node';
@@ -73,9 +71,9 @@ describe('eventPlugin', () => {
     await startTestBackend({
       extensionPoints: [],
       services: [
-        [configServiceRef, config],
-        [httpRouterServiceRef, httpRouter],
-        [loggerServiceRef, getVoidLogger()],
+        [coreServices.config, config],
+        [coreServices.httpRouter, httpRouter],
+        [coreServices.logger, getVoidLogger()],
       ],
       features: [eventsPlugin(), testModule()],
     });

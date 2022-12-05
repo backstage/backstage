@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 import {
-  configServiceRef,
   createBackendPlugin,
-  databaseServiceRef,
-  loggerServiceRef,
+  coreServices,
   loggerToWinstonLogger,
-  permissionsServiceRef,
-  urlReaderServiceRef,
-  httpRouterServiceRef,
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
@@ -86,12 +81,12 @@ export const scaffolderPlugin = createBackendPlugin({
 
     env.registerInit({
       deps: {
-        logger: loggerServiceRef,
-        config: configServiceRef,
-        reader: urlReaderServiceRef,
-        permissions: permissionsServiceRef,
-        database: databaseServiceRef,
-        httpRouter: httpRouterServiceRef,
+        logger: coreServices.logger,
+        config: coreServices.config,
+        reader: coreServices.urlReader,
+        permissions: coreServices.permissions,
+        database: coreServices.database,
+        httpRouter: coreServices.httpRouter,
         catalogClient: catalogServiceRef,
       },
       async init({

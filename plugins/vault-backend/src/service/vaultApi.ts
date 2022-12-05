@@ -135,11 +135,13 @@ export class VaultClient implements VaultApi {
             )),
           );
         } else {
+          const vaultUrl =
+            this.vaultConfig.publicUrl || this.vaultConfig.baseUrl;
           secrets.push({
             name: secret,
             path: secretPath,
-            editUrl: `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
-            showUrl: `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
+            editUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
+            showUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
           });
         }
       }),

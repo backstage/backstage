@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
+import { ChangeThreshold, GrowthType, Duration } from '../types';
 import {
   Cost,
   ChangeStatistic,
-  ChangeThreshold,
-  GrowthType,
   MetricData,
-  Duration,
   DateAggregation,
-} from '../types';
+} from '@backstage/plugin-cost-insights-common';
 import { DateTime, Duration as LuxonDuration } from 'luxon';
 import { inclusiveStartDateOf } from './duration';
 import { notEmpty } from './assert';

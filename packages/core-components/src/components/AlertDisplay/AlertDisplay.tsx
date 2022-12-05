@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { useEffect, useState } from 'react';
-import Snackbar from '@material-ui/core/Snackbar';
+import { alertApiRef, AlertMessage, useApi } from '@backstage/core-plugin-api';
 import IconButton from '@material-ui/core/IconButton';
+import Snackbar from '@material-ui/core/Snackbar';
+import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
-import { AlertMessage, useApi, alertApiRef } from '@backstage/core-plugin-api';
 import pluralize from 'pluralize';
+import React, { useEffect, useState } from 'react';
+
+// TODO: improve on this and promote to a shared component for use by all apps.
+
+/** @public */
+export type AlertDisplayProps = {
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
+};
 
 /**
  * Displays alerts from {@link @backstage/core-plugin-api#AlertApi}
@@ -30,17 +40,6 @@ import pluralize from 'pluralize';
  *
  * Shown as SnackBar at the center top of the page by default. Configurable with props.
  */
-
-// TODO: improve on this and promote to a shared component for use by all apps.
-
-export type AlertDisplayProps = {
-  anchorOrigin?: {
-    vertical: 'top' | 'bottom';
-    horizontal: 'left' | 'center' | 'right';
-  };
-};
-
-/** @public */
 export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
@@ -82,7 +81,7 @@ export function AlertDisplay(props: AlertDisplayProps) {
         }
         severity={firstMessage.severity}
       >
-        <span>
+        <Typography component="span">
           {String(firstMessage.message)}
           {messages.length > 1 && (
             <em>{` (${messages.length - 1} older ${pluralize(
@@ -90,7 +89,7 @@ export function AlertDisplay(props: AlertDisplayProps) {
               messages.length - 1,
             )})`}</em>
           )}
-        </span>
+        </Typography>
       </Alert>
     </Snackbar>
   );

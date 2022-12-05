@@ -23,7 +23,7 @@ exports.up = async function up(knex) {
   // Sqlite does not support alter column.
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities_search', table => {
-      table.text('value').nullable().alter({ alterType: true });
+      table.string('value').nullable().alter({ alterType: true });
     });
   }
 };

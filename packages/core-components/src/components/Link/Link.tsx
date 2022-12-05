@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
-import classnames from 'classnames';
 // eslint-disable-next-line no-restricted-imports
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import classnames from 'classnames';
+import { trimEnd } from 'lodash';
 import React, { ElementType } from 'react';
 import {
+  createRoutesFromChildren,
   Link as RouterLink,
   LinkProps as RouterLinkProps,
+  Route,
 } from 'react-router-dom';
-import { trimEnd } from 'lodash';
-import { createRoutesFromChildren, Route } from 'react-router-dom';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -161,7 +162,9 @@ export const Link = React.forwardRef<any, LinkProps>(
         className={classnames(classes.externalLink, props.className)}
       >
         {props.children}
-        <span className={classes.visuallyHidden}>, Opens in a new window</span>
+        <Typography component="span" className={classes.visuallyHidden}>
+          , Opens in a new window
+        </Typography>
       </MaterialLink>
     ) : (
       // Interact with React Router for internal links

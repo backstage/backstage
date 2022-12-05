@@ -29,6 +29,7 @@ export function isDatabaseConflictError(e: unknown) {
     typeof message === 'string' &&
     (/SQLITE_CONSTRAINT(?:_UNIQUE)?: UNIQUE/.test(message) ||
       /UNIQUE constraint failed:/.test(message) ||
-      /unique constraint/.test(message))
+      /unique constraint/.test(message) ||
+      /Duplicate entry/.test(message)) // MySQL uniqueness error msg
   );
 }

@@ -46,7 +46,7 @@ const useStyles = makeStyles<BackstageTheme>(
       paddingBottom: theme.spacing(5),
       [theme.breakpoints.down('xs')]: {
         paddingBottom: theme.spacing(4),
-        fontSize: 32,
+        fontSize: theme.typography.h3.fontSize,
       },
     },
     subtitle: {

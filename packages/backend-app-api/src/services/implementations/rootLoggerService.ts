@@ -18,7 +18,7 @@ import { createRootLogger } from '@backstage/backend-common';
 import {
   createServiceFactory,
   Logger,
-  rootLoggerServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { Logger as WinstonLogger } from 'winston';
 
@@ -40,7 +40,7 @@ class BackstageLogger implements Logger {
 
 /** @public */
 export const rootLoggerFactory = createServiceFactory({
-  service: rootLoggerServiceRef,
+  service: coreServices.rootLogger,
   deps: {},
   async factory() {
     return BackstageLogger.fromWinston(createRootLogger());

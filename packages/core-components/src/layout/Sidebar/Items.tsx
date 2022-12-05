@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { IconComponent, useElementFilter } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, styled, Theme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Badge from '@material-ui/core/Badge';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import { makeStyles, styled, Theme } from '@material-ui/core/styles';
 import {
   CreateCSSProperties,
   StyledComponentProps,
 } from '@material-ui/core/styles/withStyles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
-import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import classnames from 'classnames';
+import { Location } from 'history';
 import React, {
   ComponentProps,
   ComponentType,
@@ -48,18 +49,18 @@ import {
   useLocation,
   useResolvedPath,
 } from 'react-router-dom';
+
 import {
+  SidebarConfig,
   SidebarConfigContext,
   SidebarItemWithSubmenuContext,
-  SidebarConfig,
 } from './config';
-import { SidebarSubmenuProps, SidebarSubmenu } from './SidebarSubmenu';
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
 import DoubleArrowRight from './icons/DoubleArrowRight';
-import { isLocationMatch } from './utils';
-import { Location } from 'history';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
+import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
+import { isLocationMatch } from './utils';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -145,7 +146,7 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
       },
       searchField: {
         color: '#b5b5b5',
-        fontWeight: 'bold',
+        fontWeight: theme.typography.fontWeightBold,
         fontSize: theme.typography.fontSize,
       },
       searchFieldHTMLInput: {
@@ -373,10 +374,10 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     !isOpen && hasSubmenu ? { display: 'flex', marginLeft: '24px' } : {};
 
   const displayItemIcon = (
-    <div style={divStyle}>
+    <Box style={divStyle}>
       <Icon fontSize="small" />
       {!isOpen && hasSubmenu ? <ArrowRightIcon /> : <></>}
-    </div>
+    </Box>
   );
 
   const itemIcon = (
@@ -393,9 +394,9 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   const openContent = (
     <>
-      <div data-testid="login-button" className={classes.iconContainer}>
+      <Box data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
-      </div>
+      </Box>
       {text && (
         <Typography variant="subtitle2" className={classes.label}>
           {text}
@@ -572,7 +573,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   };
 
   return (
-    <div className={classes.searchRoot}>
+    <Box className={classes.searchRoot}>
       <SidebarItem
         icon={Icon}
         to={props.to}
@@ -595,7 +596,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
           }}
         />
       </SidebarItem>
-    </div>
+    </Box>
   );
 }
 
@@ -620,13 +621,13 @@ export const SidebarSpacer = styled('div')(
 export type SidebarDividerClassKey = 'root';
 
 export const SidebarDivider = styled('hr')(
-  {
+  ({ theme }) => ({
     height: 1,
     width: '100%',
     background: '#383838',
     border: 'none',
-    margin: '12px 0px',
-  },
+    margin: theme.spacing(1.2, 0),
+  }),
   { name: 'BackstageSidebarDivider' },
 ) as ComponentType<ComponentProps<'hr'> & StyledComponentProps<'root'>>;
 
@@ -693,9 +694,9 @@ export const SidebarExpandButton = () => {
       aria-label="Expand Sidebar"
       data-testid="sidebar-expand-button"
     >
-      <div className={classes.arrows}>
+      <Box className={classes.arrows}>
         {isOpen ? <DoubleArrowLeft /> : <DoubleArrowRight />}
-      </div>
+      </Box>
     </button>
   );
 };
