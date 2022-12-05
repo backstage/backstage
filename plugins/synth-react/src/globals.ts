@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as ps from 'platformscript';
 import type { PlatformScript } from 'platformscript';
+import * as ps from 'platformscript';
 
 export function globals(interpreter: PlatformScript) {
   return ps.map({});

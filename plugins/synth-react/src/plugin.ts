@@ -31,7 +31,7 @@ export const SynthPage = synthPlugin.provide(
   createRoutableExtension({
     name: 'SynthPage',
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/SynthComponent').then(m => m.SynthComponent),
     mountPoint: rootRouteRef,
   }),
 );
