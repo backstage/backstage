@@ -31,6 +31,6 @@ export function usePlatformScript(yaml: string) {
 
     const mod = await platformscript.eval(program);
 
-    return mod.value;
+    return mod;
   }, [yaml]);
 }

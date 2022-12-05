@@ -40,9 +40,9 @@ const EvalResult = ({ yaml }: { yaml: string }) => {
       if (React.isValidElement(result.value.value)) {
         return result.value.value;
       }
-      return <Inspector table data={result.value.value} />;
+      return <Inspector table={false} data={result.value.value} />;
     }
-    return <Inspector table data={ps2js(result.value)} />;
+    return <Inspector table={false} data={ps2js(result.value)} />;
   }
 
   return <></>;
