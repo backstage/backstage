@@ -25,9 +25,15 @@ export interface Config {
     baseUrl?: string;
 
     /**
-     * The api key to authenticate to Stack Overflow API
+     * The API key to authenticate to Stack Overflow API
      * @visibility secret
      */
     apiKey?: string;
+
+    /**
+     * The API Access Token to authenticate to Stack Overflow API
+     * @visibility secret
+     */
+    apiAccessToken?: string;
   };
 }

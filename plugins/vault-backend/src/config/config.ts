@@ -28,6 +28,11 @@ export interface VaultConfig {
   baseUrl: string;
 
   /**
+   * The publicUrl for your Vault instance (Optional).
+   */
+  publicUrl?: string;
+
+  /**
    * The token used by Backstage to access Vault.
    */
   token: string;
@@ -53,6 +58,7 @@ export interface VaultConfig {
 export function getVaultConfig(config: Config): VaultConfig {
   return {
     baseUrl: config.getString('vault.baseUrl'),
+    publicUrl: config.getOptionalString('vault.publicUrl'),
     token: config.getString('vault.token'),
     kvVersion: config.getOptionalNumber('vault.kvVersion') ?? 2,
     secretEngine: config.getOptionalString('vault.secretEngine') ?? 'secrets',

@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.up = async function up(knex) {
   await knex.schema.createTable('metadata', table => {
     table.comment('The table of Bazaar metadata');
@@ -59,6 +64,9 @@ exports.up = async function up(knex) {
   });
 };
 
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.down = async function down(knex) {
   await knex.schema.dropTable('metadata');
   await knex.schema.dropTable('members');

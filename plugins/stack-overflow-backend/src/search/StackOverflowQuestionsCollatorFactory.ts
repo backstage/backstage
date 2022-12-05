@@ -52,6 +52,7 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
   baseUrl?: string;
   maxPage?: number;
   apiKey?: string;
+  apiAccessToken?: string;
   requestParams: StackOverflowQuestionsRequestParams;
   logger: Logger;
 };
@@ -67,6 +68,7 @@ export class StackOverflowQuestionsCollatorFactory
   protected requestParams: StackOverflowQuestionsRequestParams;
   private readonly baseUrl: string | undefined;
   private readonly apiKey: string | undefined;
+  private readonly apiAccessToken: string | undefined;
   private readonly maxPage: number | undefined;
   private readonly logger: Logger;
   public readonly type: string = 'stack-overflow';
@@ -74,6 +76,7 @@ export class StackOverflowQuestionsCollatorFactory
   private constructor(options: StackOverflowQuestionsCollatorFactoryOptions) {
     this.baseUrl = options.baseUrl;
     this.apiKey = options.apiKey;
+    this.apiAccessToken = options.apiAccessToken;
     this.maxPage = options.maxPage;
     this.requestParams = options.requestParams;
     this.logger = options.logger.child({ documentType: this.type });
@@ -84,6 +87,9 @@ export class StackOverflowQuestionsCollatorFactory
     options: StackOverflowQuestionsCollatorFactoryOptions,
   ) {
     const apiKey = config.getOptionalString('stackoverflow.apiKey');
+    const apiAccessToken = config.getOptionalString(
+      'stackoverflow.apiAccessToken',
+    );
     const baseUrl =
       config.getOptionalString('stackoverflow.baseUrl') ||
       'https://api.stackexchange.com/2.2';
@@ -93,6 +99,7 @@ export class StackOverflowQuestionsCollatorFactory
       baseUrl,
       maxPage,
       apiKey,
+      apiAccessToken,
     });
   }
 
@@ -138,6 +145,13 @@ export class StackOverflowQuestionsCollatorFactory
       }
       const res = await fetch(
         `${this.baseUrl}/questions${params}${apiKeyParam}&page=${page}`,
+        this.apiAccessToken
+          ? {
+              headers: {
+                'X-API-Access-Token': this.apiAccessToken,
+              },
+            }
+          : undefined,
       );
 
       const data = await res.json();
