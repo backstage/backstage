@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { AppConfig, Config } from '@backstage/config';
 import React, {
   ComponentType,
   createContext,
@@ -82,7 +82,6 @@ import { ApiRegistry } from '../apis/system/ApiRegistry';
 import { resolveRouteBindings } from './resolveRouteBindings';
 import { BackstageRouteObject } from '../routing/types';
 import { isReactRouterBeta } from './isReactRouterBeta';
-import { JsonObject } from '@backstage/types';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -162,20 +161,36 @@ function useConfigLoader(
   if (config.value?.length) {
     const urlConfigReader = ConfigReader.fromConfigs(config.value);
 
-    const resolveRelativeUrl = (relativeUrl: string) =>
-      new URL(relativeUrl, document.location.origin).href;
-
-    const getRelativeUrl = (fullUrl: string) => {
-      const url = new URL(fullUrl);
-      return fullUrl.replace(url.origin, '');
-    };
-
+    /**
+     * Return the origin of the given URL.
+     * @param url An absolute URL.
+     * @returns The given URL's origin.
+     * @throws If fullUrl is not a correctly formatted absolute URL.
+     */
     const getOrigin = (url: string) => new URL(url).origin;
 
+    /**
+     * Resolve an absolute URL as relative to the current document.
+     * @param fullUrl URL to resolve.
+     * @returns Absolute URL with origin as the current document origin.
+     * @throws If fullUrl is not a correctly formatted absolute URL.
+     */
+    const overrideOrigin = (fullUrl: string) => {
+      return new URL(
+        fullUrl.replace(getOrigin(fullUrl), ''),
+        document.location.origin,
+      ).href;
+    };
+
+    /**
+     * Test configs may not define `app.baseUrl` or `backend.baseUrl` and we
+     *  don't want to enforce here.
+     */
     const appBaseUrl = urlConfigReader.getOptionalString('app.baseUrl');
     const backendBaseUrl = urlConfigReader.getOptionalString('backend.baseUrl');
+
     let configs = config.value;
-    const relativeResolverConfig: { data: JsonObject; context: string } = {
+    const relativeResolverConfig: AppConfig = {
       data: {},
       context: 'relative-resolver',
     };
@@ -183,26 +198,15 @@ function useConfigLoader(
       const appOrigin = getOrigin(appBaseUrl);
       const backendOrigin = getOrigin(backendBaseUrl);
 
-      /**
-       * We only want to override the URLs with the document origin when the URLs match
-       *  and are defined. We use getOptionalString here to not throw when the app.baseUrl
-       *  and backend.baseUrl are not defined. If they are defined but not well formatted URLs
-       *  the above getRelativeUrl() method will throw.
-       */
       if (appOrigin === backendOrigin) {
         relativeResolverConfig.data.backend = {
-          baseUrl: resolveRelativeUrl(getRelativeUrl(backendBaseUrl)),
+          baseUrl: overrideOrigin(backendBaseUrl),
         };
       }
     }
     if (appBaseUrl) {
-      /**
-       * Rewriting app.baseUrl to the current document should be a no-op. The
-       *  document hosting the app should always be the same url as the app
-       *  references.
-       */
       relativeResolverConfig.data.app = {
-        baseUrl: resolveRelativeUrl(getRelativeUrl(appBaseUrl)),
+        baseUrl: overrideOrigin(appBaseUrl),
       };
     }
     /**

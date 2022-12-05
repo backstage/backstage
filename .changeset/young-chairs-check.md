@@ -2,4 +2,4 @@
 '@backstage/core-app-api': patch
 ---
 
-Apps will now rewrite `app.baseUrl` and `backend.baseUrl` to match `location.origin` when `app.baseUrl` is the same as `backend.baseUrl`. This will help reduce the number of frontend builds you have to do with a specific config.
+Apps will now rewrite the `app.baseUrl` configuration to match the current `location.origin`. The `backend.baseUrl` will also be rewritten in the same way when the `app.baseUrl` and `backend.baseUrl` have matching origins. This will reduce the need for separate frontend builds for different environments.
