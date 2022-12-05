@@ -34,7 +34,7 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
-  useApiHolder,
+  useApi,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
@@ -653,8 +653,7 @@ describe('Integration Test', () => {
 
         const Provider = app.getProvider();
         const ConfigDisplay = ({ configString }: { configString: string }) => {
-          const apiHolder = useApiHolder();
-          const config = apiHolder.get(configApiRef);
+          const config = useApi(configApiRef);
           return (
             <span>
               {configString}: {config?.getString(configString)}
