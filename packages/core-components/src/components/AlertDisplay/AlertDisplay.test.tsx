@@ -214,6 +214,39 @@ describe('<AlertDisplay />', () => {
       expect(queryByText('transient message')).not.toBeInTheDocument();
       jest.useRealTimers();
     });
+
+    it('renders 3 different messages with overlapping timeout', async () => {
+      jest.useFakeTimers();
+      const { queryByText } = await renderInTestApp(
+        <TestApiProvider apis={apis}>
+          <AlertDisplay transientTimeoutMs={1500} />
+        </TestApiProvider>,
+      );
+
+      // 3 messages stacked with 1.5s each, display times: 0-1.5, 1.5-3, 3-4.5
+
+      // 0s in, only message 1
+      expect(queryByText('transient message one')).toBeInTheDocument();
+
+      // 1s in, message 1 still shown, message 2 added in background
+      act(() => jest.advanceTimersByTime(1000));
+      expect(queryByText('transient message one')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
+
+      // 2s in, message 2 now shown, message 3 added
+      act(() => jest.advanceTimersByTime(1000));
+      expect(queryByText('transient message two')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
+
+      // 3.5s in, message 3 now shown
+      act(() => jest.advanceTimersByTime(1500));
+      expect(queryByText('transient message three')).toBeInTheDocument();
+
+      // 5s in, all messages gone
+      act(() => jest.advanceTimersByTime(1500));
+      expect(queryByText('transient message three')).not.toBeInTheDocument();
+      jest.useRealTimers();
+    });
   });
 
   describe('with multiple messages of mixed display', () => {

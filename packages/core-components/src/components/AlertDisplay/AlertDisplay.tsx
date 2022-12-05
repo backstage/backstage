@@ -19,6 +19,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
+import { useIsMounted } from '@react-hookz/web';
 import pluralize from 'pluralize';
 import React, { useEffect, useState } from 'react';
 
@@ -62,6 +63,7 @@ export type AlertDisplayProps = {
 export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
+  const isMounted = useIsMounted();
 
   const {
     anchorOrigin = { vertical: 'top', horizontal: 'center' },
@@ -82,13 +84,14 @@ export function AlertDisplay(props: AlertDisplayProps) {
   useEffect(() => {
     const [current] = messages;
     if (current && current.display === 'transient') {
-      const timer = setTimeout(() => {
-        setMessages(msgs => msgs.filter(msg => msg !== current));
+      setTimeout(() => {
+        if (isMounted()) {
+          setMessages(msgs => msgs.filter(msg => msg !== current));
+        }
       }, timeoutMs);
-      return () => clearTimeout(timer);
     }
     return undefined;
-  }, [messages, timeoutMs]);
+  }, [messages, timeoutMs, isMounted]);
 
   if (messages.length === 0) {
     return null;
