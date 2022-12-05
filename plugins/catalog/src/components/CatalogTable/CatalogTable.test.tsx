@@ -21,6 +21,7 @@ import {
 } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
+  catalogApiRef,
   EntityKindFilter,
   entityRouteRef,
   MockEntityListContextProvider,
@@ -52,10 +53,15 @@ const entities: Entity[] = [
 ];
 
 describe('CatalogTable component', () => {
-  const mockApis = TestApiRegistry.from([
-    starredEntitiesApiRef,
-    new MockStarredEntitiesApi(),
-  ]);
+  const mockApis = TestApiRegistry.from(
+    [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+    [
+      catalogApiRef,
+      {
+        getEntityByRef: jest.fn(),
+      } as any,
+    ],
+  );
 
   beforeEach(() => {
     window.open = jest.fn();

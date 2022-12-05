@@ -20,12 +20,20 @@ import React from 'react';
 import { TemplateTitleColumn } from './TemplateTitleColumn';
 import { scaffolderApiRef } from '../../../api';
 import { ScaffolderApi } from '../../../types';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 
 describe('<TemplateTitleColumn />', () => {
   const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
     scaffold: jest.fn(),
     getTemplateParameterSchema: jest.fn(),
+  } as any;
+
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getEntityByRef: jest.fn(),
   } as any;
 
   it('should render the column with the template name', async () => {
@@ -38,7 +46,12 @@ describe('<TemplateTitleColumn />', () => {
     });
 
     const { getByText } = await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+      <TestApiProvider
+        apis={[
+          [scaffolderApiRef, scaffolderApiMock],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <TemplateTitleColumn {...props} />
       </TestApiProvider>,
       { mountedRoutes: { '/test': entityRouteRef } },

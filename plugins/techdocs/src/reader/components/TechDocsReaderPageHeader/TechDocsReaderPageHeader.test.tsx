@@ -20,7 +20,11 @@ import { ThemeProvider } from '@material-ui/core';
 
 import { lightTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import {
   techdocsApiRef,
   TechDocsReaderPageProvider,
@@ -60,6 +64,10 @@ const techdocsApiMock = {
   getTechDocsMetadata,
 };
 
+const catalogApi: jest.Mocked<CatalogApi> = {
+  getEntityByRef: jest.fn(),
+} as any;
+
 const Wrapper = ({
   entityRef = {
     kind: mockEntityMetadata.kind,
@@ -72,7 +80,12 @@ const Wrapper = ({
   children: React.ReactNode;
 }) => (
   <ThemeProvider theme={lightTheme}>
-    <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
+    <TestApiProvider
+      apis={[
+        [techdocsApiRef, techdocsApiMock],
+        [catalogApiRef, catalogApi],
+      ]}
+    >
       <TechDocsReaderPageProvider entityRef={entityRef}>
         {children}
       </TechDocsReaderPageProvider>

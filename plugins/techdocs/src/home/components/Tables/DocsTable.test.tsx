@@ -15,11 +15,16 @@
  */
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { DocsTable } from './DocsTable';
 import { rootDocsRouteRef } from '../../../routes';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
+import { ApiProvider } from '@backstage/core-app-api';
 
 // Hacky way to mock a specific boolean config value.
 const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
@@ -40,6 +45,12 @@ jest.mock('@backstage/core-plugin-api', () => ({
   },
 }));
 
+const catalogApi: jest.Mocked<CatalogApi> = {
+  getEntityByRef: jest.fn(),
+} as any;
+
+const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
+
 describe('DocsTable test', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -48,42 +59,44 @@ describe('DocsTable test', () => {
   it('should render documents passed', async () => {
     const { findByText } = render(
       wrapInTestApp(
-        <DocsTable
-          entities={[
-            {
-              apiVersion: 'version',
-              kind: 'TestKind',
-              metadata: {
-                name: 'testName',
-              },
-              spec: {
-                owner: 'user:owned',
-              },
-              relations: [
-                {
-                  targetRef: 'user:default/owned',
-                  type: 'ownedBy',
+        <ApiProvider apis={apis}>
+          <DocsTable
+            entities={[
+              {
+                apiVersion: 'version',
+                kind: 'TestKind',
+                metadata: {
+                  name: 'testName',
                 },
-              ],
-            },
-            {
-              apiVersion: 'version',
-              kind: 'TestKind2',
-              metadata: {
-                name: 'testName2',
-              },
-              spec: {
-                owner: 'not-owned@example.com',
-              },
-              relations: [
-                {
-                  targetRef: 'user:default/not-owned',
-                  type: 'ownedBy',
+                spec: {
+                  owner: 'user:owned',
                 },
-              ],
-            },
-          ]}
-        />,
+                relations: [
+                  {
+                    targetRef: 'user:default/owned',
+                    type: 'ownedBy',
+                  },
+                ],
+              },
+              {
+                apiVersion: 'version',
+                kind: 'TestKind2',
+                metadata: {
+                  name: 'testName2',
+                },
+                spec: {
+                  owner: 'not-owned@example.com',
+                },
+                relations: [
+                  {
+                    targetRef: 'user:default/not-owned',
+                    type: 'ownedBy',
+                  },
+                ],
+              },
+            ]}
+          />
+        </ApiProvider>,
         {
           mountedRoutes: {
             '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -110,27 +123,29 @@ describe('DocsTable test', () => {
 
     const { findByText } = render(
       wrapInTestApp(
-        <DocsTable
-          entities={[
-            {
-              apiVersion: 'version',
-              kind: 'TestKind',
-              metadata: {
-                name: 'testName',
-                namespace: 'SomeNamespace',
-              },
-              spec: {
-                owner: 'user:owned',
-              },
-              relations: [
-                {
-                  targetRef: 'user:default/owned',
-                  type: 'ownedBy',
+        <ApiProvider apis={apis}>
+          <DocsTable
+            entities={[
+              {
+                apiVersion: 'version',
+                kind: 'TestKind',
+                metadata: {
+                  name: 'testName',
+                  namespace: 'SomeNamespace',
                 },
-              ],
-            },
-          ]}
-        />,
+                spec: {
+                  owner: 'user:owned',
+                },
+                relations: [
+                  {
+                    targetRef: 'user:default/owned',
+                    type: 'ownedBy',
+                  },
+                ],
+              },
+            ]}
+          />
+        </ApiProvider>,
         {
           mountedRoutes: {
             '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -151,12 +166,17 @@ describe('DocsTable test', () => {
 
   it('should render empty state if no owned documents exist', async () => {
     const { findByText } = render(
-      wrapInTestApp(<DocsTable entities={[]} />, {
-        mountedRoutes: {
-          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <DocsTable entities={[]} />
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      }),
+      ),
     );
 
     expect(await findByText('No documents to show')).toBeInTheDocument();

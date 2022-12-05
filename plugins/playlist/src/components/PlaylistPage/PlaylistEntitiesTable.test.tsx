@@ -15,7 +15,11 @@
  */
 
 import { ErrorApi, errorApiRef } from '@backstage/core-plugin-api';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   PermissionApi,
@@ -42,6 +46,10 @@ jest.mock('./AddEntitiesDrawer', () => ({
 
 describe('PlaylistEntitiesTable', () => {
   const errorApi: Partial<ErrorApi> = { post: jest.fn() };
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getEntityByRef: jest.fn(),
+  } as any;
+
   const sampleEntities = [
     {
       kind: 'system',
@@ -86,6 +94,7 @@ describe('PlaylistEntitiesTable', () => {
           [errorApiRef, errorApi],
           [permissionApiRef, permissionApi],
           [playlistApiRef, playlistApi],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <PlaylistEntitiesTable playlistId="playlist-id" />

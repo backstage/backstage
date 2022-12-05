@@ -15,7 +15,11 @@
  */
 
 import { ErrorApi, errorApiRef } from '@backstage/core-plugin-api';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import {
   AuthorizeResult,
   isPermission,
@@ -80,6 +84,9 @@ describe('PlaylistHeader', () => {
     .fn()
     .mockImplementation(async () => ({ result: AuthorizeResult.ALLOW }));
   const permissionApi: Partial<PermissionApi> = { authorize: mockAuthorize };
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getEntityByRef: jest.fn(),
+  } as any;
 
   const mockOnUpdate = jest.fn();
 
@@ -91,6 +98,7 @@ describe('PlaylistHeader', () => {
           [errorApiRef, errorApi],
           [permissionApiRef, permissionApi],
           [playlistApiRef, playlistApi],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <PlaylistHeader playlist={testPlaylist} onUpdate={mockOnUpdate} />
