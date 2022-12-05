@@ -20,8 +20,8 @@ import {
   ChangeThreshold,
   EngineerThreshold,
   Duration,
-  Cost,
 } from '../types';
+import { Cost } from '@backstage/plugin-cost-insights-common';
 import { MockAggregatedDailyCosts, trendlineOf, changeOf } from '../testUtils';
 
 const GrowthMap = {

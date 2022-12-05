@@ -16,7 +16,8 @@
 
 import { DateTime, Duration as LuxonDuration } from 'luxon';
 import pluralize from 'pluralize';
-import { ChangeStatistic, Duration } from '../types';
+import { Duration } from '../types';
+import { ChangeStatistic } from '@backstage/plugin-cost-insights-common';
 import { inclusiveEndDateOf, inclusiveStartDateOf } from './duration';
 import { notEmpty } from './assert';
 

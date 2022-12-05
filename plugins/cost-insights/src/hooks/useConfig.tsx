@@ -22,7 +22,8 @@ import React, {
   useState,
 } from 'react';
 import { Config as BackstageConfig } from '@backstage/config';
-import { Currency, EngineerThreshold, Icon, Metric, Product } from '../types';
+import { Currency, EngineerThreshold, Icon } from '../types';
+import { Metric, Product } from '@backstage/plugin-cost-insights-common';
 import { getIcon } from '../utils/navigation';
 import { validateCurrencies, validateMetrics } from '../utils/config';
 import { createCurrencyFormat, defaultCurrencies } from '../utils/currency';

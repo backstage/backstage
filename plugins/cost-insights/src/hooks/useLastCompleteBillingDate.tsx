@@ -25,7 +25,7 @@ import { Alert } from '@material-ui/lab';
 import { costInsightsApiRef } from '../api';
 import { MapLoadingToProps, useLoading } from './useLoading';
 import { DefaultLoadingAction } from '../utils/loading';
-import { Maybe } from '../types';
+import { Maybe } from '@backstage/plugin-cost-insights-common';
 import { useApi } from '@backstage/core-plugin-api';
 
 type BillingDateProviderLoadingProps = {
