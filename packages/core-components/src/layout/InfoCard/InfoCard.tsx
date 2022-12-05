@@ -200,6 +200,10 @@ export function InfoCard(props: Props): JSX.Element {
   }
 
   const cardSubTitle = () => {
+    if (!subheader && !icon) {
+      return null;
+    }
+
     return (
       <div className={classes.headerSubheader}>
         {subheader && <div className={classes.subheader}>{subheader}</div>}
