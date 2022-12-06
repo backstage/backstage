@@ -2,7 +2,7 @@
 
 Welcome to the Dynatrace plugin!
 
-![](./assets/plugin.png)
+![Example of the Dynatrace plugin](./assets/plugin.png)
 
 ## Getting started
 
