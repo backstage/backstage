@@ -10903,11 +10903,11 @@ __metadata:
   linkType: hard
 
 "@keyv/redis@npm:^2.5.3":
-  version: 2.5.3
-  resolution: "@keyv/redis@npm:2.5.3"
+  version: 2.5.4
+  resolution: "@keyv/redis@npm:2.5.4"
   dependencies:
     ioredis: ^5.2.4
-  checksum: db6be54624320f5d03856985fee5151601fa278d63ef98feac12f89188fbf86b972e7f5ca3ece0d6137c81038b1eb3c42805beaf51c4c963cca35c2b7d68be92
+  checksum: 02f557e0bc0343aea44b8dd4b6ff273da5833b935236c4036fa89e90b1d92d9688dafa064d5318d26744a6c72497cd4c41dcac825cb8d5919271e3a25a3cadbb
   languageName: node
   linkType: hard
 
