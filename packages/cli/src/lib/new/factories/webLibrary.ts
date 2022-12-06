@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import chalk from 'chalk';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
 import { createFactory, CreateContext } from '../types';
-import { addPackageDependency, Task } from '../../tasks';
+import { Task } from '../../tasks';
 import { ownerPrompt, pluginIdPrompt } from './common/prompts';
 import { executePluginPackageTemplate } from './common/tasks';
 
@@ -41,9 +40,7 @@ export const webLibrary = createFactory<Options>({
   async create(options: Options, ctx: CreateContext) {
     const { id } = options;
 
-    const name = ctx.scope
-      ? `@${ctx.scope}/${id}`
-      : `backstage-plugin-${id}`;
+    const name = ctx.scope ? `@${ctx.scope}/${id}` : `backstage-plugin-${id}`;
     const extensionName = `${upperFirst(camelCase(id))}Page`;
 
     Task.log();
@@ -66,55 +63,6 @@ export const webLibrary = createFactory<Options>({
         npmRegistry: ctx.npmRegistry,
       },
     });
-
-    if (await fs.pathExists(paths.resolveTargetRoot('packages/app'))) {
-      await Task.forItem('app', 'adding dependency', async () => {
-        await addPackageDependency(
-          paths.resolveTargetRoot('packages/app/package.json'),
-          {
-            dependencies: {
-              [name]: `^${ctx.defaultVersion}`,
-            },
-          },
-        );
-      });
-
-      await Task.forItem('app', 'adding import', async () => {
-        const pluginsFilePath = paths.resolveTargetRoot(
-          'packages/app/src/App.tsx',
-        );
-        if (!(await fs.pathExists(pluginsFilePath))) {
-          return;
-        }
-
-        const content = await fs.readFile(pluginsFilePath, 'utf8');
-        const revLines = content.split('\n').reverse();
-
-        const lastImportIndex = revLines.findIndex(line =>
-          line.match(/ from ("|').*("|')/),
-        );
-        const lastRouteIndex = revLines.findIndex(line =>
-          line.match(/<\/FlatRoutes/),
-        );
-
-        if (lastImportIndex !== -1 && lastRouteIndex !== -1) {
-          const importLine = `import { ${extensionName} } from '${name}';`;
-          if (!content.includes(importLine)) {
-            revLines.splice(lastImportIndex, 0, importLine);
-          }
-
-          const componentLine = `<Route path="/${id}" element={<${extensionName} />} />`;
-          if (!content.includes(componentLine)) {
-            const [indentation] =
-              revLines[lastRouteIndex + 1].match(/^\s*/) ?? [];
-            revLines.splice(lastRouteIndex + 1, 0, indentation + componentLine);
-          }
-
-          const newContent = revLines.reverse().join('\n');
-          await fs.writeFile(pluginsFilePath, newContent, 'utf8');
-        }
-      });
-    }
 
     if (options.owner) {
       await addCodeownersEntry(`/packages/${id}`, options.owner);
