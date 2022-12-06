@@ -4329,10 +4329,8 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
-    "@types/object-hash": ^3.0.0
     cross-fetch: ^3.1.5
     msw: ^0.49.0
-    object-hash: ^3.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -14639,13 +14637,6 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 5c079611b455eff58fba6358e028b191a1e65475600f8ed8d98c1696fedcfb0290aa6c6a19cf50f21a9e2d816ecb43a19f910900d91f8ba3727e33c48f97d7f3
-  languageName: node
-  linkType: hard
-
-"@types/object-hash@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "@types/object-hash@npm:3.0.1"
-  checksum: 24853a95fdb7ab40ae170b5d8e6437d436289d41fdf3c480a71e8324257ffaae5954d10885998fa4b080d74a04866cc421d0e36a0cf6006d4a8fce003ee4d61c
   languageName: node
   linkType: hard
 
