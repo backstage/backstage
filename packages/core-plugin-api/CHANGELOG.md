@@ -1,5 +1,33 @@
 # @backstage/core-plugin-api
 
+## 1.2.0-next.2
+
+### Minor Changes
+
+- 9a1864976a: Added a new `display` property to the `AlertMessage` which can accept the values `permanent` or `transient`.
+
+  Here's a rough example of how to trigger an alert using the new `display` property:
+
+  ```ts
+  import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+  const ExampleTransient = () => {
+    const alertApi = useApi(alertApiRef);
+    alertApi.post({
+      message: 'Example of Transient Alert',
+      severity: 'success',
+      display: 'transient',
+    });
+  };
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
 ## 1.1.1-next.1
 
 ### Patch Changes

@@ -1,5 +1,38 @@
 # @backstage/core-components
 
+## 0.12.1-next.2
+
+### Patch Changes
+
+- d2e3bf6737: Made AlertDisplay not crash on undefined messages
+- 5fb6d5e92e: Updated dependency `@react-hookz/web` to `^19.0.0`.
+- 146378c146: Updated dependency `@react-hookz/web` to `^20.0.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- 830687539f: Sync components in @backstage/core-components with the Component Design Guidelines
+- 1ae86ab5fb: Added an option to allow the `AlertMessage` to be self-closing. This is done with a new `display` property that is set to `transient` on the `AlertMessage` when triggering a message to the `AlertApi`. The length of time that these transient messages stay open for can be set using the `transientTimeoutMs` prop on the `AlertDisplay` in the `App.tsx`. Here is an example:
+
+  ```diff
+    const App = () => (
+      <AppProvider>
+  +     <AlertDisplay transientTimeoutMs={2500} />
+        <OAuthRequestDialog />
+        <AppRouter>
+          <Root>{routes}</Root>
+        </AppRouter>
+      </AppProvider>
+    );
+  ```
+
+  The above example will set the transient timeout to 2500ms from the default of 5000ms
+
+- 16e31e690f: InfoCard - Remove subheader container when there is not a subheader or icon
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3-next.0
+
 ## 0.12.1-next.1
 
 ### Patch Changes

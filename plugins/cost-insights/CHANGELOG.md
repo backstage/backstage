@@ -1,5 +1,20 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.1-next.2
+
+### Patch Changes
+
+- 5960d0902e: Internal refactor to avoid usage of deprecated symbols
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/plugin-catalog-react@1.2.2-next.2
+  - @backstage/test-utils@1.2.3-next.2
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.12.1-next.1
 
 ### Patch Changes

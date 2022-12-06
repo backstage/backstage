@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.0.7-next.2
+
+### Patch Changes
+
+- 5fb6d5e92e: Updated dependency `@react-hookz/web` to `^19.0.0`.
+- 146378c146: Updated dependency `@react-hookz/web` to `^20.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/integration-react@1.1.7-next.2
+  - @backstage/plugin-techdocs-react@1.0.7-next.2
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+
 ## 1.0.7-next.1
 
 ### Patch Changes
