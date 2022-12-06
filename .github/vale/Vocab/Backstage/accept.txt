@@ -9,7 +9,6 @@ Airbrake
 Airbrakes
 Alaria
 Alef
-allowedKinds
 Anddddd
 Apdex
 api
