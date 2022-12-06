@@ -155,17 +155,27 @@ export class StackOverflowQuestionsCollatorFactory
       );
 
       const data = await res.json();
-      for (const question of data.items) {
-        yield {
-          title: question.title,
-          location: question.link,
-          text: question.owner.display_name,
-          tags: question.tags,
-          answers: question.answer_count,
-        };
+      if (data.error_id == null) {
+        for (const question of data.items) {
+          yield {
+            title: question.title,
+            location: question.link,
+            text: question.owner.display_name,
+            tags: question.tags,
+            answers: question.answer_count,
+          };
+        }
+        hasMorePages = data.has_more;
+        page = page + 1;
       }
-      hasMorePages = data.has_more;
-      page = page + 1;
+      else {
+        this.logger.warn(
+          `GET request to ${this.baseUrl}/questions${params}${apiKeyParam}&page=${page} failed`, `\n`,
+          `Error ${data.error_id}, ${data.error_name}. ${data.error_message}`,
+        );
+        break;
+      }
+
     }
   }
 }
