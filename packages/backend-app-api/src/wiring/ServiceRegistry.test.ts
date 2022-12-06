@@ -18,7 +18,7 @@ import {
   createServiceRef,
   createServiceFactory,
   ServiceRef,
-  pluginMetadataServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { ServiceRegistry } from './ServiceRegistry';
 
@@ -172,7 +172,7 @@ describe('ServiceRegistry', () => {
     const ref = createServiceRef<{ pluginId: string }>({ id: 'x' });
     const factory = createServiceFactory({
       service: ref,
-      deps: { meta: pluginMetadataServiceRef },
+      deps: { meta: coreServices.pluginMetadata },
       async factory() {
         return async ({ meta }) => ({ pluginId: meta.getId() });
       },

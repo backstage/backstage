@@ -19,9 +19,9 @@ import { BarChart } from '../../../components';
 import {
   BarChartOptions,
   CostInsightsTheme,
-  Entity,
   ResourceData,
 } from '../../../types';
+import { Entity } from '@backstage/plugin-cost-insights-common';
 import { useTheme } from '@material-ui/core';
 
 type MigrationBarChartProps = {

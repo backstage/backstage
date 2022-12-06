@@ -16,14 +16,13 @@
 
 import { DateTime } from 'luxon';
 import regression, { DataPoint } from 'regression';
+import { Duration, DEFAULT_DATE_FORMAT } from '../types';
 import {
   ChangeStatistic,
-  Duration,
   Entity,
   Trendline,
   DateAggregation,
-  DEFAULT_DATE_FORMAT,
-} from '../types';
+} from '@backstage/plugin-cost-insights-common';
 import { inclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
 import {
   MockComputeEngineInsights,

@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApiHolder } from '@backstage/core-plugin-api';
-import { JsonObject, JsonValue } from '@backstage/types';
+import {
+  useAnalytics,
+  useApiHolder,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
+import { JsonValue } from '@backstage/types';
 import {
   Stepper as MuiStepper,
   Step as MuiStep,
@@ -31,6 +35,9 @@ import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
 import validator from '@rjsf/validator-ajv8';
+import { selectedTemplateRouteRef } from '../../../routes';
+import type { ErrorTransformer } from '@rjsf/utils';
+import { getDefaultFormState } from '@rjsf/utils';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -51,6 +58,7 @@ export interface StepperProps {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  transformErrors?: ErrorTransformer;
 }
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -59,10 +67,12 @@ export interface StepperProps {
 const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
 
 export const Stepper = (props: StepperProps) => {
+  const { templateName } = useRouteRefParams(selectedTemplateRouteRef);
+  const analytics = useAnalytics();
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
-  const [formState, setFormState] = useState({});
+  const [formState, setFormState] = useState<Record<string, JsonValue>>({});
   const [errors, setErrors] = useState<
     undefined | Record<string, FieldValidation>
   >();
@@ -90,12 +100,27 @@ export const Stepper = (props: StepperProps) => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  const handleNext = async ({ formData }: { formData: JsonObject }) => {
+  const handleNext = async ({
+    formData,
+  }: {
+    formData: Record<string, JsonValue>;
+  }) => {
     // TODO(blam): What do we do about loading states, does each field extension get a chance
     // to display it's own loading? Or should we grey out the entire form.
     setErrors(undefined);
 
-    const returnedValidation = await validation(formData);
+    const schema = steps[activeStep]?.schema;
+    const rootSchema = steps[activeStep]?.mergedSchema;
+
+    const newFormData = getDefaultFormState(
+      validator,
+      schema,
+      formData,
+      rootSchema,
+      true,
+    );
+
+    const returnedValidation = await validation(newFormData);
 
     const hasErrors = Object.values(returnedValidation).some(
       i => i.__errors?.length,
@@ -105,9 +130,13 @@ export const Stepper = (props: StepperProps) => {
       setErrors(returnedValidation);
     } else {
       setErrors(undefined);
-      setActiveStep(prevActiveStep => prevActiveStep + 1);
+      setActiveStep(prevActiveStep => {
+        const stepNum = prevActiveStep + 1;
+        analytics.captureEvent('click', `Next Step (${stepNum})`);
+        return stepNum;
+      });
     }
-    setFormState(current => ({ ...current, ...formData }));
+    setFormState(current => ({ ...current, ...newFormData }));
   };
 
   return (
@@ -128,11 +157,13 @@ export const Stepper = (props: StepperProps) => {
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
             formData={formState}
+            formContext={{ formData: formState }}
             schema={steps[activeStep].schema}
             uiSchema={steps[activeStep].uiSchema}
             onSubmit={handleNext}
             fields={extensions}
             showErrorList={false}
+            transformErrors={props.transformErrors}
           >
             <div className={styles.footer}>
               <Button
@@ -160,7 +191,17 @@ export const Stepper = (props: StepperProps) => {
               </Button>
               <Button
                 variant="contained"
-                onClick={() => props.onComplete(formState)}
+                onClick={() => {
+                  props.onComplete(formState);
+                  const name =
+                    typeof formState.name === 'string'
+                      ? formState.name
+                      : undefined;
+                  analytics.captureEvent(
+                    'create',
+                    name || `new ${templateName}`,
+                  );
+                }}
               >
                 Create
               </Button>

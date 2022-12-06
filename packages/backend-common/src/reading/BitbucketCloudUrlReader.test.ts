@@ -161,7 +161,7 @@ describe('BitbucketCloudUrlReader', () => {
   describe('read', () => {
     it('rejects unknown targets', async () => {
       await expect(
-        reader.read('https://not.bitbucket.com/apa'),
+        reader.readUrl('https://not.bitbucket.com/apa'),
       ).rejects.toThrow(
         'Incorrect URL: https://not.bitbucket.com/apa, Error: Invalid Bitbucket Cloud URL or file path',
       );

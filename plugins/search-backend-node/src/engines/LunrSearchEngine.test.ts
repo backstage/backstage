@@ -381,7 +381,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -412,7 +412,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -452,7 +452,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -495,7 +495,7 @@ describe('LunrSearchEngine', () => {
         inspectableSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -544,7 +544,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -583,7 +583,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -623,7 +623,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -663,7 +663,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -708,7 +708,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -763,10 +763,10 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index-2',
       );
-      await TestPipeline.withSubject(indexer1)
+      await TestPipeline.fromIndexer(indexer1)
         .withDocuments(mockDocuments)
         .execute();
-      await TestPipeline.withSubject(indexer2)
+      await TestPipeline.fromIndexer(indexer2)
         .withDocuments(mockDocuments2)
         .execute();
 
@@ -811,7 +811,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -871,14 +871,14 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
       const indexer2 = await getActualIndexer(
         testLunrSearchEngine,
         'test-index-2',
       );
-      await TestPipeline.withSubject(indexer2)
+      await TestPipeline.fromIndexer(indexer2)
         .withDocuments(mockDocuments2)
         .execute();
 
@@ -924,7 +924,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -974,7 +974,7 @@ describe('LunrSearchEngine', () => {
       }));
 
     const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments(mockDocuments)
       .execute();
 
@@ -1112,7 +1112,7 @@ describe('stopword testing', () => {
 
     const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
 
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments(mockDocuments)
       .execute();
 
@@ -1149,7 +1149,7 @@ describe('stopword testing', () => {
 
     const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
 
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments(mockDocuments)
       .execute();
 
@@ -1186,7 +1186,7 @@ describe('stopword testing', () => {
 
     const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
 
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments(mockDocuments)
       .execute();
 

@@ -22,7 +22,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { HasSubcomponentsCard } from './HasSubcomponentsCard';
 
@@ -51,7 +51,7 @@ describe('<HasSubcomponentsCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasSubcomponentsCard />
@@ -64,9 +64,9 @@ describe('<HasSubcomponentsCard />', () => {
       },
     );
 
-    expect(getByText('Has subcomponents')).toBeInTheDocument();
+    expect(screen.getByText('Has subcomponents')).toBeInTheDocument();
     expect(
-      getByText(/No subcomponent is part of this component/i),
+      screen.getByText(/No subcomponent is part of this component/i),
     ).toBeInTheDocument();
   });
 
@@ -99,7 +99,7 @@ describe('<HasSubcomponentsCard />', () => {
       ],
     });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasSubcomponentsCard />
@@ -113,8 +113,8 @@ describe('<HasSubcomponentsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Has subcomponents')).toBeInTheDocument();
-      expect(getByText(/target-name/i)).toBeInTheDocument();
+      expect(screen.getByText('Has subcomponents')).toBeInTheDocument();
+      expect(screen.getByText(/target-name/i)).toBeInTheDocument();
     });
   });
 });

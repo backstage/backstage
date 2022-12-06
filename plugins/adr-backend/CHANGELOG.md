@@ -1,5 +1,62 @@
 # @backstage/plugin-adr-backend
 
+## 0.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-adr-common@0.2.4-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/plugin-adr-common@0.2.4-next.0
+  - @backstage/plugin-search-common@1.1.2-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/integration@1.4.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/plugin-adr-common@0.2.3
+  - @backstage/plugin-search-common@1.1.1
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/plugin-adr-common@0.2.3-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
 ## 0.2.3-next.0
 
 ### Patch Changes

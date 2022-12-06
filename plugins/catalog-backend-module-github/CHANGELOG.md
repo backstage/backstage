@@ -1,5 +1,121 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.2.2-next.1
+
+### Patch Changes
+
+- fe93cce743: Added the githubCredentialsProvider property to the GithubLocationAnalyzerOptions to be able to override the GithubCredentialsProvider.
+- a0fd4af94a: Handle GitHub `push` events at the `GithubEntityProvider` by subscribing to the topic `github.push.`
+
+  Implements `EventSubscriber` to receive events for the topic `github.push`.
+
+  On `github.push`, the affected repository will be refreshed.
+  This includes adding new Location entities, refreshing existing ones,
+  and removing obsolete ones.
+
+  Please find more information at
+  https://backstage.io/docs/integrations/github/discovery#installation-with-events-support
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-catalog-backend@1.6.0-next.1
+  - @backstage/backend-tasks@0.4.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/backend-plugin-api@0.1.5-next.1
+  - @backstage/plugin-catalog-node@1.2.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.1
+  - @backstage/plugin-events-node@0.2.0-next.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- 70fa5ec3ec: Fixes the assignment of group member references in `GithubMultiOrgProcessor` so membership relations are resolved correctly.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 754b5854df: Fix incorrectly exported GithubOrgEntityProvider as a type
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/plugin-catalog-backend@1.6.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/backend-plugin-api@0.1.5-next.0
+  - @backstage/plugin-catalog-node@1.2.2-next.0
+  - @backstage/backend-tasks@0.3.8-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 67fe5bc9a9: BREAKING: Support authenticated backends by including a server token for catalog requests. The constructor of `GithubLocationAnalyzer` now requires an instance of `TokenManager` to be supplied:
+
+  ```diff
+  ...
+    builder.addLocationAnalyzers(
+      new GitHubLocationAnalyzer({
+        discovery: env.discovery,
+        config: env.config,
+  +     tokenManager: env.tokenManager,
+      }),
+    );
+  ...
+  ```
+
+- f64d66a45c: Added the ability for the GitHub discovery provider to validate that catalog files exist before emitting them.
+
+  Users can now set the `validateLocationsExist` property to `true` in their GitHub discovery configuration to opt in to this feature.
+  This feature only works with `catalogPath`s that do not contain wildcards.
+
+  When `validateLocationsExist` is set to `true`, the GitHub discovery provider will retrieve the object from the
+  repository at the provided `catalogPath`.
+  If this file exists and is non-empty, then it will be emitted as a location for further processing.
+  If this file does not exist or is empty, then it will not be emitted.
+  Not emitting locations that do not exist allows for far fewer calls to the GitHub API to validate locations that do not exist.
+
+### Patch Changes
+
+- 67fe5bc9a9: Properly derive Github credentials when making requests in `GithubLocationAnalyzer` to support Github App authentication
+- bef063dc8d: - Make it possible to inject custom user and team transformers when configuring the `GithubOrgEntityProvider`
+- 4c9f7847e4: Updated dependency `msw` to `^0.48.0` while moving it to be a dev dependency.
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-catalog-backend@1.5.1
+  - @backstage/integration@1.4.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/types@1.0.1
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 0.2.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/backend-plugin-api@0.1.4-next.1
+  - @backstage/backend-tasks@0.3.7-next.1
+  - @backstage/plugin-catalog-backend@1.5.1-next.1
+  - @backstage/plugin-catalog-node@1.2.1-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+
 ## 0.2.0-next.0
 
 ### Minor Changes

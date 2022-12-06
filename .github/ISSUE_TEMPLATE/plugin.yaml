@@ -1,0 +1,52 @@
+name: 🔌 Plugin
+description: 'Submit a proposal for a new Plugin'
+title: '🔌 Plugin: '
+labels: [plugin]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We value your time and efforts to submit this Plugin request form. 🙏
+  - type: textarea
+    id: plugin-summary
+    validations:
+      required: true
+    attributes:
+      label: '🔖 Summary'
+      description: 'Provide a general summary of the plugin and how it should work'
+      placeholder: 'You should add ...'
+  - type: textarea
+    id: website
+    attributes:
+      label: '🌐 Project website (if applicable)'
+      description: 'Add a link to the open source project or product this plugin will integrate with, if existing'
+      placeholder: 'Website Link is ...'
+  - type: textarea
+    id: context
+    attributes:
+      label: '✌️ Context'
+      description: 'A clear and concise description about the Plugin.'
+      placeholder: 'Providing additional context'
+  - type: checkboxes
+    id: no-duplicate-issues
+    attributes:
+      label: '👀 Have you spent some time to check if this plugin request has been raised before?'
+      options:
+        - label: "I checked and didn't find similar issue"
+          required: true
+  - type: checkboxes
+    id: read-code-of-conduct
+    attributes:
+      label: '🏢 Have you read the Code of Conduct?'
+      options:
+        - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
+          required: true
+  - type: dropdown
+    id: willing-to-submit-pr
+    attributes:
+      label: Are you willing to submit PR?
+      description: This is absolutely not required, but we are happy to guide you in the contribution process.
+      options:
+        - Yes I am willing to submit a PR!
+        - No, but I'm happy to collaborate on a PR with someone else
+        - No, I don't have time to work on this right now

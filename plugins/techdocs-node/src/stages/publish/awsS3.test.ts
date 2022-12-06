@@ -14,119 +14,31 @@
  * limitations under the License.
  */
 
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadBucketCommand,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+  UploadPartCommand,
+} from '@aws-sdk/client-s3';
 import { getVoidLogger } from '@backstage/backend-common';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import express from 'express';
 import request from 'supertest';
 import mockFs from 'mock-fs';
 import path from 'path';
-import fs, { ReadStream } from 'fs-extra';
-import { EventEmitter } from 'events';
+import fs from 'fs-extra';
 import { AwsS3Publish } from './awsS3';
 import { storageRootDir } from '../../testUtils/StorageFilesMock';
+import { Readable } from 'stream';
 
-jest.mock('aws-sdk', () => {
-  const { StorageFilesMock } = require('../../testUtils/StorageFilesMock');
-  const storage = new StorageFilesMock();
-
-  return {
-    __esModule: true,
-    Credentials: jest.requireActual('aws-sdk').Credentials,
-    default: {
-      S3: class {
-        constructor() {
-          storage.emptyFiles();
-        }
-
-        headObject({ Key }: { Key: string }) {
-          return {
-            promise: async () => {
-              if (!storage.fileExists(Key)) {
-                throw new Error('File does not exist');
-              }
-            },
-          };
-        }
-
-        getObject({ Key }: { Key: string }) {
-          return {
-            promise: async () => storage.fileExists(Key),
-            createReadStream: () => {
-              const emitter = new EventEmitter();
-              process.nextTick(() => {
-                if (storage.fileExists(Key)) {
-                  emitter.emit('data', Buffer.from(storage.readFile(Key)));
-                  emitter.emit('end');
-                } else {
-                  emitter.emit(
-                    'error',
-                    new Error(`The file ${Key} does not exist!`),
-                  );
-                }
-              });
-              return emitter;
-            },
-          };
-        }
-
-        headBucket({ Bucket }: { Bucket: string }) {
-          return {
-            promise: async () => {
-              if (Bucket === 'errorBucket') {
-                throw new Error('Bucket does not exist');
-              }
-              return {};
-            },
-          };
-        }
-
-        upload({ Key, Body }: { Key: string; Body: ReadStream }) {
-          return {
-            promise: () =>
-              new Promise(async resolve => {
-                const chunks = new Array<Buffer>();
-                Body.on('data', chunk => {
-                  chunks.push(chunk as Buffer);
-                });
-                Body.once('end', () => {
-                  storage.writeFile(Key, Buffer.concat(chunks));
-                  resolve(null);
-                });
-              }),
-          };
-        }
-
-        listObjectsV2({ Bucket }: { Bucket: string }) {
-          return {
-            promise: () => {
-              if (
-                Bucket === 'delete_stale_files_success' ||
-                Bucket === 'delete_stale_files_error'
-              ) {
-                return Promise.resolve({
-                  Contents: [{ Key: 'stale_file.png' }],
-                });
-              }
-              return Promise.resolve({});
-            },
-          };
-        }
-
-        deleteObject({ Bucket }: { Bucket: string }) {
-          return {
-            promise: () => {
-              if (Bucket === 'delete_stale_files_error') {
-                throw new Error('Message');
-              }
-              return Promise.resolve();
-            },
-          };
-        }
-      },
-    },
-  };
-});
+const env = process.env;
+let s3Mock: AwsClientStub<S3Client>;
 
 const getEntityRootDir = (entity: Entity) => {
   const {
@@ -136,6 +48,23 @@ const getEntityRootDir = (entity: Entity) => {
 
   return path.join(storageRootDir, namespace || DEFAULT_NAMESPACE, kind, name);
 };
+
+class ErrorReadable extends Readable {
+  errorMessage: string;
+
+  constructor(errorMessage: string) {
+    super();
+    this.errorMessage = errorMessage;
+  }
+
+  _read() {
+    this.destroy(new Error(this.errorMessage));
+  }
+
+  _destroy(error: Error | null, callback: (error?: Error | null) => void) {
+    callback(error);
+  }
+}
 
 const logger = getVoidLogger();
 const loggerInfoSpy = jest.spyOn(logger, 'info');
@@ -219,13 +148,71 @@ describe('AwsS3Publish', () => {
   };
 
   beforeEach(() => {
+    process.env = { ...env };
+    process.env.AWS_REGION = 'us-west-2';
+
     mockFs({
       [directory]: files,
+    });
+
+    const { StorageFilesMock } = require('../../testUtils/StorageFilesMock');
+    const storage = new StorageFilesMock();
+    storage.emptyFiles();
+
+    s3Mock = mockClient(S3Client);
+
+    s3Mock.on(HeadObjectCommand).callsFake(input => {
+      if (!storage.fileExists(input.Key)) {
+        throw new Error('File does not exist');
+      }
+      return {};
+    });
+
+    s3Mock.on(GetObjectCommand).callsFake(input => {
+      if (storage.fileExists(input.Key)) {
+        return {
+          Body: Readable.from(storage.readFile(input.Key)),
+        };
+      }
+
+      throw new Error(`The file ${input.Key} does not exist!`);
+    });
+
+    s3Mock.on(HeadBucketCommand).callsFake(input => {
+      if (input.Bucket === 'errorBucket') {
+        throw new Error('Bucket does not exist');
+      }
+      return {};
+    });
+
+    s3Mock.on(ListObjectsV2Command).callsFake(input => {
+      if (
+        input.Bucket === 'delete_stale_files_success' ||
+        input.Bucket === 'delete_stale_files_error'
+      ) {
+        return {
+          Contents: [{ Key: 'stale_file.png' }],
+        };
+      }
+      return {};
+    });
+
+    s3Mock.on(DeleteObjectCommand).callsFake(input => {
+      if (input.Bucket === 'delete_stale_files_error') {
+        throw new Error('Message');
+      }
+      return {};
+    });
+
+    s3Mock.on(UploadPartCommand).rejects();
+    s3Mock.on(PutObjectCommand).callsFake(input => {
+      storage.writeFile(input.Key, input.Body);
     });
   });
 
   afterEach(() => {
     mockFs.restore();
+    process.env = env;
   });
 
   describe('getReadiness', () => {
@@ -477,8 +464,32 @@ describe('AwsS3Publish', () => {
       const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
 
       await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(
+          'The file invalid/triplet/path/techdocs_metadata.json does not exist',
+        ),
+      });
+    });
+
+    it('should return an error if the techdocs_metadata.json file cannot be read from stream', async () => {
+      s3Mock.on(GetObjectCommand).callsFake(_ => {
+        return {
+          Body: new ErrorReadable('No stream!'),
+        };
+      });
+
+      const publisher = createPublisherFromConfig();
+
+      const invalidEntityName = {
+        namespace: 'invalid',
+        kind: 'triplet',
+        name: 'path',
+      };
+
+      const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
+
+      await expect(fails).rejects.toMatchObject({
         message: expect.stringMatching(
-          'TechDocs metadata fetch failed; caused by Error: Unable to read stream; caused by Error: The file invalid/triplet/path/techdocs_metadata.json does not exist',
+          'TechDocs metadata fetch failed; caused by Error: Unable to read stream; caused by Error: No stream!',
         ),
       });
     });
@@ -588,6 +599,23 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return 404 if file is not found', async () => {
+      const response = await request(app).get(
+        `/${entityTripletPath}/not-found.html`,
+      );
+      expect(response.status).toBe(404);
+
+      expect(Buffer.from(response.text).toString('utf8')).toEqual(
+        'File Not Found',
+      );
+    });
+
+    it('should return 404 if file cannot be read from stream', async () => {
+      s3Mock.on(GetObjectCommand).callsFake(_ => {
+        return {
+          Body: new ErrorReadable('No stream!'),
+        };
+      });
+
       const response = await request(app).get(
         `/${entityTripletPath}/not-found.html`,
       );

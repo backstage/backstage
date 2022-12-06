@@ -1,5 +1,43 @@
 # @backstage/plugin-graphiql
 
+## 0.2.44-next.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/theme@0.2.16
+
+## 0.2.44-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/theme@0.2.16
+
+## 0.2.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/theme@0.2.16
+
+## 0.2.43-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.2.43-next.0
 
 ### Patch Changes

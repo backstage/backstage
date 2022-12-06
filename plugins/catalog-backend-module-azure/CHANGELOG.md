@@ -1,5 +1,77 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-catalog-backend@1.6.0-next.1
+  - @backstage/backend-tasks@0.4.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/backend-plugin-api@0.1.5-next.1
+  - @backstage/plugin-catalog-node@1.2.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/backend-plugin-api@0.1.5-next.0
+  - @backstage/plugin-catalog-node@1.2.2-next.0
+  - @backstage/backend-tasks@0.3.8-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- 87ff05892d: `AzureDevOpsEntityProvider`: Add option to configure schedule via `app-config.yaml` instead of in code.
+
+  Please find how to configure the schedule at the config at
+  https://backstage.io/docs/integrations/azure/discovery
+
+- 0ca399b31b: Add `azureDevOpsEntityProviderCatalogModule` (new backend-plugin-api, alpha).
+- 4c9f7847e4: Updated dependency `msw` to `^0.48.0` while moving it to be a dev dependency.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-catalog-backend@1.5.1
+  - @backstage/integration@1.4.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/types@1.0.1
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/backend-plugin-api@0.1.4-next.1
+  - @backstage/backend-tasks@0.3.7-next.1
+  - @backstage/plugin-catalog-backend@1.5.1-next.1
+  - @backstage/plugin-catalog-node@1.2.1-next.1
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+
 ## 0.1.9-next.0
 
 ### Patch Changes

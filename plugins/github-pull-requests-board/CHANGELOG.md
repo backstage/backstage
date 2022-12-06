@@ -1,5 +1,60 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/plugin-catalog-react@1.2.2-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/theme@0.2.16
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/theme@0.2.16
+
+## 0.1.5
+
+### Patch Changes
+
+- cc8bfc56c3: Add a new "Team" Filter Options to the Github Pull Requests Dashboard.
+
+  When toggling this option on, the dashboard will displays all of the PRs opened
+  by the members of that team on any repositories of the organization.
+
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/integration@1.4.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/theme@0.2.16
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.2.1-next.1
+
 ## 0.1.5-next.0
 
 ### Patch Changes

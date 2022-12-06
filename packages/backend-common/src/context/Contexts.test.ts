@@ -15,7 +15,6 @@
  */
 
 import { Duration } from 'luxon';
-import { AbortController } from 'node-abort-controller';
 import { Contexts } from './Contexts';
 
 describe('Contexts', () => {

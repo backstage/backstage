@@ -1,5 +1,51 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.18-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.17
+
+### Patch Changes
+
+- 62f284e394: - Adjusted the asset parser to accept case sensitive
+  - Fixed fetching data that was using the deprecated function
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/config@1.0.4
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.17-next.1
+
+### Patch Changes
+
+- 62f284e394: - Adjusted the asset parser to accept case sensitive
+  - Fixed fetching data that was using the deprecated function
+
 ## 0.3.17-next.0
 
 ### Patch Changes

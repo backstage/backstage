@@ -24,9 +24,11 @@ import {
   AlertOptions,
   AlertStatus,
   AlertSnoozeFormData,
+} from '../../types';
+import {
   ChangeStatistic,
   Entity,
-} from '../../types';
+} from '@backstage/plugin-cost-insights-common';
 import {
   KubernetesMigrationDismissForm,
   KubernetesMigrationDismissFormData,

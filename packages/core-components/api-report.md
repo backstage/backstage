@@ -52,10 +52,10 @@ import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
 
-// @public (undocumented)
+// @public
 export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
 
-// @public
+// @public (undocumented)
 export type AlertDisplayProps = {
   anchorOrigin?: {
     vertical: 'top' | 'bottom';
@@ -250,6 +250,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   edgeRanks?: number;
   edges: DependencyEdge<EdgeData>[];
   edgeWeight?: number;
+  fit?: 'grow' | 'contain';
   labelOffset?: number;
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   labelPosition?: LabelPosition;

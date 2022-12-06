@@ -122,7 +122,7 @@ describe('<AuditListTableForEntity />', () => {
 
     it('renders nothing', async () => {
       const { queryByTestId } = subject();
-      expect(await queryByTestId('AuditListTable')).toBeNull();
+      expect(queryByTestId('AuditListTable')).toBeNull();
     });
   });
 
@@ -137,7 +137,7 @@ describe('<AuditListTableForEntity />', () => {
 
     it('renders nothing', async () => {
       const { queryByTestId } = subject();
-      expect(await queryByTestId('AuditListTable')).toBeNull();
+      expect(queryByTestId('AuditListTable')).toBeNull();
     });
   });
 });

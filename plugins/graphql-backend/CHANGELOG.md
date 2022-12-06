@@ -1,5 +1,42 @@
 # @backstage/plugin-graphql-backend
 
+## 0.1.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-catalog-graphql@0.3.16-next.1
+
+## 0.1.29-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/plugin-catalog-graphql@0.3.16-next.0
+  - @backstage/config@1.0.5-next.0
+
+## 0.1.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/config@1.0.4
+  - @backstage/plugin-catalog-graphql@0.3.15
+
+## 0.1.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-catalog-graphql@0.3.15-next.0
+
 ## 0.1.28-next.0
 
 ### Patch Changes

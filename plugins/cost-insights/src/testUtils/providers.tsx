@@ -15,19 +15,24 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { LoadingContext, LoadingContextProps } from '../hooks/useLoading';
-import { GroupsContext, GroupsContextProps } from '../hooks/useGroups';
-import { FilterContext, FilterContextProps } from '../hooks/useFilters';
-import { ConfigContext, ConfigContextProps } from '../hooks/useConfig';
-import { CurrencyContext, CurrencyContextProps } from '../hooks/useCurrency';
 import {
+  LoadingContext,
+  LoadingContextProps,
+  GroupsContext,
+  GroupsContextProps,
+  FilterContext,
+  FilterContextProps,
+  ConfigContext,
+  ConfigContextProps,
+  CurrencyContext,
+  CurrencyContextProps,
   BillingDateContext,
   BillingDateContextProps,
-} from '../hooks/useLastCompleteBillingDate';
-import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
-import { Group, Duration } from '../types';
-
-export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
+  ScrollContext,
+  ScrollContextProps,
+} from '../hooks';
+import { Duration, EngineerThreshold } from '../types';
+import { createCurrencyFormat } from '../utils/currency';
 
 export type MockFilterProviderProps = PropsWithChildren<
   Partial<FilterContextProps>
@@ -85,10 +90,12 @@ export const MockConfigProvider = (props: MockConfigProviderProps) => {
   const { children, ...context } = props;
 
   const defaultContext: ConfigContextProps = {
+    baseCurrency: createCurrencyFormat(),
     metrics: [],
     products: [],
     icons: [],
     engineerCost: 0,
+    engineerThreshold: EngineerThreshold,
     currencies: [],
   };
 

@@ -1,0 +1,63 @@
+name: Automate merge message
+on:
+  pull_request_target:
+    branches: ['master']
+    types: ['closed']
+
+permissions:
+  pull-requests: write
+  actions: none
+  checks: none
+  contents: none
+  deployments: none
+  issues: none
+  packages: none
+  pages: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
+jobs:
+  message:
+    # prevent running towards forks, and only run on merged PRs
+    if: github.repository == 'backstage/backstage' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: '${{ github.event.pull_request.merge_commit_sha }}'
+
+      - name: fetch head & base
+        run: git fetch --depth 1 origin ${{ github.event.pull_request.head.sha }} ${{ github.event.pull_request.base.sha }}
+
+        # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
+      - name: Generate Message
+        id: generate-message
+        run: |
+          rm -f generate.js
+          wget -O generate.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/generate-merge-message.js 1>&2
+          node generate.js ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > message.txt
+
+      - name: Post Message
+        uses: actions/github-script@v6
+        env:
+          ISSUE_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          script: |
+            const owner = "backstage";
+            const repo = "backstage";
+            const body = require('fs').readFileSync('message.txt', 'utf8').trim();
+            const issue_number = Number(process.env.ISSUE_NUMBER);
+
+            if (!body) {
+              console.log(`skipping comment for #${issue_number}`);
+              return;
+            }
+
+            console.log(`creating comment for #${issue_number}`);
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body,
+            });

@@ -1,5 +1,38 @@
 # @backstage/backend-defaults
 
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.4-next.1
+  - @backstage/backend-plugin-api@0.1.5-next.1
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- d6dbf1792b: Added `lifecycleFactory` to default service factories.
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.4-next.0
+  - @backstage/backend-plugin-api@0.1.5-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.3
+  - @backstage/backend-plugin-api@0.1.4
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.3-next.1
+  - @backstage/backend-plugin-api@0.1.4-next.1
+
 ## 0.1.3-next.0
 
 ### Patch Changes

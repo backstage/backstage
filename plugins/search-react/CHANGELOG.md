@@ -1,5 +1,54 @@
 # @backstage/plugin-search-react
 
+## 1.2.2-next.1
+
+### Patch Changes
+
+- a19cffbeed: Update search links to only have header as linkable text
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.1.2-next.1
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.2
+  - @backstage/plugin-search-common@1.1.2-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/version-bridge@1.0.2
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/types@1.0.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.1.1
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.1-next.0
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-search-common@1.1.1-next.0
+
 ## 1.2.1-next.0
 
 ### Patch Changes

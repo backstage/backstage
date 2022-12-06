@@ -16,7 +16,6 @@
 
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { AbortSignal } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { sleep } from './util';

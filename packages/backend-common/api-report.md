@@ -6,8 +6,6 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
-import { AbortController as AbortController_2 } from 'node-abort-controller';
-import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import aws from 'aws-sdk';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
@@ -28,6 +26,7 @@ import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { KubeConfig } from '@kubernetes/client-node';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
 import { MergeResult } from 'isomorphic-git';
@@ -37,6 +36,7 @@ import { ReadCommitResult } from 'isomorphic-git';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
 import { Server } from 'http';
+import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
@@ -198,7 +198,7 @@ export interface ContainerRunner {
 
 // @alpha
 export interface Context {
-  readonly abortSignal: AbortSignal_2;
+  readonly abortSignal: AbortSignal;
   readonly deadline: Date | undefined;
   value<T = unknown>(key: string): T | undefined;
 }
@@ -208,7 +208,7 @@ export class Contexts {
   static root(): Context;
   static withAbort(
     parentCtx: Context,
-    source: AbortController_2 | AbortSignal_2,
+    source: AbortController | AbortSignal,
   ): Context;
   static withTimeoutDuration(parentCtx: Context, timeout: Duration): Context;
   static withTimeoutMillis(parentCtx: Context, timeout: number): Context;
@@ -475,6 +475,29 @@ export { isChildPath };
 export function isDatabaseConflictError(e: unknown): boolean;
 
 // @public
+export class KubernetesContainerRunner implements ContainerRunner {
+  constructor(options: KubernetesContainerRunnerOptions);
+  // (undocumented)
+  runContainer(options: RunContainerOptions): Promise<void>;
+}
+
+// @public
+export type KubernetesContainerRunnerMountBase = {
+  volumeName: string;
+  basePath: string;
+};
+
+// @public
+export type KubernetesContainerRunnerOptions = {
+  kubeConfig: KubeConfig;
+  name: string;
+  namespace?: string;
+  mountBase?: KubernetesContainerRunnerMountBase;
+  podTemplate?: V1PodTemplateSpec;
+  timeoutMs?: number;
+};
+
+// @public
 export function loadBackendConfig(options: {
   logger: Logger;
   remote?: LoadConfigOptionsRemote;
@@ -519,7 +542,7 @@ export type ReadTreeOptions = {
     },
   ): boolean;
   etag?: string;
-  signal?: AbortSignal_2;
+  signal?: AbortSignal;
 };
 
 // @public
@@ -573,7 +596,7 @@ export type ReadTreeResponseFile = {
 // @public
 export type ReadUrlOptions = {
   etag?: string;
-  signal?: AbortSignal_2;
+  signal?: AbortSignal;
 };
 
 // @public
@@ -632,7 +655,7 @@ export type RunContainerOptions = {
 // @public
 export type SearchOptions = {
   etag?: string;
-  signal?: AbortSignal_2;
+  signal?: AbortSignal;
 };
 
 // @public

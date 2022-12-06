@@ -15,15 +15,16 @@
  */
 
 import {
+  ANNOTATION_EDIT_URL,
   RELATION_MEMBER_OF,
   UserEntity,
-  ANNOTATION_EDIT_URL,
 } from '@backstage/catalog-model';
 import {
-  EntityRefLinks,
-  getEntityRelations,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
+  Avatar,
+  InfoCard,
+  InfoCardVariants,
+  Link,
+} from '@backstage/core-components';
 import {
   Box,
   Grid,
@@ -34,18 +35,19 @@ import {
   ListItemText,
   Tooltip,
 } from '@material-ui/core';
+import {
+  EntityRefLinks,
+  getEntityRelations,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
+
+import Alert from '@material-ui/lab/Alert';
 import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
+import { LinksGroup } from '../../Meta';
 import PersonIcon from '@material-ui/icons/Person';
-import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import {
-  Avatar,
-  InfoCard,
-  InfoCardVariants,
-  Link,
-} from '@backstage/core-components';
 
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
@@ -56,7 +58,10 @@ const CardTitle = (props: { title?: string }) =>
   ) : null;
 
 /** @public */
-export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
+export const UserProfileCard = (props: {
+  variant?: InfoCardVariants;
+  showLinks?: boolean;
+}) => {
   const { entity: user } = useEntity<UserEntity>();
   if (!user) {
     return <Alert severity="error">User not found</Alert>;
@@ -66,7 +71,7 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
     user.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
   const {
-    metadata: { name: metaName, description },
+    metadata: { name: metaName, description, links },
     spec: { profile },
   } = user;
   const displayName = profile?.displayName ?? metaName;
@@ -128,6 +133,8 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
                 />
               </ListItemText>
             </ListItem>
+
+            {props?.showLinks && <LinksGroup links={links} />}
           </List>
         </Grid>
       </Grid>

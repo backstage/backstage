@@ -16,21 +16,44 @@
 
 import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import { catalogEntityRouteRef, exploreRouteRef } from './routes';
-import { exampleTools } from './util/examples';
-import { createApiFactory, createPlugin } from '@backstage/core-plugin-api';
+import {
+  createApiFactory,
+  createPlugin,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
+import { ExploreClient, exploreApiRef } from './api';
+// import { exampleTools } from './util/examples';
 
 /** @public */
 export const explorePlugin = createPlugin({
   id: 'explore',
   apis: [
-    // Register a default for exploreToolsConfigRef, you may want to override
-    // the API locally in your app.
+    createApiFactory({
+      api: exploreApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+        exploreToolsConfig: exploreToolsConfigRef,
+      },
+      factory: ({ discoveryApi, fetchApi, exploreToolsConfig }) =>
+        // NOTE: The exploreToolsConfig is for backwards compatibility and will be removed in the future
+        new ExploreClient({ discoveryApi, fetchApi, exploreToolsConfig }),
+    }),
+    /**
+     * @deprecated Use ExploreApi from `@backstage/plugin-explore` instead
+     *
+     * Register a default for exploreToolsConfigRef, you may want to override
+     * the API locally in your app.
+     */
     createApiFactory({
       api: exploreToolsConfigRef,
       deps: {},
       factory: () => ({
         async getTools() {
-          return exampleTools;
+          // Returning `undefined` will enable the explore-backend to be used via the ExploreClient.
+          // If this API has been customized and returns data it will be respected first.
+          return undefined as any;
         },
       }),
     }),

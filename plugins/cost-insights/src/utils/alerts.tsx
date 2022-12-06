@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Alert, AlertForm, AlertStatus, Maybe } from '../types';
+import { Alert, AlertForm, AlertStatus } from '../types';
+import { Maybe } from '@backstage/plugin-cost-insights-common';
 import { AlertAcceptForm, AlertDismissForm, AlertSnoozeForm } from '../forms';
 
 const createAlertHandler = (status?: AlertStatus) => (alert: Alert) =>

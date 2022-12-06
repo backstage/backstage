@@ -1,5 +1,38 @@
 # @backstage/plugin-periskop-backend
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/config@1.0.5-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/config@1.0.5-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/config@1.0.4
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/config@1.0.4-next.0
+
 ## 0.1.9-next.0
 
 ### Patch Changes

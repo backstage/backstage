@@ -137,7 +137,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       },
     ];
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     // Older indices should have been queried for.
     expect(catSpy).toHaveBeenCalled();
@@ -184,7 +184,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       text: range(2000).join(', '),
     }));
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     // Ensure multiple bulk requests were made.
     expect(bulkSpy).toHaveBeenCalledTimes(2);
@@ -221,7 +221,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       catSpy,
     );
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     // Final deletion shouldn't be called.
     expect(deleteSpy).not.toHaveBeenCalled();

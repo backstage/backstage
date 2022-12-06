@@ -173,7 +173,7 @@ export const EntityBazaarInfoContent = ({
                 {parseEntityRef(bazaarProject.entityRef!).name}
               </b>,
               ' from ',
-              <b className={classes.wordBreak}>{bazaarProject.name}</b>,
+              <b className={classes.wordBreak}>{bazaarProject.title}</b>,
               ' ?',
             ]}
             type="unlink"
@@ -182,7 +182,7 @@ export const EntityBazaarInfoContent = ({
         )}
 
         <CardHeader
-          title={<p className={classes.wordBreak}>{bazaarProject?.name!}</p>}
+          title={<p className={classes.wordBreak}>{bazaarProject?.title!}</p>}
           action={
             <div>
               <IconButton

@@ -68,6 +68,14 @@ const customIndexTemplate = {
   },
 };
 
+const advanceTimersByNTimes = async (n = 1, time = 1000) => {
+  for (let i = 0; i < n; i++) {
+    await Promise.resolve();
+    jest.advanceTimersByTime(time);
+    await Promise.resolve();
+  }
+};
+
 describe('ElasticSearchSearchEngine', () => {
   let testSearchEngine: ElasticSearchSearchEngine;
   let inspectableSearchEngine: ElasticSearchSearchEngineForTranslatorTests;
@@ -855,35 +863,33 @@ describe('ElasticSearchSearchEngine', () => {
       });
 
       it('should check for and delete expected index', async () => {
-        const existsSpy = jest.fn().mockReturnValue('truthy value');
         const deleteSpy = jest.fn().mockReturnValue({});
-        mock.add({ method: 'HEAD', path: '/expected-index-name' }, existsSpy);
         mock.add({ method: 'DELETE', path: '/expected-index-name' }, deleteSpy);
 
         await errorHandler(error);
 
         // Check and delete HTTP requests were made.
-        expect(existsSpy).toHaveBeenCalled();
         expect(deleteSpy).toHaveBeenCalled();
       });
 
-      it('should not delete index if none exists', async () => {
-        // Exists call returns 404 on no index.
-        const existsSpy = jest.fn().mockReturnValue(
+      it('should retry delete index up to 5 times', async () => {
+        // Delete call returns 404
+        const deleteSpy = jest.fn().mockReturnValue(
           new errors.ResponseError({
             statusCode: 404,
             body: { status: 404 },
           } as unknown as any),
         );
-        const deleteSpy = jest.fn().mockReturnValue({});
-        mock.add({ method: 'HEAD', path: '/expected-index-name' }, existsSpy);
         mock.add({ method: 'DELETE', path: '/expected-index-name' }, deleteSpy);
 
-        await errorHandler(error);
+        // Call the error handler and advance timers
+        jest.useFakeTimers();
+        errorHandler(error);
+        await advanceTimersByNTimes(10);
+        jest.useRealTimers();
 
-        // Check request was made, but no delete request was made.
-        expect(existsSpy).toHaveBeenCalled();
-        expect(deleteSpy).not.toHaveBeenCalled();
+        // Check request was made 5 times
+        expect(deleteSpy).toHaveBeenCalledTimes(5);
       });
     });
   });

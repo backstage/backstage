@@ -49,7 +49,7 @@ the user to initiate a login. This login request is done to the `/start`
 endpoint which is handled by the `start` method.
 
 The `start` method re-directs to the external auth provider who authenticates
-the request and re-directs the request to the `/frame/handler` endpoint, which
+the request and re-directs the request to the `/handler/frame` endpoint, which
 is handled by the `frameHandler` method.
 
 The `frameHandler` returns an HTML response, containing a script that does a

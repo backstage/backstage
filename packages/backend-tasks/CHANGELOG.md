@@ -1,5 +1,58 @@
 # @backstage/backend-tasks
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- de8a975911: Changed to use native `AbortController` and `AbortSignal` from Node.js, instead
+  of the one from `node-abort-controller`. This is possible now that the minimum
+  supported Node.js version of the project is 16.
+
+  Note that their interfaces are very slightly different, but typically not in a
+  way that matters to consumers. If you see any typescript errors as a direct
+  result from this, they are compatible with each other in the ways that we
+  interact with them, and should be possible to type-cast across without ill
+  effects.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.3.7
+
+### Patch Changes
+
+- 30e43717c7: Deprecated the `HumanDuration` type, which should now instead be imported from `@backstage/types`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/types@1.0.1
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
 ## 0.3.7-next.0
 
 ### Patch Changes

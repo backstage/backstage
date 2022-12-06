@@ -39,18 +39,21 @@ import {
   RelationPairs,
 } from '../EntityRelationsGraph';
 
-const useStyles = makeStyles<Theme, { height: number | undefined }>({
-  card: ({ height }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    maxHeight: height,
-    minHeight: height,
-  }),
-  graph: {
-    flex: 1,
-    minHeight: 0,
+const useStyles = makeStyles<Theme, { height: number | undefined }>(
+  {
+    card: ({ height }) => ({
+      display: 'flex',
+      flexDirection: 'column',
+      maxHeight: height,
+      minHeight: height,
+    }),
+    graph: {
+      flex: 1,
+      minHeight: 0,
+    },
   },
-});
+  { name: 'PluginCatalogGraphCatalogGraphCard' },
+);
 
 export const CatalogGraphCard = (props: {
   variant?: InfoCardVariants;
@@ -106,7 +109,15 @@ export const CatalogGraphCard = (props: {
   );
 
   const catalogGraphParams = qs.stringify(
-    { rootEntityRefs: [stringifyEntityRef(entity)] },
+    {
+      rootEntityRefs: [stringifyEntityRef(entity)],
+      maxDepth: maxDepth + 1,
+      unidirectional,
+      mergeRelations,
+      kinds,
+      relations,
+      direction,
+    },
     { arrayFormat: 'brackets', addQueryPrefix: true },
   );
   const catalogGraphUrl = `${catalogGraphRoute()}${catalogGraphParams}`;

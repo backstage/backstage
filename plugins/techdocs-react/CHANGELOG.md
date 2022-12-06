@@ -1,5 +1,51 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+
+## 1.0.7-next.0
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/version-bridge@1.0.2
+
+## 1.0.6
+
+### Patch Changes
+
+- 7d1352d459: Analytics events captured within the `<TechDocsReaderPageProvider>` now include the conventional `entityRef` context value, associating those events with their corresponding entity.
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/version-bridge@1.0.2
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/config@1.0.4
+
+## 1.0.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/version-bridge@1.0.1
+
 ## 1.0.6-next.0
 
 ### Patch Changes

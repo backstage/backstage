@@ -16,18 +16,16 @@
 
 import { DatabaseManager } from '@backstage/backend-common';
 import {
-  configServiceRef,
+  coreServices,
   createServiceFactory,
-  databaseServiceRef,
-  pluginMetadataServiceRef,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
 export const databaseFactory = createServiceFactory({
-  service: databaseServiceRef,
+  service: coreServices.database,
   deps: {
-    config: configServiceRef,
-    plugin: pluginMetadataServiceRef,
+    config: coreServices.config,
+    plugin: coreServices.pluginMetadata,
   },
   async factory({ config }) {
     const databaseManager = DatabaseManager.fromConfig(config);

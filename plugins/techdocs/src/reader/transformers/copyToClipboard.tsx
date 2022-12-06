@@ -49,7 +49,7 @@ const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
   const [open, setOpen] = useState(false);
 
   const handleClick = useCallback(() => {
-    navigator.clipboard.writeText(text);
+    window.navigator.clipboard.writeText(text);
     setOpen(true);
   }, [text]);
 

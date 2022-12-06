@@ -52,3 +52,16 @@ export const EntitySonarQubeCard = sonarQubePlugin.provide(
     },
   }),
 );
+
+/** @public */
+export const EntitySonarQubeContentPage = sonarQubePlugin.provide(
+  createComponentExtension({
+    name: 'EntitySonarQubeContentPage',
+    component: {
+      lazy: () =>
+        import('./components/SonarQubeContentPage').then(
+          m => m.SonarQubeContentPage,
+        ),
+    },
+  }),
+);

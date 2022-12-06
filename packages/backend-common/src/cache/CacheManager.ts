@@ -16,8 +16,7 @@
 
 import { Config } from '@backstage/config';
 import Keyv from 'keyv';
-// @ts-expect-error
-import KeyvMemcache from 'keyv-memcache';
+import KeyvMemcache from '@keyv/memcache';
 import KeyvRedis from '@keyv/redis';
 import { Logger } from 'winston';
 import { getRootLogger } from '../logging';
@@ -103,7 +102,7 @@ export class CacheManager {
       getClient: (opts = {}): CacheClient => {
         const concreteClient = this.getClientWithTtl(pluginId, opts.defaultTtl);
 
-        // Always provide an error handler to avoid killing the process.
+        // Always provide an error handler to avoid stopping the process.
         concreteClient.on('error', (err: Error) => {
           // In all cases, just log the error.
           this.logger.error(err);

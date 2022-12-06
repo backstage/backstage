@@ -1,5 +1,37 @@
 # @backstage/config-loader
 
+## 1.1.7-next.1
+
+### Patch Changes
+
+- 40e7e6e1a2: Updated dependency `typescript-json-schema` to `^0.55.0`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/errors@1.1.4-next.1
+
+## 1.1.7-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 1.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
 ## 1.1.6-next.0
 
 ### Patch Changes

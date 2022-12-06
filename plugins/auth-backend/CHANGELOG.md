@@ -1,5 +1,65 @@
 # @backstage/plugin-auth-backend
 
+## 0.17.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 0.17.2-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/plugin-auth-node@0.2.8-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.17.1
+
+### Patch Changes
+
+- 0d6837ca4e: Fix wrong GitHub callback URL documentation
+- cbe11d1e23: Tweak README
+- 89d705e806: Add support for custom JWT header name in GCP IAP auth.
+- abaed9770e: Improve logging
+- d80833fe0c: Inject optional `CatalogApi` into auth-backend `createRouter` function. This will enable developers to use customized `CatalogApi` when creating the router.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-auth-node@0.2.7
+  - @backstage/types@1.0.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 0.17.1-next.1
+
+### Patch Changes
+
+- 0d6837ca4e: Fix wrong GitHub callback URL documentation
+- abaed9770e: Improve logging
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/plugin-auth-node@0.2.7-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
 ## 0.17.1-next.0
 
 ### Patch Changes

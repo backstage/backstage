@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.12.0-next.0",
+  "version": "0.12.1-next.1",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -41,7 +41,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
-    "@react-hookz/web": "^15.0.0",
+    "@react-hookz/web": "^20.0.0",
     "@types/react-sparklines": "^1.7.0",
     "@types/react-text-truncate": "^0.14.0",
     "ansi-regex": "^6.0.1",
@@ -56,7 +56,7 @@
     "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
-    "rc-progress": "3.4.0",
+    "rc-progress": "3.4.1",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
     "react-markdown": "^8.0.0",
@@ -67,7 +67,7 @@
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "remark-gfm": "^3.0.1",
-    "zen-observable": "^0.8.15",
+    "zen-observable": "^0.10.0",
     "zod": "^3.11.6"
   },
   "peerDependencies": {
@@ -99,7 +99,7 @@
     "@types/react-window": "^1.8.5",
     "@types/zen-observable": "^0.8.0",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.47.0"
+    "msw": "^0.49.0"
   },
   "files": [
     "dist"

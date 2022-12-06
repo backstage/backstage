@@ -237,7 +237,7 @@ export const HomePageBazaarInfoCard = ({
               {parseEntityRef(bazaarProject.value?.entityRef!).name}
             </b>,
             ' from ',
-            <b className={classes.wordBreak}>{bazaarProject.value?.name}</b>,
+            <b className={classes.wordBreak}>{bazaarProject.value?.title}</b>,
             ' ?',
           ]}
           type="unlink"
@@ -257,7 +257,7 @@ export const HomePageBazaarInfoCard = ({
         <CardHeader
           title={
             <p className={classes.wordBreak}>
-              {bazaarProject.value?.name || initProject.name}
+              {bazaarProject.value?.title || initProject.title}
             </p>
           }
           action={

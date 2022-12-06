@@ -1,5 +1,85 @@
 # @backstage/backend-common
 
+## 0.17.0-next.1
+
+### Minor Changes
+
+- de8a975911: Changed to use native `AbortController` and `AbortSignal` from Node.js, instead
+  of the one from `node-abort-controller`. This is possible now that the minimum
+  supported Node.js version of the project is 16.
+
+  Note that their interfaces are very slightly different, but typically not in a
+  way that matters to consumers. If you see any typescript errors as a direct
+  result from this, they are compatible with each other in the ways that we
+  interact with them, and should be possible to type-cast across without ill
+  effects.
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- 1f2b2de3fe: exported KubernetesContainerRunner, KubernetesContainerRunnerOptions, KubernetesContainerRunnerMountBase
+- 6b82598bd8: Added the ability to understand Job Artifact URLs to the GitLab integration
+- 8646067e07: Fixed `SingleHostDiscovery` so that it properly handles single-string `backend.listen` configurations such as `:80`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config-loader@1.1.7-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/errors@1.1.4-next.1
+
+## 0.16.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- dfc8edf9c5: Internal refactor to avoid usage of deprecated symbols.
+- Updated dependencies
+  - @backstage/config-loader@1.1.7-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.16.0
+
+### Minor Changes
+
+- a7607b5413: **BREAKING CHANGE**: The `UrlReader` interface has been updated to require that `readUrl` is implemented. `readUrl` has previously been optional to implement but a warning has been logged when calling its predecessor `read`.
+  The `read` method is now deprecated and will be removed in a future release.
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- 55227712dd: Generated development HTTPS backend certificate is now checked for expiration date instead of file age.
+- d05e1841ce: This patch adds GiteaURLReader to the available classes. It currently only reads single files via gitea's public repos api
+- e6ced2446a: Change to using `@keyv/memcache` now that `keyv-memcache` is deprecated
+- 210a3b5668: Small update to fix compatibility with newer versions of the `keyv` library
+- cfb30b700c: Pin `@kubernetes/client-node` version to `0.17.0`.
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/integration@1.4.0
+  - @backstage/types@1.0.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4
+  - @backstage/config-loader@1.1.6
+  - @backstage/errors@1.1.3
+
+## 0.16.0-next.1
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- cfb30b700c: Pin `@kubernetes/client-node` version to `0.17.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+
 ## 0.16.0-next.0
 
 ### Minor Changes

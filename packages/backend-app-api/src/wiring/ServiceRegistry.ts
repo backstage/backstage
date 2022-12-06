@@ -17,7 +17,7 @@
 import {
   ServiceFactory,
   ServiceRef,
-  pluginMetadataServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 
@@ -65,10 +65,10 @@ export class ServiceRegistry {
     pluginId: string,
   ): Promise<ServiceFactory> | undefined {
     // Special case handling of the plugin metadata service, generating a custom factory for it each time
-    if (ref.id === pluginMetadataServiceRef.id) {
+    if (ref.id === coreServices.pluginMetadata.id) {
       return Promise.resolve({
         scope: 'plugin',
-        service: pluginMetadataServiceRef,
+        service: coreServices.pluginMetadata,
         deps: {},
         factory: async () => async () => ({
           getId() {
@@ -114,7 +114,7 @@ export class ServiceRegistry {
 
   #checkForMissingDeps(factory: ServiceFactory, pluginId: string) {
     const missingDeps = Object.values(factory.deps).filter(ref => {
-      if (ref.id === pluginMetadataServiceRef.id) {
+      if (ref.id === coreServices.pluginMetadata.id) {
         return false;
       }
       if (this.#providedFactories.get(ref.id)) {

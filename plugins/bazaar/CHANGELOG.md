@@ -1,5 +1,67 @@
 # @backstage/plugin-bazaar
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- 9b1891061c: `HomePageBazaarInfoCard` is now displaying `title` instead of `name`. Title is a string that doesn't have to be URL friendly.
+  The BazaarOverviewCard have the new property `fullHeight`. Link in `BazaarOverviewCard`is moved to header in card.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/plugin-catalog@1.6.2-next.1
+  - @backstage/cli@0.21.2-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/plugin-catalog-react@1.2.2-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/cli@0.21.2-next.0
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/plugin-catalog@1.6.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 28b39e0e0e: The limit prop of BazaarOverviewCard has been removed entirely, and instead replaced with a new optional boolean prop `fullWidth`. The BazaarOverviewCard now always use full height without fixed width. Also fixed problem with link to Bazaar.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/cli@0.21.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-catalog@1.6.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/errors@1.1.3
+
+## 0.2.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.21.0-next.1
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/plugin-catalog@1.6.1-next.1
+  - @backstage/plugin-catalog-react@1.2.1-next.1
+
 ## 0.2.0-next.0
 
 ### Minor Changes

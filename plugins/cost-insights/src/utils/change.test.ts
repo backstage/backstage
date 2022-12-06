@@ -20,8 +20,8 @@ import {
   ChangeThreshold,
   EngineerThreshold,
   Duration,
-  Cost,
 } from '../types';
+import { Cost } from '@backstage/plugin-cost-insights-common';
 import { MockAggregatedDailyCosts, trendlineOf, changeOf } from '../testUtils';
 
 const GrowthMap = {
@@ -63,7 +63,7 @@ describe.each`
     expected: GrowthType;
   }) => {
     it(`should display ${GrowthMap[expected]}`, () => {
-      expect(growthOf({ ratio, amount })).toBe(expected);
+      expect(growthOf({ ratio, amount }, EngineerThreshold)).toBe(expected);
     });
   },
 );

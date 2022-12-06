@@ -1,6 +1,7 @@
 {
   labels: ['dependencies'],
   extends: ['config:base', ':disableDependencyDashboard', ':gitSignOff'],
+  postUpdateOptions: ['yarnDedupeHighest'],
   rangeStrategy: 'update-lockfile',
   // @elastic/elasticsearch is ignored due to licensing issues. See #10992
   ignoreDeps: ['@elastic/elasticsearch', 'event-source-polyfill'],
@@ -19,6 +20,11 @@
       matchSourceUrlPrefixes: ['https://github.com/gregberge/svgr'],
       groupName: 'SVGR monorepo packages',
       rangeStrategy: 'replace',
+    },
+    // We update yarn packages manually as it's gzip'd and we don't want to pollute the repository too much.
+    {
+      matchSourceUrls: ['https://github.com/yarnpkg/berry'],
+      enabled: false,
     },
   ],
 }
