@@ -4329,7 +4329,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
-    "@types/object-hash": ^2.2.1
+    "@types/object-hash": ^3.0.0
     cross-fetch: ^3.1.5
     msw: ^0.49.0
     object-hash: ^3.0.0
@@ -14642,10 +14642,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/object-hash@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@types/object-hash@npm:2.2.1"
-  checksum: bbcbf076903e11fa6d61dd5cc365bce2b080b18502ef52672a427443262e465d7b46b8f2821e8cea0307de66aee2eb92ad6e2bed2346acd7c8de118d4123fe3a
+"@types/object-hash@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "@types/object-hash@npm:3.0.1"
+  checksum: 24853a95fdb7ab40ae170b5d8e6437d436289d41fdf3c480a71e8324257ffaae5954d10885998fa4b080d74a04866cc421d0e36a0cf6006d4a8fce003ee4d61c
   languageName: node
   linkType: hard
 
