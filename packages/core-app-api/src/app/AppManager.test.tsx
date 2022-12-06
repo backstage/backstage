@@ -620,4 +620,110 @@ describe('Integration Test', () => {
       ),
     ]);
   });
+
+  describe('relative url resolvers', () => {
+    it.each([
+      [
+        [document.location.href, document.location.href],
+        {
+          backend: {
+            baseUrl: 'http://localhost:8008/',
+          },
+          app: {
+            baseUrl: 'http://localhost:8008/',
+          },
+        },
+      ],
+      [
+        [
+          `${document.location.origin}/backstage`,
+          `${document.location.origin}/backstage`,
+        ],
+        {
+          backend: {
+            baseUrl: 'http://test.com/backstage',
+          },
+          app: {
+            baseUrl: 'http://test.com/backstage',
+          },
+        },
+      ],
+      [
+        [
+          `${document.location.origin}/backstage/instance`,
+          `${document.location.origin}/backstage/instance`,
+        ],
+        {
+          backend: {
+            baseUrl: 'http://test.com/backstage/instance',
+          },
+          app: {
+            baseUrl: 'http://test.com/backstage/instance',
+          },
+        },
+      ],
+      [
+        [
+          `${document.location.origin}/backstage/instance`,
+          `http://test.com/backstage/instance`,
+        ],
+        {
+          backend: {
+            baseUrl: 'http://test.com/backstage/instance',
+          },
+          app: {
+            baseUrl: 'http://test-front.com/backstage/instance',
+          },
+        },
+      ],
+    ])(
+      'should be %p when %p',
+      async ([expectedAppUrl, expectedBackendUrl], data) => {
+        const app = new AppManager({
+          apis: [],
+          defaultApis: [],
+          themes: [
+            {
+              id: 'light',
+              title: 'Light Theme',
+              variant: 'light',
+              Provider: ({ children }) => <>{children}</>,
+            },
+          ],
+          icons,
+          plugins: [],
+          components,
+          configLoader: async () => [
+            {
+              context: 'test',
+              data,
+            },
+          ],
+        });
+
+        const Provider = app.getProvider();
+        const ConfigDisplay = ({ configString }: { configString: string }) => {
+          const config = useApi(configApiRef);
+          return (
+            <span>
+              {configString}: {config?.getString(configString)}
+            </span>
+          );
+        };
+
+        const dom = await renderWithEffects(
+          <Provider>
+            <ConfigDisplay configString="app.baseUrl" />
+            <ConfigDisplay configString="backend.baseUrl" />
+          </Provider>,
+        );
+
+        expect(dom.getByText(`app.baseUrl: ${expectedAppUrl}`)).toBeTruthy();
+
+        expect(
+          dom.getByText(`backend.baseUrl: ${expectedBackendUrl}`),
+        ).toBeTruthy();
+      },
+    );
+  });
 });

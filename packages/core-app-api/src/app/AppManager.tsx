@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { AppConfig, Config } from '@backstage/config';
 import React, {
   ComponentType,
   createContext,
@@ -154,7 +154,71 @@ function useConfigLoader(
     };
   }
 
-  const configReader = ConfigReader.fromConfigs(config.value ?? []);
+  let configReader;
+  /**
+   * config.value can be undefined or empty. If it's either, don't bother overriding anything.
+   */
+  if (config.value?.length) {
+    const urlConfigReader = ConfigReader.fromConfigs(config.value);
+
+    /**
+     * Return the origin of the given URL.
+     * @param url An absolute URL.
+     * @returns The given URL's origin.
+     * @throws If fullUrl is not a correctly formatted absolute URL.
+     */
+    const getOrigin = (url: string) => new URL(url).origin;
+
+    /**
+     * Resolve an absolute URL as relative to the current document.
+     * @param fullUrl URL to resolve.
+     * @returns Absolute URL with origin as the current document origin.
+     * @throws If fullUrl is not a correctly formatted absolute URL.
+     */
+    const overrideOrigin = (fullUrl: string) => {
+      return new URL(
+        fullUrl.replace(getOrigin(fullUrl), ''),
+        document.location.origin,
+      ).href;
+    };
+
+    /**
+     * Test configs may not define `app.baseUrl` or `backend.baseUrl` and we
+     *  don't want to enforce here.
+     */
+    const appBaseUrl = urlConfigReader.getOptionalString('app.baseUrl');
+    const backendBaseUrl = urlConfigReader.getOptionalString('backend.baseUrl');
+
+    let configs = config.value;
+    const relativeResolverConfig: AppConfig = {
+      data: {},
+      context: 'relative-resolver',
+    };
+    if (appBaseUrl && backendBaseUrl) {
+      const appOrigin = getOrigin(appBaseUrl);
+      const backendOrigin = getOrigin(backendBaseUrl);
+
+      if (appOrigin === backendOrigin) {
+        relativeResolverConfig.data.backend = {
+          baseUrl: overrideOrigin(backendBaseUrl),
+        };
+      }
+    }
+    if (appBaseUrl) {
+      relativeResolverConfig.data.app = {
+        baseUrl: overrideOrigin(appBaseUrl),
+      };
+    }
+    /**
+     * Only add the relative config if there is actually data to add.
+     */
+    if (Object.keys(relativeResolverConfig.data).length) {
+      configs = configs.concat([relativeResolverConfig]);
+    }
+    configReader = ConfigReader.fromConfigs(configs);
+  } else {
+    configReader = ConfigReader.fromConfigs([]);
+  }
 
   return { api: configReader };
 }
