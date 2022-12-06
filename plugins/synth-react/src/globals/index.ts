@@ -15,7 +15,10 @@
  */
 import type { PlatformScript } from 'platformscript';
 import * as ps from 'platformscript';
+import { Component } from './Component';
 
 export function globals(interpreter: PlatformScript) {
-  return ps.map({});
+  return ps.map({
+    Component: Component,
+  });
 }

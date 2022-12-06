@@ -16,9 +16,23 @@
 import type { PSValue } from 'platformscript';
 import * as ps from 'platformscript';
 import React from 'react';
-import { lookup } from './lookup';
+import { lookup } from '../lookup';
 
-export function createReactComponent(type: any) {
+export const Component = ps.fn(function* (c) {
+  const $cArg = yield* c.env.eval(c.arg);
+
+  if ($cArg.type !== 'map') {
+    throw new TypeError(`Component expects a map argument.`);
+  }
+
+  const cType = lookup('type', $cArg);
+  // let cProps;
+  // let cChildren;
+
+  if (!cType) {
+    throw new TypeError(`Component: { type: } must not be empty`);
+  }
+
   return ps.fn(function* ({ arg, env, rest }) {
     const $arg: PSValue = yield* env.eval(arg);
     if (rest.type === 'map') {
@@ -83,6 +97,6 @@ export function createReactComponent(type: any) {
         children = $arg.value;
     }
 
-    return ps.external(React.createElement(type, props, children));
+    return ps.external(React.createElement(cType.value, props, children));
   });
-}
+});
