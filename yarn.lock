@@ -7875,6 +7875,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-home": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2

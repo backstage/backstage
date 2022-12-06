@@ -78,4 +78,28 @@ describe('<StackOverflowSearchResultListItem/>', () => {
       value: 1,
     });
   });
+
+  it('should render highlight', async () => {
+    await renderInTestApp(
+      <StackOverflowSearchResultListItem
+        result={{
+          title: 'Customizing Spotify backstage UI',
+          text: 'Name of Author',
+          location: 'https://stackoverflow.com/questions/7',
+          answers: 0,
+          tags: ['backstage'],
+        }}
+        highlight={{
+          fields: {
+            title: 'Highlighted Title',
+            text: 'Highlighted Author',
+          },
+          preTag: '<xyz>',
+          postTag: '</xyz>',
+        }}
+      />,
+    );
+    expect(screen.getByText(/Highlighted Title/i)).toBeInTheDocument();
+    expect(screen.getByText(/Highlighted Author/i)).toBeInTheDocument();
+  });
 });
