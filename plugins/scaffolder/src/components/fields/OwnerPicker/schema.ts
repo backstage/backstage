@@ -15,6 +15,7 @@
  */
 import { z } from 'zod';
 import { makeFieldSchemaFromZod } from '../utils';
+import { entityQueryFilterExpressionSchema } from '../EntityPicker/schema';
 
 /**
  * @public
@@ -39,6 +40,11 @@ export const OwnerPickerFieldSchema = makeFieldSchemaFromZod(
       .describe(
         'The default namespace. Options with this namespace will not be prefixed.',
       ),
+    catalogFilter: z
+      .array(entityQueryFilterExpressionSchema)
+      .or(entityQueryFilterExpressionSchema)
+      .optional()
+      .describe('List of key-value filter expression for entities'),
   }),
 );
 
