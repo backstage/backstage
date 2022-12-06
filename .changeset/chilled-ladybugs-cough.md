@@ -1,5 +1,5 @@
 ---
-'@backstage/core-plugin-api': patch
+'@backstage/core-plugin-api': minor
 ---
 
 Added a new `display` property to the `AlertMessage` which can accept the values `permanent` or `transient`.
