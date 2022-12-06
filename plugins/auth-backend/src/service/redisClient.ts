@@ -15,11 +15,13 @@
  */
 
 import { createClient } from 'redis';
+import { Logger } from 'winston';
 
 let client: ReturnType<typeof createClient> | null = null;
 
 interface getRedisClientParams {
   redisConnectionUrl: string;
+  logger: Logger;
 }
 
 /**
@@ -32,34 +34,36 @@ interface getRedisClientParams {
 async function getRedisClient(
   options: getRedisClientParams,
 ): Promise<ReturnType<typeof createClient>> {
+  const { logger } = options;
+
   if (!client) {
     client = createClient({
       url: options.redisConnectionUrl,
     });
 
     client.on('connect', () => {
-      console.log(
+      logger.info(
         `CacheStore - Connection status: connected, url: ${options.redisConnectionUrl}`,
       );
     });
 
     client.on('end', () => {
-      console.log('CacheStore - Connection status: disconnected');
-      process.exit(0);
+      logger.info('CacheStore - Connection status: disconnected');
+      // process.exit(0);
     });
 
     client.on('reconnecting', () => {
-      console.log('CacheStore - Connection status: reconnecting');
+      logger.info('CacheStore - Connection status: reconnecting');
     });
 
     client.on('error', (err: any) => {
-      console.log(
+      logger.warn(
         `CacheStore - Connection status: error, url: ${options.redisConnectionUrl}`,
         { err },
       );
-      process.exit(1);
+      // process.exit(1);
     });
-    // @ts-ignore
+
     await client.connect();
   }
   return client;

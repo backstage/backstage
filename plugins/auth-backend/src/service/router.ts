@@ -79,6 +79,7 @@ export async function createRouter(
       {
         const redisClient = await getRedisClient({
           redisConnectionUrl: config.getString('backend.cache.connection'),
+          logger,
         });
         cacheStore = new RedisStore({
           client: redisClient,
