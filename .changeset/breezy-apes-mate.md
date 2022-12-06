@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Adding an optional restriction for locations added through catalog import. Restrictions can be added using the app-config.yaml
+Added a new `catalog.rules[].location` configuration that makes it possible to configure catalog rules to only apply to specific locations, either via exact match or a glob pattern.
