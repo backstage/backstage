@@ -89,7 +89,17 @@ export class WebStorage implements StorageApi {
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>> {
+    this.addStorageEventListener();
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
+  }
+
+  private addStorageEventListener() {
+    window.addEventListener('storage', event => {
+      if (event.key?.includes(this.namespace)) {
+        const key = event.key.replace(`${this.namespace}/`, '');
+        this.notifyChanges(key);
+      }
+    });
   }
 
   private getKeyName(key: string) {
