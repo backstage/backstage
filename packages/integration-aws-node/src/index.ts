@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-export { readAwsIntegrationConfig } from './config';
-export type {
-  AwsIntegrationConfig,
-  AwsIntegrationAccountConfig,
-  AwsIntegrationDefaultAccountConfig,
-  AwsIntegrationMainAccountConfig,
-} from './config';
 export { DefaultAwsCredentialsManager } from './DefaultAwsCredentialsManager';
 export type {
   AwsCredentialsManager,

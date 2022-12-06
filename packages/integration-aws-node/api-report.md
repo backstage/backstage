@@ -27,41 +27,6 @@ export interface AwsCredentialsManager {
 }
 
 // @public
-export type AwsIntegrationAccountConfig = {
-  accountId: string;
-  accessKeyId?: string;
-  secretAccessKey?: string;
-  profile?: string;
-  roleName?: string;
-  partition?: string;
-  region?: string;
-  externalId?: string;
-};
-
-// @public
-export type AwsIntegrationConfig = {
-  accounts: AwsIntegrationAccountConfig[];
-  accountDefaults: AwsIntegrationDefaultAccountConfig;
-  mainAccount: AwsIntegrationMainAccountConfig;
-};
-
-// @public
-export type AwsIntegrationDefaultAccountConfig = {
-  roleName?: string;
-  partition?: string;
-  region?: string;
-  externalId?: string;
-};
-
-// @public
-export type AwsIntegrationMainAccountConfig = {
-  accessKeyId?: string;
-  secretAccessKey?: string;
-  profile?: string;
-  region?: string;
-};
-
-// @public
 export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
   // (undocumented)
   static fromConfig(config: Config): DefaultAwsCredentialsManager;
@@ -69,9 +34,6 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
     opts?: AwsCredentialProviderOptions,
   ): Promise<AwsCredentialProvider>;
 }
-
-// @public
-export function readAwsIntegrationConfig(config: Config): AwsIntegrationConfig;
 
 // (No @packageDocumentation comment for this package)
 ```
