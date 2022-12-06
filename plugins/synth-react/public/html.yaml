@@ -1,0 +1,6 @@
+<h1>:
+  $Component:
+    type: h1
+<h2>:
+  $Component:
+    type: h2
