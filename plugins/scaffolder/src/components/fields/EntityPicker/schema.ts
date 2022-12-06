@@ -19,6 +19,13 @@ import { makeFieldSchemaFromZod } from '../utils';
 /**
  * @public
  */
+export const entityQueryFilterExpressionSchema = z.record(
+  z.string().or(z.array(z.string())),
+);
+
+/**
+ * @public
+ */
 export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
@@ -42,6 +49,11 @@ export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
       .describe(
         'The default namespace. Options with this namespace will not be prefixed.',
       ),
+    catalogFilter: z
+      .array(entityQueryFilterExpressionSchema)
+      .or(entityQueryFilterExpressionSchema)
+      .optional()
+      .describe('List of key-value filter expression for entities'),
   }),
 );
 
