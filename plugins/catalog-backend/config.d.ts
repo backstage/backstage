@@ -61,7 +61,7 @@ export interface Config {
         exact?: string;
         /**
          * The pattern allowed for the location, e.g.
-         * "https://github.com/org/*\/blob/master/*.yaml.
+         * "https://github.com/org/*/blob/master/*.yaml.
          */
         pattern?: string;
       }>;
