@@ -1,5 +1,21 @@
 # @backstage/backend-common
 
+## 0.17.0-next.2
+
+### Patch Changes
+
+- 98776e638a: Fixed GitlabUrlReader to include api tokens in API calls
+- 20a5161f04: Adds MySQL support for the catalog-backend
+- 3c1302c07d: Updated dependency `@types/http-errors` to `^2.0.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+
 ## 0.17.0-next.1
 
 ### Minor Changes

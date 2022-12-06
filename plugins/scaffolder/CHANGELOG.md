@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder
 
+## 1.9.0-next.2
+
+### Patch Changes
+
+- 5fb6d5e92e: Updated dependency `@react-hookz/web` to `^19.0.0`.
+- 146378c146: Updated dependency `@react-hookz/web` to `^20.0.0`.
+- 9b606366bf: Bump `json-schema-library` to version `^7.3.9` which does not pull in the `gson-pointer` library
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/plugin-catalog-react@1.2.2-next.2
+  - @backstage/integration-react@1.1.7-next.2
+  - @backstage/plugin-permission-react@0.4.8-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.2
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
 ## 1.9.0-next.1
 
 ### Patch Changes

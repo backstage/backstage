@@ -1,5 +1,17 @@
 # @backstage/plugin-vault-backend
 
+## 0.2.5-next.2
+
+### Patch Changes
+
+- 568ae02463: Added (optional) config `vault.publicUrl` as alternative to `vault.baseUrl` for `editUrl` and `showUrl` in case `vault.baseUrl` is internal
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-test-utils@0.1.31-next.2
+  - @backstage/backend-tasks@0.4.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+
 ## 0.2.5-next.1
 
 ### Patch Changes

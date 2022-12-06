@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.2.2-next.2
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0-next.2
+  - @backstage/plugin-catalog-node@1.3.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-plugin-api@0.2.0-next.2
+  - @backstage/backend-tasks@0.4.0-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.2
+  - @backstage/plugin-events-node@0.2.0-next.2
+
 ## 0.2.2-next.1
 
 ### Patch Changes

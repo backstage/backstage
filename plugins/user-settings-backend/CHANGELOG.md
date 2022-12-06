@@ -1,5 +1,17 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.1.3-next.2
+
+### Patch Changes
+
+- c507aee8a2: Ensured typescript type checks in migration files.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+
 ## 0.1.3-next.1
 
 ### Patch Changes

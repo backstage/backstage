@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend
 
+## 1.6.0-next.2
+
+### Minor Changes
+
+- 3072ebfdd7: The search table also holds the original entity value now and the facets endpoint fetches the filtered entity data from the search table.
+
+### Patch Changes
+
+- c507aee8a2: Ensured typescript type checks in migration files.
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- eacc8e2b55: Make it possible for entity providers to supply only entity refs, instead of full entities, in `delta` mutation deletions.
+- 20a5161f04: Adds MySQL support for the catalog-backend
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.3.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-plugin-api@0.2.0-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/plugin-permission-node@0.7.2-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.2
+  - @backstage/plugin-permission-common@0.7.2-next.1
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
 ## 1.6.0-next.1
 
 ### Minor Changes
