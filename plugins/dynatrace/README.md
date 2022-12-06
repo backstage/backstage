@@ -42,13 +42,13 @@ yarn add --cwd packages/app @backstage/plugin-dynatrace
 const serviceEntityPage = (
   <EntityLayout>
     [...]
-    <EntityLayout.Route
-      path="/dynatrace"
-      title="Dynatrace"
-      if={isDynatraceAvailable}
-    >
-      <DynatraceTab />
-    </EntityLayout.Route>
++    <EntityLayout.Route
++      path="/dynatrace"
++      title="Dynatrace"
++      if={isDynatraceAvailable}
++    >
++      <DynatraceTab />
++    </EntityLayout.Route>
   </EntityLaytou>
 )
 
