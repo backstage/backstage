@@ -83,17 +83,17 @@ export const EntityLifecyclePicker = () => {
     });
   }, [selectedLifecycles, updateFilters]);
 
-  const availableLifecycles = useMemo(
-    () =>
-      [
-        ...new Set(
-          backendEntities
-            .map((e: Entity) => e.spec?.lifecycle)
-            .filter(Boolean) as string[],
-        ),
-      ].sort(),
-    [backendEntities],
-  );
+  const availableLifecycles = useMemo(() => {
+    const lifecycles = [
+      ...new Set(
+        backendEntities
+          .map((e: Entity) => e.spec?.lifecycle)
+          .filter(Boolean) as string[],
+      ),
+    ].sort();
+    if (lifecycles.length === 0) setSelectedLifecycles([]);
+    return lifecycles;
+  }, [backendEntities]);
 
   if (!availableLifecycles.length) return null;
 

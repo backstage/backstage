@@ -83,21 +83,21 @@ export const EntityOwnerPicker = () => {
     });
   }, [selectedOwners, updateFilters]);
 
-  const availableOwners = useMemo(
-    () =>
-      [
-        ...new Set(
-          backendEntities
-            .flatMap((e: Entity) =>
-              getEntityRelations(e, RELATION_OWNED_BY).map(o =>
-                humanizeEntityRef(o, { defaultKind: 'group' }),
-              ),
-            )
-            .filter(Boolean) as string[],
-        ),
-      ].sort(),
-    [backendEntities],
-  );
+  const availableOwners = useMemo(() => {
+    const owners = [
+      ...new Set(
+        backendEntities
+          .flatMap((e: Entity) =>
+            getEntityRelations(e, RELATION_OWNED_BY).map(o =>
+              humanizeEntityRef(o, { defaultKind: 'group' }),
+            ),
+          )
+          .filter(Boolean) as string[],
+      ),
+    ].sort();
+    if (owners.length === 0) setSelectedOwners([]);
+    return owners;
+  }, [backendEntities]);
 
   if (!availableOwners.length) return null;
 
