@@ -27,6 +27,7 @@ type Props = {
   catalogEntities: Entity[];
   useTablePagination?: boolean;
   gridSize?: GridSize;
+  height: string;
 };
 
 const useStyles = makeStyles({
@@ -55,6 +56,7 @@ export const ProjectPreview = ({
   catalogEntities,
   useTablePagination = true,
   gridSize = 2,
+  height,
 }: Props) => {
   const classes = useStyles();
   const [page, setPage] = useState(1);
@@ -90,6 +92,7 @@ export const ProjectPreview = ({
                   key={i}
                   fetchBazaarProjects={fetchBazaarProjects}
                   catalogEntities={catalogEntities}
+                  height={height}
                 />
               </Grid>
             );

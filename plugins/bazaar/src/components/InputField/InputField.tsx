@@ -30,7 +30,7 @@ type Rules = {
 };
 
 type Props = {
-  inputType: 'description' | 'community' | 'responsible' | 'name';
+  inputType: 'description' | 'community' | 'responsible' | 'title';
   error?: FieldError | undefined;
   control: Control<FormValues, object>;
   helperText?: string;

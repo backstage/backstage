@@ -44,6 +44,7 @@ export function createPublishGitlabAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     setUserAsOwner?: boolean;
+    topics?: string[];
   }>({
     id: 'publish:gitlab',
     description:
@@ -99,6 +100,14 @@ export function createPublishGitlabAction(options: {
             description:
               'Set the token user as owner of the newly created repository. Requires a token authorized to do the edit in the integration configuration for the matching host',
           },
+          topics: {
+            title: 'Topic labels',
+            description: 'Topic labels to apply on the repository.',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
         },
       },
       output: {
@@ -128,6 +137,7 @@ export function createPublishGitlabAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         setUserAsOwner = false,
+        topics = [],
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -173,6 +183,7 @@ export function createPublishGitlabAction(options: {
         namespace_id: targetNamespace,
         name: repo,
         visibility: repoVisibility,
+        ...(topics.length ? { topics } : {}),
       });
 
       // When setUserAsOwner is true the input token is expected to come from an unprivileged user GitLab

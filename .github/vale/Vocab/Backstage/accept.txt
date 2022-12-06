@@ -126,6 +126,7 @@ github
 Gitiles
 gitlab
 GitLab
+globals
 Gource
 Grafana
 graphql
@@ -234,11 +235,14 @@ onboarding
 Onboarding
 OpenShift
 orgs
+padding
+paddings
 pagerduty
 pageview
 parallelization
 parseable
 Patrik
+pattison
 Peloton
 performant
 Performant
@@ -314,6 +318,7 @@ Spotifiers
 spotify
 Spotify
 sqlite
+sqs
 squidfunk
 src
 statefulsets
@@ -352,6 +357,7 @@ theia
 thumbsup
 todo
 todos
+togglable
 tolerations
 Tolerations
 toolchain
@@ -403,3 +409,5 @@ zod
 Zolotusky
 zoomable
 zsh
+Lainfiesta
+allowlisted

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import * as deployments from '../../__fixtures__/2-deployments.json';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, textContentMatcher } from '@backstage/test-utils';
 import { DeploymentDrawer } from './DeploymentDrawer';
 
 describe('DeploymentDrawer', () => {
@@ -33,9 +33,13 @@ describe('DeploymentDrawer', () => {
     expect(getByText('YAML')).toBeInTheDocument();
     expect(getByText('Strategy')).toBeInTheDocument();
     expect(getByText('Rolling Update:')).toBeInTheDocument();
-    expect(getByText('Max Surge: 25%')).toBeInTheDocument();
-    expect(getByText('Max Unavailable: 25%')).toBeInTheDocument();
-    expect(getByText('Type: RollingUpdate')).toBeInTheDocument();
+    expect(getByText(textContentMatcher('Max Surge: 25%'))).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('Max Unavailable: 25%')),
+    ).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('Type: RollingUpdate')),
+    ).toBeInTheDocument();
     expect(getByText('Min Ready Seconds')).toBeInTheDocument();
     expect(getByText('???')).toBeInTheDocument();
     expect(getByText('Progress Deadline Seconds')).toBeInTheDocument();

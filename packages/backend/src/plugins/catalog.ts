@@ -15,15 +15,18 @@
  */
 
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
   env: PluginEnvironment,
+  providers?: Array<EntityProvider>,
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
   builder.addProcessor(new ScaffolderEntitiesProcessor());
+  builder.addEntityProvider(providers ?? []);
   const { processingEngine, router } = await builder.build();
   await processingEngine.start();
   return router;

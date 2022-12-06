@@ -16,13 +16,16 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import { EntityNotFound } from './EntityNotFound';
 
 describe('<EntityNotFound />', () => {
   it('renders without exploding', async () => {
-    const { getByText } = await renderInTestApp(<EntityNotFound />);
-    expect(getByText(/entity was not found/i)).toBeInTheDocument();
-    expect(getByText(/getting started documentation/i)).toBeInTheDocument();
-    expect(getByText(/docs/i)).toBeInTheDocument();
+    await renderInTestApp(<EntityNotFound />);
+    expect(screen.getByText(/entity was not found/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/getting started documentation/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/docs/i)).toBeInTheDocument();
   });
 });

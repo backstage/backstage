@@ -116,7 +116,7 @@ The way to execute this step of the migration is not as well defined as the prev
 - In places where the entire repo is being built, use `yarn backstage-cli repo build`, which also supports the `--since` flag. The migration here is a bit more nuanced as it depends on why you are building all packages.
   - If you are building all packages to **verify** that you are able to build them, you most likely want `backstage-cli repo build --all`. The `--all` flag signals that bundled packages like `packages/app` and `packages/backend` should be built as well. Pair this up with a `--since` flag in CI to avoid needing to build all packages.
   - If you are building all packages to **publish** them, then `backstage-cli repo build` is enough, as it builds all published packages.
-  - If you are building all packages to **deploy** them, you likely don't want to use the `repo` command at all, simply call `yarn build` in the packages you want to deploy instead. For example, if you are deploying the backend with a docker host build, it's enough to call `yarn build` inside `packages/backend`.
+  - If you are building all packages to **deploy** them, you likely don't want to use the `repo` command at all, simply call `yarn build` in the packages you want to deploy instead. For example, if you are deploying the backend with a docker host build, it's enough to call `yarn build` inside `packages/backend`. In a standard `@backstage/create-app` there is also a shorthand for building the backend from the root, `yarn build:backend`.
 
 ## FAQ
 

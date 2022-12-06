@@ -25,4 +25,5 @@ export { schedulerFactory } from './schedulerService';
 export { tokenManagerFactory } from './tokenManagerService';
 export { urlReaderFactory } from './urlReaderService';
 export { httpRouterFactory } from './httpRouterService';
+export { lifecycleFactory } from './lifecycleService';
 export type { HttpRouterFactoryOptions } from './httpRouterService';

@@ -16,17 +16,16 @@
 
 import { loadBackendConfig } from '@backstage/backend-common';
 import {
-  configServiceRef,
+  coreServices,
   createServiceFactory,
   loggerToWinstonLogger,
-  rootLoggerServiceRef,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
 export const configFactory = createServiceFactory({
-  service: configServiceRef,
+  service: coreServices.config,
   deps: {
-    logger: rootLoggerServiceRef,
+    logger: coreServices.rootLogger,
   },
   async factory({ logger }) {
     const config = await loadBackendConfig({

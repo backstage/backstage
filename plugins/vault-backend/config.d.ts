@@ -24,6 +24,12 @@ export interface Config {
     baseUrl: string;
 
     /**
+     * The publicUrl for your Vault instance (Optional).
+     * @visibility frontend
+     */
+    publicUrl?: string;
+
+    /**
      * The token used by Backstage to access Vault.
      * @visibility secret
      */

@@ -40,7 +40,7 @@ image](https://backstage.io/docs/getting-started/deployment-docker)
 documentation to build a new Backstage Docker image:
 
 ```shell
-$ yarn build
+$ yarn build:backend
 $ yarn build-image --tag backstage
 ```
 

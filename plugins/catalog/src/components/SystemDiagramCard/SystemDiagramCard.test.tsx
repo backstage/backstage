@@ -22,6 +22,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Entity, RELATION_PART_OF } from '@backstage/catalog-model';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { SystemDiagramCard } from './SystemDiagramCard';
 
@@ -53,7 +54,7 @@ describe('<SystemDiagramCard />', () => {
       relations: [],
     };
 
-    const { queryByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={entity}>
           <SystemDiagramCard />
@@ -66,9 +67,9 @@ describe('<SystemDiagramCard />', () => {
       },
     );
 
-    expect(queryByText(/System Diagram/)).toBeInTheDocument();
-    expect(queryByText(/namespace2\/system2/)).toBeInTheDocument();
-    expect(queryByText(/namespace\/entity/)).not.toBeInTheDocument();
+    expect(screen.getByText(/System Diagram/)).toBeInTheDocument();
+    expect(screen.getByText(/namespace2\/system2/)).toBeInTheDocument();
+    expect(screen.queryByText(/namespace\/entity/)).not.toBeInTheDocument();
   });
 
   it('shows related systems', async () => {
@@ -108,7 +109,7 @@ describe('<SystemDiagramCard />', () => {
       ],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={entity}>
           <SystemDiagramCard />
@@ -121,9 +122,9 @@ describe('<SystemDiagramCard />', () => {
       },
     );
 
-    expect(getByText('System Diagram')).toBeInTheDocument();
-    expect(getByText('namespace/system')).toBeInTheDocument();
-    expect(getByText('namespace/entity')).toBeInTheDocument();
+    expect(screen.getByText('System Diagram')).toBeInTheDocument();
+    expect(screen.getByText('namespace/system')).toBeInTheDocument();
+    expect(screen.getByText('namespace/entity')).toBeInTheDocument();
   });
 
   it('should truncate long domains, systems or entities', async () => {
@@ -163,7 +164,7 @@ describe('<SystemDiagramCard />', () => {
       ],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={entity}>
           <SystemDiagramCard />
@@ -176,8 +177,8 @@ describe('<SystemDiagramCard />', () => {
       },
     );
 
-    expect(getByText('namespace/alongdomai...')).toBeInTheDocument();
-    expect(getByText('namespace/alongsyste...')).toBeInTheDocument();
-    expect(getByText('namespace/alongentit...')).toBeInTheDocument();
+    expect(screen.getByText('namespace/alongdomai...')).toBeInTheDocument();
+    expect(screen.getByText('namespace/alongsyste...')).toBeInTheDocument();
+    expect(screen.getByText('namespace/alongentit...')).toBeInTheDocument();
   });
 });

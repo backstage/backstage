@@ -39,10 +39,12 @@ describe('isSonarQubeAvailable', () => {
     const entity = createDummyEntity('dummy');
     expect(isSonarQubeAvailable(entity)).toBe(true);
   });
+
   it('returns false if sonarqube annotation empty', () => {
     const entity = createDummyEntity('');
     expect(isSonarQubeAvailable(entity)).toBe(false);
   });
+
   it('returns false if sonarqube annotation not defined', () => {
     const entity = {
       apiVersion: '',
@@ -59,6 +61,7 @@ describe('isSonarQubeAvailable', () => {
 describe('useProjectInfo', () => {
   const DUMMY_INSTANCE = 'dummyInstance';
   const DUMMY_KEY = 'dummyKey';
+
   it('parse annotation with key and instance', () => {
     const entity = createDummyEntity(
       DUMMY_INSTANCE + SONARQUBE_PROJECT_INSTANCE_SEPARATOR + DUMMY_KEY,
@@ -68,6 +71,33 @@ describe('useProjectInfo', () => {
       projectKey: DUMMY_KEY,
     });
   });
+
+  it('parse annotation with instance, tenant/project-key', () => {
+    const DUMMY_KEY_WITH_TENANT = 'dummy-tenant/dummyKey';
+    const entity = createDummyEntity(
+      DUMMY_INSTANCE +
+        SONARQUBE_PROJECT_INSTANCE_SEPARATOR +
+        DUMMY_KEY_WITH_TENANT,
+    );
+    expect(useProjectInfo(entity)).toEqual({
+      projectInstance: DUMMY_INSTANCE,
+      projectKey: DUMMY_KEY_WITH_TENANT,
+    });
+  });
+
+  it('parse annotation with instance, tenant:project-key', () => {
+    const DUMMY_KEY_WITH_TENANT = 'dummy-tenant:dummyKey';
+    const entity = createDummyEntity(
+      DUMMY_INSTANCE +
+        SONARQUBE_PROJECT_INSTANCE_SEPARATOR +
+        DUMMY_KEY_WITH_TENANT,
+    );
+    expect(useProjectInfo(entity)).toEqual({
+      projectInstance: DUMMY_INSTANCE,
+      projectKey: DUMMY_KEY_WITH_TENANT,
+    });
+  });
+
   // compatibility with previous mono-instance sonarqube config
   it('parse annotation with only key', () => {
     const entity = createDummyEntity(DUMMY_KEY);
@@ -76,6 +106,7 @@ describe('useProjectInfo', () => {
       projectKey: DUMMY_KEY,
     });
   });
+
   it('handle empty annotation', () => {
     const entity = createDummyEntity('');
     expect(useProjectInfo(entity)).toEqual({
@@ -83,6 +114,7 @@ describe('useProjectInfo', () => {
       projectKey: undefined,
     });
   });
+
   it('handle non-existent annotation', () => {
     const entity = {
       apiVersion: '',

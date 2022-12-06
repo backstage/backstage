@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import { useOutlet } from 'react-router';
 import { CatalogPage } from './CatalogPage';
 
@@ -30,15 +31,15 @@ jest.mock('./DefaultCatalogPage', () => ({
 
 describe('CatalogPage', () => {
   it('renders provided router element', async () => {
-    const { getByText } = await renderInTestApp(<CatalogPage />);
+    await renderInTestApp(<CatalogPage />);
 
-    expect(getByText('Route Children')).toBeInTheDocument();
+    expect(screen.getByText('Route Children')).toBeInTheDocument();
   });
 
   it('renders DefaultCatalogPage home when no router children are provided', async () => {
     (useOutlet as jest.Mock).mockReturnValueOnce(null);
-    const { getByText } = await renderInTestApp(<CatalogPage />);
+    await renderInTestApp(<CatalogPage />);
 
-    expect(getByText('DefaultCatalogPage')).toBeInTheDocument();
+    expect(screen.getByText('DefaultCatalogPage')).toBeInTheDocument();
   });
 });

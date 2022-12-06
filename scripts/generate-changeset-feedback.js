@@ -73,20 +73,46 @@ async function listChangedFiles(ref) {
 }
 
 async function listPackages() {
-  const { stdout: version } = await execFile('yarn', ['--version']);
-  if (version.match(/^1\./)) {
-    const { stdout } = await execFile('yarn', ['-s', 'workspaces', 'info']);
-    return Object.entries(JSON.parse(stdout)).map(([name, info]) => ({
-      name,
-      path: info.location,
-    }));
+  const rootPkg = require(resolvePath(process.cwd(), './package.json'));
+  if (!rootPkg?.workspaces?.packages) {
+    throw new Error('No workspaces found in root package.json');
   }
-  const { stdout } = await execFile('yarn', ['workspaces', 'list', '--json']);
-  return stdout
-    .split(/\r?\n/)
-    .filter(line => line)
-    .map(line => JSON.parse(line))
-    .map(({ name, location }) => ({ name, path: location }));
+
+  const pkgs = [];
+
+  // Naive workspace lookup implementation, we can't shell out to yarn here as the implementation embedded in the repo
+  for (const pkgPath of rootPkg?.workspaces?.packages) {
+    const readDirRecursive = (dir, parts) => {
+      const [nextPart] = parts;
+
+      // We've reached the end of the path pattern, check if package.json exists
+      if (!nextPart) {
+        try {
+          const pkg = require(resolvePath(dir, 'package.json'));
+          pkgs.push({
+            path: relativePath(process.cwd(), dir),
+            name: pkg.name,
+          });
+        } catch {
+          process.stderr.write(`Failed to read package.json in ${dir}\n`);
+        }
+        return;
+      }
+
+      for (const filePath of fs.readdirSync(dir)) {
+        if (fs.statSync(resolvePath(dir, filePath)).isDirectory()) {
+          if (filePath === nextPart || nextPart === '*') {
+            readDirRecursive(resolvePath(dir, filePath), parts.slice(1));
+          }
+        }
+      }
+    };
+
+    // Split the workspace paths by / and check each directory level recursively
+    readDirRecursive(process.cwd(), pkgPath.split('/'));
+  }
+
+  return pkgs;
 }
 
 async function loadChangesets(filePaths) {
@@ -276,6 +302,7 @@ async function main() {
       2,
     ),
   );
+  process.stderr.write('\n');
 
   const summary = formatSummary(changedPackages, changesets);
   process.stdout.write(summary);

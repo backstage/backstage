@@ -24,7 +24,7 @@ necessary environment variables:
 
 ```sh
 yarn tsc
-yarn build
+yarn build:backend
 yarn workspace example-backend build-image
 docker run -p 7007:7007 example-backend
 ```

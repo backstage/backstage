@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { InputLabel, FormControl, Select, MenuItem } from '@material-ui/core';
-import { Maybe, Metric } from '../../types';
+import { Maybe, Metric } from '@backstage/plugin-cost-insights-common';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 
 export type MetricSelectProps = {

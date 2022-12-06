@@ -21,6 +21,7 @@ import {
   TestApiProvider,
   TestApiRegistry,
 } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { CatalogImportApi, catalogImportApiRef } from '../../api';
 import { ImportInfoCard } from './ImportInfoCard';
@@ -49,7 +50,7 @@ describe('<ImportInfoCard />', () => {
   });
 
   it('renders without exploding', async () => {
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, new ConfigReader({ integrations: {} })],
@@ -60,32 +61,34 @@ describe('<ImportInfoCard />', () => {
       </TestApiProvider>,
     );
 
-    expect(getByText('Register an existing component')).toBeInTheDocument();
+    expect(
+      screen.getByText('Register an existing component'),
+    ).toBeInTheDocument();
   });
 
   it('renders section on GitHub discovery if supported', async () => {
     catalogImportApi.preparePullRequest = async () => ({ title: '', body: '' });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ImportInfoCard />
       </ApiProvider>,
     );
 
-    expect(getByText(/The wizard discovers all/)).toBeInTheDocument();
+    expect(screen.getByText(/The wizard discovers all/)).toBeInTheDocument();
   });
 
   it('renders section on pull requests if supported', async () => {
     catalogImportApi.preparePullRequest = async () => ({ title: '', body: '' });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ImportInfoCard />
       </ApiProvider>,
     );
 
     expect(
-      getByText(/the wizard will prepare a Pull Request/),
+      screen.getByText(/the wizard will prepare a Pull Request/),
     ).toBeInTheDocument();
   });
 });

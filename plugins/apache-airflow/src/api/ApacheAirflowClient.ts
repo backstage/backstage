@@ -25,6 +25,7 @@ import {
   InstanceVersion,
   ListDagsParams,
 } from './types';
+import { DagRun } from './types/Dags';
 
 export class ApacheAirflowClient implements ApacheAirflowApi {
   discoveryApi: DiscoveryApi;
@@ -97,9 +98,54 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
   async updateDag(dagId: string, isPaused: boolean): Promise<Dag> {
     const init = {
       method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ is_paused: isPaused }),
     };
     return await this.fetch<Dag>(`/dags/${dagId}`, init);
+  }
+
+  /**
+   * Get the latest DAG Runs of a specific DAG.
+   * The DAG runs are ordered by start date
+   *
+   * @remarks
+   *
+   * The "limit" option means the maximum number of DAG runs to return
+   * "objectsPerRequest" means the maximum number of DAG runs to be taken per fetch request.
+   * This is just to make sure the response payloads are not too big
+   */
+  async getDagRuns(
+    dagId: string,
+    options = { objectsPerRequest: 100, limit: 5 },
+  ): Promise<DagRun[]> {
+    const dagRuns: DagRun[] = [];
+    const searchParams: ListDagsParams = {
+      limit: Math.min(options.objectsPerRequest || 100, options.limit || 5),
+      offset: 0,
+      order_by: '-start_date',
+    };
+
+    for (;;) {
+      const response = await this.fetch<{
+        dag_runs: DagRun[];
+        total_entries: number;
+      }>(`/dags/${dagId}/dagRuns?${qs.stringify(searchParams)}`);
+      dagRuns.push(...response.dag_runs);
+
+      if (response.dag_runs.length < searchParams.limit!) {
+        break;
+      }
+      if (
+        dagRuns.length >= response.total_entries ||
+        dagRuns.length >= options.limit
+      ) {
+        break;
+      }
+      searchParams.offset! += response.dag_runs.length;
+    }
+    return dagRuns;
   }
 
   async getInstanceStatus(): Promise<InstanceStatus> {

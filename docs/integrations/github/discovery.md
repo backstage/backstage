@@ -14,7 +14,7 @@ organization and register entities matching the configured path. This can be
 useful as an alternative to static locations or manually adding things to the
 catalog. This is the preferred method for ingesting entities into the catalog.
 
-## Installation
+## Installation without Events Support
 
 You will have to add the provider in the catalog initialization code of your
 backend. They are not installed by default, therefore you have to add a
@@ -52,6 +52,52 @@ And then add the entity provider to your catalog builder:
     // [...]
   }
 ```
+
+## Installation with Events Support
+
+Please follow the installation instructions at
+
+- https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md
+- https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md
+
+Additionally, you need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Set up your provider
+
+```diff
+// packages/backend/src/plugins/catalogEventBasedProviders.ts
++import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+ import { EntityProvider } from '@backstage/plugin-catalog-node';
+ import { EventSubscriber } from '@backstage/plugin-events-node';
+ import { PluginEnvironment } from '../types';
+ export default async function createCatalogEventBasedProviders(
+-  _: PluginEnvironment,
++  env: PluginEnvironment,
+ ): Promise<Array<EntityProvider & EventSubscriber>> {
+   const providers: Array<
+     (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
+   > = [];
+-  // add your event-based entity providers here
++  providers.push(
++    GithubEntityProvider.fromConfig(env.config, {
++       logger: env.logger,
++       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
++       schedule: env.scheduler.createScheduledTaskRunner({
++         frequency: { minutes: 30 },
++         timeout: { minutes: 3 },
++       }),
++       // optional: alternatively, use schedule
++       scheduler: env.scheduler,
++    }),
++  );
+   return providers.flat();
+ }
+```
+
+You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks). The webhook will need to be configured to forward `push` events.
 
 ## Configuration
 

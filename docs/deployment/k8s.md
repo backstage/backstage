@@ -256,7 +256,7 @@ bash-5.1# exit
 
 The database pod is running, but how does another pod connect to it?
 
-Kubernetes pods are transient - they can be killed, restarted, or created
+Kubernetes pods are transient - they can be stopped, restarted, or created
 dynamically. Therefore we don't want to try to connect to pods directly, but
 rather create a Kubernetes Service. Services keep track of pods and direct
 traffic to the right place.

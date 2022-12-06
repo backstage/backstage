@@ -179,7 +179,7 @@ export class Git {
       });
     } catch (ex) {
       this.config.logger?.error(
-        `Failed to fetch repo {dir=${dir},origin=${origin}}`,
+        `Failed to fetch repo {dir=${dir},remote=${remote}}`,
       );
       if (ex.data) {
         throw new Error(`${ex.message} {data=${JSON.stringify(ex.data)}}`);

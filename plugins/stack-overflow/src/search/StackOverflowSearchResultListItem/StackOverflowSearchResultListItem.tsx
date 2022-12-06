@@ -25,25 +25,39 @@ import {
   Box,
   Chip,
 } from '@material-ui/core';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 type StackOverflowSearchResultListItemProps = {
   result: any; // TODO(emmaindal): type to StackOverflowDocument.
   icon?: React.ReactNode;
+  rank?: number;
 };
 
 export const StackOverflowSearchResultListItem = (
   props: StackOverflowSearchResultListItemProps,
 ) => {
   const { location, title, text, answers, tags } = props.result;
+  const analytics = useAnalytics();
+
+  const handleClick = () => {
+    analytics.captureEvent('discover', title, {
+      attributes: { to: location },
+      value: props.rank,
+    });
+  };
 
   return (
-    <Link to={location}>
+    <>
       <ListItem alignItems="center">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <Box flexWrap="wrap">
           <ListItemText
             primaryTypographyProps={{ variant: 'h6' }}
-            primary={_unescape(title)}
+            primary={
+              <Link to={location} noTrack onClick={handleClick}>
+                {_unescape(title)}
+              </Link>
+            }
             secondary={`Author: ${text}`}
           />
           <Chip label={`Answer(s): ${answers}`} size="small" />
@@ -54,6 +68,6 @@ export const StackOverflowSearchResultListItem = (
         </Box>
       </ListItem>
       <Divider />
-    </Link>
+    </>
   );
 };

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { RegisterExistingButton } from './RegisterExistingButton';
@@ -30,28 +32,22 @@ describe('RegisterExistingButton', () => {
   it('should not render if to is unset', async () => {
     (usePermission as jest.Mock).mockReturnValue({ allowed: true });
 
-    const { queryByText } = await renderInTestApp(
-      <RegisterExistingButton title="Pick me" />,
-    );
+    await renderInTestApp(<RegisterExistingButton title="Pick me" />);
 
-    expect(await queryByText('Pick me')).not.toBeInTheDocument();
+    expect(screen.queryByText('Pick me')).not.toBeInTheDocument();
   });
 
   it('should not render if permissions are not allowed', async () => {
     (usePermission as jest.Mock).mockReturnValue({ allowed: false });
-    const { queryByText } = await renderInTestApp(
-      <RegisterExistingButton title="Pick me" to="blah" />,
-    );
+    await renderInTestApp(<RegisterExistingButton title="Pick me" to="blah" />);
 
-    expect(await queryByText('Pick me')).not.toBeInTheDocument();
+    expect(screen.queryByText('Pick me')).not.toBeInTheDocument();
   });
 
   it('should render the button with the text', async () => {
     (usePermission as jest.Mock).mockReturnValue({ allowed: true });
-    const { queryByText } = await renderInTestApp(
-      <RegisterExistingButton title="Pick me" to="blah" />,
-    );
+    await renderInTestApp(<RegisterExistingButton title="Pick me" to="blah" />);
 
-    expect(await queryByText('Pick me')).toBeInTheDocument();
+    expect(screen.getByText('Pick me')).toBeInTheDocument();
   });
 });

@@ -44,7 +44,7 @@ const ActionItem = ({
   onClick,
 }: HeaderActionMenuItem) => {
   return (
-    <React.Fragment>
+    <Fragment>
       <ListItem
         data-testid="header-action-item"
         disabled={disabled}
@@ -58,7 +58,7 @@ const ActionItem = ({
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText primary={label} secondary={secondaryLabel} />
       </ListItem>
-    </React.Fragment>
+    </Fragment>
   );
 };
 

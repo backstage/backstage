@@ -17,7 +17,6 @@
 import { CostInsightsHeader } from './CostInsightsHeader';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import React from 'react';
-
 import { ApiProvider } from '@backstage/core-app-api';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 
@@ -43,7 +42,7 @@ describe('<CostInsightsHeader/>', () => {
       </ApiProvider>,
     );
 
-    expect(rendered.queryByText(/doing great/)).toBeInTheDocument();
+    expect(rendered.getByText(/doing great/)).toBeInTheDocument();
   });
 
   it('Shows work to do when alerts > 1', async () => {
@@ -57,7 +56,7 @@ describe('<CostInsightsHeader/>', () => {
         />
       </ApiProvider>,
     );
-    expect(rendered.queryByText(/few things/)).toBeInTheDocument();
+    expect(rendered.getByText(/few things/)).toBeInTheDocument();
   });
 
   it('Handles grammar with a single alert', async () => {
@@ -73,7 +72,7 @@ describe('<CostInsightsHeader/>', () => {
     );
 
     expect(rendered.queryByText(/things/)).not.toBeInTheDocument();
-    expect(rendered.queryByText(/one thing/)).toBeInTheDocument();
+    expect(rendered.getByText(/one thing/)).toBeInTheDocument();
   });
 
   it('Shows no costs when hasCostData is false', async () => {
@@ -87,7 +86,7 @@ describe('<CostInsightsHeader/>', () => {
         />
       </ApiProvider>,
     );
-    expect(rendered.queryByText(/this is awkward/)).toBeInTheDocument();
+    expect(rendered.getByText(/this is awkward/)).toBeInTheDocument();
   });
 
   describe.each`
@@ -109,9 +108,7 @@ describe('<CostInsightsHeader/>', () => {
           />
         </ApiProvider>,
       );
-      expect(
-        rendered.queryByText(/Test group display name/),
-      ).toBeInTheDocument();
+      expect(rendered.getByText(/Test group display name/)).toBeInTheDocument();
     });
 
     it('Fallbacks to group id when display name not available', async () => {
@@ -125,7 +122,7 @@ describe('<CostInsightsHeader/>', () => {
           />
         </ApiProvider>,
       );
-      expect(rendered.queryByText(/test-user-group-1/)).toBeInTheDocument();
+      expect(rendered.getByText(/test-user-group-1/)).toBeInTheDocument();
     });
   });
 });

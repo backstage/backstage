@@ -28,7 +28,6 @@ import { fireEvent, getByRole, waitFor } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import React from 'react';
 import { SWRConfig } from 'swr';
-
 import { PlaylistApi, playlistApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { EntityPlaylistDialog } from './EntityPlaylistDialog';
@@ -182,7 +181,7 @@ describe('EntityPlaylistDialog', () => {
     });
 
     expect(
-      rendered.queryByTestId('mock-playlist-edit-dialog'),
+      rendered.getByTestId('mock-playlist-edit-dialog'),
     ).toBeInTheDocument();
 
     act(() => {

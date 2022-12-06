@@ -139,10 +139,16 @@ export type EntityProviderMutation =
   | {
       type: 'delta';
       added: DeferredEntity[];
-      removed: DeferredEntity[];
+      removed: (
+        | DeferredEntity
+        | {
+            entityRef: string;
+            locationKey?: string;
+          }
+      )[];
     };
 
-// @public (undocumented)
+// @public
 export type EntityProviderRefreshOptions = {
   keys: string[];
 };

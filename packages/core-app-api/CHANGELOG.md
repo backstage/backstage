@@ -1,5 +1,58 @@
 # @backstage/core-app-api
 
+## 1.2.1-next.2
+
+### Patch Changes
+
+- b4b5b02315: Tweak feature flag registration so that it happens immediately before the first rendering of the app, rather than just after.
+- 203271b746: Prevent duplicate feature flag components from rendering in the settings when using <FeatureFlagged /> components
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- 63310e3987: Apps will now rewrite the `app.baseUrl` configuration to match the current `location.origin`. The `backend.baseUrl` will also be rewritten in the same way when the `app.baseUrl` and `backend.baseUrl` have matching origins. This will reduce the need for separate frontend builds for different environments.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/version-bridge@1.0.2
+
+## 1.2.0
+
+### Minor Changes
+
+- 9b737e5f2e: Updated the React Router wiring to make use of the new `basename` property of the router components in React Router v6 stable. To implement this, a new optional `basename` property has been added to the `Router` app component, which can be forwarded to the concrete router implementation in order to support this new behavior. This is done by default in any app that does not have a `Router` component override.
+- 127fcad26d: Deprecated the `homepage` config as the component that used it - `HomepageTimer` - has been removed and replaced by the `HeaderWorldClock` in the home plugin
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/version-bridge@1.0.2
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/types@1.0.1
+  - @backstage/config@1.0.4
+
 ## 1.2.0-next.0
 
 ### Minor Changes

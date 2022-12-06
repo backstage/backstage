@@ -39,7 +39,7 @@ import { Request } from 'request';
  *
  * @public
  */
-export type MountBaseOptions = {
+export type KubernetesContainerRunnerMountBase = {
   volumeName: string;
   basePath: string;
 };
@@ -51,7 +51,7 @@ export type MountBaseOptions = {
  * and their names will be prefixed with the provided 'name'.
  *
  * 'podTemplate' defines a Pod template for the Jobs. It has to include
- * a volume definition named as the {@link MountBaseOptions} 'volumeName'.
+ * a volume definition named as the {@link KubernetesContainerRunnerMountBase} 'volumeName'.
  *
  * @public
  */
@@ -59,7 +59,7 @@ export type KubernetesContainerRunnerOptions = {
   kubeConfig: KubeConfig;
   name: string;
   namespace?: string;
-  mountBase?: MountBaseOptions;
+  mountBase?: KubernetesContainerRunnerMountBase;
   podTemplate?: V1PodTemplateSpec;
   timeoutMs?: number;
 };
@@ -77,12 +77,12 @@ export class KubernetesContainerRunner implements ContainerRunner {
   private readonly log: Log;
   private readonly name: string;
   private readonly namespace: string;
-  private readonly mountBase?: MountBaseOptions;
+  private readonly mountBase?: KubernetesContainerRunnerMountBase;
   private readonly podTemplate?: V1PodTemplateSpec;
   private readonly timeoutMs: number;
   private readonly containerName = 'executor';
 
-  getNamespace(kubeConfig: KubeConfig, namespace?: string): string {
+  private getNamespace(kubeConfig: KubeConfig, namespace?: string): string {
     let _namespace = namespace;
     if (!_namespace) {
       _namespace = kubeConfig.getContextObject(
@@ -95,10 +95,10 @@ export class KubernetesContainerRunner implements ContainerRunner {
     return _namespace;
   }
 
-  validateMountBase(
-    mountBase: MountBaseOptions,
+  private validateMountBase(
+    mountBase: KubernetesContainerRunnerMountBase,
     podTemplate?: V1PodTemplateSpec,
-  ): MountBaseOptions {
+  ): KubernetesContainerRunnerMountBase {
     if (
       !podTemplate?.spec?.volumes?.filter(v => v.name === mountBase.volumeName)
         .length
@@ -213,7 +213,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
     await this.runJob(jobSpec, taskId, logStream);
   }
 
-  handleError(err: any, errorCallback: (reason: any) => void) {
+  private handleError(err: any, errorCallback: (reason: any) => void) {
     if (err.code !== 'ECONNRESET' && err.message !== 'aborted') {
       errorCallback(
         handleKubernetesError(
@@ -224,7 +224,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
     }
   }
 
-  watchPod(
+  private watchPod(
     taskId: string,
     callback: (pod: V1Pod) => void,
     errorCallback: (reason: any) => void,
@@ -247,7 +247,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
     );
   }
 
-  tailLogs(
+  private tailLogs(
     taskId: string,
     logStream: Writable,
   ): { promise: Promise<void>; close: () => Promise<void> } {
@@ -295,7 +295,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
     return { promise: Promise.race([watchPromise, logPromise]), close };
   }
 
-  waitPod(taskId: string): {
+  private waitPod(taskId: string): {
     promise: Promise<void>;
     close: () => Promise<void>;
   } {
@@ -322,7 +322,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
     return { promise, close };
   }
 
-  async createJob(jobSpec: V1Job): Promise<any> {
+  private async createJob(jobSpec: V1Job): Promise<any> {
     return this.batchV1Api
       .createNamespacedJob(this.namespace, jobSpec)
       .catch(err => {
@@ -333,7 +333,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
       });
   }
 
-  async runJob(
+  private async runJob(
     jobSpec: V1Job,
     taskId: string,
     logStream: Writable,

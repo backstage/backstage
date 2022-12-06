@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
+import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import { Line } from 'rc-progress';
-import { BackstageTheme } from '@backstage/theme';
-import { getProgressColor, GaugePropsGetColor } from './Gauge';
+import React from 'react';
+
+import { GaugePropsGetColor, getProgressColor } from './Gauge';
 
 type Props = {
   /**
@@ -47,14 +48,14 @@ export function LinearGauge(props: Props) {
   });
   return (
     <Tooltip title={`${percent}%`}>
-      <span>
+      <Typography component="span">
         <Line
           percent={percent}
           strokeWidth={4}
           trailWidth={4}
           strokeColor={strokeColor}
         />
-      </span>
+      </Typography>
     </Tooltip>
   );
 }

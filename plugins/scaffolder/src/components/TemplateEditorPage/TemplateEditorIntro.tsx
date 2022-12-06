@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
 
 interface EditorIntroProps {
   style?: JSX.IntrinsicElements['div']['style'];
-  onSelect?: (option: 'local' | 'form') => void;
+  onSelect?: (option: 'local' | 'form' | 'field-explorer') => void;
 }
 
 export function TemplateEditorIntro(props: EditorIntroProps) {
@@ -104,6 +104,22 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
     </Card>
   );
 
+  const cardFieldExplorer = (
+    <Card className={classes.card} elevation={4}>
+      <CardActionArea onClick={() => props.onSelect?.('field-explorer')}>
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            Custom Field Explorer
+          </Typography>
+          <Typography variant="body1">
+            View and play around with available installed custom field
+            extensions.
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+
   return (
     <div style={props.style}>
       <Typography variant="h6" className={classes.introText}>
@@ -121,6 +137,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
         {supportsLoad && cardLoadLocal}
         {cardFormEditor}
         {!supportsLoad && cardLoadLocal}
+        {cardFieldExplorer}
       </div>
     </div>
   );

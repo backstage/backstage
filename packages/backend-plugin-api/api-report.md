@@ -25,6 +25,16 @@ export interface BackendFeature {
 }
 
 // @public (undocumented)
+export interface BackendLifecycle {
+  addShutdownHook(options: BackendLifecycleShutdownHook): void;
+}
+
+// @public (undocumented)
+export type BackendLifecycleShutdownHook = {
+  fn: () => void | Promise<void>;
+};
+
+// @public (undocumented)
 export interface BackendModuleConfig<TOptions> {
   // (undocumented)
   moduleId: string;
@@ -66,10 +76,29 @@ export interface BackendRegistrationPoints {
 }
 
 // @public (undocumented)
-export const cacheServiceRef: ServiceRef<PluginCacheManager, 'plugin'>;
+const cacheServiceRef: ServiceRef<PluginCacheManager, 'plugin'>;
 
 // @public (undocumented)
-export const configServiceRef: ServiceRef<Config, 'root'>;
+const configServiceRef: ServiceRef<Config, 'root'>;
+
+declare namespace coreServices {
+  export {
+    configServiceRef as config,
+    httpRouterServiceRef as httpRouter,
+    loggerServiceRef as logger,
+    urlReaderServiceRef as urlReader,
+    cacheServiceRef as cache,
+    databaseServiceRef as database,
+    discoveryServiceRef as discovery,
+    tokenManagerServiceRef as tokenManager,
+    permissionsServiceRef as permissions,
+    schedulerServiceRef as scheduler,
+    rootLoggerServiceRef as rootLogger,
+    pluginMetadataServiceRef as pluginMetadata,
+    lifecycleServiceRef as lifecycle,
+  };
+}
+export { coreServices };
 
 // @public
 export function createBackendModule<
@@ -136,10 +165,10 @@ export function createServiceRef<T>(options: {
 }): ServiceRef<T, 'root'>;
 
 // @public (undocumented)
-export const databaseServiceRef: ServiceRef<PluginDatabaseManager, 'plugin'>;
+const databaseServiceRef: ServiceRef<PluginDatabaseManager, 'plugin'>;
 
 // @public (undocumented)
-export const discoveryServiceRef: ServiceRef<PluginEndpointDiscovery, 'plugin'>;
+const discoveryServiceRef: ServiceRef<PluginEndpointDiscovery, 'plugin'>;
 
 // @public
 export type ExtensionPoint<T> = {
@@ -156,7 +185,10 @@ export interface HttpRouterService {
 }
 
 // @public (undocumented)
-export const httpRouterServiceRef: ServiceRef<HttpRouterService, 'plugin'>;
+const httpRouterServiceRef: ServiceRef<HttpRouterService, 'plugin'>;
+
+// @public (undocumented)
+const lifecycleServiceRef: ServiceRef<BackendLifecycle, 'plugin'>;
 
 // @public (undocumented)
 export interface Logger {
@@ -167,7 +199,7 @@ export interface Logger {
 }
 
 // @public (undocumented)
-export const loggerServiceRef: ServiceRef<Logger, 'plugin'>;
+const loggerServiceRef: ServiceRef<Logger, 'plugin'>;
 
 // @public (undocumented)
 export function loggerToWinstonLogger(
@@ -176,7 +208,7 @@ export function loggerToWinstonLogger(
 ): Logger_2;
 
 // @public (undocumented)
-export const permissionsServiceRef: ServiceRef<
+const permissionsServiceRef: ServiceRef<
   PermissionAuthorizer | PermissionEvaluator,
   'plugin'
 >;
@@ -188,13 +220,13 @@ export interface PluginMetadata {
 }
 
 // @public (undocumented)
-export const pluginMetadataServiceRef: ServiceRef<PluginMetadata, 'plugin'>;
+const pluginMetadataServiceRef: ServiceRef<PluginMetadata, 'plugin'>;
 
 // @public (undocumented)
-export const rootLoggerServiceRef: ServiceRef<Logger, 'root'>;
+const rootLoggerServiceRef: ServiceRef<Logger, 'root'>;
 
 // @public (undocumented)
-export const schedulerServiceRef: ServiceRef<PluginTaskScheduler, 'plugin'>;
+const schedulerServiceRef: ServiceRef<PluginTaskScheduler, 'plugin'>;
 
 // @public (undocumented)
 export type ServiceFactory<TService = unknown> =
@@ -236,7 +268,7 @@ export type ServiceRef<
 };
 
 // @public (undocumented)
-export const tokenManagerServiceRef: ServiceRef<TokenManager, 'plugin'>;
+const tokenManagerServiceRef: ServiceRef<TokenManager, 'plugin'>;
 
 // @public (undocumented)
 export type TypesToServiceRef<T> = {
@@ -244,5 +276,5 @@ export type TypesToServiceRef<T> = {
 };
 
 // @public (undocumented)
-export const urlReaderServiceRef: ServiceRef<UrlReader, 'plugin'>;
+const urlReaderServiceRef: ServiceRef<UrlReader, 'plugin'>;
 ```

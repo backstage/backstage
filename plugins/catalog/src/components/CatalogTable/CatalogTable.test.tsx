@@ -29,7 +29,7 @@ import {
   UserListFilter,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
 
@@ -66,7 +66,7 @@ describe('CatalogTable component', () => {
   });
 
   it('should render error message', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{ error: new Error('error') }}>
           <CatalogTable />
@@ -78,14 +78,14 @@ describe('CatalogTable component', () => {
         },
       },
     );
-    const errorMessage = await rendered.findByText(
+    const errorMessage = await screen.findByText(
       /Could not fetch catalog entities./,
     );
     expect(errorMessage).toBeInTheDocument();
   });
 
   it('should display entity names when loading has finished and no error occurred', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
@@ -108,10 +108,10 @@ describe('CatalogTable component', () => {
         },
       },
     );
-    expect(rendered.getByText(/Owned \(3\)/)).toBeInTheDocument();
-    expect(rendered.getByText(/component1/)).toBeInTheDocument();
-    expect(rendered.getByText(/component2/)).toBeInTheDocument();
-    expect(rendered.getByText(/component3/)).toBeInTheDocument();
+    expect(screen.getByText(/Owned \(3\)/)).toBeInTheDocument();
+    expect(screen.getByText(/component1/)).toBeInTheDocument();
+    expect(screen.getByText(/component2/)).toBeInTheDocument();
+    expect(screen.getByText(/component3/)).toBeInTheDocument();
   });
 
   it('should use specified edit URL if in annotation', async () => {
@@ -124,7 +124,7 @@ describe('CatalogTable component', () => {
       },
     };
 
-    const { getByTitle } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{ entities: [entity] }}>
           <CatalogTable />
@@ -137,7 +137,7 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const editButton = getByTitle('Edit');
+    const editButton = screen.getByTitle('Edit');
 
     await act(async () => {
       fireEvent.click(editButton);
@@ -156,7 +156,7 @@ describe('CatalogTable component', () => {
       },
     };
 
-    const { getByTitle } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{ entities: [entity] }}>
           <CatalogTable />
@@ -169,7 +169,7 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const viewButton = getByTitle('View');
+    const viewButton = screen.getByTitle('View');
 
     await act(async () => {
       fireEvent.click(viewButton);
@@ -278,7 +278,7 @@ describe('CatalogTable component', () => {
   ])(
     'should render correct columns with kind filter $kind',
     async ({ kind, expectedColumns }) => {
-      const { getAllByRole } = await renderInTestApp(
+      await renderInTestApp(
         <ApiProvider apis={mockApis}>
           <MockEntityListContextProvider
             value={{
@@ -298,9 +298,9 @@ describe('CatalogTable component', () => {
         },
       );
 
-      const columnHeader = getAllByRole('button').filter(
-        c => c.tagName === 'SPAN',
-      );
+      const columnHeader = screen
+        .getAllByRole('button')
+        .filter(c => c.tagName === 'SPAN');
       const columnHeaderLabels = columnHeader.map(c => c.textContent);
       expect(columnHeaderLabels).toEqual(expectedColumns);
     },
@@ -316,7 +316,7 @@ describe('CatalogTable component', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{ entities: [entity] }}>
           <CatalogTable subtitle="Should be rendered" />
@@ -329,7 +329,7 @@ describe('CatalogTable component', () => {
       },
     );
 
-    expect(getByText('Should be rendered')).toBeInTheDocument();
+    expect(screen.getByText('Should be rendered')).toBeInTheDocument();
   });
 
   it('should render the label column with customised title and value as specified', async () => {
@@ -347,7 +347,7 @@ describe('CatalogTable component', () => {
     };
     const expectedColumns = ['Name', 'Category', 'Actions'];
 
-    const { getAllByRole, getByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{ entities: [entity] }}>
           <CatalogTable columns={columns} />
@@ -360,13 +360,13 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const columnHeader = getAllByRole('button').filter(
-      c => c.tagName === 'SPAN',
-    );
+    const columnHeader = screen
+      .getAllByRole('button')
+      .filter(c => c.tagName === 'SPAN');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
     expect(columnHeaderLabels).toEqual(expectedColumns);
 
-    const labelCellValue = getByText('generic');
+    const labelCellValue = screen.getByText('generic');
     expect(labelCellValue).toBeInTheDocument();
   });
 });

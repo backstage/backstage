@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  ANNOTATION_LOCATION,
+  Entity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
@@ -116,11 +120,12 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             });
           }
 
+          const location =
+            unprocessedEntity?.metadata?.annotations?.[ANNOTATION_LOCATION];
           for (const error of result.errors) {
-            // TODO(freben): Try to extract the location out of the unprocessed
-            // entity and add as meta to the log lines
             this.logger.warn(error.message, {
               entity: entityRef,
+              location,
             });
           }
           const errorsString = JSON.stringify(

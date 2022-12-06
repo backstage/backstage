@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  GroupEntity,
+  parseEntityRef,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 
 export function buildOrgHierarchy(groups: GroupEntity[]) {
   const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
@@ -52,12 +58,29 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
 // Ensure that users have their direct group memberships.
 export function assignGroupsToUsers(
   users: UserEntity[],
-  groupMemberUsers: Map<string, string[]>,
+  groups: GroupEntity[],
 ) {
-  const usersByName = new Map(users.map(u => [u.metadata.name, u]));
-  for (const [groupName, userNames] of groupMemberUsers.entries()) {
-    for (const userName of userNames) {
-      const user = usersByName.get(userName);
+  const groupMemberUsers = new Map(
+    groups.map(group => {
+      const groupKey =
+        group.metadata.namespace &&
+        group.metadata.namespace !== DEFAULT_NAMESPACE
+          ? `${group.metadata.namespace}/${group.metadata.name}`
+          : group.metadata.name;
+      // Fully qualify member refs so they can be keyed off of since they may contain namespace prefixes
+      return [
+        groupKey,
+        group.spec.members?.map(m =>
+          stringifyEntityRef(parseEntityRef(m, { defaultKind: 'user' })),
+        ) || [],
+      ];
+    }),
+  );
+
+  const usersByRef = new Map(users.map(u => [stringifyEntityRef(u), u]));
+  for (const [groupName, userRefs] of groupMemberUsers.entries()) {
+    for (const ref of userRefs) {
+      const user = usersByRef.get(ref);
       if (user && !user.spec.memberOf?.includes(groupName)) {
         if (!user.spec.memberOf) {
           user.spec.memberOf = [];

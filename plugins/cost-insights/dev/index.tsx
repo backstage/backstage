@@ -23,7 +23,26 @@ import {
   CostInsightsPage,
   CostInsightsProjectGrowthInstructionsPage,
   CostInsightsLabelDataflowInstructionsPage,
+  EntityCostInsightsContent,
 } from '../src/plugin';
+import { Content, Header, Page } from '@backstage/core-components';
+import { Grid } from '@material-ui/core';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { Entity } from '@backstage/catalog-model';
+
+const mockEntity: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'backstage',
+    description: 'backstage.io',
+  },
+  spec: {
+    lifecycle: 'production',
+    type: 'service',
+    owner: 'user:guest',
+  },
+};
 
 createDevApp()
   .registerPlugin(costInsightsPlugin)
@@ -43,5 +62,23 @@ createDevApp()
   .addPage({
     title: 'Labelling',
     element: <CostInsightsLabelDataflowInstructionsPage />,
+  })
+  .addPage({
+    title: 'Entity',
+    element: (
+      <Page themeId="home">
+        <Header title="Entity" />
+
+        <Content>
+          <Grid container>
+            <Grid item md={12}>
+              <EntityProvider entity={mockEntity}>
+                <EntityCostInsightsContent />
+              </EntityProvider>
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    ),
   })
   .render();

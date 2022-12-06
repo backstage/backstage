@@ -43,6 +43,7 @@ import {
   getOrganizationUsers,
   parseGithubOrgUrl,
 } from '../lib';
+import { TeamTransformer, UserTransformer } from '../lib/defaultTransformers';
 
 /**
  * Options for {@link GithubOrgEntityProvider}.
@@ -88,6 +89,16 @@ export interface GithubOrgEntityProviderOptions {
    * Optionally supply a custom credentials provider, replacing the default one.
    */
   githubCredentialsProvider?: GithubCredentialsProvider;
+
+  /**
+   * Optionally include a user transformer for transforming from GitHub users to User Entities
+   */
+  userTransformer?: UserTransformer;
+
+  /**
+   * Optionally include a team transformer for transforming from GitHub teams to Group Entities
+   */
+  teamTransformer?: TeamTransformer;
 }
 
 // TODO: Consider supporting an (optional) webhook that reacts on org changes
@@ -123,6 +134,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider:
         options.githubCredentialsProvider ||
         DefaultGithubCredentialsProvider.fromIntegrations(integrations),
+      userTransformer: options.userTransformer,
+      teamTransformer: options.teamTransformer,
     });
 
     provider.schedule(options.schedule);
@@ -137,6 +150,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       gitHubConfig: GithubIntegrationConfig;
       logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
+      userTransformer?: UserTransformer;
+      teamTransformer?: TeamTransformer;
     },
   ) {
     this.credentialsProvider =
@@ -177,12 +192,19 @@ export class GithubOrgEntityProvider implements EntityProvider {
     });
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
-    const { users } = await getOrganizationUsers(client, org, tokenType);
-    const { groups, groupMemberUsers } = await getOrganizationTeams(
+    const { users } = await getOrganizationUsers(
       client,
       org,
+      tokenType,
+      this.options.userTransformer,
     );
-    assignGroupsToUsers(users, groupMemberUsers);
+    const { groups } = await getOrganizationTeams(
+      client,
+      org,
+      this.options.teamTransformer,
+    );
+
+    assignGroupsToUsers(users, groups);
     buildOrgHierarchy(groups);
 
     const { markCommitComplete } = markReadComplete({ users, groups });

@@ -34,6 +34,10 @@ export interface CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse>;
+  getEntitiesByRefs(
+    request: GetEntitiesByRefsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntitiesByRefsResponse>;
   getEntityAncestors(
     request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
@@ -91,6 +95,10 @@ export class CatalogClient implements CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse>;
+  getEntitiesByRefs(
+    request: GetEntitiesByRefsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntitiesByRefsResponse>;
   getEntityAncestors(
     request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
@@ -146,13 +154,29 @@ export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
 
 // @public
+export type EntityFieldsQuery = string[];
+
+// @public
+export type EntityFilterQuery =
+  | Record<string, string | symbol | (string | symbol)[]>[]
+  | Record<string, string | symbol | (string | symbol)[]>;
+
+// @public
+export interface GetEntitiesByRefsRequest {
+  entityRefs: string[];
+  fields?: EntityFieldsQuery | undefined;
+}
+
+// @public
+export interface GetEntitiesByRefsResponse {
+  items: Array<Entity | undefined>;
+}
+
+// @public
 export interface GetEntitiesRequest {
   after?: string;
-  fields?: string[] | undefined;
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
+  fields?: EntityFieldsQuery;
+  filter?: EntityFilterQuery;
   limit?: number;
   offset?: number;
 }

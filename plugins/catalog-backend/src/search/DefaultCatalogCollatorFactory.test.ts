@@ -114,14 +114,14 @@ describe('DefaultCatalogCollatorFactory', () => {
     });
 
     it('fetches from the configured catalog service', async () => {
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
       expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('catalog');
       expect(documents).toHaveLength(expectedEntities.length);
     });
 
     it('maps a returned entity to an expected CatalogEntityDocument', async () => {
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
       expect(documents[0]).toMatchObject({
@@ -159,7 +159,7 @@ describe('DefaultCatalogCollatorFactory', () => {
       });
       collator = await factory.getCollator();
 
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
       expect(documents[0]).toMatchObject({
         location: '/software/test-entity',
@@ -177,7 +177,7 @@ describe('DefaultCatalogCollatorFactory', () => {
       });
       collator = await factory.getCollator();
 
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
       // The simulated 'Foo,Bar' filter should return in an empty list
@@ -191,7 +191,7 @@ describe('DefaultCatalogCollatorFactory', () => {
       });
       collator = await factory.getCollator();
 
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
       expect(documents).toHaveLength(expectedEntities.length);

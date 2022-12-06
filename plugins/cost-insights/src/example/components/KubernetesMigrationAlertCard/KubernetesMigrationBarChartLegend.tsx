@@ -17,7 +17,8 @@
 import React from 'react';
 import { Box, useTheme } from '@material-ui/core';
 import { CostGrowth, LegendItem } from '../../../components';
-import { ChangeStatistic, CostInsightsTheme, Duration } from '../../../types';
+import { CostInsightsTheme, Duration } from '../../../types';
+import { ChangeStatistic } from '@backstage/plugin-cost-insights-common';
 import { monthOf } from '../../../utils/formatters';
 
 export type MigrationBarChartLegendProps = {

@@ -17,7 +17,7 @@
 import React from 'react';
 import { CostInsightsTabs } from './CostInsightsTabs';
 import userEvent from '@testing-library/user-event';
-import { Group } from '../../types';
+import { Group } from '@backstage/plugin-cost-insights-common';
 import { MockFilterProvider, MockLoadingProvider } from '../../testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 

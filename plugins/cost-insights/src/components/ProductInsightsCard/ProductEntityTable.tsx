@@ -17,11 +17,16 @@
 import React from 'react';
 import classnames from 'classnames';
 import { Typography } from '@material-ui/core';
-import { costFormatter, formatChange } from '../../utils/formatters';
+import { formatChange } from '../../utils/formatters';
 import { useEntityDialogStyles as useStyles } from '../../utils/styles';
 import { CostGrowthIndicator } from '../CostGrowth';
-import { BarChartOptions, ChangeStatistic, Entity } from '../../types';
+import { BarChartOptions } from '../../types';
+import {
+  ChangeStatistic,
+  Entity,
+} from '@backstage/plugin-cost-insights-common';
 import { Table, TableColumn } from '@backstage/core-components';
+import { useConfig } from '../../hooks';
 
 export type ProductEntityTableOptions = Partial<
   Pick<BarChartOptions, 'previousName' | 'currentName'>
@@ -35,36 +40,38 @@ type RowData = {
   change: ChangeStatistic;
 };
 
-function createRenderer(col: keyof RowData, classes: Record<string, string>) {
-  return function render(rowData: {}): JSX.Element {
-    const row = rowData as RowData;
-    const rowStyles = classnames(classes.row, {
-      [classes.rowTotal]: row.id === 'total',
-      [classes.colFirst]: col === 'label',
-      [classes.colLast]: col === 'change',
-    });
+const createRenderer =
+  (baseCurrency: Intl.NumberFormat) =>
+  (col: keyof RowData, classes: Record<string, string>) => {
+    return function render(rowData: {}): JSX.Element {
+      const row = rowData as RowData;
+      const rowStyles = classnames(classes.row, {
+        [classes.rowTotal]: row.id === 'total',
+        [classes.colFirst]: col === 'label',
+        [classes.colLast]: col === 'change',
+      });
 
-    switch (col) {
-      case 'previous':
-      case 'current':
-        return (
-          <Typography className={rowStyles}>
-            {costFormatter.format(row[col])}
-          </Typography>
-        );
-      case 'change':
-        return (
-          <CostGrowthIndicator
-            className={rowStyles}
-            change={row.change}
-            formatter={formatChange}
-          />
-        );
-      default:
-        return <Typography className={rowStyles}>{row.label}</Typography>;
-    }
+      switch (col) {
+        case 'previous':
+        case 'current':
+          return (
+            <Typography className={rowStyles}>
+              {baseCurrency.format(row[col])}
+            </Typography>
+          );
+        case 'change':
+          return (
+            <CostGrowthIndicator
+              className={rowStyles}
+              change={row.change}
+              formatter={formatChange}
+            />
+          );
+        default:
+          return <Typography className={rowStyles}>{row.label}</Typography>;
+      }
+    };
   };
-}
 
 // material-table does not support fixed rows. Override the sorting algorithm
 // to force Total row to bottom by default or when a user sort toggles a column.
@@ -99,6 +106,7 @@ export const ProductEntityTable = ({
   options,
 }: ProductEntityTableProps) => {
   const classes = useStyles();
+  const { baseCurrency } = useConfig();
   const entities = entity.entities[entityLabel];
 
   const data = Object.assign(
@@ -116,7 +124,7 @@ export const ProductEntityTable = ({
     {
       field: 'label',
       title: <Typography className={firstColClasses}>{entityLabel}</Typography>,
-      render: createRenderer('label', classes),
+      render: createRenderer(baseCurrency)('label', classes),
       customSort: createSorter('label'),
       width: '33.33%',
     },
@@ -126,7 +134,7 @@ export const ProductEntityTable = ({
         <Typography className={classes.column}>{data.previousName}</Typography>
       ),
       align: 'right',
-      render: createRenderer('previous', classes),
+      render: createRenderer(baseCurrency)('previous', classes),
       customSort: createSorter('previous'),
     },
     {
@@ -135,14 +143,14 @@ export const ProductEntityTable = ({
         <Typography className={classes.column}>{data.currentName}</Typography>
       ),
       align: 'right',
-      render: createRenderer('current', classes),
+      render: createRenderer(baseCurrency)('current', classes),
       customSort: createSorter('current'),
     },
     {
       field: 'change',
       title: <Typography className={lastColClasses}>Change</Typography>,
       align: 'right',
-      render: createRenderer('change', classes),
+      render: createRenderer(baseCurrency)('change', classes),
       customSort: createSorter('change'),
     },
   ];

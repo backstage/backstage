@@ -154,6 +154,7 @@ export class CatalogBuilder {
   private locationAnalyzer: LocationAnalyzer | undefined = undefined;
   private readonly permissionRules: CatalogPermissionRule[];
   private allowedLocationType: string[];
+  private legacySingleProcessorValidation = false;
 
   /**
    * Creates a catalog builder.
@@ -384,6 +385,7 @@ export class CatalogBuilder {
     >
   ) {
     this.permissionRules.push(...permissionRules.flat());
+    return this;
   }
 
   /**
@@ -393,6 +395,15 @@ export class CatalogBuilder {
    */
   setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder {
     this.allowedLocationType = allowedLocationTypes;
+    return this;
+  }
+
+  /**
+   * Enables the legacy behaviour of canceling validation early whenever only a
+   * single processor declares an entity kind to be valid.
+   */
+  useLegacySingleProcessorValidation(): this {
+    this.legacySingleProcessorValidation = true;
     return this;
   }
 
@@ -429,6 +440,7 @@ export class CatalogBuilder {
       logger,
       parser,
       policy,
+      legacySingleProcessorValidation: this.legacySingleProcessorValidation,
     });
     const stitcher = new Stitcher(dbClient, logger);
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog(

@@ -1,5 +1,45 @@
 # @internal/plugin-catalog-customized
 
+## 0.0.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.7.0-next.2
+  - @backstage/plugin-catalog-react@1.2.2-next.2
+
+## 0.0.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.6.2-next.1
+  - @backstage/plugin-catalog-react@1.2.2-next.1
+
+## 0.0.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/plugin-catalog@1.6.2-next.0
+
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/plugin-catalog@1.6.1
+
+## 0.0.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.6.1-next.1
+  - @backstage/plugin-catalog-react@1.2.1-next.1
+
 ## 0.0.4-next.0
 
 ### Patch Changes

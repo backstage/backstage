@@ -92,7 +92,7 @@ describe('GithubUrlReader', () => {
   describe('implementation', () => {
     it('rejects unknown targets', async () => {
       await expect(
-        githubProcessor.read('https://not.github.com/apa'),
+        githubProcessor.readUrl('https://not.github.com/apa'),
       ).rejects.toThrow(
         'Incorrect URL: https://not.github.com/apa, Error: Invalid GitHub URL or file path',
       );
@@ -135,7 +135,7 @@ describe('GithubUrlReader', () => {
         ),
       );
 
-      await gheProcessor.read(
+      await gheProcessor.readUrl(
         'https://github.com/backstage/mock/tree/blob/main',
       );
     });

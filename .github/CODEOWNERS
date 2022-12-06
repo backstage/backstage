@@ -36,6 +36,15 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/code-coverage-backend                      @backstage/reviewers @alde @nissayeva
 /plugins/cost-insights                              @backstage/reviewers @backstage/silver-lining
 /plugins/cost-insights-*                            @backstage/reviewers @backstage/silver-lining
+/plugins/events-backend                             @backstage/reviewers @pjungermann
+/plugins/events-backend-module-aws-sqs              @backstage/reviewers @pjungermann
+/plugins/events-backend-module-azure                @backstage/reviewers @pjungermann
+/plugins/events-backend-module-bitbucket-cloud      @backstage/reviewers @pjungermann
+/plugins/events-backend-module-gerrit               @backstage/reviewers @pjungermann
+/plugins/events-backend-module-github               @backstage/reviewers @pjungermann
+/plugins/events-backend-module-gitlab               @backstage/reviewers @pjungermann
+/plugins/events-backend-test-utils                  @backstage/reviewers @pjungermann
+/plugins/events-node                                @backstage/reviewers @pjungermann
 /plugins/explore                                    @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/explore-react                              @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/fossa                                      @backstage/reviewers @backstage/sda-se-reviewers

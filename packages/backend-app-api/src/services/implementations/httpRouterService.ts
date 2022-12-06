@@ -16,9 +16,7 @@
 
 import {
   createServiceFactory,
-  httpRouterServiceRef,
-  configServiceRef,
-  pluginMetadataServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 import { Handler } from 'express';
@@ -36,10 +34,10 @@ export type HttpRouterFactoryOptions = {
 
 /** @public */
 export const httpRouterFactory = createServiceFactory({
-  service: httpRouterServiceRef,
+  service: coreServices.httpRouter,
   deps: {
-    config: configServiceRef,
-    plugin: pluginMetadataServiceRef,
+    config: coreServices.config,
+    plugin: coreServices.pluginMetadata,
   },
   async factory({ config }, options?: HttpRouterFactoryOptions) {
     const defaultPluginId = options?.indexPlugin ?? 'app';

@@ -116,8 +116,9 @@ describe('AzureUrlReader', () => {
         treeResponseFactory,
       });
 
-      const data = await reader.read(url);
-      const res = await JSON.parse(data.toString('utf-8'));
+      const { buffer } = await reader.readUrl(url);
+      const fromStream = await buffer();
+      const res = await JSON.parse(fromStream.toString());
       expect(res).toEqual(response);
     });
 
@@ -145,7 +146,7 @@ describe('AzureUrlReader', () => {
           logger,
           treeResponseFactory,
         });
-        await reader.read(url);
+        await reader.readUrl(url);
       }).rejects.toThrow(error);
     });
   });

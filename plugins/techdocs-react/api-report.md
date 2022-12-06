@@ -173,7 +173,7 @@ export const useShadowRootElements: <
 ) => TReturnedElement[];
 
 // @public
-export const useShadowRootSelection: (wait?: number) => Selection | null;
+export const useShadowRootSelection: (waitMillis?: number) => Selection | null;
 
 // @public
 export const useTechDocsAddons: () => {

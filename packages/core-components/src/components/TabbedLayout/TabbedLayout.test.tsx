@@ -79,6 +79,6 @@ describe('TabbedLayout', () => {
     expect(queryByText('tabbed-test-content')).not.toBeInTheDocument();
 
     expect(getByText('tabbed-test-title-2')).toBeInTheDocument();
-    expect(queryByText('tabbed-test-content-2')).toBeInTheDocument();
+    expect(getByText('tabbed-test-content-2')).toBeInTheDocument();
   });
 });

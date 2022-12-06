@@ -58,7 +58,7 @@ describe('LunrSearchEngineIndexer', () => {
       },
     ];
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     expect(lunrBuilderAddSpy).toHaveBeenCalledWith(documents[0]);
   });
@@ -70,7 +70,7 @@ describe('LunrSearchEngineIndexer', () => {
       location: `location-${i}`,
     }));
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
     expect(lunrBuilderAddSpy).toHaveBeenCalledTimes(350);
   });
 
@@ -84,7 +84,7 @@ describe('LunrSearchEngineIndexer', () => {
       },
     ];
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     // Builder ref should be set to location (and only once).
     expect(lunrBuilderRefSpy).toHaveBeenCalledTimes(1);

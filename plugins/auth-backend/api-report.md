@@ -670,6 +670,8 @@ export const readState: (stateString: string) => OAuthState;
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
+  catalogApi?: CatalogApi;
+  // (undocumented)
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;

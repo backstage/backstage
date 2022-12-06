@@ -16,8 +16,9 @@
 
 import { DateTime, Duration as LuxonDuration } from 'luxon';
 import pluralize from 'pluralize';
-import { ChangeStatistic, Duration } from '../types';
-import { inclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
+import { Duration } from '../types';
+import { ChangeStatistic } from '@backstage/plugin-cost-insights-common';
+import { inclusiveEndDateOf, inclusiveStartDateOf } from './duration';
 import { notEmpty } from './assert';
 
 export type Period = {
@@ -25,25 +26,28 @@ export type Period = {
   periodEnd: string;
 };
 
-export const costFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
+export const currencyFormatter = (currency: Intl.NumberFormat) => {
+  const options = currency.resolvedOptions();
 
-export const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
+  return new Intl.NumberFormat(options.locale, {
+    style: 'currency',
+    currency: options.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+};
 
-export const lengthyCurrencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 0,
-  minimumSignificantDigits: 2,
-  maximumSignificantDigits: 2,
-});
+export const lengthyCurrencyFormatter = (currency: Intl.NumberFormat) => {
+  const options = currency.resolvedOptions();
+
+  return new Intl.NumberFormat(options.locale, {
+    style: 'currency',
+    currency: options.currency,
+    minimumFractionDigits: 0,
+    minimumSignificantDigits: 2,
+    maximumSignificantDigits: 2,
+  });
+};
 
 export const numberFormatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 0,

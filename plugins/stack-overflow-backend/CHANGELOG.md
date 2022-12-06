@@ -1,5 +1,60 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.1.8-next.2
+
+### Patch Changes
+
+- fd0ca6f447: Added option to supply API Access Token. This is required in addition to an API key when trying to access the data for a private Stack Overflow Team.
+- Updated dependencies
+  - @backstage/cli@0.21.2-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.21.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.21.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/plugin-search-common@1.1.2-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- cbe11d1e23: Tweak README
+- a6d779d58a: Remove explicit default visibility at `config.d.ts` files.
+
+  ```ts
+  /**
+   * @visibility backend
+   */
+  ```
+
+- Updated dependencies
+  - @backstage/cli@0.21.0
+  - @backstage/config@1.0.4
+  - @backstage/plugin-search-common@1.1.1
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.21.0-next.1
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
 ## 0.1.7-next.0
 
 ### Patch Changes

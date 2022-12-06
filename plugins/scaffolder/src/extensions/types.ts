@@ -15,14 +15,14 @@
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { FieldValidation, FieldProps } from '@rjsf/core';
-import { PropsWithChildren } from 'react';
-
 import {
   UIOptionsType,
   FieldProps as FieldPropsV5,
   UiSchema as UiSchemaV5,
   FieldValidation as FieldValidationV5,
 } from '@rjsf/utils';
+import { PropsWithChildren } from 'react';
+import { JSONSchema7 } from 'json-schema';
 
 /**
  * Field validation type for Custom Field Extensions.
@@ -34,6 +34,16 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   field: FieldValidation,
   context: { apiHolder: ApiHolder },
 ) => void | Promise<void>;
+
+/**
+ * Type for the Custom Field Extension schema.
+ *
+ * @public
+ */
+export type CustomFieldExtensionSchema = {
+  returnValue: JSONSchema7;
+  uiOptions?: JSONSchema7;
+};
 
 /**
  * Type for the Custom Field Extension with the
@@ -50,6 +60,7 @@ export type FieldExtensionOptions<
     props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
   ) => JSX.Element | null;
   validation?: CustomFieldValidator<TFieldReturnValue>;
+  schema?: CustomFieldExtensionSchema;
 };
 
 /**
@@ -107,4 +118,5 @@ export type NextFieldExtensionOptions<
     props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
   ) => JSX.Element | null;
   validation?: NextCustomFieldValidator<TFieldReturnValue>;
+  schema?: CustomFieldExtensionSchema;
 };

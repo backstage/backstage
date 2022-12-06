@@ -20,8 +20,10 @@ import { Typography, TypographyProps } from '@material-ui/core';
 import { default as ArrowDropUp } from '@material-ui/icons/ArrowDropUp';
 import { default as ArrowDropDown } from '@material-ui/icons/ArrowDropDown';
 import { growthOf } from '../../utils/change';
-import { ChangeStatistic, GrowthType, Maybe } from '../../types';
+import { GrowthType } from '../../types';
 import { useCostGrowthStyles as useStyles } from '../../utils/styles';
+import { ChangeStatistic, Maybe } from '@backstage/plugin-cost-insights-common';
+import { useConfig } from '../../hooks';
 
 /** @public */
 export type CostGrowthIndicatorProps = TypographyProps & {
@@ -34,10 +36,12 @@ export type CostGrowthIndicatorProps = TypographyProps & {
 
 /** @public */
 export const CostGrowthIndicator = (props: CostGrowthIndicatorProps) => {
+  const { engineerThreshold } = useConfig();
   const { change, formatter, className, ...extraProps } = props;
 
   const classes = useStyles();
-  const growth = growthOf(change);
+
+  const growth = growthOf(change, engineerThreshold);
 
   const classNames = classnames(classes.indicator, className, {
     [classes.excess]: growth === GrowthType.Excess,

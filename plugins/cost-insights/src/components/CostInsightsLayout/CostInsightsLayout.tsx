@@ -15,7 +15,7 @@
  */
 import React, { PropsWithChildren } from 'react';
 import { makeStyles } from '@material-ui/core';
-import { Group } from '../../types';
+import { Group } from '@backstage/plugin-cost-insights-common';
 import { CostInsightsTabs } from '../CostInsightsTabs';
 import { Header, Page } from '@backstage/core-components';
 

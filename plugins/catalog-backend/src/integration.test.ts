@@ -245,6 +245,7 @@ class TestHarness {
       logger,
       parser: defaultEntityDataParser,
       policy: EntityPolicies.allOf([]),
+      legacySingleProcessorValidation: false,
     });
     const stitcher = new Stitcher(db, logger);
     const catalog = new DefaultEntitiesCatalog(db, stitcher);

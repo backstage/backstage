@@ -217,9 +217,15 @@ describe('OwnershipCard', () => {
     expect(
       queryByText(getByText('SYSTEM').parentElement!, '1'),
     ).toBeInTheDocument();
+    expect(
+      queryByText(getByText('SYSTEM').parentElement!, 'System'),
+    ).not.toBeInTheDocument();
     expect(getByText('OPENAPI')).toBeInTheDocument();
     expect(
       queryByText(getByText('OPENAPI').parentElement!, '1'),
+    ).toBeInTheDocument();
+    expect(
+      queryByText(getByText('OPENAPI').parentElement!, 'API'),
     ).toBeInTheDocument();
     expect(() => getByText('LIBRARY')).toThrow();
   });
@@ -246,7 +252,7 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
       'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
+      '/create/?filters%5Bkind%5D=api&filters%5Btype%5D=openapi&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
     );
   });
 
@@ -292,7 +298,7 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
       'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=user%3Athe-user&filters%5Bowners%5D=my-team&filters%5Bowners%5D=custom%2Fsome-team&filters%5Buser%5D=all',
+      '/create/?filters%5Bkind%5D=api&filters%5Btype%5D=openapi&filters%5Bowners%5D=user%3Athe-user&filters%5Bowners%5D=my-team&filters%5Bowners%5D=custom%2Fsome-team&filters%5Buser%5D=all',
     );
   });
 

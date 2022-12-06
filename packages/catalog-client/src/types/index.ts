@@ -20,13 +20,17 @@ export type {
   AddLocationResponse,
   CatalogApi,
   CatalogRequestOptions,
+  EntityFieldsQuery,
+  EntityFilterQuery,
+  GetEntitiesByRefsRequest,
+  GetEntitiesByRefsResponse,
   GetEntitiesRequest,
   GetEntitiesResponse,
   GetEntityAncestorsRequest,
   GetEntityAncestorsResponse,
-  Location,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  Location,
   ValidateEntityResponse,
 } from './api';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

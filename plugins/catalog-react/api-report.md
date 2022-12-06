@@ -175,6 +175,7 @@ export const EntityKindPicker: (
 
 // @public
 export interface EntityKindPickerProps {
+  allowedKinds?: string[];
   // (undocumented)
   hidden?: boolean;
   // (undocumented)

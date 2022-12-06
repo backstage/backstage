@@ -17,7 +17,6 @@
 import { HumanDuration } from '@backstage/types';
 import { CronTime } from 'cron';
 import { Duration } from 'luxon';
-import { AbortSignal } from 'node-abort-controller';
 import { z } from 'zod';
 
 /**

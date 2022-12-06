@@ -32,10 +32,10 @@ import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import { Logger } from 'winston';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
-  LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import {
@@ -76,6 +76,7 @@ export class DefaultCatalogProcessingOrchestrator
       parser: CatalogProcessorParser;
       policy: EntityPolicy;
       rulesEnforcer: CatalogRulesEnforcer;
+      legacySingleProcessorValidation: boolean;
     },
   ) {}
 
@@ -253,19 +254,17 @@ export class DefaultCatalogProcessingOrchestrator
       );
     }
 
-    let foundKind = false;
+    let valid = false;
 
     for (const processor of this.options.processors) {
       if (processor.validateEntityKind) {
         try {
-          foundKind = await processor.validateEntityKind(entity);
-          if (foundKind) {
-            // TODO(freben): It would make sense to keep running, so that
-            // multiple processors could have a go at making checks. For
-            // example, an org may want to add additional rules on top of the
-            // provided ones. But that would be a breaking change, so we'll
-            // postpone that to a future processors rewrite.
-            break;
+          const thisValid = await processor.validateEntityKind(entity);
+          if (thisValid) {
+            valid = true;
+            if (this.options.legacySingleProcessorValidation) {
+              break;
+            }
           }
         } catch (e) {
           throw new InputError(
@@ -276,7 +275,7 @@ export class DefaultCatalogProcessingOrchestrator
       }
     }
 
-    if (!foundKind) {
+    if (!valid) {
       throw new InputError(
         `No processor recognized the entity ${context.entityRef} as valid, possibly caused by a foreign kind or apiVersion`,
       );

@@ -34,7 +34,7 @@ type Props = {
   project: BazaarProject;
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
-  fullHeight?: boolean;
+  height?: string;
 };
 
 const useStyles = makeStyles({
@@ -48,7 +48,6 @@ const useStyles = makeStyles({
     WebkitLineClamp: 7,
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
-    textAlign: 'justify',
   },
   memberCount: {
     float: 'right',
@@ -60,6 +59,7 @@ const useStyles = makeStyles({
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    height: '5rem',
   },
 });
 
@@ -67,10 +67,11 @@ export const ProjectCard = ({
   project,
   fetchBazaarProjects,
   catalogEntities,
+  height,
 }: Props) => {
   const classes = useStyles();
   const [openCard, setOpenCard] = useState(false);
-  const { id, name, status, updatedAt, description, membersCount } = project;
+  const { id, title, status, updatedAt, description, membersCount } = project;
 
   const handleClose = () => {
     setOpenCard(false);
@@ -93,7 +94,7 @@ export const ProjectCard = ({
             classes={{ root: classes.header }}
             title={
               <Typography noWrap variant="h6" component="h4">
-                {name}
+                {title}
               </Typography>
             }
             subtitle={`updated ${DateTime.fromISO(
@@ -102,7 +103,7 @@ export const ProjectCard = ({
               base: DateTime.now(),
             })}`}
           />
-          <CardContent className={classes.content}>
+          <CardContent className={classes.content} style={{ height: height }}>
             <StatusTag styles={classes.statusTag} status={status} />
             <Typography variant="body2" className={classes.memberCount}>
               {Number(membersCount) === Number(1)

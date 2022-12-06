@@ -22,7 +22,15 @@ export const EntitySonarQubeCard: (props: {
 }) => JSX.Element;
 
 // @public (undocumented)
+export const EntitySonarQubeContentPage: (
+  props: SonarQubeContentPageProps,
+) => JSX.Element;
+
+// @public (undocumented)
 export const isSonarQubeAvailable: (entity: Entity) => boolean;
+
+// @public (undocumented)
+export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 
 // @public (undocumented)
 export const SonarQubeCard: (props: {
@@ -31,7 +39,11 @@ export const SonarQubeCard: (props: {
 }) => JSX.Element;
 
 // @public (undocumented)
-const sonarQubePlugin: BackstagePlugin<{}, {}, {}>;
-export { sonarQubePlugin as plugin };
-export { sonarQubePlugin };
+export type SonarQubeContentPageProps = {
+  title?: string;
+  supportTitle?: string;
+};
+
+// @public (undocumented)
+export const sonarQubePlugin: BackstagePlugin<{}, {}, {}>;
 ```

@@ -31,7 +31,7 @@ describe('formatErrorMessage with esbuild plugin error', () => {
       plugin: 'esbuild',
       message: 'test',
       id: 'index.js',
-      errors: [{ text: 'Dummy', location: { line: 1, column: 1 } }],
+      errors: [{ text: 'Sample', location: { line: 1, column: 1 } }],
     });
     expect(msg).toContain('test\n\n');
   });

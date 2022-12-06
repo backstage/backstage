@@ -28,7 +28,8 @@ import {
   FormGroup,
   Typography,
 } from '@material-ui/core';
-import { AlertFormProps, Entity } from '../../types';
+import { AlertFormProps } from '../../types';
+import { Entity } from '@backstage/plugin-cost-insights-common';
 import { KubernetesMigrationAlert } from '../alerts';
 import { findAlways } from '../../utils/assert';
 

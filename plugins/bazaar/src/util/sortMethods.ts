@@ -26,10 +26,10 @@ export const sortByDate = (a: BazaarProject, b: BazaarProject): number => {
   return dateB - dateA;
 };
 
-export const sortByName = (a: BazaarProject, b: BazaarProject) => {
-  if (a.name < b.name) {
+export const sortByTitle = (a: BazaarProject, b: BazaarProject) => {
+  if (a.title < b.title) {
     return -1;
-  } else if (a.name > b.name) {
+  } else if (a.title > b.title) {
     return 1;
   }
   return 0;

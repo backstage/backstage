@@ -236,7 +236,7 @@ describe('<ListTasksPage />', () => {
     );
 
     await act(async () => {
-      const allButton = await getByText('All');
+      const allButton = getByText('All');
       fireEvent.click(allButton);
     });
 

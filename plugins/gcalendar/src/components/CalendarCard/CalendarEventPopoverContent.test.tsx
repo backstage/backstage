@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-
+import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-
 import { CalendarEventPopoverContent } from './CalendarEventPopoverContent';
 
 describe('<CalendarEventPopoverContent />', () => {
@@ -35,21 +35,18 @@ describe('<CalendarEventPopoverContent />', () => {
   };
 
   it('should render event info', async () => {
-    const { queryByText, queryByTestId } = await renderInTestApp(
-      <CalendarEventPopoverContent event={event} />,
-    );
-    expect(queryByText(event.summary)).toBeInTheDocument();
-    expect(queryByText(event.description)).toBeInTheDocument();
-    expect(queryByText(event.attendees[0].email)).toBeInTheDocument();
-    expect(queryByText('Join Zoom Meeting')).toBeInTheDocument();
-    expect(queryByText('Join Zoom Meeting')?.closest('a')).toHaveAttribute(
-      'href',
-      event.conferenceData.entryPoints[0].uri,
-    );
-    expect(queryByTestId('open-calendar-link')).toHaveAttribute(
+    await renderInTestApp(<CalendarEventPopoverContent event={event} />);
+    expect(screen.getByText(event.summary)).toBeInTheDocument();
+    expect(screen.getByText(event.description)).toBeInTheDocument();
+    expect(screen.getByText(event.attendees[0].email)).toBeInTheDocument();
+    expect(screen.getByText('Join Zoom Meeting')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Join Zoom Meeting')?.closest('a'),
+    ).toHaveAttribute('href', event.conferenceData.entryPoints[0].uri);
+    expect(screen.queryByTestId('open-calendar-link')).toHaveAttribute(
       'href',
       event.htmlLink,
     );
-    expect(queryByText(event.attendees[0].email)).toBeInTheDocument();
+    expect(screen.getByText(event.attendees[0].email)).toBeInTheDocument();
   });
 });

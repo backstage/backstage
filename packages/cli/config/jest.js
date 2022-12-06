@@ -54,14 +54,14 @@ function getRoleConfig(role) {
     case 'common-library':
     case 'frontend-plugin':
     case 'frontend-plugin-module':
-      return { testEnvironment: 'jsdom' };
+      return { testEnvironment: require.resolve('jest-environment-jsdom') };
     case 'cli':
     case 'backend':
     case 'node-library':
     case 'backend-plugin':
     case 'backend-plugin-module':
     default:
-      return { testEnvironment: 'node' };
+      return { testEnvironment: require.resolve('jest-environment-node') };
   }
 }
 
@@ -82,7 +82,7 @@ async function getProjectConfig(targetPath, displayName) {
   let closestPkgJson = undefined;
   let currentPath = targetPath;
 
-  // Some sanity check to avoid infinite loop
+  // Some confidence check to avoid infinite loop
   for (let i = 0; i < 100; i++) {
     const packagePath = path.resolve(currentPath, 'package.json');
     const exists = fs.pathExistsSync(packagePath);

@@ -21,11 +21,11 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 export type ClosedDropdownClassKey = 'icon';
 
 const useStyles = makeStyles(
-  () =>
+  theme =>
     createStyles({
       icon: {
         position: 'absolute',
-        right: '4px',
+        right: theme.spacing(0.5),
         pointerEvents: 'none',
       },
     }),

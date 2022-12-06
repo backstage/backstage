@@ -393,6 +393,98 @@ You can add more icons, if the [default icons](https://github.com/backstage/back
 
 Note: If the icon is not available as one of the default icons or one you've added then it will fall back to Material UI's `LanguageIcon`
 
+## Custom Sidebar
+
+As you've seen there are many ways that you can customize your Backstage app. The following section will show you how you can customize the sidebar.
+
+### Sidebar Sub-menu
+
+For this example we'll show you how you can expand the sidebar with a sub-menu:
+
+1. Open the `Root.tsx` file located in `packages/app/src/components/Root` as this is where the sidebar code lives
+2. Then we want to add the following imports for the icons:
+
+   ```ts
+   import ApiIcon from '@material-ui/icons/Extension';
+   import ComponentIcon from '@material-ui/icons/Memory';
+   import DomainIcon from '@material-ui/icons/Apartment';
+   import ResourceIcon from '@material-ui/icons/Work';
+   import SystemIcon from '@material-ui/icons/Category';
+   import UserIcon from '@material-ui/icons/Person';
+   ```
+
+3. Then update the `@backstage/core-components` import like this:
+
+   ```diff
+     import {
+       Sidebar,
+       sidebarConfig,
+       SidebarDivider,
+       SidebarGroup,
+       SidebarItem,
+       SidebarPage,
+       SidebarScrollWrapper,
+       SidebarSpace,
+       useSidebarOpenState,
+       Link,
+   +   GroupIcon,
+   +   SidebarSubmenu,
+   +   SidebarSubmenuItem,
+     } from '@backstage/core-components';
+   ```
+
+4. Finally replace `<SidebarItem icon={HomeIcon} to="catalog" text="Home" />` with this:
+
+   ```ts
+   <SidebarItem icon={HomeIcon} to="catalog" text="Home">
+     <SidebarSubmenu title="Catalog">
+       <SidebarSubmenuItem
+         title="Domains"
+         to="catalog?filters[kind]=domain"
+         icon={DomainIcon}
+       />
+       <SidebarSubmenuItem
+         title="Systems"
+         to="catalog?filters[kind]=system"
+         icon={SystemIcon}
+       />
+       <SidebarSubmenuItem
+         title="Components"
+         to="catalog?filters[kind]=component"
+         icon={ComponentIcon}
+       />
+       <SidebarSubmenuItem
+         title="APIs"
+         to="catalog?filters[kind]=api"
+         icon={ApiIcon}
+       />
+       <SidebarDivider />
+       <SidebarSubmenuItem
+         title="Resources"
+         to="catalog?filters[kind]=resource"
+         icon={ResourceIcon}
+       />
+       <SidebarDivider />
+       <SidebarSubmenuItem
+         title="Groups"
+         to="catalog?filters[kind]=group"
+         icon={GroupIcon}
+       />
+       <SidebarSubmenuItem
+         title="Users"
+         to="catalog?filters[kind]=user"
+         icon={UserIcon}
+       />
+     </SidebarSubmenu>
+   </SidebarItem>
+   ```
+
+When you startup your Backstage app and hover over the Home option on the sidebar you'll now see a nice sub-menu appear with links to the various Kinds in your Catalog. It would look like this:
+
+![Sidebar sub-menu example](./../assets/getting-started/sidebar-submenu-example.png)
+
+You can see more ways to use this in the [Storybook Sidebar examples](https://backstage.io/storybook/?path=/story/layout-sidebar--sample-scalable-sidebar)
+
 ## Custom Homepage
 
 In addition to a custom theme, a custom logo, you can also customize the

@@ -52,7 +52,7 @@ export class DatabaseHandler {
   private columns = [
     'metadata.id',
     'metadata.entity_ref',
-    'metadata.name',
+    'metadata.title',
     'metadata.description',
     'metadata.status',
     'metadata.updated_at',
@@ -116,7 +116,7 @@ export class DatabaseHandler {
 
   async insertMetadata(bazaarProject: any) {
     const {
-      name,
+      title,
       entityRef,
       community,
       description,
@@ -129,7 +129,7 @@ export class DatabaseHandler {
 
     await this.client
       .insert({
-        name,
+        title,
         entity_ref: entityRef,
         community,
         description,
@@ -145,7 +145,7 @@ export class DatabaseHandler {
 
   async updateMetadata(bazaarProject: any) {
     const {
-      name,
+      title,
       id,
       entityRef,
       community,
@@ -158,7 +158,7 @@ export class DatabaseHandler {
     } = bazaarProject;
 
     return await this.client('metadata').where({ id: id }).update({
-      name,
+      title,
       entity_ref: entityRef,
       description,
       community,

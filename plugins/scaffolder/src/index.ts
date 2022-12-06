@@ -43,6 +43,7 @@ export {
   ScaffolderFieldExtensions,
 } from './extensions';
 export type {
+  CustomFieldExtensionSchema,
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,

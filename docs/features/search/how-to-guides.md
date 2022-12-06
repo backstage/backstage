@@ -171,6 +171,6 @@ const highlightOverride = {
 };
 ```
 
-[obj-mode]: https://nodejs.org/docs/latest-v14.x/api/stream.html#stream_object_mode
-[read-stream]: https://nodejs.org/docs/latest-v14.x/api/stream.html#stream_readable_streams
+[obj-mode]: https://nodejs.org/dist/latest-v16.x/docs/api/stream.html#stream_object_mode
+[read-stream]: https://nodejs.org/dist/latest-v16.x/docs/api/stream.html#readable-streams
 [async-gen]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of#iterating_over_async_generators

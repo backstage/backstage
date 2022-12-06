@@ -23,34 +23,56 @@ import {
   Typography,
 } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Props = {
   value: number;
   onChange: (value: number) => void;
 };
 
-const useStyles = makeStyles({
-  formControl: {
-    width: '100%',
-    maxWidth: 300,
+const useStyles = makeStyles(
+  {
+    formControl: {
+      width: '100%',
+      maxWidth: 300,
+    },
   },
-});
+  { name: 'PluginCatalogGraphMaxDepthFilter' },
+);
 
 export const MaxDepthFilter = ({ value, onChange }: Props) => {
   const classes = useStyles();
+  const onChangeRef = useRef(onChange);
+  const [currentValue, setCurrentValue] = useState(value);
 
+  // Keep a fresh reference to the latest callback
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  // If the value changes externally, update ourselves
+  useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
+
+  // When the entered text changes, update ourselves and communicate externally
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const v = Number(event.target.value);
-      onChange(v <= 0 ? Number.POSITIVE_INFINITY : v);
+      const newValueNumeric = Number(event.target.value);
+      const newValue =
+        Number.isFinite(newValueNumeric) && newValueNumeric > 0
+          ? newValueNumeric
+          : Number.POSITIVE_INFINITY;
+      setCurrentValue(newValue);
+      onChangeRef.current(newValue);
     },
-    [onChange],
+    [],
   );
 
   const reset = useCallback(() => {
-    onChange(Number.POSITIVE_INFINITY);
-  }, [onChange]);
+    setCurrentValue(Number.POSITIVE_INFINITY);
+    onChangeRef.current(Number.POSITIVE_INFINITY);
+  }, [onChangeRef]);
 
   return (
     <Box pb={1} pt={1}>
@@ -59,7 +81,7 @@ export const MaxDepthFilter = ({ value, onChange }: Props) => {
         <OutlinedInput
           type="number"
           placeholder="∞ Infinite"
-          value={isFinite(value) ? value : ''}
+          value={Number.isFinite(currentValue) ? String(currentValue) : ''}
           onChange={handleChange}
           endAdornment={
             <InputAdornment position="end">

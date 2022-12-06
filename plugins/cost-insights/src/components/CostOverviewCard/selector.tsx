@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Duration, Maybe, PageFilters } from '../../types';
+import { Duration, PageFilters } from '../../types';
+import { Maybe } from '@backstage/plugin-cost-insights-common';
 import { MapFiltersToProps } from '../../hooks/useFilters';
 
 type CostOverviewFilterProps = PageFilters & {

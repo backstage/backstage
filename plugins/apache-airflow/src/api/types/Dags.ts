@@ -44,6 +44,17 @@ export interface Dag {
   tags: Tag[];
 }
 
+export interface DagRun {
+  dag_run_id: string;
+  dag_id: string;
+  logical_date: string;
+  start_date: string;
+  end_date: string;
+  state: 'queued' | 'running' | 'success' | 'failed';
+  external_trigger: boolean;
+  conf: {};
+}
+
 export interface TimeDelta {
   __type: 'TimeDelta';
   days: number;

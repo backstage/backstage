@@ -20,7 +20,7 @@ import { lightTheme } from '@backstage/theme';
 import { waitFor } from '@testing-library/react';
 
 const clipboardSpy = jest.fn();
-Object.defineProperty(navigator, 'clipboard', {
+Object.defineProperty(window.navigator, 'clipboard', {
   value: {
     writeText: clipboardSpy,
   },
