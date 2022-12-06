@@ -124,11 +124,15 @@ export default async (opts: OptionValues): Promise<void> => {
 
     Task.log();
     Task.log(
-      chalk.green(`🥇  Successfully created ${chalk.cyan(answers.name)}`),
+      chalk.green(
+        `🥇  Successfully created ${chalk.cyan(answers.name)} in ${chalk.cyan(
+          `${appDir}`,
+        )}`,
+      ),
     );
     Task.log();
     Task.section('All set! Now you might want to');
-    Task.log(`  Run the app: ${chalk.cyan(`cd ${answers.name} && yarn dev`)}`);
+    Task.log(`  Run the app: ${chalk.cyan(`cd ${appDir} && yarn dev`)}`);
     Task.log(
       '  Set up the software catalog: https://backstage.io/docs/features/software-catalog/configuration',
     );
