@@ -130,6 +130,8 @@ export type Props = {
   subheader?: ReactNode;
   divider?: boolean;
   deepLink?: BottomLinkProps;
+  /** @deprecated Use errorBoundaryProps instead */
+  slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
   variant?: InfoCardVariants;
   children?: ReactNode;
