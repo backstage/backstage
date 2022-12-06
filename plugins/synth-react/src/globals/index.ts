@@ -16,9 +16,46 @@
 import type { PlatformScript } from 'platformscript';
 import * as ps from 'platformscript';
 import { Component } from './Component';
+import { Fragment } from './Fragment';
+
+type ModuleResolvers = Record<string, () => Promise<Record<string, unknown>>>;
+
+function createModuleResolver(resolvers: ModuleResolvers) {
+  return ps.fn(function* ({ arg, env }) {
+    const $arg = yield* env.eval(arg);
+
+    if ($arg.type !== 'string') {
+      throw new TypeError(`Backstage.resolve expects string as an argument`);
+    }
+
+    if (!($arg.value in resolvers)) {
+      throw new Error(`Unknown module: ${$arg.value}`);
+    }
+
+    const jsMod: Record<string, unknown> = yield {
+      type: 'action',
+      *operation(resolve, reject) {
+        resolvers[$arg.value]().then(resolve, reject);
+        yield {
+          type: 'suspend',
+        };
+      },
+    };
+
+    return ps.external(jsMod, ([key]) => ps.external(jsMod[key]));
+  });
+}
 
 export function globals(interpreter: PlatformScript) {
   return ps.map({
-    Component: Component,
+    Backstage: ps.map({
+      '<>': Fragment,
+      Component: Component,
+      resolve: createModuleResolver({
+        '@material-ui/core/Card': () => import('@material-ui/core/Card'),
+        '@material-ui/core/Typography': () =>
+          import('@material-ui/core/Typography'),
+      }),
+    }),
   });
 }

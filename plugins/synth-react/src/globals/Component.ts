@@ -37,34 +37,12 @@ export const Component = ps.fn(function* (c) {
     const $arg: PSValue = yield* env.eval(arg);
     if (rest.type === 'map') {
       // add key prop to each item in children array
-      for (const [key, value] of rest.value.entries()) {
-        if (
-          key.type === 'string' &&
-          key.value === 'children' &&
-          value.type === 'list'
-        ) {
-          let index = 0;
-          for (const item of value.value) {
-            if (item.type === 'map') {
-              let found;
-              for (const [propKey] of item.value.entries()) {
-                if (propKey.value === 'key') {
-                  found = true;
-                  break;
-                }
-              }
-              if (!found) {
-                item.value.set(
-                  { type: 'string', value: 'key' },
-                  { type: 'string', value: String(index) },
-                );
-              }
-            }
-            index++;
-          }
-        }
+      const children = lookup('children', rest);
+      if (children && children.type === 'list') {
+        injectKeyProps(children);
       }
     }
+
     const $options = yield* env.eval(rest);
 
     const props: Record<string, any> = {};
@@ -100,3 +78,18 @@ export const Component = ps.fn(function* (c) {
     return ps.external(React.createElement(cType.value, props, children));
   });
 });
+
+function injectKeyProps(list: ps.PSList) {
+  let index = 0;
+  for (const item of list.value) {
+    if (item.type === 'map') {
+      if (!lookup('key', item)) {
+        item.value.set(
+          { type: 'string', value: 'key' },
+          { type: 'string', value: String(index) },
+        );
+      }
+    }
+    index++;
+  }
+}

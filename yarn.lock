@@ -7951,7 +7951,7 @@ __metadata:
     "@types/node": "*"
     cross-fetch: ^3.1.5
     msw: ^0.49.0
-    platformscript: 1.0.0-alpha.6
+    platformscript: 1.0.0-alpha.7
     react-inspector: ^6.0.1
     react-use: ^17.2.4
     yaml: ^2.1.3
@@ -31778,12 +31778,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"platformscript@npm:1.0.0-alpha.6":
-  version: 1.0.0-alpha.6
-  resolution: "platformscript@npm:1.0.0-alpha.6"
+"platformscript@npm:1.0.0-alpha.7":
+  version: 1.0.0-alpha.7
+  resolution: "platformscript@npm:1.0.0-alpha.7"
   dependencies:
     yaml-ast-parser: 0.0.43
-  checksum: f8c1d985a1e2a15cd48d6f10f62218603e4beaa59b946aff908a7c9163574da7bd61066d8b867d6a13237eb9ea65b0ae269b1eb200017f9d3805160f2faef809
+  checksum: 151137f8809ded0fac99c0c384414324ffc62deae3c4735b7c2f953e8033087897d95af8c7b39e9d08925243a98e384ff87b0926bfacb2364bd523383f53c5a9
   languageName: node
   linkType: hard
 

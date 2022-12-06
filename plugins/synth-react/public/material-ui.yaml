@@ -1,0 +1,12 @@
+<Card>:
+  $Backstage.Component:
+    type: 
+      $let:
+        exports: { $Backstage.resolve: "@material-ui/core/Card" }
+      $do: $exports.default
+<Typography>:
+  $Backstage.Component:
+    type: 
+      $let:
+        exports: { $Backstage.resolve: "@material-ui/core/Typography" }
+      $do: $exports.default

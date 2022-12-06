@@ -29,8 +29,11 @@ export function usePlatformScript(yaml: string) {
   return useAsync(async (): Promise<PSValue> => {
     const program = ps.parse(yaml as string);
 
-    const mod = await platformscript.eval(program);
+    const mod = await platformscript.moduleEval(
+      program,
+      new URL('/dynamic.yaml', window.location.href),
+    );
 
-    return mod;
+    return mod.value;
   }, [yaml]);
 }

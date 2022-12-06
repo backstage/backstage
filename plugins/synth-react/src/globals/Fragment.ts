@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { synthPlugin, SynthPage } from '../src/plugin';
+import * as ps from 'platformscript';
 
-const HELLO_WORLD = `$import:
-    - names: [<h1>]
-      from: ./html.yaml
-    - names: [<Typography>]
-      from: ./material-ui.yaml
-$do:
-  $Backstage.<>:
-    - $<h1>: Hello World 
-    - $<Typography>:
-        component: p
-      children: The quick brown fox jumps over the lazy dog
-`;
+export const Fragment = ps.fn(function* ({ arg, env }) {
+  const $arg = yield* env.eval(arg);
 
-createDevApp()
-  .registerPlugin(synthPlugin)
-  .addPage({
-    element: <SynthPage yaml={HELLO_WORLD} />,
-    title: 'Synth Page',
-    path: '/synth-react',
-  })
-  .render();
+  let elements: ps.PSValue[];
+  if ($arg.type === 'list') {
+    elements = $arg.value;
+  } else {
+    elements = [$arg.value];
+  }
+
+  const children = elements.map((psValue: { value: any }, i: number) => ({
+    ...psValue.value,
+    key: psValue.value.key !== null ? psValue.value.key : i,
+  }));
+
+  return ps.external(React.createElement(React.Fragment, null, children));
+});
