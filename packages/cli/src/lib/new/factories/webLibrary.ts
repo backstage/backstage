@@ -31,8 +31,8 @@ type Options = {
   codeOwnersPath?: string;
 };
 
-export const webLibraryPackage = createFactory<Options>({
-  name: 'web-library-package',
+export const webLibrary = createFactory<Options>({
+  name: 'web-library',
   description: 'A new web-library package',
   optionsDiscovery: async () => ({
     codeOwnersPath: await getCodeownersFilePath(paths.targetRoot),
@@ -42,7 +42,7 @@ export const webLibraryPackage = createFactory<Options>({
     const { id } = options;
 
     const name = ctx.scope
-      ? `@${ctx.scope}/plugin-${id}`
+      ? `@${ctx.scope}/${id}`
       : `backstage-plugin-${id}`;
     const extensionName = `${upperFirst(camelCase(id))}Page`;
 
@@ -50,7 +50,7 @@ export const webLibraryPackage = createFactory<Options>({
     Task.log(`Creating web-library package ${chalk.cyan(name)}`);
 
     const targetDir = ctx.isMonoRepo
-      ? paths.resolveTargetRoot('plugins', id)
+      ? paths.resolveTargetRoot('packages', id)
       : paths.resolveTargetRoot(`backstage-plugin-${id}`);
 
     await executePluginPackageTemplate(ctx, {
@@ -117,7 +117,7 @@ export const webLibraryPackage = createFactory<Options>({
     }
 
     if (options.owner) {
-      await addCodeownersEntry(`/plugins/${id}`, options.owner);
+      await addCodeownersEntry(`/packages/${id}`, options.owner);
     }
 
     await Task.forCommand('yarn install', { cwd: targetDir, optional: true });

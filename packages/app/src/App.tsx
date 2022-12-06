@@ -108,6 +108,7 @@ import { PlaylistIndexPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 
+
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
