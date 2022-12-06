@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
+import { within } from '@testing-library/react';
 import { InfoCard } from './InfoCard';
 
 const minProps = {
@@ -35,5 +36,39 @@ describe('<InfoCard />', () => {
   it('renders a deepLink when prop is set', async () => {
     const rendered = await renderInTestApp(<InfoCard {...minProps} />);
     expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
+  });
+
+  describe('Subheader', () => {
+    it('shows the subheader passed in via the subheader prop', async () => {
+      const { getByTestId } = await renderInTestApp(
+        <InfoCard {...minProps} subheader="example subheader" />,
+      );
+
+      const subheaderContainer = getByTestId('info-card-subheader');
+
+      expect(
+        within(subheaderContainer).getByText('example subheader'),
+      ).toBeInTheDocument();
+    });
+
+    it('shows the icon passed in via the icon prop', async () => {
+      const { getByTestId } = await renderInTestApp(
+        <InfoCard {...minProps} icon={<span data-testid="mock-icon" />} />,
+      );
+
+      const subheaderContainer = getByTestId('info-card-subheader');
+
+      expect(
+        within(subheaderContainer).getByTestId('mock-icon'),
+      ).toBeInTheDocument();
+    });
+
+    it('is not rendered where there is not an icon or subheading', async () => {
+      const { queryByTestId } = await renderInTestApp(
+        <InfoCard {...minProps} />,
+      );
+
+      expect(queryByTestId('info-card-subheader')).not.toBeInTheDocument();
+    });
   });
 });
