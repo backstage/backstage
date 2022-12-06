@@ -36,7 +36,7 @@ import { generateStableHash } from './util';
 describe('Default Processing Database', () => {
   const defaultLogger = getVoidLogger();
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
   async function createDatabase(
@@ -991,13 +991,7 @@ describe('Default Processing Database', () => {
             added: [],
             removed: [
               {
-                entity: {
-                  apiVersion: '1.0.0',
-                  metadata: {
-                    name: 'new-root',
-                  },
-                  kind: 'Location',
-                } as Entity,
+                entityRef: 'location:default/new-root',
                 locationKey: 'file:/tmp/foobar',
               },
             ],

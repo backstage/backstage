@@ -89,7 +89,7 @@ export const EntityRelationsGraph = (props: {
 }) => {
   const {
     rootEntityNames,
-    maxDepth = Number.POSITIVE_INFINITY,
+    maxDepth = 2,
     unidirectional = true,
     mergeRelations = true,
     kinds,

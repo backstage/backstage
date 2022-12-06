@@ -73,7 +73,7 @@ export const CatalogEntityPage: () => JSX.Element;
 // @public (undocumented)
 export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function CatalogKindHeader(props: CatalogKindHeaderProps): JSX.Element;
 
 // @public

@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-export { configServiceRef } from './configServiceRef';
-export { httpRouterServiceRef } from './httpRouterServiceRef';
+import * as coreServices from './coreServices';
+
+export { coreServices };
 export type { HttpRouterService } from './httpRouterServiceRef';
-export { loggerServiceRef } from './loggerServiceRef';
 export type { Logger } from './loggerServiceRef';
-export { urlReaderServiceRef } from './urlReaderServiceRef';
-export { cacheServiceRef } from './cacheServiceRef';
-export { databaseServiceRef } from './databaseServiceRef';
-export { discoveryServiceRef } from './discoveryServiceRef';
-export { tokenManagerServiceRef } from './tokenManagerServiceRef';
-export { permissionsServiceRef } from './permissionsServiceRef';
-export { schedulerServiceRef } from './schedulerServiceRef';
-export { rootLoggerServiceRef } from './rootLoggerServiceRef';
-export { pluginMetadataServiceRef } from './pluginMetadataServiceRef';
-export { lifecycleServiceRef } from './lifecycleServiceRef';
 export type {
   BackendLifecycle,
   BackendLifecycleShutdownHook,

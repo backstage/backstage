@@ -47,7 +47,7 @@ const useStyles = makeStyles(
       padding: theme.spacing(2, 2, 2, 2.5),
     },
     headerTitle: {
-      fontWeight: 700,
+      fontWeight: theme.typography.fontWeightBold,
     },
     headerSubheader: {
       paddingTop: theme.spacing(1),
@@ -200,8 +200,15 @@ export function InfoCard(props: Props): JSX.Element {
   }
 
   const cardSubTitle = () => {
+    if (!subheader && !icon) {
+      return null;
+    }
+
     return (
-      <div className={classes.headerSubheader}>
+      <div
+        className={classes.headerSubheader}
+        data-testid="info-card-subheader"
+      >
         {subheader && <div className={classes.subheader}>{subheader}</div>}
         {icon}
       </div>

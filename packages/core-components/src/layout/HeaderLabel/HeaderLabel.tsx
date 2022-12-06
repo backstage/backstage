@@ -30,7 +30,7 @@ const useStyles = makeStyles(
     },
     label: {
       color: theme.palette.common.white,
-      fontWeight: 'bold',
+      fontWeight: theme.typography.fontWeightBold,
       letterSpacing: 0,
       fontSize: theme.typography.fontSize,
       marginBottom: theme.spacing(1) / 2,
@@ -77,10 +77,10 @@ export function HeaderLabel(props: HeaderLabelProps) {
   );
   return (
     <Grid item>
-      <span className={classes.root}>
+      <Typography component="span" className={classes.root}>
         <Typography className={classes.label}>{label}</Typography>
         {url ? <Link to={url}>{content}</Link> : content}
-      </span>
+      </Typography>
     </Grid>
   );
 }

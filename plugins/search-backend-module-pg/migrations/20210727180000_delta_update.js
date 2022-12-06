@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// @ts-check
+
 /**
  * @param {import('knex').Knex} knex
  */

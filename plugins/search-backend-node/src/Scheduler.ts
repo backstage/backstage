@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AbortController } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { TaskFunction, TaskRunner } from '@backstage/backend-tasks';
 

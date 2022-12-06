@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { AppConfig, Config } from '@backstage/config';
 import React, {
   ComponentType,
   createContext,
   PropsWithChildren,
   ReactElement,
   useContext,
-  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -116,7 +116,7 @@ function getBasePath(configApi: Config) {
 function readBasePath(configApi: ConfigApi) {
   let { pathname } = new URL(
     configApi.getOptionalString('app.baseUrl') ?? '/',
-    'http://dummy.dev', // baseUrl can be specified as just a path
+    'http://sample.dev', // baseUrl can be specified as just a path
   );
   pathname = pathname.replace(/\/*$/, '');
   return pathname;
@@ -154,7 +154,71 @@ function useConfigLoader(
     };
   }
 
-  const configReader = ConfigReader.fromConfigs(config.value ?? []);
+  let configReader;
+  /**
+   * config.value can be undefined or empty. If it's either, don't bother overriding anything.
+   */
+  if (config.value?.length) {
+    const urlConfigReader = ConfigReader.fromConfigs(config.value);
+
+    /**
+     * Return the origin of the given URL.
+     * @param url An absolute URL.
+     * @returns The given URL's origin.
+     * @throws If fullUrl is not a correctly formatted absolute URL.
+     */
+    const getOrigin = (url: string) => new URL(url).origin;
+
+    /**
+     * Resolve an absolute URL as relative to the current document.
+     * @param fullUrl URL to resolve.
+     * @returns Absolute URL with origin as the current document origin.
+     * @throws If fullUrl is not a correctly formatted absolute URL.
+     */
+    const overrideOrigin = (fullUrl: string) => {
+      return new URL(
+        fullUrl.replace(getOrigin(fullUrl), ''),
+        document.location.origin,
+      ).href;
+    };
+
+    /**
+     * Test configs may not define `app.baseUrl` or `backend.baseUrl` and we
+     *  don't want to enforce here.
+     */
+    const appBaseUrl = urlConfigReader.getOptionalString('app.baseUrl');
+    const backendBaseUrl = urlConfigReader.getOptionalString('backend.baseUrl');
+
+    let configs = config.value;
+    const relativeResolverConfig: AppConfig = {
+      data: {},
+      context: 'relative-resolver',
+    };
+    if (appBaseUrl && backendBaseUrl) {
+      const appOrigin = getOrigin(appBaseUrl);
+      const backendOrigin = getOrigin(backendBaseUrl);
+
+      if (appOrigin === backendOrigin) {
+        relativeResolverConfig.data.backend = {
+          baseUrl: overrideOrigin(backendBaseUrl),
+        };
+      }
+    }
+    if (appBaseUrl) {
+      relativeResolverConfig.data.app = {
+        baseUrl: overrideOrigin(appBaseUrl),
+      };
+    }
+    /**
+     * Only add the relative config if there is actually data to add.
+     */
+    if (Object.keys(relativeResolverConfig.data).length) {
+      configs = configs.concat([relativeResolverConfig]);
+    }
+    configReader = ConfigReader.fromConfigs(configs);
+  } else {
+    configReader = ConfigReader.fromConfigs([]);
+  }
 
   return { api: configReader };
 }
@@ -230,6 +294,7 @@ export class AppManager implements BackstageApp {
     let routesHaveBeenValidated = false;
 
     const Provider = ({ children }: PropsWithChildren<{}>) => {
+      const needsFeatureFlagRegistrationRef = useRef(true);
       const appThemeApi = useMemo(
         () => AppThemeSelector.createWithStorage(this.themes),
         [],
@@ -284,10 +349,21 @@ export class AppManager implements BackstageApp {
         this.configApi = api;
       }
 
-      useEffect(() => {
-        if (hasConfigApi) {
-          const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+      if ('node' in loadedConfig) {
+        // Loading or error
+        return loadedConfig.node;
+      }
 
+      // We can't register feature flags just after the element traversal, because the
+      // config API isn't available yet and implementations frequently depend on it.
+      // Instead we make it happen immediately, to make sure all flags are available
+      // for the first render.
+      if (hasConfigApi && needsFeatureFlagRegistrationRef.current) {
+        needsFeatureFlagRegistrationRef.current = false;
+
+        const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+
+        if (featureFlagsApi) {
           for (const plugin of this.plugins.values()) {
             if ('getFeatureFlags' in plugin) {
               for (const flag of plugin.getFeatureFlags()) {
@@ -310,15 +386,15 @@ export class AppManager implements BackstageApp {
 
           // Go through the featureFlags returned from the traversal and
           // register those now the configApi has been loaded
+          const registeredFlags = featureFlagsApi.getRegisteredFlags();
+          const flagNames = new Set(registeredFlags.map(f => f.name));
           for (const name of featureFlags) {
-            featureFlagsApi.registerFlag({ name, pluginId: '' });
+            // Prevents adding duplicate feature flags
+            if (!flagNames.has(name)) {
+              featureFlagsApi.registerFlag({ name, pluginId: '' });
+            }
           }
         }
-      }, [hasConfigApi, loadedConfig, featureFlags]);
-
-      if ('node' in loadedConfig) {
-        // Loading or error
-        return loadedConfig.node;
       }
 
       const { ThemeProvider = AppThemeProvider } = this.components;

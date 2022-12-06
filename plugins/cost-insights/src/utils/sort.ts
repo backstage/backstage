@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DateAggregation, ResourceData } from '../types';
+import { ResourceData } from '../types';
+import { DateAggregation } from '@backstage/plugin-cost-insights-common';
 import { ProductState } from './loading';
 
 export const aggregationSort = (

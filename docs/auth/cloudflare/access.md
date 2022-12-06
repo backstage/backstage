@@ -63,7 +63,7 @@ export default async function createPlugin(
           // and the access token and produces the Backstage token with the
           // relevant user info.
           async resolver({ profile, result }, ctx) {
-            // Somehow compute the Backstage token claims. Just some dummy code
+            // Somehow compute the Backstage token claims. Just some sample code
             // shown here, but you may want to query your LDAP server, or
             // https://<teamName>.cloudflareaccess.com/cdn-cgi/access/get-identity
             // https://developers.cloudflare.com/cloudflare-one/identity/users/validating-json/#groups-within-a-jwt

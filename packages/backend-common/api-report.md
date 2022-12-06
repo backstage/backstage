@@ -6,8 +6,6 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
-import { AbortController as AbortController_2 } from 'node-abort-controller';
-import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import aws from 'aws-sdk';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
@@ -200,7 +198,7 @@ export interface ContainerRunner {
 
 // @alpha
 export interface Context {
-  readonly abortSignal: AbortSignal_2;
+  readonly abortSignal: AbortSignal;
   readonly deadline: Date | undefined;
   value<T = unknown>(key: string): T | undefined;
 }
@@ -210,7 +208,7 @@ export class Contexts {
   static root(): Context;
   static withAbort(
     parentCtx: Context,
-    source: AbortController_2 | AbortSignal_2,
+    source: AbortController | AbortSignal,
   ): Context;
   static withTimeoutDuration(parentCtx: Context, timeout: Duration): Context;
   static withTimeoutMillis(parentCtx: Context, timeout: number): Context;
@@ -544,7 +542,7 @@ export type ReadTreeOptions = {
     },
   ): boolean;
   etag?: string;
-  signal?: AbortSignal_2;
+  signal?: AbortSignal;
 };
 
 // @public
@@ -598,7 +596,7 @@ export type ReadTreeResponseFile = {
 // @public
 export type ReadUrlOptions = {
   etag?: string;
-  signal?: AbortSignal_2;
+  signal?: AbortSignal;
 };
 
 // @public
@@ -657,7 +655,7 @@ export type RunContainerOptions = {
 // @public
 export type SearchOptions = {
   etag?: string;
-  signal?: AbortSignal_2;
+  signal?: AbortSignal;
 };
 
 // @public

@@ -19,15 +19,17 @@ import { DateTime } from 'luxon';
 import { CostInsightsApi, ProductInsightsOptions } from '../api';
 import {
   Alert,
-  Cost,
   DEFAULT_DATE_FORMAT,
+  ProjectGrowthData,
+  UnlabeledDataflowData,
+} from '../types';
+import {
   Entity,
   Group,
   MetricData,
   Project,
-  ProjectGrowthData,
-  UnlabeledDataflowData,
-} from '../types';
+  Cost,
+} from '@backstage/plugin-cost-insights-common';
 import { KubernetesMigrationAlert } from './alerts';
 import { ProjectGrowthAlert, UnlabeledDataflowAlert } from '../alerts';
 import {
