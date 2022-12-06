@@ -169,9 +169,8 @@ export class StackOverflowQuestionsCollatorFactory
         page = page + 1;
       }
       else {
-        this.logger.warn(
-          `GET request to ${this.baseUrl}/questions${params}${apiKeyParam}&page=${page} failed`, `\n`,
-          `Error ${data.error_id}, ${data.error_name}. ${data.error_message}`,
+        this.logger.error(
+          `GET request to ${this.baseUrl}/questions${params}${apiKeyParam}&page=${page} failed:\n Error ${data.error_id}, ${data.error_name}. ${data.error_message}`,
         );
         break;
       }
