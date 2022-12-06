@@ -16,7 +16,6 @@
 
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
-import { spawnSync } from 'child_process';
 import {
   createTemporaryTsConfig,
   categorizePackageDirs,
@@ -25,8 +24,18 @@ import {
   buildDocs,
 } from './api-extractor';
 import { findPackageDirs, paths as cliPaths } from '../../lib/paths';
+import { generateTSC } from './generateTSC';
 
-export default async (opts: OptionValues) => {
+type Options = {
+  ci?: boolean;
+  docs?: boolean;
+  tsc?: boolean;
+  paths?: string[];
+  allowWarnings?: string[] | boolean;
+  omitMessages?: string[];
+} & OptionValues;
+
+export const buildApiReports = async (opts: Options) => {
   const tmpDir = cliPaths.resolveTargetRoot(
     './node_modules/.cache/api-extractor',
   );
@@ -90,6 +99,7 @@ export default async (opts: OptionValues) => {
     });
   }
 
+  console.log(isDocsBuild);
   if (isDocsBuild) {
     console.log('# Generating package documentation');
     await buildDocs({
@@ -98,37 +108,6 @@ export default async (opts: OptionValues) => {
     });
   }
 };
-
-/**
- * Generates the TypeScript declaration files for the specified project, using the provided `tsconfig.json` file.
- *
- * Any existing declaration files in the `dist-types` directory will be deleted before generating the new ones.
- *
- * If the `tsc` command exits with a non-zero exit code, the process will be terminated with the same exit code.
- *
- * @param tsconfigFilePath {string} The path to the `tsconfig.json` file to use for generating the declaration files.
- * @returns {Promise<void>} A promise that resolves when the declaration files have been generated.
- */
-export async function generateTSC(tsconfigFilePath: string) {
-  await fs.remove(cliPaths.resolveTargetRoot('dist-types'));
-  const { status } = spawnSync(
-    'yarn',
-    [
-      'tsc',
-      ['--project', tsconfigFilePath],
-      ['--skipLibCheck', 'false'],
-      ['--incremental', 'false'],
-    ].flat(),
-    {
-      stdio: 'inherit',
-      shell: true,
-      cwd: cliPaths.targetRoot,
-    },
-  );
-  if (status !== 0) {
-    process.exit(status || undefined);
-  }
-}
 
 /**
  * Retrieves the list of package names in the "workspaces" field of the `package.json` file in the current workspace root.
@@ -173,6 +152,6 @@ function parseArrayOption(value: string[] | boolean | undefined) {
     return value;
   }
   return value?.flatMap((str: string) =>
-    str.includes(',') ? str.split(',') : str,
+    str.includes(',') ? str.split(',').map(s => s.trim()) : str,
   );
 }

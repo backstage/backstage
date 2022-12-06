@@ -39,7 +39,9 @@ export function registerCommands(program: Command) {
     )
     .description('Generate an API report for selected packages')
     .action(
-      lazy(() => import('./api-reports/api-reports').then(m => m.default)),
+      lazy(() =>
+        import('./api-reports/api-reports').then(m => m.buildApiReports),
+      ),
     );
 
   program
