@@ -90,7 +90,7 @@ async function listPackages() {
         try {
           const pkg = require(resolvePath(dir, 'package.json'));
           pkgs.push({
-            location: relativePath(process.cwd(), dir),
+            path: relativePath(process.cwd(), dir),
             name: pkg.name,
           });
         } catch {
