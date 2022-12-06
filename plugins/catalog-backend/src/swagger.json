@@ -1,0 +1,523 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"RefreshOptions": {
+				"properties": {
+					"authorizationToken": {
+						"type": "string"
+					},
+					"entityRef": {
+						"type": "string",
+						"description": "The reference to a single entity that should be refreshed"
+					}
+				},
+				"required": [
+					"entityRef"
+				],
+				"type": "object",
+				"description": "Options for requesting a refresh of entities in the catalog."
+			},
+			"JsonObject": {
+				"properties": {},
+				"type": "object",
+				"description": "A type representing all allowed JSON object values."
+			},
+			"Record_string.string_": {
+				"properties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"EntityLink": {
+				"properties": {
+					"type": {
+						"type": "string",
+						"description": "An optional value to categorize links into specific groups"
+					},
+					"icon": {
+						"type": "string",
+						"description": "An optional semantic key that represents a visual icon."
+					},
+					"title": {
+						"type": "string",
+						"description": "An optional descriptive title for the link."
+					},
+					"url": {
+						"type": "string",
+						"description": "The url to the external site, document, etc."
+					}
+				},
+				"required": [
+					"url"
+				],
+				"type": "object",
+				"description": "A link to external information that is related to the entity."
+			},
+			"EntityMeta": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/JsonObject"
+					},
+					{
+						"properties": {
+							"links": {
+								"items": {
+									"$ref": "#/components/schemas/EntityLink"
+								},
+								"type": "array",
+								"description": "A list of external hyperlinks related to the entity."
+							},
+							"tags": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array",
+								"description": "A list of single-valued strings, to for example classify catalog entities in\nvarious ways."
+							},
+							"annotations": {
+								"$ref": "#/components/schemas/Record_string.string_",
+								"description": "Key/value pairs of non-identifying auxiliary information attached to the\nentity."
+							},
+							"labels": {
+								"$ref": "#/components/schemas/Record_string.string_",
+								"description": "Key/value pairs of identifying information attached to the entity."
+							},
+							"description": {
+								"type": "string",
+								"description": "A short (typically relatively few words, on one line) description of the\nentity."
+							},
+							"title": {
+								"type": "string",
+								"description": "A display name of the entity, to be presented in user interfaces instead\nof the `name` property above, when available.\n\nThis field is sometimes useful when the `name` is cumbersome or ends up\nbeing perceived as overly technical. The title generally does not have\nas stringent format requirements on it, so it may contain special\ncharacters and be more explanatory. Do keep it very short though, and\navoid situations where a title can be confused with the name of another\nentity, or where two entities share a title.\n\nNote that this is only for display purposes, and may be ignored by some\nparts of the code. Entity references still always make use of the `name`\nproperty, not the title."
+							},
+							"namespace": {
+								"type": "string",
+								"description": "The namespace that the entity belongs to."
+							},
+							"name": {
+								"type": "string",
+								"description": "The name of the entity.\n\nMust be unique within the catalog at any given point in time, for any\ngiven namespace + kind pair. This value is part of the technical\nidentifier of the entity, and as such it will appear in URLs, database\ntables, entity references, and similar. It is subject to restrictions\nregarding what characters are allowed.\n\nIf you want to use a different, more human readable string with fewer\nrestrictions on it in user interfaces, see the `title` field below."
+							},
+							"etag": {
+								"type": "string",
+								"description": "An opaque string that changes for each update operation to any part of\nthe entity, including metadata.\n\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, and the server will then reject the\noperation if it does not match the current stored value."
+							},
+							"uid": {
+								"type": "string",
+								"description": "A globally unique ID for the entity.\n\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, but the server is free to reject requests\nthat do so in such a way that it breaks semantics."
+							}
+						},
+						"required": [
+							"name"
+						],
+						"type": "object"
+					}
+				],
+				"description": "Metadata fields common to all versions/kinds of entity."
+			},
+			"EntityRelation": {
+				"properties": {
+					"targetRef": {
+						"type": "string",
+						"description": "The entity ref of the target of this relation."
+					},
+					"type": {
+						"type": "string",
+						"description": "The type of the relation."
+					}
+				},
+				"required": [
+					"targetRef",
+					"type"
+				],
+				"type": "object",
+				"description": "A relation of a specific type to another entity in the catalog."
+			},
+			"Entity": {
+				"properties": {
+					"relations": {
+						"items": {
+							"$ref": "#/components/schemas/EntityRelation"
+						},
+						"type": "array",
+						"description": "The relations that this entity has with other entities."
+					},
+					"spec": {
+						"$ref": "#/components/schemas/JsonObject",
+						"description": "The specification data describing the entity itself."
+					},
+					"metadata": {
+						"$ref": "#/components/schemas/EntityMeta",
+						"description": "Metadata related to the entity."
+					},
+					"kind": {
+						"type": "string",
+						"description": "The high level entity type being described."
+					},
+					"apiVersion": {
+						"type": "string",
+						"description": "The version of specification format for this particular entity that\nthis is written against."
+					}
+				},
+				"required": [
+					"metadata",
+					"kind",
+					"apiVersion"
+				],
+				"type": "object",
+				"description": "The parts of the format that's common to all versions/kinds of entity."
+			},
+			"EntityAncestryResponse": {
+				"properties": {
+					"items": {
+						"items": {
+							"properties": {
+								"parentEntityRefs": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								},
+								"entity": {
+									"$ref": "#/components/schemas/Entity"
+								}
+							},
+							"required": [
+								"parentEntityRefs",
+								"entity"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"rootEntityRef": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"items",
+					"rootEntityRef"
+				],
+				"type": "object"
+			},
+			"Record_string.Array__value-string--count-number___": {
+				"properties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"EntityFacetsResponse": {
+				"description": "The response shape for {@link EntitiesCatalog.facets}.",
+				"properties": {
+					"facets": {
+						"$ref": "#/components/schemas/Record_string.Array__value-string--count-number___",
+						"description": "The computed facets, one entry per facet in the request."
+					}
+				},
+				"required": [
+					"facets"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "@backstage/plugin-catalog-backend",
+		"version": "1.6.0-next.1",
+		"description": "The Backstage backend plugin that provides the Backstage catalog",
+		"license": {
+			"name": "Apache-2.0"
+		},
+		"contact": {}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/refresh": {
+			"post": {
+				"operationId": "RefreshEntity",
+				"responses": {
+					"200": {
+						"description": "Refreshed"
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RefreshOptions"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/entities": {
+			"get": {
+				"operationId": "GetEntities",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Entity"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "filter",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "fields",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "offset",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "after",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/entities/by-uid/{uid}": {
+			"get": {
+				"operationId": "GetEntityByUid",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Entity"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uid",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "header",
+						"name": "authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/entities/by-name/{kind}/{namespace}/{name}": {
+			"get": {
+				"operationId": "GetEntityByName",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Entity"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "kind",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "namespace",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "name",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "header",
+						"name": "authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/entities/by-name/{kind}/{namespace}/{name}/ancestry": {
+			"get": {
+				"operationId": "GetEntityAncestryByName",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EntityAncestryResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "kind",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "namespace",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "name",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "header",
+						"name": "authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/entity-facets": {
+			"get": {
+				"operationId": "GetEntityFacets",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EntityFacetsResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "facet",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "header",
+						"name": "authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "filter",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

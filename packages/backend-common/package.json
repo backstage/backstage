@@ -58,7 +58,7 @@
     "concat-stream": "^2.0.0",
     "cors": "^2.8.5",
     "dockerode": "^3.3.1",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "express-promise-router": "^4.1.0",
     "fs-extra": "10.1.0",
     "git-url-parse": "^13.0.0",
@@ -80,6 +80,7 @@
     "selfsigned": "^2.0.0",
     "stoppable": "^1.1.0",
     "tar": "^6.1.12",
+    "tsoa": "^4.1.3",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
     "yauzl": "^2.10.0",
@@ -119,7 +120,8 @@
     "msw": "^0.49.0",
     "mysql2": "^2.2.5",
     "recursive-readdir": "^2.2.2",
-    "supertest": "^6.1.3"
+    "supertest": "^6.1.3",
+    "swagger-autogen": "^2.22.0"
   },
   "files": [
     "dist",

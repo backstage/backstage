@@ -9,6 +9,8 @@
   "compilerOptions": {
     "outDir": "dist-types",
     "rootDir": ".",
-    "useUnknownInCatchVariables": false
+    "useUnknownInCatchVariables": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }

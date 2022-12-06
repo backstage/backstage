@@ -1,0 +1,11 @@
+{
+    "entryFile": "packages/backend-common/src/index.ts",
+    "noImplicitAdditionalProperties": "throw-on-extras",
+    "spec": {
+        "outputDirectory": "dist",
+        "specVersion": 3
+    },
+    "routes": {
+        "routesDir": "dist"
+    }
+}

@@ -37,9 +37,9 @@ function getPathArrayAndValue(input: Entity, field: string) {
 }
 
 export function parseEntityTransformParams(
-  params: Record<string, unknown>,
+  fieldsParam: string | undefined,
 ): ((entity: Entity) => Entity) | undefined {
-  const fieldsStrings = parseStringsParam(params.fields, 'fields');
+  const fieldsStrings = parseStringsParam(fieldsParam, 'fields');
   if (!fieldsStrings) {
     return undefined;
   }

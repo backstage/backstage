@@ -23,10 +23,10 @@ import { parseStringsParam } from './common';
  * /entities?filter=metadata.namespace=default,kind=Component
  */
 export function parseEntityFilterParams(
-  params: Record<string, unknown>,
+  filter: string | undefined,
 ): EntityFilter | undefined {
   // Each filter string is on the form a=b,c=d
-  const filterStrings = parseStringsParam(params.filter, 'filter');
+  const filterStrings = parseStringsParam(filter, 'filter');
   if (!filterStrings) {
     return undefined;
   }

@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { IocContainer } from '@tsoa/runtime';
+import { container } from 'tsyringe';
 
-import { InputError } from '@backstage/errors';
-import { parseStringsParam } from './common';
-
-/**
- * Parses the facets part of a facet query, like
- * /entity-facets?filter=metadata.namespace=default,kind=Component&facet=metadata.namespace
- */
-export function parseEntityFacetParams(facet: string): string[] {
-  // Each facet string is on the form a.b.c
-  const facetStrings = parseStringsParam(facet, 'facet');
-  if (facetStrings) {
-    const filtered = facetStrings.filter(Boolean);
-    if (filtered.length) {
-      return filtered;
-    }
-  }
-
-  throw new InputError('Missing facet parameter');
-}
+export const iocContainer: IocContainer = {
+  get: <T>(controller: { prototype: T }): T => {
+    console.log('resolving');
+    return container.resolve<T>(controller as never);
+  },
+};

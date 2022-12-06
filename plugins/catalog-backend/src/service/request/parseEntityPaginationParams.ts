@@ -23,11 +23,13 @@ import { parseIntegerParam, parseStringParam } from './common';
  * /entities?offset=100&limit=10
  */
 export function parseEntityPaginationParams(
-  params: Record<string, unknown>,
+  offsetParam: string | undefined,
+  limitParam: string | undefined,
+  afterParam: string | undefined,
 ): EntityPagination | undefined {
-  const offset = parseIntegerParam(params.offset, 'offset');
-  const limit = parseIntegerParam(params.limit, 'limit');
-  const after = parseStringParam(params.after, 'after');
+  const offset = parseIntegerParam(offsetParam, 'offset');
+  const limit = parseIntegerParam(limitParam, 'limit');
+  const after = parseStringParam(afterParam, 'after');
 
   if (offset === undefined && limit === undefined && after === undefined) {
     return undefined;

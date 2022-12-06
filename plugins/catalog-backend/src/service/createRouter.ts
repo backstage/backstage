@@ -47,6 +47,9 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
+import { RegisterRoutes } from '../routes';
+import { container, ValueProvider } from 'tsyringe';
+import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 
 /**
  * Options used by {@link createRouter}.
@@ -82,6 +85,7 @@ export async function createRouter(
     logger,
     permissionIntegrationRouter,
   } = options;
+
   const router = Router();
   router.use(express.json());
 
@@ -90,6 +94,16 @@ export async function createRouter(
   if (readonlyEnabled) {
     logger.info('Catalog is running in readonly mode');
   }
+
+  container.register<EntitiesCatalog>('EntitiesCatalog', {
+    useValue: entitiesCatalog,
+  } as ValueProvider<EntitiesCatalog>);
+  container.register<RefreshService>('RefreshService', {
+    useValue: refreshService,
+  } as ValueProvider<RefreshService>);
+
+  RegisterRoutes(router);
+  return router;
 
   if (refreshService) {
     router.post('/refresh', async (req, res) => {

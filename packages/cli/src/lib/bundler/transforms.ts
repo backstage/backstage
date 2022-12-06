@@ -64,8 +64,12 @@ export const transforms = (options: TransformOptions): Transforms => {
                 syntax: 'typescript',
                 tsx: !isBackend,
                 dynamicImport: true,
+                decorators: true,
+                decoratorsBeforeExport: true,
               },
               transform: {
+                legacyDecorator: true,
+                decoratorMetadata: true,
                 react: isBackend
                   ? undefined
                   : {

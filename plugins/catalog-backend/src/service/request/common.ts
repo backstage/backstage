@@ -66,6 +66,7 @@ export function parseStringsParam(
   param: unknown,
   ctx: string,
 ): string[] | undefined {
+  console.log(param);
   if (param === undefined) {
     return undefined;
   }
