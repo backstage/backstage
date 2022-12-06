@@ -99,11 +99,9 @@ async function listPackages() {
         return;
       }
 
-      // Find all subdirectories, check if they match the provided pattern
-      const nextPattern = new RegExp(nextPart.replaceAll('*', '.*'));
       for (const filePath of fs.readdirSync(dir)) {
         if (fs.statSync(resolvePath(dir, filePath)).isDirectory()) {
-          if (filePath.match(nextPattern)) {
+          if (filePath === nextPart || nextPart === '*') {
             readDirRecursive(resolvePath(dir, filePath), parts.slice(1));
           }
         }
