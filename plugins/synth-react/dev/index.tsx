@@ -27,7 +27,7 @@ $do:
     - $<h1>: Hello World 
     - $<Typography>:
         component: p
-      children: The quick brown fox jumps over the lazy dog
+      <>: The quick brown fox jumps over the lazy dog
 `;
 
 createDevApp()

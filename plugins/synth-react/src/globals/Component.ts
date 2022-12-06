@@ -37,7 +37,7 @@ export const Component = ps.fn(function* (c) {
     const $arg: PSValue = yield* env.eval(arg);
     if (rest.type === 'map') {
       // add key prop to each item in children array
-      const children = lookup('children', rest);
+      const children = lookup('<>', rest);
       if (children && children.type === 'list') {
         injectKeyProps(children);
       }
@@ -58,7 +58,7 @@ export const Component = ps.fn(function* (c) {
           if (!!key) {
             props.key = key.value;
           }
-          const _children = lookup('children', $options);
+          const _children = lookup('<>', $options);
           if (!!_children) {
             if (_children.type === 'list') {
               children = _children.value.map(value => value.value);
