@@ -95,6 +95,10 @@ export const EntityLifecyclePicker = () => {
     }
   }, [queryParamLifecycles, availableLifecycles]);
 
+  useEffect(() => {
+    if (!availableLifecycles.length) setSelectedLifecycles([]);
+  }, [availableLifecycles]);
+
   if (!availableLifecycles.length) return null;
 
   return (

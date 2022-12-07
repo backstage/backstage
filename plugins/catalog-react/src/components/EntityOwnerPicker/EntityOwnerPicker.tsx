@@ -99,6 +99,10 @@ export const EntityOwnerPicker = () => {
     }
   }, [queryParamOwners, availableOwners]);
 
+  useEffect(() => {
+    if (!availableOwners.length) setSelectedOwners([]);
+  }, [availableOwners]);
+
   if (!availableOwners.length) return null;
 
   return (
