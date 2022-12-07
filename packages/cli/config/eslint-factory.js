@@ -219,14 +219,6 @@ function createConfigForRole(dir, role, extraConfig = {}) {
         ],
         rules: {
           ...extraConfig.rules,
-          'react/forbid-elements': [
-            1,
-            {
-              forbid: [
-                { element: 'button', message: 'use MUI <Button> instead' },
-              ],
-            },
-          ],
         },
         parserOptions: {
           ecmaFeatures: {

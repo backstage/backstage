@@ -18,7 +18,7 @@ var path = require('path');
 
 module.exports = {
   root: true,
-  plugins: ['notice', 'testing-library'],
+  plugins: ['@spotify', 'notice', 'react', 'testing-library'],
   rules: {
     'notice/notice': [
       'error',
@@ -43,6 +43,12 @@ module.exports = {
           'This rule can sometimes be ignored when converting text to be displayed to the user.',
         selector:
           "CallExpression[arguments.length=0] > MemberExpression[property.name='toUpperCase']",
+      },
+    ],
+    'react/forbid-elements': [
+      1,
+      {
+        forbid: [{ element: 'button', message: 'use MUI <Button> instead' }],
       },
     ],
     'testing-library/await-async-query': 'error',
