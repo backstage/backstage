@@ -1,5 +1,20 @@
 # @backstage/plugin-bazaar
 
+## 0.2.1-next.2
+
+### Patch Changes
+
+- 312962da30: Add `title` as optional parameter to `BazaarOverviewCard`
+- Updated dependencies
+  - @backstage/plugin-catalog@1.7.0-next.2
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/cli@0.21.2-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/plugin-catalog-react@1.2.2-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+
 ## 0.2.1-next.1
 
 ### Patch Changes

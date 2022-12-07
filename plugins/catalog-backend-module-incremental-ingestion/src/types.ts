@@ -33,14 +33,6 @@ import type { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
 
 /**
- * Entity annotation containing the incremental entity provider.
- *
- * @public
- */
-export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION =
-  'backstage.io/incremental-provider-name';
-
-/**
  * Ingest entities into the catalog in bite-sized chunks.
  *
  * A Normal `EntityProvider` allows you to introduce entities into the
@@ -130,6 +122,22 @@ export interface IncrementalEntityProviderOptions {
    * `[{ minutes: 1}, { minutes: 5}, {minutes: 30 }, { hours: 3 }]`
    */
   backoff?: DurationObjectUnits[];
+
+  /**
+   * If an error occurs at a data source that results in a large
+   * number of assets being inadvertently removed, it will result in
+   * Backstage removing all associated entities. To avoid that, set
+   * a percentage of entities past which removal will be disallowed.
+   */
+  rejectRemovalsAbovePercentage?: number;
+
+  /**
+   * Similar to the rejectRemovalsAbovePercentage, this option
+   * prevents removals in circumstances where a data source has
+   * improperly returned 0 assets. If set to `true`, Backstage will
+   * reject removals when that happens.
+   */
+  rejectEmptySourceCollections?: boolean;
 }
 
 /** @public */
@@ -154,4 +162,6 @@ export interface IterationEngineOptions {
   restLength: DurationObjectUnits;
   ready: Promise<void>;
   backoff?: IncrementalEntityProviderOptions['backoff'];
+  rejectRemovalsAbovePercentage?: number;
+  rejectEmptySourceCollections?: boolean;
 }

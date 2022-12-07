@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.21.2-next.2
+
+### Patch Changes
+
+- 5850ef9b84: Fix webpack dev server issue where it wasn't serving `index.html` from correct endpoint on subsequent requests.
+- ee14bab716: Updated dependency `minimatch` to `5.1.1` and switch version range to `^`.
+- ed0cf59c59: Updated dependency `@rollup/plugin-commonjs` to `^23.0.0`.
+- 16b7c2fccd: Updated dependency `@rollup/plugin-yaml` to `^4.0.0`.
+- 086c0bbb45: Updated dependency `@rollup/plugin-json` to `^5.0.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/release-manifests@0.0.8-next.0
+  - @backstage/types@1.0.2-next.1
+
 ## 0.21.2-next.1
 
 ### Patch Changes

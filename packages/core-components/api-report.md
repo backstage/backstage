@@ -55,12 +55,13 @@ import { WithStyles } from '@material-ui/core/styles';
 // @public
 export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
 
-// @public (undocumented)
+// @public
 export type AlertDisplayProps = {
   anchorOrigin?: {
     vertical: 'top' | 'bottom';
     horizontal: 'left' | 'center' | 'right';
   };
+  transientTimeoutMs?: number;
 };
 
 // @public

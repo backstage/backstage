@@ -479,6 +479,7 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
@@ -573,6 +574,7 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   // (undocumented)
   catalogClient: CatalogApi;
+  concurrentTasksLimit?: number;
   // (undocumented)
   config: Config;
   // (undocumented)
@@ -587,7 +589,7 @@ export interface RouterOptions {
   scheduler?: PluginTaskScheduler;
   // (undocumented)
   taskBroker?: TaskBroker;
-  // (undocumented)
+  // @deprecated (undocumented)
   taskWorkers?: number;
 }
 
@@ -818,6 +820,8 @@ export type TaskStoreShutDownTaskOptions = {
 export class TaskWorker {
   // (undocumented)
   static create(options: CreateWorkerOptions): Promise<TaskWorker>;
+  // (undocumented)
+  protected onReadyToClaimTask(): Promise<void>;
   // (undocumented)
   runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)

@@ -22,14 +22,17 @@ import { Alert } from '@material-ui/lab';
 import pluralize from 'pluralize';
 import React, { useEffect, useState } from 'react';
 
-// TODO: improve on this and promote to a shared component for use by all apps.
-
-/** @public */
+/**
+ * Properties for {@link AlertDisplay}
+ *
+ * @public
+ */
 export type AlertDisplayProps = {
   anchorOrigin?: {
     vertical: 'top' | 'bottom';
     horizontal: 'left' | 'center' | 'right';
   };
+  transientTimeoutMs?: number;
 };
 
 /**
@@ -39,12 +42,33 @@ export type AlertDisplayProps = {
  * @remarks
  *
  * Shown as SnackBar at the center top of the page by default. Configurable with props.
+ *
+ * @param anchorOrigin - The `vertical` property will set the vertical orientation of where the AlertDisplay will be located
+ * and the `horizontal` property will set the horizontal orientation of where the AlertDisplay will be located
+ * @param transientTimeoutMs - Number of milliseconds a transient alert will stay open for. Default value is 5000
+ *
+ * @example
+ * Here's some examples:
+ * ```
+ * // This example shows the default usage, the SnackBar will show up at the top in the center and any transient messages will stay open for 5000ms
+ * <AlertDisplay />
+ *
+ * // With this example the SnackBar will show up in the bottom right hand corner and any transient messages will stay open for 2500ms
+ * <AlertDisplay transientTimeoutMs={2500} anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}/>
+ *
+ * // If you want to just set the time a transientTimeoutMs, you can do that like this:
+ * <AlertDisplay transientTimeoutMs={10000} />
+ * ```
  */
 export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
 
-  const { anchorOrigin = { vertical: 'top', horizontal: 'center' } } = props;
+  const {
+    anchorOrigin = { vertical: 'top', horizontal: 'center' },
+    transientTimeoutMs,
+  } = props;
+  const timeoutMs = transientTimeoutMs ?? 5000;
 
   useEffect(() => {
     const subscription = alertApi
@@ -56,11 +80,24 @@ export function AlertDisplay(props: AlertDisplayProps) {
     };
   }, [alertApi]);
 
+  const [firstMessage] = messages;
+
+  useEffect(() => {
+    if (firstMessage && firstMessage.display === 'transient') {
+      const timeout = setTimeout(() => {
+        setMessages(msgs => {
+          const newMsgs = msgs.filter(msg => msg !== firstMessage);
+          return newMsgs.length === msgs.length ? msgs : newMsgs;
+        });
+      }, timeoutMs);
+      return () => clearTimeout(timeout);
+    }
+    return undefined;
+  }, [firstMessage, timeoutMs]);
+
   if (messages.length === 0) {
     return null;
   }
-
-  const [firstMessage] = messages;
 
   const handleClose = () => {
     setMessages(msgs => msgs.filter(msg => msg !== firstMessage));

@@ -1,5 +1,19 @@
 # @backstage/test-utils
 
+## 1.2.3-next.2
+
+### Patch Changes
+
+- 830687539f: Sync components in @backstage/core-components with the Component Design Guidelines
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/core-app-api@1.2.1-next.2
+  - @backstage/plugin-permission-react@0.4.8-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
 ## 1.2.3-next.1
 
 ### Patch Changes

@@ -1,5 +1,45 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.9.0-next.2
+
+### Minor Changes
+
+- b32005e98a: Deprecated the `taskWorkers` option in RouterOptions in favor of `concurrentTasksLimit` which sets the limit of concurrent tasks in a single TaskWorker
+
+  TaskWorker can now run multiple (defaults to 10) tasks concurrently using the `concurrentTasksLimit` option available in both `RouterOptions` and `CreateWorkerOptions`.
+
+  To use the option to create a TaskWorker:
+
+  ```diff
+  const worker = await TaskWorker.create({
+      taskBroker,
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+      additionalTemplateFilters,
+  +   concurrentTasksLimit: 10 // (1 to Infinity)
+  });
+  ```
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0-next.2
+  - @backstage/plugin-catalog-node@1.3.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-plugin-api@0.2.0-next.2
+  - @backstage/backend-tasks@0.4.0-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
 ## 1.8.1-next.1
 
 ### Patch Changes

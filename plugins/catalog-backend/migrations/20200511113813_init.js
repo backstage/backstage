@@ -27,7 +27,7 @@ exports.up = async function up(knex) {
       //
       .createTable('locations', table => {
         table.comment(
-          'Registered locations that shall be contiuously scanned for catalog item updates',
+          'Registered locations that shall be continuously scanned for catalog item updates',
         );
         table
           .uuid('id')

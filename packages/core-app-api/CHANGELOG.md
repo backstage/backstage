@@ -1,5 +1,19 @@
 # @backstage/core-app-api
 
+## 1.2.1-next.2
+
+### Patch Changes
+
+- b4b5b02315: Tweak feature flag registration so that it happens immediately before the first rendering of the app, rather than just after.
+- 203271b746: Prevent duplicate feature flag components from rendering in the settings when using <FeatureFlagged /> components
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- 63310e3987: Apps will now rewrite the `app.baseUrl` configuration to match the current `location.origin`. The `backend.baseUrl` will also be rewritten in the same way when the `app.baseUrl` and `backend.baseUrl` have matching origins. This will reduce the need for separate frontend builds for different environments.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
 ## 1.2.1-next.1
 
 ### Patch Changes
