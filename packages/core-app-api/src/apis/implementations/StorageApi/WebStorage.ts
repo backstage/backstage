@@ -22,7 +22,7 @@ import {
 import { JsonValue, Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
-const buckets = new Map<string, WebStorage>();
+export const buckets = new Map<string, WebStorage>();
 
 /**
  * An implementation of the storage API, that uses the browser's local storage.
@@ -109,9 +109,16 @@ export class WebStorage implements StorageApi {
   }
 
   private handleStorageChange(eventKey: StorageEvent['key']) {
-    if (!eventKey?.startsWith(this.namespace)) return;
-    const key = eventKey?.replace(`${this.namespace}/`, '');
-    this.notifyChanges(key);
+    if (!eventKey?.startsWith(this.namespace)) {
+      return;
+    }
+    // Grab the part of this key that is local to this bucket
+    const trimmedKey = eventKey?.slice(`${this.namespace}/`.length);
+
+    // If the key still contains a slash, it means it's a sub-bucket
+    if (!trimmedKey.includes('/')) {
+      this.notifyChanges(decodeURIComponent(trimmedKey));
+    }
   }
 
   private getKeyName(key: string) {
