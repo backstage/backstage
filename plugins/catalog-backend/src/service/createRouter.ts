@@ -147,7 +147,6 @@ export async function createRouter(
         res.status(204).end();
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
-        await new Promise(resolve => setTimeout(resolve, 3000));
         const { kind, namespace, name } = req.params;
         const { entities } = await entitiesCatalog.entities({
           filter: basicEntityFilter({
