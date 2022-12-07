@@ -697,6 +697,7 @@ export type SignInPageProps = {
 // @public
 export interface StorageApi {
   forBucket(name: string): StorageApi;
+  handleStorageChange?(eventKey: StorageEvent['key']): void;
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>>;

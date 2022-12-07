@@ -91,7 +91,7 @@ export interface StorageApi {
    *
    * @param eventKey - The key of a storage event object
    */
-  handleStorageChange(eventKey: StorageEvent['key']): void;
+  handleStorageChange?(eventKey: StorageEvent['key']): void;
 
   /**
    * Returns an immediate snapshot value for the given key, if possible.

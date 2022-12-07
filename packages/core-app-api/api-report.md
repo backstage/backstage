@@ -558,6 +558,8 @@ export class WebStorage implements StorageApi {
   // (undocumented)
   get<T>(key: string): T | undefined;
   // (undocumented)
+  handleStorageChange(eventKey: StorageEvent['key']): void;
+  // (undocumented)
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>>;
