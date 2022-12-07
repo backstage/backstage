@@ -24,14 +24,6 @@ import ObservableImpl from 'zen-observable';
 
 const buckets = new Map<string, WebStorage>();
 
-window.addEventListener('storage', event => {
-  for (const [bucketPath, webStorage] of buckets.entries()) {
-    if (event.key?.startsWith(bucketPath)) {
-      webStorage.handleStorageChange(event.key);
-    }
-  }
-});
-
 /**
  * An implementation of the storage API, that uses the browser's local storage.
  *
@@ -43,11 +35,23 @@ export class WebStorage implements StorageApi {
     private readonly errorApi: ErrorApi,
   ) {}
 
+  private static hasSubscribers = false;
+
   static create(options: {
     errorApi: ErrorApi;
     namespace?: string;
   }): WebStorage {
     return new WebStorage(options.namespace ?? '', options.errorApi);
+  }
+
+  private static addStorageEventListener() {
+    window.addEventListener('storage', event => {
+      for (const [bucketPath, webStorage] of buckets.entries()) {
+        if (event.key?.startsWith(bucketPath)) {
+          webStorage.handleStorageChange(event.key);
+        }
+      }
+    });
   }
 
   get<T>(key: string): T | undefined {
@@ -97,6 +101,10 @@ export class WebStorage implements StorageApi {
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>> {
+    if (!WebStorage.hasSubscribers) {
+      WebStorage.addStorageEventListener();
+      WebStorage.hasSubscribers = true;
+    }
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
   }
 
