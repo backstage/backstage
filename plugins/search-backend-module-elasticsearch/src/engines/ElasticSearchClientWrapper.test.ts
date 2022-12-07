@@ -336,5 +336,24 @@ describe('ElasticSearchClientWrapper', () => {
         body: { actions: input.actions },
       });
     });
+
+    it('accepts provider "opensearch"', async () => {
+      osOptions = {
+        provider: 'opensearch',
+        node: 'https://my-opensearch-instance.address.com',
+        // todo(backstage/techdocs-core): Remove the following ts-ignore when
+        // @short.io/opensearch-mock is updated to work w/opensearch >= 2.0.0
+        // @ts-ignore
+        connection: mock.getConnection(),
+      };
+
+      const wrapper = ElasticSearchClientWrapper.fromClientOptions(osOptions);
+      expect(OpenSearchClient).toHaveBeenCalledWith(osOptions);
+
+      const searchInput = { index: 'xyz', body: { eg: 'etc' } };
+      const result = (await wrapper.search(searchInput)) as any;
+      expect(result.client).toBe('os');
+      expect(result.args).toStrictEqual(searchInput);
+    });
   });
 });
