@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GetEntityFacetsResponse } from '@backstage/catalog-client';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
@@ -23,18 +23,72 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import { SelectedOwnedByFilter } from './SelectedOwnedByFilter';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 
 const catalogApi = {
-  getEntityFacets: jest.fn().mockResolvedValue({
-    facets: {
-      kind: [
-        { value: 'Component', count: 2 },
-        { value: 'System', count: 1 },
-        { value: 'API', count: 1 },
-        { value: 'Resource', count: 1 },
-      ],
-    },
-  } as GetEntityFacetsResponse),
+  getEntities: jest.fn().mockResolvedValue({
+    items: [
+      {
+        apiVersion: 'backstage.io/v1beta1',
+        metadata: {
+          name: 'service-with-owner',
+          description: 'service with an owner',
+          tags: ['a-tag'],
+          annotations: {
+            'backstage.io/techdocs-ref': 'dir:.',
+          },
+        },
+        kind: 'Component',
+        spec: {
+          type: 'service',
+          lifecycle: 'test',
+          owner: 'team-a',
+        },
+        relations: [
+          {
+            type: RELATION_OWNED_BY,
+            targetRef: 'group:default/my-team',
+          },
+        ],
+      },
+      {
+        apiVersion: 'backstage.io/v1beta1',
+        metadata: {
+          name: 'service-with-incomplete-data',
+          description: '',
+          tags: [],
+        },
+        kind: 'Component',
+        spec: {
+          type: 'service',
+          lifecycle: 'test',
+          owner: '',
+        },
+      },
+      {
+        apiVersion: 'backstage.io/v1beta1',
+        metadata: {
+          name: 'service-with-user-owner',
+        },
+        kind: 'Component',
+        spec: {
+          type: 'service',
+          lifecycle: 'test',
+          owner: 'user:my-user',
+        },
+      },
+      {
+        apiVersion: 'backstage.io/v1beta1',
+        metadata: {
+          name: 'user-a',
+        },
+        kind: 'User',
+        spec: {
+          memberOf: 'group-a',
+        },
+      },
+    ],
+  } as GetEntitiesResponse),
 };
 const apis = TestApiRegistry.from(
   [catalogApiRef, catalogApi],
@@ -46,7 +100,7 @@ describe('<SelectedOwnedByFilter/>', () => {
     const { baseElement } = await renderWithEffects(
       <ApiProvider apis={apis}>
         <SelectedOwnedByFilter
-          value={['api', 'component']}
+          value={['user', 'component']}
           onChange={() => {}}
         />
       </ApiProvider>,
@@ -58,13 +112,13 @@ describe('<SelectedOwnedByFilter/>', () => {
     await renderWithEffects(
       <ApiProvider apis={apis}>
         <SelectedOwnedByFilter
-          value={['api', 'component']}
+          value={['user', 'component']}
           onChange={() => {}}
         />
       </ApiProvider>,
     );
 
-    expect(screen.getByText('API')).toBeInTheDocument();
+    expect(screen.getByText('User')).toBeInTheDocument();
     expect(screen.getByText('Component')).toBeInTheDocument();
   });
   it('should return undefined if all values are selected', async () => {
@@ -72,7 +126,7 @@ describe('<SelectedOwnedByFilter/>', () => {
     await renderWithEffects(
       <ApiProvider apis={apis}>
         <SelectedOwnedByFilter
-          value={['api', 'component', 'system', 'domain']}
+          value={['user', 'component', 'system', 'domain']}
           onChange={onChange}
         />
       </ApiProvider>,
