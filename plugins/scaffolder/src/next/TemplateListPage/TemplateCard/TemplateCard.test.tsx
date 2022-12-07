@@ -15,7 +15,6 @@
  */
 import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import {
-  catalogApiRef,
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -51,12 +50,6 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [
-            catalogApiRef,
-            {
-              getEntityByRef: jest.fn(),
-            } as any,
-          ],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -86,12 +79,6 @@ describe('TemplateCard', () => {
             new DefaultStarredEntitiesApi({
               storageApi: MockStorageApi.create(),
             }),
-          ],
-          [
-            catalogApiRef,
-            {
-              getEntityByRef: jest.fn(),
-            } as any,
           ],
         ]}
       >
@@ -124,12 +111,6 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [
-            catalogApiRef,
-            {
-              getEntityByRef: jest.fn(),
-            } as any,
-          ],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -159,12 +140,6 @@ describe('TemplateCard', () => {
             new DefaultStarredEntitiesApi({
               storageApi: MockStorageApi.create(),
             }),
-          ],
-          [
-            catalogApiRef,
-            {
-              getEntityByRef: jest.fn(),
-            } as any,
           ],
         ]}
       >
@@ -204,12 +179,6 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [
-            catalogApiRef,
-            {
-              getEntityByRef: jest.fn(),
-            } as any,
-          ],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -248,12 +217,6 @@ describe('TemplateCard', () => {
             new DefaultStarredEntitiesApi({
               storageApi: MockStorageApi.create(),
             }),
-          ],
-          [
-            catalogApiRef,
-            {
-              getEntityByRef: jest.fn(),
-            } as any,
           ],
         ]}
       >
