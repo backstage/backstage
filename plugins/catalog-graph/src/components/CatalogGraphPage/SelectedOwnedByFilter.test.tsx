@@ -25,6 +25,15 @@ import { ApiProvider } from '@backstage/core-app-api';
 import { SelectedOwnedByFilter } from './SelectedOwnedByFilter';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 
+const getEntitiesMock = jest.fn();
+jest.mock('@backstage/catalog-client', () => {
+  return {
+    CatalogClient: jest
+      .fn()
+      .mockImplementation(() => ({ getEntities: getEntitiesMock })),
+  };
+});
+
 const catalogApi = {
   getEntities: jest.fn().mockResolvedValue({
     items: [
@@ -96,6 +105,12 @@ const apis = TestApiRegistry.from(
 );
 
 describe('<SelectedOwnedByFilter/>', () => {
+  beforeEach(() => {
+    getEntitiesMock.mockResolvedValue(catalogApi);
+  });
+  afterEach(() => {
+    getEntitiesMock.mockClear();
+  });
   it('should not explode while loading', async () => {
     const { baseElement } = await renderWithEffects(
       <ApiProvider apis={apis}>
