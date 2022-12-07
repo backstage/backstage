@@ -22,7 +22,7 @@ import {
   isUserEntity,
   isGroupEntity,
 } from '@backstage/catalog-model';
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { entityRouteRef } from '../../routes';
 import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps, Progress } from '@backstage/core-components';
@@ -45,9 +45,9 @@ import {
 import HoverPopover from 'material-ui-popup-state/HoverPopover';
 import EmailIcon from '@material-ui/icons/Email';
 import InfoIcon from '@material-ui/icons/Info';
-import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
+import { Alert, Skeleton } from '@material-ui/lab';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 /**
  * Props for {@link EntityRefLink}.
@@ -69,7 +69,7 @@ type PeekAheadPopoverProps = {
 const useStyles = makeStyles(() => {
   return {
     popoverPaper: {
-      width: '20em',
+      width: '30em',
     },
   };
 });
@@ -81,22 +81,24 @@ export const PeekAheadPopover = ({
   const entityRoute = useRouteRef(entityRouteRef);
   const classes = useStyles();
   const apiHolder = useApiHolder();
-  const [entity, setEntity] = useState<Entity | undefined>();
 
-  const { loading, error } = useAsync(async () => {
-    if (!entity) {
-      if (popupState.isOpen) {
-        const catalogApi = apiHolder.get(catalogApiRef);
-        if (catalogApi) {
-          const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
-          if (!retrievedEntity) {
-            throw new Error(`${entityRef.name} was not found`);
-          }
-          setEntity(retrievedEntity);
-        }
+  const [{ loading, error, value: entity }, load] = useAsyncFn(async () => {
+    const catalogApi = apiHolder.get(catalogApiRef);
+    if (catalogApi) {
+      const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
+      if (!retrievedEntity) {
+        throw new Error(`${entityRef.name} was not found`);
       }
+      return retrievedEntity;
     }
-  }, [popupState.isOpen, apiHolder, entityRef]);
+    return undefined;
+  }, [apiHolder, entityRef]);
+
+  useEffect(() => {
+    if (popupState.isOpen && !entity && !error && !loading) {
+      load();
+    }
+  }, [popupState.isOpen, load, entity, error, loading]);
 
   return (
     <HoverPopover
@@ -120,18 +122,21 @@ export const PeekAheadPopover = ({
           <Typography variant="h5" component="div">
             {entityRef.name}
           </Typography>
-          <Typography color="textSecondary">{entityRef.kind}</Typography>
-          <Typography variant="body2">
-            {error && <Alert severity="warning">{error.message}</Alert>}
-            {entity && (
-              <>
-                {entity.metadata.description}
-                <br />
-                <br />
-                {entity.spec?.type}
-              </>
-            )}
-          </Typography>
+          {error && <Alert severity="warning">{error.message}</Alert>}
+          {entity ? (
+            <>
+              <Typography color="textSecondary">{entity.kind}</Typography>
+              <Typography paragraph>{entity.metadata.description}</Typography>
+              <Typography>{entity.spec?.type}</Typography>
+            </>
+          ) : (
+            <>
+              <Skeleton width="30%" variant="text" />
+              <Skeleton variant="text" />
+              <Skeleton width="50%" variant="text" />
+              <Skeleton width="20%" variant="text" />
+            </>
+          )}
         </CardContent>
         <CardActions>
           {entity &&
