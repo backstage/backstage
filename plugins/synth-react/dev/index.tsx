@@ -22,12 +22,15 @@ const HELLO_WORLD = `$import:
       from: ./html.yaml
     - names: [<Typography>]
       from: ./material-ui.yaml
+    - names: [<AboutCard>]
+      from: ./catalog.yaml
 $do:
   $Backstage.<>:
     - $<h1>: Hello World 
     - $<Typography>:
         component: p
       <>: The quick brown fox jumps over the lazy dog
+    - $<AboutCard>: true
 `;
 
 createDevApp()

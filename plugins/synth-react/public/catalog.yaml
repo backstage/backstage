@@ -1,0 +1,10 @@
+$import:
+  names: [<Grid>]
+  from: ./material-ui.yaml
+
+<AboutCard>:
+  $():
+    $<Grid>:
+      container: true
+    <>:
+      - nothing

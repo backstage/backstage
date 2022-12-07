@@ -10,3 +10,9 @@
       $let:
         exports: { $Backstage.resolve: "@material-ui/core/Typography" }
       $do: $exports.default
+<Grid>:
+  $Backstage.Component:
+    type: 
+      $let:
+        exports: { $Backstage.resolve: "@material-ui/core/Grid" }
+      $do: $exports.default

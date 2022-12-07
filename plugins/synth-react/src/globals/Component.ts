@@ -18,7 +18,7 @@ import * as ps from 'platformscript';
 import React from 'react';
 import { lookup } from '../lookup';
 
-export const Component = ps.fn(function* (c) {
+export const Component = ps.fn(function* Component(c) {
   const $cArg = yield* c.env.eval(c.arg);
 
   if ($cArg.type !== 'map') {
@@ -33,7 +33,7 @@ export const Component = ps.fn(function* (c) {
     throw new TypeError(`Component: { type: } must not be empty`);
   }
 
-  return ps.fn(function* ({ arg, env, rest }) {
+  return ps.fn(function* InnerComponent({ arg, env, rest }) {
     const $arg: PSValue = yield* env.eval(arg);
     if (rest.type === 'map') {
       // add key prop to each item in children array
