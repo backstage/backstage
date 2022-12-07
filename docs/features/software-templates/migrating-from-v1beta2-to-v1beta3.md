@@ -169,14 +169,14 @@ These should be moved to `links` under the `output` object instead.
 
 ```diff
   output:
--   remoteUrl: '{{ steps.publish.output.remoteUrl }}'
--   entityRef: '{{ steps.register.output.entityRef }}'
+-   remoteUrl: '{{ steps["publish"].output.remoteUrl }}'
+-   entityRef: '{{ steps["register"].output.entityRef }}'
 +   links:
 +     - title: Repository
-+       url: ${{ steps.publish.output.remoteUrl }}
++       url: ${{ steps["publish"].output.remoteUrl }}
 +     - title: Open in catalog
 +       icon: catalog
-+       entityRef: ${{ steps.register.output.entityRef }}
++       entityRef: ${{ steps["register"].output.entityRef }}
 
 ```
 
@@ -206,7 +206,7 @@ Alternatively, it's possible to keep the `dash-case` syntax and use brackets for
 
 ```yaml
 input:
-  repoUrl: ${{ steps['my-custom-action'].output.repoUrl }}
+  repoUrl: ${{ steps["my-custom-action"].output.repoUrl }}
 ```
 
 ### Summary
