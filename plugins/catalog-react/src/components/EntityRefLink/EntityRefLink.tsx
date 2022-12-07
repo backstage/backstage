@@ -22,7 +22,7 @@ import {
   isUserEntity,
   isGroupEntity,
 } from '@backstage/catalog-model';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState } from 'react';
 import { entityRouteRef } from '../../routes';
 import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps, Progress } from '@backstage/core-components';
@@ -81,23 +81,21 @@ export const PeekAheadPopover = ({
   const entityRoute = useRouteRef(entityRouteRef);
   const classes = useStyles();
   const apiHolder = useApiHolder();
+  const [entity, setEntity] = useState<Entity | undefined>();
 
-  const {
-    value: entity,
-    loading,
-    error,
-  } = useAsync(async () => {
-    if (popupState.isOpen) {
-      const catalogApi = apiHolder.get(catalogApiRef);
-      if (catalogApi) {
-        const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
-        if (!retrievedEntity) {
-          throw new Error(`${entityRef.name} was not found`);
+  const { loading, error } = useAsync(async () => {
+    if (!entity) {
+      if (popupState.isOpen) {
+        const catalogApi = apiHolder.get(catalogApiRef);
+        if (catalogApi) {
+          const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
+          if (!retrievedEntity) {
+            throw new Error(`${entityRef.name} was not found`);
+          }
+          setEntity(retrievedEntity);
         }
-        return retrievedEntity;
       }
     }
-    return undefined;
   }, [popupState.isOpen, apiHolder, entityRef]);
 
   return (
