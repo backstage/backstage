@@ -138,10 +138,11 @@ export interface Config {
       bearer: string;
     };*/
           }
+
         /**
          *  AWS = In house hosting Open Search
          */
-          | {
+        | {
             provider: 'opensearch';
             /**
              * Node configuration.
@@ -166,7 +167,7 @@ export interface Config {
               | {
                   apiKey: string;
                 };
-          }      
+          }
       );
     };
   };
