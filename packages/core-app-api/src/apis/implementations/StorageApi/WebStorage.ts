@@ -35,7 +35,7 @@ export class WebStorage implements StorageApi {
     private readonly errorApi: ErrorApi,
   ) {}
 
-  private static hasSubscribers = false;
+  private static hasSubscribed = false;
 
   static create(options: {
     errorApi: ErrorApi;
@@ -101,14 +101,14 @@ export class WebStorage implements StorageApi {
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>> {
-    if (!WebStorage.hasSubscribers) {
+    if (!WebStorage.hasSubscribed) {
       WebStorage.addStorageEventListener();
-      WebStorage.hasSubscribers = true;
+      WebStorage.hasSubscribed = true;
     }
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
   }
 
-  handleStorageChange(eventKey: StorageEvent['key']) {
+  private handleStorageChange(eventKey: StorageEvent['key']) {
     if (!eventKey?.startsWith(this.namespace)) return;
     const key = eventKey?.replace(`${this.namespace}/`, '');
     this.notifyChanges(key);

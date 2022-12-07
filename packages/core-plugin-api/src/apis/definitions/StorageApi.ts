@@ -86,14 +86,6 @@ export interface StorageApi {
   ): Observable<StorageValueSnapshot<T>>;
 
   /**
-   * Synchronizes stored data across multiple tabs or windows by using the
-   * browser's StorageEvent API.
-   *
-   * @param eventKey - The key of a storage event object
-   */
-  handleStorageChange?(eventKey: StorageEvent['key']): void;
-
-  /**
    * Returns an immediate snapshot value for the given key, if possible.
    *
    * @remarks
