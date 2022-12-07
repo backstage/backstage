@@ -24,18 +24,18 @@ import {
   buildDocs,
 } from './api-extractor';
 import { findPackageDirs, paths as cliPaths } from '../../lib/paths';
-import { generateTSC } from './generateTSC';
+import { generateTypeDeclarations } from './generateTypeDeclarations';
 
 type Options = {
   ci?: boolean;
   docs?: boolean;
   tsc?: boolean;
-  paths?: string[];
-  allowWarnings?: string[] | boolean;
-  omitMessages?: string[];
+  allowWarnings?: string;
+  allowAllWarnings?: boolean;
+  omitMessages?: string;
 } & OptionValues;
 
-export const buildApiReports = async (opts: Options) => {
+export const buildApiReports = async (paths: string[] = [], opts: Options) => {
   const tmpDir = cliPaths.resolveTargetRoot(
     './node_modules/.cache/api-extractor',
   );
@@ -43,14 +43,15 @@ export const buildApiReports = async (opts: Options) => {
   const isCiBuild = opts.ci;
   const isDocsBuild = opts.docs;
   const runTsc = opts.tsc;
-
-  const parsedPaths = parseArrayOption(opts.paths);
-  const isAllPackages = !Array.isArray(parsedPaths) || !parsedPaths?.length;
-  const selectedPaths = isAllPackages ? await getWorkspacePkgs() : parsedPaths;
-  const selectedPackageDirs = await findPackageDirs(selectedPaths);
-
   const allowWarnings = parseArrayOption(opts.allowWarnings);
+  const allowAllWarnings = opts.allowAllWarnings;
   const omitMessages = parseArrayOption(opts.omitMessages);
+
+  const isAllPackages = !paths?.length;
+  const selectedPaths = isAllPackages
+    ? await getWorkspacePackagePathPatterns()
+    : paths;
+  const selectedPackageDirs = await findPackageDirs(selectedPaths);
 
   if (isAllPackages && !isCiBuild && !isDocsBuild) {
     console.log('');
@@ -59,7 +60,7 @@ export const buildApiReports = async (opts: Options) => {
     );
     console.log('');
     console.log(
-      '       yarn build:api-reports -p packages/config -p packages/core-plugin-api,plugins/*',
+      '       yarn build:api-reports packages/config packages/core-plugin-api plugins/*',
     );
     console.log('');
   }
@@ -73,7 +74,7 @@ export const buildApiReports = async (opts: Options) => {
 
   if (runTsc) {
     console.log('# Compiling TypeScript');
-    await generateTSC(tsconfigFilePath);
+    await generateTypeDeclarations(tsconfigFilePath);
   }
 
   const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
@@ -87,7 +88,7 @@ export const buildApiReports = async (opts: Options) => {
       outputDir: tmpDir,
       isLocalBuild: !isCiBuild,
       tsconfigFilePath,
-      allowWarnings,
+      allowWarnings: allowAllWarnings || allowWarnings,
       omitMessages: Array.isArray(omitMessages) ? omitMessages : [],
     });
   }
@@ -99,7 +100,6 @@ export const buildApiReports = async (opts: Options) => {
     });
   }
 
-  console.log(isDocsBuild);
   if (isDocsBuild) {
     console.log('# Generating package documentation');
     await buildDocs({
@@ -116,7 +116,7 @@ export const buildApiReports = async (opts: Options) => {
  *
  * @returns {Promise<string[] | undefined>} The list of package names, or `undefined` if not found.
  */
-async function getWorkspacePkgs() {
+async function getWorkspacePackagePathPatterns() {
   const pkgJson = await fs
     .readJson(cliPaths.resolveTargetRoot('package.json'))
     .catch(error => {
@@ -130,28 +130,22 @@ async function getWorkspacePkgs() {
 }
 
 /**
- * Splits each string in the input array on comma, and returns an array of the resulting substrings.
- * If the input array is `undefined`, returns `undefined`. If the input value is `true` or `false`,
- * returns the value as-is.
+ * Splits the input string on comma, and returns an array of the resulting substrings.
+ * for `undefined` or an empty string, returns an empty array.
  *
- * @param value An array of strings to be split on comma, or a boolean value (inherithed from commanderjs array args).
- * @returns An array of the resulting substrings, the original boolean value, or `undefined` if the input value is `undefined`.
+ * @param value A string to be split on comma.
+ * @returns An array of the resulting substrings, or an empty array if the input value is `undefined` or an empty string.
  *
  * @example
- * parseOption(['foo,bar,baz'])
+ * parseOption('foo,bar,baz')
  * // returns ['foo', 'bar', 'baz']
  *
- * parseOption(true)
- * // returns true
+ * parseOption('')
+ * // returns []
  *
  * parseOption()
- * // returns undefined
+ * // returns []
  */
-function parseArrayOption(value: string[] | boolean | undefined) {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-  return value?.flatMap((str: string) =>
-    str.includes(',') ? str.split(',').map(s => s.trim()) : str,
-  );
+function parseArrayOption(value: string | undefined) {
+  return value ? value.split(',').map(s => s.trim()) : [];
 }

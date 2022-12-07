@@ -26,9 +26,9 @@ import {
 } from './api-extractor';
 
 import { buildApiReports } from './api-reports';
-import { generateTSC } from './generateTSC';
+import { generateTypeDeclarations } from './generateTypeDeclarations';
 
-jest.mock('./generateTSC');
+jest.mock('./generateTypeDeclarations');
 // create mocks for the dependencies of the `buildApiReports` function
 jest.mock('./api-extractor', () => ({
   createTemporaryTsConfig: jest.fn(),
@@ -44,17 +44,17 @@ jest.mock('./api-extractor', () => ({
   buildDocs: jest.fn(),
 }));
 
-const paths = pathsLib.paths;
+const projectPaths = pathsLib.paths;
 
-jest.spyOn(paths, 'targetRoot', 'get').mockReturnValue('/root');
-jest.spyOn(paths, 'resolveTargetRoot').mockImplementation((...path) => {
+jest.spyOn(projectPaths, 'targetRoot', 'get').mockReturnValue('/root');
+jest.spyOn(projectPaths, 'resolveTargetRoot').mockImplementation((...path) => {
   return resolvePath('/root', ...path);
 });
 
 describe('buildApiReports', () => {
   beforeEach(() => {
     mockFs({
-      [paths.targetRoot]: {
+      [projectPaths.targetRoot]: {
         'package.json': JSON.stringify({
           workspaces: { packages: ['packages/*', 'plugins/*'] },
         }),
@@ -89,8 +89,9 @@ describe('buildApiReports', () => {
   });
   it('should run whitout any options', async () => {
     const opts = {};
+    const paths: string[] = [];
 
-    await buildApiReports(opts);
+    await buildApiReports(paths, opts);
 
     expect(categorizePackageDirs).toHaveBeenCalledWith([
       'packages/package-a',
@@ -100,7 +101,7 @@ describe('buildApiReports', () => {
       'plugins/plugin-c',
     ]);
 
-    expect(generateTSC).not.toHaveBeenCalled();
+    expect(generateTypeDeclarations).not.toHaveBeenCalled();
     expect(runApiExtraction).toHaveBeenCalledWith({
       packageDirs: [
         'packages/package-a',
@@ -110,7 +111,7 @@ describe('buildApiReports', () => {
         'plugins/plugin-c',
       ],
       tsconfigFilePath: '/root/tsconfig.json',
-      allowWarnings: undefined,
+      allowWarnings: [],
       omitMessages: [],
       isLocalBuild: true,
       outputDir: '/root/node_modules/.cache/api-extractor',
@@ -132,11 +133,10 @@ describe('buildApiReports', () => {
 
   describe('paths', () => {
     it('should generate API reports for one specific package', async () => {
-      const opts = {
-        paths: ['packages/package-a'],
-      };
+      const paths = ['packages/package-a'];
+      const opts = {};
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
         'packages/package-a',
@@ -145,7 +145,7 @@ describe('buildApiReports', () => {
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a'],
         tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
+        allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
         outputDir: '/root/node_modules/.cache/api-extractor',
@@ -158,11 +158,10 @@ describe('buildApiReports', () => {
       expect(buildDocs).not.toHaveBeenCalled();
     });
     it('should generate API reports for multiple specific packages', async () => {
-      const opts = {
-        paths: ['packages/package-a', 'packages/package-b'],
-      };
+      const paths = ['packages/package-a', 'packages/package-b'];
+      const opts = {};
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
         'packages/package-a',
@@ -172,7 +171,7 @@ describe('buildApiReports', () => {
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a', 'packages/package-b'],
         tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
+        allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
         outputDir: '/root/node_modules/.cache/api-extractor',
@@ -185,11 +184,10 @@ describe('buildApiReports', () => {
       expect(buildDocs).not.toHaveBeenCalled();
     });
     it('should generate API reports for all packages matching the glob pattern', async () => {
-      const opts = {
-        paths: ['packages/*'],
-      };
+      const paths = ['packages/*'];
+      const opts = {};
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
         'packages/package-a',
@@ -199,7 +197,7 @@ describe('buildApiReports', () => {
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a', 'packages/package-b'],
         tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
+        allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
         outputDir: '/root/node_modules/.cache/api-extractor',
@@ -213,11 +211,10 @@ describe('buildApiReports', () => {
     });
 
     it('should generate API reports for all packages matching multiple glob patterns', async () => {
-      const opts = {
-        paths: ['packages/*', 'plugins/*a'],
-      };
+      const paths = ['packages/*', 'plugins/*a'];
+      const opts = {};
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
         'packages/package-a',
@@ -232,7 +229,7 @@ describe('buildApiReports', () => {
           'plugins/plugin-a',
         ],
         tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
+        allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
         outputDir: '/root/node_modules/.cache/api-extractor',
@@ -250,11 +247,10 @@ describe('buildApiReports', () => {
     });
 
     it('should generate API reports for specific packages and glob pattern', async () => {
-      const opts = {
-        paths: ['packages/package-a', 'plugins/*'],
-      };
+      const opts = {};
+      const paths = ['packages/package-a', 'plugins/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
         'packages/package-a',
@@ -271,7 +267,7 @@ describe('buildApiReports', () => {
           'plugins/plugin-c',
         ],
         tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
+        allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
         outputDir: '/root/node_modules/.cache/api-extractor',
@@ -290,54 +286,18 @@ describe('buildApiReports', () => {
     });
   });
   describe('allowWarnings', () => {
-    it('should accept boolean values', async () => {
-      const opts = {
-        paths: ['packages/*'],
-        allowWarnings: true,
-      };
-
-      await buildApiReports(opts);
-
-      expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: true,
-        omitMessages: [],
-        isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
-      });
-    });
-
     it('should accept single path value', async () => {
       const opts = {
-        paths: ['packages/*'],
-        allowWarnings: ['packages/package-a'],
+        allowWarnings: 'packages/package-a',
       };
+      const paths = ['packages/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a', 'packages/package-b'],
         tsconfigFilePath: '/root/tsconfig.json',
         allowWarnings: ['packages/package-a'],
-        omitMessages: [],
-        isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
-      });
-    });
-
-    it('should accept multiple path values as array', async () => {
-      const opts = {
-        paths: ['packages/*'],
-        allowWarnings: ['packages/package-a', 'packages/package-b'],
-      };
-
-      await buildApiReports(opts);
-
-      expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: ['packages/package-a', 'packages/package-b'],
         omitMessages: [],
         isLocalBuild: true,
         outputDir: '/root/node_modules/.cache/api-extractor',
@@ -346,11 +306,11 @@ describe('buildApiReports', () => {
 
     it('should accept multiple path values as comma separated string', async () => {
       const opts = {
-        paths: ['packages/*'],
-        allowWarnings: ['packages/package-a,packages/package-b'],
+        allowWarnings: 'packages/package-a,packages/package-b',
       };
+      const paths = ['packages/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a', 'packages/package-b'],
@@ -364,11 +324,11 @@ describe('buildApiReports', () => {
 
     it('should accept multiple path values as comma separated string with spaces', async () => {
       const opts = {
-        paths: ['packages/*'],
-        allowWarnings: ['packages/package-a, packages/package-b'],
+        allowWarnings: 'packages/package-a, packages/package-b',
       };
+      const paths = ['packages/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a', 'packages/package-b'],
@@ -380,54 +340,56 @@ describe('buildApiReports', () => {
       });
     });
   });
+  describe('allowAllWarnings', () => {
+    it('should accept boolean values', async () => {
+      const opts = {
+        allowAllWarnings: true,
+      };
+      const paths = ['packages/*'];
+
+      await buildApiReports(paths, opts);
+
+      expect(runApiExtraction).toHaveBeenCalledWith({
+        packageDirs: ['packages/package-a', 'packages/package-b'],
+        tsconfigFilePath: '/root/tsconfig.json',
+        allowWarnings: true,
+        omitMessages: [],
+        isLocalBuild: true,
+        outputDir: '/root/node_modules/.cache/api-extractor',
+      });
+    });
+  });
   describe('omitMessages', () => {
     it('should accept single message value', async () => {
       const opts = {
-        paths: ['packages/*'],
-        omitMessages: ['ae-missing-release-tag'],
+        omitMessages: 'ae-missing-release-tag',
       };
+      const paths = ['packages/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a', 'packages/package-b'],
         tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
+        allowWarnings: [],
         omitMessages: ['ae-missing-release-tag'],
         isLocalBuild: true,
         outputDir: '/root/node_modules/.cache/api-extractor',
       });
     });
 
-    it('should accept multiple message values as array', async () => {
-      const opts = {
-        paths: ['packages/*'],
-        omitMessages: ['ae-missing-release-tag', 'ae-missing-annotations'],
-      };
-
-      await buildApiReports(opts);
-
-      expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
-        omitMessages: ['ae-missing-release-tag', 'ae-missing-annotations'],
-        isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
-      });
-    });
     it('should accept multiple message values as comma separated string', async () => {
       const opts = {
-        paths: ['packages/*'],
-        omitMessages: ['ae-missing-release-tag,ae-missing-annotations'],
+        omitMessages: 'ae-missing-release-tag,ae-missing-annotations',
       };
+      const paths = ['packages/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a', 'packages/package-b'],
         tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
+        allowWarnings: [],
         omitMessages: ['ae-missing-release-tag', 'ae-missing-annotations'],
         isLocalBuild: true,
         outputDir: '/root/node_modules/.cache/api-extractor',
@@ -436,16 +398,16 @@ describe('buildApiReports', () => {
 
     it('should accept multiple message values as comma separated string with spaces', async () => {
       const opts = {
-        paths: ['packages/*'],
-        omitMessages: ['ae-missing-release-tag, ae-missing-annotations'],
+        omitMessages: 'ae-missing-release-tag, ae-missing-annotations',
       };
+      const paths = ['packages/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a', 'packages/package-b'],
         tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
+        allowWarnings: [],
         omitMessages: ['ae-missing-release-tag', 'ae-missing-annotations'],
         isLocalBuild: true,
         outputDir: '/root/node_modules/.cache/api-extractor',
@@ -455,16 +417,16 @@ describe('buildApiReports', () => {
   describe('isCI', () => {
     it('should set localBuild to false if CI option is passed', async () => {
       const opts = {
-        paths: ['packages/*'],
         ci: true,
       };
+      const paths = ['packages/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: ['packages/package-a', 'packages/package-b'],
         tsconfigFilePath: '/root/tsconfig.json',
-        allowWarnings: undefined,
+        allowWarnings: [],
         omitMessages: [],
         isLocalBuild: false,
         outputDir: '/root/node_modules/.cache/api-extractor',
@@ -478,11 +440,11 @@ describe('buildApiReports', () => {
   describe('docs', () => {
     it('should run typedoc if docs option is passed', async () => {
       const opts = {
-        paths: ['packages/*'],
         docs: true,
       };
+      const paths = ['packages/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
       expect(buildDocs).toHaveBeenCalledWith({
         inputDir: '/root/node_modules/.cache/api-extractor',
@@ -493,13 +455,13 @@ describe('buildApiReports', () => {
   describe('tsc', () => {
     it('should run tsc if tsc option is passed', async () => {
       const opts = {
-        paths: ['packages/*'],
         tsc: true,
       };
+      const paths = ['packages/*'];
 
-      await buildApiReports(opts);
+      await buildApiReports(paths, opts);
 
-      expect(generateTSC).toHaveBeenCalled();
+      expect(generateTypeDeclarations).toHaveBeenCalled();
     });
   });
 });

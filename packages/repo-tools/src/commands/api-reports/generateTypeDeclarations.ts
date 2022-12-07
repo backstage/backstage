@@ -28,7 +28,7 @@ import { paths as cliPaths } from '../../lib/paths';
  * @returns {Promise<void>} A promise that resolves when the declaration files have been generated.
  */
 
-export async function generateTSC(tsconfigFilePath: string) {
+export async function generateTypeDeclarations(tsconfigFilePath: string) {
   await fs.remove(cliPaths.resolveTargetRoot('dist-types'));
   const { status } = spawnSync(
     'yarn',
