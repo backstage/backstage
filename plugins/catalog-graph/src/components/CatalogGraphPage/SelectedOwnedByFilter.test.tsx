@@ -14,21 +14,100 @@
  * limitations under the License.
  */
 
-import { RELATION_CHILD_OF, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { render, screen } from '@testing-library/react';
+import { GetEntityFacetsResponse } from '@backstage/catalog-client';
+import {
+  RELATION_CHILD_OF,
+  RELATION_OWNED_BY,
+  RELATION_HAS_MEMBER,
+} from '@backstage/catalog-model';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
+import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React from 'react';
+import { ApiProvider } from '@backstage/core-app-api';
 import { SelectedOwnedByFilter } from './SelectedOwnedByFilter';
 
+const catalogApi = {
+  getEntityFacets: jest.fn().mockResolvedValue({
+    facets: {
+      kind: [
+        { value: 'Component', count: 2 },
+        { value: 'System', count: 1 },
+        { value: 'API', count: 1 },
+        { value: 'Resource', count: 1 },
+      ],
+    },
+  } as GetEntityFacetsResponse),
+};
+const apis = TestApiRegistry.from(
+  [catalogApiRef, catalogApi],
+  [alertApiRef, {} as AlertApi],
+);
+
 describe('<SelectedOwnedByFilter/>', () => {
-  test('should render current value', () => {
-    render(
-      <SelectedOwnedByFilter
-        value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
-        onChange={() => {}}
-      />,
+  it('should not explode while loading', async () => {
+    const { baseElement } = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <SelectedOwnedByFilter
+          value={['api', 'component']}
+          onChange={() => {}}
+        />
+      </ApiProvider>,
+    );
+    expect(baseElement).toBeInTheDocument();
+  });
+
+  it('should render current value', async () => {
+    await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <SelectedOwnedByFilter
+          value={['api', 'component']}
+          onChange={() => {}}
+        />
+      </ApiProvider>,
     );
 
-    expect(screen.getByText(RELATION_OWNED_BY)).toBeInTheDocument();
-    expect(screen.getByText(RELATION_CHILD_OF)).toBeInTheDocument();
+    expect(screen.getByText('API')).toBeInTheDocument();
+    expect(screen.getByText('Component')).toBeInTheDocument();
+  });
+  it('should return undefined if all values are selected', async () => {
+    const onChange = jest.fn();
+    await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <SelectedOwnedByFilter
+          value={['api', 'component', 'system', 'domain']}
+          onChange={onChange}
+        />
+      </ApiProvider>,
+    );
+    await userEvent.click(screen.getByLabelText('Open'));
+
+    await waitFor(() =>
+      expect(screen.getByText('Resource')).toBeInTheDocument(),
+    );
+
+    await userEvent.click(screen.getByText('Resource'));
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  it('should return all values when cleared', async () => {
+    const onChange = jest.fn();
+    await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <SelectedOwnedByFilter value={[]} onChange={onChange} />
+      </ApiProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.tab();
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(undefined);
+    });
   });
 });
