@@ -67,14 +67,6 @@ export const EntityOwnerPicker = () => {
     queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
   );
 
-  // Set selected owners on query parameter updates; this happens at initial page load and from
-  // external updates to the page location.
-  useEffect(() => {
-    if (queryParamOwners.length) {
-      setSelectedOwners(queryParamOwners);
-    }
-  }, [queryParamOwners]);
-
   useEffect(() => {
     updateFilters({
       owners: selectedOwners.length
@@ -83,21 +75,29 @@ export const EntityOwnerPicker = () => {
     });
   }, [selectedOwners, updateFilters]);
 
-  const availableOwners = useMemo(() => {
-    const owners = [
-      ...new Set(
-        backendEntities
-          .flatMap((e: Entity) =>
-            getEntityRelations(e, RELATION_OWNED_BY).map(o =>
-              humanizeEntityRef(o, { defaultKind: 'group' }),
-            ),
-          )
-          .filter(Boolean) as string[],
-      ),
-    ].sort();
-    if (owners.length === 0) setSelectedOwners([]);
-    return owners;
-  }, [backendEntities]);
+  const availableOwners = useMemo(
+    () =>
+      [
+        ...new Set(
+          backendEntities
+            .flatMap((e: Entity) =>
+              getEntityRelations(e, RELATION_OWNED_BY).map(o =>
+                humanizeEntityRef(o, { defaultKind: 'group' }),
+              ),
+            )
+            .filter(Boolean) as string[],
+        ),
+      ].sort(),
+    [backendEntities],
+  );
+
+  // Set selected owners on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamOwners.length && availableOwners.length) {
+      setSelectedOwners(queryParamOwners);
+    }
+  }, [queryParamOwners, availableOwners]);
 
   if (!availableOwners.length) return null;
 
