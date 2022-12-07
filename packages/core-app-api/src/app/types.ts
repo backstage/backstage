@@ -307,6 +307,8 @@ export type BackstageApp = {
   /**
    * Router component that should wrap the App Routes create with getRoutes()
    * and any other components that should only be available while signed in.
+   *
+   * @deprecated Import and use the {@link AppRouter} component from `@backstage/core-app-api` instead
    */
   getRouter(): ComponentType<{}>;
 };

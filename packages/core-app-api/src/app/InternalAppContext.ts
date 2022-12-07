@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export { AppRouter } from './AppRouter';
-export { createSpecializedApp } from './createSpecializedApp';
-export { defaultConfigLoader } from './defaultConfigLoader';
-export * from './types';
+import { createContext } from 'react';
+import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
+import { BackstageRouteObject } from '../routing/types';
+
+export const InternalAppContext = createContext<
+  | undefined
+  | {
+      routeObjects: BackstageRouteObject[];
+      appIdentityProxy: AppIdentityProxy;
+    }
+>(undefined);

@@ -228,6 +228,9 @@ export type AppRouteBinder = <
 ) => void;
 
 // @public
+export function AppRouter({ children }: { children?: ReactNode }): JSX.Element;
+
+// @public
 export class AppThemeSelector implements AppThemeApi {
   constructor(themes: AppTheme[]);
   // (undocumented)
