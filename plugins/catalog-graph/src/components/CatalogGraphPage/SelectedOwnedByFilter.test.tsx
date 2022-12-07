@@ -148,11 +148,9 @@ describe('<SelectedOwnedByFilter/>', () => {
     );
     await userEvent.click(screen.getByLabelText('Open'));
 
-    await waitFor(() =>
-      expect(screen.getByText('Resource')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText('system')).toBeInTheDocument());
 
-    await userEvent.click(screen.getByText('Resource'));
+    await userEvent.click(screen.getByText('system'));
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith(undefined);
