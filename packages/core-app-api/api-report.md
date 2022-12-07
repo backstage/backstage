@@ -262,6 +262,7 @@ export type AuthApiCreateOptions = {
 export type BackstageApp = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
+  createRoot(element: JSX.Element): ComponentType<{}>;
   getProvider(): ComponentType<{}>;
   getRouter(): ComponentType<{}>;
 };

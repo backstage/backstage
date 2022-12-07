@@ -248,7 +248,23 @@ export class AppManager implements BackstageApp {
     return this.components;
   }
 
+  createRoot(element: JSX.Element): ComponentType<{}> {
+    const AppProvider = this.getProvider();
+    const AppRoot = () => {
+      return <AppProvider>{element}</AppProvider>;
+    };
+    return AppRoot;
+  }
+
+  #getProviderCalled = false;
   getProvider(): ComponentType<{}> {
+    if (this.#getProviderCalled) {
+      throw new Error(
+        'app.getProvider() or app.createRoot() has already been called, and can only be called once',
+      );
+    }
+    this.#getProviderCalled = true;
+
     const appContext = new AppContextImpl(this);
 
     // We only validate routes once
