@@ -1,5 +1,5 @@
 ---
-'@backstage/create-app': minor
+'@backstage/create-app': patch
 ---
 
 added default project name for CI job compatibility
