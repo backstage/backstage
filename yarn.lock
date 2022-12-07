@@ -20850,9 +20850,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"engine.io@npm:~3.5.0":
-  version: 3.5.0
-  resolution: "engine.io@npm:3.5.0"
+"engine.io@npm:~3.6.0":
+  version: 3.6.1
+  resolution: "engine.io@npm:3.6.1"
   dependencies:
     accepts: ~1.3.4
     base64id: 2.0.0
@@ -20860,7 +20860,7 @@ __metadata:
     debug: ~4.1.0
     engine.io-parser: ~2.2.0
     ws: ~7.4.2
-  checksum: 8d7eb107428301084502c65c8ae48e350587fa57edae734a88f7345debd386ed1d8a25ece7e82ba3ff1ad65300fb0123def1446a1a13127929ee5eac378af8b2
+  checksum: 7dd9eddc79aedf61a63141e6208ee89936c659445378f965bff6d5eb3e9cb4815aff735f2b1886487e2be51116a343e89d972ae5790bf2ac9fdcb2572baf8935
   languageName: node
   linkType: hard
 
@@ -34795,9 +34795,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io-client@npm:2.4.0, socket.io-client@npm:^2.2.0":
-  version: 2.4.0
-  resolution: "socket.io-client@npm:2.4.0"
+"socket.io-client@npm:2.5.0, socket.io-client@npm:^2.2.0":
+  version: 2.5.0
+  resolution: "socket.io-client@npm:2.5.0"
   dependencies:
     backo2: 1.0.2
     component-bind: 1.0.0
@@ -34810,7 +34810,7 @@ __metadata:
     parseuri: 0.0.6
     socket.io-parser: ~3.3.0
     to-array: 0.1.4
-  checksum: d5f16c6d836f6672f89896e785dccdb15ea4a78719daf9bc7954b5943e6ecbae97a56f4a8a33e22418ab0ce38e05a54770d2080bbf6c6d5c0c3a72b60a895800
+  checksum: a33accaf02c4a4c47ac9b09018fa4b9fa67a648a0cc92602e520ec884520050796786eb0df78fc1a9bf51e7b3d7b50ba4ffd3bda6e44df2c253a77100124669c
   languageName: node
   linkType: hard
 
@@ -34837,16 +34837,16 @@ __metadata:
   linkType: hard
 
 "socket.io@npm:^2.2.0":
-  version: 2.4.1
-  resolution: "socket.io@npm:2.4.1"
+  version: 2.5.0
+  resolution: "socket.io@npm:2.5.0"
   dependencies:
     debug: ~4.1.0
-    engine.io: ~3.5.0
+    engine.io: ~3.6.0
     has-binary2: ~1.0.2
     socket.io-adapter: ~1.1.0
-    socket.io-client: 2.4.0
+    socket.io-client: 2.5.0
     socket.io-parser: ~3.4.0
-  checksum: 290e4e8dae5c38628c5164cae12fc8154165233a46ecc241768a44f0add8f1243a0b13239385573fbbe9e4fb6424c199381461b577d504dc47529f5e1e7b6e4d
+  checksum: 6f20a413352cb0a8bb13063249fe425c81fb54beca1bdd71221262305cf21232e6a37fdd4a232b5695dbd4d3204281a9313829c9c373c5ba01c5bd7218edd094
   languageName: node
   linkType: hard
 
