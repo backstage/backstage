@@ -8911,13 +8911,13 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0":
-  version: 6.6.0
-  resolution: "@codemirror/view@npm:6.6.0"
+  version: 6.7.0
+  resolution: "@codemirror/view@npm:6.7.0"
   dependencies:
     "@codemirror/state": ^6.1.4
     style-mod: ^4.0.0
     w3c-keyname: ^2.2.4
-  checksum: 9b007eedcf13e94ec7d9c30ee302e1a1fcd382bef2481bd9afa3a116458652983e745b40494eb29d80df1dca8f99e91dcb1e4eba37670c2553ffc90bef0933e7
+  checksum: 9271ffee2889ed42137966424aa11d664fe2ebffec0254b22fbe5817db2c0f6da48b01bd5a8d532390b7678d26583c5329cc0c6f9fba964d7e28405f4f996554
   languageName: node
   linkType: hard
 
