@@ -133,8 +133,8 @@ describe('<SelectedOwnedByFilter/>', () => {
       </ApiProvider>,
     );
 
-    expect(screen.getByText('User')).toBeInTheDocument();
-    expect(screen.getByText('Component')).toBeInTheDocument();
+    expect(screen.getByText('user')).toBeInTheDocument();
+    expect(screen.getByText('component')).toBeInTheDocument();
   });
   it('should return undefined if all values are selected', async () => {
     const onChange = jest.fn();
