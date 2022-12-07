@@ -16,25 +16,12 @@
 
 import { UserEntity } from '@backstage/catalog-model';
 import {
-  CatalogApi,
-  catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import {
-  renderWithEffects,
-  TestApiRegistry,
-  wrapInTestApp,
-} from '@backstage/test-utils';
+import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { UserProfileCard } from './UserProfileCard';
-import { ApiProvider } from '@backstage/core-app-api';
-
-const catalogApi: jest.Mocked<CatalogApi> = {
-  getEntityByRef: jest.fn(),
-} as any;
-
-const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 describe('UserSummary Test', () => {
   const userEntity: UserEntity = {
@@ -63,11 +50,9 @@ describe('UserSummary Test', () => {
   it('Display Profile Card', async () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={userEntity}>
-            <UserProfileCard variant="gridItem" />
-          </EntityProvider>
-        </ApiProvider>,
+        <EntityProvider entity={userEntity}>
+          <UserProfileCard variant="gridItem" />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -115,11 +100,9 @@ describe('Edit Button', () => {
 
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={userEntity}>
-            <UserProfileCard variant="gridItem" />
-          </EntityProvider>
-        </ApiProvider>,
+        <EntityProvider entity={userEntity}>
+          <UserProfileCard variant="gridItem" />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -160,11 +143,9 @@ describe('Edit Button', () => {
 
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={userEntity}>
-            <UserProfileCard variant="gridItem" />
-          </EntityProvider>
-        </ApiProvider>,
+        <EntityProvider entity={userEntity}>
+          <UserProfileCard variant="gridItem" />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -215,11 +196,9 @@ describe('Edit Button', () => {
 
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={userEntity}>
-            <UserProfileCard variant="gridItem" />
-          </EntityProvider>
-        </ApiProvider>,
+        <EntityProvider entity={userEntity}>
+          <UserProfileCard variant="gridItem" />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -271,11 +250,9 @@ describe('Edit Button', () => {
 
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={userEntity}>
-            <UserProfileCard showLinks variant="gridItem" />
-          </EntityProvider>
-        </ApiProvider>,
+        <EntityProvider entity={userEntity}>
+          <UserProfileCard showLinks variant="gridItem" />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
