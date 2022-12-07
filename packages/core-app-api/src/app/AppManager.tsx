@@ -179,7 +179,7 @@ function useConfigLoader(
       return new URL(
         fullUrl.replace(getOrigin(fullUrl), ''),
         document.location.origin,
-      ).href;
+      ).href.replace(/\/$/, '');
     };
 
     /**
@@ -199,15 +199,17 @@ function useConfigLoader(
       const backendOrigin = getOrigin(backendBaseUrl);
 
       if (appOrigin === backendOrigin) {
-        relativeResolverConfig.data.backend = {
-          baseUrl: overrideOrigin(backendBaseUrl),
-        };
+        const newBackendBaseUrl = overrideOrigin(backendBaseUrl);
+        if (backendBaseUrl !== newBackendBaseUrl) {
+          relativeResolverConfig.data.backend = { baseUrl: newBackendBaseUrl };
+        }
       }
     }
     if (appBaseUrl) {
-      relativeResolverConfig.data.app = {
-        baseUrl: overrideOrigin(appBaseUrl),
-      };
+      const newAppBaseUrl = overrideOrigin(appBaseUrl);
+      if (appBaseUrl !== newAppBaseUrl) {
+        relativeResolverConfig.data.app = { baseUrl: newAppBaseUrl };
+      }
     }
     /**
      * Only add the relative config if there is actually data to add.

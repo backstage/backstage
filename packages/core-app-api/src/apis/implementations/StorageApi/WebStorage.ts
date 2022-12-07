@@ -35,11 +35,23 @@ export class WebStorage implements StorageApi {
     private readonly errorApi: ErrorApi,
   ) {}
 
+  private static hasSubscribed = false;
+
   static create(options: {
     errorApi: ErrorApi;
     namespace?: string;
   }): WebStorage {
     return new WebStorage(options.namespace ?? '', options.errorApi);
+  }
+
+  private static addStorageEventListener() {
+    window.addEventListener('storage', event => {
+      for (const [bucketPath, webStorage] of buckets.entries()) {
+        if (event.key?.startsWith(bucketPath)) {
+          webStorage.handleStorageChange(event.key);
+        }
+      }
+    });
   }
 
   get<T>(key: string): T | undefined {
@@ -89,7 +101,17 @@ export class WebStorage implements StorageApi {
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>> {
+    if (!WebStorage.hasSubscribed) {
+      WebStorage.addStorageEventListener();
+      WebStorage.hasSubscribed = true;
+    }
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
+  }
+
+  private handleStorageChange(eventKey: StorageEvent['key']) {
+    if (!eventKey?.startsWith(this.namespace)) return;
+    const key = eventKey?.replace(`${this.namespace}/`, '');
+    this.notifyChanges(key);
   }
 
   private getKeyName(key: string) {

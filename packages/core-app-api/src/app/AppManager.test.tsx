@@ -624,21 +624,18 @@ describe('Integration Test', () => {
   describe('relative url resolvers', () => {
     it.each([
       [
-        [document.location.href, document.location.href],
+        ['http://localhost', 'http://localhost'],
         {
           backend: {
-            baseUrl: 'http://localhost:8008/',
+            baseUrl: 'http://localhost:8008',
           },
           app: {
-            baseUrl: 'http://localhost:8008/',
+            baseUrl: 'http://localhost:8008',
           },
         },
       ],
       [
-        [
-          `${document.location.origin}/backstage`,
-          `${document.location.origin}/backstage`,
-        ],
+        ['http://localhost/backstage', 'http://localhost/backstage'],
         {
           backend: {
             baseUrl: 'http://test.com/backstage',
@@ -650,8 +647,8 @@ describe('Integration Test', () => {
       ],
       [
         [
-          `${document.location.origin}/backstage/instance`,
-          `${document.location.origin}/backstage/instance`,
+          'http://localhost/backstage/instance',
+          'http://localhost/backstage/instance',
         ],
         {
           backend: {
@@ -664,8 +661,8 @@ describe('Integration Test', () => {
       ],
       [
         [
-          `${document.location.origin}/backstage/instance`,
-          `http://test.com/backstage/instance`,
+          'http://localhost/backstage/instance',
+          'http://test.com/backstage/instance',
         ],
         {
           backend: {
