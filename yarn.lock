@@ -7189,7 +7189,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-playlist@workspace:plugins/playlist"
   dependencies:
-    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
@@ -8059,7 +8058,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils"
   dependencies:
-    "@backstage/catalog-client": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
@@ -8067,7 +8065,6 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
-    "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-techdocs": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
@@ -8129,7 +8126,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib"
   dependencies:
-    "@backstage/catalog-client": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
@@ -8144,7 +8140,7 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
-    "@react-hookz/web": ^19.0.0
+    "@react-hookz/web": ^20.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -8233,7 +8229,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs@workspace:plugins/techdocs"
   dependencies:
-    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -12451,6 +12446,22 @@ __metadata:
     js-cookie:
       optional: true
   checksum: 0fda3d3a0f967b6b38817f1e72d111711fc01036a8e6d0850bd4e3b3fa41af8635b260babf19e384402ac6d2dfa7db779585c0c8b16700cc0f568df9662ca517
+  languageName: node
+  linkType: hard
+
+"@react-hookz/web@npm:^20.0.0":
+  version: 20.0.0
+  resolution: "@react-hookz/web@npm:20.0.0"
+  dependencies:
+    "@react-hookz/deep-equal": ^1.0.3
+  peerDependencies:
+    js-cookie: ^3.0.1
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  peerDependenciesMeta:
+    js-cookie:
+      optional: true
+  checksum: 475d03cdd9a9131b7094549602c8a3ab52ad33e99d7ef408ba2ee7897bfdf332ab5228f46187b9a4c42535b4aaaf808e2c9c882949b2ec32d5ad42d53487a723
   languageName: node
   linkType: hard
 

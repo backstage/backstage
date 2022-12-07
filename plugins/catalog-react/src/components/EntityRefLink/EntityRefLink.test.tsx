@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
-import { catalogApiRef } from '../../api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { ApiProvider } from '@backstage/core-app-api';
-
-const catalogApi: jest.Mocked<CatalogApi> = {
-  getEntityByRef: jest.fn(),
-} as any;
-
-const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 describe('<EntityRefLink />', () => {
   it('renders link for entity in default namespace', async () => {
@@ -43,16 +34,11 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityRefLink entityRef={entity} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-        },
+    await renderInTestApp(<EntityRefLink entityRef={entity} />, {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
       },
-    );
+    });
 
     expect(screen.getByText('component:software')).toHaveAttribute(
       'href',
@@ -74,16 +60,11 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityRefLink entityRef={entity} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-        },
+    await renderInTestApp(<EntityRefLink entityRef={entity} />, {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
       },
-    );
+    });
     expect(screen.getByText('component:test/software')).toHaveAttribute(
       'href',
       '/catalog/test/component/software',
@@ -105,9 +86,7 @@ describe('<EntityRefLink />', () => {
       },
     };
     await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityRefLink entityRef={entity} defaultKind="Component" />
-      </ApiProvider>,
+      <EntityRefLink entityRef={entity} defaultKind="Component" />,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -126,16 +105,11 @@ describe('<EntityRefLink />', () => {
       namespace: 'default',
       name: 'software',
     };
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityRefLink entityRef={entityName} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-        },
+    await renderInTestApp(<EntityRefLink entityRef={entityName} />, {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
       },
-    );
+    });
     expect(screen.getByText('component:software')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
@@ -148,16 +122,11 @@ describe('<EntityRefLink />', () => {
       namespace: 'test',
       name: 'software',
     };
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityRefLink entityRef={entityName} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-        },
+    await renderInTestApp(<EntityRefLink entityRef={entityName} />, {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
       },
-    );
+    });
     expect(screen.getByText('component:test/software')).toHaveAttribute(
       'href',
       '/catalog/test/component/software',
@@ -171,9 +140,7 @@ describe('<EntityRefLink />', () => {
       name: 'software',
     };
     await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityRefLink entityRef={entityName} defaultKind="component" />
-      </ApiProvider>,
+      <EntityRefLink entityRef={entityName} defaultKind="component" />,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -193,11 +160,9 @@ describe('<EntityRefLink />', () => {
       name: 'software',
     };
     await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityRefLink entityRef={entityName} defaultKind="component">
-          Custom Children
-        </EntityRefLink>
-      </ApiProvider>,
+      <EntityRefLink entityRef={entityName} defaultKind="component">
+        Custom Children
+      </EntityRefLink>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,

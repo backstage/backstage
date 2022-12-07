@@ -25,8 +25,8 @@ import {
 import React, { forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
 import { humanizeEntityRef } from './humanize';
-import { Link, LinkProps } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { Link, LinkProps, Progress } from '@backstage/core-components';
+import { useApiHolder, useRouteRef } from '@backstage/core-plugin-api';
 import {
   Button,
   Tooltip,
@@ -80,7 +80,7 @@ export const PeekAheadPopover = ({
 }: PeekAheadPopoverProps) => {
   const entityRoute = useRouteRef(entityRouteRef);
   const classes = useStyles();
-  const catalogApi = useApi(catalogApiRef);
+  const apiHolder = useApiHolder();
 
   const {
     value: entity,
@@ -88,18 +88,17 @@ export const PeekAheadPopover = ({
     error,
   } = useAsync(async () => {
     if (popupState.isOpen) {
-      const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
-      if (!retrievedEntity) {
-        throw new Error(`${entityRef.name} was not found`);
+      const catalogApi = apiHolder.get(catalogApiRef);
+      if (catalogApi) {
+        const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
+        if (!retrievedEntity) {
+          throw new Error(`${entityRef.name} was not found`);
+        }
+        return retrievedEntity;
       }
-      return retrievedEntity;
     }
     return undefined;
-  }, [popupState]);
-
-  if (loading) {
-    return null;
-  }
+  }, [popupState.isOpen, apiHolder, entityRef]);
 
   return (
     <HoverPopover
@@ -117,12 +116,13 @@ export const PeekAheadPopover = ({
       }}
     >
       <Card>
+        {loading && <Progress />}
         <CardContent>
-          <Typography gutterBottom>{entityRef.namespace}</Typography>
+          <Typography color="textSecondary">{entityRef.namespace}</Typography>
           <Typography variant="h5" component="div">
             {entityRef.name}
           </Typography>
-          <Typography>{entityRef.kind}</Typography>
+          <Typography color="textSecondary">{entityRef.kind}</Typography>
           <Typography variant="body2">
             {error && <Alert severity="warning">{error.message}</Alert>}
             {entity && (
@@ -201,25 +201,17 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       { defaultKind },
     );
 
-    const link = (
-      <Link
-        {...bindHover(popupState)}
-        {...linkProps}
-        ref={ref}
-        to={entityRoute(routeParams)}
-      >
-        {children}
-        {!children && (title ?? formattedEntityRefTitle)}
-      </Link>
-    );
-
     return (
       <>
-        {title ? (
-          <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>
-        ) : (
-          link
-        )}
+        <Link
+          {...bindHover(popupState)}
+          {...linkProps}
+          ref={ref}
+          to={entityRoute(routeParams)}
+        >
+          {children}
+          {!children && (title ?? formattedEntityRefTitle)}
+        </Link>
 
         <PeekAheadPopover
           popupState={popupState}

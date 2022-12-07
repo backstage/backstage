@@ -20,21 +20,12 @@ import {
   RELATION_PART_OF,
   SystemEntity,
 } from '@backstage/catalog-model';
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { entityRouteRef } from '../../routes';
 import { EntityTable } from './EntityTable';
 import { componentEntityColumns, systemEntityColumns } from './presets';
-import { catalogApiRef } from '../../api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { ApiProvider } from '@backstage/core-app-api';
-
-const catalogApi: jest.Mocked<CatalogApi> = {
-  getEntityByRef: jest.fn(),
-} as any;
-
-const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 describe('systemEntityColumns', () => {
   it('shows systems', async () => {
@@ -64,14 +55,12 @@ describe('systemEntityColumns', () => {
     ];
 
     await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityTable
-          title="My Systems"
-          entities={entities}
-          emptyContent={<div>EMPTY</div>}
-          columns={systemEntityColumns}
-        />
-      </ApiProvider>,
+      <EntityTable
+        title="My Systems"
+        entities={entities}
+        emptyContent={<div>EMPTY</div>}
+        columns={systemEntityColumns}
+      />,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -118,14 +107,12 @@ describe('componentEntityColumns', () => {
     ];
 
     await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityTable
-          title="My Components"
-          entities={entities}
-          emptyContent={<div>EMPTY</div>}
-          columns={componentEntityColumns}
-        />
-      </ApiProvider>,
+      <EntityTable
+        title="My Components"
+        entities={entities}
+        emptyContent={<div>EMPTY</div>}
+        columns={componentEntityColumns}
+      />,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,

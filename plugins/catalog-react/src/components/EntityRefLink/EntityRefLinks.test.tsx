@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLinks } from './EntityRefLinks';
-import { catalogApiRef } from '../../api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { ApiProvider } from '@backstage/core-app-api';
-
-const catalogApi: jest.Mocked<CatalogApi> = {
-  getEntityByRef: jest.fn(),
-} as any;
-
-const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 describe('<EntityRefLinks />', () => {
   it('renders a single link', async () => {
@@ -38,16 +29,11 @@ describe('<EntityRefLinks />', () => {
         name: 'software',
       },
     ];
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityRefLinks entityRefs={entityNames} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-        },
+    await renderInTestApp(<EntityRefLinks entityRefs={entityNames} />, {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
       },
-    );
+    });
     expect(screen.getByText('component:software')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
@@ -67,16 +53,11 @@ describe('<EntityRefLinks />', () => {
         name: 'interface',
       },
     ];
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityRefLinks entityRefs={entityNames} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-        },
+    await renderInTestApp(<EntityRefLinks entityRefs={entityNames} />, {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
       },
-    );
+    });
     expect(screen.getByText(',')).toBeInTheDocument();
     expect(screen.getByText('component:software')).toHaveAttribute(
       'href',
