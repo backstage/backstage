@@ -40,7 +40,7 @@ export function tokenToExpiry(jwtToken: string | undefined): Date {
   }
 
   const [_header, rawPayload, _signature] = jwtToken.split('.');
-  const payload = JSON.parse(atob(rawPayload));
+  const payload = JSON.parse(window.atob(rawPayload));
   if (typeof payload.exp !== 'number') {
     return fallback;
   }
