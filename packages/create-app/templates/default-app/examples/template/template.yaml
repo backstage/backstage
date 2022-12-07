@@ -71,4 +71,4 @@ spec:
         url: ${{ steps["publish"].output.remoteUrl }}
       - title: Open in catalog
         icon: catalog
-        entityRef: ${{ steps["register"].output.entityRef }}
+        entityRef: ${{ steps['register'].output.entityRef }}
