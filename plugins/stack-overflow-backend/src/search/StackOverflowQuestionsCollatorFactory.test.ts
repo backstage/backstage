@@ -95,14 +95,6 @@ describe('StackOverflowQuestionsCollatorFactory', () => {
     const worker = setupServer();
     setupRequestMockHandlers(worker);
 
-    afterEach(async () => {
-      worker.resetHandlers();
-    });
-
-    afterAll(async () => {
-      worker.close();
-    });
-
     it('returns a readable stream', async () => {
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
         config,
