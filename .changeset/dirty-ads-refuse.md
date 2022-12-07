@@ -1,4 +1,7 @@
 ---
+'@backstage/plugin-scaffolder-backend-module-cookiecutter': patch
+'@backstage/plugin-scaffolder-backend-module-rails': patch
+'@backstage/plugin-scaffolder-backend-module-yeoman': patch
 '@backstage/create-app': patch
 '@backstage/plugin-scaffolder-backend': patch
 ---
