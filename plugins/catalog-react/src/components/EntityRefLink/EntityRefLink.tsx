@@ -35,6 +35,8 @@ import {
   Card,
   CardActions,
   makeStyles,
+  Box,
+  Chip,
 } from '@material-ui/core';
 import {
   usePopupState,
@@ -71,8 +73,17 @@ const useStyles = makeStyles(() => {
     popoverPaper: {
       width: '30em',
     },
+    descriptionTypography: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      display: '-webkit-box',
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: 'vertical',
+    },
   };
 });
+
+const maxTagChips = 4;
 
 export const PeekAheadPopover = ({
   popupState,
@@ -126,8 +137,21 @@ export const PeekAheadPopover = ({
           {entity ? (
             <>
               <Typography color="textSecondary">{entity.kind}</Typography>
-              <Typography paragraph>{entity.metadata.description}</Typography>
+              <Typography className={classes.descriptionTypography} paragraph>
+                {entity.metadata.description}
+              </Typography>
               <Typography>{entity.spec?.type}</Typography>
+              <Box marginTop="0.5em">
+                {(entity.metadata.tags || []).slice(0, maxTagChips).map(tag => {
+                  return <Chip size="small" label={tag} />;
+                })}
+                {entity.metadata.tags?.length &&
+                  entity.metadata.tags?.length > maxTagChips && (
+                    <Tooltip title="Drill into the entity to see all of the tags.">
+                      <Chip size="small" label="..." />
+                    </Tooltip>
+                  )}
+              </Box>
             </>
           ) : (
             <>
