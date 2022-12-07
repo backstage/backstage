@@ -15,12 +15,7 @@
  */
 
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
-import {
-  RELATION_CHILD_OF,
-  RELATION_OWNED_BY,
-  RELATION_HAS_MEMBER,
-} from '@backstage/catalog-model';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
