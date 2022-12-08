@@ -14,27 +14,5 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { EntityTagFilter } from '../../filters';
-import { EntityAutocompletePicker } from '../EntityAutocompletePicker/EntityAutocompletePicker';
-
-/** @public */
-export type CatalogReactEntityTagPickerClassKey = 'input';
-
-/** @public */
-export type EntityTagPickerProps = {
-  showCounts?: boolean;
-};
-
-/** @public */
-export const EntityTagPicker = (props: EntityTagPickerProps) => {
-  return (
-    <EntityAutocompletePicker
-      label="Tags"
-      name="tags"
-      path="metadata.tags"
-      Filter={EntityTagFilter}
-      showCounts={props.showCounts}
-    />
-  );
-};
+export { EntityAutocompletePicker } from './EntityAutocompletePicker';
+export type { EntityAutocompletePickerProps } from './EntityAutocompletePicker';
