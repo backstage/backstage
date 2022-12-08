@@ -254,6 +254,17 @@ export class EntityOwnerFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityOwnerPicker: () => JSX.Element | null;
 
+// @public
+export const EntityPeekAheadPopover: ({
+  entityRef,
+  children,
+}: EntityPeekAheadPopoverProps) => JSX.Element;
+
+// @public
+export type EntityPeekAheadPopoverProps = PropsWithChildren<{
+  entityRef: CompoundEntityRef;
+}>;
+
 // @public (undocumented)
 export const EntityProcessingStatusPicker: () => JSX.Element;
 

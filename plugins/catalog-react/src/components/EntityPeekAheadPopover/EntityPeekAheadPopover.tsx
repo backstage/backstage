@@ -42,12 +42,20 @@ import {
   CompoundEntityRef,
   isUserEntity,
   isGroupEntity,
+  UserEntity,
+  GroupEntity,
+  Entity,
 } from '@backstage/catalog-model';
 import { Link, Progress } from '@backstage/core-components';
 
-export type EntityPeekAheadPopoverProps = {
+/**
+ * Properties for an entity popover on hover of a component.
+ *
+ * @public
+ */
+export type EntityPeekAheadPopoverProps = PropsWithChildren<{
   entityRef: CompoundEntityRef;
-};
+}>;
 
 const useStyles = makeStyles(() => {
   return {
@@ -66,11 +74,71 @@ const useStyles = makeStyles(() => {
 
 const maxTagChips = 4;
 
+const EmailCardAction = ({ email }: { email: string }) => {
+  return (
+    <Tooltip title={`Email ${email}`}>
+      <Button target="_blank" href={`mailto:${email}`} size="small">
+        <EmailIcon color="action" />
+      </Button>
+    </Tooltip>
+  );
+};
+
+const UserCardActions = ({ entity }: { entity: UserEntity }) => {
+  return (
+    <>
+      {entity.spec.profile?.email && (
+        <EmailCardAction email={entity.spec.profile.email} />
+      )}
+    </>
+  );
+};
+
+const GroupCardActions = ({ entity }: { entity: GroupEntity }) => {
+  return (
+    <>
+      {entity.spec.profile?.email && (
+        <EmailCardAction email={entity.spec.profile.email} />
+      )}
+    </>
+  );
+};
+
+/**
+ * Shows an entity popover on hover of a component.
+ *
+ * @public
+ */
+const EntityCardActions = ({ entity }: { entity: Entity }) => {
+  const entityRoute = useRouteRef(entityRouteRef);
+
+  return (
+    <>
+      <Tooltip title="Show details">
+        <Link
+          component="button"
+          to={entityRoute({
+            name: entity.metadata.name,
+            namespace: entity.metadata.namespace || 'default',
+            kind: entity.kind.toLocaleLowerCase('en-US'),
+          })}
+        >
+          <InfoIcon color="action" />
+        </Link>
+      </Tooltip>
+    </>
+  );
+};
+
+/**
+ * Shows an entity popover on hover of a component.
+ *
+ * @public
+ */
 export const EntityPeekAheadPopover = ({
   entityRef,
   children,
-}: PropsWithChildren<EntityPeekAheadPopoverProps>) => {
-  const entityRoute = useRouteRef(entityRouteRef);
+}: EntityPeekAheadPopoverProps) => {
   const classes = useStyles();
   const apiHolder = useApiHolder();
   const popupState = usePopupState({
@@ -154,24 +222,13 @@ export const EntityPeekAheadPopover = ({
             )}
           </CardContent>
           <CardActions>
-            {entity &&
-              (isUserEntity(entity) || isGroupEntity(entity)) &&
-              entity.spec.profile?.email && (
-                <Tooltip title={`Email ${entity.spec.profile.email}`}>
-                  <Button
-                    target="_blank"
-                    href={`mailto:${entity.spec.profile.email}`}
-                    size="small"
-                  >
-                    <EmailIcon color="action" />
-                  </Button>
-                </Tooltip>
-              )}
-            <Tooltip title="Show details">
-              <Link component="button" to={entityRoute(entityRef)}>
-                <InfoIcon color="action" />
-              </Link>
-            </Tooltip>
+            {entity && (
+              <>
+                {isUserEntity(entity) && <UserCardActions entity={entity} />}
+                {isGroupEntity(entity) && <GroupCardActions entity={entity} />}
+                <EntityCardActions entity={entity} />
+              </>
+            )}
           </CardActions>
         </Card>
       </HoverPopover>
