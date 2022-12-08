@@ -133,7 +133,7 @@ describe('webLibraryPackage factory', () => {
     await webLibraryPackage.create(options, {
       scope: 'internal',
       private: true,
-      isMonoRepo: true,
+      isMonoRepo: false,
       defaultVersion: '1.0.0',
       markAsModified: () => {},
       createTemporaryDirectory: () => fs.mkdtemp('test'),
@@ -141,11 +141,11 @@ describe('webLibraryPackage factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: resolvePath(`/root/packages/${expectedwebLibraryPackageName}`),
+      cwd: resolvePath(`/root/${expectedwebLibraryPackageName}`),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: resolvePath(`/root/packages/${expectedwebLibraryPackageName}`),
+      cwd: resolvePath(`/root/${expectedwebLibraryPackageName}`),
       optional: true,
     });
   });
