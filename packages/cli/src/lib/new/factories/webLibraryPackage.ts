@@ -15,8 +15,6 @@
  */
 
 import chalk from 'chalk';
-import camelCase from 'lodash/camelCase';
-import upperFirst from 'lodash/upperFirst';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
 import { createFactory, CreateContext } from '../types';
@@ -39,9 +37,7 @@ export const webLibraryPackage = createFactory<Options>({
   optionsPrompts: [pluginIdPrompt(), ownerPrompt()],
   async create(options: Options, ctx: CreateContext) {
     const { id } = options;
-
     const name = ctx.scope ? `@${ctx.scope}/${id}` : `${id}`;
-    const extensionName = `${upperFirst(camelCase(id))}Page`;
 
     Task.log();
     Task.log(`Creating web-library package ${chalk.cyan(name)}`);
@@ -56,8 +52,6 @@ export const webLibraryPackage = createFactory<Options>({
       values: {
         id,
         name,
-        extensionName,
-        pluginVar: `${camelCase(id)}Plugin`,
         pluginVersion: ctx.defaultVersion,
         privatePackage: ctx.private,
         npmRegistry: ctx.npmRegistry,
