@@ -123,32 +123,6 @@ describe('<SelectedOwnedByFilter/>', () => {
     expect(screen.getByText('user')).toBeInTheDocument();
     expect(screen.getByText('group')).toBeInTheDocument();
   });
-  it('should return undefined if all values are selected', async () => {
-    const onChange = jest.fn();
-    await renderWithEffects(
-      <ApiProvider apis={apis}>
-        <SelectedOwnedByFilter
-          value={[
-            'service-with-owner',
-            'service-with-incomplete-data',
-            'service-with-user-owner',
-          ]}
-          onChange={onChange}
-        />
-      </ApiProvider>,
-    );
-    await userEvent.click(screen.getByLabelText('Open'));
-
-    await waitFor(() =>
-      expect(screen.getByText('service-with-owner')).toBeInTheDocument(),
-    );
-
-    await userEvent.click(screen.getByText('service-with-owner'));
-
-    await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith(catalogApi);
-    });
-  });
 
   it('should return all values when cleared', async () => {
     const onChange = jest.fn();
