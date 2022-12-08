@@ -393,16 +393,17 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               hash,
               locationKey,
             );
+            if (ok) {
+              await tx<DbRefreshStateReferencesRow>(
+                'refresh_state_references',
+              ).insert({
+                source_key: options.sourceKey,
+                target_entity_ref: entityRef,
+              });
+            }
           }
 
-          if (ok) {
-            await tx<DbRefreshStateReferencesRow>(
-              'refresh_state_references',
-            ).insert({
-              source_key: options.sourceKey,
-              target_entity_ref: entityRef,
-            });
-          } else {
+          if (!ok) {
             const conflictingKey = await this.checkLocationKeyConflict(
               tx,
               entityRef,
