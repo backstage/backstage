@@ -15,22 +15,11 @@
  */
 
 import React from 'react';
-import {
-  TemplateContent,
-  useGetCustomFields,
-} from '@backstage/plugin-scaffolder';
+import { EmbeddedScaffolderWorkflow } from '../EmbeddedScaffolderWorkflow/EmbeddedScaffolderWorkflow';
 
-interface SecurityTabProps {
-  namespace: string;
-  templateName: string;
-  customExtensionsElement?: React.ReactNode;
-}
+interface SecurityTabProps {}
 
-export function SecurityTab({
-  namespace,
-  templateName,
-  customExtensionsElement = <></>,
-}: SecurityTabProps): JSX.Element | null {
+export function SecurityTab({}: SecurityTabProps): JSX.Element | null {
   // eslint-disable-next-line no-alert
   const onComplete = async () => alert('success!!!!');
 
@@ -38,21 +27,25 @@ export function SecurityTab({
     <h2>{error?.message ?? 'Houston we have a problem.'}</h2>
   );
 
-  const fieldExtensions = useGetCustomFields(customExtensionsElement);
-
   return (
-    <TemplateContent
-      namespace={namespace}
-      templateName={templateName}
+    <EmbeddedScaffolderWorkflow
       onComplete={onComplete}
       onError={onError}
-      customFieldExtensions={fieldExtensions}
-      initialFormState={{
-        name: 'prefilled-name',
-        description: 'prefilled description',
-        owner: 'acme-corp',
-        repoUrl: 'github.com?owner=component&repo=component',
-      }}
+      namespace="default"
+      templateName="docs-template"
+      frontPage={
+        <>
+          <h1>Security Insights</h1>
+          <p>
+            Security insights actionable advice to improve security posture of
+            your application
+          </p>
+          <p>
+            You must complete on-boarding process to activate security insights
+            on this project.
+          </p>
+        </>
+      }
     />
   );
 }

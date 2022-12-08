@@ -33,6 +33,7 @@ import { FormProps } from '../types';
 import { nextRouteRef } from '../routes';
 import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { TemplateWizardContent } from '../TemplateWizardContent/TemplateWizardContent';
+import { Header, Page } from '@backstage/core-components';
 
 type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
@@ -85,6 +86,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
         onComplete={onComplete}
         onError={onError}
         customFieldExtensions={props.customFieldExtensions}
+        FormProps={props.FormProps}
       />
     </AnalyticsContext>
   );
