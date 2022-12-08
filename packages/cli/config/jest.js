@@ -65,7 +65,7 @@ function getRoleConfig(role) {
   }
 }
 
-async function getProjectConfig(targetPath, displayName) {
+async function getProjectConfig(targetPath, extraConfig) {
   const configJsPath = path.resolve(targetPath, 'jest.config.js');
   const configTsPath = path.resolve(targetPath, 'jest.config.ts');
   // If the package has it's own jest config, we use that instead.
@@ -125,11 +125,8 @@ async function getProjectConfig(targetPath, displayName) {
   }
 
   const options = {
-    ...(displayName && { displayName }),
+    ...extraConfig,
     rootDir: path.resolve(targetPath, 'src'),
-    coverageDirectory: path.resolve(targetPath, 'coverage'),
-    coverageProvider: envOptions.nextTests ? 'babel' : 'v8',
-    collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
     },
@@ -237,15 +234,21 @@ async function getRootConfig() {
   const targetPackagePath = path.resolve(targetPath, 'package.json');
   const exists = await fs.pathExists(targetPackagePath);
 
+  const coverageConfig = {
+    coverageDirectory: path.resolve(targetPath, 'coverage'),
+    coverageProvider: envOptions.nextTests ? 'babel' : 'v8',
+    collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
+  };
+
   if (!exists) {
-    return getProjectConfig(targetPath);
+    return getProjectConfig(targetPath, coverageConfig);
   }
 
   // Check whether the current package is a workspace root or not
   const data = await fs.readJson(targetPackagePath);
   const workspacePatterns = data.workspaces && data.workspaces.packages;
   if (!workspacePatterns) {
-    return getProjectConfig(targetPath);
+    return getProjectConfig(targetPath, coverageConfig);
   }
 
   // If the target package is a workspace root, we find all packages in the
@@ -269,7 +272,9 @@ async function getRootConfig() {
         testScript?.includes('backstage-cli test') ||
         testScript?.includes('backstage-cli package test');
       if (testScript && isSupportedTestScript) {
-        return await getProjectConfig(projectPath, packageData.name);
+        return await getProjectConfig(projectPath, {
+          displayName: packageData.name,
+        });
       }
 
       return undefined;
@@ -279,6 +284,7 @@ async function getRootConfig() {
   return {
     rootDir: targetPath,
     projects: configs,
+    ...coverageConfig,
   };
 }
 
