@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright 2022 The Backstage Authors
  *
@@ -16,10 +15,30 @@
  */
 
 import React from 'react';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  TemplateWizardContent,
+  useGetCustomFields,
+} from '@backstage/plugin-scaffolder';
 
-export function SecurityTab(): JSX.Element | null {
-  const entity = useEntity();
-  console.log(entity);
-  return <h1>Security</h1>;
+interface SecurityTabProps {
+  customExtensionsElement: React.ReactNode;
+}
+
+export function SecurityTab(props: SecurityTabProps): JSX.Element | null {
+  // eslint-disable-next-line no-alert
+  const onComplete = async () => alert('success!!!!');
+  const onError = (error: Error | undefined) => (
+    <h2>{error?.message ?? 'Houston we have a problem.'}</h2>
+  );
+  const fieldExtensions = useGetCustomFields(props.customExtensionsElement);
+
+  return (
+    <TemplateWizardContent
+      namespace="default"
+      templateName="docs-template"
+      onComplete={onComplete}
+      onError={onError}
+      customFieldExtensions={fieldExtensions}
+    />
+  );
 }
