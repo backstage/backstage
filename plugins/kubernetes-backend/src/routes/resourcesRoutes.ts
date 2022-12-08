@@ -21,7 +21,6 @@ import {
 import { CatalogApi } from '@backstage/catalog-client';
 import { InputError, AuthenticationError } from '@backstage/errors';
 import express, { Request } from 'express';
-import { KubernetesObjectsProvider, ObjectToFetch } from '../types/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
@@ -38,9 +37,13 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from '@backstage/plugin-permission-node';
-import { transformConditions } from '../permissions';
+import {
+  transformConditions,
+  DEFAULT_OBJECTS,
+  KubernetesObjectsProvider,
+  ObjectToFetch,
+} from '@backstage/plugin-kubernetes-backend';
 import lodash from 'lodash';
-import { DEFAULT_OBJECTS } from '../service';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
@@ -163,7 +166,6 @@ export const addResourceRoutesToRouter = (
         [
           {
             permission: kubernetesCustomResourcesReadPermission,
-            resourceRef: req.body.id,
           },
         ],
         { token },
