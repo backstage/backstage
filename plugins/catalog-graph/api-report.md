@@ -73,7 +73,6 @@ export const EntityCatalogGraphCard: (props: {
   unidirectional?: boolean | undefined;
   mergeRelations?: boolean | undefined;
   kinds?: string[] | undefined;
-  ownedBy?: string[] | undefined;
   relations?: string[] | undefined;
   direction?: Direction | undefined;
   height?: number | undefined;
@@ -111,6 +110,7 @@ export const EntityRelationsGraph: (props: {
   unidirectional?: boolean | undefined;
   mergeRelations?: boolean | undefined;
   kinds?: string[] | undefined;
+  ownedBy?: string[] | undefined;
   relations?: string[] | undefined;
   direction?: Direction | undefined;
   onNodeClick?:
