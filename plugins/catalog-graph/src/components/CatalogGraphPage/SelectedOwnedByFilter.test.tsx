@@ -146,7 +146,7 @@ describe('<SelectedOwnedByFilter/>', () => {
     await userEvent.click(screen.getByText('service-with-owner'));
 
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith(undefined);
+      expect(onChange).toHaveBeenCalledWith(catalogApi);
     });
   });
 
