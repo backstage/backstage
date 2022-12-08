@@ -107,4 +107,46 @@ describe('webLibraryPackage factory', () => {
       optional: true,
     });
   });
+
+  it('should create a web library plugin with options and codeowners', async () => {
+    const expectedwebLibraryPackageName = 'test';
+
+    mockFs({
+      '/root': {
+        CODEOWNERS: '',
+        packages: mockFs.directory(),
+      },
+      [paths.resolveOwn('templates')]: mockFs.load(
+        paths.resolveOwn('templates'),
+      ),
+    });
+
+    const options = await FactoryRegistry.populateOptions(webLibraryPackage, {
+      id: 'test',
+      owner: '@backstage/test-owners',
+    });
+
+    const [, mockStream] = createMockOutputStream();
+    jest.spyOn(process, 'stderr', 'get').mockReturnValue(mockStream);
+    jest.spyOn(Task, 'forCommand').mockResolvedValue();
+
+    await webLibraryPackage.create(options, {
+      scope: 'internal',
+      private: true,
+      isMonoRepo: true,
+      defaultVersion: '1.0.0',
+      markAsModified: () => {},
+      createTemporaryDirectory: () => fs.mkdtemp('test'),
+    });
+
+    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
+      cwd: resolvePath(`/root/packages/${expectedwebLibraryPackageName}`),
+      optional: true,
+    });
+    expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
+      cwd: resolvePath(`/root/packages/${expectedwebLibraryPackageName}`),
+      optional: true,
+    });
+  });
 });
