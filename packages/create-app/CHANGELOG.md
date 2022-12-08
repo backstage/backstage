@@ -1,5 +1,14 @@
 # @backstage/create-app
 
+## 0.4.35-next.3
+
+### Patch Changes
+
+- c4788dbb58: Fix dependency ordering in templated packages.
+- af1358bb07: added default project name for CI job compatibility
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+
 ## 0.4.35-next.2
 
 ### Patch Changes
