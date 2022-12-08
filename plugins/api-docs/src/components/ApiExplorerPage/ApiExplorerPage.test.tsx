@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { useOutlet } from 'react-router';
+import { useOutlet } from 'react-router-dom';
 import { ApiExplorerPage } from './ApiExplorerPage';
 
 jest.mock('react-router', () => ({

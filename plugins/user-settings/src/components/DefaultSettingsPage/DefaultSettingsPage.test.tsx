@@ -18,7 +18,7 @@ import React from 'react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { DefaultSettingsPage } from './DefaultSettingsPage';
 import { UserSettingsTab } from '../UserSettingsTab';
-import { useOutlet } from 'react-router';
+import { useOutlet } from 'react-router-dom';
 import { SettingsLayout } from '../SettingsLayout';
 
 jest.mock('react-router', () => ({

@@ -15,7 +15,7 @@
  */
 import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
 import { act, renderHook } from '@testing-library/react-hooks';
-import { useLocation as useLocationMocked } from 'react-router';
+import { useLocation as useLocationMocked } from 'react-router-dom';
 import { Direction } from '../EntityRelationsGraph';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 

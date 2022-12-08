@@ -17,7 +17,7 @@ import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
 import React, { ComponentType, useCallback, useContext, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
 import { FieldExtensionOptions } from '../../extensions';

@@ -21,7 +21,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { useOutlet } from 'react-router';
+import { useOutlet } from 'react-router-dom';
 import { catalogImportApiRef, CatalogImportClient } from '../../api';
 import { ImportPage } from './ImportPage';
 

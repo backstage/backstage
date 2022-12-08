@@ -16,7 +16,7 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import { useSearch } from '@backstage/plugin-search-react';
 import { SearchPage } from './SearchPage';
 

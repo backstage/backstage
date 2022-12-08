@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType, useEffect } from 'react';
-import { Navigate, Route, Routes, useOutlet } from 'react-router';
+import { Navigate, Route, Routes, useOutlet } from 'react-router-dom';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
