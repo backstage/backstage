@@ -128,17 +128,15 @@ describe('resourcesRoutes', () => {
     app.use(errorHandler());
   });
 
-  describe('POST /resources/workloads/query', () => {
-    beforeEach(() => {
-      permissions.authorizeConditional.mockReset();
-    });
+  beforeEach(() => {
+    permissions.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
+  });
 
+  describe('POST /resources/workloads/query', () => {
     // eslint-disable-next-line jest/expect-expect
     it('200 happy path', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/workloads/query')
         .send({
@@ -193,10 +191,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing entity ref', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/workloads/query')
         .send({
@@ -217,10 +211,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when bad entity ref', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/workloads/query')
         .send({
@@ -246,10 +236,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when no entity in catalog', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/workloads/query')
         .send({
@@ -274,10 +260,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('401 when no Auth header', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/workloads/query')
         .send({
@@ -298,10 +280,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('401 when invalid Auth header', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/workloads/query')
         .send({
@@ -323,10 +301,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/workloads/query')
         .send({
@@ -350,9 +324,9 @@ describe('resourcesRoutes', () => {
     describe('permissions framework is enabled', () => {
       // eslint-disable-next-line jest/expect-expect
       it('returns a 403 response if Permission Policy is in place that blocks endpoint', async () => {
-        permissions.authorizeConditional.mockReturnValue(
-          Promise.resolve([{ result: AuthorizeResult.DENY }]),
-        );
+        permissions.authorizeConditional.mockResolvedValue([
+          { result: AuthorizeResult.DENY },
+        ]);
 
         await request(app)
           .post('/resources/workloads/query')
@@ -368,22 +342,20 @@ describe('resourcesRoutes', () => {
       });
 
       it('Filters out deployments if Permission Policy only allows access to pods', async () => {
-        permissions.authorizeConditional.mockReturnValue(
-          Promise.resolve([
-            {
-              result: AuthorizeResult.CONDITIONAL,
-              pluginId: 'kubernetes',
+        permissions.authorizeConditional.mockResolvedValue([
+          {
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'kubernetes',
+            resourceType: 'kubernetes-resource',
+            conditions: {
               resourceType: 'kubernetes-resource',
-              conditions: {
-                resourceType: 'kubernetes-resource',
-                rule: 'IS_OF_KIND',
-                params: {
-                  kind: 'pods',
-                },
+              rule: 'IS_OF_KIND',
+              params: {
+                kind: 'pods',
               },
             },
-          ]),
-        );
+          },
+        ]);
 
         await request(app)
           .post('/resources/workloads/query')
@@ -425,16 +397,8 @@ describe('resourcesRoutes', () => {
     });
   });
   describe('POST /resources/custom/query', () => {
-    beforeEach(() => {
-      permissions.authorizeConditional.mockReset();
-    });
-
     // eslint-disable-next-line jest/expect-expect
     it('200 happy path', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
@@ -470,10 +434,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing custom resources', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
@@ -498,10 +458,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when custom resources not array', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
@@ -527,10 +483,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when custom resources empty', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
@@ -556,10 +508,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing entity ref', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
@@ -587,10 +535,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when bad entity ref', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
@@ -623,10 +567,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when no entity in catalog', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
@@ -658,10 +598,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('401 when no Auth header', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
@@ -689,10 +625,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('401 when invalid Auth header', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
@@ -721,9 +653,9 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('403 response if Permission Policy is in place that blocks endpoint', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.DENY }]),
-      );
+      permissions.authorizeConditional.mockResolvedValue([
+        { result: AuthorizeResult.DENY },
+      ]);
 
       await request(app)
         .post('/resources/custom/query')
@@ -746,10 +678,6 @@ describe('resourcesRoutes', () => {
     });
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
-      permissions.authorizeConditional.mockReturnValue(
-        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-      );
-
       await request(app)
         .post('/resources/custom/query')
         .send({
