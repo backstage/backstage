@@ -6503,6 +6503,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
@@ -39268,6 +39269,13 @@ __metadata:
   peerDependencies:
     zod: ^3.18.0
   checksum: 10e84864a3ccc2e04500b9bc81369ed7c5b3ec068ea582a13369175ed40e785091a63ae7fa86ebb4ddf1bccd55c3dab32f4d3070bbcc3296e68305ff787c9df3
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.11.6":
+  version: 3.20.2
+  resolution: "zod@npm:3.20.2"
+  checksum: 04172f7e9350372684ccd298d4716908edc9113751295b6c4e1b3ea84e2af8997e504b33ba36f4741417bb2a5dc90bfd40501f6b0e7389df10e42a63d6d8366c
   languageName: node
   linkType: hard
 
