@@ -41,17 +41,18 @@ const catalogApi = {
         apiVersion: 'backstage.io/v1beta1',
         metadata: {
           name: 'service-with-owner',
+          namespace: 'service-with-owner',
           description: 'service with an owner',
           tags: ['a-tag'],
           annotations: {
             'backstage.io/techdocs-ref': 'dir:.',
           },
         },
-        kind: 'Component',
+        kind: 'Group',
         spec: {
           type: 'service',
           lifecycle: 'test',
-          owner: 'team-a',
+          owner: 'group:default/my-team',
         },
         relations: [
           {
@@ -64,10 +65,11 @@ const catalogApi = {
         apiVersion: 'backstage.io/v1beta1',
         metadata: {
           name: 'service-with-incomplete-data',
+          namespace: 'service-with-incomplete-data',
           description: '',
           tags: [],
         },
-        kind: 'Component',
+        kind: 'Group',
         spec: {
           type: 'service',
           lifecycle: 'test',
@@ -78,22 +80,13 @@ const catalogApi = {
         apiVersion: 'backstage.io/v1beta1',
         metadata: {
           name: 'service-with-user-owner',
+          namespace: 'service-with-user-owner',
         },
-        kind: 'Component',
+        kind: 'User',
         spec: {
           type: 'service',
           lifecycle: 'test',
           owner: 'user:my-user',
-        },
-      },
-      {
-        apiVersion: 'backstage.io/v1beta1',
-        metadata: {
-          name: 'user-a',
-        },
-        kind: 'User',
-        spec: {
-          memberOf: 'group-a',
         },
       },
     ],
@@ -114,10 +107,7 @@ describe('<SelectedOwnedByFilter/>', () => {
   it('should not explode while loading', async () => {
     const { baseElement } = await renderWithEffects(
       <ApiProvider apis={apis}>
-        <SelectedOwnedByFilter
-          value={['user', 'component']}
-          onChange={() => {}}
-        />
+        <SelectedOwnedByFilter value={['user', 'group']} onChange={() => {}} />
       </ApiProvider>,
     );
     expect(baseElement).toBeInTheDocument();
@@ -126,31 +116,34 @@ describe('<SelectedOwnedByFilter/>', () => {
   it('should render current value', async () => {
     await renderWithEffects(
       <ApiProvider apis={apis}>
-        <SelectedOwnedByFilter
-          value={['user', 'component']}
-          onChange={() => {}}
-        />
+        <SelectedOwnedByFilter value={['user', 'group']} onChange={() => {}} />
       </ApiProvider>,
     );
 
     expect(screen.getByText('user')).toBeInTheDocument();
-    expect(screen.getByText('component')).toBeInTheDocument();
+    expect(screen.getByText('group')).toBeInTheDocument();
   });
   it('should return undefined if all values are selected', async () => {
     const onChange = jest.fn();
     await renderWithEffects(
       <ApiProvider apis={apis}>
         <SelectedOwnedByFilter
-          value={['user', 'component', 'system', 'domain']}
+          value={[
+            'service-with-owner',
+            'service-with-incomplete-data',
+            'service-with-user-owner',
+          ]}
           onChange={onChange}
         />
       </ApiProvider>,
     );
     await userEvent.click(screen.getByLabelText('Open'));
 
-    await waitFor(() => expect(screen.getByText('system')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText('service-with-owner')).toBeInTheDocument(),
+    );
 
-    await userEvent.click(screen.getByText('system'));
+    await userEvent.click(screen.getByText('service-with-owner'));
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith(undefined);
