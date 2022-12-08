@@ -28,25 +28,39 @@ export function globals(interpreter: PlatformScript) {
     B: ps.map({
       '<>': Fragment,
       log,
-      // if: ps.fn(function*({ arg, env }) {
-      //   const $arg = yield* env.eval(arg);
-
-      //   if ($arg.type === 'boolean') {
-
-      //   }
-      // }),
       Component: Component,
       resolve: createModuleResolver({
         '@material-ui/core/Card': () =>
           import('@material-ui/core/Card').then(m => ps.external(m.default)),
+        '@material-ui/core/CardHeader': () =>
+          import('@material-ui/core/CardHeader').then(m =>
+            ps.external(m.default),
+          ),
+        '@material-ui/core/Divider': () =>
+          import('@material-ui/core/CardHeader').then(m =>
+            ps.external(m.default),
+          ),
         '@material-ui/core/Typography': () =>
           import('@material-ui/core/Typography').then(m =>
             ps.external(m.default),
           ),
         '@material-ui/core/Grid': () =>
           import('@material-ui/core/Grid').then(m => ps.external(m.default)),
+        '@backstage/core-components': () =>
+          import('@backstage/core-components').then(m =>
+            ps.external(m, ([path]) => ps.external(m[path])),
+          ),
+        '@backstage/integration-react': () =>
+          import('@backstage/integration-react').then(m =>
+            ps.external(m, ([path]) => ps.external(m[path])),
+          ),
+        '@backstage/plugin-catalog-react': () =>
+          import('@backstage/plugin-catalog-react').then(m =>
+            ps.external(m, ([path]) => ps.external(m[path])),
+          ),
         '@material-ui/core/styles/makeStyles': () =>
           import('@material-ui/core/styles/makeStyles').then(psMakeStylesFn),
+        
       }),
     }),
   });

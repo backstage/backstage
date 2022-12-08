@@ -25,12 +25,32 @@ $do:
     <Card>:
       $B.Component:
         type: { $B.resolve: "@material-ui/core/Card" }
+    <CardHeader>:
+      $B.Component:
+        type: { $B.resolve: "@material-ui/core/CardHeader" }
     <Typography>:
       $B.Component:
         type: { $B.resolve: "@material-ui/core/Typography" }
     <Grid>:
       $B.Component:
         type: { $B.resolve: "@material-ui/core/Grid" }
+    <Divider>:
+      $B.Component:
+        type: { $B.resolve: "@material-ui/core/Divider" }
+    <HeaderIconLinkRow>:
+      $B.Component:
+        type:
+          $let:
+            exports: { $B.resolve: "@backstage/core-components" }
+          $do:
+            $exports.HeaderIconLinkRow
+    <ScmIntegrationIcon>:
+      $B.Component:
+        type:
+          $let:
+            exports: { $B.resolve: "@backstage/integration-react" }
+          $do:
+            $exports.ScmIntegrationIcon
     makeStyles: { $B.resolve: "@material-ui/core/styles/makeStyles" }
   $do:
     $let:
@@ -55,6 +75,16 @@ $do:
       $do:
         $<Card>:
           className: gridItem
+        <>:
+          - $<CardHeader>:
+              title: About
+              subheader:
+                $<HeaderIconLinkRow>:
+                  links:
+                    - label: View Source
+          - $<Divider>: true
+
+
 `;
 
 createDevApp()
