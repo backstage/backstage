@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-// remove this line and add imports as required for your package
-export {}
+import '@testing-library/jest-dom';
