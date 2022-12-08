@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: wayback-search
   description: Search of the wayback machine
+  annotations:
+    myorg.org/security: 'true'
 spec:
   type: service
   lifecycle: production
