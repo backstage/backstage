@@ -53,8 +53,6 @@ const app = createApp({
   },
 });
 
-const AppProvider = app.getProvider();
-
 const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
@@ -96,14 +94,12 @@ const routes = (
   </FlatRoutes>
 );
 
-const App = () => (
-  <AppProvider>
+export default app.createRoot(
+  <>
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
       <Root>{routes}</Root>
     </AppRouter>
-  </AppProvider>
+  </>,
 );
-
-export default App;
