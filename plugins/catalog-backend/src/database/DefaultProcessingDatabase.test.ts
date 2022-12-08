@@ -1137,6 +1137,23 @@ describe('Default Processing Database', () => {
             }),
           ]),
         );
+        let references = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        ).select();
+        expect(references).toEqual([
+          {
+            id: 1,
+            source_key: 'lols',
+            source_entity_ref: null,
+            target_entity_ref: 'component:default/a',
+          },
+          {
+            id: 2,
+            source_key: 'lols',
+            source_entity_ref: null,
+            target_entity_ref: 'component:default/b',
+          },
+        ]);
 
         await db.transaction(async tx => {
           await db.replaceUnprocessedEntities(tx, {
@@ -1180,6 +1197,23 @@ describe('Default Processing Database', () => {
             }),
           ]),
         );
+        references = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        ).select();
+        expect(references).toEqual([
+          {
+            id: 1,
+            source_key: 'lols',
+            source_entity_ref: null,
+            target_entity_ref: 'component:default/a',
+          },
+          {
+            id: 2,
+            source_key: 'lols',
+            source_entity_ref: null,
+            target_entity_ref: 'component:default/b',
+          },
+        ]);
       },
       60_000,
     );
