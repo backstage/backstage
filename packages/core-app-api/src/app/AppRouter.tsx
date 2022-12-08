@@ -100,9 +100,8 @@ export interface AppRouterProps {
  * Until the user has successfully signed in, this component will render
  * the sign-in page. Once the user has signed-in, it will instead render
  * the app, while providing routing and route tracking for the app.
- *
  */
-export function AppRouter({ children }: { children?: ReactNode }) {
+export function AppRouter(props: AppRouterProps) {
   const { Router: RouterComponent, SignInPage: SignInPageComponent } =
     useApp().getComponents();
 
@@ -145,7 +144,7 @@ export function AppRouter({ children }: { children?: ReactNode }) {
         <RouterComponent>
           <RouteTracker routeObjects={routeObjects} />
           <Routes>
-            <Route path={mountPath} element={<>{children}</>} />
+            <Route path={mountPath} element={<>{props.children}</>} />
           </Routes>
         </RouterComponent>
       );
@@ -154,7 +153,7 @@ export function AppRouter({ children }: { children?: ReactNode }) {
     return (
       <RouterComponent basename={basePath}>
         <RouteTracker routeObjects={routeObjects} />
-        {children}
+        {props.children}
       </RouterComponent>
     );
   }
@@ -168,7 +167,7 @@ export function AppRouter({ children }: { children?: ReactNode }) {
           appIdentityProxy={appIdentityProxy}
         >
           <Routes>
-            <Route path={mountPath} element={<>{children}</>} />
+            <Route path={mountPath} element={<>{props.children}</>} />
           </Routes>
         </SignInPageWrapper>
       </RouterComponent>
@@ -182,7 +181,7 @@ export function AppRouter({ children }: { children?: ReactNode }) {
         component={SignInPageComponent}
         appIdentityProxy={appIdentityProxy}
       >
-        {children}
+        {props.children}
       </SignInPageWrapper>
     </RouterComponent>
   );

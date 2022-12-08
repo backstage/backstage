@@ -228,7 +228,13 @@ export type AppRouteBinder = <
 ) => void;
 
 // @public
-export function AppRouter({ children }: { children?: ReactNode }): JSX.Element;
+export function AppRouter(props: AppRouterProps): JSX.Element;
+
+// @public
+export interface AppRouterProps {
+  // (undocumented)
+  children?: ReactNode;
+}
 
 // @public
 export class AppThemeSelector implements AppThemeApi {
