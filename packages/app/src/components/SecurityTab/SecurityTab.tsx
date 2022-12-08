@@ -16,7 +16,7 @@
 
 import React from 'react';
 import {
-  TemplateWizardContent,
+  TemplateContent,
   useGetCustomFields,
 } from '@backstage/plugin-scaffolder';
 
@@ -37,7 +37,7 @@ export function SecurityTab({
   const fieldExtensions = useGetCustomFields(customExtensionsElement);
 
   return (
-    <TemplateWizardContent
+    <TemplateContent
       namespace="default"
       templateName="docs-template"
       onComplete={onComplete}

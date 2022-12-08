@@ -31,6 +31,10 @@ import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { Stepper } from '../TemplateWizardPage/Stepper';
+import {
+  SecretsContext,
+  SecretsContextProvider,
+} from '../../components/secrets/SecretsContext';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
@@ -110,3 +114,9 @@ export const TemplateWizardContent = (
     </Page>
   );
 };
+
+export const TemplateContent = (props: TemplateWizardContentProps) => (
+  <SecretsContextProvider>
+    <TemplateWizardContent {...props} />
+  </SecretsContextProvider>
+);
