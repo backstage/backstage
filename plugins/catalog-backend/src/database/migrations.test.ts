@@ -21,8 +21,12 @@ import fs from 'fs';
 const migrationsDir = `${__dirname}/../../migrations`;
 const migrationsFiles = fs.readdirSync(migrationsDir).sort();
 
-async function migrateOnce(knex: Knex): Promise<void> {
+async function migrateUpOnce(knex: Knex): Promise<void> {
   await knex.migrate.up({ directory: migrationsDir });
+}
+
+async function migrateDownOnce(knex: Knex): Promise<void> {
+  await knex.migrate.down({ directory: migrationsDir });
 }
 
 async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
@@ -31,7 +35,7 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
     throw new Error(`Migration ${target} not found`);
   }
   for (let i = 0; i < index; i++) {
-    await migrateOnce(knex);
+    await migrateUpOnce(knex);
   }
 }
 
@@ -74,12 +78,21 @@ describe('migrations', () => {
         ]),
       );
 
-      await knex.migrate.up({ directory: migrationsDir });
+      await migrateUpOnce(knex);
 
       await expect(knex('search')).resolves.toEqual(
         expect.arrayContaining([
           { entity_id: 'i', key: 'k1', value: 'v1', original_value: 'v1' },
           { entity_id: 'i', key: 'k2', value: null, original_value: null },
+        ]),
+      );
+
+      await migrateDownOnce(knex);
+
+      await expect(knex('search')).resolves.toEqual(
+        expect.arrayContaining([
+          { entity_id: 'i', key: 'k1', value: 'v1' },
+          { entity_id: 'i', key: 'k2', value: null },
         ]),
       );
 
