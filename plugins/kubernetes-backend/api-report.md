@@ -4,22 +4,30 @@
 
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+import { Conditions } from '@backstage/plugin-permission-node';
+import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { Credentials } from 'aws-sdk';
 import type { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
-import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
+import { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
 import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger } from 'winston';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { PermissionCondition } from '@backstage/plugin-permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import type { RequestHandler } from 'express';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
@@ -91,6 +99,31 @@ export interface ClusterDetails {
   // (undocumented)
   url: string;
 }
+
+// @alpha
+export const createKubernetesConditionalDecision: (
+  permission: ResourcePermission<'kubernetes-resource'>,
+  conditions: PermissionCriteria<
+    PermissionCondition<'kubernetes-resource', PermissionRuleParams>
+  >,
+) => ConditionalPolicyDecision;
+
+// @alpha
+export const createKubernetesPermissionRule: <
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: PermissionRule<
+    FetchResponse,
+    ObjectToFetch,
+    'kubernetes-resource',
+    TParams
+  >,
+) => PermissionRule<
+  FetchResponse,
+  ObjectToFetch,
+  'kubernetes-resource',
+  TParams
+>;
 
 // @alpha @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -265,6 +298,18 @@ export interface KubernetesClustersSupplier {
   getClusters(): Promise<ClusterDetails[]>;
 }
 
+// @alpha
+export const kubernetesConditions: Conditions<{
+  isOfKind: PermissionRule<
+    FetchResponse,
+    ObjectToFetch,
+    'kubernetes-resource',
+    {
+      kind: string;
+    }
+  >;
+}>;
+
 // @alpha (undocumented)
 export interface KubernetesEnvironment {
   // (undocumented)
@@ -341,6 +386,16 @@ export type KubernetesObjectTypes =
   | 'daemonsets';
 
 // @alpha
+export type KubernetesPermissionRule<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  FetchResponse,
+  ObjectToFetch,
+  'kubernetes-resource',
+  TParams
+>;
+
+// @alpha
 export class KubernetesProxy {
   constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
   // (undocumented)
@@ -410,6 +465,18 @@ export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
   ): Promise<ClusterDetails>;
 }
 
+// @alpha
+export const permissionRules: {
+  isOfKind: PermissionRule<
+    FetchResponse,
+    ObjectToFetch,
+    'kubernetes-resource',
+    {
+      kind: string;
+    }
+  >;
+};
+
 // @alpha (undocumented)
 export interface RouterOptions {
   // (undocumented)
@@ -446,4 +513,7 @@ export type SigningCreds = {
   secretAccessKey: string | undefined;
   sessionToken: string | undefined;
 };
+
+// @alpha (undocumented)
+export const transformConditions: ConditionTransformer<ObjectToFetch>;
 ```

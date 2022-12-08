@@ -69,5 +69,8 @@ export const kubernetesConditions = conditions;
  */
 export const createKubernetesConditionalDecision = createConditionalDecision;
 
+/**
+ * @alpha
+ */
 export const transformConditions: ConditionTransformer<ObjectToFetch> =
   createConditionTransformer(Object.values(permissionRules));
