@@ -67,13 +67,13 @@ export const EntityOwnerPicker = () => {
     queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
   );
 
+  // Set selected owners on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
   useEffect(() => {
-    updateFilters({
-      owners: selectedOwners.length
-        ? new EntityOwnerFilter(selectedOwners)
-        : undefined,
-    });
-  }, [selectedOwners, updateFilters]);
+    if (queryParamOwners.length) {
+      setSelectedOwners(queryParamOwners);
+    }
+  }, [queryParamOwners]);
 
   const availableOwners = useMemo(
     () =>
@@ -91,17 +91,14 @@ export const EntityOwnerPicker = () => {
     [backendEntities],
   );
 
-  // Set selected owners on query parameter updates; this happens at initial page load and from
-  // external updates to the page location.
   useEffect(() => {
-    if (queryParamOwners.length && availableOwners.length) {
-      setSelectedOwners(queryParamOwners);
-    }
-  }, [queryParamOwners, availableOwners]);
-
-  useEffect(() => {
-    if (!availableOwners.length) setSelectedOwners([]);
-  }, [availableOwners]);
+    updateFilters({
+      owners:
+        selectedOwners.length && availableOwners.length
+          ? new EntityOwnerFilter(selectedOwners)
+          : undefined,
+    });
+  }, [selectedOwners, updateFilters, availableOwners]);
 
   if (!availableOwners.length) return null;
 

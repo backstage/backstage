@@ -67,13 +67,13 @@ export const EntityLifecyclePicker = () => {
       : filters.lifecycles?.values ?? [],
   );
 
+  // Set selected lifecycles on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
   useEffect(() => {
-    updateFilters({
-      lifecycles: selectedLifecycles.length
-        ? new EntityLifecycleFilter(selectedLifecycles)
-        : undefined,
-    });
-  }, [selectedLifecycles, updateFilters]);
+    if (queryParamLifecycles.length) {
+      setSelectedLifecycles(queryParamLifecycles);
+    }
+  }, [queryParamLifecycles]);
 
   const availableLifecycles = useMemo(
     () =>
@@ -87,17 +87,14 @@ export const EntityLifecyclePicker = () => {
     [backendEntities],
   );
 
-  // Set selected lifecycles on query parameter updates; this happens at initial page load and from
-  // external updates to the page location.
   useEffect(() => {
-    if (queryParamLifecycles.length && availableLifecycles.length) {
-      setSelectedLifecycles(queryParamLifecycles);
-    }
-  }, [queryParamLifecycles, availableLifecycles]);
-
-  useEffect(() => {
-    if (!availableLifecycles.length) setSelectedLifecycles([]);
-  }, [availableLifecycles]);
+    updateFilters({
+      lifecycles:
+        selectedLifecycles.length && availableLifecycles.length
+          ? new EntityLifecycleFilter(selectedLifecycles)
+          : undefined,
+    });
+  }, [selectedLifecycles, updateFilters, availableLifecycles]);
 
   if (!availableLifecycles.length) return null;
 
