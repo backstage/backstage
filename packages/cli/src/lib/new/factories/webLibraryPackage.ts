@@ -40,7 +40,7 @@ export const webLibraryPackage = createFactory<Options>({
   async create(options: Options, ctx: CreateContext) {
     const { id } = options;
 
-    const name = ctx.scope ? `@${ctx.scope}/${id}` : `backstage-plugin-${id}`;
+    const name = ctx.scope ? `@${ctx.scope}/${id}` : `${id}`;
     const extensionName = `${upperFirst(camelCase(id))}Page`;
 
     Task.log();
@@ -48,7 +48,7 @@ export const webLibraryPackage = createFactory<Options>({
 
     const targetDir = ctx.isMonoRepo
       ? paths.resolveTargetRoot('packages', id)
-      : paths.resolveTargetRoot(`backstage-plugin-${id}`);
+      : paths.resolveTargetRoot(`${id}`);
 
     await executePluginPackageTemplate(ctx, {
       targetDir,
