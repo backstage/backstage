@@ -1,18 +1,9 @@
 <Card>:
-  $Backstage.Component:
-    type: 
-      $let:
-        exports: { $Backstage.resolve: "@material-ui/core/Card" }
-      $do: $exports.default
+  $B.Component:
+    type: { $B.resolve: "@material-ui/core/Card" }
 <Typography>:
-  $Backstage.Component:
-    type: 
-      $let:
-        exports: { $Backstage.resolve: "@material-ui/core/Typography" }
-      $do: $exports.default
+  $B.Component:
+    type: { $B.resolve: "@material-ui/core/Typography" }
 <Grid>:
-  $Backstage.Component:
-    type: 
-      $let:
-        exports: { $Backstage.resolve: "@material-ui/core/Grid" }
-      $do: $exports.default
+  $B.Component:
+    type: { $B.resolve: "@material-ui/core/Grid" }

@@ -14,28 +14,17 @@
  * limitations under the License.
  */
 import * as ps from 'platformscript';
-import { ModuleResolvers } from './index';
+import { ps2js } from 'platformscript';
+import * as makeStylesModule from '@material-ui/core/styles/makeStyles';
 
-export function createModuleResolver(resolvers: ModuleResolvers) {
-  return ps.fn(function* ({ arg, env }) {
+export const psMakeStylesFn: (m: typeof makeStylesModule) => ps.PSFn = m =>
+  ps.fn(function* _makeStyles({ arg, env }) {
     const $arg = yield* env.eval(arg);
-
-    if ($arg.type !== 'string') {
-      throw new TypeError(`Backstage.resolve expects string as an argument`);
+    if ($arg.type !== 'map') {
+      throw new TypeError(`makeStyles expects a map`);
     }
 
-    if (!($arg.value in resolvers)) {
-      throw new Error(`Unknown module: ${$arg.value}`);
-    }
+    const styles = ps2js($arg);
 
-    return yield {
-      type: 'action',
-      *operation(resolve, reject) {
-        resolvers[$arg.value]().then(resolve, reject);
-        yield {
-          type: 'suspend',
-        };
-      },
-    };
+    return ps.external(m.default(styles), ([path]) => styles[path]);
   });
-}

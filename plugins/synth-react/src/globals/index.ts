@@ -13,29 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { PlatformScript } from 'platformscript';
+import { PlatformScript, PSValue } from 'platformscript';
 import * as ps from 'platformscript';
 import { Component } from './Component';
 import { createModuleResolver } from './createModuleResolver';
 import { Fragment } from './Fragment';
 import { log } from './log';
+import { psMakeStylesFn } from './makeStyles';
 
-export type ModuleResolvers = Record<
-  string,
-  () => Promise<Record<string, unknown>>
->;
+export type ModuleResolvers = Record<string, () => Promise<PSValue>>;
 
 export function globals(interpreter: PlatformScript) {
   return ps.map({
-    Backstage: ps.map({
+    B: ps.map({
       '<>': Fragment,
       log,
+      // if: ps.fn(function*({ arg, env }) {
+      //   const $arg = yield* env.eval(arg);
+
+      //   if ($arg.type === 'boolean') {
+
+      //   }
+      // }),
       Component: Component,
       resolve: createModuleResolver({
-        '@material-ui/core/Card': () => import('@material-ui/core/Card'),
+        '@material-ui/core/Card': () =>
+          import('@material-ui/core/Card').then(m => ps.external(m.default)),
         '@material-ui/core/Typography': () =>
-          import('@material-ui/core/Typography'),
-        '@material-ui/core/Grid': () => import('@material-ui/core/Grid'),
+          import('@material-ui/core/Typography').then(m =>
+            ps.external(m.default),
+          ),
+        '@material-ui/core/Grid': () =>
+          import('@material-ui/core/Grid').then(m => ps.external(m.default)),
+        '@material-ui/core/styles/makeStyles': () =>
+          import('@material-ui/core/styles/makeStyles').then(psMakeStylesFn),
       }),
     }),
   });

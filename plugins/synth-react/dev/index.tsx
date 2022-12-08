@@ -20,17 +20,41 @@ import { synthPlugin, SynthPage } from '../src/plugin';
 const HELLO_WORLD = `$import:
     - names: [<h1>]
       from: ./html.yaml
-    - names: [<Typography>]
-      from: ./material-ui.yaml
-    - names: [<AboutCard>]
-      from: ./catalog.yaml
 $do:
-  $Backstage.<>:
-    - $<h1>: Hello World 
-    - $<Typography>:
-        component: p
-      <>: The quick brown fox jumps over the lazy dog
-    - $<AboutCard>: true
+  $let:
+    <Card>:
+      $B.Component:
+        type: { $B.resolve: "@material-ui/core/Card" }
+    <Typography>:
+      $B.Component:
+        type: { $B.resolve: "@material-ui/core/Typography" }
+    <Grid>:
+      $B.Component:
+        type: { $B.resolve: "@material-ui/core/Grid" }
+    makeStyles: { $B.resolve: "@material-ui/core/styles/makeStyles" }
+  $do:
+    $let:
+      useStyles:
+        $makeStyles:
+          gridItemCard:
+            display: flex
+            flexDirection: column
+            height: calc(100% - 10px)
+            marginBottom: 10px
+          fullHeightCard:
+            display: flex
+            flexDirection: column
+            height: 100%
+          gridItemCardContent:
+            flex: 1
+          fullHeightCardContent:
+            flex: 1
+    $do:
+      $let:
+        classes: { useStyles: true }
+      $do:
+        $<Card>:
+          className: gridItem
 `;
 
 createDevApp()

@@ -1,6 +1,6 @@
 <h1>:
-  $Backstage.Component:
+  $B.Component:
     type: h1
 <h2>:
-  $Backstage.Component:
+  $B.Component:
     type: h2
