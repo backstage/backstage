@@ -11,101 +11,91 @@ This permission framework integration with the kubernetes plugin assumes you hav
 - Ensure that your backstage app has enabled the permission framework. See the "[getting started](../../permissions/getting-started.md)" permission documentation for Backstage integrators.
 - Ensure that you have a kubernetes resource in the cluster you are using. Our current implementation recognizes the types of resources shown below:
 
-```
-export type KubernetesObjectTypes =
-   | 'pods'
-   | 'services'
-   | 'configmaps'
-   | 'deployments'
-   | 'limitranges'
-   | 'replicasets'
-   | 'horizontalpodautoscalers'
-   | 'jobs'
-   | 'cronjobs'
-   | 'ingresses'
-   | 'customresources'
-```
+  ```typescript
+  export type KubernetesObjectTypes =
+    | 'pods'
+    | 'services'
+    | 'configmaps'
+    | 'deployments'
+    | 'limitranges'
+    | 'replicasets'
+    | 'horizontalpodautoscalers'
+    | 'jobs'
+    | 'cronjobs'
+    | 'ingresses'
+    | 'customresources';
+  ```
 
 - Ensure that the kubernetes resources in your cluster have a label that an entity in your catalog can use via label selector annotation. Workloads and custom endpoints make use of an entity reference field in the request, that entity reference should have an annotation like:
 
-```
-metadata:
+  ```yaml
+  metadata:
     annotations:
-        'backstage.io/kubernetes-label-selector': 'app=backstage'
-```
+      'backstage.io/kubernetes-label-selector': 'app=backstage'
+  ```
 
-that should correspond to the label you provide your kubernetes resource when creating it. In this case your pod should have the label 'app=backstage'
+  that should correspond to the label you provide your kubernetes resource when creating it. In this case your pod should have the label `app=backstage`
 
-- Ensure that you provide a backstage bearer token when calling the /workloads and /custom endpoints. The /clusters endpoint currently doesn't require this. Because a token is required for 2 out of the 3 endpoints it is required for you to login using one of the backstage auth providers. You can add a console.log line in packages/backend/src/plugins/auth.ts for an issued token under the provider that you are using to access that token.
+- Ensure that you provide a backstage bearer token when calling the `/resources/workloads/query` and `/resources/custom/query` endpoints. The `/clusters` endpoint currently doesn't require this. Because a token is required for 2 out of the 3 endpoints it is required for you to login using one of the backstage auth providers. You can add a console.log line in packages/backend/src/plugins/auth.ts for an issued token under the provider that you are using to access that token.
 
 ## How do the endpoints work prior to the permission framework integration?
 
 By default, Backstage endpoints are not protected, and all actions are available to anyone. The same is true for the Kubernetes plugin endpoints provided you have properly configured the cluster locator stanza in your [app-config](https://github.com/backstage/backstage/blob/master/app-config.yaml). By default if a user attempts to make a call to any of the following endpoints:
 
-- api/kubernetes/resources/workloads/query
-- api/kubernetes/resources/custom/query
-- api/kubernetes/clusters
+- `/api/kubernetes/resources/workloads/query`
+- `/api/kubernetes/resources/custom/query`
+- `/api/kubernetes/clusters`
 
 then you are returned a response like:
 
-### api/kubernetes/resources/workloads/query
+### `/api/kubernetes/resources/workloads/query`
 
-```
+```json
 {
-    items: [
+  "items": [
+    {
+      "cluster": {
+        "name": "clusterOne"
+      },
+      "podMetrics": [],
+      "resources": [
         {
-        cluster: {
-            name: 'clusterOne',
+          "type": "pods",
+          "resources": [{ "metadata": { "name": "pod1" } }]
         },
-        podMetrics: [],
-        resources: [
-            {
-            type: 'pods',
-            resources: [
-                {
-                metadata: {
-                    name: 'pod1',
-                },
-                },
-            ],
-            },
-            { type: 'services', resources: [] },
-            { type: 'configmaps', resources: [] },
-            { type: 'limitranges', resources: [] },
-            {
-            type: 'deployments',
-            resources: [
-                {
-                name: 'deployment1',
-                },
-            ],
-            },
-            { type: 'replicasets', resources: [] },
-            { type: 'horizontalpodautoscalers', resources: [] },
-            { type: 'jobs', resources: [] },
-            { type: 'cronjobs', resources: [] },
-            { type: 'ingresses', resources: [] },
-            { type: 'statefulsets', resources: [] },
-            { type: 'daemonsets', resources: [] },
-        ],
-        errors: [],
+        { "type": "services", "resources": [] },
+        { "type": "configmaps", "resources": [] },
+        { "type": "limitranges", "resources": [] },
+        {
+          "type": "deployments",
+          "resources": [{ "metadata": { "name": "deployment1" } }]
         },
-    ],
+        { "type": "replicasets", "resources": [] },
+        { "type": "horizontalpodautoscalers", "resources": [] },
+        { "type": "jobs", "resources": [] },
+        { "type": "cronjobs", "resources": [] },
+        { "type": "ingresses", "resources": [] },
+        { "type": "statefulsets", "resources": [] },
+        { "type": "daemonsets", "resources": [] }
+      ],
+      "errors": []
+    }
+  ]
 }
 ```
 
 \*Note that here we are querying a cluster that has two resources, a pod and a deployment running
 
-### api/kubernetes/clusters
+### `/api/kubernetes/clusters`
 
-```
+```json
 {
-    "items": [
-        {
-            "name": "kind",
-            "authProvider": "serviceAccount"
-        }
-    ]
+  "items": [
+    {
+      "name": "kind",
+      "authProvider": "serviceAccount"
+    }
+  ]
 }
 ```
 
@@ -117,7 +107,7 @@ If we leverage the permission framework in the Kubernetes plugin this allows for
 
 A sample policy like
 
-```
+```typescript
 class DenyAllKubernetesClusterRead implements PermissionPolicy {
   async handle(request: PolicyQuery): Promise<PolicyDecision> {
     if (isPermission(request.permission, kubernetesClusterReadPermission)) {
@@ -131,17 +121,17 @@ class DenyAllKubernetesClusterRead implements PermissionPolicy {
 would now leverage the permission framework to give us the following response:
 api/kubernetes/clusters
 
-```
+```json
 {
-    "error": {
-        "name": "NotAllowedError"
-    }
+  "error": {
+    "name": "NotAllowedError"
+  }
 }
 ```
 
 A Sample policy like
 
-```
+```typescript
 class K8sPermissionOnlyPodsPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
@@ -155,7 +145,7 @@ class K8sPermissionOnlyPodsPolicy implements PermissionPolicy {
     ) {
       return createKubernetesConditionalDecision(
         request.permission,
-        kubernetesConditions.isOfKind({ kind: 'pods' } ?? { kind: '' }),
+        kubernetesConditions.isOfKind({ kind: 'pods' }),
       );
     }
 
@@ -166,29 +156,29 @@ class K8sPermissionOnlyPodsPolicy implements PermissionPolicy {
 
 would now leverage the permission framework to give us the following response:
 
-```
+```json
 {
-    items: [
+  "items": [
+    {
+      "cluster": {
+        "name": "clusterOne"
+      },
+      "podMetrics": [],
+      "resources": [
         {
-            cluster: {
-                name: 'clusterOne',
-        },
-            podMetrics: [],
-            resources: [
-                {
-                    type: 'pods',
-                    resources: [
-                        {
-                            metadata: {
-                                name: 'pod1',
-                            },
-                        },
-                    ],
-                },
-            ],
-            errors: [],
-        },
-    ],
+          "type": "pods",
+          "resources": [
+            {
+              "metadata": {
+                "name": "pod1"
+              }
+            }
+          ]
+        }
+      ],
+      "errors": []
+    }
+  ]
 }
 ```
 
@@ -198,7 +188,7 @@ First we make a file in the root of this directory and then add the location of 
 
 new kubernetes.yaml
 
-```
+```yaml
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
@@ -216,43 +206,43 @@ We then append the file location to our config file
 
 app-config.yaml
 
-```
+```yaml
 catalog:
-    locations:
-        - type: file
-            target: ../../kubernetes.yaml
+  locations:
+    - type: file
+      target: ../../kubernetes.yaml
 ```
 
-We assume you have already created some resource in the cluster you have configured with the label app=backstage. If you have not you can create a pod using a yaml like the one listed below and you can apply it in your terminal using kubectl apply -f pod.yaml:
+We assume you have already created some resource in the cluster you have configured with the label `app=backstage`. If you have not you can create a pod using a yaml like the one listed below and you can apply it in your terminal using `kubectl apply -f pod.yaml`:
 
 pod.yaml
 
-```
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-    name: new-pod
-    labels:
-        app: backstage
+  name: new-pod
+  labels:
+    app: backstage
 spec:
-    containers:
-       - name: test-cont
-         image: nginx
+  containers:
+    - name: test-cont
+      image: nginx
 ```
 
-Now that you have these entities set up you can make a sample policy under packages/backend/src/plugins/permission.ts
+Now that you have these entities set up you can make a sample policy under `packages/backend/src/plugins/permission.ts`.
 
 After creating the policy class like in the examples above make sure to set the policy at the bottom of the file. Change the value of policy in that method call to the name of the policy you just created.
 
 Before:
 
-```
+```typescript
 policy: new ExamplePermissionPolicy(),
 ```
 
 After:
 
-```
+```typescript
 policy: new K8sPermissionOnlyPodsPolicy(),
 ```
 
