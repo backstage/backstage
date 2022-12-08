@@ -21,10 +21,14 @@ import {
 } from '@backstage/plugin-scaffolder';
 
 interface SecurityTabProps {
+  namespace: string;
+  templateName: string;
   customExtensionsElement?: React.ReactNode;
 }
 
 export function SecurityTab({
+  namespace,
+  templateName,
   customExtensionsElement = <></>,
 }: SecurityTabProps): JSX.Element | null {
   // eslint-disable-next-line no-alert
@@ -38,11 +42,17 @@ export function SecurityTab({
 
   return (
     <TemplateContent
-      namespace="default"
-      templateName="docs-template"
+      namespace={namespace}
+      templateName={templateName}
       onComplete={onComplete}
       onError={onError}
       customFieldExtensions={fieldExtensions}
+      initialFormState={{
+        name: 'prefilled-name',
+        description: 'prefilled description',
+        owner: 'acme-corp',
+        repoUrl: 'github.com?owner=component&repo=component',
+      }}
     />
   );
 }

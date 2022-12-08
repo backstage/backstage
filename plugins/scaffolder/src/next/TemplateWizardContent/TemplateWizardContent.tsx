@@ -55,6 +55,7 @@ export interface TemplateWizardContentProps {
   transformErrors?: ErrorTransformer;
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
   onError(error: Error | undefined): JSX.Element | null;
+  initialFormState?: Record<string, JsonValue>;
 }
 
 export const TemplateWizardContent = (
@@ -107,6 +108,7 @@ export const TemplateWizardContent = (
               extensions={props.customFieldExtensions}
               onComplete={props.onComplete}
               transformErrors={props.transformErrors}
+              initialFormState={props.initialFormState}
             />
           </InfoCard>
         )}

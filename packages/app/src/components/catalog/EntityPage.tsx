@@ -404,7 +404,7 @@ const overviewContent = (
 
 const securityContent = (
   <EntityLayout.Route path="/security" title="Security" if={showSecurityTab}>
-    <SecurityTab />
+    <SecurityTab namespace="default" templateName="docs-template" />
   </EntityLayout.Route>
 );
 
