@@ -77,7 +77,12 @@ export class DefaultIdentityClient implements IdentityApi {
       ? options.algorithms
       : ['ES256'];
   }
-
+  async getIdentity({
+    request,
+  }: Omit<
+    IdentityApiGetIdentityRequest,
+    'optional'
+  >): Promise<BackstageIdentityResponse>;
   async getIdentity({
     request,
     optional = false,

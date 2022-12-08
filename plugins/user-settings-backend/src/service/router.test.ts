@@ -29,10 +29,7 @@ describe('createRouter', () => {
     set: jest.fn(),
     delete: jest.fn(),
   };
-  const getIdentityMock = jest.fn<
-    Promise<BackstageIdentityResponse | undefined>,
-    any
-  >();
+  const getIdentityMock = jest.fn();
   const identityApi: jest.Mocked<Partial<IdentityApi>> = {
     getIdentity: getIdentityMock,
   };

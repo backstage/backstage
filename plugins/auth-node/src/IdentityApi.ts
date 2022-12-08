@@ -31,6 +31,10 @@ export interface IdentityApi {
    * Returns a BackstageIdentity (user) matching the token.
    * The method throws an error if verification fails.
    */
+
+  getIdentity(
+    options: Omit<IdentityApiGetIdentityRequest, 'optional'>,
+  ): Promise<BackstageIdentityResponse>;
   getIdentity(
     options: IdentityApiGetIdentityRequest,
   ): Promise<BackstageIdentityResponse | undefined>;

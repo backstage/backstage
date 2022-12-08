@@ -24,7 +24,12 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  InputError,
+  NotFoundError,
+  stringifyError,
+} from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 import {
@@ -50,6 +55,7 @@ import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
+  BackstageIdentityResponse,
   IdentityApi,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
@@ -95,62 +101,77 @@ function isSupportedTemplate(entity: TemplateEntityV1beta3) {
  * until someone explicitly passes an IdentityApi. When we have reasonable confidence that most backstage deployments
  * are using the IdentityApi, we can remove this function.
  */
-function buildDefaultIdentityClient({
-  logger,
-}: {
-  logger: Logger;
-}): IdentityApi {
-  return {
-    getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
-      const header = request.headers.authorization;
 
-      if (!header) {
-        return undefined;
+class CustomIdentityClient implements IdentityApi {
+  private logger: Logger;
+  constructor(options: { logger: Logger }) {
+    this.logger = options.logger;
+  }
+  async getIdentity({
+    request,
+  }: Omit<
+    IdentityApiGetIdentityRequest,
+    'optional'
+  >): Promise<BackstageIdentityResponse>;
+  async getIdentity({
+    request,
+    optional,
+  }: IdentityApiGetIdentityRequest): Promise<
+    BackstageIdentityResponse | undefined
+  > {
+    const header = request.headers.authorization;
+
+    if (!header) {
+      if (!optional) {
+        throw new AuthenticationError('Identity was not provided');
+      }
+      return undefined;
+    }
+
+    try {
+      const token = header.match(/^Bearer\s(\S+\.\S+\.\S+)$/i)?.[1];
+      if (!token) {
+        throw new TypeError('Expected Bearer with JWT');
       }
 
-      try {
-        const token = header.match(/^Bearer\s(\S+\.\S+\.\S+)$/i)?.[1];
-        if (!token) {
-          throw new TypeError('Expected Bearer with JWT');
-        }
+      const [_header, rawPayload, _signature] = token.split('.');
+      const payload: JsonValue = JSON.parse(
+        Buffer.from(rawPayload, 'base64').toString(),
+      );
 
-        const [_header, rawPayload, _signature] = token.split('.');
-        const payload: JsonValue = JSON.parse(
-          Buffer.from(rawPayload, 'base64').toString(),
-        );
-
-        if (
-          typeof payload !== 'object' ||
-          payload === null ||
-          Array.isArray(payload)
-        ) {
-          throw new TypeError('Malformed JWT payload');
-        }
-
-        const sub = payload.sub;
-        if (typeof sub !== 'string') {
-          throw new TypeError('Expected string sub claim');
-        }
-
-        // Check that it's a valid ref, otherwise this will throw.
-        parseEntityRef(sub);
-
-        return {
-          identity: {
-            userEntityRef: sub,
-            ownershipEntityRefs: [],
-            type: 'user',
-          },
-          token,
-        };
-      } catch (e) {
-        logger.error(`Invalid authorization header: ${stringifyError(e)}`);
-        return undefined;
+      if (
+        typeof payload !== 'object' ||
+        payload === null ||
+        Array.isArray(payload)
+      ) {
+        throw new TypeError('Malformed JWT payload');
       }
-    },
-  };
+
+      const sub = payload.sub;
+      if (typeof sub !== 'string') {
+        throw new TypeError('Expected string sub claim');
+      }
+
+      // Check that it's a valid ref, otherwise this will throw.
+      parseEntityRef(sub);
+
+      return {
+        identity: {
+          userEntityRef: sub,
+          ownershipEntityRefs: [],
+          type: 'user',
+        },
+        token,
+      };
+    } catch (e) {
+      this.logger.error(`Invalid authorization header: ${stringifyError(e)}`);
+      if (!optional) {
+        throw new AuthenticationError(e.message);
+      }
+      return undefined;
+    }
+  }
 }
-
 /**
  * A method to create a router for the scaffolder backend plugin.
  * @public
@@ -179,7 +200,7 @@ export async function createRouter(
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
   const identity: IdentityApi =
-    options.identity || buildDefaultIdentityClient({ logger });
+    options.identity || new CustomIdentityClient({ logger });
 
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
