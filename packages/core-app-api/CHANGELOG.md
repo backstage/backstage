@@ -1,5 +1,17 @@
 # @backstage/core-app-api
 
+## 1.2.1-next.3
+
+### Patch Changes
+
+- 6870b43dd1: Fix for the automatic rewriting of base URLs.
+- 653d7912ac: Made `WebStorage` notify its subscribers when `localStorage` values change in other tabs/windows
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
 ## 1.2.1-next.2
 
 ### Patch Changes
