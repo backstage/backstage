@@ -21,11 +21,11 @@ const glob = require('util').promisify(require('glob'));
 const { version } = require('../package.json');
 
 const envOptions = {
-  nextTests: Boolean(process.env.BACKSTAGE_NEXT_TESTS),
+  oldTests: Boolean(process.env.BACKSTAGE_OLD_TESTS),
   enableSourceMaps: Boolean(process.env.ENABLE_SOURCE_MAPS),
 };
 
-if (envOptions.nextTests) {
+if (!envOptions.oldTests) {
   // Needed so that, at import-time, it can hook into Jest's internals.
   require('./jestCachingModuleLoader');
 }
@@ -135,7 +135,7 @@ async function getProjectConfig(targetPath, extraConfig) {
       '\\.(mjs|cjs|js)$': [
         require.resolve('./jestSwcTransform'),
         {
-          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          sourceMaps: envOptions.enableSourceMaps || !envOptions.oldTests,
           jsc: {
             parser: {
               syntax: 'ecmascript',
@@ -146,7 +146,7 @@ async function getProjectConfig(targetPath, extraConfig) {
       '\\.jsx$': [
         require.resolve('./jestSwcTransform'),
         {
-          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          sourceMaps: envOptions.enableSourceMaps || !envOptions.oldTests,
           jsc: {
             parser: {
               syntax: 'ecmascript',
@@ -163,7 +163,7 @@ async function getProjectConfig(targetPath, extraConfig) {
       '\\.ts$': [
         require.resolve('./jestSwcTransform'),
         {
-          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          sourceMaps: envOptions.enableSourceMaps || !envOptions.oldTests,
           jsc: {
             parser: {
               syntax: 'typescript',
@@ -174,7 +174,7 @@ async function getProjectConfig(targetPath, extraConfig) {
       '\\.tsx$': [
         require.resolve('./jestSwcTransform'),
         {
-          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          sourceMaps: envOptions.enableSourceMaps || !envOptions.oldTests,
           jsc: {
             parser: {
               syntax: 'typescript',
@@ -196,9 +196,9 @@ async function getProjectConfig(targetPath, extraConfig) {
     // A bit more opinionated
     testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
 
-    runtime: envOptions.nextTests
-      ? require.resolve('./jestCachingModuleLoader')
-      : undefined,
+    runtime: envOptions.oldTests
+      ? undefined
+      : require.resolve('./jestCachingModuleLoader'),
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
     ...getRoleConfig(closestPkgJson?.backstage?.role),
@@ -236,7 +236,7 @@ async function getRootConfig() {
 
   const coverageConfig = {
     coverageDirectory: path.resolve(targetPath, 'coverage'),
-    coverageProvider: envOptions.nextTests ? 'babel' : 'v8',
+    coverageProvider: envOptions.oldTests ? 'v8' : 'babel',
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
   };
 
