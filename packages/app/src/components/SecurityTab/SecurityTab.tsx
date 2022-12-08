@@ -21,16 +21,20 @@ import {
 } from '@backstage/plugin-scaffolder';
 
 interface SecurityTabProps {
-  customExtensionsElement: React.ReactNode;
+  customExtensionsElement?: React.ReactNode;
 }
 
-export function SecurityTab(props: SecurityTabProps): JSX.Element | null {
+export function SecurityTab({
+  customExtensionsElement = <></>,
+}: SecurityTabProps): JSX.Element | null {
   // eslint-disable-next-line no-alert
   const onComplete = async () => alert('success!!!!');
+
   const onError = (error: Error | undefined) => (
     <h2>{error?.message ?? 'Houston we have a problem.'}</h2>
   );
-  const fieldExtensions = useGetCustomFields(props.customExtensionsElement);
+
+  const fieldExtensions = useGetCustomFields(customExtensionsElement);
 
   return (
     <TemplateWizardContent
