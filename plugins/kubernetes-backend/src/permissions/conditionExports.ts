@@ -15,7 +15,12 @@
  */
 
 import { RESOURCE_TYPE_KUBERNETES_RESOURCE } from '@backstage/plugin-kubernetes-common';
-import { createConditionExports } from '@backstage/plugin-permission-node';
+import {
+  createConditionExports,
+  createConditionTransformer,
+  ConditionTransformer,
+} from '@backstage/plugin-permission-node';
+import { ObjectToFetch } from '../types';
 import { permissionRules } from './rules';
 
 const { conditions, createConditionalDecision } = createConditionExports({
@@ -63,3 +68,6 @@ export const kubernetesConditions = conditions;
  * @alpha
  */
 export const createKubernetesConditionalDecision = createConditionalDecision;
+
+export const transformConditions: ConditionTransformer<ObjectToFetch> =
+  createConditionTransformer(Object.values(permissionRules));

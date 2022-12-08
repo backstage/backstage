@@ -21,18 +21,26 @@ import {
 import { CatalogApi } from '@backstage/catalog-client';
 import { InputError, AuthenticationError } from '@backstage/errors';
 import express, { Request } from 'express';
-import { KubernetesObjectsProvider } from '../types/types';
+import { KubernetesObjectsProvider, ObjectToFetch } from '../types/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   PermissionEvaluator,
-  PermissionCondition,
+  PermissionCriteria,
 } from '@backstage/plugin-permission-common';
 import {
   kubernetesWorkloadResourcesReadPermission,
   kubernetesCustomResourcesReadPermission,
 } from '@backstage/plugin-kubernetes-common';
 import { NotAllowedError } from '@backstage/errors';
+import {
+  isAndCriteria,
+  isNotCriteria,
+  isOrCriteria,
+} from '@backstage/plugin-permission-node';
+import { transformConditions } from '../permissions';
+import lodash from 'lodash';
+import { DEFAULT_OBJECTS } from '../service';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
@@ -75,56 +83,72 @@ export const addResourceRoutesToRouter = (
     return entity;
   };
 
+  const conditionsParser = (
+    conditions: PermissionCriteria<ObjectToFetch>,
+  ): Set<ObjectToFetch> => {
+    if (isAndCriteria(conditions)) {
+      const setObjFetch: Set<ObjectToFetch>[] =
+        conditions.allOf.map(conditionsParser);
+      const arrObjFetch: ObjectToFetch[][] = setObjFetch.map(crit =>
+        Array.from(crit),
+      );
+      return new Set(lodash.intersection(...arrObjFetch));
+    } else if (isOrCriteria(conditions)) {
+      const setObjFetch: Set<ObjectToFetch>[] =
+        conditions.anyOf.map(conditionsParser);
+      const arrObjFetch: ObjectToFetch[][] = setObjFetch.map(crit =>
+        Array.from(crit),
+      );
+      return new Set(lodash.union(...arrObjFetch));
+    } else if (isNotCriteria(conditions)) {
+      const returnedValue = conditionsParser(conditions);
+      return new Set(
+        lodash.difference(DEFAULT_OBJECTS, Array.from(returnedValue)),
+      );
+    }
+    return new Set([conditions]);
+  };
+
   router.post('/resources/workloads/query', async (req, res) => {
     const token = getBearerTokenFromAuthorizationHeader(
       req.header('authorization'),
     );
-
     const authorizeResponse = (
       await permissionApi.authorizeConditional(
         [
           {
             permission: kubernetesWorkloadResourcesReadPermission,
-            resourceRef: req.body.id,
           },
         ],
         { token },
       )
     )[0];
-
     if (authorizeResponse.result === AuthorizeResult.DENY) {
-      res.status(403).json({ error: new NotAllowedError() });
+      res.status(403).json({ error: new NotAllowedError('Unauthorized') });
       return;
     }
-
     const entity = await getEntityByReq(req);
     const response = await objectsProvider.getKubernetesObjectsByEntity({
       entity,
       auth: req.body.auth,
     });
     let editedResponse = response;
-
     if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
-      const permissionCondition =
-        authorizeResponse.conditions as PermissionCondition;
-
-      if (
-        permissionCondition.params !== undefined &&
-        permissionCondition.params.kind !== null &&
-        permissionCondition.params.kind !== undefined
-      ) {
-        const paramString = permissionCondition.params.kind as string;
-        const filteredResponse = {
-          items: response.items.map(clusterObjects => ({
-            ...clusterObjects,
-            resources: clusterObjects.resources.filter(fetchResponse => {
-              return fetchResponse.type === paramString;
-            }),
-          })),
-        };
-
-        editedResponse = filteredResponse;
-      }
+      const conditions: PermissionCriteria<ObjectToFetch> = transformConditions(
+        authorizeResponse.conditions,
+      );
+      const filteringArray = Array.from(conditionsParser(conditions));
+      const filteredResponse = {
+        items: response.items.map(clusterObjects => ({
+          ...clusterObjects,
+          resources: clusterObjects.resources.filter(fetchResponse => {
+            return filteringArray.some(
+              ({ objectType }) => fetchResponse.type === objectType,
+            );
+          }),
+        })),
+      };
+      editedResponse = filteredResponse;
     }
     res.json(editedResponse);
   });
@@ -147,7 +171,7 @@ export const addResourceRoutesToRouter = (
     )[0];
 
     if (authorizeResponse.result === AuthorizeResult.DENY) {
-      res.status(403).json({ error: new NotAllowedError() });
+      res.status(403).json({ error: new NotAllowedError('Unauthorized') });
       return;
     }
 

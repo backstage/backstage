@@ -83,7 +83,9 @@ describe('resourcesRoutes', () => {
                     type: 'deployments',
                     resources: [
                       {
-                        name: 'deployment1',
+                        metadata: {
+                          name: 'deployment1',
+                        },
                       },
                     ],
                   },
@@ -172,7 +174,9 @@ describe('resourcesRoutes', () => {
                   type: 'deployments',
                   resources: [
                     {
-                      name: 'deployment1',
+                      metadata: {
+                        name: 'deployment1',
+                      },
                     },
                   ],
                 },
@@ -383,6 +387,83 @@ describe('resourcesRoutes', () => {
                         {
                           metadata: {
                             name: 'pod1',
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                  errors: [],
+                },
+              ],
+            });
+          });
+      });
+
+      it('filters in both pods and deployments if Permission Policy allows access to both pods and deployments', async () => {
+        permissions.authorizeConditional.mockReturnValue(
+          Promise.resolve([
+            {
+              result: AuthorizeResult.CONDITIONAL,
+              pluginId: 'kubernetes',
+              resourceType: 'kubernetes-resource',
+              conditions: {
+                anyOf: [
+                  {
+                    resourceType: 'kubernetes-resource',
+                    rule: 'IS_OF_KIND',
+                    params: {
+                      kind: 'pods',
+                    },
+                  },
+                  {
+                    resourceType: 'kubernetes-resource',
+                    rule: 'IS_OF_KIND',
+                    params: {
+                      kind: 'deployments',
+                    },
+                  },
+                ],
+              },
+            },
+          ]),
+        );
+
+        await request(app)
+          .post('/resources/workloads/query')
+          .send({
+            entityRef: 'kind:namespacec/someComponent',
+            auth: {
+              google: 'something',
+            },
+          })
+          .set('Content-Type', 'application/json')
+          .set('Authorization', 'Bearer Zm9vYmFy')
+          .expect(200)
+          .expect(res => {
+            expect(res.body).toStrictEqual({
+              items: [
+                {
+                  cluster: {
+                    name: 'clusterOne',
+                  },
+                  podMetrics: [],
+                  resources: [
+                    {
+                      type: 'pods',
+                      resources: [
+                        {
+                          metadata: {
+                            name: 'pod1',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      type: 'deployments',
+                      resources: [
+                        {
+                          metadata: {
+                            name: 'deployment1',
                           },
                         },
                       ],

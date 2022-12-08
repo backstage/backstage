@@ -17,5 +17,6 @@
 export {
   kubernetesConditions,
   createKubernetesConditionalDecision,
+  transformConditions,
 } from './conditionExports';
 export * from './rules/index';
