@@ -188,8 +188,7 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const commitSha = (await commitsGitlabResponse.json())[0].id;
-
+    const commitSha = (await commitsGitlabResponse.json())[0]?.id ?? '';
     if (etag && etag === commitSha) {
       throw new NotModifiedError();
     }
