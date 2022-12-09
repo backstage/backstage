@@ -29,6 +29,7 @@ import {
 import { defaultEntityDataParser } from './modules/util/parse';
 import { DefaultCatalogProcessingOrchestrator } from './processing/DefaultCatalogProcessingOrchestrator';
 import { applyDatabaseMigrations } from './database/migrations';
+import { DefaultCatalogDatabase } from './database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { ScmIntegrations } from '@backstage/integration';
 import { DefaultCatalogRulesEnforcer } from './ingestion/CatalogRules';
@@ -50,6 +51,7 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { RefreshStateItem } from './database/types';
+import { DefaultProviderDatabase } from './database/DefaultProviderDatabase';
 
 const voidLogger = getVoidLogger();
 
@@ -213,6 +215,14 @@ class TestHarness {
 
     await applyDatabaseMigrations(db);
 
+    const catalogDatabase = new DefaultCatalogDatabase({
+      database: db,
+      logger,
+    });
+    const providerDatabase = new DefaultProviderDatabase({
+      database: db,
+      logger,
+    });
     const processingDatabase = new DefaultProcessingDatabase({
       database: db,
       logger,
@@ -272,11 +282,11 @@ class TestHarness {
       proxyProgressTracker,
     );
 
-    const refresh = new DefaultRefreshService({ database: processingDatabase });
+    const refresh = new DefaultRefreshService({ database: catalogDatabase });
 
     const provider = new TestProvider();
 
-    await connectEntityProviders(processingDatabase, [provider]);
+    await connectEntityProviders(providerDatabase, [provider]);
 
     return new TestHarness(
       catalog,
