@@ -158,8 +158,16 @@ export const transforms = (options: TransformOptions): Transforms => {
       },
     },
     {
-      test: /\.ya?ml$/,
-      use: require.resolve('yml-loader'),
+      oneOf: [
+        {
+          resourceQuery: /raw/,
+          type: 'asset/source',
+        },
+        {
+          test: /\.ya?ml$/,
+          use: require.resolve('yml-loader'),
+        },
+      ],
     },
     {
       include: /\.(md)$/,
