@@ -285,6 +285,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -305,6 +306,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -325,6 +327,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 
@@ -348,6 +351,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -368,6 +372,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -388,6 +393,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: false,
+      dismissStaleReviews: false,
     });
   });
 
@@ -411,6 +417,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -432,6 +439,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -453,6 +461,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -474,6 +483,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 
