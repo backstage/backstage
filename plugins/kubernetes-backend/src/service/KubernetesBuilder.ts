@@ -19,6 +19,18 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Duration } from 'luxon';
 import { Logger } from 'winston';
+import {
+  createPermissionIntegrationRouter,
+  makeCreatePermissionRule,
+} from '@backstage/plugin-permission-node';
+import {
+  PermissionCriteria,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
+import fetch from 'node-fetch';
+import * as https from 'https';
+import { expect } from 'expect';
+import { NotFoundError } from '@backstage/errors';
 
 import { getCombinedClusterSupplier } from '../cluster-locator';
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
@@ -66,6 +78,37 @@ export type KubernetesBuilderReturn = Promise<{
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
 }>;
+
+const RESOURCE_TYPE_KUBERNETES_RESOURCE = 'kubernetes-resource';
+type K8sQuery = Set<{
+  apiVersion: string;
+  kind: string;
+  cluster?: string;
+  namespace?: string;
+  labelSelector?: string;
+  subResource?: string;
+}>;
+const createKubernetesPermissionRule = makeCreatePermissionRule<
+  object,
+  K8sQuery,
+  typeof RESOURCE_TYPE_KUBERNETES_RESOURCE
+>();
+const matchesJSON = createKubernetesPermissionRule({
+  name: 'MATCHES_JSON',
+  description: 'Allow kubernetes resources matching the given JSON structure',
+  resourceType: RESOURCE_TYPE_KUBERNETES_RESOURCE,
+  apply: (resource: object, params: PermissionRuleParams) => {
+    try {
+      expect(resource).toMatchObject(params!);
+    } catch {
+      return false;
+    }
+    return true;
+  },
+  toQuery(_: PermissionRuleParams): PermissionCriteria<K8sQuery> {
+    return new Set();
+  },
+});
 
 /**
  *
@@ -268,6 +311,67 @@ export class KubernetesBuilder {
     const logger = this.env.logger;
     const router = Router();
     router.use(express.json());
+    router.use(
+      createPermissionIntegrationRouter({
+        resourceType: RESOURCE_TYPE_KUBERNETES_RESOURCE,
+        // permissions?: Array<Permission>,
+        rules: [matchesJSON],
+        getResources: (resourceRefs: string[]) => {
+          return Promise.all(
+            resourceRefs.map(async (resourceRef: string) => {
+              // Parse the reference, following a format like this:
+              // "cluster:group/v1beta1.things:namespace/name"
+              const [clusterName, gvk, metadata] = resourceRef.split(':');
+              const [groupVersion, plural] = gvk.split('.');
+              let group: string;
+              let apiVersion: string;
+              if (groupVersion.includes('/')) {
+                [group, apiVersion] = groupVersion.split('/');
+              } else {
+                [group, apiVersion] = ['', groupVersion];
+              }
+              let namespace: string;
+              let name: string;
+              if (metadata.includes('/')) {
+                [namespace, name] = metadata.split('/');
+              } else {
+                [namespace, name] = ['', metadata];
+              }
+
+              // actually grab the referenced resource, naively
+              const clusterDetails = await clusterSupplier
+                .getClusters()
+                .then(clusters => clusters.find(c => c.name === clusterName));
+              if (!clusterDetails) {
+                throw new NotFoundError(`Cluster '${clusterName}' not found`);
+              }
+              if (!clusterDetails.serviceAccountToken) {
+                throw new Error(`No credentials for cluster ${clusterName}`);
+              }
+              const encode = (s: string) => encodeURIComponent(s);
+              let resourcePath = group
+                ? `/apis/${encode(group)}/${encode(apiVersion)}`
+                : `/api/${encode(apiVersion)}`;
+              if (namespace) {
+                resourcePath += `/namespaces/${encode(namespace)}`;
+              }
+              resourcePath += `/${encode(plural)}/${encode(name)}`;
+              return fetch(`${clusterDetails.url}${resourcePath}`, {
+                method: 'GET',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${clusterDetails.serviceAccountToken}`,
+                },
+                agent: new https.Agent({
+                  ca: Buffer.from(clusterDetails.caData || '', 'base64'),
+                }),
+              }).then(r => r.json());
+            }),
+          );
+        },
+      }),
+    );
 
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {

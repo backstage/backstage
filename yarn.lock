@@ -6706,6 +6706,8 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
     "@google-cloud/container": ^4.0.0
     "@jest-mock/express": ^2.0.1
     "@kubernetes/client-node": 0.17.0
@@ -6718,6 +6720,7 @@ __metadata:
     aws4: ^1.11.0
     compression: ^1.7.4
     cors: ^2.8.5
+    expect: ^29.3.1
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: 10.1.0
