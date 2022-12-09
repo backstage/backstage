@@ -322,24 +322,24 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const entityRef = stringifyEntityRef(entity);
       const hash = generateStableHash(entity);
 
-      const updated = await updateUnprocessedEntity(
+      const updated = await updateUnprocessedEntity({
         tx,
         entity,
         hash,
         locationKey,
-      );
+      });
       if (updated) {
         stateReferences.push(entityRef);
         continue;
       }
 
-      const inserted = await insertUnprocessedEntity(
+      const inserted = await insertUnprocessedEntity({
         tx,
         entity,
         hash,
-        this.options.logger,
         locationKey,
-      );
+        logger: this.options.logger,
+      });
       if (inserted) {
         stateReferences.push(entityRef);
         continue;
@@ -348,11 +348,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       // If the row can't be inserted, we have a conflict, but it could be either
       // because of a conflicting locationKey or a race with another instance, so check
       // whether the conflicting entity has the same entityRef but a different locationKey
-      const conflictingKey = await checkLocationKeyConflict(
+      const conflictingKey = await checkLocationKeyConflict({
         tx,
         entityRef,
         locationKey,
-      );
+      });
       if (conflictingKey) {
         this.options.logger.warn(
           `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,

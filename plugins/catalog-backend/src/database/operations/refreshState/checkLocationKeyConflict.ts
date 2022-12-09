@@ -23,11 +23,13 @@ import { DbRefreshStateRow } from '../../tables';
  *
  * @returns The conflicting key if there is one.
  */
-export async function checkLocationKeyConflict(
-  tx: Knex.Transaction,
-  entityRef: string,
-  locationKey?: string,
-): Promise<string | undefined> {
+export async function checkLocationKeyConflict(options: {
+  tx: Knex.Transaction;
+  entityRef: string;
+  locationKey?: string;
+}): Promise<string | undefined> {
+  const { tx, entityRef, locationKey } = options;
+
   const row = await tx<DbRefreshStateRow>('refresh_state')
     .select('location_key')
     .where('entity_ref', entityRef)

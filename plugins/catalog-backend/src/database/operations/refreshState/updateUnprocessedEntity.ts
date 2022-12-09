@@ -24,12 +24,14 @@ import { DbRefreshStateRow } from '../../tables';
  *
  * Updating the entity will also cause it to be scheduled for immediate processing.
  */
-export async function updateUnprocessedEntity(
-  tx: Knex.Transaction,
-  entity: Entity,
-  hash: string,
-  locationKey?: string,
-): Promise<boolean> {
+export async function updateUnprocessedEntity(options: {
+  tx: Knex.Transaction;
+  entity: Entity;
+  hash: string;
+  locationKey?: string;
+}): Promise<boolean> {
+  const { tx, entity, hash, locationKey } = options;
+
   const entityRef = stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
 

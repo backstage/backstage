@@ -22,6 +22,8 @@ import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
 import type { Logger } from 'winston';
 import { rethrowError } from './conversion';
+import { deleteWithEagerPruningOfChildren } from './operations/provider/deleteWithEagerPruningOfChildren';
+import { refreshByRefreshKeys } from './operations/provider/refreshByRefreshKeys';
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
@@ -51,10 +53,10 @@ export class DefaultProviderDatabase implements ProviderDatabase {
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
     try {
       let result: T | undefined = undefined;
-
       await this.options.database.transaction(
         async tx => {
-          // We can't return here, as knex swallows the return type in case the transaction is rolled back:
+          // We can't return here, as knex swallows the return type in case the
+          // transaction is rolled back:
           // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
           result = await fn(tx);
         },
@@ -63,7 +65,6 @@ export class DefaultProviderDatabase implements ProviderDatabase {
           doNotRejectOnRollback: true,
         },
       );
-
       return result!;
     } catch (e) {
       this.options.logger.debug(`Error during transaction, ${e}`);
@@ -76,128 +77,14 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-
     const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
-      let removedCount = 0;
-      const rootId = () => {
-        if (tx.client.config.client.includes('mysql')) {
-          return tx.raw('CAST(NULL as UNSIGNED INT)', []);
-        }
-
-        return tx.raw('CAST(NULL as INT)', []);
-      };
-      for (const refs of lodash.chunk(toRemove, 1000)) {
-        /*
-        WITH RECURSIVE
-          -- All the nodes that can be reached downwards from our root
-          descendants(root_id, entity_ref) AS (
-            SELECT id, target_entity_ref
-            FROM refresh_state_references
-            WHERE source_key = "R1" AND target_entity_ref = "A"
-            UNION
-            SELECT descendants.root_id, target_entity_ref
-            FROM descendants
-            JOIN refresh_state_references ON source_entity_ref = descendants.entity_ref
-          ),
-          -- All the nodes that can be reached upwards from the descendants
-          ancestors(root_id, via_entity_ref, to_entity_ref) AS (
-            SELECT CAST(NULL as INT), entity_ref, entity_ref
-            FROM descendants
-            UNION
-            SELECT
-              CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END,
-              source_entity_ref,
-              ancestors.to_entity_ref
-            FROM ancestors
-            JOIN refresh_state_references ON target_entity_ref = ancestors.via_entity_ref
-          )
-        -- Start out with all of the descendants
-        SELECT descendants.entity_ref
-        FROM descendants
-        -- Expand with all ancestors that point to those, but aren't the current root
-        LEFT OUTER JOIN ancestors
-          ON ancestors.to_entity_ref = descendants.entity_ref
-          AND ancestors.root_id IS NOT NULL
-          AND ancestors.root_id != descendants.root_id
-        -- Exclude all lines that had such a foreign ancestor
-        WHERE ancestors.root_id IS NULL;
-        */
-        removedCount += await tx<DbRefreshStateRow>('refresh_state')
-          .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
-            return (
-              orphans
-                // All the nodes that can be reached downwards from our root
-                .withRecursive('descendants', function descendants(outer) {
-                  return outer
-                    .select({ root_id: 'id', entity_ref: 'target_entity_ref' })
-                    .from('refresh_state_references')
-                    .where('source_key', options.sourceKey)
-                    .whereIn('target_entity_ref', refs)
-                    .union(function recursive(inner) {
-                      return inner
-                        .select({
-                          root_id: 'descendants.root_id',
-                          entity_ref:
-                            'refresh_state_references.target_entity_ref',
-                        })
-                        .from('descendants')
-                        .join('refresh_state_references', {
-                          'descendants.entity_ref':
-                            'refresh_state_references.source_entity_ref',
-                        });
-                    });
-                })
-                // All the nodes that can be reached upwards from the descendants
-                .withRecursive('ancestors', function ancestors(outer) {
-                  return outer
-                    .select({
-                      root_id: rootId(),
-                      via_entity_ref: 'entity_ref',
-                      to_entity_ref: 'entity_ref',
-                    })
-                    .from('descendants')
-                    .union(function recursive(inner) {
-                      return inner
-                        .select({
-                          root_id: tx.raw(
-                            'CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END',
-                            [],
-                          ),
-                          via_entity_ref: 'source_entity_ref',
-                          to_entity_ref: 'ancestors.to_entity_ref',
-                        })
-                        .from('ancestors')
-                        .join('refresh_state_references', {
-                          target_entity_ref: 'ancestors.via_entity_ref',
-                        });
-                    });
-                })
-                // Start out with all of the descendants
-                .select('descendants.entity_ref')
-                .from('descendants')
-                // Expand with all ancestors that point to those, but aren't the current root
-                .leftOuterJoin('ancestors', function keepaliveRoots() {
-                  this.on(
-                    'ancestors.to_entity_ref',
-                    '=',
-                    'descendants.entity_ref',
-                  );
-                  this.andOnNotNull('ancestors.root_id');
-                  this.andOn('ancestors.root_id', '!=', 'descendants.root_id');
-                })
-                .whereNull('ancestors.root_id')
-            );
-          })
-          .delete();
-
-        await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-          .where('source_key', '=', options.sourceKey)
-          .whereIn('target_entity_ref', refs)
-          .delete();
-      }
-
+      const removedCount = await deleteWithEagerPruningOfChildren({
+        tx,
+        entityRefs: toRemove,
+        sourceKey: options.sourceKey,
+      });
       this.options.logger.debug(
         `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
       );
@@ -258,15 +145,20 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         const entityRef = stringifyEntityRef(entity);
 
         try {
-          let ok = await updateUnprocessedEntity(tx, entity, hash, locationKey);
+          let ok = await updateUnprocessedEntity({
+            tx,
+            entity,
+            hash,
+            locationKey,
+          });
           if (!ok) {
-            ok = await insertUnprocessedEntity(
+            ok = await insertUnprocessedEntity({
               tx,
               entity,
               hash,
-              this.options.logger,
               locationKey,
-            );
+              logger: this.options.logger,
+            });
           }
 
           if (ok) {
@@ -277,11 +169,11 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               target_entity_ref: entityRef,
             });
           } else {
-            const conflictingKey = await checkLocationKeyConflict(
+            const conflictingKey = await checkLocationKeyConflict({
               tx,
               entityRef,
               locationKey,
-            );
+            });
             if (conflictingKey) {
               this.options.logger.warn(
                 `Source ${options.sourceKey} detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
@@ -302,18 +194,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     options: RefreshByKeyOptions,
   ) {
     const tx = txOpaque as Knex.Transaction;
-    const { keys } = options;
-
-    await tx<DbRefreshStateRow>('refresh_state')
-      .whereIn('entity_id', function selectEntityRefs(tx2) {
-        tx2
-          .whereIn('key', keys)
-          .select({
-            entity_id: 'refresh_keys.entity_id',
-          })
-          .from('refresh_keys');
-      })
-      .update({ next_update_at: tx.fn.now() });
+    await refreshByRefreshKeys({ tx, keys: options.keys });
   }
 
   private async createDelta(

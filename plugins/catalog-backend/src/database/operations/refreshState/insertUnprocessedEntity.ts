@@ -25,13 +25,15 @@ import { isDatabaseConflictError } from '@backstage/backend-common';
  * Attempts to insert a new refresh state row for the given entity, returning
  * true if successful and false if there was a conflict.
  */
-export async function insertUnprocessedEntity(
-  tx: Knex.Transaction,
-  entity: Entity,
-  hash: string,
-  logger: Logger,
-  locationKey?: string,
-): Promise<boolean> {
+export async function insertUnprocessedEntity(options: {
+  tx: Knex.Transaction;
+  entity: Entity;
+  hash: string;
+  locationKey?: string;
+  logger: Logger;
+}): Promise<boolean> {
+  const { tx, entity, hash, logger, locationKey } = options;
+
   const entityRef = stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
 
