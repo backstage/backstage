@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { makeStyles } from '@material-ui/core/styles';
-import React, { Fragment } from 'react';
+import React from 'react';
 
 /** @public */
 export type HeaderIconLinkRowClassKey = 'links';
@@ -32,24 +32,13 @@ const useStyles = makeStyles(
   { name: 'BackstageHeaderIconLinkRow' },
 );
 
-type Props = {
-  links: React.ReactNode[];
-};
-
 /**
  * HTML nav tag with links mapped inside
  *
  * @public
  *
  */
-export function HeaderIconLinkRow(props: Props) {
-  const { links } = props;
+export const HeaderIconLinkRow = (props: { children?: React.ReactNode }) => {
   const classes = useStyles();
-  return (
-    <nav className={classes.links}>
-      {links.map((link, index) => (
-        <Fragment key={index}>{link}</Fragment>
-      ))}
-    </nav>
-  );
-}
+  return <nav className={classes.links}>{props.children}</nav>;
+};
