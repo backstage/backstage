@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
-import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
+import React, { Fragment } from 'react';
 
 /** @public */
 export type HeaderIconLinkRowClassKey = 'links';
@@ -34,7 +33,7 @@ const useStyles = makeStyles(
 );
 
 type Props = {
-  links: IconLinkVerticalProps[];
+  links: React.ReactNode[];
 };
 
 /**
@@ -49,7 +48,7 @@ export function HeaderIconLinkRow(props: Props) {
   return (
     <nav className={classes.links}>
       {links.map((link, index) => (
-        <IconLinkVertical key={index + 1} {...link} />
+        <Fragment key={index}>{link}</Fragment>
       ))}
     </nav>
   );
