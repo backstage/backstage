@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 export {
+  type TemplateContentProps,
   TemplateWizardContent,
   TemplateContent,
 } from './TemplateWizardContent';

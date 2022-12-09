@@ -20,61 +20,86 @@ import {
   TemplateContent,
   useGetCustomFields,
 } from '@backstage/plugin-scaffolder';
-import { Button } from '@material-ui/core';
+import type { FormProps } from '@backstage/plugin-scaffolder-react';
+import type { TemplateContentProps } from '@backstage/plugin-scaffolder';
+import { Box, Button } from '@material-ui/core';
 import type { JsonValue } from '@backstage/types';
-import { FormProps } from '@backstage/plugin-scaffolder-react';
 
-interface WorkflowProps {
-  frontPage: ReactNode;
-  namespace: string;
-  templateName: string;
+type WorkflowProps = Omit<TemplateContentProps, 'customFieldExtensions'> & {
   customExtensionsElement?: React.ReactNode;
   initialFormState?: Record<string, JsonValue>;
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
   onError(error: Error | undefined): JSX.Element | null;
   FormProps: FormProps
-}
+  frontPage: ReactNode;
+  finishPage: ReactNode;
+};
+
+type Display = 'front' | 'workflow' | 'finish';
+
+type DisplayComponents = Record<Display, JSX.Element>;
+
+type OnCompleteArgs = Parameters<TemplateContentProps['onComplete']>[0];
 
 export function EmbeddedScaffolderWorkflow({
   namespace,
   templateName,
   customExtensionsElement = <></>,
   frontPage,
-  onComplete,
+  finishPage,
+  onComplete = async (_values: OnCompleteArgs) => void 0,
   onError,
+  title,
+  description,
+  ReviewStateWrapper,
 }: WorkflowProps): JSX.Element {
-  const [showTemplateContent, setShowTemplateContent] = useState(false);
+  const [display, setDisplay] = useState<Display>('front');
   const fieldExtensions = useGetCustomFields(customExtensionsElement);
 
-  const showContent = !showTemplateContent;
+  const startTemplate = useCallback(() => setDisplay('workflow'), []);
 
-  const startTemplate = useCallback(() => setShowTemplateContent(true), []);
+  const onWorkFlowComplete = useCallback(
+    async (values: OnCompleteArgs) => {
+      setDisplay('finish');
 
-  return (
-    <>
-      {showContent && (
-        <>
-          {frontPage}
-          <Button variant="contained" onClick={startTemplate}>
-            SETUP
-          </Button>
-        </>
-      )}
-      {showTemplateContent && (
-        <TemplateContent
-          namespace={namespace}
-          templateName={templateName}
-          onComplete={onComplete}
-          onError={onError}
-          customFieldExtensions={fieldExtensions}
-          initialFormState={{
-            name: 'prefilled-name',
-            description: 'prefilled description',
-            owner: 'acme-corp',
-            repoUrl: 'github.com?owner=component&repo=component',
-          }}
-        />
-      )}
-    </>
+      await onComplete(values);
+    },
+    [onComplete],
   );
+
+  const DisplayElements: DisplayComponents = {
+    front: (
+      <Box display="flex" alignItems="center" flexDirection="column">
+        {frontPage}
+        <Button variant="contained" onClick={startTemplate}>
+          SETUP
+        </Button>
+      </Box>
+    ),
+    workflow: (
+      <TemplateContent
+        title={title}
+        description={description}
+        namespace={namespace}
+        templateName={templateName}
+        onComplete={onWorkFlowComplete}
+        onError={onError}
+        customFieldExtensions={fieldExtensions}
+        initialFormState={{
+          name: 'prefilled-name',
+          description: 'prefilled description',
+          owner: 'acme-corp',
+          repoUrl: 'github.com?owner=component&repo=component',
+        }}
+        ReviewStateWrapper={ReviewStateWrapper}
+      />
+    ),
+    finish: (
+      <Box display="flex" alignItems="center" flexDirection="column">
+        {finishPage}
+      </Box>
+    ),
+  };
+
+  return <>{DisplayElements[display]}</>;
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useAnalytics, useApiHolder } from '@backstage/core-plugin-api';
+import { useAnalytics, useApiHolder, useRouteRefParams } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import {
   Stepper as MuiStepper,
@@ -28,12 +28,12 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
+import type { FormProps } from '../../types';
+import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
-import { ReviewState } from '../ReviewState';
+import { useFormDataFromQuery } from '../../hooks/useFormDataFromQuery';
 import validator from '@rjsf/validator-ajv6';
 
-import { useFormDataFromQuery } from '../../hooks';
-import { FormProps } from '../../types';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -62,7 +62,9 @@ export type StepperProps = {
   initialState?: Record<string, JsonValue>;
 
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-};
+  initialFormState?: Record<string, JsonValue>;
+  ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
+}
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
 // which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
@@ -73,7 +75,11 @@ const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
  * The `Stepper` component is the Wizard that is rendered when a user selects a template
  * @alpha
  */
-export const Stepper = (props: StepperProps) => {
+
+export const Stepper = ({
+  ReviewStateWrapper = ReviewState,
+  ...props
+}: StepperProps) => {
   const analytics = useAnalytics();
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
@@ -183,7 +189,7 @@ export const Stepper = (props: StepperProps) => {
           </Form>
         ) : (
           <>
-            <ReviewState formState={formState} schemas={steps} />
+            <ReviewStateWrapper formState={formState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}

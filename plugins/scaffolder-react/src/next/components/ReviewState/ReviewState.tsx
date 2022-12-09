@@ -23,7 +23,7 @@ import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
  * The props for the {@link ReviewState} component.
  * @alpha
  */
-export type ReviewStateProps = {
+export interface ReviewStateProps {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
 };

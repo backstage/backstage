@@ -28,6 +28,8 @@ import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import {
+  ReviewState,
+  type ReviewStateProps,
   SecretsContextProvider,
   Stepper,
   type NextFieldExtensionOptions,
@@ -46,7 +48,9 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
   },
 }));
 
-export interface TemplateWizardContentProps {
+export interface TemplateContentProps {
+  title?: string;
+  description?: string;
   namespace: string;
   templateName: string;
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
@@ -55,11 +59,13 @@ export interface TemplateWizardContentProps {
   onError(error: Error | undefined): JSX.Element | null;
   initialFormState?: Record<string, JsonValue>;
   FormProps?: FormProps;
+  ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
 }
 
-export const TemplateWizardContent = (
-  props: TemplateWizardContentProps,
-): JSX.Element | null => {
+export const TemplateWizardContent = ({
+  ReviewStateWrapper = ReviewState,
+  ...props
+}: TemplateContentProps): JSX.Element | null => {
   const styles = useStyles();
   const templateRef = stringifyEntityRef({
     kind: 'Template',
@@ -86,11 +92,13 @@ export const TemplateWizardContent = (
       {loading && <Progress />}
       {manifest && (
         <InfoCard
-          title={manifest.title}
+          title={props.title ?? manifest.title}
           subheader={
             <MarkdownContent
               className={styles.markdown}
-              content={manifest.description ?? 'No description'}
+              content={
+                props.description ?? manifest.description ?? 'No description'
+              }
             />
           }
           noPadding
@@ -101,6 +109,8 @@ export const TemplateWizardContent = (
             extensions={props.customFieldExtensions}
             onComplete={props.onComplete}
             FormProps={props.FormProps}
+            initialFormState={props.initialFormState}
+            ReviewStateWrapper={ReviewStateWrapper}
           />
         </InfoCard>
       )}
@@ -108,7 +118,7 @@ export const TemplateWizardContent = (
   );
 };
 
-export const TemplateContent = (props: TemplateWizardContentProps) => (
+export const TemplateContent = (props: TemplateContentProps) => (
   <SecretsContextProvider>
     <TemplateWizardContent {...props} />
   </SecretsContextProvider>

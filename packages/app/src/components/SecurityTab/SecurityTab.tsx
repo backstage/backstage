@@ -16,12 +16,19 @@
 
 import React from 'react';
 import { EmbeddedScaffolderWorkflow } from '../EmbeddedScaffolderWorkflow/EmbeddedScaffolderWorkflow';
+import { Box } from '@material-ui/core';
 
-interface SecurityTabProps {}
+const ReviewWrapper = () => {
+  return (
+    <Box display="flex" alignItems="center" flexDirection="column">
+      <h1>This is a different wrapper for the review page</h1>
+    </Box>
+  );
+};
 
-export function SecurityTab({}: SecurityTabProps): JSX.Element | null {
-  // eslint-disable-next-line no-alert
-  const onComplete = async () => alert('success!!!!');
+export function SecurityTab(): JSX.Element | null {
+  // eslint-disable-next-line no-console
+  const onComplete = async () => console.log('onComplete called from ');
 
   const onError = (error: Error | undefined) => (
     <h2>{error?.message ?? 'Houston we have a problem.'}</h2>
@@ -29,6 +36,11 @@ export function SecurityTab({}: SecurityTabProps): JSX.Element | null {
 
   return (
     <EmbeddedScaffolderWorkflow
+      title="Altered title"
+      description={`
+## This is markdown
+- overriding the template description
+      `}
       onComplete={onComplete}
       onError={onError}
       namespace="default"
@@ -46,6 +58,13 @@ export function SecurityTab({}: SecurityTabProps): JSX.Element | null {
           </p>
         </>
       }
+      finishPage={
+        <>
+          <h1>Security Insights</h1>
+          <p>Congratulations, this application is complete!</p>
+        </>
+      }
+      ReviewStateWrapper={ReviewWrapper}
     />
   );
 }

@@ -46,6 +46,13 @@ export * from './deprecated';
 /** next exports */
 export { NextScaffolderPage } from './plugin';
 export {
+  TemplateContent,
+  useGetCustomFields,
+  type TemplateContentProps,
+} from './next';
+export type { NextRouterProps } from './next';
+export type { TemplateGroupFilter } from './next';
+export {
   nextRouteRef,
   nextScaffolderTaskRouteRef,
   nextSelectedTemplateRouteRef,

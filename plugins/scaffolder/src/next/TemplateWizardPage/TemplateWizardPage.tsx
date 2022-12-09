@@ -29,11 +29,10 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/lib/useAsync';
 import { JsonValue } from '@backstage/types';
-import { FormProps } from '../types';
+import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { nextRouteRef } from '../routes';
 import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { TemplateWizardContent } from '../TemplateWizardContent/TemplateWizardContent';
-import { Header, Page } from '@backstage/core-components';
 
 type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
