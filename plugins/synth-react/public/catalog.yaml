@@ -1,7 +1,10 @@
-$import:
-  names: [<Card>]
-  from: ./material-ui.yaml
-$do:
-  <AboutCard>:
-    $B.<>:
-      $<Card>: true
+catalogPlugin: { $B.resolve: '@backstage/plugin-catalog' }
+catalogReactPlugin: { $B.resolve: '@backstage/plugin-catalog-react' }
+
+<AboutCard>:
+  $B.Component:
+    type: $catalogPlugin.EntityAboutCard
+
+<EntityProvider>:
+  $B.Component:
+    type: $catalogReactPlugin.EntityProvider

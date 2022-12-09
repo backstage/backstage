@@ -18,66 +18,72 @@ import * as ps from 'platformscript';
 import React from 'react';
 import { lookup } from '../lookup';
 
-export const Component = ps.fn(function* Component(c) {
-  const $cArg = yield* c.env.eval(c.arg);
+export const Component = ps.fn(
+  function* Component(c) {
+    const $cArg = yield* c.env.eval(c.arg);
 
-  if ($cArg.type !== 'map') {
-    throw new TypeError(`Component expects a map argument.`);
-  }
-
-  const cType = lookup('type', $cArg);
-  // let cProps;
-  // let cChildren;
-
-  if (!cType) {
-    throw new TypeError(`Component: { type: } must not be empty`);
-  }
-
-  return ps.fn(function* InnerComponent({ arg, env, rest }) {
-    const $arg: PSValue = yield* env.eval(arg);
-    if (rest.type === 'map') {
-      // add key prop to each item in children array
-      const children = lookup('<>', rest);
-      if (children && children.type === 'list') {
-        injectKeyProps(children);
-      }
+    if ($cArg.type !== 'map') {
+      throw new TypeError(`Component expects a map argument.`);
     }
 
-    const $options = yield* env.eval(rest);
+    const cType = lookup('type', $cArg);
+    // let cProps;
+    // let cChildren;
 
-    const props: Record<string, any> = {};
-    let children = [];
+    if (!(cType && cType.value)) {
+      throw new TypeError(`Component: { type: } must not be empty`);
+    }
 
-    switch ($arg.type) {
-      case 'map':
-        for (const [key, value] of $arg.value.entries()) {
-          props[String(key.value)] = value.value;
-        }
-        if ($options.type === 'map') {
-          const key = lookup('key', $options);
-          if (!!key) {
-            props.key = key.value;
+    return ps.fn(
+      function* InnerComponent({ arg, env, rest }) {
+        const $arg: PSValue = yield* env.eval(arg);
+        if (rest.type === 'map') {
+          // add key prop to each item in children array
+          const children = lookup('<>', rest);
+          if (children && children.type === 'list') {
+            injectKeyProps(children);
           }
-          const _children = lookup('<>', $options);
-          if (!!_children) {
-            if (_children.type === 'list') {
-              children = _children.value.map(value => value.value);
-            } else {
-              children = _children.value;
+        }
+
+        const $options = yield* env.eval(rest);
+
+        const props: Record<string, any> = {};
+        let children = [];
+
+        switch ($arg.type) {
+          case 'map':
+            for (const [key, value] of $arg.value.entries()) {
+              props[String(key.value)] = value.value;
             }
-          }
+            if ($options.type === 'map') {
+              const key = lookup('key', $options);
+              if (!!key) {
+                props.key = key.value;
+              }
+              const _children = lookup('<>', $options);
+              if (!!_children) {
+                if (_children.type === 'list') {
+                  children = _children.value.map(value => value.value);
+                } else {
+                  children = _children.value;
+                }
+              }
+            }
+            break;
+          case 'list':
+            children = $arg.value.map(value => value.value);
+            break;
+          default:
+            children = $arg.value;
         }
-        break;
-      case 'list':
-        children = $arg.value.map(value => value.value);
-        break;
-      default:
-        children = $arg.value;
-    }
 
-    return ps.external(React.createElement(cType.value, props, children));
-  });
-});
+        return ps.external(React.createElement(cType.value, props, children));
+      },
+      { name: 'props' },
+    );
+  },
+  { name: 'component' },
+);
 
 function injectKeyProps(list: ps.PSList) {
   let index = 0;

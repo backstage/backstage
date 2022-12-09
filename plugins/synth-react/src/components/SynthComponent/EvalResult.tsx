@@ -27,7 +27,7 @@ export function EvalResult({ yaml }: { yaml: string }) {
   } else if (result.value) {
     if (result.value.type === 'external') {
       if (React.isValidElement(result.value.value)) {
-        return result.value.value;
+        return <>{result.value.value}</>;
       }
       return <Inspector table={false} data={result.value.value} />;
     }

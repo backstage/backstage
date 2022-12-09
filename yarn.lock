@@ -7934,12 +7934,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-synth-react@workspace:plugins/synth-react"
   dependencies:
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"

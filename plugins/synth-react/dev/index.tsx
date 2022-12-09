@@ -16,6 +16,7 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { synthPlugin, SynthPage } from '../src/plugin';
+
 import HELLO_WORLD from './helloWorld.yaml?raw';
 
 createDevApp()

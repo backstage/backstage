@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PlatformScript, PSValue } from 'platformscript';
+import type { PlatformScript, PSValue } from 'platformscript';
 import * as ps from 'platformscript';
 import { Component } from './Component';
 import { createModuleResolver } from './createModuleResolver';
@@ -22,21 +22,42 @@ import { log } from './log';
 
 export type ModuleResolvers = Record<string, () => Promise<PSValue>>;
 
+function exportAsExternals(m) {
+  return ps.external(m, ([path]) => {
+    if (!Object.hasOwn(m, path)) {
+      throw new Error(
+        `\`${path}\` is not exported from package. Did you mean one of ${Object.keys(
+          m,
+        ).join(', ')}?`,
+      );
+    }
+    return ps.external(m[path]);
+  });
+}
+
 export function globals(interpreter: PlatformScript) {
   return ps.map({
     B: ps.map({
       '<>': Fragment,
+      toJS: ps.fn(
+        function* toJS({ arg, env }) {
+          const $arg = yield* env.eval(arg);
+
+          return ps.external(ps.ps2js($arg));
+        },
+        { name: 'object' },
+      ),
       log,
       Component: Component,
       resolve: createModuleResolver({
         '@material-ui/core': () =>
-          import('@material-ui/core').then(m =>
-            ps.external(m, ([path]) => ps.external(m[path])),
-          ),
+          import('@material-ui/core').then(exportAsExternals),
         '@backstage/core-components': () =>
-          import('@backstage/core-components').then(m =>
-            ps.external(m, ([path]) => ps.external(m[path])),
-          ),
+          import('@backstage/core-components').then(exportAsExternals),
+        '@backstage/plugin-catalog': () =>
+          import('@backstage/plugin-catalog').then(exportAsExternals),
+        '@backstage/plugin-catalog-react': () =>
+          import('@backstage/plugin-catalog-react').then(exportAsExternals),
       }),
     }),
   });

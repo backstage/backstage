@@ -13,15 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export const synthPlugin = createPlugin({
   id: 'synth',
+  apis: [
+    createApiFactory({
+      api: catalogApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new CatalogClient({ discoveryApi, fetchApi }),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },

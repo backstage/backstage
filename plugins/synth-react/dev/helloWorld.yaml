@@ -1,5 +1,15 @@
 $import:
-  - names: [<AboutCard>]
+  - names: [<AboutCard>, <EntityProvider>]
     from: ./catalog.yaml
+  - names: [spec, metadata, kind]
+    from: ./catalog-info.yaml
 $do:
-  $<AboutCard>: true
+  $<EntityProvider>:
+    entity:
+      $B.toJS:
+        kind: $kind
+        metadata: $metadata
+        spec: $spec
+  <>:
+    - $<AboutCard>:
+        gridItem: true

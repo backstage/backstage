@@ -15,9 +15,12 @@
  */
 import * as ps from 'platformscript';
 
-export const log = ps.fn(function* ({ arg, env }) {
-  const $arg = yield* env.eval(arg);
+export const log = ps.fn(
+  function* log({ arg, env }) {
+    const $arg = yield* env.eval(arg);
 
-  // eslint-disable-next-line no-console
-  return ps.external(console.log($arg.value));
-});
+    // eslint-disable-next-line no-console
+    return ps.external(console.log($arg.value));
+  },
+  { name: 'message' },
+);

@@ -16,20 +16,23 @@
 import React from 'react';
 import * as ps from 'platformscript';
 
-export const Fragment = ps.fn(function* ({ arg, env }) {
-  const $arg = yield* env.eval(arg);
+export const Fragment = ps.fn(
+  function* Fragment({ arg, env }) {
+    const $arg = yield* env.eval(arg);
 
-  let elements: ps.PSValue[];
-  if ($arg.type === 'list') {
-    elements = $arg.value;
-  } else {
-    elements = [$arg.value];
-  }
+    let elements: ps.PSValue[];
+    if ($arg.type === 'list') {
+      elements = $arg.value;
+    } else {
+      elements = [$arg.value];
+    }
 
-  const children = elements.map((psValue: { value: any }, i: number) => ({
-    ...psValue.value,
-    key: psValue.value.key !== null ? psValue.value.key : i,
-  }));
+    const children = elements.map((psValue: { value: any }, i: number) => ({
+      ...psValue.value,
+      key: psValue.value.key !== null ? psValue.value.key : i,
+    }));
 
-  return ps.external(React.createElement(React.Fragment, null, children));
-});
+    return ps.external(React.createElement(React.Fragment, null, children));
+  },
+  { name: '' },
+);
