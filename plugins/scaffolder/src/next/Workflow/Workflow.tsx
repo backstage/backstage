@@ -48,6 +48,9 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
   },
 }));
 
+/**
+ * @alpha
+ */
 export interface WorkflowProps {
   title?: string;
   description?: string;
@@ -118,6 +121,9 @@ export const Workflow = ({
   );
 };
 
+/**
+ * @alpha
+ */
 export const EmbeddableWorkflow = (props: WorkflowProps) => (
   <SecretsContextProvider>
     <Workflow {...props} />
