@@ -18,18 +18,7 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { ConflictError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
-import { v4 as uuid } from 'uuid';
 import type { Logger } from 'winston';
-import {
-  Transaction,
-  GetProcessableEntitiesResult,
-  ProcessingDatabase,
-  RefreshStateItem,
-  UpdateProcessedEntityOptions,
-  UpdateEntityCacheOptions,
-  ListParentsOptions,
-  ListParentsResult,
-} from './types';
 import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
@@ -39,10 +28,22 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from './tables';
+import {
+  GetProcessableEntitiesResult,
+  ListParentsOptions,
+  ListParentsResult,
+  ProcessingDatabase,
+  RefreshStateItem,
+  Transaction,
+  UpdateEntityCacheOptions,
+  UpdateProcessedEntityOptions,
+} from './types';
 
-import { generateStableHash } from './util';
-import { isDatabaseConflictError } from '@backstage/backend-common';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
+import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
+import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
+import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
+import { generateStableHash } from './util';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -291,123 +292,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
   }
 
-  /**
-   * Attempts to update an existing refresh state row, returning true if it was
-   * updated and false if there was no entity with a matching ref and location key.
-   *
-   * Updating the entity will also cause it to be scheduled for immediate processing.
-   */
-  private async updateUnprocessedEntity(
-    tx: Knex.Transaction,
-    entity: Entity,
-    hash: string,
-    locationKey?: string,
-  ): Promise<boolean> {
-    const entityRef = stringifyEntityRef(entity);
-    const serializedEntity = JSON.stringify(entity);
-
-    const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
-      .update({
-        unprocessed_entity: serializedEntity,
-        unprocessed_hash: hash,
-        location_key: locationKey,
-        last_discovery_at: tx.fn.now(),
-        // We only get to this point if a processed entity actually had any changes, or
-        // if an entity provider requested this mutation, meaning that we can safely
-        // bump the deferred entities to the front of the queue for immediate processing.
-        next_update_at: tx.fn.now(),
-      })
-      .where('entity_ref', entityRef)
-      .andWhere(inner => {
-        if (!locationKey) {
-          return inner.whereNull('location_key');
-        }
-        return inner
-          .where('location_key', locationKey)
-          .orWhereNull('location_key');
-      });
-
-    return refreshResult === 1;
-  }
-
-  /**
-   * Attempts to insert a new refresh state row for the given entity, returning
-   * true if successful and false if there was a conflict.
-   */
-  private async insertUnprocessedEntity(
-    tx: Knex.Transaction,
-    entity: Entity,
-    hash: string,
-    locationKey?: string,
-  ): Promise<boolean> {
-    const entityRef = stringifyEntityRef(entity);
-    const serializedEntity = JSON.stringify(entity);
-
-    try {
-      let query = tx<DbRefreshStateRow>('refresh_state').insert({
-        entity_id: uuid(),
-        entity_ref: entityRef,
-        unprocessed_entity: serializedEntity,
-        unprocessed_hash: hash,
-        errors: '',
-        location_key: locationKey,
-        next_update_at: tx.fn.now(),
-        last_discovery_at: tx.fn.now(),
-      });
-
-      // TODO(Rugvip): only tested towards MySQL, Postgres and SQLite.
-      // We have to do this because the only way to detect if there was a conflict with
-      // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
-      // break the ongoing transaction.
-      if (tx.client.config.client.includes('pg')) {
-        query = query.onConflict('entity_ref').ignore() as any; // type here does not match runtime
-      }
-
-      // Postgres gives as an object with rowCount, SQLite gives us an array
-      const result: { rowCount?: number; length?: number } = await query;
-      return result.rowCount === 1 || result.length === 1;
-    } catch (error) {
-      // SQLite, or MySQL reached this rather than the rowCount check above
-      if (!isDatabaseConflictError(error)) {
-        throw error;
-      } else {
-        this.options.logger.debug(
-          `Unable to insert a new refresh state row, ${error}`,
-        );
-        return false;
-      }
-    }
-  }
-
-  /**
-   * Checks whether a refresh state exists for the given entity that has a
-   * location key that does not match the provided location key.
-   *
-   * @returns The conflicting key if there is one.
-   */
-  private async checkLocationKeyConflict(
-    tx: Knex.Transaction,
-    entityRef: string,
-    locationKey?: string,
-  ): Promise<string | undefined> {
-    const row = await tx<DbRefreshStateRow>('refresh_state')
-      .select('location_key')
-      .where('entity_ref', entityRef)
-      .first();
-
-    const conflictingKey = row?.location_key;
-
-    // If there's no existing key we can't have a conflict
-    if (!conflictingKey) {
-      return undefined;
-    }
-
-    if (conflictingKey !== locationKey) {
-      return conflictingKey;
-    }
-    return undefined;
-  }
-
   private deduplicateRelations(rows: DbRelationsRow[]): DbRelationsRow[] {
     return lodash.uniqBy(
       rows,
@@ -438,7 +322,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const entityRef = stringifyEntityRef(entity);
       const hash = generateStableHash(entity);
 
-      const updated = await this.updateUnprocessedEntity(
+      const updated = await updateUnprocessedEntity(
         tx,
         entity,
         hash,
@@ -449,10 +333,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         continue;
       }
 
-      const inserted = await this.insertUnprocessedEntity(
+      const inserted = await insertUnprocessedEntity(
         tx,
         entity,
         hash,
+        this.options.logger,
         locationKey,
       );
       if (inserted) {
@@ -463,7 +348,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       // If the row can't be inserted, we have a conflict, but it could be either
       // because of a conflicting locationKey or a race with another instance, so check
       // whether the conflicting entity has the same entityRef but a different locationKey
-      const conflictingKey = await this.checkLocationKeyConflict(
+      const conflictingKey = await checkLocationKeyConflict(
         tx,
         entityRef,
         locationKey,
