@@ -207,4 +207,21 @@ describe('<EntityOwnerPicker/>', () => {
       owners: new EntityOwnerFilter(['team-b']),
     });
   });
+  it('removes owners from filters if there are none available', () => {
+    const updateFilters = jest.fn();
+    render(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { owners: ['team-a'] },
+          backendEntities: [],
+        }}
+      >
+        <EntityOwnerPicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: undefined,
+    });
+  });
 });
