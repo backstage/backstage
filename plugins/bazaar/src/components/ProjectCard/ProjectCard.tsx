@@ -29,6 +29,7 @@ import { BazaarProject } from '../../types';
 import { DateTime } from 'luxon';
 import { HomePageBazaarInfoCard } from '../HomePageBazaarInfoCard';
 import { Entity } from '@backstage/catalog-model';
+import { BackstageTheme } from '@backstage/theme';
 
 type Props = {
   project: BazaarProject;
@@ -37,23 +38,32 @@ type Props = {
   height?: string;
 };
 
-const useStyles = makeStyles({
+type StyleProps = {
+  height?: string;
+};
+
+const useStyles = makeStyles((theme: BackstageTheme) => ({
+  description: (props: StyleProps) => ({
+    height: props.height === '7rem' ? '3.7rem' : '10.2rem',
+    display: '-webkit-box',
+    WebkitLineClamp: 7,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    '-webkit-background-clip': 'text',
+    backgroundImage: `linear-gradient(180deg, ${
+      theme.palette.textContrast
+    } 0%, ${theme.palette.textContrast} ${
+      props.height === '7rem' ? '60%' : '75%'
+    }, transparent 100%)`,
+    color: 'transparent',
+  }),
   statusTag: {
     display: 'inline-block',
     whiteSpace: 'nowrap',
     marginBottom: '0.8rem',
   },
-  description: {
-    display: '-webkit-box',
-    WebkitLineClamp: 7,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-  },
   memberCount: {
     float: 'right',
-  },
-  content: {
-    height: '13rem',
   },
   header: {
     whiteSpace: 'nowrap',
@@ -61,7 +71,7 @@ const useStyles = makeStyles({
     textOverflow: 'ellipsis',
     height: '5rem',
   },
-});
+}));
 
 export const ProjectCard = ({
   project,
@@ -69,7 +79,7 @@ export const ProjectCard = ({
   catalogEntities,
   height,
 }: Props) => {
-  const classes = useStyles();
+  const classes = useStyles({ height });
   const [openCard, setOpenCard] = useState(false);
   const { id, title, status, updatedAt, description, membersCount } = project;
 
@@ -103,7 +113,7 @@ export const ProjectCard = ({
               base: DateTime.now(),
             })}`}
           />
-          <CardContent className={classes.content} style={{ height: height }}>
+          <CardContent>
             <StatusTag styles={classes.statusTag} status={status} />
             <Typography variant="body2" className={classes.memberCount}>
               {Number(membersCount) === Number(1)

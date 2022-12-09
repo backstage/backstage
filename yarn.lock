@@ -4825,6 +4825,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/theme": "workspace:^"
     "@date-io/luxon": 1.x
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
