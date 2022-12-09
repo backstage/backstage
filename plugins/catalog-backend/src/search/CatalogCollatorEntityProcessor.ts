@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity, isUserEntity, isGroupEntity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 
-export function getDocumentText(entity: Entity): string {
-  const documentTexts: string[] = [];
-  documentTexts.push(entity.metadata.description || '');
-
-  if (isUserEntity(entity) || isGroupEntity(entity)) {
-    if (entity.spec?.profile?.displayName) {
-      documentTexts.push(entity.spec.profile.displayName);
-    }
-  }
-  return documentTexts.join(' : ');
+export interface CatalogCollatorEntityProcessor {
+  process(entity: Entity, locationTemplate: string): CatalogEntityDocument;
 }

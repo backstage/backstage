@@ -167,6 +167,42 @@ export class CatalogBuilder {
   useLegacySingleProcessorValidation(): this;
 }
 
+// @public (undocumented)
+export abstract class CatalogCollatorFactory
+  implements DocumentCollatorFactory
+{
+  protected constructor(options: CatalogCollatorFactoryOptions);
+  // (undocumented)
+  static fromConfig(
+    _config: Config,
+    _options: CatalogCollatorFactoryCreateOptions,
+  ): CatalogCollatorFactory;
+  // (undocumented)
+  getCollator(): Promise<Readable>;
+  // (undocumented)
+  readonly type: string;
+  // (undocumented)
+  readonly visibilityPermission: Permission;
+}
+
+// @public (undocumented)
+export type CatalogCollatorFactoryCreateOptions = Omit<
+  CatalogCollatorFactoryOptions,
+  'entityProcessor' | 'type'
+>;
+
+// @public (undocumented)
+export type CatalogCollatorFactoryOptions = {
+  type: string;
+  discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
+  entityProcessor: CatalogCollatorEntityProcessor;
+  locationTemplate?: string;
+  filter?: GetEntitiesRequest['filter'];
+  batchSize?: number;
+  catalogClient?: CatalogApi;
+};
+
 // @alpha
 export const catalogConditions: Conditions<{
   hasAnnotation: PermissionRule<
@@ -351,29 +387,17 @@ export class DefaultCatalogCollator {
 }
 
 // @public (undocumented)
-export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
+export class DefaultCatalogCollatorFactory extends CatalogCollatorFactory {
   // (undocumented)
   static fromConfig(
     _config: Config,
     options: DefaultCatalogCollatorFactoryOptions,
   ): DefaultCatalogCollatorFactory;
-  // (undocumented)
-  getCollator(): Promise<Readable>;
-  // (undocumented)
-  readonly type: string;
-  // (undocumented)
-  readonly visibilityPermission: Permission;
 }
 
 // @public (undocumented)
-export type DefaultCatalogCollatorFactoryOptions = {
-  discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
-  locationTemplate?: string;
-  filter?: GetEntitiesRequest['filter'];
-  batchSize?: number;
-  catalogClient?: CatalogApi;
-};
+export type DefaultCatalogCollatorFactoryOptions =
+  CatalogCollatorFactoryCreateOptions;
 
 export { DeferredEntity };
 
@@ -583,4 +607,8 @@ export class UrlReaderProcessor implements CatalogProcessor {
     cache: CatalogProcessorCache,
   ): Promise<boolean>;
 }
+
+// Warnings were encountered during analysis:
+//
+// src/search/CatalogCollatorFactory.d.ts:14:5 - (ae-forgotten-export) The symbol "CatalogCollatorEntityProcessor" needs to be exported by the entry point index.d.ts
 ```
