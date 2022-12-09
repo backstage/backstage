@@ -169,6 +169,7 @@ describe('<EntityLifecyclePicker/>', () => {
         value={{
           updateFilters,
           queryParameters: { lifecycles: ['experimental'] },
+          backendEntities: sampleEntities,
         }}
       >
         <EntityLifecyclePicker />
@@ -182,6 +183,8 @@ describe('<EntityLifecyclePicker/>', () => {
         value={{
           updateFilters,
           queryParameters: { lifecycles: ['production'] },
+          backendEntities: sampleEntities,
+          q,
         }}
       >
         <EntityLifecyclePicker />

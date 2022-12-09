@@ -183,6 +183,7 @@ describe('<EntityOwnerPicker/>', () => {
         value={{
           updateFilters,
           queryParameters: { owners: ['team-a'] },
+          backendEntities: sampleEntities,
         }}
       >
         <EntityOwnerPicker />
@@ -196,6 +197,7 @@ describe('<EntityOwnerPicker/>', () => {
         value={{
           updateFilters,
           queryParameters: { owners: ['team-b'] },
+          backendEntities: sampleEntities,
         }}
       >
         <EntityOwnerPicker />
