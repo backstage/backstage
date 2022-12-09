@@ -7939,6 +7939,8 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13
@@ -7950,8 +7952,9 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
+    lodash.get: ^4.4.2
     msw: ^0.49.0
-    platformscript: 1.0.0-alpha.7
+    platformscript: 1.0.0-alpha.8
     react-inspector: ^6.0.1
     react-use: ^17.2.4
     yaml: ^2.1.3
@@ -31778,12 +31781,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"platformscript@npm:1.0.0-alpha.7":
-  version: 1.0.0-alpha.7
-  resolution: "platformscript@npm:1.0.0-alpha.7"
+"platformscript@npm:1.0.0-alpha.8":
+  version: 1.0.0-alpha.8
+  resolution: "platformscript@npm:1.0.0-alpha.8"
   dependencies:
     yaml-ast-parser: 0.0.43
-  checksum: 151137f8809ded0fac99c0c384414324ffc62deae3c4735b7c2f953e8033087897d95af8c7b39e9d08925243a98e384ff87b0926bfacb2364bd523383f53c5a9
+  checksum: ee3c47b9f39a68fa4d5d67a056cd4d645175769425f654fc41ed92580ee599ce1a521de29e069b7772ea2aa8382707b6660cfa37f7f13314e59386ca5378d9d3
   languageName: node
   linkType: hard
 

@@ -16,76 +16,7 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { synthPlugin, SynthPage } from '../src/plugin';
-
-const HELLO_WORLD = `$import:
-    - names: [<h1>]
-      from: ./html.yaml
-$do:
-  $let:
-    <Card>:
-      $B.Component:
-        type: { $B.resolve: "@material-ui/core/Card" }
-    <CardHeader>:
-      $B.Component:
-        type: { $B.resolve: "@material-ui/core/CardHeader" }
-    <Typography>:
-      $B.Component:
-        type: { $B.resolve: "@material-ui/core/Typography" }
-    <Grid>:
-      $B.Component:
-        type: { $B.resolve: "@material-ui/core/Grid" }
-    <Divider>:
-      $B.Component:
-        type: { $B.resolve: "@material-ui/core/Divider" }
-    <HeaderIconLinkRow>:
-      $B.Component:
-        type:
-          $let:
-            exports: { $B.resolve: "@backstage/core-components" }
-          $do:
-            $exports.HeaderIconLinkRow
-    <ScmIntegrationIcon>:
-      $B.Component:
-        type:
-          $let:
-            exports: { $B.resolve: "@backstage/integration-react" }
-          $do:
-            $exports.ScmIntegrationIcon
-    makeStyles: { $B.resolve: "@material-ui/core/styles/makeStyles" }
-  $do:
-    $let:
-      useStyles:
-        $makeStyles:
-          gridItemCard:
-            display: flex
-            flexDirection: column
-            height: calc(100% - 10px)
-            marginBottom: 10px
-          fullHeightCard:
-            display: flex
-            flexDirection: column
-            height: 100%
-          gridItemCardContent:
-            flex: 1
-          fullHeightCardContent:
-            flex: 1
-    $do:
-      $let:
-        classes: { useStyles: true }
-      $do:
-        $<Card>:
-          className: gridItem
-        <>:
-          - $<CardHeader>:
-              title: About
-              subheader:
-                $<HeaderIconLinkRow>:
-                  links:
-                    - label: View Source
-          - $<Divider>: true
-
-
-`;
+import HELLO_WORLD from './helloWorld.yaml?raw';
 
 createDevApp()
   .registerPlugin(synthPlugin)

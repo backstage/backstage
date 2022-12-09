@@ -1,0 +1,5 @@
+$import:
+  - names: [<AboutCard>]
+    from: ./catalog.yaml
+$do:
+  $<AboutCard>: true

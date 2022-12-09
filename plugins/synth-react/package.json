@@ -25,12 +25,15 @@
   "dependencies": {
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/integration-react": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@monaco-editor/react": "^4.4.6",
-    "platformscript": "1.0.0-alpha.7",
+    "lodash.get": "^4.4.2",
+    "platformscript": "1.0.0-alpha.8",
     "react-inspector": "^6.0.1",
     "react-use": "^17.2.4",
     "yaml": "^2.1.3"

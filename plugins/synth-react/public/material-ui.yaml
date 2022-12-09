@@ -1,9 +1,9 @@
-<Card>:
-  $B.Component:
-    type: { $B.resolve: "@material-ui/core/Card" }
-<Typography>:
-  $B.Component:
-    type: { $B.resolve: "@material-ui/core/Typography" }
-<Grid>:
-  $B.Component:
-    type: { $B.resolve: "@material-ui/core/Grid" }
+$let:
+  core: { $B.resolve: "@material-ui/core" }
+$do:
+  $B.log: $core
+  # <Card>: { $B.Component: { type: $core.Card } }
+  # <CardHeader>: { $B.Component: { type: $core.CardHeader } }
+  # <Typography>: { $B.Component: { type: $core.Typography } }
+  # <Grid>: { $B.Component: { type: $core.Typography } }
+  # <Divider>: { $B.Component: { type: $core.Divider } }

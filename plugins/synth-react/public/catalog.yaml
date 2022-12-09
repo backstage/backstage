@@ -1,10 +1,7 @@
 $import:
-  names: [<Grid>]
+  names: [<Card>]
   from: ./material-ui.yaml
-
-<AboutCard>:
-  $():
-    $<Grid>:
-      container: true
-    <>:
-      - nothing
+$do:
+  <AboutCard>:
+    $B.<>:
+      $<Card>: true
