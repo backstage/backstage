@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonArray } from '@backstage/types';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/API.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
@@ -36,6 +37,7 @@ export interface ApiEntityV1alpha1 extends Entity {
     owner: string;
     definition: string;
     system?: string;
+    swaggerPlugins?: JsonArray;
   };
 }
 

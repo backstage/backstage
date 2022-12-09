@@ -78,8 +78,11 @@ paths:
       type: 'openapi',
       title: 'OpenAPI',
       rawLanguage: 'yaml',
-      component: definitionString => (
-        <OpenApiDefinitionWidget definition={definitionString} />
+      component: (definitionString, plugins) => (
+        <OpenApiDefinitionWidget
+          definition={definitionString}
+          plugins={plugins}
+        />
       ),
     });
 

@@ -15,6 +15,7 @@
  */
 
 import { Progress } from '@backstage/core-components';
+import { JsonArray } from '@backstage/types';
 import React, { Suspense } from 'react';
 
 // The swagger-ui component and related CSS has a significant size, only load it
@@ -28,6 +29,7 @@ const LazyOpenApiDefinition = React.lazy(() =>
 /** @public */
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
+  plugins?: JsonArray | undefined;
 };
 
 /** @public */

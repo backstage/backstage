@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonArray } from '@backstage/types';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import SwaggerUI from 'swagger-ui-react';
@@ -133,9 +134,13 @@ const useStyles = makeStyles(theme => ({
 
 export type OpenApiDefinitionProps = {
   definition: string;
+  plugins?: JsonArray;
 };
 
-export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
+export const OpenApiDefinition = ({
+  definition,
+  plugins,
+}: OpenApiDefinitionProps) => {
   const classes = useStyles();
 
   // Due to a bug in the swagger-ui-react component, the component needs
@@ -147,9 +152,22 @@ export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
     return () => clearTimeout(timer);
   }, [definition, setDef]);
 
+  // Due to a bug in the swagger-ui-react component, the component needs
+  // to be created without content first.
+  const [plgins, setPlugins] = useState<{}[] | undefined>([{}]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // {} is truthy, if the plugins value is not passed then
+      // the intital state will remain.
+      if (!!plugins) setPlugins(plugins as object[]);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [plugins, setPlugins]);
+
   return (
     <div className={classes.root}>
-      <SwaggerUI spec={def} url="" deepLinking />
+      <SwaggerUI spec={def} url="" plugins={plgins} deepLinking />
     </div>
   );
 };

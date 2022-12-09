@@ -51,6 +51,7 @@ interface ApiEntityV1alpha1 extends Entity {
     owner: string;
     definition: string;
     system?: string;
+    swaggerPlugings?: JsonArray;
   };
 }
 export { ApiEntityV1alpha1 as ApiEntity };
