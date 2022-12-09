@@ -37,7 +37,7 @@ export async function deleteWithEagerPruningOfChildren(options: {
     tx.raw(
       tx.client.config.client.includes('mysql')
         ? 'CAST(NULL as UNSIGNED INT)'
-        : 'CAST(NULL as UNSIGNED INT)',
+        : 'CAST(NULL as INT)',
       [],
     );
 
