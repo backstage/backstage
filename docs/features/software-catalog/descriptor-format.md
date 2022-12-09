@@ -703,7 +703,7 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: {{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 ```
 
