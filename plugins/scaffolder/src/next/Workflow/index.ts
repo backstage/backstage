@@ -13,8 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  type TemplateContentProps,
-  TemplateWizardContent,
-  TemplateContent,
-} from './TemplateWizardContent';
+export { type WorkflowProps, Workflow, EmbeddableWorkflow } from './Workflow';

@@ -17,15 +17,15 @@
 import React, { useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import {
-  TemplateContent,
+  EmbeddableWorkflow,
   useGetCustomFields,
+  WorkflowProps,
 } from '@backstage/plugin-scaffolder';
-import type { FormProps } from '@backstage/plugin-scaffolder-react';
-import type { TemplateContentProps } from '@backstage/plugin-scaffolder';
 import { Box, Button } from '@material-ui/core';
 import type { JsonValue } from '@backstage/types';
+import type { FormProps } from '@backstage/plugin-scaffolder-react';
 
-type WorkflowProps = Omit<TemplateContentProps, 'customFieldExtensions'> & {
+type EmbeddedWorkflowProps = Omit<WorkflowProps, 'customFieldExtensions'> & {
   customExtensionsElement?: React.ReactNode;
   initialFormState?: Record<string, JsonValue>;
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
@@ -39,7 +39,7 @@ type Display = 'front' | 'workflow' | 'finish';
 
 type DisplayComponents = Record<Display, JSX.Element>;
 
-type OnCompleteArgs = Parameters<TemplateContentProps['onComplete']>[0];
+type OnCompleteArgs = Parameters<WorkflowProps['onComplete']>[0];
 
 export function EmbeddedScaffolderWorkflow({
   namespace,
@@ -52,7 +52,7 @@ export function EmbeddedScaffolderWorkflow({
   title,
   description,
   ReviewStateWrapper,
-}: WorkflowProps): JSX.Element {
+}: EmbeddedWorkflowProps): JSX.Element {
   const [display, setDisplay] = useState<Display>('front');
   const fieldExtensions = useGetCustomFields(customExtensionsElement);
 
@@ -77,7 +77,7 @@ export function EmbeddedScaffolderWorkflow({
       </Box>
     ),
     workflow: (
-      <TemplateContent
+      <EmbeddableWorkflow
         title={title}
         description={description}
         namespace={namespace}

@@ -30,9 +30,9 @@ import {
 import useAsync from 'react-use/lib/useAsync';
 import { JsonValue } from '@backstage/types';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
-import { nextRouteRef } from '../routes';
-import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
-import { TemplateWizardContent } from '../TemplateWizardContent/TemplateWizardContent';
+import { nextRouteRef, scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
+import { Header, Page } from '@backstage/core-components';
+import { Workflow } from '../Workflow/Workflow';
 
 type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
@@ -79,14 +79,21 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
 
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
-      <TemplateWizardContent
-        namespace={namespace}
-        templateName={templateName}
-        onComplete={onComplete}
-        onError={onError}
-        customFieldExtensions={props.customFieldExtensions}
-        FormProps={props.FormProps}
-      />
+      <Page themeId="website">
+        <Header
+          pageTitleOverride="Create a new component"
+          title="Create a new component"
+          subtitle="Create new software components using standard templates in your organization"
+        />
+        <Workflow
+          namespace={namespace}
+          templateName={templateName}
+          onComplete={onComplete}
+          onError={onError}
+          customFieldExtensions={props.customFieldExtensions}
+          FormProps={props.FormProps}
+        />
+      </Page>
     </AnalyticsContext>
   );
 };
