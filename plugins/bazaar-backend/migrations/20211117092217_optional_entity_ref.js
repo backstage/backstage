@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.up = async function up(knex) {
   if (knex.client.config.client.includes('sqlite3')) {
     await knex.schema.dropTable('metadata');
@@ -92,6 +97,9 @@ exports.up = async function up(knex) {
   }
 };
 
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.down = async function down(knex) {
   if (knex.client.config.client.includes('sqlite3')) {
     await knex.schema.dropTable('metadata');

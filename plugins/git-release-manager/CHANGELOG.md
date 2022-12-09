@@ -1,5 +1,35 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.25-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.3
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+
+## 0.3.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+
+## 0.3.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+
 ## 0.3.25-next.0
 
 ### Patch Changes

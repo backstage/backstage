@@ -68,7 +68,16 @@ export interface RouterOptions {
   scheduler?: PluginTaskScheduler;
 
   actions?: TemplateAction<any>[];
+  /**
+   * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
+   * @defaultValue 1
+   */
   taskWorkers?: number;
+  /**
+   * Sets the number of concurrent tasks that can be run at any given time on the TaskWorker
+   * @defaultValue 10
+   */
+  concurrentTasksLimit?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
@@ -161,6 +170,7 @@ export async function createRouter(
     catalogClient,
     actions,
     taskWorkers,
+    concurrentTasksLimit,
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
@@ -203,7 +213,7 @@ export async function createRouter(
   const actionRegistry = new TemplateActionRegistry();
 
   const workers = [];
-  for (let i = 0; i < (taskWorkers || 3); i++) {
+  for (let i = 0; i < (taskWorkers || 1); i++) {
     const worker = await TaskWorker.create({
       taskBroker,
       actionRegistry,
@@ -212,6 +222,7 @@ export async function createRouter(
       workingDirectory,
       additionalTemplateFilters,
       additionalTemplateGlobals,
+      concurrentTasksLimit,
     });
     workers.push(worker);
   }

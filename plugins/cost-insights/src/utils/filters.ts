@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Duration, Group, PageFilters } from '../types';
+import { Duration, PageFilters } from '../types';
+import { Group } from '@backstage/plugin-cost-insights-common';
 
 export function getDefaultPageFilters(groups: Group[]): PageFilters {
   return {

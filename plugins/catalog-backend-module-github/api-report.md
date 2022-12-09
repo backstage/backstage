@@ -128,6 +128,7 @@ export type GithubLocationAnalyzerOptions = {
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 };
 
 // @public

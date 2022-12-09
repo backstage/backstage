@@ -29,7 +29,7 @@ import {
   attachComponentData,
   createRouteRef,
 } from '@backstage/core-plugin-api';
-import { RenderResult } from '@testing-library/react';
+import { MatcherFunction, RenderResult } from '@testing-library/react';
 import { renderWithEffects } from './testingLibrary';
 import { defaultApis } from './defaultApis';
 import { mockApis } from './mockApis';
@@ -242,3 +242,24 @@ export async function renderInTestApp(
     wrapper: createTestAppWrapper(options),
   });
 }
+
+/**
+ * Returns a `@testing-library/react` valid MatcherFunction for supplied text
+ *
+ * @param string - text Text to match by element's textContent
+ *
+ * @public
+ */
+export const textContentMatcher =
+  (text: string): MatcherFunction =>
+  (_, node) => {
+    if (!node) {
+      return false;
+    }
+
+    const hasText = (textNode: Element) => textNode?.textContent === text;
+    const childrenDontHaveText = (containerNode: Element) =>
+      Array.from(containerNode?.children).every(child => !hasText(child));
+
+    return hasText(node) && childrenDontHaveText(node);
+  };

@@ -15,14 +15,17 @@ stackoverflow:
   baseUrl: https://api.stackexchange.com/2.2 # alternative: your internal stack overflow instance
 ```
 
-### Stack Overflow for Teams (private stack overflow instance)
+### Stack Overflow for Teams
 
-If you have a private stack overflow instance you will need to supply an API key as well. You can read more about how to set this up by going to [Stack Overflows Help Page](https://stackoverflow.help/en/articles/4385859-stack-overflow-for-teams-api)
+If you have a private Stack Overflow instance and/or a private Stack Overflow Team you will need to supply an API key. You can read more about how to set this up by going to [Stack Overflow's Help Page](https://stackoverflow.help/en/articles/4385859-stack-overflow-for-teams-api).
+
+A private Stack Overflow Team requires both an API key and an API Access Token. Step 3 ("Generate an Access Token via OAuth") from the previously mentioned Help Page explains the process for generating an API Access Token with no expiration.
 
 ```yaml
 stackoverflow:
   baseUrl: https://api.stackexchange.com/2.2 # alternative: your internal stack overflow instance
   apiKey: $STACK_OVERFLOW_API_KEY
+  apiAccessToken: $STACK_OVERFLOW_API_ACCESS_TOKEN
 ```
 
 ## Areas of Responsibility

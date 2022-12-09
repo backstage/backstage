@@ -178,7 +178,24 @@ export function buildMiddleware(
   return createProxyMiddleware(filter, fullConfig);
 }
 
-/** @public */
+/**
+ * Creates a new {@link https://expressjs.com/en/api.html#router | "express router"} that proxy each target configured under the `proxy` key of the config
+ * @example
+ * ```ts
+ * let router = await createRouter({logger, config, discovery});
+ * ```
+ * @config
+ * ```yaml
+ * proxy:
+ *  simple-example: http://simple.example.com:8080 # Opt 1 Simple URL String
+ *  '/larger-example/v1': # Opt 2 `http-proxy-middleware` compatible object
+ *    target: http://larger.example.com:8080/svc.v1
+ *    headers:
+ *      Authorization: Bearer ${EXAMPLE_AUTH_TOKEN}
+ *```
+ * @see https://backstage.io/docs/plugins/proxying
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

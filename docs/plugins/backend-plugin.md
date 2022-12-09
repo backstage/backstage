@@ -51,7 +51,7 @@ terminal window, now run
 curl localhost:7007/carmen/health
 ```
 
-This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to kill it
+This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to stop it
 again.
 
 ## Developing your Backend Plugin

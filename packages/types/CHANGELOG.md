@@ -1,5 +1,11 @@
 # @backstage/types
 
+## 1.0.2-next.1
+
+### Patch Changes
+
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+
 ## 1.0.2-next.0
 
 ### Patch Changes

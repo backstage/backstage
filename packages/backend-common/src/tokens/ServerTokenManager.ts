@@ -27,7 +27,7 @@ const TOKEN_EXPIRY_AFTER = Duration.fromObject({ hours: 1 });
 const TOKEN_REISSUE_AFTER = Duration.fromObject({ minutes: 10 });
 
 /**
- * A token manager that issues static dummy tokens and never fails
+ * A token manager that issues static fake tokens and never fails
  * authentication. This can be useful for testing.
  */
 class NoopTokenManager implements TokenManager {
@@ -66,7 +66,7 @@ export class ServerTokenManager implements TokenManager {
   private currentTokenPromise: Promise<{ token: string }> | undefined;
 
   /**
-   * Creates a token manager that issues static dummy tokens and never fails
+   * Creates a token manager that issues static fake tokens and never fails
    * authentication. This can be useful for testing.
    */
   static noop(): TokenManager {

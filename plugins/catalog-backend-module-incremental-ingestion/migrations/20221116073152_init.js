@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// @ts-check
+
 /**
  * @param { import("knex").Knex } knex
  */
@@ -25,7 +27,7 @@ exports.up = async function up(knex) {
     table.comment('Tracks ingestion streams for very large data sets');
 
     table
-      .uuid('id', { primary: true })
+      .uuid('id')
       .notNullable()
       .comment('Auto-generated ID of the ingestion');
 
@@ -85,7 +87,7 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.alterTable('ingestions', t => {
-    t.primary('id');
+    t.primary(['id']);
     t.index('provider_name', 'ingestion_provider_name_idx');
     t.unique(['provider_name', 'completion_ticket'], {
       indexName: 'ingestion_composite_index',
@@ -100,7 +102,7 @@ exports.up = async function up(knex) {
     table.comment('tracks each step of an iterative ingestion');
 
     table
-      .uuid('id', { primary: true })
+      .uuid('id')
       .notNullable()
       .comment('Auto-generated ID of the ingestion mark');
 
@@ -128,7 +130,7 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.alterTable('ingestion_marks', t => {
-    t.primary('id');
+    t.primary(['id']);
     t.index('ingestion_id', 'ingestion_mark_ingestion_id_idx');
   });
 
@@ -141,7 +143,7 @@ exports.up = async function up(knex) {
     );
 
     table
-      .uuid('id', { primary: true })
+      .uuid('id')
       .notNullable()
       .comment('Auto-generated ID of the marked entity');
 
@@ -162,7 +164,7 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.alterTable('ingestion_mark_entities', t => {
-    t.primary('id');
+    t.primary(['id']);
     t.index('ingestion_mark_id', 'ingestion_mark_entity_ingestion_mark_id_idx');
   });
 };

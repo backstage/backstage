@@ -16,22 +16,29 @@
 
 import { createApiRef } from '@backstage/core-plugin-api';
 
-/** @public */
+/**
+ * Deprecated types moved to `@backstage/plugin-explore-common`
+ */
+import * as common from '@backstage/plugin-explore-common';
+
+/**
+ * @deprecated Use ExploreTool from `@backstage/plugin-explore-common`
+ * @public
+ */
+export type ExploreTool = common.ExploreTool;
+
+/**
+ * @deprecated Use exploreApiRef from `@backstage/plugin-explore` & the `@backstage/plugin-explore-backend`
+ * @public
+ */
 export const exploreToolsConfigRef = createApiRef<ExploreToolsConfig>({
   id: 'plugin.explore.toolsconfig',
 });
 
-/** @public */
-export type ExploreTool = {
-  title: string;
-  description?: string;
-  url: string;
-  image: string;
-  tags?: string[];
-  lifecycle?: string;
-};
-
-/** @public */
+/**
+ * @deprecated Use ExploreApi from `@backstage/plugin-explore` & the `@backstage/plugin-explore-backend`
+ * @public
+ */
 export interface ExploreToolsConfig {
   getTools: () => Promise<ExploreTool[]>;
 }

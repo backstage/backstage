@@ -15,19 +15,17 @@
  */
 
 import {
-  configServiceRef,
+  coreServices,
   createServiceFactory,
-  pluginMetadataServiceRef,
-  schedulerServiceRef,
 } from '@backstage/backend-plugin-api';
 import { TaskScheduler } from '@backstage/backend-tasks';
 
 /** @public */
 export const schedulerFactory = createServiceFactory({
-  service: schedulerServiceRef,
+  service: coreServices.scheduler,
   deps: {
-    config: configServiceRef,
-    plugin: pluginMetadataServiceRef,
+    config: coreServices.config,
+    plugin: coreServices.pluginMetadata,
   },
   async factory({ config }) {
     const taskScheduler = TaskScheduler.fromConfig(config);

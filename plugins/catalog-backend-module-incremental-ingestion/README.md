@@ -13,11 +13,10 @@ Unfortunately, these two kinds of mutations are insufficient for very large data
 3. Addressing the above two use case with `full` mutation is not an option on very large datasets because a `full` mutation requires that all entities are in memory to create a diff. If your data source has 100k+ records, this can easily cause your processes to run out of memory.
 4. In cases when you can use `full` mutation, committing many entities into the processing pipeline fills up the processing queue and delays the processing of entities from other entity providers.
 
-We created the Incremental Entity Provider to address all of the above issues. The Incremental Entity Provider addresses these issues with a combination of `delta` mutations and a mark-and-sweep mechanism. Instead of doing a single `full` mutation, it performs a series of bursts. At the end of each burst, the Incremental Entity Provider performs the following three operations,
+We created the Incremental Entity Provider to address all of the above issues. The Incremental Entity Provider addresses these issues with a combination of `delta` mutations and a mark-and-sweep mechanism. Instead of doing a single `full` mutation, it performs a series of bursts. At the end of each burst, the Incremental Entity Provider performs the following operations,
 
 1. Marks each received entity in the database.
-2. Annotates each entity with `backstage/incremental-entity-provider: <entity-provider-id>` annotation.
-3. Commits all of the entities with a `delta` mutation.
+2. Commits all of the entities with a `delta` mutation.
 
 Incremental Entity Providers will wait a configurable interval before proceeding to the next burst.
 

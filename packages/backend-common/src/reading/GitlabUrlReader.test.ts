@@ -44,6 +44,7 @@ const gitlabProcessor = new GitlabUrlReader(
         host: 'gitlab.com',
         apiBaseUrl: 'https://gitlab.com/api/v4',
         baseUrl: 'https://gitlab.com',
+        token: 'gl-dummy-token',
       }),
     ),
   ),
@@ -57,6 +58,7 @@ const hostedGitlabProcessor = new GitlabUrlReader(
         host: 'gitlab.mycompany.com',
         apiBaseUrl: 'https://gitlab.mycompany.com/api/v4',
         baseUrl: 'https://gitlab.mycompany.com',
+        token: 'gl-dummy-token',
       }),
     ),
   ),
@@ -654,6 +656,23 @@ describe('GitlabUrlReader', () => {
           ),
         ),
       ).rejects.toThrow(/^Unable to translate GitLab artifact URL:/);
+    });
+  });
+
+  describe('resolveProjectToId', () => {
+    it('should resolve the project path to a valid project id', async () => {
+      worker.use(
+        rest.get('*/api/v4/projects/some%2Fproject', (req, res, ctx) => {
+          // the private-token header must be included on API calls
+          expect(req.headers.get('private-token')).toBe('gl-dummy-token');
+          return res(ctx.status(200), ctx.json({ id: 12345 }));
+        }),
+      );
+      await expect(
+        (gitlabProcessor as any).resolveProjectToId(
+          new URL('https://gitlab.com/some/project'),
+        ),
+      ).resolves.toEqual(12345);
     });
   });
 });

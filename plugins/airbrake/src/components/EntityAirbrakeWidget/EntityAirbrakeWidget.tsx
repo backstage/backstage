@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
-import React from 'react';
-import { Grid, Typography } from '@material-ui/core';
 import {
   EmptyState,
   ErrorPanel,
@@ -23,12 +22,13 @@ import {
   MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
-import hash from 'object-hash';
-import { makeStyles } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
 import { useApi } from '@backstage/core-plugin-api';
-import { airbrakeApiRef } from '../../api';
+import { BackstageTheme } from '@backstage/theme';
+import { Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
+import { airbrakeApiRef } from '../../api';
 import { AIRBRAKE_PROJECT_ID_ANNOTATION, useProjectId } from '../useProjectId';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
@@ -64,8 +64,8 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
       <Grid container spacing={3} direction="column">
         {value.groups?.map(group => (
           <Grid item key={group.id}>
-            {group.errors?.map(groupError => (
-              <InfoCard title={groupError.type} key={hash(groupError)}>
+            {group.errors?.map((groupError, i) => (
+              <InfoCard title={groupError.type} key={i}>
                 <Typography variant="body1" className={classes.multilineText}>
                   {groupError.message}
                 </Typography>

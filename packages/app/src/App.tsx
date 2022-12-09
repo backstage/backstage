@@ -280,7 +280,7 @@ const routes = (
 
 const App = () => (
   <AppProvider>
-    <AlertDisplay />
+    <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
     <AppRouter>
       <Root>{routes}</Root>

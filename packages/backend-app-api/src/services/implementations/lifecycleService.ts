@@ -16,10 +16,8 @@
 import {
   BackendLifecycle,
   createServiceFactory,
-  lifecycleServiceRef,
+  coreServices,
   loggerToWinstonLogger,
-  pluginMetadataServiceRef,
-  rootLoggerServiceRef,
   BackendLifecycleShutdownHook,
 } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
@@ -80,10 +78,10 @@ class PluginScopedLifecycleImpl implements BackendLifecycle {
  * Allows plugins to register shutdown hooks that are run when the process is about to exit.
  * @public */
 export const lifecycleFactory = createServiceFactory({
-  service: lifecycleServiceRef,
+  service: coreServices.lifecycle,
   deps: {
-    logger: rootLoggerServiceRef,
-    plugin: pluginMetadataServiceRef,
+    logger: coreServices.rootLogger,
+    plugin: coreServices.pluginMetadata,
   },
   async factory({ logger }) {
     const rootLifecycle = new BackendLifecycleImpl(

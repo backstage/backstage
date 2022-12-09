@@ -15,12 +15,9 @@
  */
 
 import {
-  configServiceRef,
+  coreServices,
   createBackendModule,
-  loggerServiceRef,
   loggerToWinstonLogger,
-  schedulerServiceRef,
-  tokenManagerServiceRef,
 } from '@backstage/backend-plugin-api';
 import {
   catalogProcessingExtensionPoint,
@@ -40,13 +37,13 @@ export const bitbucketCloudEntityProviderCatalogModule = createBackendModule({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         catalogApi: catalogServiceRef,
-        config: configServiceRef,
+        config: coreServices.config,
         // TODO(pjungermann): How to make this optional for those which only want the provider without event support?
         //  Do we even want to support this?
         events: eventsExtensionPoint,
-        logger: loggerServiceRef,
-        scheduler: schedulerServiceRef,
-        tokenManager: tokenManagerServiceRef,
+        logger: coreServices.logger,
+        scheduler: coreServices.scheduler,
+        tokenManager: coreServices.tokenManager,
       },
       async init({
         catalog,

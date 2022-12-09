@@ -13,6 +13,7 @@ Options:
 
 Commands:
   api-reports [options] [path...]
+  type-deps
   help [command]
 ```
 
@@ -25,5 +26,14 @@ Options:
   --ci
   --tsc
   --docs
+  -h, --help
+```
+
+### `backstage-repo-tools type-deps`
+
+```
+Usage: backstage-repo-tools type-deps [options]
+
+Options:
   -h, --help
 ```
