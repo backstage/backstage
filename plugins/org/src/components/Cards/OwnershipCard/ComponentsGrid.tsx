@@ -75,6 +75,7 @@ const EntityCountTile = ({
         display="flex"
         flexDirection="column"
         alignItems="center"
+        style={{ height: '100%' }}
       >
         <Typography className={classes.bold} variant="h6">
           {counter}
