@@ -9,9 +9,6 @@
     "ghcr.io/devcontainers-contrib/features/mkdocs:1": {}
   },
 
-  // Features to add to the dev container. More info: https://containers.dev/features.
-  // "features": {},
-
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [3000, 7007],
 
