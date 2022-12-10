@@ -5109,6 +5109,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@types/express": ^4.17.6
     "@types/luxon": ^3.0.0
