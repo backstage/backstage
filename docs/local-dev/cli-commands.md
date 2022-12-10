@@ -237,6 +237,18 @@ Options:
   -h, --help               display help for command
 ```
 
+These are the available `--select` options supported by the `create` command:
+
+| Create Option     | Description                                             | Example                        | Related                                                              |
+| ----------------- | ------------------------------------------------------- | ------------------------------ | -------------------------------------------------------------------- |
+| plugin            | Used to generate a default frontend plugin              | `packages/app`                 | [Create a Plugin](https://backstage.io/docs/plugins/create-a-plugin) |
+| backend-plugin    | Used to generate a backend-specific plugin              | `packages/backend`             | [Backend Plugin](https://backstage.io/docs/plugins/backend-plugin)   |
+| plugin-common     | Generates a common library to be shared amongst plugins | `@backstage/plugin-adr-common` |                                                                      |
+| web-library       | Placeholder                                             | `@backstage/version-bridge`    |                                                                      |
+| scaffolder-module | Placeholder                                             | Placeholder                    |                                                                      |
+
+You may reference [Package Roles](http://localhost:3000/docs/local-dev/cli-build-system#package-roles) to understand how these align with role definitions.
+
 ## config:docs
 
 This commands opens up the reference documentation of your apps local
