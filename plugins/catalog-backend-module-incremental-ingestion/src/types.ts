@@ -46,7 +46,7 @@ import { IncrementalIngestionDatabaseManager } from './database/IncrementalInges
  *
  * @public
  */
-export interface IncrementalEntityProvider<TCursor, TContext> {
+export interface IncrementalEntityProvider<TCursor, TContext, TInput = null> {
   /**
    * This name must be unique between all of the entity providers
    * operating in the catalog.
@@ -75,6 +75,14 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
    * @param burst - a function which performs a series of iterations
    */
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
+
+  /**
+   * If present, this method maps incoming payloads to apply updates
+   * outside of the incremental ingestion schedule.
+   */
+  deltaMapper?: (payload: TInput) => {
+    delta: { added: DeferredEntity[]; removed: DeferredEntity[] } | undefined;
+  };
 }
 
 /**
@@ -154,11 +162,11 @@ export interface IterationEngine {
   taskFn: TaskFunction;
 }
 
-export interface IterationEngineOptions {
+export interface IterationEngineOptions<TInput> {
   logger: Logger;
   connection: EntityProviderConnection;
   manager: IncrementalIngestionDatabaseManager;
-  provider: IncrementalEntityProvider<unknown, unknown>;
+  provider: IncrementalEntityProvider<unknown, unknown, TInput>;
   restLength: DurationObjectUnits;
   ready: Promise<void>;
   backoff?: IncrementalEntityProviderOptions['backoff'];

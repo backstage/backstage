@@ -38,7 +38,7 @@ export const incrementalIngestionEntityProviderCatalogModule =
       env,
       options: {
         providers: Array<{
-          provider: IncrementalEntityProvider<unknown, unknown>;
+          provider: IncrementalEntityProvider<unknown, unknown, unknown>;
           options: IncrementalEntityProviderOptions;
         }>;
       },

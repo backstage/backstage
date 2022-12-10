@@ -21,14 +21,18 @@ import { performance } from 'perf_hooks';
 import { Duration, DurationObjectUnits } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
+import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
-export class IncrementalIngestionEngine implements IterationEngine {
+export class IncrementalIngestionEngine<TInput>
+  implements IterationEngine, EventSubscriber
+{
   private readonly restLength: Duration;
   private readonly backoff: DurationObjectUnits[];
+  private readonly providerEventTopic: string;
 
   private manager: IncrementalIngestionDatabaseManager;
 
-  constructor(private options: IterationEngineOptions) {
+  constructor(private options: IterationEngineOptions<TInput>) {
     this.manager = options.manager;
     this.restLength = Duration.fromObject(options.restLength);
     this.backoff = options.backoff ?? [
@@ -37,6 +41,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
       { minutes: 30 },
       { hours: 3 },
     ];
+    this.providerEventTopic = `${options.provider.getProviderName()}-delta`;
   }
 
   async taskFn(signal: AbortSignal) {
@@ -325,5 +330,43 @@ export class IncrementalIngestionEngine implements IterationEngine {
       added,
       removed,
     });
+  }
+
+  async onEvent(params: EventParams): Promise<void> {
+    const { topic, eventPayload } = params;
+    if (topic !== this.providerEventTopic) {
+      return;
+    }
+
+    const { logger, provider, connection } = this.options;
+    logger.info(
+      `incremental-engine: Received ${this.providerEventTopic} event`,
+    );
+
+    const payload = eventPayload as TInput;
+
+    if (!provider.deltaMapper) {
+      return;
+    }
+
+    const update = provider.deltaMapper(payload);
+
+    if (update.delta) {
+      await connection.applyMutation({
+        type: 'delta',
+        ...update.delta,
+      });
+      logger.info(
+        `incremental-engine: Processed ${this.providerEventTopic} event`,
+      );
+    } else {
+      logger.info(
+        `incremental-engine: Rejected ${this.providerEventTopic} event - empty or invalid`,
+      );
+    }
+  }
+
+  supportsEventTopics(): string[] {
+    return [this.providerEventTopic];
   }
 }

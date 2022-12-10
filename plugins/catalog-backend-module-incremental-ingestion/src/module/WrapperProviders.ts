@@ -28,7 +28,7 @@ import { Duration } from 'luxon';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionEngine } from '../engine/IncrementalIngestionEngine';
-import { createIncrementalProviderRouter } from '../router/routes';
+import { IncrementalProviderRouter } from '../router/routes';
 import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
@@ -72,14 +72,14 @@ export class WrapperProviders {
   }
 
   async adminRouter(): Promise<express.Router> {
-    return createIncrementalProviderRouter(
+    return await new IncrementalProviderRouter(
       new IncrementalIngestionDatabaseManager({ client: this.options.client }),
       loggerToWinstonLogger(this.options.logger),
-    );
+    ).createRouter();
   }
 
-  private async startProvider(
-    provider: IncrementalEntityProvider<unknown, unknown>,
+  private async startProvider<TCursor, TContext, TInput>(
+    provider: IncrementalEntityProvider<TCursor, TContext, TInput>,
     providerOptions: IncrementalEntityProviderOptions,
     connection: EntityProviderConnection,
   ) {

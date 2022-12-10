@@ -24,7 +24,7 @@ import { Knex } from 'knex';
 import { IncrementalIngestionEngine } from '../engine/IncrementalIngestionEngine';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
-import { createIncrementalProviderRouter } from '../router/routes';
+import { IncrementalProviderRouter } from '../router/routes';
 import { Deferred } from '../util';
 
 /** @public */
@@ -60,16 +60,16 @@ export class IncrementalCatalogBuilder {
       router: 'IncrementalProviderAdmin',
     });
 
-    const incrementalAdminRouter = await createIncrementalProviderRouter(
+    const incrementalAdminRouter = await new IncrementalProviderRouter(
       this.manager,
       routerLogger,
-    );
+    ).createRouter();
 
     return { incrementalAdminRouter };
   }
 
-  addIncrementalEntityProvider<TCursor, TContext>(
-    provider: IncrementalEntityProvider<TCursor, TContext>,
+  addIncrementalEntityProvider<TCursor, TContext, TInput>(
+    provider: IncrementalEntityProvider<TCursor, TContext, TInput>,
     options: IncrementalEntityProviderOptions,
   ) {
     const { burstInterval, burstLength, restLength } = options;
