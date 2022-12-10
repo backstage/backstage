@@ -111,7 +111,7 @@ describe('Lockfile', () => {
     expect(lockfile.toString()).toBe(mockADedup);
 
     await expect(fs.readFile('/yarn.lock', 'utf8')).resolves.toBe(mockA);
-    await expect(lockfile.save()).resolves.toBeUndefined();
+    await expect(lockfile.save('/yarn.lock')).resolves.toBeUndefined();
     await expect(fs.readFile('/yarn.lock', 'utf8')).resolves.toBe(mockADedup);
   });
 
@@ -268,7 +268,7 @@ describe('New Lockfile', () => {
     expect(lockfile.toString()).toBe(mockANewDedup);
 
     await expect(fs.readFile('/yarn.lock', 'utf8')).resolves.toBe(mockANew);
-    await expect(lockfile.save()).resolves.toBeUndefined();
+    await expect(lockfile.save('/yarn.lock')).resolves.toBeUndefined();
     await expect(fs.readFile('/yarn.lock', 'utf8')).resolves.toBe(
       mockANewDedup,
     );

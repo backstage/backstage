@@ -65,20 +65,6 @@ type AnalyzeResult = {
   newRanges: AnalyzeResultNewRange[];
 };
 
-function parseLockfile(lockfileContents: string) {
-  try {
-    return {
-      object: parseSyml(lockfileContents),
-      type: 'success',
-    };
-  } catch (err) {
-    return {
-      object: null,
-      type: err,
-    };
-  }
-}
-
 // the new yarn header is handled out of band of the parsing
 // https://github.com/yarnpkg/berry/blob/0c5974f193a9397630e9aee2b3876cca62611149/packages/yarnpkg-core/sources/Project.ts#L1741-L1746
 const NEW_HEADER = `${[
@@ -86,11 +72,6 @@ const NEW_HEADER = `${[
   `# Manual changes might be lost - proceed with caution!\n`,
 ].join(``)}\n`;
 
-function stringifyLockfile(data: LockfileData, legacy: boolean) {
-  return legacy
-    ? legacyStringifyLockfile(data)
-    : NEW_HEADER + stringifySyml(data);
-}
 // taken from yarn parser package
 // https://github.com/yarnpkg/berry/blob/0c5974f193a9397630e9aee2b3876cca62611149/packages/yarnpkg-parsers/sources/syml.ts#L136
 const LEGACY_REGEX = /^(#.*(\r?\n))*?#\s+yarn\s+lockfile\s+v1\r?\n/i;
@@ -111,13 +92,19 @@ const SPECIAL_OBJECT_KEYS = [
 export class Lockfile {
   static async load(path: string) {
     const lockfileContents = await fs.readFile(path, 'utf8');
-    const legacy = LEGACY_REGEX.test(lockfileContents);
-    const lockfile = parseLockfile(lockfileContents);
-    if (lockfile.type !== 'success') {
-      throw new Error(`Failed yarn.lock parse with ${lockfile.type}`);
+    return Lockfile.parse(lockfileContents);
+  }
+
+  static parse(content: string) {
+    const legacy = LEGACY_REGEX.test(content);
+
+    let data: LockfileData;
+    try {
+      data = parseSyml(content);
+    } catch (err) {
+      throw new Error(`Failed yarn.lock parse, ${err}`);
     }
 
-    const data = lockfile.object as LockfileData;
     const packages = new Map<string, LockfileQueryEntry[]>();
 
     for (const [key, value] of Object.entries(data)) {
@@ -144,11 +131,10 @@ export class Lockfile {
       }
     }
 
-    return new Lockfile(path, packages, data, legacy);
+    return new Lockfile(packages, data, legacy);
   }
 
   private constructor(
-    private readonly path: string,
     private readonly packages: Map<string, LockfileQueryEntry[]>,
     private readonly data: LockfileData,
     private readonly legacy: boolean = false,
@@ -340,11 +326,13 @@ export class Lockfile {
     }
   }
 
-  async save() {
-    await fs.writeFile(this.path, this.toString(), 'utf8');
+  async save(path: string) {
+    await fs.writeFile(path, this.toString(), 'utf8');
   }
 
   toString() {
-    return stringifyLockfile(this.data, this.legacy);
+    return this.legacy
+      ? legacyStringifyLockfile(this.data)
+      : NEW_HEADER + stringifySyml(this.data);
   }
 }
