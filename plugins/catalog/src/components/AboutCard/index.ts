@@ -21,14 +21,5 @@ export type { AboutContentProps } from './AboutContent';
 export { AboutField } from './AboutField';
 export type { AboutFieldProps } from './AboutField';
 
-import { EditMetadataButton } from './EditMetadataButton';
-import { RefreshActionButton } from './RefreshActionButton';
-import { ViewInSourceButton } from './ViewInSourceButton';
-import { ViewInTechDocsButton } from './ViewInTechDocsButton';
-
-export const aboutCardButtons = {
-  EditMetadataButton,
-  RefreshActionButton,
-  ViewInSourceButton,
-  ViewInTechDocsButton,
-};
+export * from './buttons';
+export * from './fields';

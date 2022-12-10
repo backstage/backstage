@@ -18,20 +18,32 @@ import {
   HeaderIconLinkRow,
   InfoCardVariants,
 } from '@backstage/core-components';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
   CardContent,
   CardHeader,
   Divider,
+  Grid,
   makeStyles,
 } from '@material-ui/core';
 import React from 'react';
-import { AboutContent } from './AboutContent';
-import { EditMetadataButton } from './EditMetadataButton';
-import { RefreshActionButton } from './RefreshActionButton';
-import { ViewInSourceButton } from './ViewInSourceButton';
-import { ViewInTechDocsButton } from './ViewInTechDocsButton';
+import {
+  RefreshActionButton,
+  EditMetadataButton,
+  ViewInSourceButton,
+  ViewInTechDocsButton,
+} from './buttons';
+import {
+  DescriptionAboutField,
+  OwnerAboutField,
+  DomainAboutField,
+  SystemAboutField,
+  ParentComponentAboutField,
+  TypeAboutField,
+  LifecycleAboutField,
+  TagsAboutField,
+  LocationTargetsAboutField,
+} from './fields';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -53,20 +65,6 @@ const useStyles = makeStyles({
   },
 });
 
-const defaultHeaderActions = (
-  <>
-    <RefreshActionButton />
-    <EditMetadataButton />
-  </>
-);
-
-const defaultMainActions = (
-  <>
-    <ViewInSourceButton />
-    <ViewInTechDocsButton />
-  </>
-);
-
 /**
  * Props for {@link EntityAboutCard}.
  *
@@ -74,20 +72,17 @@ const defaultMainActions = (
  */
 export interface AboutCardProps {
   variant?: InfoCardVariants;
-  secondaryActions: React.ReactNode;
-  mainActions: React.ReactNode;
+  primaryButtons?: React.ReactNode;
+  secondaryButtons?: React.ReactNode;
+  fields?: React.ReactNode;
 }
 
 /**
  * Exported publicly via the EntityAboutCard
  */
 export function AboutCard(props: AboutCardProps) {
-  const secondaryActions = props.secondaryActions ?? defaultHeaderActions;
-  const mainActions = props.mainActions ?? defaultMainActions;
-
   const { variant } = props;
   const classes = useStyles();
-  const { entity } = useEntity();
 
   let cardClass = '';
   if (variant === 'gridItem') {
@@ -103,16 +98,44 @@ export function AboutCard(props: AboutCardProps) {
     cardContentClass = classes.fullHeightCardContent;
   }
 
+  const primaryButtons = props.primaryButtons ?? (
+    <>
+      <ViewInSourceButton />
+      <ViewInTechDocsButton />
+    </>
+  );
+
+  const secondaryButtons = props.secondaryButtons ?? (
+    <>
+      <RefreshActionButton />
+      <EditMetadataButton />
+    </>
+  );
+
+  const fields = props.fields ?? (
+    <>
+      <DescriptionAboutField />
+      <OwnerAboutField />
+      <DomainAboutField />
+      <SystemAboutField />
+      <ParentComponentAboutField />
+      <TypeAboutField />
+      <LifecycleAboutField />
+      <TagsAboutField />
+      <LocationTargetsAboutField />
+    </>
+  );
+
   return (
     <Card className={cardClass}>
       <CardHeader
         title="About"
-        action={secondaryActions}
-        subheader={<HeaderIconLinkRow>{mainActions}</HeaderIconLinkRow>}
+        action={secondaryButtons}
+        subheader={<HeaderIconLinkRow>{primaryButtons}</HeaderIconLinkRow>}
       />
       <Divider />
       <CardContent className={cardContentClass}>
-        <AboutContent entity={entity} />
+        <Grid container>{fields}</Grid>
       </CardContent>
     </Card>
   );

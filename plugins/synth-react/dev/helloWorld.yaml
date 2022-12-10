@@ -3,6 +3,7 @@ $import:
     from: ./catalog.yaml
   - names: [spec, metadata, kind]
     from: ./catalog-info.yaml
+
 $do:
   $<EntityProvider>:
     entity:
