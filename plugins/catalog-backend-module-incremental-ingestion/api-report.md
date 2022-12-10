@@ -33,8 +33,8 @@ export type EntityIteratorResult<T> =
 // @public (undocumented)
 export class IncrementalCatalogBuilder {
   // (undocumented)
-  addIncrementalEntityProvider<TCursor, TContext>(
-    provider: IncrementalEntityProvider<TCursor, TContext>,
+  addIncrementalEntityProvider<TCursor, TContext, TInput>(
+    provider: IncrementalEntityProvider<TCursor, TContext, TInput>,
     options: IncrementalEntityProviderOptions,
   ): void;
   // (undocumented)
@@ -48,8 +48,16 @@ export class IncrementalCatalogBuilder {
 }
 
 // @public
-export interface IncrementalEntityProvider<TCursor, TContext> {
+export interface IncrementalEntityProvider<TCursor, TContext, TInput = null> {
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
+  deltaMapper?: (payload: TInput) => {
+    delta:
+      | {
+          added: DeferredEntity[];
+          removed: DeferredEntity[];
+        }
+      | undefined;
+  };
   getProviderName(): string;
   next(
     context: TContext,
@@ -70,7 +78,7 @@ export interface IncrementalEntityProviderOptions {
 // @alpha
 export const incrementalIngestionEntityProviderCatalogModule: (options: {
   providers: {
-    provider: IncrementalEntityProvider<unknown, unknown>;
+    provider: IncrementalEntityProvider<unknown, unknown, unknown>;
     options: IncrementalEntityProviderOptions;
   }[];
 }) => BackendFeature;
