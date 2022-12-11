@@ -26,6 +26,12 @@ import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import {
+  BackstageIdentityResponse,
+  IdentityApiGetIdentityRequest,
+} from '@backstage/plugin-auth-node';
+import { AuthenticationError } from '@backstage/errors';
+import { IdentityApi } from '@backstage/core-plugin-api';
 
 const mockApplyConditions: jest.MockedFunction<
   InstanceType<typeof PermissionIntegrationClient>['applyConditions']
@@ -49,6 +55,10 @@ jest.mock('./PermissionIntegrationClient', () => ({
   })),
 }));
 
+type getIdentityOptional = (
+  options: IdentityApiGetIdentityRequest,
+) => Promise<BackstageIdentityResponse | undefined>;
+
 const policy = {
   handle: jest.fn().mockImplementation(async (_req, identity) => {
     if (identity) {
@@ -62,6 +72,28 @@ describe('createRouter', () => {
   let app: express.Express;
 
   beforeAll(async () => {
+    const getIdentityMock = jest.fn(
+      ({
+        request: req,
+      }: IdentityApiGetIdentityRequest): Promise<
+        BackstageIdentityResponse | undefined
+      > => {
+        const token = req.headers.authorization?.replace(/^Bearer[ ]+/, '');
+
+        if (!token) {
+          return Promise.resolve(undefined);
+        }
+
+        return Promise.resolve({
+          identity: {
+            type: 'user',
+            userEntityRef: 'test-user',
+            ownershipEntityRefs: ['blah'],
+          },
+          token,
+        });
+      },
+    );
     const router = await createRouter({
       config: new ConfigReader({ permission: { enabled: true } }),
       logger: getVoidLogger(),
@@ -70,22 +102,7 @@ describe('createRouter', () => {
         getExternalBaseUrl: jest.fn(),
       },
       identity: {
-        getIdentity: jest.fn(({ request: req }) => {
-          const token = req.headers.authorization?.replace(/^Bearer[ ]+/, '');
-
-          if (!token) {
-            return Promise.resolve(undefined);
-          }
-
-          return Promise.resolve({
-            identity: {
-              type: 'user',
-              userEntityRef: 'test-user',
-              ownershipEntityRefs: ['blah'],
-            },
-            token,
-          });
-        }),
+        getIdentity: getIdentityMock,
       },
       policy,
     });
