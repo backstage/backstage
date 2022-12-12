@@ -520,6 +520,176 @@ describe('KubernetesFetcher', () => {
         ],
       });
     });
+    describe('when server uses TLS', () => {
+      let httpsRequest: jest.SpyInstance;
+      beforeAll(() => {
+        httpsRequest = jest.spyOn(
+          // this is pretty egregious reverse engineering of msw.
+          // If the SetupServerApi constructor was exported, we wouldn't need
+          // to be quite so hacky here
+          (worker as any).interceptor.interceptors[0].modules.get('https'),
+          'request',
+        );
+      });
+      beforeEach(() => {
+        httpsRequest.mockClear();
+      });
+      it('should trust specified caData', async () => {
+        worker.use(
+          rest.get('https://localhost:9999/api/v1/pods', (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'pod-name' } }],
+              }),
+            ),
+          ),
+        );
+
+        await sut.fetchObjectsForService({
+          serviceId: 'some-service',
+          clusterDetails: {
+            name: 'cluster1',
+            url: 'https://localhost:9999',
+            serviceAccountToken: 'token',
+            authProvider: 'serviceAccount',
+            caData: 'MOCKCA',
+          },
+          objectTypesToFetch: new Set<ObjectToFetch>([
+            {
+              group: '',
+              apiVersion: 'v1',
+              plural: 'pods',
+              objectType: 'pods',
+            },
+          ]),
+          labelSelector: '',
+          customResources: [],
+        });
+
+        expect(httpsRequest).toHaveBeenCalledTimes(1);
+        const [[{ agent }]] = httpsRequest.mock.calls;
+        expect(agent.options.ca.toString('base64')).toMatch('MOCKCA');
+      });
+      it('should use default chain of trust when caData is unspecified', async () => {
+        worker.use(
+          rest.get('https://localhost:9999/api/v1/pods', (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'pod-name' } }],
+              }),
+            ),
+          ),
+        );
+
+        await sut.fetchObjectsForService({
+          serviceId: 'some-service',
+          clusterDetails: {
+            name: 'cluster1',
+            url: 'https://localhost:9999',
+            serviceAccountToken: 'token',
+            authProvider: 'serviceAccount',
+          },
+          objectTypesToFetch: new Set<ObjectToFetch>([
+            {
+              group: '',
+              apiVersion: 'v1',
+              plural: 'pods',
+              objectType: 'pods',
+            },
+          ]),
+          labelSelector: '',
+          customResources: [],
+        });
+
+        expect(httpsRequest).toHaveBeenCalledTimes(1);
+        const [[{ agent }]] = httpsRequest.mock.calls;
+        expect(agent.options.ca).toBeUndefined();
+      });
+      describe('with a CA file on disk', () => {
+        afterEach(() => {
+          mockFs.restore();
+        });
+        it('should trust contents of specified caFile', async () => {
+          mockFs({
+            '/path/to/ca.crt': 'MOCKCA',
+          });
+          worker.use(
+            rest.get('https://localhost:9999/api/v1/pods', (req, res, ctx) =>
+              res(
+                checkToken(req, ctx, 'token'),
+                withLabels(req, ctx, {
+                  items: [{ metadata: { name: 'pod-name' } }],
+                }),
+              ),
+            ),
+          );
+
+          await sut.fetchObjectsForService({
+            serviceId: 'some-service',
+            clusterDetails: {
+              name: 'cluster1',
+              url: 'https://localhost:9999',
+              serviceAccountToken: 'token',
+              authProvider: 'serviceAccount',
+              caFile: '/path/to/ca.crt',
+            },
+            objectTypesToFetch: new Set<ObjectToFetch>([
+              {
+                group: '',
+                apiVersion: 'v1',
+                plural: 'pods',
+                objectType: 'pods',
+              },
+            ]),
+            labelSelector: '',
+            customResources: [],
+          });
+
+          expect(httpsRequest).toHaveBeenCalledTimes(1);
+          const [[{ agent }]] = httpsRequest.mock.calls;
+          expect(agent.options.ca.toString()).toEqual('MOCKCA');
+        });
+      });
+      it('should accept unauthorized certs when skipTLSVerify is set', async () => {
+        worker.use(
+          rest.get('https://localhost:9999/api/v1/pods', (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'pod-name' } }],
+              }),
+            ),
+          ),
+        );
+
+        await sut.fetchObjectsForService({
+          serviceId: 'some-service',
+          clusterDetails: {
+            name: 'cluster1',
+            url: 'https://localhost:9999',
+            serviceAccountToken: 'token',
+            authProvider: 'serviceAccount',
+            skipTLSVerify: true,
+          },
+          objectTypesToFetch: new Set<ObjectToFetch>([
+            {
+              group: '',
+              apiVersion: 'v1',
+              plural: 'pods',
+              objectType: 'pods',
+            },
+          ]),
+          labelSelector: '',
+          customResources: [],
+        });
+
+        expect(httpsRequest).toHaveBeenCalledTimes(1);
+        const [[{ agent }]] = httpsRequest.mock.calls;
+        expect(agent.options.rejectUnauthorized).toBe(false);
+      });
+    });
     it('should use namespace if provided', async () => {
       worker.use(
         rest.get(
