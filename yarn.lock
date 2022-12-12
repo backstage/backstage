@@ -12482,8 +12482,8 @@ __metadata:
   linkType: hard
 
 "@react-hookz/web@npm:^20.0.0":
-  version: 20.0.0
-  resolution: "@react-hookz/web@npm:20.0.0"
+  version: 20.0.1
+  resolution: "@react-hookz/web@npm:20.0.1"
   dependencies:
     "@react-hookz/deep-equal": ^1.0.3
   peerDependencies:
@@ -12493,7 +12493,7 @@ __metadata:
   peerDependenciesMeta:
     js-cookie:
       optional: true
-  checksum: 475d03cdd9a9131b7094549602c8a3ab52ad33e99d7ef408ba2ee7897bfdf332ab5228f46187b9a4c42535b4aaaf808e2c9c882949b2ec32d5ad42d53487a723
+  checksum: 433dcb140953a877d4c81e1c176cd4302c184293ccddc5ee8de3ae3e592441b528c0c88bc07ed29fea2c993bacb146dfe0c7541832cb56785f07d8717626a1a2
   languageName: node
   linkType: hard
 
