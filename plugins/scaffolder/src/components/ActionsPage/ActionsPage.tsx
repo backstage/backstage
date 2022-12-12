@@ -22,6 +22,7 @@ import {
   Table,
   TableBody,
   Box,
+  Chip,
   TableCell,
   TableContainer,
   TableHead,
@@ -107,7 +108,11 @@ export const ActionsPage = () => {
           <TableCell>{props.title}</TableCell>
           <TableCell>{props.description}</TableCell>
           <TableCell>
-            <span className={classes.code}>{props.type}</span>
+            <>
+              {[props.type].flat().map(type => (
+                <Chip label={type} />
+              ))}
+            </>
           </TableCell>
         </TableRow>
       );
