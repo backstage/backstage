@@ -1,6 +1,5 @@
 ---
 '@backstage/plugin-bazaar-backend': patch
-'@internal/plugin-todo-list-backend': patch
 '@backstage/plugin-permission-backend': patch
 '@backstage/plugin-playlist-backend': patch
 '@backstage/plugin-scaffolder-backend': patch
