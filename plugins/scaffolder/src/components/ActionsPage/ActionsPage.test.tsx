@@ -115,6 +115,48 @@ describe('TemplatePage', () => {
     expect(rendered.getByText('Test output')).toBeInTheDocument();
   });
 
+  it('renders action with multipel input types', async () => {
+    scaffolderApiMock.listActions.mockResolvedValue([
+      {
+        id: 'test',
+        description: 'example description',
+        schema: {
+          input: {
+            type: 'object',
+            required: ['foobar'],
+            properties: {
+              foobar: {
+                title: 'Test title',
+                type: ['array', 'number'],
+              },
+            },
+          },
+          output: {
+            type: 'object',
+            properties: {
+              buzz: {
+                title: 'Test output',
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    ]);
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ActionsPage />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create/actions': rootRouteRef,
+        },
+      },
+    );
+    expect(rendered.getByText('array')).toBeInTheDocument();
+    expect(rendered.getByText('number')).toBeInTheDocument();
+  });
+
   it('renders action with oneOf input', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
       {
