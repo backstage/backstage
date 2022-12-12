@@ -78,10 +78,12 @@ describe('Lockfile', () => {
     });
 
     const lockfile = await Lockfile.load('/yarn.lock');
-    expect(lockfile.get('a')).toEqual([{ range: '^1', version: '1.0.1' }]);
+    expect(lockfile.get('a')).toEqual([
+      { range: '^1', version: '1.0.1', dataKey: 'a@^1' },
+    ]);
     expect(lockfile.get('b')).toEqual([
-      { range: '2.0.x', version: '2.0.1' },
-      { range: '^2', version: '2.0.0' },
+      { range: '2.0.x', version: '2.0.1', dataKey: 'b@2.0.x' },
+      { range: '^2', version: '2.0.0', dataKey: 'b@^2' },
     ]);
     expect(lockfile.toString()).toBe(mockA);
   });
@@ -234,11 +236,13 @@ describe('New Lockfile', () => {
     });
 
     const lockfile = await Lockfile.load('/yarn.lock');
-    expect(lockfile.get('a')).toEqual([{ range: '^1', version: '1.0.1' }]);
+    expect(lockfile.get('a')).toEqual([
+      { range: '^1', version: '1.0.1', dataKey: 'a@^1' },
+    ]);
     expect(lockfile.get('b')).toEqual([
-      { range: '2.0.x', version: '2.0.1' },
-      { range: '^2.0.1', version: '2.0.1' },
-      { range: '^2', version: '2.0.0' },
+      { range: '2.0.x', version: '2.0.1', dataKey: 'b@2.0.x, b@^2.0.1' },
+      { range: '^2.0.1', version: '2.0.1', dataKey: 'b@2.0.x, b@^2.0.1' },
+      { range: '^2', version: '2.0.0', dataKey: 'b@^2' },
     ]);
     expect(lockfile.toString()).toBe(mockANew);
   });
@@ -314,5 +318,223 @@ describe('New Lockfile', () => {
     await expect(fs.readFile('/yarn.lock', 'utf8')).resolves.toBe(
       mockANewLocalDedup,
     );
+  });
+
+  describe('diff', () => {
+    const lockfileLegacyA = Lockfile.parse(`${HEADER}
+a@^1:
+  version "1.0.1"
+  resolved "https://my-registry/a-1.0.01.tgz#abc123"
+  integrity sha512-xyz
+  dependencies:
+    b "^2"
+
+b@3:
+  version "3.0.1"
+  integrity sha512-abc1
+
+b@2.0.x:
+  version "2.0.1"
+  integrity sha512-abc2
+
+b@^2:
+  version "2.0.0"
+  integrity sha512-abc3
+
+c@^1:
+  version "1.0.1"
+  integrity x
+`);
+
+    const lockfileLegacyB = Lockfile.parse(`${HEADER}
+a@^1:
+  version "1.0.1"
+  resolved "https://my-registry/a-1.0.01.tgz#abc123"
+  integrity sha512-xyz-other
+  dependencies:
+    b "^2"
+
+b@2.0.x, b@^2:
+  version "2.0.0"
+  integrity sha512-abc3
+
+b@4:
+  version "4.0.0"
+  integrity sha512-abc
+
+d@^1:
+  version "1.0.1"
+  integrity x
+`);
+
+    const lockfileModernA = Lockfile.parse(`${HEADER}
+"a@^1":
+  version "1.0.1"
+  resolved "https://my-registry/a-1.0.01.tgz#abc123"
+  checksum sha512-xyz
+  dependencies:
+    b "^2"
+
+"b@3":
+  version "3.0.1"
+  checksum sha512-abc1
+
+"b@2.0.x":
+  version "2.0.1"
+  checksum sha512-abc2
+
+"b@^2":
+  version "2.0.0"
+  checksum sha512-abc3
+
+"c@^1":
+  version "1.0.1"
+  checksum x
+`);
+
+    const lockfileModernB = Lockfile.parse(`${HEADER}
+"a@^1":
+  version "1.0.1"
+  resolution "a@npm:1.0.1"
+  checksum sha512-xyz-other
+  dependencies:
+    b "^2"
+
+"b@2.0.x, b@^2":
+  version "2.0.0"
+  checksum sha512-abc3
+
+"b@4":
+  version "4.0.0"
+  checksum sha512-abc
+
+"d@^1":
+  version "1.0.1"
+  checksum x
+`);
+
+    it('should diff two legacy lockfiles', async () => {
+      expect(lockfileLegacyA.diff(lockfileLegacyB)).toEqual({
+        added: [
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
+        ],
+        changed: [
+          { name: 'a', range: '^1' },
+          { name: 'b', range: '2.0.x' },
+        ],
+        removed: [
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
+        ],
+      });
+      expect(lockfileLegacyB.diff(lockfileLegacyA)).toEqual({
+        added: [
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
+        ],
+        changed: [
+          { name: 'a', range: '^1' },
+          { name: 'b', range: '2.0.x' },
+        ],
+        removed: [
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
+        ],
+      });
+    });
+
+    it('should diff two modern lockfiles', async () => {
+      expect(lockfileModernA.diff(lockfileModernB)).toEqual({
+        added: [
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
+        ],
+        changed: [
+          { name: 'a', range: '^1' },
+          { name: 'b', range: '2.0.x' },
+        ],
+        removed: [
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
+        ],
+      });
+      expect(lockfileModernB.diff(lockfileModernA)).toEqual({
+        added: [
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
+        ],
+        changed: [
+          { name: 'a', range: '^1' },
+          { name: 'b', range: '2.0.x' },
+        ],
+        removed: [
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
+        ],
+      });
+    });
+
+    it('should diff legacy and modern lockfiles', async () => {
+      expect(lockfileLegacyA.diff(lockfileModernB)).toEqual({
+        added: [
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
+        ],
+        changed: [
+          { name: 'a', range: '^1' },
+          { name: 'b', range: '2.0.x' },
+        ],
+        removed: [
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
+        ],
+      });
+      expect(lockfileLegacyB.diff(lockfileModernA)).toEqual({
+        added: [
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
+        ],
+        changed: [
+          { name: 'a', range: '^1' },
+          { name: 'b', range: '2.0.x' },
+        ],
+        removed: [
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
+        ],
+      });
+    });
+
+    it('should diff modern and legacy lockfiles', async () => {
+      expect(lockfileModernA.diff(lockfileLegacyB)).toEqual({
+        added: [
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
+        ],
+        changed: [
+          { name: 'a', range: '^1' },
+          { name: 'b', range: '2.0.x' },
+        ],
+        removed: [
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
+        ],
+      });
+      expect(lockfileModernB.diff(lockfileLegacyA)).toEqual({
+        added: [
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
+        ],
+        changed: [
+          { name: 'a', range: '^1' },
+          { name: 'b', range: '2.0.x' },
+        ],
+        removed: [
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
+        ],
+      });
+    });
   });
 });
