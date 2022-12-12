@@ -30,8 +30,6 @@ import {
   BackstageIdentityResponse,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
-import { AuthenticationError } from '@backstage/errors';
-import { IdentityApi } from '@backstage/core-plugin-api';
 
 const mockApplyConditions: jest.MockedFunction<
   InstanceType<typeof PermissionIntegrationClient>['applyConditions']
@@ -54,10 +52,6 @@ jest.mock('./PermissionIntegrationClient', () => ({
     applyConditions: mockApplyConditions,
   })),
 }));
-
-type getIdentityOptional = (
-  options: IdentityApiGetIdentityRequest,
-) => Promise<BackstageIdentityResponse | undefined>;
 
 const policy = {
   handle: jest.fn().mockImplementation(async (_req, identity) => {
@@ -93,7 +87,7 @@ describe('createRouter', () => {
           token,
         });
       },
-    );
+    ) as any;
     const router = await createRouter({
       config: new ConfigReader({ permission: { enabled: true } }),
       logger: getVoidLogger(),
