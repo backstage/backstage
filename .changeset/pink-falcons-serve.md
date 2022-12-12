@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': minor
 ---
 
-Make a scaffolder workflow embeddable in other components
+Embed scaffolder workflow in other components
