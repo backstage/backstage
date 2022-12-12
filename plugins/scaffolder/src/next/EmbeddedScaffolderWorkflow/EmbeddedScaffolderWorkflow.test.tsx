@@ -13,5 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { SecurityTab } from './SecurityTab';
-export { showSecurityTab } from './showSecurityTab';
+describe('<EmbeddedScaffolderWorkflow />', () => {
+  it('should embed workflow inside another component', () => {});
+});
