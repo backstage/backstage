@@ -154,8 +154,6 @@ import {
   ReportIssue,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { EntityCostInsightsContent } from '@backstage/plugin-cost-insights';
-import { SecurityTab } from '../SecurityTab/SecurityTab';
-import { showSecurityTab } from '../SecurityTab';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -402,12 +400,6 @@ const overviewContent = (
   </Grid>
 );
 
-const securityContent = (
-  <EntityLayout.Route path="/security" title="Security" if={showSecurityTab}>
-    <SecurityTab />
-  </EntityLayout.Route>
-);
-
 const serviceEntityPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
@@ -447,8 +439,6 @@ const serviceEntityPage = (
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
     </EntityLayout.Route>
-
-    {securityContent}
 
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
