@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { EmbeddedScaffolderWorkflow } from '../EmbeddedScaffolderWorkflow/EmbeddedScaffolderWorkflow';
 import { Box } from '@material-ui/core';
+import { EmbeddedScaffolderWorkflow } from '@backstage/plugin-scaffolder';
 
 const ReviewWrapper = () => {
   return (

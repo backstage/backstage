@@ -48,6 +48,7 @@ export { NextScaffolderPage } from './plugin';
 export {
   EmbeddableWorkflow,
   useGetCustomFields,
+  EmbeddedScaffolderWorkflow,
   type WorkflowProps,
   type ReviewStateProps,
   type ParsedTemplateSchema,

@@ -16,14 +16,11 @@
 
 import React, { useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import {
-  EmbeddableWorkflow,
-  useGetCustomFields,
-  WorkflowProps,
-} from '@backstage/plugin-scaffolder';
-import { Box, Button } from '@material-ui/core';
 import type { JsonValue } from '@backstage/types';
-import type { FormProps } from '@backstage/plugin-scaffolder-react';
+import { EmbeddableWorkflow, WorkflowProps } from '../Workflow/Workflow';
+import { FormProps } from '@backstage/plugin-scaffolder-react';
+import { useGetCustomFields } from '../Router';
+import { Box, Button } from '@material-ui/core';
 
 type EmbeddedWorkflowProps = Omit<
   WorkflowProps,
