@@ -106,8 +106,20 @@ techdocs:
       # If not set, the default location will be the root of the storage bucket
       bucketRootPath: '/'
 
-      # (Optional) An API key is required to write to a storage bucket.
-      # If not set, environment variables or aws config file will be used to authenticate.
+      # (Optional) The AWS account ID where the storage bucket is located.
+      # Credentials for the account ID must be configured in the 'aws' app config section.
+      # See the integration-aws-node package for details on how to configure credentials in
+      # the 'aws' app config section.
+      # https://www.npmjs.com/package/@backstage/integration-aws-node
+      # If account ID is not set and no credentials are set, environment variables or aws config file will be used to authenticate.
+      # https://www.npmjs.com/package/@aws-sdk/credential-provider-node
+      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html
+      accountId: ${TECHDOCS_AWSS3_ACCOUNT_ID}
+
+      # (Optional) AWS credentials to use to write to the storage bucket.
+      # This configuration section is now deprecated.
+      # Configuring the account ID is now preferred, with credentials in the 'aws' app config section.
+      # If credentials are not set and no account ID is set, environment variables or aws config file will be used to authenticate.
       # https://www.npmjs.com/package/@aws-sdk/credential-provider-node
       # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html
       credentials:
