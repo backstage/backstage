@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { Box } from '@material-ui/core';
 import { EmbeddedScaffolderWorkflow } from '@backstage/plugin-scaffolder';
+import { Box } from '@material-ui/core';
 
 const ReviewWrapper = () => {
   return (
@@ -43,11 +43,17 @@ export function SecurityTab(): JSX.Element | null {
       description={`
 ## This is markdown
 - overriding the template description
-  `}
+      `}
       onComplete={onComplete}
       onError={onError}
       namespace="default"
       templateName="docs-template"
+      initialFormState={{
+        name: 'prefilled-name',
+        description: 'prefilled description',
+        owner: 'acme-corp',
+        repoUrl: 'github.com?owner=component&repo=component',
+      }}
       frontPage={
         <>
           <h1>Security Insights</h1>
