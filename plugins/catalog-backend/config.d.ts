@@ -57,8 +57,8 @@ export interface Config {
         /**
          * The exact location, e.g.
          * "https://github.com/org/repo/blob/master/users.yaml".
-         * 
-         * The exact location can also be used to match on locations 
+         *
+         * The exact location can also be used to match on locations
          * that contain glob characters themselves, e.g.
          * "https://github.com/org/*\/blob/master/*.yaml".
          */
