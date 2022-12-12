@@ -59,6 +59,7 @@ export function EmbeddedScaffolderWorkflow({
   title,
   description,
   ReviewStateWrapper,
+  initialFormState,
 }: EmbeddedScaffolderWorkflowProps): JSX.Element {
   const [display, setDisplay] = useState<Display>('front');
   const fieldExtensions = useCustomFieldExtensions(customExtensionsElement, DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS);
@@ -92,13 +93,8 @@ export function EmbeddedScaffolderWorkflow({
         onComplete={onWorkFlowComplete}
         onError={onError}
         customFieldExtensions={fieldExtensions}
-        initialFormState={{
-          name: 'prefilled-name',
-          description: 'prefilled description',
-          owner: 'acme-corp',
-          repoUrl: 'github.com?owner=component&repo=component',
-        }}
         ReviewStateWrapper={ReviewStateWrapper}
+        initialFormState={initialFormState}
       />
     ),
     finish: (
