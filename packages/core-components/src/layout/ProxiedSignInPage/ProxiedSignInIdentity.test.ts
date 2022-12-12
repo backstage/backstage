@@ -209,7 +209,7 @@ describe('ProxiedSignInIdentity', () => {
       expect(getHeaders).toHaveBeenCalledTimes(1);
       expect(serverCalled).toHaveBeenCalledTimes(1);
 
-      expect(req1).not.toBeUndefined();
+      expect(req1!).not.toBeUndefined();
       // required header should be present
       expect(req1!.headers.get('x-requested-with')).toEqual('XMLHttpRequest');
       // optional header should be present when passed
