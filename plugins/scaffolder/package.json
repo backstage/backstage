@@ -75,8 +75,8 @@
     "use-immer": "^0.7.0",
     "yaml": "^2.0.0",
     "zen-observable": "^0.10.0",
-    "zod": "^3.11.6",
-    "zod-to-json-schema": "^3.18.1"
+    "zod": "~3.18.0",
+    "zod-to-json-schema": "~3.18.0"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
