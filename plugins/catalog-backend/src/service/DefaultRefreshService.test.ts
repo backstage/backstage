@@ -16,11 +16,14 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
+import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
-import { applyDatabaseMigrations } from '../database/migrations';
+import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
+import { applyDatabaseMigrations } from '../database/migrations';
 import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
@@ -29,11 +32,9 @@ import { ProcessingDatabase } from '../database/types';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
 import { EntityProcessingRequest } from '../processing/types';
 import { Stitcher } from '../stitching/Stitcher';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { v4 as uuid } from 'uuid';
 import { DefaultRefreshService } from './DefaultRefreshService';
 
-describe('Refresh integration', () => {
+describe('DefaultRefreshService', () => {
   const defaultLogger = getVoidLogger();
   const databases = TestDatabases.create({
     ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
@@ -47,10 +48,14 @@ describe('Refresh integration', () => {
     await applyDatabaseMigrations(knex);
     return {
       knex,
-      db: new DefaultProcessingDatabase({
+      processingDb: new DefaultProcessingDatabase({
         database: knex,
         logger,
         refreshInterval: () => 100,
+      }),
+      catalogDb: new DefaultCatalogDatabase({
+        database: knex,
+        logger,
       }),
     };
   }
@@ -176,10 +181,12 @@ describe('Refresh integration', () => {
   it.each(databases.eachSupportedId())(
     'should refresh the parent location, %p',
     async databaseId => {
-      const { knex, db } = await createDatabase(databaseId);
-      const refreshService = new DefaultRefreshService({ database: db });
+      const { knex, processingDb, catalogDb } = await createDatabase(
+        databaseId,
+      );
+      const refreshService = new DefaultRefreshService({ database: catalogDb });
       const engine = await createPopulatedEngine({
-        db,
+        db: processingDb,
         knex,
         entities: [
           {
@@ -220,10 +227,12 @@ describe('Refresh integration', () => {
   it.each(databases.eachSupportedId())(
     'should refresh the location further up the tree, %p',
     async databaseId => {
-      const { knex, db } = await createDatabase(databaseId);
-      const refreshService = new DefaultRefreshService({ database: db });
+      const { knex, processingDb, catalogDb } = await createDatabase(
+        databaseId,
+      );
+      const refreshService = new DefaultRefreshService({ database: catalogDb });
       const engine = await createPopulatedEngine({
-        db,
+        db: processingDb,
         knex,
         entities: [
           {
@@ -273,10 +282,12 @@ describe('Refresh integration', () => {
     'should refresh even when parent has no changes',
     async databaseId => {
       let secondRound = false;
-      const { knex, db } = await createDatabase(databaseId);
-      const refreshService = new DefaultRefreshService({ database: db });
+      const { knex, processingDb, catalogDb } = await createDatabase(
+        databaseId,
+      );
+      const refreshService = new DefaultRefreshService({ database: catalogDb });
       const engine = await createPopulatedEngine({
-        db,
+        db: processingDb,
         knex,
         entities: [
           {
