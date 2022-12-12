@@ -86,7 +86,7 @@ import {
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
-import { Navigate, Route } from 'react-router';
+import { Navigate, Route } from 'react-router-dom';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { homePage } from './components/home/HomePage';

@@ -17,7 +17,7 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { RoutedTabs } from './RoutedTabs';
 
 const testRoute1 = {

@@ -27,7 +27,7 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 import { Owner } from './Owner';
 import { mockApiClient } from '../../test-helpers/mock-api-client';
 
-jest.mock('react-router', () => ({
+jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
   useLocation: jest.fn(() => ({
     search: mockSearchCalver,

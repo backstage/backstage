@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType } from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 
 import { List, ListItem } from '@material-ui/core';
 import DefaultIcon from '@material-ui/icons/InsertDriveFile';
