@@ -48,15 +48,10 @@ export function tokenToExpiry(jwtToken: string | undefined): Date {
   return new Date(payload.exp * 1000 - DEFAULTS.tokenExpiryMarginMillis);
 }
 
-export type RefreshHeaders =
-  | HeadersInit
-  | (() => HeadersInit)
-  | (() => Promise<HeadersInit>);
-
 type ProxiedSignInIdentityOptions = {
   provider: string;
   discoveryApi: typeof discoveryApiRef.T;
-  headers?: RefreshHeaders;
+  headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
 };
 
 type State =

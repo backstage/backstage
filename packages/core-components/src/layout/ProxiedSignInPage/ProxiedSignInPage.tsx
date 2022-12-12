@@ -23,7 +23,7 @@ import React from 'react';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ErrorPanel } from '../../components/ErrorPanel';
 import { Progress } from '../../components/Progress';
-import { ProxiedSignInIdentity, RefreshHeaders } from './ProxiedSignInIdentity';
+import { ProxiedSignInIdentity } from './ProxiedSignInIdentity';
 
 /**
  * Props for {@link ProxiedSignInPage}.
@@ -41,7 +41,7 @@ export type ProxiedSignInPageProps = SignInPageProps & {
    * Optional headers which are passed along with the request to the
    * underlying provider
    */
-  headers?: RefreshHeaders;
+  headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
 };
 
 /**
