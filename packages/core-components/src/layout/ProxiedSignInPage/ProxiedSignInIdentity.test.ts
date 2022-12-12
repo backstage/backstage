@@ -103,7 +103,6 @@ describe('ProxiedSignInIdentity', () => {
           },
         };
       }
-
       worker.events.on('request:match', serverCalled);
       worker.use(
         rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
@@ -163,6 +162,138 @@ describe('ProxiedSignInIdentity', () => {
       jest.advanceTimersByTime(1001);
       await identity.getSessionAsync(); // now the expiry has passed
       expect(serverCalled).toHaveBeenCalledTimes(2);
+    });
+
+    // dummy response for tests which are only testing the request behaviour
+    const dummySessionResponse = {
+      providerInfo: {},
+      profile: {},
+      backstageIdentity: {
+        token: '',
+        identity: {
+          ownershipEntityRefs: [''],
+          userEntityRef: '',
+          type: 'user',
+        },
+      },
+    };
+
+    it('handles headers passed as a promise', async () => {
+      let req1: Request;
+      const getBaseUrl = jest.fn();
+      const serverCalled = jest.fn().mockImplementation(req => {
+        req1 = req;
+      });
+
+      worker.events.on('request:match', serverCalled);
+      worker.use(
+        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(dummySessionResponse),
+          ),
+        ),
+      );
+
+      const getHeaders = jest.fn().mockResolvedValue({ 'x-foo': 'bars' });
+      const identity = new ProxiedSignInIdentity({
+        provider: 'foo',
+        discoveryApi: { getBaseUrl },
+        headers: getHeaders,
+      });
+
+      getBaseUrl.mockResolvedValue('http://example.com/api/auth');
+
+      await identity.start(); // should not throw
+      expect(getBaseUrl).toHaveBeenCalledTimes(1);
+      expect(getBaseUrl).toHaveBeenLastCalledWith('auth');
+      expect(getHeaders).toHaveBeenCalledTimes(1);
+      expect(serverCalled).toHaveBeenCalledTimes(1);
+
+      expect(req1!).not.toBeUndefined();
+      // required header should be present
+      expect(req1!.headers.get('x-requested-with')).toEqual('XMLHttpRequest');
+      // optional header should be present when passed
+      expect(req1!.headers.get('x-foo')).toEqual('bars');
+    });
+
+    it('handles headers passed as an object', async () => {
+      let req1: Request;
+      const getBaseUrl = jest.fn();
+      const serverCalled = jest.fn().mockImplementation(req => {
+        req1 = req;
+      });
+
+      worker.events.on('request:match', serverCalled);
+      worker.use(
+        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(dummySessionResponse),
+          ),
+        ),
+      );
+
+      const identity = new ProxiedSignInIdentity({
+        provider: 'foo',
+        discoveryApi: { getBaseUrl },
+        headers: { 'x-foo': 'bars' },
+      });
+
+      getBaseUrl.mockResolvedValue('http://example.com/api/auth');
+
+      await identity.start(); // should not throw
+      expect(getBaseUrl).toHaveBeenCalledTimes(1);
+      expect(getBaseUrl).toHaveBeenLastCalledWith('auth');
+      expect(serverCalled).toHaveBeenCalledTimes(1);
+
+      expect(req1!).not.toBeUndefined();
+      // required header should be present
+      expect(req1!.headers.get('x-requested-with')).toEqual('XMLHttpRequest');
+      // optional header should be present when passed
+      expect(req1!.headers.get('x-foo')).toEqual('bars');
+    });
+
+    it('handles headers passed as a function', async () => {
+      let req1: Request;
+      const getBaseUrl = jest.fn();
+      const serverCalled = jest.fn().mockImplementation(req => {
+        req1 = req;
+      });
+
+      worker.events.on('request:match', serverCalled);
+      worker.use(
+        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(dummySessionResponse),
+          ),
+        ),
+      );
+
+      const getHeaders = jest.fn().mockReturnValue({ 'x-foo': 'bars' });
+      const identity = new ProxiedSignInIdentity({
+        provider: 'foo',
+        discoveryApi: { getBaseUrl },
+        headers: getHeaders,
+      });
+
+      getBaseUrl.mockResolvedValue('http://example.com/api/auth');
+
+      await identity.start(); // should not throw
+      expect(getBaseUrl).toHaveBeenCalledTimes(1);
+      expect(getBaseUrl).toHaveBeenLastCalledWith('auth');
+      expect(getHeaders).toHaveBeenCalledTimes(1);
+      expect(serverCalled).toHaveBeenCalledTimes(1);
+
+      expect(req1!).not.toBeUndefined();
+      // required header should be present
+      expect(req1!.headers.get('x-requested-with')).toEqual('XMLHttpRequest');
+      // optional header should be present when passed
+      expect(req1!.headers.get('x-foo')).toEqual('bars');
     });
   });
 });
