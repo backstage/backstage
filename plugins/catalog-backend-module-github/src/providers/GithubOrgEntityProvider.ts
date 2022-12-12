@@ -18,10 +18,7 @@ import { TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
-  DEFAULT_NAMESPACE,
   Entity,
-  GroupEntity,
-  UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -43,12 +40,8 @@ import {
   OrganizationMemberAddedEvent,
   OrganizationMemberRemovedEvent,
   TeamEvent,
-  TeamEditedEvent,
-  MembershipEvent,
 } from '@octokit/webhooks-types';
-import { CatalogApi } from '@backstage/catalog-client';
-import { TokenManager } from '@backstage/backend-common';
-import { merge, omit } from 'lodash';
+import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {
@@ -63,13 +56,9 @@ import {
 } from '../lib';
 import { TeamTransformer, UserTransformer } from '../lib';
 import {
-  addUserToGroup,
-  removeUserFromGroup,
   createAddEntitiesOperation,
   createRemoveEntitiesOperation,
-  createReplaceEntitiesOperation,
   DeferredEntitiesBuilder,
-  EntityUpdateOperation,
 } from '../lib/github';
 
 /**
@@ -126,9 +115,6 @@ export interface GithubOrgEntityProviderOptions {
    * Optionally include a team transformer for transforming from GitHub teams to Group Entities
    */
   teamTransformer?: TeamTransformer;
-
-  catalogApi?: CatalogApi;
-  tokenManager?: TokenManager;
 }
 
 /**
@@ -142,8 +128,6 @@ export class GithubOrgEntityProvider
   private readonly credentialsProvider: GithubCredentialsProvider;
   private connection?: EntityProviderConnection;
   private scheduleFn?: () => Promise<void>;
-
-  private eventConfigErrorThrown = false;
 
   static fromConfig(config: Config, options: GithubOrgEntityProviderOptions) {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -169,8 +153,6 @@ export class GithubOrgEntityProvider
         DefaultGithubCredentialsProvider.fromIntegrations(integrations),
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
-      catalogApi: options.catalogApi,
-      tokenManager: options.tokenManager,
     });
 
     provider.schedule(options.schedule);
@@ -187,8 +169,6 @@ export class GithubOrgEntityProvider
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
-      catalogApi?: CatalogApi;
-      tokenManager?: TokenManager;
     },
   ) {
     this.credentialsProvider =
@@ -266,20 +246,11 @@ export class GithubOrgEntityProvider
     const { logger } = this.options;
     logger.debug(`Received event from ${params.topic}`);
 
-    if (!this.canHandleEvents()) {
-      logger.debug(`Skipping event ${params.topic}`);
-      return;
-    }
-
     const addEntitiesOperation = createAddEntitiesOperation(
       this.options.id,
       this.options.gitHubConfig.host,
     );
     const removeEntitiesOperation = createRemoveEntitiesOperation(
-      this.options.id,
-      this.options.gitHubConfig.host,
-    );
-    const replaceEntitiesOperation = createReplaceEntitiesOperation(
       this.options.id,
       this.options.gitHubConfig.host,
     );
@@ -312,26 +283,14 @@ export class GithubOrgEntityProvider
             : removeEntitiesOperation;
         await this.onTeamChangeInOrganization(teamEvent, createDeltaOperation);
       } else if (teamEvent.action === 'edited') {
-        await this.onTeamEditedInOrganization(
-          teamEvent,
-          replaceEntitiesOperation,
-        );
+        this.onEventToRebuildOrg();
       }
     }
 
     // handle change membership in the org
     // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#membership
     if (params.topic.includes('membership')) {
-      const membershipEvent = params.eventPayload as MembershipEvent;
-      const updateOperation =
-        membershipEvent.action === 'added'
-          ? addUserToGroup
-          : removeUserFromGroup;
-      await this.onMemberChangeToTeam(
-        membershipEvent,
-        replaceEntitiesOperation,
-        updateOperation,
-      );
+      this.onEventToRebuildOrg();
     }
 
     return;
@@ -340,22 +299,6 @@ export class GithubOrgEntityProvider
   /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.supportsEventTopics} */
   supportsEventTopics(): string[] {
     return ['github.organization', 'github.team', 'github.membership'];
-  }
-
-  private canHandleEvents(): boolean {
-    if (this.options.catalogApi && this.options.tokenManager) {
-      return true;
-    }
-
-    // throw only once
-    if (!this.eventConfigErrorThrown) {
-      this.eventConfigErrorThrown = true;
-      throw new Error(
-        `${this.getProviderName()} not well configured to handle ${this.supportsEventTopics()}. Missing CatalogApi and/or TokenManager.`,
-      );
-    }
-
-    return false;
   }
 
   private async onTeamChangeInOrganization(
@@ -412,71 +355,14 @@ export class GithubOrgEntityProvider
     });
   }
 
-  private async onTeamEditedInOrganization(
-    event: TeamEditedEvent,
-    createDeltaOperation: DeferredEntitiesBuilder,
-  ) {
-    if (!this.connection) {
-      throw new Error('Not initialized');
-    }
-
-    const { name } = event.changes;
-    const org = event.organization.login;
-
-    const { token } = await this.options.tokenManager!.getToken();
-    const groups = await this.options.catalogApi!.getEntities(
-      {
-        filter: [
-          {
-            kind: 'Group',
-            [`metadata.annotations.github.com/team-id`]: `${event.team.id}`,
-          },
-        ],
-        fields: ['apiVersion', 'kind', 'metadata', 'spec'],
-      },
-      { token },
-    );
-
-    if (groups.items.length === 0) {
-      this.options.logger.debug(
-        `Skipping event because couldn't found group with 'github.com/node-id':${event.team.node_id}`,
-      );
-      return;
-    }
-
-    const group = groups.items[0] as GroupEntity;
-    const { removed } = createDeltaOperation(org, [group]);
-    const { name: newTeamName, html_url: url, description, slug } = event.team;
-
-    if (name) {
-      merge(group, {
-        metadata: {
-          name: slug,
-          annotations: {
-            [`backstage.io/edit-url`]: `${url}/edit`,
-            [`github.com/team-slug`]: `${org}/${slug}`,
-            [ANNOTATION_LOCATION]: `url:${url}`,
-            [ANNOTATION_ORIGIN_LOCATION]: `url:${url}`,
-          },
-        },
-        spec: {
-          profile: {
-            displayName: newTeamName,
-          },
-        },
+  private onEventToRebuildOrg() {
+    try {
+      this.read(this.options).then(() => {
+        this.options.logger.debug('Event process finished');
       });
+    } catch (e) {
+      this.options.logger.debug(`Event process error ${e}`);
     }
-
-    if (description) {
-      group.metadata.description = description;
-    }
-
-    const { added } = createDeltaOperation(org, [group]);
-    await this.connection.applyMutation({
-      type: 'delta',
-      removed,
-      added,
-    });
   }
 
   private async onMemberChangeInOrganization(
@@ -516,73 +402,6 @@ export class GithubOrgEntityProvider
     )) as Entity;
 
     const { added, removed } = createDeltaOperation(org, [user]);
-    await this.connection.applyMutation({
-      type: 'delta',
-      removed,
-      added,
-    });
-  }
-
-  private async onMemberChangeToTeam(
-    event: MembershipEvent,
-    createDeltaOperation: DeferredEntitiesBuilder,
-    updateEntities: EntityUpdateOperation,
-  ) {
-    if (!this.connection) {
-      throw new Error('Not initialized');
-    }
-
-    // The docs are saying I will receive the slug for the removed event, but the types don't reflect that,
-    // so I will just check to be sure the slug is there
-    // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#membership
-    if (!('slug' in event.team)) {
-      return;
-    }
-    const teamSlug = event.team.slug;
-    const userSlug = event.member.login;
-
-    const { token } = await this.options.tokenManager!.getToken();
-    const org = event.organization.login;
-    let group = (await this.options.catalogApi!.getEntityByRef(
-      {
-        kind: 'Group',
-        namespace: DEFAULT_NAMESPACE,
-        name: teamSlug,
-      },
-      { token },
-    )) as GroupEntity;
-
-    if (!group) {
-      this.options.logger.debug(
-        `Skipping event because couldn't found group ':${teamSlug} for namespace ${DEFAULT_NAMESPACE}`,
-      );
-      return;
-    }
-
-    let user = (await this.options.catalogApi!.getEntityByRef(
-      {
-        kind: 'User',
-        namespace: DEFAULT_NAMESPACE,
-        name: userSlug,
-      },
-      { token },
-    )) as UserEntity;
-
-    group = omit(group, 'relations');
-
-    if (!user) {
-      this.options.logger.debug(
-        `Skipping event because couldn't found user ':${userSlug} for namespace ${DEFAULT_NAMESPACE}`,
-      );
-      return;
-    }
-    user = omit(user, 'relations');
-
-    const { removed } = createDeltaOperation(org, [group, user]);
-
-    const result = updateEntities(user, group);
-
-    const { added } = createDeltaOperation(org, [result.group, result.user]);
     await this.connection.applyMutation({
       type: 'delta',
       removed,

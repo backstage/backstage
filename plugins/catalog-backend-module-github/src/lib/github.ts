@@ -27,7 +27,6 @@ import {
 import { withLocations } from '../providers/GithubOrgEntityProvider';
 
 import { DeferredEntity } from '@backstage/plugin-catalog-backend';
-import { merge, omit } from 'lodash';
 
 // Graphql types
 
@@ -419,11 +418,6 @@ export type DeferredEntitiesBuilder = (
   entities: Entity[],
 ) => { added: DeferredEntity[]; removed: DeferredEntity[] };
 
-export type EntityUpdateOperation = (
-  user: UserEntity,
-  group: GroupEntity,
-) => { user: UserEntity; group: GroupEntity };
-
 export const createAddEntitiesOperation =
   (id: string, host: string) => (org: string, entities: Entity[]) => ({
     removed: [],
@@ -441,52 +435,3 @@ export const createRemoveEntitiesOperation =
       entity: withLocations(`https://${host}`, org, entity),
     })),
   });
-
-export const createReplaceEntitiesOperation =
-  (id: string, host: string) => (org: string, entities: Entity[]) => {
-    const entitiesToReplace = entities.map(entity => ({
-      locationKey: `github-org-provider:${id}`,
-      entity: withLocations(`https://${host}`, org, entity),
-    }));
-
-    return {
-      removed: entitiesToReplace,
-      added: entitiesToReplace,
-    };
-  };
-
-export function removeUserFromGroup(user: UserEntity, group: GroupEntity) {
-  return {
-    group: merge(omit(group, 'spec.members'), {
-      spec: {
-        members: group?.spec?.members?.filter(m => m !== user.metadata.name),
-      },
-    }),
-
-    user: merge(omit(user, 'spec.memberOf'), {
-      spec: {
-        memberOf: user?.spec?.memberOf?.filter(m => m !== group.metadata.name),
-      },
-    }),
-  };
-}
-
-export function addUserToGroup(user: UserEntity, group: GroupEntity) {
-  if (!group.spec?.members) {
-    group.spec = {
-      ...group.spec,
-      members: [],
-    };
-  }
-
-  if (!user.spec?.memberOf) {
-    user.spec = {
-      ...user.spec,
-      memberOf: [],
-    };
-  }
-
-  group.spec?.members?.push(user.metadata.name);
-  user.spec?.memberOf?.push(group.metadata.name);
-  return { group, user };
-}

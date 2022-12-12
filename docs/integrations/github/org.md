@@ -76,7 +76,6 @@ Set up your provider
 
 ```diff
 // packages/backend/src/plugins/catalogEventBasedProviders.ts
-+import { CatalogClient } from '@backstage/catalog-client';
 +import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
  import { EntityProvider } from '@backstage/plugin-catalog-node';
  import { EventSubscriber } from '@backstage/plugin-events-node';
@@ -94,8 +93,6 @@ Set up your provider
 +      id: 'production',
 +      orgUrl: 'https://github.com/backstage',
 +      logger: env.logger,
-+      catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
-+      tokenManager: env.tokenManager,
 +      schedule: env.scheduler.createScheduledTaskRunner({
 +        frequency: { minutes: 60 },
 +        timeout: { minutes: 15 },
@@ -105,9 +102,6 @@ Set up your provider
    return providers.flat();
  }
 ```
-
-**Attention:**
-`catalogApi` and `tokenManager` are required at this variant compared to the one without events support.
 
 You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
 The webhook will need to be configured to forward `organization`,`team` and `membership` events.
@@ -164,10 +158,6 @@ that item.
 There is also a `defaultUserTransformer` and `defaultOrganizationTeamTransformer`.
 You could use these and simply decorate the response from the default
 transformation if you only need to change a few properties.
-
-**Attention:**
-When you use the Events Support with a `TeamTransformer`, you need to ensure your entity will have the
-annotation `github.com/team-id` with the value from `team.databaseId`. Without this, the `team.edit` event could fail to update
 
 ### Resolving GitHub users via organization email
 
