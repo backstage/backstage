@@ -27,7 +27,7 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+import { FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -148,6 +148,9 @@ const app = createApp({
     });
   },
 });
+
+const AppProvider = app.getProvider();
+const AppRouter = app.getRouter();
 
 const routes = (
   <FlatRoutes>
@@ -279,12 +282,14 @@ const routes = (
   </FlatRoutes>
 );
 
-export default app.createRoot(
-  <>
+const App = () => (
+  <AppProvider>
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
     <AppRouter>
       <Root>{routes}</Root>
     </AppRouter>
-  </>,
+  </AppProvider>
 );
+
+export default App;
