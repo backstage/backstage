@@ -18,7 +18,7 @@ import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { UserSettingsSignInAvatar } from './UserSettingsSignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
-import { useUserProfile } from '../useUserProfileInfo';
+import { useUserProfile } from '../../useUserProfileInfo';
 import { InfoCard } from '@backstage/core-components';
 
 /** @public */

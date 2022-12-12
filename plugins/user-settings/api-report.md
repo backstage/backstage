@@ -70,6 +70,13 @@ export type SettingsLayoutRouteProps = {
   >;
 };
 
+// @public (undocumented)
+export function use24HourTimeState(): [
+  boolean,
+  (value: boolean) => void,
+  boolean,
+];
+
 // @public @deprecated (undocumented)
 export const USER_SETTINGS_TAB_KEY = 'plugin.user-settings.settingsLayoutRoute';
 
@@ -80,6 +87,9 @@ export const UserSettingsAppearanceCard: () => JSX.Element;
 export const UserSettingsAuthProviders: (props: {
   providerSettings?: JSX.Element;
 }) => JSX.Element;
+
+// @public (undocumented)
+export const UserSettingsDateTimeCard: () => JSX.Element;
 
 // @public (undocumented)
 export const UserSettingsFeatureFlags: () => JSX.Element;

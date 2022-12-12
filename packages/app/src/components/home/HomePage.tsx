@@ -20,8 +20,6 @@ import {
   ComponentTabs,
   ComponentTab,
   WelcomeTitle,
-  HeaderWorldClock,
-  ClockConfig,
   HomePageStarredEntities,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
@@ -29,39 +27,12 @@ import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
-
-const clockConfigs: ClockConfig[] = [
-  {
-    label: 'NYC',
-    timeZone: 'America/New_York',
-  },
-  {
-    label: 'UTC',
-    timeZone: 'UTC',
-  },
-  {
-    label: 'STO',
-    timeZone: 'Europe/Stockholm',
-  },
-  {
-    label: 'TYO',
-    timeZone: 'Asia/Tokyo',
-  },
-];
-
-const timeFormat: Intl.DateTimeFormatOptions = {
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false,
-};
+import { HeaderClock } from './HeaderClock';
 
 export const homePage = (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
-      <HeaderWorldClock
-        clockConfigs={clockConfigs}
-        customTimeFormat={timeFormat}
-      />
+      <HeaderClock />
     </Header>
     <Content>
       <Grid container spacing={3}>

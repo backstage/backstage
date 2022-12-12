@@ -16,7 +16,7 @@
 
 import { InfoCard } from '@backstage/core-components';
 import React from 'react';
-import { useUserProfile } from '../useUserProfileInfo';
+import { useUserProfile } from '../../useUserProfileInfo';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';

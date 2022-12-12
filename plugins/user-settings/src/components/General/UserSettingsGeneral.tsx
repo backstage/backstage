@@ -16,9 +16,10 @@
 
 import { Grid } from '@material-ui/core';
 import React from 'react';
-import { UserSettingsProfileCard } from './UserSettingsProfileCard';
-import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
-import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
+import { UserSettingsProfileCard } from './Profile/UserSettingsProfileCard';
+import { UserSettingsAppearanceCard } from './Appearance/UserSettingsAppearanceCard';
+import { UserSettingsIdentityCard } from './Identity/UserSettingsIdentityCard';
+import { UserSettingsDateTimeCard } from './DateTime/UserSettingsDateTimeCard';
 
 /** @public */
 export const UserSettingsGeneral = () => {
@@ -32,6 +33,9 @@ export const UserSettingsGeneral = () => {
       </Grid>
       <Grid item xs={12} md={6}>
         <UserSettingsIdentityCard />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <UserSettingsDateTimeCard />
       </Grid>
     </Grid>
   );

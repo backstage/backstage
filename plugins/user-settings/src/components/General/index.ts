@@ -15,10 +15,12 @@
  */
 
 export { UserSettingsGeneral } from './UserSettingsGeneral';
-export { UserSettingsProfileCard } from './UserSettingsProfileCard';
-export { UserSettingsMenu } from './UserSettingsMenu';
-export { UserSettingsSignInAvatar } from './UserSettingsSignInAvatar';
-export { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
-export { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
-export { UserSettingsPinToggle } from './UserSettingsPinToggle';
-export { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
+export { UserSettingsProfileCard } from './Profile/UserSettingsProfileCard';
+export { UserSettingsMenu } from './Profile/UserSettingsMenu';
+export { UserSettingsSignInAvatar } from './Profile/UserSettingsSignInAvatar';
+export { UserSettingsAppearanceCard } from './Appearance/UserSettingsAppearanceCard';
+export { UserSettingsThemeToggle } from './Appearance/UserSettingsThemeToggle';
+export { UserSettingsPinToggle } from './Appearance/UserSettingsPinToggle';
+export { UserSettingsIdentityCard } from './Identity/UserSettingsIdentityCard';
+export { UserSettingsDateTimeCard } from './DateTime/UserSettingsDateTimeCard';
+export * from './DateTime/userSettingsDateTimeState';
