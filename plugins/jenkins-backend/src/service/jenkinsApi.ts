@@ -89,7 +89,7 @@ export class JenkinsApiImpl {
     } else {
       // We aren't filtering
       // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
-      const folder = await client.job.get({
+      const project = await client.job.get({
         name: jenkinsInfo.jobFullName,
         // Filter only be the information we need, instead of loading all fields.
         // Limit to only show the latest build for each job and only load 50 jobs
@@ -99,8 +99,16 @@ export class JenkinsApiImpl {
         tree: JenkinsApiImpl.jobsTreeSpec.replace(/\s/g, ''),
       });
 
-      // TODO: support this being a project itself.
-      for (const jobDetails of folder.jobs) {
+      const isStandaloneProject = !project.jobs;
+      if (isStandaloneProject) {
+        const standaloneProject = await client.job.get({
+          name: jenkinsInfo.jobFullName,
+          tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
+        });
+        projects.push(this.augmentProject(standaloneProject));
+        return projects;
+      }
+      for (const jobDetails of project.jobs) {
         // for each branch (we assume)
         if (jobDetails?.jobs) {
           // skipping folders inside folders for now
