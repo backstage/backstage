@@ -17,7 +17,6 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
-import { DateTime } from 'luxon';
 import { applyDatabaseMigrations } from '../database/migrations';
 import {
   DbFinalEntitiesRow,
@@ -43,7 +42,6 @@ describe('Stitcher', () => {
       const stitcher = new Stitcher(db, logger);
       let entities: DbFinalEntitiesRow[];
       let entity: Entity;
-      const timeBeforeStitch = DateTime.now();
 
       await db<DbRefreshStateRow>('refresh_state').insert([
         {
@@ -114,13 +112,6 @@ describe('Stitcher', () => {
       expect(entity.metadata.etag).toEqual(entities[0].hash);
       const last_updated_at = entities[0].last_updated_at;
       expect(last_updated_at).not.toBeNull();
-      const lastUpdatedAt = DateTime.fromMillis(
-        last_updated_at ? +last_updated_at : 0,
-      );
-      const msAfterStitch = lastUpdatedAt
-        .diff(timeBeforeStitch, 'milliseconds')
-        .toObject();
-      expect(msAfterStitch.milliseconds).toBeGreaterThan(0);
       const firstHash = entities[0].hash;
 
       const search = await db<DbSearchRow>('search');
@@ -190,7 +181,6 @@ describe('Stitcher', () => {
         },
       ]);
 
-      const timeBeforeRestitch = DateTime.now();
       await stitcher.stitch(new Set(['k:ns/n']));
 
       entities = await db<DbFinalEntitiesRow>('final_entities');
@@ -224,14 +214,6 @@ describe('Stitcher', () => {
       expect(entities[0].hash).not.toEqual(firstHash);
       expect(entities[0].hash).toEqual(entity.metadata.etag);
       expect(entity.metadata.etag).toEqual(entities[0].hash);
-      const last_updated_at_after_restitch = entities[0].last_updated_at;
-      expect(last_updated_at_after_restitch).not.toBeNull();
-      const msAfterRestitch = DateTime.fromMillis(
-        last_updated_at_after_restitch ? +last_updated_at_after_restitch : 0,
-      )
-        .diff(timeBeforeRestitch, 'milliseconds')
-        .toObject();
-      expect(msAfterRestitch.milliseconds).toBeGreaterThan(0);
 
       expect(await db<DbSearchRow>('search')).toEqual(
         expect.arrayContaining([
