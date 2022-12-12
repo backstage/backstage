@@ -137,3 +137,7 @@ sonarqube:
       baseUrl: https://special-project-sonarqube.example.com
       apiKey: abcdef0123456789abcedf0123456789ab
 ```
+
+## Links
+
+- [Sonarqube Frontend](../sonarqube/README.md)
