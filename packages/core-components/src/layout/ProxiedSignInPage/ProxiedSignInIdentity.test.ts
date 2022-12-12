@@ -48,7 +48,7 @@ describe('ProxiedSignInIdentity', () => {
 
     it('handles a token that has no exp', async () => {
       const [a, _b, c] = validBackstageToken.split('.');
-      const botched = `${a}.${btoa(JSON.stringify({}))}.${c}`;
+      const botched = `${a}.${window.btoa(JSON.stringify({}))}.${c}`;
       expect(tokenToExpiry(botched)).toEqual(
         new Date(new Date(Date.now() + DEFAULTS.defaultTokenExpiryMillis)),
       );
@@ -81,16 +81,18 @@ describe('ProxiedSignInIdentity', () => {
           backstageIdentity: {
             token: [
               'eyJhbGciOiJFUzI1NiIsImtpZCI6ImMxNTMzNDRiLWZjYzktNGIwOS1iN2ZhLTU3ZmM5MDhjMjBiNiJ9',
-              btoa(
-                JSON.stringify({
-                  iss: 'http://localhost:7007/api/auth',
-                  sub: 'user:default/freben',
-                  aud: 'backstage',
-                  iat,
-                  exp,
-                  ent: ['group:default/my-team'],
-                }),
-              ).replace(/=/g, ''),
+              window
+                .btoa(
+                  JSON.stringify({
+                    iss: 'http://localhost:7007/api/auth',
+                    sub: 'user:default/freben',
+                    aud: 'backstage',
+                    iat,
+                    exp,
+                    ent: ['group:default/my-team'],
+                  }),
+                )
+                .replace(/=/g, ''),
               '4nOTmPHPwhzaKTzikgUsHcszfcP-JamcojMnRfyfsKhyHCCEywe6uLFlvvmK5NbaX5Z7IIji-kg7bxKU58kwoQ',
             ].join('.'),
             identity: {

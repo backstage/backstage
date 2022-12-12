@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { DateAggregation, Entity } from '../types';
+import {
+  DateAggregation,
+  Entity,
+} from '@backstage/plugin-cost-insights-common';
 
 export const MockAggregatedDailyCosts: DateAggregation[] = [
   {

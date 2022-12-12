@@ -88,17 +88,17 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
   # some outputs which are saved along with the job for use in the frontend
   output:
     links:
       - title: Repository
-        url: ${{ steps.publish.output.remoteUrl }}
+        url: ${{ steps['publish'].output.remoteUrl }}
       - title: Open in catalog
         icon: catalog
-        entityRef: ${{ steps.register.output.entityRef }}
+        entityRef: ${{ steps['register'].output.entityRef }}
 ```
 
 Let's dive in and pick apart what each of these sections do and what they are.
@@ -505,10 +505,10 @@ The main two that are used are the following:
 output:
   links:
     - title: Repository
-      url: ${{ steps.publish.output.remoteUrl }} # link to the remote repository
+      url: ${{ steps['publish'].output.remoteUrl }} # link to the remote repository
     - title: Open in catalog
       icon: catalog
-      entityRef: ${{ steps.register.output.entityRef }} # link to the entity that has been ingested to the catalog
+      entityRef: ${{ steps['register'].output.entityRef }} # link to the entity that has been ingested to the catalog
 ```
 
 ## The templating syntax

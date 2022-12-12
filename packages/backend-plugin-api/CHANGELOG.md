@@ -1,5 +1,19 @@
 # @backstage/backend-plugin-api
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 884d749b14: **BREAKING**: All core service references are now exported via a single `coreServices` object. For example, the `loggerServiceRef` is now accessed via `coreServices.logger` instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-tasks@0.4.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
 ## 0.1.5-next.1
 
 ### Patch Changes

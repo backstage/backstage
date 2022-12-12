@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -106,14 +106,14 @@ describe('<CatalogKindHeader />', () => {
     await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ queryParameters: { kind: 'frob' } }}
+          value={{ queryParameters: { kind: 'FROb' } }}
         >
           <CatalogKindHeader />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
 
-    expect(screen.getByText('Frobs')).toBeInTheDocument();
+    expect(screen.getByText('FRObs')).toBeInTheDocument();
   });
 
   it('updates the kind filter', async () => {
@@ -166,9 +166,11 @@ describe('<CatalogKindHeader />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('template'),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        kind: new EntityKindFilter('template'),
+      }),
+    );
   });
 
   it('limits kinds when allowedKinds is set', async () => {

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Duration, Entity, Loading, Maybe, Product } from '../types';
+import { Duration, Loading } from '../types';
+import { Entity, Maybe, Product } from '@backstage/plugin-cost-insights-common';
 import { DEFAULT_DURATION } from './duration';
 
 export type ProductState = {

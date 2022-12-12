@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.1.0-next.2
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults is now provided alongside the query result
+
+### Patch Changes
+
+- 45eb4d23cf: Fixed a bug that prevented indices from being cleaned up under some circumstances, which could have led to shard exhaustion.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.0-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+
 ## 1.0.5-next.1
 
 ### Patch Changes

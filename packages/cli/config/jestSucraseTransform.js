@@ -17,7 +17,6 @@
 const { createHash } = require('crypto');
 const { transform } = require('sucrase');
 const sucrasePkg = require('sucrase/package.json');
-const sucrasePluginPkg = require('@sucrase/jest-plugin/package.json');
 
 const ESM_REGEX = /\b(?:import|export)\b/;
 
@@ -70,14 +69,11 @@ function createTransformer(config) {
     return { code: source };
   };
 
-  // TODO: contribute something like this to @sucrase/jest-plugin
   const getCacheKey = sourceText => {
     return createHash('md5')
       .update(sourceText)
       .update(Buffer.alloc(1))
       .update(sucrasePkg.version)
-      .update(Buffer.alloc(1))
-      .update(sucrasePluginPkg.version)
       .update(Buffer.alloc(1))
       .update(JSON.stringify(config))
       .update(Buffer.alloc(1))

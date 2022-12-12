@@ -1,5 +1,24 @@
 # @backstage/plugin-search-backend
 
+## 1.2.0-next.2
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults is now provided alongside the query result
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/plugin-permission-node@0.7.2-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
 ## 1.1.2-next.1
 
 ### Patch Changes

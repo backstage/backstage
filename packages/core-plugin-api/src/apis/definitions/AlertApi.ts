@@ -26,6 +26,7 @@ export type AlertMessage = {
   message: string;
   // Severity will default to success since that is what material ui defaults the value to.
   severity?: 'success' | 'info' | 'warning' | 'error';
+  display?: 'permanent' | 'transient';
 };
 
 /**

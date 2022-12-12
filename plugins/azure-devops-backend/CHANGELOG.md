@@ -1,5 +1,15 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.18-next.2
+
+### Patch Changes
+
+- eaccf6d628: Updated installation documentation
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-azure-devops-common@0.3.0
+
 ## 0.3.18-next.1
 
 ### Patch Changes

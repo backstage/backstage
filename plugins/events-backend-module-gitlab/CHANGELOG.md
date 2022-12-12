@@ -1,5 +1,15 @@
 # @backstage/plugin-events-backend-module-gitlab
 
+## 0.1.1-next.2
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-events-node@0.2.0-next.2
+
 ## 0.1.1-next.1
 
 ### Patch Changes

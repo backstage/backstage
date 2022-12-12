@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.2.4-next.2
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/plugin-techdocs-node@1.4.3-next.2
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+
 ## 1.2.4-next.1
 
 ### Patch Changes

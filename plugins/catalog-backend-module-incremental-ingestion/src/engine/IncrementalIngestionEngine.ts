@@ -15,11 +15,7 @@
  */
 
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
-import {
-  INCREMENTAL_ENTITY_PROVIDER_ANNOTATION,
-  IterationEngine,
-  IterationEngineOptions,
-} from '../types';
+import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { performance } from 'perf_hooks';
 import { Duration, DurationObjectUnits } from 'luxon';
@@ -268,22 +264,60 @@ export class IncrementalIngestionEngine implements IterationEngine {
             ...deferred.entity.metadata,
             annotations: {
               ...deferred.entity.metadata.annotations,
-              [INCREMENTAL_ENTITY_PROVIDER_ANNOTATION]:
-                this.options.provider.getProviderName(),
             },
           },
         },
       })) ?? [];
 
-    const removed: DeferredEntity[] = [];
+    const removed: { entityRef: string }[] = [];
 
     if (done) {
-      removed.push(
-        ...(await this.manager.computeRemoved(
-          this.options.provider.getProviderName(),
-          id,
-        )),
+      this.options.logger.info(
+        `incremental-engine: Ingestion '${id}': Final page reached, calculating removed entities`,
       );
+      const result = await this.manager.computeRemoved(
+        this.options.provider.getProviderName(),
+        id,
+      );
+
+      const { total } = result;
+
+      let doRemoval = true;
+      if (this.options.rejectEmptySourceCollections) {
+        if (total === 0) {
+          this.options.logger.error(
+            `incremental-engine: Ingestion '${id}': Rejecting empty entity collection!`,
+          );
+          doRemoval = false;
+        }
+      }
+
+      if (this.options.rejectRemovalsAbovePercentage) {
+        // If the total entities upserted in this ingestion is 0, then
+        // 100% of entities are stale and marked for removal.
+        const percentRemoved =
+          total > 0 ? (result.removed.length / total) * 100 : 100;
+        if (percentRemoved <= this.options.rejectRemovalsAbovePercentage) {
+          this.options.logger.info(
+            `incremental-engine: Ingestion '${id}': Removing ${result.removed.length} entities that have no matching assets`,
+          );
+        } else {
+          const notice = `Attempted to remove ${percentRemoved}% of matching entities!`;
+          this.options.logger.error(
+            `incremental-engine: Ingestion '${id}': ${notice}`,
+          );
+          await this.manager.updateIngestionRecordById({
+            ingestionId: id,
+            update: {
+              last_error: `REMOVAL_THRESHOLD exceeded on ingestion mark ${markId}: ${notice}`,
+            },
+          });
+          doRemoval = false;
+        }
+      }
+      if (doRemoval) {
+        removed.push(...result.removed);
+      }
     }
 
     await this.options.connection.applyMutation({
