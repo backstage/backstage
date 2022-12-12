@@ -17,6 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 
-export interface CatalogCollatorEntityProcessor {
-  process(entity: Entity, locationTemplate: string): CatalogEntityDocument;
+/** @public */
+export interface CatalogCollatorEntityTransformer {
+  transform(entity: Entity, locationTemplate: string): CatalogEntityDocument;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DefaultCatalogCollatorEntityProcessor } from './DefaultCatalogCollatorEntityProcessor';
+import { DefaultCatalogCollatorEntityTransformer } from './DefaultCatalogCollatorEntityTransformer';
 
 const entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -48,12 +48,12 @@ const userEntity = {
 
 const locationTemplate = '/catalog/:namespace/:kind/:name';
 
-describe('DefaultCatalogCollatorEntityProcessor', () => {
-  const entityProcessor = new DefaultCatalogCollatorEntityProcessor();
+describe('DefaultCatalogCollatorEntityTransformer', () => {
+  const entityTransformer = new DefaultCatalogCollatorEntityTransformer();
 
-  describe('process', () => {
+  describe('transform', () => {
     it('maps a returned entity', async () => {
-      const document = entityProcessor.process(entity, locationTemplate);
+      const document = entityTransformer.transform(entity, locationTemplate);
 
       expect(document).toMatchObject({
         title: entity.metadata.title,
@@ -84,7 +84,7 @@ describe('DefaultCatalogCollatorEntityProcessor', () => {
         },
       };
 
-      const document = entityProcessor.process(
+      const document = entityTransformer.transform(
         entityWithoutTitle,
         locationTemplate,
       );
@@ -104,7 +104,7 @@ describe('DefaultCatalogCollatorEntityProcessor', () => {
     });
 
     it('maps a returned entity with custom locationTemplate', async () => {
-      const document = entityProcessor.process(entity, '/catalog/:name');
+      const document = entityTransformer.transform(entity, '/catalog/:name');
 
       expect(document).toMatchObject({
         title: entity.metadata.title,
@@ -121,7 +121,10 @@ describe('DefaultCatalogCollatorEntityProcessor', () => {
     });
 
     it('maps a returned user entity', async () => {
-      const document = entityProcessor.process(userEntity, locationTemplate);
+      const document = entityTransformer.transform(
+        userEntity,
+        locationTemplate,
+      );
 
       expect(document).toMatchObject({
         title: userEntity.metadata.name,
@@ -143,7 +146,10 @@ describe('DefaultCatalogCollatorEntityProcessor', () => {
         spec: undefined,
       };
 
-      const document = entityProcessor.process(testEntity, locationTemplate);
+      const document = entityTransformer.transform(
+        testEntity,
+        locationTemplate,
+      );
 
       expect(document).toMatchObject({
         title: userEntity.metadata.name,
@@ -174,7 +180,10 @@ describe('DefaultCatalogCollatorEntityProcessor', () => {
         },
       };
 
-      const document = entityProcessor.process(groupEntity, locationTemplate);
+      const document = entityTransformer.transform(
+        groupEntity,
+        locationTemplate,
+      );
 
       expect(document).toMatchObject({
         title: groupEntity.metadata.name,

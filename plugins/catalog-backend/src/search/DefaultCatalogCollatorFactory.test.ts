@@ -95,9 +95,19 @@ describe('DefaultCatalogCollatorFactory', () => {
     );
   });
 
-  it('has expected type', () => {
-    const factory = DefaultCatalogCollatorFactory.fromConfig(config, options);
-    expect(factory.type).toBe('software-catalog');
+  describe('type', () => {
+    it('has default', () => {
+      const factory = DefaultCatalogCollatorFactory.fromConfig(config, options);
+      expect(factory.type).toBe('software-catalog');
+    });
+
+    it('has custom', () => {
+      const factory = DefaultCatalogCollatorFactory.fromConfig(config, {
+        ...options,
+        type: 'custom-type',
+      });
+      expect(factory.type).toBe('custom-type');
+    });
   });
 
   describe('getCollator', () => {
@@ -121,6 +131,36 @@ describe('DefaultCatalogCollatorFactory', () => {
     });
 
     it('maps a returned entity to an expected CatalogEntityDocument', async () => {
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+
+      expect(documents[0]).toMatchObject({
+        title: expectedEntities[0].metadata.name,
+        location: '/catalog/default/component/test-entity',
+        text: expectedEntities[0].metadata.description,
+        namespace: 'default',
+        componentType: expectedEntities[0]!.spec!.type,
+        lifecycle: expectedEntities[0]!.spec!.lifecycle,
+        owner: expectedEntities[0]!.spec!.owner,
+        authorization: {
+          resourceRef: 'component:default/test-entity',
+        },
+      });
+      expect(documents[1]).toMatchObject({
+        title: expectedEntities[1].metadata.title,
+        location: '/catalog/default/component/test-entity-2',
+        text: expectedEntities[1].metadata.description,
+        namespace: 'default',
+        componentType: expectedEntities[1]!.spec!.type,
+        lifecycle: expectedEntities[1]!.spec!.lifecycle,
+        owner: expectedEntities[1]!.spec!.owner,
+        authorization: {
+          resourceRef: 'component:default/test-entity-2',
+        },
+      });
+    });
+
+    it('maps a returned entity to an expected CatalogEntityDocument with custom transformer', async () => {
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 

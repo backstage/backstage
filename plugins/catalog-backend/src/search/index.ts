@@ -16,11 +16,7 @@
 
 export { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
 export type { DefaultCatalogCollatorFactoryOptions } from './DefaultCatalogCollatorFactory';
-export { CatalogCollatorFactory } from './CatalogCollatorFactory';
-export type {
-  CatalogCollatorFactoryOptions,
-  CatalogCollatorFactoryCreateOptions,
-} from './CatalogCollatorFactory';
+export type { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
 
 /**
  * todo(backstage/techdocs-core): stop exporting this in a future release.

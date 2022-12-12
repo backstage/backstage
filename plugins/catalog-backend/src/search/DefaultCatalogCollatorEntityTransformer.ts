@@ -21,12 +21,12 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
-import { CatalogCollatorEntityProcessor } from './CatalogCollatorEntityProcessor';
+import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
 
-export class DefaultCatalogCollatorEntityProcessor
-  implements CatalogCollatorEntityProcessor
+export class DefaultCatalogCollatorEntityTransformer
+  implements CatalogCollatorEntityTransformer
 {
-  public process(
+  public transform(
     entity: Entity,
     locationTemplate: string,
   ): CatalogEntityDocument {
