@@ -147,7 +147,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         })
       : client.rest.repos.createForAuthenticatedUser({
           name: repo,
-          private: repoVisibility === 'private',
+          private: repoVisibility !== 'public',
           description: description,
           delete_branch_on_merge: deleteBranchOnMerge,
           allow_merge_commit: allowMergeCommit,
