@@ -19,7 +19,7 @@ import { useLocation as useLocationMocked } from 'react-router-dom';
 import { Direction } from '../EntityRelationsGraph';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 
-jest.mock('react-router', () => ({
+jest.mock('react-router-dom', () => ({
   useLocation: jest.fn(),
 }));
 

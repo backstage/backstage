@@ -19,8 +19,8 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { useOutlet } from 'react-router-dom';
 import { ApiExplorerPage } from './ApiExplorerPage';
 
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useOutlet: jest.fn().mockReturnValue('Route Children'),
 }));
 
