@@ -26,9 +26,12 @@ const ReviewWrapper = () => {
   );
 };
 
+/*
+ * This is an exmaple component that uses the <EmbeddedScaffolderWorkflow />
+ */
 export function SecurityTab(): JSX.Element | null {
   // eslint-disable-next-line no-console
-  const onComplete = async () => console.log('onComplete called from ');
+  const onComplete = async () => console.log('we can add to onComplete here');
 
   const onError = (error: Error | undefined) => (
     <h2>{error?.message ?? 'Houston we have a problem.'}</h2>
