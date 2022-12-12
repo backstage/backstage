@@ -23,7 +23,7 @@ import React from 'react';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ErrorPanel } from '../../components/ErrorPanel';
 import { Progress } from '../../components/Progress';
-import { ProxiedSignInIdentity } from './ProxiedSignInIdentity';
+import { ProxiedSignInIdentity, RefreshHeaders } from './ProxiedSignInIdentity';
 
 /**
  * Props for {@link ProxiedSignInPage}.
@@ -38,10 +38,10 @@ export type ProxiedSignInPageProps = SignInPageProps & {
   provider: string;
 
   /**
-   * An optional function which returns a promise resolving with any headers
-   * that need to be added to the call made to /refresh endpoint.
+   * Optional headers which are passed along with the request to the
+   * underlying provider
    */
-  getHeaders?: () => Promise<HeadersInit>;
+  headers?: RefreshHeaders;
 };
 
 /**
@@ -66,7 +66,7 @@ export const ProxiedSignInPage = (props: ProxiedSignInPageProps) => {
     const identity = new ProxiedSignInIdentity({
       provider: props.provider,
       discoveryApi,
-      getHeaders: props.getHeaders,
+      headers: props.headers,
     });
 
     await identity.start();
