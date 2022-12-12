@@ -42,11 +42,9 @@ import useAsync from 'react-use/lib/useAsync';
  * @public
  */
 
-interface starredEntitiesProp {
-  noStarredEntitiesMessage?: React.ReactNode;
-}
-
-export const Content = ({ noStarredEntitiesMessage }: starredEntitiesProp) => {
+export const Content = (props: {
+  noStarredEntitiesMessage?: React.ReactNode | undefined;
+}) => {
   const catalogApi = useApi(catalogApiRef);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
@@ -81,7 +79,7 @@ export const Content = ({ noStarredEntitiesMessage }: starredEntitiesProp) => {
   if (starredEntities.size === 0)
     return (
       <Typography variant="body1">
-        {noStarredEntitiesMessage ||
+        {props.noStarredEntitiesMessage ||
           'Click the star beside an entity name to add it to this list!'}
       </Typography>
     );
