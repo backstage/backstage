@@ -93,16 +93,7 @@ export const Router = (props: RouterProps) => {
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
 
-  const customFieldExtensions = useCustomFieldExtensions(outlet);
-  const fieldExtensions = [
-    ...customFieldExtensions,
-    ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
-      ({ name }) =>
-        !customFieldExtensions.some(
-          customFieldExtension => customFieldExtension.name === name,
-        ),
-    ),
-  ] as FieldExtensionOptions[];
+  const fieldExtensions = useCustomFieldExtensions(outlet, DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS);
 
   // todo(blam): this should also be moved to a hook in -react
   const customLayouts = useElementFilter(outlet, elements =>

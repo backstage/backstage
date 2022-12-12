@@ -43,7 +43,7 @@ export function SecurityTab(): JSX.Element | null {
       description={`
 ## This is markdown
 - overriding the template description
-      `}
+  `}
       onComplete={onComplete}
       onError={onError}
       namespace="default"

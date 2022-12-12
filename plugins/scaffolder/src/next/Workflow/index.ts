@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { type WorkflowProps, Workflow, EmbeddableWorkflow } from './Workflow';
+export { EmbeddableWorkflow, type WorkflowProps } from './Workflow';

@@ -17,12 +17,15 @@
 import React, { useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import type { JsonValue } from '@backstage/types';
-import { EmbeddableWorkflow, WorkflowProps } from '../Workflow/Workflow';
-import { FormProps } from '@backstage/plugin-scaffolder-react';
-import { useGetCustomFields } from '../Router';
+import { EmbeddableWorkflow, type WorkflowProps } from '../Workflow/Workflow';
+import { FormProps, useCustomFieldExtensions } from '@backstage/plugin-scaffolder-react';
 import { Box, Button } from '@material-ui/core';
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
-type EmbeddedWorkflowProps = Omit<
+/**
+ * @alpha
+ */
+export type EmbeddedScaffolderWorkflowProps = Omit<
   WorkflowProps,
   'customFieldExtensions' | 'onComplete'
 > & {
@@ -41,6 +44,10 @@ type DisplayComponents = Record<Display, JSX.Element>;
 
 type OnCompleteArgs = Parameters<WorkflowProps['onComplete']>[0];
 
+/**
+ * Allows the EmbeddableWorkflow to be called from outside of a normal scaffolder workflow
+ * @alpha
+ */
 export function EmbeddedScaffolderWorkflow({
   namespace,
   templateName,
@@ -52,9 +59,9 @@ export function EmbeddedScaffolderWorkflow({
   title,
   description,
   ReviewStateWrapper,
-}: EmbeddedWorkflowProps): JSX.Element {
+}: EmbeddedScaffolderWorkflowProps): JSX.Element {
   const [display, setDisplay] = useState<Display>('front');
-  const fieldExtensions = useGetCustomFields(customExtensionsElement);
+  const fieldExtensions = useCustomFieldExtensions(customExtensionsElement, DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS);
 
   const startTemplate = useCallback(() => setDisplay('workflow'), []);
 

@@ -20,16 +20,19 @@ import {
   FIELD_EXTENSION_WRAPPER_KEY,
 } from '../extensions/keys';
 
+type Extension = Omit<FieldExtensionOptions, 'validation'> & { validation?: unknown }
+
 /**
  * Hook that returns all custom field extensions from the current outlet.
  * @public
  */
 export const useCustomFieldExtensions = <
-  TComponentDataType = FieldExtensionOptions,
+  TComponentDataType = FieldExtensionOptions
 >(
   outlet: React.ReactNode,
+  defaultScaffolderFieldExtensions: Extension[] = []
 ) => {
-  return useElementFilter(outlet, elements =>
+  const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
@@ -37,5 +40,15 @@ export const useCustomFieldExtensions = <
       .findComponentData<TComponentDataType>({
         key: FIELD_EXTENSION_KEY,
       }),
-  );
+  )  as FieldExtensionOptions[];
+
+  return [
+    ...customFieldExtensions,
+    ...defaultScaffolderFieldExtensions.filter(
+      ({ name }) =>
+        !customFieldExtensions.some(
+          customFieldExtension => customFieldExtension.name === name,
+        ),
+    ),
+  ];
 };

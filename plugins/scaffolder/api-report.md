@@ -31,7 +31,11 @@ import { Observable } from '@backstage/types';
 import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+<<<<<<< HEAD
 import { ReactNode } from 'react';
+=======
+import type { ReactNode } from 'react';
+>>>>>>> 1a12ad8e8d (fix api-reports)
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScaffolderApi as ScaffolderApi_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderDryRunOptions as ScaffolderDryRunOptions_2 } from '@backstage/plugin-scaffolder-react';
@@ -80,8 +84,29 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   },
 ) => void | Promise<void>;
 
+// @alpha
+export function EmbeddedScaffolderWorkflow({
+  namespace,
+  templateName,
+  customExtensionsElement,
+  frontPage,
+  finishPage,
+  onComplete,
+  onError,
+  title,
+  description,
+  ReviewStateWrapper,
+}: EmbeddedScaffolderWorkflowProps): JSX.Element;
+
 // @alpha (undocumented)
-export const EmbeddableWorkflow: (props: WorkflowProps) => JSX.Element;
+export type EmbeddedScaffolderWorkflowProps = Omit<
+  WorkflowProps,
+  'customFieldExtensions' | 'onComplete'
+> & {
+  customExtensionsElement?: React_2.ReactNode;
+  frontPage: ReactNode;
+  finishPage: ReactNode;
+} & Partial<Pick<WorkflowProps, 'onComplete'>>;
 
 // @public
 export const EntityNamePickerFieldExtension: FieldExtensionComponent<
@@ -128,9 +153,9 @@ export type EntityPickerUiOptions =
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
   string[],
   {
-    showCounts?: boolean | undefined;
-    kinds?: string[] | undefined;
     helperText?: string | undefined;
+    kinds?: string[] | undefined;
+    showCounts?: boolean | undefined;
   }
 >;
 
@@ -138,9 +163,9 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
-    showCounts?: boolean | undefined;
-    kinds?: string[] | undefined;
     helperText?: string | undefined;
+    kinds?: string[] | undefined;
+    showCounts?: boolean | undefined;
   }
 >;
 
@@ -565,6 +590,7 @@ export type TemplateParameterSchema = TemplateParameterSchema_2;
 export const TemplateTypePicker: () => JSX.Element | null;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
 =======
@@ -573,6 +599,8 @@ export const useGetCustomFields: (
   element: React_2.ReactNode,
 ) => NextFieldExtensionOptions<unknown, unknown>[];
 
+=======
+>>>>>>> 1a12ad8e8d (fix api-reports)
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 

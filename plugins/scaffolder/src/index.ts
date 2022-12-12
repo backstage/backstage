@@ -46,9 +46,8 @@ export * from './deprecated';
 /** next exports */
 export { NextScaffolderPage } from './plugin';
 export {
-  EmbeddableWorkflow,
-  useGetCustomFields,
   EmbeddedScaffolderWorkflow,
+  type EmbeddedScaffolderWorkflowProps,
   type WorkflowProps,
   type ReviewStateProps,
   type ParsedTemplateSchema,
