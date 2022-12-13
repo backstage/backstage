@@ -38,7 +38,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback } from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 
-export function RefreshActionButton() {
+export function RefreshButton() {
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);

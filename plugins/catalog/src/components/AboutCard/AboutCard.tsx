@@ -29,7 +29,7 @@ import {
 import React from 'react';
 import {
   EditMetadataButton,
-  RefreshActionButton,
+  RefreshButton,
   ViewInSourceButton,
   ViewInTechDocsButton,
 } from './buttons';

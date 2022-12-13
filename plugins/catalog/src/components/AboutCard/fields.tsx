@@ -122,7 +122,7 @@ export function DomainAboutField() {
     );
   }
 
-  return null;
+  return <></>;
 }
 
 export function SystemAboutField() {
@@ -152,7 +152,7 @@ export function SystemAboutField() {
     );
   }
 
-  return null;
+  return <></>;
 }
 
 export function ParentComponentAboutField() {
@@ -180,7 +180,7 @@ export function ParentComponentAboutField() {
     );
   }
 
-  return null;
+  return <></>;
 }
 
 export function TypeAboutField() {
@@ -201,7 +201,7 @@ export function TypeAboutField() {
     );
   }
 
-  return null;
+  return <></>;
 }
 
 export function LifecycleAboutField() {
@@ -218,7 +218,7 @@ export function LifecycleAboutField() {
     />;
   }
 
-  return null;
+  return <></>;
 }
 
 export function TagsAboutField() {
@@ -275,5 +275,5 @@ export function LocationTargetsAboutField() {
     );
   }
 
-  return null;
+  return <></>;
 }
