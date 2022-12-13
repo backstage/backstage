@@ -18,6 +18,7 @@ import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
   DEFAULT_NAMESPACE,
+  getEntitySourceLocation,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { IconLinkVertical, Link } from '@backstage/core-components';
@@ -27,21 +28,13 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import {
-  ScmIntegrationIcon,
-  scmIntegrationsApiRef,
-} from '@backstage/integration-react';
-import {
-  catalogApiRef,
-  getEntitySourceLocation,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
+import { ScmIntegrationIcon } from '@backstage/integration-react';
+
 import { IconButton } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback } from 'react';
-import { viewTechDocRouteRef } from '../../routes';
 
 export function RefreshActionButton() {
   const { entity } = useEntity();
@@ -98,18 +91,26 @@ export function EditMetadataButton() {
 
 export function ViewInSourceButton() {
   const { entity } = useEntity();
-  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
-  const entitySourceLocation = getEntitySourceLocation(
-    entity,
-    scmIntegrationsApi,
-  );
+
+  let entitySourceLocation:
+    | {
+        type: string;
+        target: string;
+      }
+    | undefined;
+
+  try {
+    entitySourceLocation = getEntitySourceLocation(entity);
+  } catch (e) {
+    // do not throw
+  }
 
   return (
     <IconLinkVertical
       label="View Source"
       disabled={!entitySourceLocation}
-      icon={<ScmIntegrationIcon type={entitySourceLocation?.integrationType} />}
-      href={entitySourceLocation?.locationTargetUrl}
+      icon={<ScmIntegrationIcon type={entitySourceLocation?.type} />}
+      href={entitySourceLocation?.target}
     />
   );
 }

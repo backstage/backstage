@@ -39,3 +39,4 @@ export { useStarredEntities } from './useStarredEntities';
 export { useStarredEntity } from './useStarredEntity';
 export { useEntityOwnership } from './useEntityOwnership';
 export { useEntityPermission } from './useEntityPermission';
+export { useDynamicColumns } from './useDynamicColumns';

@@ -20,15 +20,15 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import {
-  EntityRefLinks,
-  getEntityRelations,
   useEntity,
+  AboutField,
+  getEntityRelations,
+  EntityRefLinks,
+  LinksGridList,
 } from '@backstage/plugin-catalog-react';
 import { JsonArray } from '@backstage/types';
 import { Chip, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { AboutField } from './AboutField';
-import { LinksGridList } from '../EntityLinksCard/LinksGridList';
 
 const useStyles = makeStyles({
   description: {

@@ -16,10 +16,10 @@
 
 import { ImageList, ImageListItem } from '@material-ui/core';
 import React from 'react';
-import { IconLink } from './IconLink';
-import { ColumnBreakpoints } from './types';
-import { useDynamicColumns } from './useDynamicColumns';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { ColumnBreakpoints } from '../../types';
+import { useDynamicColumns } from '../../hooks';
+import { IconLink } from '../IconLink';
 
 export interface LinksGridListItem {
   href: string;

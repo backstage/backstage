@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
 import { EntityLinksEmptyState } from './EntityLinksEmptyState';
-import { LinksGridList } from './LinksGridList';
-import { ColumnBreakpoints } from './types';
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
+import { ColumnBreakpoints, useEntity } from '@backstage/plugin-catalog-react';
+import { LinksGridList } from '@backstage/plugin-catalog-react';
 
 /** @public */
 export interface EntityLinksCardProps {

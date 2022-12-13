@@ -18,7 +18,6 @@ import {
   HeaderIconLinkRow,
   InfoCardVariants,
 } from '@backstage/core-components';
-import { useElementFilter } from '@backstage/core-plugin-api';
 import {
   Card,
   CardContent,
@@ -29,21 +28,21 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import {
-  RefreshActionButton,
   EditMetadataButton,
+  RefreshActionButton,
   ViewInSourceButton,
   ViewInTechDocsButton,
 } from './buttons';
 import {
   DescriptionAboutField,
-  OwnerAboutField,
   DomainAboutField,
-  SystemAboutField,
-  ParentComponentAboutField,
-  TypeAboutField,
   LifecycleAboutField,
-  TagsAboutField,
   LocationTargetsAboutField,
+  OwnerAboutField,
+  ParentComponentAboutField,
+  SystemAboutField,
+  TagsAboutField,
+  TypeAboutField,
 } from './fields';
 
 const useStyles = makeStyles({

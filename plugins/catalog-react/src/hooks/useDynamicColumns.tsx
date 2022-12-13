@@ -15,7 +15,7 @@
  */
 
 import { Theme, useMediaQuery } from '@material-ui/core';
-import { Breakpoint, ColumnBreakpoints } from './types';
+import type { Breakpoint, ColumnBreakpoints } from '../types';
 
 const colDefaults: ColumnBreakpoints = {
   xs: 1,
