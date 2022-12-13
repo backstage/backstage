@@ -82,10 +82,7 @@ export const primaryButtons = [
   <ViewInTechDocsButton />,
 ];
 
-export const secondaryButtons = [
-  <RefreshActionButton />,
-  <EditMetadataButton />,
-];
+export const secondaryButtons = [<RefreshButton />, <EditMetadataButton />];
 
 export const fields = [
   <DescriptionAboutField />,
