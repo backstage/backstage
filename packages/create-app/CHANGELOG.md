@@ -1,5 +1,63 @@
 # @backstage/create-app
 
+## 0.4.35-next.4
+
+### Patch Changes
+
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- dfb269fab2: Updated the template to have the `'/test'` proxy endpoint in `app-config.yaml` be commented out by default.
+- d9b3753f87: Updated the app template to use the new `AppRouter` component instead of `app.getRouter()`, as well as `app.createRoot()` instead of `app.getProvider()`.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { FlatRoutes } from '@backstage/core-app-api';
+  +import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+
+   ...
+
+  -const AppProvider = app.getProvider();
+  -const AppRouter = app.getRouter();
+
+   ...
+
+  -const App = () => (
+  +export default app.createRoot(
+  -  <AppProvider>
+  +  <>
+       <AlertDisplay />
+       <OAuthRequestDialog />
+       <AppRouter>
+         <Root>{routes}</Root>
+       </AppRouter>
+  -  </AppProvider>
+  +  </>,
+   );
+  ```
+
+  The final export step should end up looking something like this:
+
+  ```tsx
+  export default app.createRoot(
+    <>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </>,
+  );
+  ```
+
+  Note that `app.createRoot()` accepts a React element, rather than a component.
+
+- 71e75c0b70: Removed the `react-router` dependency from the app package, using only `react-router-dom` instead.
+
+  This change is just a bit of cleanup and is optional. If you want to apply it to your app, remove the `react-router` dependency from `packages/app/package.json`, and replace any imports from `react-router` with `react-router-dom` instead.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+
 ## 0.4.35-next.3
 
 ### Patch Changes

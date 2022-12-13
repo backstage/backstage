@@ -1,5 +1,32 @@
 # @backstage/plugin-scaffolder
 
+## 1.9.0-next.4
+
+### Minor Changes
+
+- 34a48cdc4f: The `RepoUrlPicker` field extension now has an `allowedProjects` option for narrowing the selection of Bitbucket URLs.
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- db6310b6a0: Show input type array correctly on installed actions page.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/plugin-permission-react@0.4.8-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/integration-react@1.1.7-next.4
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.3
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
 ## 1.9.0-next.3
 
 ### Patch Changes

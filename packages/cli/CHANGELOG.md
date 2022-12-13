@@ -1,5 +1,28 @@
 # @backstage/cli
 
+## 0.22.0-next.4
+
+### Minor Changes
+
+- 736f893f72: The Jest configuration that was previously enabled with `BACKSTAGE_NEXT_TESTS` is now enabled by default. To revert to the old configuration you can now instead set `BACKSTAGE_OLD_TESTS`.
+
+  This new configuration uses the `babel` coverage provider rather than `v8`. It used to be that `v8` worked better when using Sucrase for transpilation, but now that we have switched to SWC, `babel` seems to work better. In addition, the new configuration also enables source maps by default, as they no longer have a negative impact on code coverage accuracy, and it also enables a modified Jest runtime with additional caching of script objects.
+
+### Patch Changes
+
+- dd721148b5: Updated Jest coverage configuration to only apply either in the root project or package configuration, depending on whether repo or package tests are run.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- c27eabef6b: Adds new web-library package option when generating a new plugin
+- 309f2daca4: Updated dependency `esbuild` to `^0.16.0`.
+- d9d9a7a134: Removed all copyright notices from package templates.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/release-manifests@0.0.8-next.0
+  - @backstage/types@1.0.2-next.1
+
 ## 0.21.2-next.3
 
 ### Patch Changes

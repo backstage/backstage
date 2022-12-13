@@ -1,5 +1,20 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.1-next.4
+
+### Patch Changes
+
+- 593c22253a: Added Y axis for metric data, with relevant formatting and data domain
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/test-utils@1.2.3-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.12.1-next.3
 
 ### Patch Changes

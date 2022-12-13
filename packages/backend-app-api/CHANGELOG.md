@@ -1,5 +1,16 @@
 # @backstage/backend-app-api
 
+## 0.2.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.0-next.3
+  - @backstage/plugin-permission-node@0.7.2-next.3
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-plugin-api@0.2.0-next.3
+  - @backstage/errors@1.1.4-next.1
+
 ## 0.2.4-next.2
 
 ### Patch Changes
