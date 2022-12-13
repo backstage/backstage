@@ -57,21 +57,6 @@ describe('BitbucketRepoPicker', () => {
     expect(getAllByRole('textbox')).toHaveLength(1);
   });
 
-  it('renders a select if there is a list of allowed projects', async () => {
-    const allowedProjects = ['project1', 'project2'];
-    const { findByText } = render(
-      <BitbucketRepoPicker
-        onChange={jest.fn()}
-        rawErrors={[]}
-        state={{ host: 'bitbucket.org', repoName: 'repo' }}
-        allowedProjects={allowedProjects}
-      />,
-    );
-
-    expect(await findByText('project1')).toBeInTheDocument();
-    expect(await findByText('project2')).toBeInTheDocument();
-  });
-
   describe('workspace field', () => {
     it('calls onChange when the workspace changes', () => {
       const onChange = jest.fn();
@@ -107,6 +92,48 @@ describe('BitbucketRepoPicker', () => {
       fireEvent.change(projectInput, { target: { value: 'test-project' } });
 
       expect(onChange).toHaveBeenCalledWith({ project: 'test-project' });
+    });
+
+    it('Does not render a select if the list of allowed projects does not exist', async () => {
+      const { getAllByRole } = render(
+        <BitbucketRepoPicker
+          onChange={jest.fn()}
+          rawErrors={[]}
+          state={{ host: 'bitbucket.org', repoName: 'repo' }}
+        />,
+      );
+
+      expect(getAllByRole('textbox')).toHaveLength(2);
+      expect(getAllByRole('textbox')[1]).toHaveValue('');
+    });
+
+    it('Does not render a select if the list of allowed projects is empty', async () => {
+      const { getAllByRole } = render(
+        <BitbucketRepoPicker
+          onChange={jest.fn()}
+          rawErrors={[]}
+          state={{ host: 'bitbucket.org', repoName: 'repo' }}
+          allowedProjects={[]}
+        />,
+      );
+
+      expect(getAllByRole('textbox')).toHaveLength(2);
+      expect(getAllByRole('textbox')[1]).toHaveValue('');
+    });
+
+    it('Does render a select if there is a list of allowed projects', async () => {
+      const allowedProjects = ['project1', 'project2'];
+      const { findByText } = render(
+        <BitbucketRepoPicker
+          onChange={jest.fn()}
+          rawErrors={[]}
+          state={{ host: 'bitbucket.org', repoName: 'repo' }}
+          allowedProjects={allowedProjects}
+        />,
+      );
+
+      expect(await findByText('project1')).toBeInTheDocument();
+      expect(await findByText('project2')).toBeInTheDocument();
     });
   });
 });

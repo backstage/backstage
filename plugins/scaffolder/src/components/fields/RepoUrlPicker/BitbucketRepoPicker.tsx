@@ -21,6 +21,15 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 
+/**
+ * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
+ * field extension.
+ *
+ * @public
+ * @param allowedOwners - Allowed workspaces for the Bitbucket cloud repository
+ * @param allowedProjects - Allowed projects for the Bitbucket cloud repository
+ *
+ */
 export const BitbucketRepoPicker = (props: {
   allowedOwners?: string[];
   allowedProjects?: string[];
