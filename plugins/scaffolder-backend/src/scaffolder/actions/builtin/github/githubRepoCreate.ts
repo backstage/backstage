@@ -63,11 +63,11 @@ export function createGithubRepoCreateAction(options: {
     collaborators?: Array<
       | {
           user: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          access: string;
         }
       | {
           team: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          access: string;
         }
       | {
           /** @deprecated This field is deprecated in favor of team */

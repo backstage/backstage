@@ -110,7 +110,6 @@ const collaborators = {
       access: {
         type: 'string',
         description: 'The type of access for the user',
-        enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
       },
       user: {
         type: 'string',
