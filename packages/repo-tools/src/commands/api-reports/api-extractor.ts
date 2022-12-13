@@ -232,7 +232,8 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     extends: './tsconfig.json',
     include: [
       // These two contain global definitions that are needed for stable API report generation
-      'packages/cli/asset-types/asset-types.d.ts',
+      // eslint-disable-next-line no-restricted-syntax
+      `${resolvePath(__dirname)}/asset-types/asset-types.d.ts`,
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
   });
