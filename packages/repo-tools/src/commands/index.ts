@@ -20,13 +20,28 @@ import { exitWithError } from '../lib/errors';
 
 export function registerCommands(program: Command) {
   program
-    .command('api-reports [path...]')
+    .command('api-reports [paths...]')
     .option('--ci', 'CI run checks that there is no changes on API reports')
     .option('--tsc', 'executes the tsc compilation before extracting the APIs')
     .option('--docs', 'generates the api documentation')
+    .option(
+      '-a, --allow-warnings <allowWarningsPaths>',
+      'continue processing packages after getting errors on selected packages Allows glob patterns and comma separated values (i.e. packages/core,plugins/core-*)',
+    )
+    .option(
+      '--allow-all-warnings',
+      'continue processing packages after getting errors on all packages',
+      false,
+    )
+    .option(
+      '-o, --omit-messages <messageCodes>',
+      'select some message code to be omited on the API Extractor (comma separated values i.e ae-cyclic-inherit-doc,ae-missing-getter )',
+    )
     .description('Generate an API report for selected packages')
     .action(
-      lazy(() => import('./api-reports/api-reports').then(m => m.default)),
+      lazy(() =>
+        import('./api-reports/api-reports').then(m => m.buildApiReports),
+      ),
     );
 
   program
