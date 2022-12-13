@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { MetricKey } from '@backstage/plugin-sonarqube-react';
+import { MetricKey as NonDeprecatedMetricKey } from '@backstage/plugin-sonarqube-react';
+import { SonarUrlProcessorFunc as NonDeprecatedSonarUrlProcessorFunc } from '@backstage/plugin-sonarqube-react';
 
 export interface InstanceUrlWrapper {
   instanceUrl: string;
@@ -25,7 +26,17 @@ export interface FindingsWrapper {
   measures: Measure[];
 }
 
+/**
+ * @deprecated use the same type from `@backstage/plugin-sonarqube-react` instead
+ */
+export type MetricKey = NonDeprecatedMetricKey;
+
 export interface Measure {
   metric: MetricKey;
   value: string;
 }
+
+/**
+ * @deprecated use the same type from `@backstage/plugin-sonarqube-react` instead
+ */
+export type SonarUrlProcessorFunc = NonDeprecatedSonarUrlProcessorFunc;
