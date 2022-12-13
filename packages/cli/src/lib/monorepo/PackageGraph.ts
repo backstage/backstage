@@ -240,12 +240,21 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
 
     if (changedFiles.includes('yarn.lock') && options.analyzeLockfile) {
       // Load the lockfile in the working tree and the one at the ref and diff them
-      const thisLockfile = await Lockfile.load(
-        paths.resolveTargetRoot('yarn.lock'),
-      );
-      const otherLockfile = Lockfile.parse(
-        await readFileAtRef('yarn.lock', options.ref),
-      );
+      let thisLockfile: Lockfile;
+      let otherLockfile: Lockfile;
+      try {
+        thisLockfile = await Lockfile.load(
+          paths.resolveTargetRoot('yarn.lock'),
+        );
+        otherLockfile = Lockfile.parse(
+          await readFileAtRef('yarn.lock', options.ref),
+        );
+      } catch (error) {
+        console.warn(
+          `Failed to read lockfiles, assuming all packages have changed, ${error}`,
+        );
+        return Array.from(this.values());
+      }
       const diff = thisLockfile.diff(otherLockfile);
 
       // Create a simplified dependency graph only keeps track of package names
