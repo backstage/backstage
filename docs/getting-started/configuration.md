@@ -79,7 +79,7 @@ backend:
   database:
 -    client: better-sqlite3
 -    connection: ':memory:'
-+    # config options: https://node-postgres.com/api/client
++    # config options: https://node-postgres.com/apis/client
 +    client: pg
 +    connection:
 +      host: ${POSTGRES_HOST}
