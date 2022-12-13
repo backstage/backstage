@@ -15,11 +15,7 @@
  */
 
 import React, { ComponentType } from 'react';
-import {
-  EntityPeekAheadPopover,
-  EntityPeekAheadPopoverProps,
-} from './EntityPeekAheadPopover';
-import Button from '@material-ui/core/Button';
+import { EntityRefLink, EntityRefLinkProps } from './EntityRefLink';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -84,7 +80,7 @@ const defaultArgs = {
 };
 
 export default {
-  title: 'Catalog /PeekAheadPopover',
+  title: 'Catalog /EntityRefLink',
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
@@ -104,35 +100,25 @@ export default {
   ],
 };
 
-export const Default = (args: EntityPeekAheadPopoverProps) => (
-  <EntityPeekAheadPopover {...args}>
-    <Button>Hover over me to see details about this component</Button>
-  </EntityPeekAheadPopover>
+export const Default = (args: EntityRefLinkProps) => (
+  <EntityRefLink {...args} />
 );
 Default.args = defaultArgs;
 
-export const User = (args: EntityPeekAheadPopoverProps) => (
-  <EntityPeekAheadPopover {...args}>
-    <Button>Hover over me to see details about this user</Button>
-  </EntityPeekAheadPopover>
-);
+export const User = (args: EntityRefLinkProps) => <EntityRefLink {...args} />;
 User.args = {
   entityRef: 'user:default/fname.lname',
 };
 
-export const NotFound = (args: EntityPeekAheadPopoverProps) => (
-  <EntityPeekAheadPopover {...args}>
-    <Button>Hover over me to see details about this not found entity</Button>
-  </EntityPeekAheadPopover>
+export const NotFound = (args: EntityRefLinkProps) => (
+  <EntityRefLink {...args} />
 );
 NotFound.args = {
   entityRef: 'user:default/doesnt.exist',
 };
 
-export const SlowCatalogItem = (args: EntityPeekAheadPopoverProps) => (
-  <EntityPeekAheadPopover {...args}>
-    <Button>Hover over me to see details about this slow entity</Button>
-  </EntityPeekAheadPopover>
+export const SlowCatalogItem = (args: EntityRefLinkProps) => (
+  <EntityRefLink {...args} />
 );
 SlowCatalogItem.args = {
   entityRef: 'component:default/slow.catalog.item',
