@@ -229,8 +229,6 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     fs.removeSync(path);
   });
 
-  console.log(resolvePackagePathBackend('@backstage/cli', 'asset-types/asset-types.d.ts'));
-
   await fs.writeJson(path, {
     extends: './tsconfig.json',
     include: [
