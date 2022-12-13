@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
       '&:hover': {
         boxShadow: theme.shadows[4],
       },
+      height: '100%',
     },
     bold: {
       fontWeight: theme.typography.fontWeightBold,
@@ -75,7 +76,6 @@ const EntityCountTile = ({
         display="flex"
         flexDirection="column"
         alignItems="center"
-        style={{ height: '100%' }}
       >
         <Typography className={classes.bold} variant="h6">
           {counter}
