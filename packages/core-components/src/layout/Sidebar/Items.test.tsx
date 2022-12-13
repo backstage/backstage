@@ -71,7 +71,7 @@ describe('Items', () => {
     it('should render a button with custom style', async () => {
       expect(
         await screen.findByRole('button', { name: /create/i }),
-      ).toHaveStyle(`background-color: ${hexToRgb('2b2a2a')}`);
+      ).toHaveStyle(`background-color: transparent`);
     });
   });
   describe('SidebarSearchField', () => {

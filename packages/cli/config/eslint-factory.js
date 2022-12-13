@@ -217,9 +217,6 @@ function createConfigForRole(dir, role, extraConfig = {}) {
           '@spotify/eslint-config-react',
           ...(extraConfig.extends ?? []),
         ],
-        rules: {
-          ...extraConfig.rules,
-        },
         parserOptions: {
           ecmaFeatures: {
             jsx: true,
