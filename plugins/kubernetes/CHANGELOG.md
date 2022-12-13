@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.5-next.4
+
+### Patch Changes
+
+- 365f887717: Removed rendering for ErrorEmptyState in ErrorReporting component, so nothing is rendered when there are no errors. Also removed Divider on Kubernetes page.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-kubernetes-common@0.4.5-next.1
+
 ## 0.7.5-next.3
 
 ### Patch Changes

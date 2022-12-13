@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.5.0-next.3
+
+### Minor Changes
+
+- dfbdae092e: Added a new optional `accountId` to the configuration options of the AWS S3 publisher. Configuring this option will source credentials for the `accountId` in the `aws` app config section. See https://github.com/backstage/backstage/blob/master/packages/integration-aws-node/README.md for more details.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/plugin-techdocs-node@1.4.3-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.3
+  - @backstage/plugin-search-common@1.2.0-next.3
+
 ## 1.4.2-next.2
 
 ### Patch Changes

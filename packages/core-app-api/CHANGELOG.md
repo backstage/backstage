@@ -1,5 +1,65 @@
 # @backstage/core-app-api
 
+## 1.3.0-next.4
+
+### Minor Changes
+
+- e0d9c9559a: Added a new `AppRouter` component and `app.createRoot()` method that replaces `app.getRouter()` and `app.getProvider()`, which are now deprecated. The new `AppRouter` component is a drop-in replacement for the old router component, while the new `app.createRoot()` method is used instead of the old provider component.
+
+  An old app setup might look like this:
+
+  ```tsx
+  const app = createApp(/* ... */);
+
+  const AppProvider = app.getProvider();
+  const AppRouter = app.getRouter();
+
+  const routes = ...;
+
+  const App = () => (
+    <AppProvider>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </AppProvider>
+  );
+
+  export default App;
+  ```
+
+  With these new APIs, the setup now looks like this:
+
+  ```tsx
+  import { AppRouter } from '@backstage/core-app-api';
+
+  const app = createApp(/* ... */);
+
+  const routes = ...;
+
+  export default app.createRoot(
+    <>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </>,
+  );
+  ```
+
+  Note that `app.createRoot()` accepts a React element, rather than a component.
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
 ## 1.2.1-next.3
 
 ### Patch Changes

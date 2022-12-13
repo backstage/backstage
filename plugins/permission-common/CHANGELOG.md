@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-common
 
+## 0.7.2-next.2
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+
 ## 0.7.2-next.1
 
 ### Patch Changes
