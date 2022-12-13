@@ -19,6 +19,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   stringifyLocationRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
@@ -86,6 +87,17 @@ export class ProcessorOutputCollector {
         assertError(e);
         this.logger.debug(`Envelope validation failed at ${location}, ${e}`);
         this.errors.push(e);
+        return;
+      }
+
+      // The processor contract says you should return the "trunk" (current)
+      // entity, not emit it. But it happens that this is misunderstood or
+      // accidentally forgotten. This can lead to circular references which at
+      // best is wasteful, so we try to be helpful by ignoring such emitted
+      // entities.
+      if (
+        stringifyEntityRef(entity) === stringifyEntityRef(this.parentEntity)
+      ) {
         return;
       }
 
