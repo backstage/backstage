@@ -57,6 +57,8 @@ export function createPublishGithubAction(options: {
     gitAuthorEmail?: string;
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
+    squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
     sourcePath?: string;
@@ -117,6 +119,8 @@ export function createPublishGithubAction(options: {
           gitAuthorEmail: inputProps.gitAuthorEmail,
           allowMergeCommit: inputProps.allowMergeCommit,
           allowSquashMerge: inputProps.allowSquashMerge,
+          squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
+          squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
           allowRebaseMerge: inputProps.allowRebaseMerge,
           allowAutoMerge: inputProps.allowAutoMerge,
           sourcePath: inputProps.sourcePath,
@@ -154,6 +158,8 @@ export function createPublishGithubAction(options: {
         gitAuthorEmail,
         allowMergeCommit = true,
         allowSquashMerge = true,
+        squashMergeCommitTitle = 'PR_TITLE',
+        squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,
         collaborators,
@@ -185,6 +191,8 @@ export function createPublishGithubAction(options: {
         deleteBranchOnMerge,
         allowMergeCommit,
         allowSquashMerge,
+        squashMergeCommitTitle,
+        squashMergeCommitMessage,
         allowRebaseMerge,
         allowAutoMerge,
         access,
