@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.24-next.4
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+
 ## 0.2.24-next.3
 
 ### Patch Changes

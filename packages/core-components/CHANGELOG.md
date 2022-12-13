@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.12.1-next.4
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- a5a2d12298: Added option to pass additional headers to `<ProxiedSignInPage />`, which are passed along with the request to the underlying provider
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3-next.0
+
 ## 0.12.1-next.3
 
 ### Patch Changes

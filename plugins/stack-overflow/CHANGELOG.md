@@ -1,5 +1,19 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.8-next.4
+
+### Patch Changes
+
+- c981e83612: The `<StackOverflowSearchResultListItem />` component is now able to highlight the result title and/or text when provided. To take advantage of this, pass in the `highlight` prop, similar to how it is done on other result list item components.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-home@0.4.28-next.4
+  - @backstage/plugin-search-react@1.3.0-next.4
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.0-next.3
+
 ## 0.1.8-next.3
 
 ### Patch Changes

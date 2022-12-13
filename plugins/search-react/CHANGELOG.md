@@ -1,5 +1,18 @@
 # @backstage/plugin-search-react
 
+## 1.3.0-next.4
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/plugin-search-common@1.2.0-next.3
+
 ## 1.3.0-next.3
 
 ### Patch Changes

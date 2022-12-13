@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.8.1-next.4
+
+### Patch Changes
+
+- 22e20b3a59: Clusters declared in the app-config can now have their CA configured via a local filesystem path using the `caFile` property.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-test-utils@0.1.31-next.4
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.3
+  - @backstage/plugin-kubernetes-common@0.4.5-next.1
+
 ## 0.8.1-next.3
 
 ### Patch Changes

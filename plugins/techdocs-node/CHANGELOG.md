@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-node
 
+## 1.4.3-next.3
+
+### Patch Changes
+
+- e40790d0c2: Add support for specifying an S3 bucket's account ID and retrieving the credentials from the `aws` app config section. This is now the preferred way to configure AWS credentials for Techdocs.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.0-next.0
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/plugin-search-common@1.2.0-next.3
+
 ## 1.4.3-next.2
 
 ### Patch Changes

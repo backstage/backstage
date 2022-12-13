@@ -1,5 +1,14 @@
 # @backstage/plugin-apollo-explorer
 
+## 0.1.5-next.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+
 ## 0.1.5-next.3
 
 ### Patch Changes

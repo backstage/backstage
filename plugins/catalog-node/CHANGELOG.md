@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-node
 
+## 1.3.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.0-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.3
+
 ## 1.3.0-next.2
 
 ### Minor Changes
