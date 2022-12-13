@@ -329,10 +329,9 @@ function progressTracker() {
     logger.debug(`Processing ${item.entityRef}`);
 
     if (item.nextUpdateAt) {
-      promProcessingQueueDelay.observe(
-        -item.nextUpdateAt.diffNow().as('seconds'),
-      );
-      processingQueueDelay.record(-item.nextUpdateAt.diffNow().as('seconds'));
+      const seconds = -item.nextUpdateAt.diffNow().as('seconds');
+      promProcessingQueueDelay.observe(seconds);
+      processingQueueDelay.record(seconds);
     }
 
     function endTime() {
