@@ -670,6 +670,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -691,6 +692,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: true,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -712,6 +714,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -739,6 +742,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -760,6 +764,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: false,
       dismissStaleReviews: false,
     });
@@ -781,6 +786,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -808,6 +814,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -818,6 +825,7 @@ describe('publish:github', () => {
         ...mockContext.input,
         requiredStatusCheckContexts: ['statusCheck'],
         requireBranchesToBeUpToDate: true,
+        requiredConversationResolution: false,
       },
     });
 
@@ -830,6 +838,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -852,6 +861,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -873,6 +883,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -955,6 +966,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -976,6 +988,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: true,
     });
@@ -997,6 +1010,7 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });

@@ -284,6 +284,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -305,6 +306,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: true,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -326,6 +328,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -350,6 +353,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -371,6 +375,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -392,6 +397,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: false,
       dismissStaleReviews: false,
     });
@@ -416,6 +422,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -426,6 +433,7 @@ describe('github:repo:push', () => {
         ...mockContext.input,
         requiredStatusCheckContexts: ['statusCheck'],
         requireBranchesToBeUpToDate: true,
+        requiredConversationResolution: false,
       },
     });
 
@@ -438,6 +446,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -460,6 +469,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -470,6 +480,7 @@ describe('github:repo:push', () => {
         ...mockContext.input,
         requiredStatusCheckContexts: [],
         requireBranchesToBeUpToDate: true,
+        requiredConversationResolution: false,
       },
     });
 
@@ -482,6 +493,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -525,6 +537,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
@@ -546,6 +559,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: true,
     });
@@ -567,6 +581,7 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
     });
