@@ -29,6 +29,7 @@ type LockfileData = {
     integrity?: string /* old */;
     checksum?: string /* new */;
     dependencies?: { [name: string]: string };
+    peerDependencies?: { [name: string]: string };
   };
 };
 
@@ -337,6 +338,25 @@ export class Lockfile {
       }
       entry.version = newVersion;
     }
+  }
+
+  createSimplifiedDependencyGraph(): Map<string, Set<string>> {
+    const graph = new Map<string, Set<string>>();
+
+    for (const [name, entries] of this.packages) {
+      const dependencies = new Set(
+        entries.flatMap(e => {
+          const data = this.data[e.dataKey];
+          return [
+            ...Object.keys(data?.dependencies ?? {}),
+            ...Object.keys(data?.peerDependencies ?? {}),
+          ];
+        }),
+      );
+      graph.set(name, dependencies);
+    }
+
+    return graph;
   }
 
   /**
