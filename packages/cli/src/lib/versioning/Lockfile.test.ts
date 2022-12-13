@@ -536,5 +536,54 @@ d@^1:
         ],
       });
     });
+
+    it('should handle workspace ranges', async () => {
+      const lockfile = `${HEADER}
+"@backstage/app-defaults@workspace:^, @backstage/app-defaults@workspace:packages/app-defaults":
+  version: 0.0.0-use.local
+  resolution: "@backstage/app-defaults@workspace:packages/app-defaults"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/plugin-permission-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/backend-app-api@workspace:^, @backstage/backend-app-api@workspace:packages/backend-app-api":
+  version: 0.0.0-use.local
+  resolution: "@backstage/backend-app-api@workspace:packages/backend-app-api"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+`;
+      expect(Lockfile.parse(lockfile).diff(Lockfile.parse(lockfile))).toEqual({
+        added: [],
+        changed: [],
+        removed: [],
+      });
+    });
   });
 });

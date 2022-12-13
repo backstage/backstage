@@ -379,7 +379,7 @@ export class Lockfile {
         if (otherPkg && thisPkg) {
           const thisCheck = thisPkg.integrity || thisPkg.checksum;
           const otherCheck = otherPkg.integrity || otherPkg.checksum;
-          if (!thisCheck || !otherCheck || thisCheck !== otherCheck) {
+          if (thisCheck !== otherCheck) {
             diff.changed.push({ name, range: otherQuery.range });
           }
         }
