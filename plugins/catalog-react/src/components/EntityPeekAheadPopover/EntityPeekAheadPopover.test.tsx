@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityPeekAheadPopover } from './EntityPeekAheadPopover';
 import { ApiProvider } from '@backstage/core-app-api';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
+import { Button } from '@material-ui/core';
+import { entityRouteRef } from '../../routes';
 
 const catalogApi: Partial<CatalogApi> = {
   getEntityByRef: async (
     entityRef: CompoundEntityRef,
   ): Promise<Entity | undefined> => {
     if (
-      entityRef ===
-      { name: 'service1', namespace: 'default', kind: 'component ' }
+      entityRef.name === 'service1' &&
+      entityRef.namespace === 'default' &&
+      entityRef.kind === 'component'
     ) {
       return {
         apiVersion: '',
@@ -51,22 +54,31 @@ const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 describe('<EntityPeekAheadPopover/>', () => {
   it('renders all owners', async () => {
-    render(
+    renderInTestApp(
       <ApiProvider apis={apis}>
-        <EntityPeekAheadPopover
-          entityRef={{
-            name: 'service1',
-            namespace: 'default',
-            kind: 'component',
-          }}
-        >
-          <div data-testid="popover">asdf</div>
+        <EntityPeekAheadPopover entityRef="component:default/service1">
+          <Button data-testid="popover1">s1</Button>
+        </EntityPeekAheadPopover>
+        <EntityPeekAheadPopover entityRef="component:default/service2">
+          <Button data-testid="popover2">s2</Button>
         </EntityPeekAheadPopover>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
-    expect(screen.getByText('asdf')).toBeInTheDocument();
+    expect(screen.getByText('s1')).toBeInTheDocument();
     expect(screen.queryByText('service1')).toBeNull();
-    fireEvent.mouseOver(screen.getByTestId('popover'));
-    expect(screen.getByText('service1')).toBeInTheDocument();
+    fireEvent.mouseOver(screen.getByTestId('popover1'));
+    expect(await screen.findByText('service1')).toBeInTheDocument();
+
+    expect(screen.getByText('s2')).toBeInTheDocument();
+    expect(screen.queryByText('service2')).toBeNull();
+    fireEvent.mouseOver(screen.getByTestId('popover2'));
+    expect(
+      await screen.findByText(/service2 was not found/),
+    ).toBeInTheDocument();
   });
 });

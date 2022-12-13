@@ -34,17 +34,17 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
-import { Alert, Skeleton } from '@material-ui/lab';
+import { Alert } from '@material-ui/lab';
 import EmailIcon from '@material-ui/icons/Email';
 import InfoIcon from '@material-ui/icons/Info';
 import { useApiHolder, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  CompoundEntityRef,
   isUserEntity,
   isGroupEntity,
   UserEntity,
   GroupEntity,
   Entity,
+  parseEntityRef,
 } from '@backstage/catalog-model';
 import { Link, Progress } from '@backstage/core-components';
 
@@ -54,11 +54,14 @@ import { Link, Progress } from '@backstage/core-components';
  * @public
  */
 export type EntityPeekAheadPopoverProps = PropsWithChildren<{
-  entityRef: CompoundEntityRef;
+  entityRef: string;
 }>;
 
 const useStyles = makeStyles(() => {
   return {
+    trigger: {
+      display: 'inline-block',
+    },
     popoverPaper: {
       width: '30em',
     },
@@ -130,33 +133,53 @@ const EntityCardActions = ({ entity }: { entity: Entity }) => {
   );
 };
 
+const EntityNotFoundCard = ({
+  entityRef,
+  error,
+}: {
+  entityRef: string;
+  error?: Error;
+}) => {
+  return (
+    <Card>
+      <CardContent>
+        <Alert severity="warning">
+          {entityRef} was not found {error?.message}
+        </Alert>
+      </CardContent>
+    </Card>
+  );
+};
+
 /**
  * Shows an entity popover on hover of a component.
  *
  * @public
  */
-export const EntityPeekAheadPopover = ({
-  entityRef,
-  children,
-}: EntityPeekAheadPopoverProps) => {
+export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
+  const { entityRef, children } = props;
+
   const classes = useStyles();
   const apiHolder = useApiHolder();
   const popupState = usePopupState({
     variant: 'popover',
     popupId: 'entity-peek-ahead',
   });
+  const compoundEntityRef = parseEntityRef(entityRef);
 
   const [{ loading, error, value: entity }, load] = useAsyncFn(async () => {
     const catalogApi = apiHolder.get(catalogApiRef);
     if (catalogApi) {
-      const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
+      const retrievedEntity = await catalogApi.getEntityByRef(
+        compoundEntityRef,
+      );
       if (!retrievedEntity) {
-        throw new Error(`${entityRef.name} was not found`);
+        throw new Error(`${compoundEntityRef.name} was not found`);
       }
       return retrievedEntity;
     }
     return undefined;
-  }, [apiHolder, entityRef]);
+  }, [apiHolder, compoundEntityRef]);
 
   useEffect(() => {
     if (popupState.isOpen && !entity && !error && !loading) {
@@ -166,9 +189,9 @@ export const EntityPeekAheadPopover = ({
 
   return (
     <>
-      <div data-testid="trigger" {...bindHover(popupState)}>
+      <span data-testid="trigger" {...bindHover(popupState)}>
         {children}
-      </div>
+      </span>
       <HoverPopover
         PaperProps={{
           className: classes.popoverPaper,
@@ -183,16 +206,20 @@ export const EntityPeekAheadPopover = ({
           horizontal: 'center',
         }}
       >
-        <Card>
+        <>
           {loading && <Progress />}
-          <CardContent>
-            <Typography color="textSecondary">{entityRef.namespace}</Typography>
-            <Typography variant="h5" component="div">
-              {entityRef.name}
-            </Typography>
-            {error && <Alert severity="warning">{error.message}</Alert>}
-            {entity ? (
-              <>
+          {!entity && !loading && (
+            <EntityNotFoundCard entityRef={entityRef} error={error} />
+          )}
+          {entity && (
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary">
+                  {compoundEntityRef.namespace}
+                </Typography>
+                <Typography variant="h5" component="div">
+                  {compoundEntityRef.name}
+                </Typography>
                 <Typography color="textSecondary">{entity.kind}</Typography>
                 <Typography className={classes.descriptionTypography} paragraph>
                   {entity.metadata.description}
@@ -202,35 +229,28 @@ export const EntityPeekAheadPopover = ({
                   {(entity.metadata.tags || [])
                     .slice(0, maxTagChips)
                     .map(tag => {
-                      return <Chip size="small" label={tag} />;
+                      return <Chip key={tag} size="small" label={tag} />;
                     })}
                   {entity.metadata.tags?.length &&
                     entity.metadata.tags?.length > maxTagChips && (
                       <Tooltip title="Drill into the entity to see all of the tags.">
-                        <Chip size="small" label="..." />
+                        <Chip key="other-tags" size="small" label="..." />
                       </Tooltip>
                     )}
                 </Box>
-              </>
-            ) : (
-              <>
-                <Skeleton width="30%" variant="text" />
-                <Skeleton variant="text" />
-                <Skeleton width="50%" variant="text" />
-                <Skeleton width="20%" variant="text" />
-              </>
-            )}
-          </CardContent>
-          <CardActions>
-            {entity && (
-              <>
-                {isUserEntity(entity) && <UserCardActions entity={entity} />}
-                {isGroupEntity(entity) && <GroupCardActions entity={entity} />}
-                <EntityCardActions entity={entity} />
-              </>
-            )}
-          </CardActions>
-        </Card>
+              </CardContent>
+              <CardActions>
+                <>
+                  {isUserEntity(entity) && <UserCardActions entity={entity} />}
+                  {isGroupEntity(entity) && (
+                    <GroupCardActions entity={entity} />
+                  )}
+                  <EntityCardActions entity={entity} />
+                </>
+              </CardActions>
+            </Card>
+          )}
+        </>
       </HoverPopover>
     </>
   );

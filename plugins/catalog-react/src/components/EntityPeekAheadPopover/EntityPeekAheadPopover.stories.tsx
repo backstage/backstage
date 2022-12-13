@@ -60,16 +60,27 @@ const mockCatalogApi = {
         },
       };
     }
+    if (
+      entityRef.namespace === 'default' &&
+      entityRef.name === 'slow.catalog.item' &&
+      entityRef.kind === 'component'
+    ) {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      return {
+        kind: 'Component',
+        metadata: {
+          name: 'slow.catalog.item',
+          namespace: 'default',
+          description: 'Details about the slow.catalog.item service',
+        },
+      };
+    }
     return undefined;
   },
 };
 
 const defaultArgs = {
-  entityRef: {
-    namespace: 'default',
-    name: 'playback',
-    kind: 'component',
-  },
+  entityRef: 'component:default/playback',
 };
 
 export default {
@@ -106,9 +117,23 @@ export const User = (args: EntityPeekAheadPopoverProps) => (
   </EntityPeekAheadPopover>
 );
 User.args = {
-  entityRef: {
-    kind: 'user',
-    namespace: 'default',
-    name: 'fname.lname',
-  },
+  entityRef: 'user:default/fname.lname',
+};
+
+export const NotFound = (args: EntityPeekAheadPopoverProps) => (
+  <EntityPeekAheadPopover {...args}>
+    <Button>Hover over me to see details about this not found entity</Button>
+  </EntityPeekAheadPopover>
+);
+NotFound.args = {
+  entityRef: 'user:default/doesnt.exist',
+};
+
+export const SlowCatalogItem = (args: EntityPeekAheadPopoverProps) => (
+  <EntityPeekAheadPopover {...args}>
+    <Button>Hover over me to see details about this slow entity</Button>
+  </EntityPeekAheadPopover>
+);
+SlowCatalogItem.args = {
+  entityRef: 'component:default/slow.catalog.item',
 };

@@ -77,7 +77,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     );
 
     return (
-      <EntityPeekAheadPopover entityRef={{ kind, namespace, name }}>
+      <EntityPeekAheadPopover entityRef={`${kind}:${namespace}/${name}`}>
         <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
           {children}
           {!children && (title ?? formattedEntityRefTitle)}
