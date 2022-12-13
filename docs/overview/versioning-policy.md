@@ -1,7 +1,7 @@
 ---
 id: versioning-policy
 title: Release & Versioning Policy
-description:
+description: The process and policy for releasing and versioning Backstage
 ---
 
 The Backstage project is comprised of a set of software components that together
