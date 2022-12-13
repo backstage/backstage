@@ -458,6 +458,7 @@ export async function createElasticSearchClientOptions(
     const authConfig = config.getConfig('auth');
     return {
       provider: 'opensearch',
+      node: config.getString('node'),
       auth: {
         username: authConfig.getString('username'),
         password: authConfig.getString('password'),
