@@ -292,7 +292,7 @@ function progressTracker() {
   );
 
   const processedEntities = meter.createCounter(
-    'catalog.stitched.entities.count',
+    'catalog.processed.entities.count',
     { description: 'Amount of entities processed' },
   );
 
