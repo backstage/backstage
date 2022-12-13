@@ -29,12 +29,14 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import { ScmIntegrationIcon } from '@backstage/integration-react';
+import { useEntity, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 import { IconButton } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback } from 'react';
+import { viewTechDocRouteRef } from '../../routes';
 
 export function RefreshActionButton() {
   const { entity } = useEntity();
