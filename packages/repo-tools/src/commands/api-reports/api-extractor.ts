@@ -233,7 +233,10 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     extends: './tsconfig.json',
     include: [
       // These two contain global definitions that are needed for stable API report generation
-      resolvePackagePathBackend('@backstage/cli', 'asset-types/asset-types.d.ts'),
+      resolvePackagePathBackend(
+        '@backstage/cli',
+        'asset-types/asset-types.d.ts',
+      ),
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
     // we don't exclude node_modules so that we can use the asset-types.d.ts file
