@@ -18,6 +18,7 @@ import {
   HeaderIconLinkRow,
   InfoCardVariants,
 } from '@backstage/core-components';
+import { useElementFilter } from '@backstage/core-plugin-api';
 import {
   Card,
   CardContent,
@@ -118,20 +119,30 @@ export function AboutCard(props: AboutCardProps) {
     cardContentClass = classes.fullHeightCardContent;
   }
 
+  const actions = useElementFilter(
+    props.secondaryButtons ?? secondaryButtons,
+    c => c.getElements(),
+  );
+
+  const headerButtons = useElementFilter(
+    props.primaryButtons ?? primaryButtons,
+    c => c.getElements(),
+  );
+
+  const aboutFields = useElementFilter(props.fields ?? fields, c =>
+    c.getElements(),
+  );
+
   return (
     <Card className={cardClass}>
       <CardHeader
         title="About"
-        action={props.secondaryButtons ?? secondaryButtons}
-        subheader={
-          <HeaderIconLinkRow>
-            {props.primaryButtons ?? primaryButtons}
-          </HeaderIconLinkRow>
-        }
+        action={actions}
+        subheader={<HeaderIconLinkRow>{headerButtons}</HeaderIconLinkRow>}
       />
       <Divider />
       <CardContent className={cardContentClass}>
-        <Grid container>{props.fields ?? fields}</Grid>
+        <Grid container>{aboutFields}</Grid>
       </CardContent>
     </Card>
   );

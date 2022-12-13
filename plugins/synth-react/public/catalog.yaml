@@ -8,9 +8,22 @@ catalogReactPlugin: { $resolve: '@backstage/plugin-catalog-react' }
 <AboutCard>:
   $Component:
     type: $catalogPlugin.EntityAboutCard
-  primaryButtons: $props.primaryButtons
-  secondaryButtons: $catalogReactPlugin.secondaryButtons
-  fields: $catalogReactPlugin.fields
+  primaryButtons:
+    EntityViewInSourceButton: $catalogPlugin.EntityViewInSourceButton
+    EntityViewInTechDocsButton: $catalogPlugin.EntityViewInTechDocsButton
+  secondaryButtons:
+    EntityRefreshButton: $catalogPlugin.EntityRefreshButton
+    EntityEditMetadataButton: $catalogPlugin.EntityEditMetadataButton
+  fields:
+    EntityDescriptionAboutField: $catalogPlugin.EntityDescriptionAboutField
+    EntityOwnerAboutField: $catalogPlugin.EntityOwnerAboutField
+    EntityDomainAboutField: $catalogPlugin.EntityDomainAboutField
+    EntitySystemAboutField: $catalogPlugin.EntitySystemAboutField
+    EntityParentComponentAboutField: $catalogPlugin.EntityParentComponentAboutField
+    EntityTypeAboutField: $catalogPlugin.EntityTypeAboutField
+    EntityLifecycleAboutField: $catalogPlugin.EntityLifecycleAboutField
+    EntityTagsAboutField: $catalogPlugin.EntityTagsAboutField
+    EntityLocationTargetsAboutField: $catalogPlugin.EntityLocationTargetsAboutField
 
 <EntityProvider>:
   $Component:
