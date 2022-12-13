@@ -35,6 +35,7 @@ import { paths as cliPaths } from '../../lib/paths';
 import { runPlain } from '../run';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import pickBy from 'lodash/pickBy';
+import yn from 'yn';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -148,6 +149,8 @@ export async function createConfig(
     require.resolve('react-refresh'),
   ];
 
+  const withCache = yn(process.env[BUILD_CACHE_ENV_VAR], { default: false });
+
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
@@ -208,7 +211,7 @@ export async function createConfig(
         : {}),
     },
     plugins,
-    ...(process.env[BUILD_CACHE_ENV_VAR]
+    ...(withCache
       ? {
           cache: {
             type: 'filesystem',
