@@ -2,8 +2,4 @@
 '@backstage/plugin-scaffolder': minor
 ---
 
-Add field selection rendering of allowed Projects for BitbucketRepoPicker. Allows a user to define allowed projects via the ui:field RepoUrlPicker ui:options allowed Projects.
-
-Add comments about expected values for BitbucketRepoPicker: Projects and workspaces
-
-Update tests to cover null, empty list, and list values for allowed Bitbucket projects
+The `RepoUrlPicker` field extension now has an `allowedProjects` option for narrowing the selection of Bitbucket URLs.
