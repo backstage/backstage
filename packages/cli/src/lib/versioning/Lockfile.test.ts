@@ -416,30 +416,30 @@ d@^1:
     it('should diff two legacy lockfiles', async () => {
       expect(lockfileLegacyA.diff(lockfileLegacyB)).toEqual({
         added: [
-          { name: 'b', range: '4' },
-          { name: 'd', range: '^1' },
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
         ],
         changed: [
           { name: 'a', range: '^1' },
           { name: 'b', range: '2.0.x' },
         ],
         removed: [
-          { name: 'b', range: '3' },
-          { name: 'c', range: '^1' },
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
         ],
       });
       expect(lockfileLegacyB.diff(lockfileLegacyA)).toEqual({
         added: [
-          { name: 'b', range: '3' },
-          { name: 'c', range: '^1' },
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
         ],
         changed: [
           { name: 'a', range: '^1' },
           { name: 'b', range: '2.0.x' },
         ],
         removed: [
-          { name: 'b', range: '4' },
-          { name: 'd', range: '^1' },
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
         ],
       });
     });
@@ -447,30 +447,30 @@ d@^1:
     it('should diff two modern lockfiles', async () => {
       expect(lockfileModernA.diff(lockfileModernB)).toEqual({
         added: [
-          { name: 'b', range: '4' },
-          { name: 'd', range: '^1' },
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
         ],
         changed: [
           { name: 'a', range: '^1' },
           { name: 'b', range: '2.0.x' },
         ],
         removed: [
-          { name: 'b', range: '3' },
-          { name: 'c', range: '^1' },
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
         ],
       });
       expect(lockfileModernB.diff(lockfileModernA)).toEqual({
         added: [
-          { name: 'b', range: '3' },
-          { name: 'c', range: '^1' },
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
         ],
         changed: [
           { name: 'a', range: '^1' },
           { name: 'b', range: '2.0.x' },
         ],
         removed: [
-          { name: 'b', range: '4' },
-          { name: 'd', range: '^1' },
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
         ],
       });
     });
@@ -478,30 +478,30 @@ d@^1:
     it('should diff legacy and modern lockfiles', async () => {
       expect(lockfileLegacyA.diff(lockfileModernB)).toEqual({
         added: [
-          { name: 'b', range: '4' },
-          { name: 'd', range: '^1' },
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
         ],
         changed: [
           { name: 'a', range: '^1' },
           { name: 'b', range: '2.0.x' },
         ],
         removed: [
-          { name: 'b', range: '3' },
-          { name: 'c', range: '^1' },
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
         ],
       });
       expect(lockfileLegacyB.diff(lockfileModernA)).toEqual({
         added: [
-          { name: 'b', range: '3' },
-          { name: 'c', range: '^1' },
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
         ],
         changed: [
           { name: 'a', range: '^1' },
           { name: 'b', range: '2.0.x' },
         ],
         removed: [
-          { name: 'b', range: '4' },
-          { name: 'd', range: '^1' },
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
         ],
       });
     });
@@ -509,30 +509,30 @@ d@^1:
     it('should diff modern and legacy lockfiles', async () => {
       expect(lockfileModernA.diff(lockfileLegacyB)).toEqual({
         added: [
-          { name: 'b', range: '4' },
-          { name: 'd', range: '^1' },
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
         ],
         changed: [
           { name: 'a', range: '^1' },
           { name: 'b', range: '2.0.x' },
         ],
         removed: [
-          { name: 'b', range: '3' },
-          { name: 'c', range: '^1' },
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
         ],
       });
       expect(lockfileModernB.diff(lockfileLegacyA)).toEqual({
         added: [
-          { name: 'b', range: '3' },
-          { name: 'c', range: '^1' },
+          { name: 'b', range: '4' },
+          { name: 'd', range: '^1' },
         ],
         changed: [
           { name: 'a', range: '^1' },
           { name: 'b', range: '2.0.x' },
         ],
         removed: [
-          { name: 'b', range: '4' },
-          { name: 'd', range: '^1' },
+          { name: 'b', range: '3' },
+          { name: 'c', range: '^1' },
         ],
       });
     });

@@ -38,6 +38,17 @@ type LockfileQueryEntry = {
   dataKey: string;
 };
 
+type LockfileDiffEntry = {
+  name: string;
+  range: string;
+};
+
+type LockfileDiff = {
+  added: LockfileDiffEntry[];
+  changed: LockfileDiffEntry[];
+  removed: LockfileDiffEntry[];
+};
+
 /** Entries that have an invalid version range, for example an npm tag */
 type AnalyzeResultInvalidRange = {
   name: string;
@@ -328,56 +339,60 @@ export class Lockfile {
     }
   }
 
-  diff(newLockfile: Lockfile) {
+  /**
+   * Diff with another lockfile, returning entries that have been
+   * added, changed, and removed compared to the other lockfile.
+   */
+  diff(otherLockfile: Lockfile): LockfileDiff {
     const diff = {
       added: new Array<{ name: string; range: string }>(),
-      removed: new Array<{ name: string; range: string }>(),
       changed: new Array<{ name: string; range: string }>(),
+      removed: new Array<{ name: string; range: string }>(),
     };
 
-    // Keeps track of packages that only exist in the old lockfile
+    // Keeps track of packages that only exist in this lockfile
     const remainingOldNames = new Set(this.packages.keys());
 
-    for (const [name, newQueries] of newLockfile.packages) {
+    for (const [name, otherQueries] of otherLockfile.packages) {
       remainingOldNames.delete(name);
 
-      const oldQueries = this.packages.get(name);
-      // If the packages doesn't exist in the old lockfile, add all entries
-      if (!oldQueries) {
-        diff.added.push(...newQueries.map(q => ({ name, range: q.range })));
+      const thisQueries = this.packages.get(name);
+      // If the packages doesn't exist in this lockfile, add all entries
+      if (!thisQueries) {
+        diff.removed.push(...otherQueries.map(q => ({ name, range: q.range })));
         continue;
       }
 
-      const remainingOldRanges = new Set(oldQueries.map(q => q.range));
+      const remainingOldRanges = new Set(thisQueries.map(q => q.range));
 
-      for (const newQuery of newQueries) {
-        remainingOldRanges.delete(newQuery.range);
+      for (const otherQuery of otherQueries) {
+        remainingOldRanges.delete(otherQuery.range);
 
-        const oldQuery = oldQueries.find(q => q.range === newQuery.range);
-        if (!oldQuery) {
-          diff.added.push({ name, range: newQuery.range });
+        const thisQuery = thisQueries.find(q => q.range === otherQuery.range);
+        if (!thisQuery) {
+          diff.removed.push({ name, range: otherQuery.range });
           continue;
         }
 
-        const newPkg = newLockfile.data[newQuery.dataKey];
-        const oldPkg = this.data[oldQuery.dataKey];
-        if (newPkg && oldPkg) {
-          const oldCheck = oldPkg.integrity || oldPkg.checksum;
-          const newCheck = newPkg.integrity || newPkg.checksum;
-          if (!oldCheck || !newCheck || oldCheck !== newCheck) {
-            diff.changed.push({ name, range: newQuery.range });
+        const otherPkg = otherLockfile.data[otherQuery.dataKey];
+        const thisPkg = this.data[thisQuery.dataKey];
+        if (otherPkg && thisPkg) {
+          const thisCheck = thisPkg.integrity || thisPkg.checksum;
+          const otherCheck = otherPkg.integrity || otherPkg.checksum;
+          if (!thisCheck || !otherCheck || thisCheck !== otherCheck) {
+            diff.changed.push({ name, range: otherQuery.range });
           }
         }
       }
 
-      for (const oldRange of remainingOldRanges) {
-        diff.removed.push({ name, range: oldRange });
+      for (const thisRange of remainingOldRanges) {
+        diff.added.push({ name, range: thisRange });
       }
     }
 
     for (const name of remainingOldNames) {
       const queries = this.packages.get(name) ?? [];
-      diff.removed.push(...queries.map(q => ({ name, range: q.range })));
+      diff.added.push(...queries.map(q => ({ name, range: q.range })));
     }
 
     return diff;
