@@ -20,7 +20,17 @@ spec:
           ui:options:
             allowedHosts:
               - bitbucket.org
-              - server.bitbucket.com
+            # The rest of these options are optional.
+            # You can read more at: https://backstage.io/docs/reference/plugin-scaffolder.repourlpickerfieldextension
+            # allowedOwners:
+            #   - WORKSPACE1
+            #   - WORKSPACE2
+            # allowedProjects:
+            #   - PROJECT1
+            #   - PROJECT2
+            # allowedRepos:
+            #   - REPO1
+            #   - REPO2
     - title: Fill in some steps
       required:
         - name
