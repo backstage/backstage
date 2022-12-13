@@ -236,6 +236,8 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
       resolvePackagePathBackend('@backstage/cli', 'asset-types/asset-types.d.ts'),
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
+    // we don't exclude node_modules so that we can use the asset-types.d.ts file
+    exclude: [],
   });
 
   return path;
