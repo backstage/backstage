@@ -15,7 +15,7 @@
  */
 import type { PlatformScript, PSValue } from 'platformscript';
 import * as ps from 'platformscript';
-import { Component } from './Component';
+import { createComponent } from './createComponent';
 import { createModuleResolver } from './createModuleResolver';
 import { Fragment } from './Fragment';
 import { log } from './log';
@@ -48,7 +48,7 @@ export function globals(interpreter: PlatformScript) {
         { name: 'object' },
       ),
       log,
-      Component: Component,
+      Component: createComponent(interpreter),
       resolve: createModuleResolver({
         '@material-ui/core': () =>
           import('@material-ui/core').then(exportAsExternals),

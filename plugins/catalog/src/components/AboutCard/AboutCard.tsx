@@ -18,6 +18,7 @@ import {
   HeaderIconLinkRow,
   InfoCardVariants,
 } from '@backstage/core-components';
+import { useElementFilter } from '@backstage/core-plugin-api';
 import {
   Card,
   CardContent,
@@ -72,10 +73,32 @@ const useStyles = makeStyles({
  */
 export interface AboutCardProps {
   variant?: InfoCardVariants;
-  primaryButtons?: React.ReactNode;
-  secondaryButtons?: React.ReactNode;
-  fields?: React.ReactNode;
+  primaryButtons?: JSX.Element[];
+  secondaryButtons?: JSX.Element[];
+  fields?: JSX.Element[];
 }
+
+export const primaryButtons = [
+  <ViewInSourceButton />,
+  <ViewInTechDocsButton />,
+];
+
+export const secondaryButtons = [
+  <RefreshActionButton />,
+  <EditMetadataButton />,
+];
+
+export const fields = [
+  <DescriptionAboutField />,
+  <OwnerAboutField />,
+  <DomainAboutField />,
+  <SystemAboutField />,
+  <ParentComponentAboutField />,
+  <TypeAboutField />,
+  <LifecycleAboutField />,
+  <TagsAboutField />,
+  <LocationTargetsAboutField />,
+];
 
 /**
  * Exported publicly via the EntityAboutCard
@@ -98,44 +121,20 @@ export function AboutCard(props: AboutCardProps) {
     cardContentClass = classes.fullHeightCardContent;
   }
 
-  const primaryButtons = props.primaryButtons ?? (
-    <>
-      <ViewInSourceButton />
-      <ViewInTechDocsButton />
-    </>
-  );
-
-  const secondaryButtons = props.secondaryButtons ?? (
-    <>
-      <RefreshActionButton />
-      <EditMetadataButton />
-    </>
-  );
-
-  const fields = props.fields ?? (
-    <>
-      <DescriptionAboutField />
-      <OwnerAboutField />
-      <DomainAboutField />
-      <SystemAboutField />
-      <ParentComponentAboutField />
-      <TypeAboutField />
-      <LifecycleAboutField />
-      <TagsAboutField />
-      <LocationTargetsAboutField />
-    </>
-  );
-
   return (
     <Card className={cardClass}>
       <CardHeader
         title="About"
-        action={secondaryButtons}
-        subheader={<HeaderIconLinkRow>{primaryButtons}</HeaderIconLinkRow>}
+        action={props.secondaryButtons ?? secondaryButtons}
+        subheader={
+          <HeaderIconLinkRow>
+            {props.primaryButtons ?? primaryButtons}
+          </HeaderIconLinkRow>
+        }
       />
       <Divider />
       <CardContent className={cardContentClass}>
-        <Grid container>{fields}</Grid>
+        <Grid container>{props.fields ?? fields}</Grid>
       </CardContent>
     </Card>
   );

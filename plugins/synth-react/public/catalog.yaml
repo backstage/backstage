@@ -1,10 +1,17 @@
-catalogPlugin: { $B.resolve: '@backstage/plugin-catalog' }
-catalogReactPlugin: { $B.resolve: '@backstage/plugin-catalog-react' }
+$import:
+  - names: [resolve, Component]
+    from: ./backstage.yaml
+
+catalogPlugin: { $resolve: '@backstage/plugin-catalog' }
+catalogReactPlugin: { $resolve: '@backstage/plugin-catalog-react' }
 
 <AboutCard>:
-  $B.Component:
+  $Component:
     type: $catalogPlugin.EntityAboutCard
+  primaryButtons: $props.primaryButtons
+  secondaryButtons: $catalogReactPlugin.secondaryButtons
+  fields: $catalogReactPlugin.fields
 
 <EntityProvider>:
-  $B.Component:
+  $Component:
     type: $catalogReactPlugin.EntityProvider

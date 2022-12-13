@@ -1,4 +1,6 @@
 $import:
+  - names: [toJS]
+    from: ./backstage.yaml
   - names: [<AboutCard>, <EntityProvider>]
     from: ./catalog.yaml
   - names: [spec, metadata, kind]
@@ -7,7 +9,7 @@ $import:
 $do:
   $<EntityProvider>:
     entity:
-      $B.toJS:
+      $toJS:
         kind: $kind
         metadata: $metadata
         spec: $spec

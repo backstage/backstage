@@ -1,7 +1,11 @@
-core: { $B.resolve: "@material-ui/core" }
+$import:
+  - names: [resolve]
+    from: ./backstage.yaml
 
-<Card>: { $B.Component: { type: $core.Card } }
-<CardHeader>: { $B.Component: { type: $core.CardHeader } }
-<Typography>: { $B.Component: { type: $core.Typography } }
-<Grid>: { $B.Component: { type: $core.Typography } }
-<Divider>: { $B.Component: { type: $core.Divider } }
+core: { $resolve: "@material-ui/core" }
+
+<Card>: { $Component: { type: $core.Card } }
+<CardHeader>: { $Component: { type: $core.CardHeader } }
+<Typography>: { $Component: { type: $core.Typography } }
+<Grid>: { $Component: { type: $core.Typography } }
+<Divider>: { $Component: { type: $core.Divider } }
