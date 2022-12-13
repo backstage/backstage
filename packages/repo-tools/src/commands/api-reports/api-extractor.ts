@@ -66,6 +66,7 @@ import {
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { paths as cliPaths } from '../../lib/paths';
+import { resolvePackagePath as resolvePackagePathBackend } from '@backstage/backend-common';
 
 import minimatch from 'minimatch';
 
@@ -228,12 +229,13 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     fs.removeSync(path);
   });
 
+  console.log(resolvePackagePathBackend('@backstage/cli', 'asset-types/asset-types.d.ts'));
+
   await fs.writeJson(path, {
     extends: './tsconfig.json',
     include: [
       // These two contain global definitions that are needed for stable API report generation
-      // eslint-disable-next-line no-restricted-syntax
-      `${resolvePath(__dirname)}/asset-types/asset-types.d.ts`,
+      `${resolvePackagePathBackend('@backstage/cli', 'asset-types/asset-types.d.ts')}`,
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
   });
