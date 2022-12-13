@@ -38,6 +38,12 @@ const requireCodeOwnerReviews = {
     'Require an approved review in PR including files with a designated Code Owner',
   type: 'boolean',
 };
+const dismissStaleReviews = {
+  title: 'Dismiss Stale Reviews',
+  description:
+    'New reviewable commits pushed to a matching branch will dismiss pull request review approvals.',
+  type: 'boolean',
+};
 const requiredStatusCheckContexts = {
   title: 'Required Status Check Contexts',
   description:
@@ -207,6 +213,7 @@ export { bypassPullRequestAllowances };
 export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };
+export { dismissStaleReviews };
 export { requiredStatusCheckContexts };
 export { requireBranchesToBeUpToDate };
 export { sourcePath };

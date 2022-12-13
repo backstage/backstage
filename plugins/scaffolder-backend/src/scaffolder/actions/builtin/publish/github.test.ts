@@ -671,6 +671,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -691,6 +692,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -711,6 +713,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 
@@ -737,6 +740,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -757,6 +761,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: false,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -777,6 +782,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 
@@ -803,6 +809,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -824,6 +831,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -845,6 +853,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -865,6 +874,7 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 
@@ -920,6 +930,75 @@ describe('publish:github', () => {
       owner: 'owner',
       repo: 'repo',
       names: ['node.js'],
+    });
+  });
+
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of dismissStaleReviews', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repo',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        dismissStaleReviews: true,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      enforceAdmins: true,
+      dismissStaleReviews: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        dismissStaleReviews: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 });

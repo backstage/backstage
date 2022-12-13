@@ -421,7 +421,7 @@ export interface OpenSearchElasticSearchClientOptions
   // (undocumented)
   nodes?: string | string[] | OpenSearchNodeOptions | OpenSearchNodeOptions[];
   // (undocumented)
-  provider?: 'aws';
+  provider?: 'aws' | 'opensearch';
 }
 
 // @public (undocumented)

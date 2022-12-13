@@ -18,7 +18,7 @@ import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Button } from './Button';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 
 describe('<Button />', () => {
   it('navigates using react-router', async () => {

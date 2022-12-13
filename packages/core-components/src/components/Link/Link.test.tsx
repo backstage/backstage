@@ -23,7 +23,7 @@ import {
 } from '@backstage/test-utils';
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link, useResolvedPath } from './Link';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { renderHook, WrapperComponent } from '@testing-library/react-hooks';
 import { ConfigReader } from '@backstage/config';
 

@@ -50,6 +50,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/integration-aws-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@google-cloud/storage": "^6.0.0",
     "@trendyol-js/openstack-swift-sdk": "^0.0.5",

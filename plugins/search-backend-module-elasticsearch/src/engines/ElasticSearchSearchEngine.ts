@@ -150,6 +150,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
     } else if (options.provider === 'aws') {
       logger.info('Initializing AWS OpenSearch search engine.');
+    } else if (options.provider === 'opensearch') {
+      logger.info('Initializing OpenSearch search engine.');
     } else {
       logger.info('Initializing ElasticSearch search engine.');
     }
@@ -442,6 +444,25 @@ export async function createElasticSearchClientOptions(
       // @ts-ignore
       node: config.getString('node'),
       ...AWSConnection,
+      ...(sslConfig
+        ? {
+            ssl: {
+              rejectUnauthorized:
+                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+            },
+          }
+        : {}),
+    };
+  }
+  if (config.getOptionalString('provider') === 'opensearch') {
+    const authConfig = config.getConfig('auth');
+    return {
+      provider: 'opensearch',
+      node: config.getString('node'),
+      auth: {
+        username: authConfig.getString('username'),
+        password: authConfig.getString('password'),
+      },
       ...(sslConfig
         ? {
             ssl: {

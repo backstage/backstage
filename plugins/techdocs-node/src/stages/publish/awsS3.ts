@@ -17,6 +17,10 @@ import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, ForwardedError } from '@backstage/errors';
 import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
+import {
   GetObjectCommand,
   CopyObjectCommand,
   DeleteObjectCommand,
@@ -27,12 +31,9 @@ import {
   ListObjectsV2Command,
   S3Client,
 } from '@aws-sdk/client-s3';
-import {
-  fromNodeProviderChain,
-  fromTemporaryCredentials,
-} from '@aws-sdk/credential-providers';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { Upload } from '@aws-sdk/lib-storage';
-import { CredentialProvider } from '@aws-sdk/types';
+import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
@@ -97,7 +98,10 @@ export class AwsS3Publish implements PublisherBase {
     this.sse = options.sse;
   }
 
-  static fromConfig(config: Config, logger: Logger): PublisherBase {
+  static async fromConfig(
+    config: Config,
+    logger: Logger,
+  ): Promise<PublisherBase> {
     let bucketName = '';
     try {
       bucketName = config.getString('techdocs.publisher.awsS3.bucketName');
@@ -121,17 +125,21 @@ export class AwsS3Publish implements PublisherBase {
     // or AWS shared credentials file at ~/.aws/credentials will be used.
     const region = config.getOptionalString('techdocs.publisher.awsS3.region');
 
-    // Credentials is an optional config. If missing, the default ways of authenticating AWS SDK V2 will be used.
-    // 1. AWS environment variables
-    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
-    // 2. AWS shared credentials file at ~/.aws/credentials
-    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html
-    // 3. IAM Roles for EC2
-    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-iam.html
+    // Credentials can optionally be configured by specifying the AWS account ID, which will retrieve credentials
+    // for the account from the 'aws' section of the app config.
+    // Credentials can also optionally be directly configured in the techdocs awsS3 config, but this method is
+    // deprecated.
+    // If no credentials are configured, the AWS SDK V3's default credential chain will be used.
+    const accountId = config.getOptionalString(
+      'techdocs.publisher.awsS3.accountId',
+    );
     const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
-    const credentials = AwsS3Publish.buildCredentials(
+    const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+    const sdkCredentialProvider = await AwsS3Publish.buildCredentials(
+      credsManager,
+      accountId,
       credentialsConfig,
       region,
     );
@@ -150,7 +158,7 @@ export class AwsS3Publish implements PublisherBase {
 
     const storageClient = new S3Client({
       customUserAgent: 'backstage-aws-techdocs-s3-publisher',
-      credentialDefaultProvider: () => credentials,
+      credentialDefaultProvider: () => sdkCredentialProvider,
       ...(region && { region }),
       ...(endpoint && { endpoint }),
       ...(s3ForcePathStyle && { s3ForcePathStyle }),
@@ -174,7 +182,7 @@ export class AwsS3Publish implements PublisherBase {
   private static buildStaticCredentials(
     accessKeyId: string,
     secretAccessKey: string,
-  ): CredentialProvider {
+  ): AwsCredentialIdentityProvider {
     return async () => {
       return Promise.resolve({
         accessKeyId,
@@ -183,20 +191,31 @@ export class AwsS3Publish implements PublisherBase {
     };
   }
 
-  private static buildCredentials(
+  private static async buildCredentials(
+    credsManager: AwsCredentialsManager,
+    accountId?: string,
     config?: Config,
     region?: string,
-  ): CredentialProvider {
-    if (!config) {
-      return fromNodeProviderChain();
+  ): Promise<AwsCredentialIdentityProvider> {
+    // Pull credentials for the specified account ID from the 'aws' config section
+    if (accountId) {
+      return (await credsManager.getCredentialProvider({ accountId }))
+        .sdkCredentialProvider;
     }
 
+    // Fall back to the default credential chain if neither account ID
+    // nor explicit credentials are provided
+    if (!config) {
+      return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
+    }
+
+    // Pull credentials from the techdocs config section (deprecated)
     const accessKeyId = config.getOptionalString('accessKeyId');
     const secretAccessKey = config.getOptionalString('secretAccessKey');
-    const explicitCredentials: CredentialProvider =
+    const explicitCredentials: AwsCredentialIdentityProvider =
       accessKeyId && secretAccessKey
         ? AwsS3Publish.buildStaticCredentials(accessKeyId, secretAccessKey)
-        : fromNodeProviderChain();
+        : (await credsManager.getCredentialProvider()).sdkCredentialProvider;
 
     const roleArn = config.getOptionalString('roleArn');
     if (roleArn) {

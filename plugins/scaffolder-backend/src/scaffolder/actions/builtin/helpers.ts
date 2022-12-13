@@ -193,6 +193,7 @@ type BranchProtectionOptions = {
   requireBranchesToBeUpToDate?: boolean;
   defaultBranch?: string;
   enforceAdmins?: boolean;
+  dismissStaleReviews?: boolean;
 };
 
 export const enableBranchProtectionOnDefaultRepoBranch = async ({
@@ -206,6 +207,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   requireBranchesToBeUpToDate = true,
   defaultBranch = 'master',
   enforceAdmins = true,
+  dismissStaleReviews = false,
 }: BranchProtectionOptions): Promise<void> => {
   const tryOnce = async () => {
     try {
@@ -233,6 +235,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
           required_approving_review_count: 1,
           require_code_owner_reviews: requireCodeOwnerReviews,
           bypass_pull_request_allowances: bypassPullRequestAllowances,
+          dismiss_stale_reviews: dismissStaleReviews,
         },
       });
     } catch (e) {

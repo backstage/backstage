@@ -45,7 +45,7 @@ import classNames from 'classnames';
 import { DateTime, Interval } from 'luxon';
 import qs from 'qs';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import useInterval from 'react-use/lib/useInterval';
 import {
   rootRouteRef,

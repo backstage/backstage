@@ -26,7 +26,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 import { orderBy } from 'lodash';
 import React, { createContext, useEffect, useState, useContext } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
 import { SidebarConfigContext, SidebarConfig } from './config';

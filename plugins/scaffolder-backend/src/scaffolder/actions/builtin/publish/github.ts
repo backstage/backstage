@@ -68,6 +68,7 @@ export function createPublishGithubAction(options: {
         }
       | undefined;
     requireCodeOwnerReviews?: boolean;
+    dismissStaleReviews?: boolean;
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
@@ -103,6 +104,7 @@ export function createPublishGithubAction(options: {
           access: inputProps.access,
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          dismissStaleReviews: inputProps.dismissStaleReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           repoVisibility: inputProps.repoVisibility,
@@ -138,6 +140,7 @@ export function createPublishGithubAction(options: {
         homepage,
         access,
         requireCodeOwnerReviews = false,
+        dismissStaleReviews = false,
         bypassPullRequestAllowances,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
@@ -213,6 +216,7 @@ export function createPublishGithubAction(options: {
         gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
+        dismissStaleReviews,
       );
 
       ctx.output('remoteUrl', remoteUrl);

@@ -23,7 +23,7 @@ import {
   MarkdownContent,
 } from '@backstage/core-components';
 import { NextFieldExtensionOptions } from '../../extensions';
-import { Navigate, useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AnalyticsContext,

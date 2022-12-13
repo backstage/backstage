@@ -29,7 +29,7 @@ import {
 import { makeStyles, Theme } from '@material-ui/core';
 import qs from 'qs';
 import React, { MouseEvent, useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
   ALL_RELATION_PAIRS,

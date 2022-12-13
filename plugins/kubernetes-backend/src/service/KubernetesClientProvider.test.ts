@@ -16,26 +16,29 @@
 
 import '@backstage/backend-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
+import { ClusterDetails } from '../types/types';
+import * as https from 'https';
+import mockFs from 'mock-fs';
 
 describe('KubernetesClientProvider', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
+  afterEach(() => {
+    mockFs.restore();
+  });
 
-  it('can get core client by cluster details', async () => {
+  it('can get core client by cluster details', () => {
     const sut = new KubernetesClientProvider();
+    const getKubeConfig = jest.spyOn(sut, 'getKubeConfig');
 
-    const mockGetKubeConfig = jest.fn(sut.getKubeConfig.bind({}));
-
-    sut.getKubeConfig = mockGetKubeConfig;
-
-    const result = sut.getCoreClientByClusterDetails({
+    const clusterDetails: ClusterDetails = {
       name: 'cluster-name',
       url: 'http://localhost:9999',
       serviceAccountToken: 'TOKEN',
       authProvider: 'serviceAccount',
-      skipTLSVerify: false,
-    });
+    };
+    const result = sut.getCoreClientByClusterDetails(clusterDetails);
 
     expect(result.basePath).toBe('http://localhost:9999');
     // These fields aren't on the type but are there
@@ -44,23 +47,21 @@ describe('KubernetesClientProvider', () => {
     expect(auth.clusters[0].name).toBe('cluster-name');
     expect(auth.clusters[0].skipTLSVerify).toBe(false);
 
-    expect(mockGetKubeConfig.mock.calls.length).toBe(1);
+    expect(getKubeConfig).toHaveBeenCalledTimes(1);
   });
 
-  it('can get custom objects client by cluster details', async () => {
+  it('can get custom objects client by cluster details', () => {
     const sut = new KubernetesClientProvider();
+    const getKubeConfig = jest.spyOn(sut, 'getKubeConfig');
 
-    const mockGetKubeConfig = jest.fn(sut.getKubeConfig.bind({}));
-
-    sut.getKubeConfig = mockGetKubeConfig;
-
-    const result = sut.getCustomObjectsClient({
+    const clusterDetails: ClusterDetails = {
       name: 'cluster-name',
       url: 'http://localhost:9999',
       serviceAccountToken: 'TOKEN',
       authProvider: 'serviceAccount',
       skipTLSVerify: false,
-    });
+    };
+    const result = sut.getCustomObjectsClient(clusterDetails);
 
     expect(result.basePath).toBe('http://localhost:9999');
     // These fields aren't on the type but are there
@@ -68,6 +69,27 @@ describe('KubernetesClientProvider', () => {
     expect(auth.users[0].token).toBe('TOKEN');
     expect(auth.clusters[0].name).toBe('cluster-name');
 
-    expect(mockGetKubeConfig.mock.calls.length).toBe(1);
+    expect(getKubeConfig).toHaveBeenCalledTimes(1);
+  });
+
+  it('respects caFile', async () => {
+    mockFs({
+      '/path/to/ca.crt': 'my-ca',
+    });
+    const clusterDetails: ClusterDetails = {
+      name: 'cluster-name',
+      url: 'https://localhost:9999',
+      authProvider: 'serviceAccount',
+      serviceAccountToken: 'TOKEN',
+      caFile: '/path/to/ca.crt',
+    };
+    const kubeConfig = new KubernetesClientProvider().getKubeConfig(
+      clusterDetails,
+    );
+
+    const options: https.RequestOptions = {};
+    await kubeConfig.applytoHTTPSOptions(options);
+
+    expect(options.ca?.toString()).toEqual('my-ca');
   });
 });

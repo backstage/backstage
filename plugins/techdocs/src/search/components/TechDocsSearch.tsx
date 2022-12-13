@@ -23,7 +23,7 @@ import {
 } from '@backstage/plugin-search-react';
 import { makeStyles, Paper } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
 
 const useStyles = makeStyles(theme => ({

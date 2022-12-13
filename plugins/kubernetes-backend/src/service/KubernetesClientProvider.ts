@@ -15,10 +15,13 @@
  */
 
 import {
+  Cluster,
+  Context,
   CoreV1Api,
+  CustomObjectsApi,
   KubeConfig,
   Metrics,
-  CustomObjectsApi,
+  User,
 } from '@kubernetes/client-node';
 import { ClusterDetails } from '../types/types';
 
@@ -28,27 +31,28 @@ import { ClusterDetails } from '../types/types';
  */
 export class KubernetesClientProvider {
   // visible for testing
-  getKubeConfig(clusterDetails: ClusterDetails) {
-    const cluster = {
+  getKubeConfig(clusterDetails: ClusterDetails): KubeConfig {
+    const cluster: Cluster = {
       name: clusterDetails.name,
       server: clusterDetails.url,
-      skipTLSVerify: clusterDetails.skipTLSVerify,
+      skipTLSVerify: clusterDetails.skipTLSVerify || false,
       caData: clusterDetails.caData,
+      caFile: clusterDetails.caFile,
     };
 
     // TODO configure
-    const user = {
+    const user: User = {
       name: 'backstage',
       token: clusterDetails.serviceAccountToken,
     };
 
-    const context = {
+    const context: Context = {
       name: `${clusterDetails.name}`,
       user: user.name,
       cluster: cluster.name,
     };
 
-    const kc = new KubeConfig();
+    const kc: KubeConfig = new KubeConfig();
     if (clusterDetails.serviceAccountToken) {
       kc.loadFromOptions({
         clusters: [cluster],
@@ -63,19 +67,19 @@ export class KubernetesClientProvider {
     return kc;
   }
 
-  getCoreClientByClusterDetails(clusterDetails: ClusterDetails) {
+  getCoreClientByClusterDetails(clusterDetails: ClusterDetails): CoreV1Api {
     const kc = this.getKubeConfig(clusterDetails);
 
     return kc.makeApiClient(CoreV1Api);
   }
 
-  getMetricsClient(clusterDetails: ClusterDetails) {
+  getMetricsClient(clusterDetails: ClusterDetails): Metrics {
     const kc = this.getKubeConfig(clusterDetails);
 
     return new Metrics(kc);
   }
 
-  getCustomObjectsClient(clusterDetails: ClusterDetails) {
+  getCustomObjectsClient(clusterDetails: ClusterDetails): CustomObjectsApi {
     const kc = this.getKubeConfig(clusterDetails);
 
     return kc.makeApiClient(CustomObjectsApi);

@@ -49,6 +49,7 @@ export function createGithubRepoPushAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     requireCodeOwnerReviews?: boolean;
+    dismissStaleReviews?: boolean;
     bypassPullRequestAllowances?:
       | {
           users?: string[];
@@ -71,6 +72,7 @@ export function createGithubRepoPushAction(options: {
         properties: {
           repoUrl: inputProps.repoUrl,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          dismissStaleReviews: inputProps.dismissStaleReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
@@ -102,6 +104,7 @@ export function createGithubRepoPushAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         requireCodeOwnerReviews = false,
+        dismissStaleReviews = false,
         bypassPullRequestAllowances,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
@@ -148,6 +151,7 @@ export function createGithubRepoPushAction(options: {
         gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
+        dismissStaleReviews,
       );
 
       ctx.output('remoteUrl', remoteUrl);
