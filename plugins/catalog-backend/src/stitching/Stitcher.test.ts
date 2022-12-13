@@ -213,7 +213,6 @@ describe('Stitcher', () => {
 
       expect(entities[0].hash).not.toEqual(firstHash);
       expect(entities[0].hash).toEqual(entity.metadata.etag);
-      expect(entity.metadata.etag).toEqual(entities[0].hash);
 
       expect(await db<DbSearchRow>('search')).toEqual(
         expect.arrayContaining([
