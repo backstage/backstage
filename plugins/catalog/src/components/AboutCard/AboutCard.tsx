@@ -28,22 +28,20 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import {
-  EditMetadataButton,
-  RefreshButton,
-  ViewInSourceButton,
-  ViewInTechDocsButton,
-} from './buttons';
-import {
-  DescriptionAboutField,
-  DomainAboutField,
-  LifecycleAboutField,
-  LocationTargetsAboutField,
-  OwnerAboutField,
-  ParentComponentAboutField,
-  SystemAboutField,
-  TagsAboutField,
-  TypeAboutField,
-} from './fields';
+  EntityDescriptionAboutField,
+  EntityDomainAboutField,
+  EntityEditMetadataButton,
+  EntityLifecycleAboutField,
+  EntityLocationTargetsAboutField,
+  EntityOwnerAboutField,
+  EntityParentComponentAboutField,
+  EntityRefreshButton,
+  EntitySystemAboutField,
+  EntityTagsAboutField,
+  EntityTypeAboutField,
+  EntityViewInSourceButton,
+  EntityViewInTechDocsButton,
+} from '../../plugin';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -78,22 +76,25 @@ export interface AboutCardProps {
 }
 
 export const primaryButtons = [
-  <ViewInSourceButton />,
-  <ViewInTechDocsButton />,
+  <EntityViewInSourceButton />,
+  <EntityViewInTechDocsButton />,
 ];
 
-export const secondaryButtons = [<RefreshButton />, <EditMetadataButton />];
+export const secondaryButtons = [
+  <EntityRefreshButton />,
+  <EntityEditMetadataButton />,
+];
 
 export const fields = [
-  <DescriptionAboutField />,
-  <OwnerAboutField />,
-  <DomainAboutField />,
-  <SystemAboutField />,
-  <ParentComponentAboutField />,
-  <TypeAboutField />,
-  <LifecycleAboutField />,
-  <TagsAboutField />,
-  <LocationTargetsAboutField />,
+  <EntityDescriptionAboutField />,
+  <EntityOwnerAboutField />,
+  <EntityDomainAboutField />,
+  <EntitySystemAboutField />,
+  <EntityParentComponentAboutField />,
+  <EntityTypeAboutField />,
+  <EntityLifecycleAboutField />,
+  <EntityTagsAboutField />,
+  <EntityLocationTargetsAboutField />,
 ];
 
 /**
