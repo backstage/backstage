@@ -45,7 +45,7 @@ module.exports = {
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
           editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
-          path: 'docs',
+          path: '../docs',
           sidebarPath: 'sidebars.json',
         },
         blog: {
