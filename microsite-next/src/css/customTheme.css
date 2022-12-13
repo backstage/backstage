@@ -7,3 +7,15 @@
   --ifm-color-primary-darker: #2e9e8a;
   --ifm-color-primary-darkest: #268271;
 }
+
+.footerLogo {
+  background-image: url(/img/logo.svg);
+  background-repeat: no-repeat;
+  height: 40px;
+  width: 180px;
+  margin-top: 0px;
+}
+
+.copyright {
+  font-size: 10pt;
+}

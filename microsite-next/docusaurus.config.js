@@ -106,20 +106,86 @@ module.exports = {
     footer: {
       links: [
         {
+          items: [
+            {
+              html: '<a href="/"><h2 class="footerLogo"></h2></a>',
+            },
+          ],
+        },
+        {
+          title: 'Docs',
+          items: [
+            {
+              label: 'What is Backstage?',
+              to: 'docs/overview/what-is-backstage',
+            },
+            {
+              label: 'Getting started',
+              to: 'docs/getting-started/',
+            },
+            {
+              label: 'Software Catalog',
+              to: 'docs/features/software-catalog/software-catalog-overview',
+            },
+            {
+              label: 'Create a Plugin',
+              to: 'docs/plugins/create-a-plugin',
+            },
+            {
+              label: 'Designing for Backstage',
+              to: 'docs/dls/design',
+            },
+          ],
+        },
+        {
           title: 'Community',
           items: [
             {
-              label: 'Twitter',
-              to: 'https://twitter.com/SpotifyEng',
+              label: 'Support chatroom',
+              to: 'https://discord.gg/MUpMjP2',
+            },
+            {
+              label: 'Contributing',
+              to: 'https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md',
+            },
+            {
+              label: 'Adopting',
+              to: 'https://backstage.spotify.com',
+            },
+            {
+              label: 'Subscribe to our newsletter',
+              to: 'https://mailchi.mp/spotify/backstage-community',
+            },
+            {
+              label: 'CNCF Incubation',
+              to: 'https://www.cncf.io/projects/',
+            },
+          ],
+        },
+        {
+          title: 'More',
+          items: [
+            {
+              label: 'Open Source @ Spotify',
+              to: 'https://spotify.github.io/',
+            },
+            {
+              label: 'Spotify Engineering Blog',
+              to: 'https://engineering.atspotify.com/',
+            },
+            {
+              label: 'Spotify for Developers',
+              to: 'https://developer.spotify.com/',
+            },
+            {
+              label: 'Github',
+              to: 'https://github.com/backstage/',
             },
           ],
         },
       ],
       copyright:
-        'Copyright © 2022 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage',
-      logo: {
-        src: 'img/android-chrome-192x192.png',
-      },
+        '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2022 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
     },
     algolia: {
       appId: 'AZYC4ZFNTN',
