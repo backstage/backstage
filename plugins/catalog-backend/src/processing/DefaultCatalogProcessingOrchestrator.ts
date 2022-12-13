@@ -187,7 +187,7 @@ export class DefaultCatalogProcessingOrchestrator
           res = await processor.preProcessEntity(
             res,
             context.location,
-            context.collector.onEmit,
+            context.collector.forProcessor(processor),
             context.originLocation,
             context.cache.forProcessor(processor),
           );
@@ -300,7 +300,7 @@ export class DefaultCatalogProcessingOrchestrator
 
     for (const maybeRelativeTarget of targets) {
       if (type === 'file' && maybeRelativeTarget.endsWith(path.sep)) {
-        context.collector.onEmit(
+        context.collector.generic()(
           processingResult.inputError(
             context.location,
             `LocationEntityProcessor cannot handle ${type} type location with target ${context.location.target} that ends with a path separator`,
@@ -326,7 +326,7 @@ export class DefaultCatalogProcessingOrchestrator
                 presence,
               },
               presence === 'optional',
-              context.collector.onEmit,
+              context.collector.forProcessor(processor),
               this.options.parser,
               context.cache.forProcessor(processor, target),
             );
@@ -365,7 +365,7 @@ export class DefaultCatalogProcessingOrchestrator
           res = await processor.postProcessEntity(
             res,
             context.location,
-            context.collector.onEmit,
+            context.collector.forProcessor(processor),
             context.cache.forProcessor(processor),
           );
         } catch (e) {

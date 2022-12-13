@@ -24,6 +24,7 @@ import {
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import {
+  CatalogProcessor,
   CatalogProcessorResult,
   DeferredEntity,
   EntityRelationSpec,
@@ -51,8 +52,17 @@ export class ProcessorOutputCollector {
     private readonly parentEntity: Entity,
   ) {}
 
-  get onEmit(): (i: CatalogProcessorResult) => void {
-    return i => this.receive(i);
+  generic(): (i: CatalogProcessorResult) => void {
+    return i => this.receive(this.logger, i);
+  }
+
+  forProcessor(
+    processor: CatalogProcessor,
+  ): (i: CatalogProcessorResult) => void {
+    const logger = this.logger.child({
+      processor: processor.getProcessorName(),
+    });
+    return i => this.receive(logger, i);
   }
 
   results() {
@@ -65,9 +75,9 @@ export class ProcessorOutputCollector {
     };
   }
 
-  private receive(i: CatalogProcessorResult) {
+  private receive(logger: Logger, i: CatalogProcessorResult) {
     if (this.done) {
-      this.logger.warn(
+      logger.warn(
         `Item of type "${
           i.type
         }" was emitted after processing had completed. Stack trace: ${
@@ -85,7 +95,7 @@ export class ProcessorOutputCollector {
         entity = validateEntityEnvelope(i.entity);
       } catch (e) {
         assertError(e);
-        this.logger.debug(`Envelope validation failed at ${location}, ${e}`);
+        logger.debug(`Envelope validation failed at ${location}, ${e}`);
         this.errors.push(e);
         return;
       }
@@ -95,9 +105,11 @@ export class ProcessorOutputCollector {
       // accidentally forgotten. This can lead to circular references which at
       // best is wasteful, so we try to be helpful by ignoring such emitted
       // entities.
-      if (
-        stringifyEntityRef(entity) === stringifyEntityRef(this.parentEntity)
-      ) {
+      const entityRef = stringifyEntityRef(entity);
+      if (entityRef === stringifyEntityRef(this.parentEntity)) {
+        logger.warn(
+          `Ignored emitted entity ${entityRef} whose ref was identical to the one being processed. This commonly indicates mistakenly emitting the input entity instead of returning it.`,
+        );
         return;
       }
 
