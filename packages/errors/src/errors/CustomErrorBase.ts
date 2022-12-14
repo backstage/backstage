@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { stringifyError } from '../serialization';
+import { stringifyError } from '../serialization/error';
 import { isError } from './assertion';
 
 /**
