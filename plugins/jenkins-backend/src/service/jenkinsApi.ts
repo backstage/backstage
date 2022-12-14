@@ -75,7 +75,7 @@ export class JenkinsApiImpl {
     const projects: BackstageProject[] = [];
 
     if (branches) {
-      // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
+      // Assume jenkinsInfo.jobFullName is a MultiBranch Pipeline project which contains one job per branch.
       // TODO: extract a strategy interface for this
       const job = await Promise.any(
         branches.map(branch =>
@@ -88,7 +88,9 @@ export class JenkinsApiImpl {
       projects.push(this.augmentProject(job));
     } else {
       // We aren't filtering
-      // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
+      // Assume jenkinsInfo.jobFullName is either
+      // a MultiBranch Pipeline (folder with one job per branch) project
+      // a Pipeline (standalone) project
       const project = await client.job.get({
         name: jenkinsInfo.jobFullName,
         // Filter only be the information we need, instead of loading all fields.
@@ -110,12 +112,7 @@ export class JenkinsApiImpl {
       }
       for (const jobDetails of project.jobs) {
         // for each branch (we assume)
-        if (jobDetails?.jobs) {
-          // skipping folders inside folders for now
-          // TODO: recurse
-        } else {
-          projects.push(this.augmentProject(jobDetails));
-        }
+        projects.push(this.augmentProject(jobDetails));
       }
     }
     return projects;
