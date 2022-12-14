@@ -15,12 +15,15 @@
  */
 
 import { createServiceRef } from '../system/types';
-import { Logger } from './loggerServiceRef';
+import { LoggerService } from './loggerServiceRef';
+
+/** @public */
+export type RootLoggerService = LoggerService;
 
 /**
  * @public
  */
-export const rootLoggerServiceRef = createServiceRef<Logger>({
+export const rootLoggerServiceRef = createServiceRef<RootLoggerService>({
   id: 'core.root.logger',
   scope: 'root',
 });
