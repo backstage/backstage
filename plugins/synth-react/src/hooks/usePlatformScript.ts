@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import * as ps from 'platformscript';
 import { useAsync } from 'react-use';
 import { createPlatformScript, PSValue } from 'platformscript';
@@ -26,14 +26,40 @@ export function usePlatformScript(yaml: string) {
     return createPlatformScript(globals);
   }, [globals]);
 
-  return useAsync(async (): Promise<PSValue> => {
-    const program = ps.parse(yaml as string);
+  const [lastSuccessfulResult, setLastSuccessfulResult] = useState<
+    ps.PSValue | undefined
+  >();
+
+  const program = useMemo(() => {
+    try {
+      const result = ps.parse(yaml as string);
+      return result;
+    } catch (e) {
+      return e;
+    }
+  }, [yaml]);
+
+  const result = useAsync(async (): Promise<PSValue> => {
+    if (program instanceof Error) {
+      throw program;
+    }
 
     const mod = await platformscript.moduleEval(
       program,
       new URL('/dynamic.yaml', window.location.href),
     );
 
+    setLastSuccessfulResult(mod.value);
+
     return mod.value;
-  }, [yaml]);
+  }, [program]);
+
+  if (!!result.error) {
+    return {
+      ...result,
+      value: lastSuccessfulResult,
+    };
+  }
+
+  return result;
 }

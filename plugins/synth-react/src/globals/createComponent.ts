@@ -35,6 +35,8 @@ export const createComponent = (interpreter: PlatformScript) =>
         throw new TypeError(`Component: { type: } must not be empty`);
       }
 
+      const defaults = yield* c.env.eval(c.rest);
+
       return ps.fn(
         function* InnerComponent({ arg, env, rest }) {
           const $arg: PSValue = yield* env.eval(arg);
@@ -48,13 +50,25 @@ export const createComponent = (interpreter: PlatformScript) =>
 
           const $options = yield* env.eval(rest);
 
-          const props: Record<string, any> = {};
+          const props: Record<string, unknown> = {};
           let children = [];
 
           switch ($arg.type) {
             case 'map':
               for (const [key, value] of $arg.value.entries()) {
-                props[String(key.value)] = value.value;
+                if (
+                  value.type === 'fn' &&
+                  key.type === 'string' &&
+                  defaults.type === 'map'
+                ) {
+                  const defaultValue = lookup(key.value, defaults);
+                  if (defaultValue) {
+                    const result = yield* env.call(value, defaultValue);
+                    // console.log({ result })
+                  }
+                } else {
+                  props[String(key.value)] = value.value;
+                }
               }
               if ($options.type === 'map') {
                 const key = lookup('key', $options);
@@ -78,9 +92,17 @@ export const createComponent = (interpreter: PlatformScript) =>
               children = $arg.value;
           }
 
-          // let component;
-          // if (cType.type === "fn") {
-          //   component = yield* interpreter.call(cType, js2ps(props))
+          // if (defaults.type === "map") {
+          //   for (const [key, defaultValue] of defaults.value.entries()) {
+          //     if (key.type === "string") {
+          //       const propName = key.value;
+          //       const propValue = props[propName]
+          //       console.log({ propValue, props})
+          //       if (isPSValue(propValue) && propValue.type === "fn") {
+          //         console.log({ propValue })
+          //       }
+          //     }
+          //   }
           // }
 
           return ps.external(React.createElement(cType.value, props, children));
@@ -104,4 +126,21 @@ function injectKeyProps(list: ps.PSList) {
     }
     index++;
   }
+}
+
+function isPSValue(value: any): value is ps.PSValue {
+  return (
+    [
+      'string',
+      'number',
+      'boolean',
+      'map',
+      'template',
+      'ref',
+      'list',
+      'fn',
+      'fncall',
+      'external',
+    ].includes(value?.type) && Object.hasOwn(value, 'value')
+  );
 }

@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 import React from 'react';
-import { usePlatformScript } from '../../hooks/usePlatformScript';
+import type { PSValue } from 'platformscript';
 import { Inspector } from 'react-inspector';
 
-export function EvalResult({ yaml }: { yaml: string }) {
-  const result = usePlatformScript(yaml || 'false');
-
-  if (result.loading) {
-    return <>Loading...</>;
-  } else if (result.error) {
-    return <>{result.error.message}</>;
-  } else if (result.value) {
-    if (result.value.type === 'external') {
-      if (React.isValidElement(result.value.value)) {
-        return <>{result.value.value}</>;
-      }
-      return <Inspector table={false} data={result.value.value} />;
+export function RenderResult({ value }: { value: PSValue }) {
+  if (value && value.type === 'external') {
+    if (React.isValidElement(value.value)) {
+      return <>{value.value}</>;
     }
-    return <Inspector table={false} data={result.value} />;
+    return <Inspector table={false} data={value.value} />;
   }
 
-  return <></>;
+  return <Inspector table={false} data={value} />;
 }

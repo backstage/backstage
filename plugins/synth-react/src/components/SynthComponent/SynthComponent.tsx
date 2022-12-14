@@ -22,12 +22,17 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
+import { usePlatformScript } from '../../hooks/usePlatformScript';
 import { YAMLEditor } from '../YAMLEditor/YAMLEditor';
-import { EvalResult } from './EvalResult';
+import { RenderResult } from './EvalResult';
+
+const FALLBACK = '"false"';
 
 export const SynthComponent = ({ yaml }: { yaml: string }) => {
-  const [_yaml, setYaml] = useState(yaml);
+  const [_yaml, setYaml] = useState(yaml || FALLBACK);
+  const result = usePlatformScript(_yaml);
 
   return (
     <Page themeId="tool">
@@ -41,14 +46,19 @@ export const SynthComponent = ({ yaml }: { yaml: string }) => {
         </ContentHeader>
         <Grid container spacing={3} direction="row">
           <Grid item sm={6}>
-            <EvalResult yaml={_yaml} />
+            {result.value ? <RenderResult value={result.value} /> : null}
           </Grid>
           <Grid item sm={6}>
-            <YAMLEditor
-              onChange={(value = '"false"') => setYaml(value)}
-              defaultValue={_yaml}
-              value={_yaml}
-            />
+            <>
+              <YAMLEditor
+                onChange={(value = FALLBACK) => setYaml(value)}
+                defaultValue={_yaml}
+                value={_yaml}
+              />
+              {result.error ? (
+                <Alert severity="error">{String(result.error)}</Alert>
+              ) : null}
+            </>
           </Grid>
         </Grid>
       </Content>
