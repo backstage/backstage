@@ -72,6 +72,14 @@ export class FetchError extends Error {
 }
 
 // @public (undocumented)
+export enum FormFactor {
+  // (undocumented)
+  Desktop = 'desktop',
+  // (undocumented)
+  Mobile = 'mobile',
+}
+
+// @public (undocumented)
 const isLighthouseAvailable: (entity: Entity) => boolean;
 export { isLighthouseAvailable };
 export { isLighthouseAvailable as isPluginApplicableToEntity };
@@ -168,12 +176,23 @@ export class LighthouseRestApi implements LighthouseApi {
 export const Router: () => JSX.Element;
 
 // @public (undocumented)
+export type ScreenEmulation = {
+  mobile: boolean;
+  width: number;
+  height: number;
+  deviceScaleFactor: number;
+  disabled: boolean;
+} | null;
+
+// @public (undocumented)
 export interface TriggerAuditPayload {
   // (undocumented)
   options: {
     lighthouseConfig: {
       settings: {
-        emulatedFormFactor: string;
+        formFactor: FormFactor;
+        screenEmulation: ScreenEmulation;
+        emulatedFormFactor: FormFactor;
       };
     };
   };
