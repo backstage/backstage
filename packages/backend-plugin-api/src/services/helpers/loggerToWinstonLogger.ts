@@ -26,9 +26,24 @@ class BackstageLoggerTransport extends Transport {
     super(opts);
   }
 
-  log(info: { message: string }, callback: VoidFunction) {
-    // TODO: add support for levels and fields
-    this.backstageLogger.info(info.message);
+  log(info: any, callback: VoidFunction) {
+    const { level, message, ...meta } = info;
+    switch (level) {
+      case 'error':
+        this.backstageLogger.error(message, meta);
+        break;
+      case 'warn':
+        this.backstageLogger.warn(message, meta);
+        break;
+      case 'info':
+        this.backstageLogger.info(message, meta);
+        break;
+      case 'debug':
+        this.backstageLogger.debug(message, meta);
+        break;
+      default:
+        this.backstageLogger.info(message, meta);
+    }
     callback();
   }
 }
