@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import {
   BackendRegisterInit,
-  ServiceHolder,
+  EnumerableServiceHolder,
   ServiceOrExtensionPoint,
 } from './types';
 
@@ -30,9 +30,9 @@ export class BackendInitializer {
   #features = new Map<BackendFeature, unknown>();
   #registerInits = new Array<BackendRegisterInit>();
   #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
-  #serviceHolder: ServiceHolder;
+  #serviceHolder: EnumerableServiceHolder;
 
-  constructor(serviceHolder: ServiceHolder) {
+  constructor(serviceHolder: EnumerableServiceHolder) {
     this.#serviceHolder = serviceHolder;
   }
 
@@ -85,6 +85,14 @@ export class BackendInitializer {
     }
     this.#started = true;
 
+    // Initialize all root scoped services
+    for (const ref of this.#serviceHolder.getServiceRefs()) {
+      if (ref.scope === 'root') {
+        await this.#serviceHolder.get(ref, 'root');
+      }
+    }
+
+    // Initialize all features
     for (const [feature] of this.#features) {
       const provides = new Set<ExtensionPoint<unknown>>();
 
