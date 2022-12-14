@@ -52,9 +52,11 @@ export const TechDocsReaderProvider = ({
   children,
 }: TechDocsReaderProviderProps) => {
   const { '*': path = '' } = useParams();
-  const { entityRef } = useTechDocsReaderPage();
+  const { entityRef, setReaderState } = useTechDocsReaderPage();
   const { kind, namespace, name } = entityRef;
   const value = useReaderState(kind, namespace, name, path);
+
+  setReaderState(value.state);
 
   return (
     <TechDocsReaderContext.Provider value={value}>

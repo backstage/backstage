@@ -66,6 +66,8 @@ export type TechDocsReaderPageValue = {
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;
   setSubtitle: Dispatch<SetStateAction<string>>;
+  readerState: string;
+  setReaderState: Dispatch<SetStateAction<string>>;
   /**
    * @deprecated property can be passed down directly to the `TechDocsReaderPageContent` instead.
    */
@@ -81,6 +83,8 @@ const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   metadata: { loading: true },
   entityMetadata: { loading: true },
   entityRef: { kind: '', name: '', namespace: '' },
+  readerState: '',
+  setReaderState: () => {},
 };
 
 const TechDocsReaderPageContext = createVersionedContext<{
@@ -114,14 +118,15 @@ export const TechDocsReaderPageProvider = memo(
   ({ entityRef, children }: TechDocsReaderPageProviderProps) => {
     const techdocsApi = useApi(techdocsApiRef);
     const config = useApi(configApiRef);
+    const [readerState, setReaderState] = useState('');
 
     const metadata = useAsync(async () => {
       return techdocsApi.getTechDocsMetadata(entityRef);
-    }, [entityRef]);
+    }, [entityRef, readerState]);
 
     const entityMetadata = useAsync(async () => {
       return techdocsApi.getEntityMetadata(entityRef);
-    }, [entityRef]);
+    }, [entityRef, readerState]);
 
     const [title, setTitle] = useState(defaultTechDocsReaderPageValue.title);
     const [subtitle, setSubtitle] = useState(
@@ -141,6 +146,8 @@ export const TechDocsReaderPageProvider = memo(
       setTitle,
       subtitle,
       setSubtitle,
+      readerState,
+      setReaderState,
     };
     const versionedValue = createVersionedValueMap({ 1: value });
 

@@ -76,6 +76,7 @@ export const TechDocsReaderPageHeader = (
     entityRef,
     metadata: { value: metadata, loading: metadataLoading },
     entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
+    readerState,
   } = useTechDocsReaderPage();
 
   useEffect(() => {
@@ -154,11 +155,17 @@ export const TechDocsReaderPageHeader = (
     </>
   );
 
+  // Avoid showing the header before we know whether it is ready / needs to be re-built.
+  // This way, we avoid the header flickering for docs that haven't been built yet.
+  const contentNotReady =
+    !readerState ||
+    readerState === 'CHECKING' ||
+    readerState === 'INITIAL_BUILD';
   // If there is no entity or techdocs metadata, there's no reason to show the
   // header (hides the header on 404 error pages).
   const noEntMetadata = !entityMetadataLoading && entityMetadata === undefined;
   const noTdMetadata = !metadataLoading && metadata === undefined;
-  if (noEntMetadata || noTdMetadata) return null;
+  if (noEntMetadata || noTdMetadata || contentNotReady) return null;
 
   return (
     <Header
