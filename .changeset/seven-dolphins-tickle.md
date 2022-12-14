@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-jenkins-backend': minor
+'@backstage/plugin-jenkins-backend': patch
 ---
 
 added support for standalone jenkins projects
