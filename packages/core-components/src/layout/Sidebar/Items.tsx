@@ -140,6 +140,7 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        lineHeight: '0',
       },
       searchRoot: {
         marginBottom: 12,
@@ -371,12 +372,14 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   const { isOpen } = useSidebarOpenState();
 
   const divStyle =
-    !isOpen && hasSubmenu ? { display: 'flex', marginLeft: '24px' } : {};
+    !isOpen && hasSubmenu
+      ? { display: 'flex', marginLeft: '20px' }
+      : { lineHeight: '0' };
 
   const displayItemIcon = (
     <Box style={divStyle}>
       <Icon fontSize="small" />
-      {!isOpen && hasSubmenu ? <ArrowRightIcon /> : <></>}
+      {!isOpen && hasSubmenu ? <ArrowRightIcon fontSize="small" /> : <></>}
     </Box>
   );
 
