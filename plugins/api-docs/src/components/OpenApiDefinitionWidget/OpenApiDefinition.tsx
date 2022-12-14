@@ -133,9 +133,41 @@ const useStyles = makeStyles(theme => ({
 
 export type OpenApiDefinitionProps = {
   definition: string;
+  plugins?: string[] | undefined; // list of customizable plugin names for the swagger page
 };
 
-export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
+// short of writing a parser for a custom swagger plugins string
+// not sure how to keep the generic functionality for all swagger options
+function DisableTryItOutPlugin() {
+  return {
+    statePlugins: {
+      spec: {
+        wrapSelectors: {
+          allowTryItOutFor: () => () => false,
+        },
+      },
+    },
+  };
+}
+
+function DisableAuthorizePlugin() {
+  return {
+    wrapComponents: {
+      authorizeBtn: () => () => false,
+    },
+  };
+}
+
+// names of plugins should match the keys of the following object
+const supportedSwaggerPlugins: { [key in string]?: any } = {
+  disableTryItOut: DisableTryItOutPlugin,
+  disableAuthorizeButton: DisableAuthorizePlugin,
+};
+
+export const OpenApiDefinition = ({
+  definition,
+  plugins,
+}: OpenApiDefinitionProps) => {
   const classes = useStyles();
 
   // Due to a bug in the swagger-ui-react component, the component needs
@@ -147,9 +179,27 @@ export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
     return () => clearTimeout(timer);
   }, [definition, setDef]);
 
+  // Due to a bug in the swagger-ui-react component, the component needs
+  // to be created without content first.
+  const [plgins, setPlugins] = useState<any[] | undefined>([{}]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!!plugins)
+        setPlugins(
+          plugins
+            ?.filter(plugin =>
+              Object.keys(supportedSwaggerPlugins).includes(plugin),
+            )
+            ?.map(plugin => supportedSwaggerPlugins[plugin]),
+        );
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [plugins, setPlugins]);
+
   return (
     <div className={classes.root}>
-      <SwaggerUI spec={def} url="" deepLinking />
+      <SwaggerUI spec={def} plugins={plgins} url="" deepLinking />
     </div>
   );
 };

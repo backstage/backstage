@@ -28,6 +28,7 @@ const LazyOpenApiDefinition = React.lazy(() =>
 /** @public */
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
+  plugins?: string[];
 };
 
 /** @public */

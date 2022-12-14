@@ -35,6 +35,13 @@ $ yarn install  # fetch dependency packages - may take a while
 $ yarn tsc      # does a first run of type generation and checks
 ```
 
+If yarn install does not complete, you might need to download the following dependencies
+(list is of common missing dependencies, it is not exhaustive)
+pixman
+cairo
+pango
+canvas (npm dependency)
+
 ## Serving the Example App
 
 Open a terminal window and start the web app by using the following command from

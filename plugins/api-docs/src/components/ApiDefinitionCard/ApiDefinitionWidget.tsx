@@ -23,7 +23,10 @@ import { GrpcApiDefinitionWidget } from '../GrpcApiDefinitionWidget';
 export type ApiDefinitionWidget = {
   type: string;
   title: string;
-  component: (definition: string) => React.ReactElement;
+  component: (
+    definition: string,
+    swaggerPlugins?: string[] | undefined,
+  ) => React.ReactElement;
   rawLanguage?: string;
 };
 
@@ -34,8 +37,11 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       type: 'openapi',
       title: 'OpenAPI',
       rawLanguage: 'yaml',
-      component: definition => (
-        <OpenApiDefinitionWidget definition={definition} />
+      component: (definition, swaggerPlugins) => (
+        <OpenApiDefinitionWidget
+          definition={definition}
+          plugins={swaggerPlugins}
+        />
       ),
     },
     {
