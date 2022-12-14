@@ -20,6 +20,7 @@ import {
   LoggerService,
   coreServices,
 } from '@backstage/backend-plugin-api';
+import { LogMeta } from '@backstage/backend-plugin-api';
 import { Logger as WinstonLogger } from 'winston';
 
 class BackstageLogger implements LoggerService {
@@ -29,12 +30,24 @@ class BackstageLogger implements LoggerService {
 
   private constructor(private readonly winston: WinstonLogger) {}
 
-  info(message: string, ...meta: any[]): void {
-    this.winston.info(message, ...meta);
+  error(message: string, meta?: LogMeta): void {
+    this.winston.error(message, meta);
   }
 
-  child(fields: { [name: string]: string }): LoggerService {
-    return new BackstageLogger(this.winston.child(fields));
+  warn(message: string, meta?: LogMeta): void {
+    this.winston.warn(message, meta);
+  }
+
+  info(message: string, meta?: LogMeta): void {
+    this.winston.info(message, meta);
+  }
+
+  debug(message: string, meta?: LogMeta): void {
+    this.winston.debug(message, meta);
+  }
+
+  child(meta: LogMeta): LoggerService {
+    return new BackstageLogger(this.winston.child(meta));
   }
 }
 

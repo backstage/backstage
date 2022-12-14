@@ -19,9 +19,18 @@ import { createServiceRef } from '../system/types';
 /**
  * @public
  */
+export type LogMeta = Error | { [name: string]: any };
+
+/**
+ * @public
+ */
 export interface LoggerService {
-  info(message: string): void;
-  child(fields: { [name: string]: string }): LoggerService;
+  error(message: string, meta?: LogMeta): void;
+  warn(message: string, meta?: LogMeta): void;
+  info(message: string, meta?: LogMeta): void;
+  debug(message: string, meta?: LogMeta): void;
+
+  child(meta: LogMeta): LoggerService;
 }
 
 /**

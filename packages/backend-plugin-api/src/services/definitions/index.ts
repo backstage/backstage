@@ -26,7 +26,7 @@ export type {
   LifecycleService,
   LifecycleServiceShutdownHook,
 } from './lifecycleServiceRef';
-export type { LoggerService } from './loggerServiceRef';
+export type { LoggerService, LogMeta } from './loggerServiceRef';
 export type { PermissionsService } from './permissionsServiceRef';
 export type { PluginMetadataService } from './pluginMetadataServiceRef';
 export type { RootLoggerService } from './rootLoggerServiceRef';
