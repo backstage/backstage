@@ -66,8 +66,6 @@ import {
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { paths as cliPaths } from '../../lib/paths';
-import { resolvePackagePath as resolvePackagePathBackend } from '@backstage/backend-common';
-
 import minimatch from 'minimatch';
 
 const tmpDir = cliPaths.resolveTargetRoot(
@@ -233,10 +231,7 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     extends: './tsconfig.json',
     include: [
       // These two contain global definitions that are needed for stable API report generation
-      resolvePackagePathBackend(
-        '@backstage/cli',
-        'asset-types/asset-types.d.ts',
-      ),
+      require.resolve('@backstage/cli/asset-types/asset-types.d.ts'),
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
     // we don't exclude node_modules so that we can use the asset-types.d.ts file
