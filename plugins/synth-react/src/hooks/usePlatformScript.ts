@@ -40,7 +40,7 @@ export function usePlatformScript(yaml: string) {
   }, [yaml]);
 
   const result = useAsync(async (): Promise<PSValue> => {
-    if (program instanceof Error) {
+    if (program instanceof Error || program.name === 'YAMLException') {
       throw program;
     }
 
