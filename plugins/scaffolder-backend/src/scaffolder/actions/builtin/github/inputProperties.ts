@@ -91,7 +91,7 @@ const allowSquashMerge = {
 const squashMergeCommitTitle = {
   title: 'Default squash merge commit title',
   enum: ['PR_TITLE', 'COMMIT_OR_PR_TITLE'],
-  description: `Sets the default value for a squash merge commit title. The default value is 'PR_TITLE'`,
+  description: `Sets the default value for a squash merge commit title. The default value is 'COMMIT_OR_PR_TITLE'`,
 };
 const squashMergeCommitMessage = {
   title: 'Default squash merge commit message',

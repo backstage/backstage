@@ -126,7 +126,7 @@ export function createGithubRepoCreateAction(options: {
         deleteBranchOnMerge = false,
         allowMergeCommit = true,
         allowSquashMerge = true,
-        squashMergeCommitTitle = 'PR_TITLE',
+        squashMergeCommitTitle = 'COMMIT_OR_PR_TITLE',
         squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,

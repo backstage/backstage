@@ -158,7 +158,7 @@ export function createPublishGithubAction(options: {
         gitAuthorEmail,
         allowMergeCommit = true,
         allowSquashMerge = true,
-        squashMergeCommitTitle = 'PR_TITLE',
+        squashMergeCommitTitle = 'COMMIT_OR_PR_TITLE',
         squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,
