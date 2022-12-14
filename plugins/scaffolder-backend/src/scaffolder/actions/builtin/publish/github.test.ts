@@ -1015,4 +1015,75 @@ describe('publish:github', () => {
       dismissStaleReviews: false,
     });
   });
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredConversationResolution', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repo',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredConversationResolution: true,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: true,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredConversationResolution: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+    });
+  });
 });
