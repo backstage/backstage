@@ -109,7 +109,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
                     resources: items,
                   }),
                 )
-              : this.handleUnsuccessfulResponse(r),
+              : this.handleUnsuccessfulResponse(params.clusterDetails.name, r),
         ),
       );
 
@@ -147,22 +147,23 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           }),
         );
       } else if (podMetrics.ok) {
-        return this.handleUnsuccessfulResponse(podList);
+        return this.handleUnsuccessfulResponse(clusterDetails.name, podList);
       }
-      return this.handleUnsuccessfulResponse(podMetrics);
+      return this.handleUnsuccessfulResponse(clusterDetails.name, podMetrics);
     });
 
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
   private async handleUnsuccessfulResponse(
+    clusterName: string,
     res: Response,
   ): Promise<KubernetesFetchError> {
     const resourcePath = new URL(res.url).pathname;
     this.logger.warn(
-      `statusCode=${
+      `Received ${
         res.status
-      } for resource ${resourcePath} body=[${await res.text()}]`,
+      } status when fetching "${resourcePath}" from cluster "${clusterName}"; body=[${await res.text()}]`,
     );
     return {
       errorType: statusCodeToErrorType(res.status),

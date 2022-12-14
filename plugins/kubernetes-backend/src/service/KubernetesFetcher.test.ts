@@ -388,7 +388,7 @@ describe('KubernetesFetcher', () => {
         ],
       });
       expect(warn).toHaveBeenCalledWith(
-        'statusCode=401 for resource /api/v1/services body=[{"kind":"Status","apiVersion":"v1","code":401}]',
+        'Received 401 status when fetching "/api/v1/services" from cluster "cluster1"; body=[{"kind":"Status","apiVersion":"v1","code":401}]',
       );
     });
     // they're in testErrorResponse
