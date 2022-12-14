@@ -23,7 +23,7 @@ import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
 import { renderHook } from '@testing-library/react-hooks';
-import { hexToRgb, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   spotlight: {
