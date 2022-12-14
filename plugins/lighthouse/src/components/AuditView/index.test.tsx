@@ -149,6 +149,28 @@ describe('AuditView', () => {
         ).toHaveAttribute('href', `/audit/${a.id}`);
       });
     });
+
+    it('navigates to the next report with respect to the base path', async () => {
+      // TODO: I would need help here. How to set the base path for the test?
+      const basePath = `/lighthouse`;
+      const rendered = render(
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <AuditView />
+          </ApiProvider>,
+          { routeEntries: [basePath] },
+        ),
+      );
+
+      await rendered.findByTestId('audit-sidebar');
+
+      websiteResponse.audits.forEach(a => {
+        expect(
+          rendered.getByText(formatTime(a.timeCreated)).parentElement
+            ?.parentElement,
+        ).toHaveAttribute('href', `${basePath}/audits/${a.id}`);
+      });
+    });
   });
 
   describe('when the request for the website by id is pending', () => {

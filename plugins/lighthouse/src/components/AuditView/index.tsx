@@ -80,7 +80,7 @@ const AuditLinkList = ({ audits = [], selectedId }: AuditLinkListProps) => (
         button
         component={Link}
         replace
-        to={resolvePath(generatePath('audit/:id', { id: audit.id }), '../../')}
+        to={resolvePath(generatePath('audit/:id', { id: audit.id }), '../')}
       >
         <ListItemIcon>
           <AuditStatusIcon audit={audit} />
@@ -178,7 +178,7 @@ export const AuditViewContent = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate(`../../${createAuditButtonUrl}`)}
+          onClick={() => navigate(`../${createAuditButtonUrl}`)}
         >
           Create New Audit
         </Button>
