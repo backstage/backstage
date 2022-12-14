@@ -63,8 +63,19 @@ export const createComponent = (interpreter: PlatformScript) =>
                 ) {
                   const defaultValue = lookup(key.value, defaults);
                   if (defaultValue) {
-                    const result = yield* env.call(value, defaultValue);
-                    // console.log({ result })
+                    const result = yield* c.env.call(value, defaultValue);
+                    if (result.type === 'list') {
+                      const values = [];
+                      for (const item of result.value) {
+                        if (item.type === 'fn') {
+                          const fn = yield* c.env.call(item, arg);
+                          values.push(ps.ps2js(fn));
+                        } else {
+                          values.push(ps.ps2js(item));
+                        }
+                      }
+                      props[String(key.value)] = values;
+                    }
                   }
                 } else {
                   props[String(key.value)] = value.value;
@@ -91,19 +102,6 @@ export const createComponent = (interpreter: PlatformScript) =>
             default:
               children = $arg.value;
           }
-
-          // if (defaults.type === "map") {
-          //   for (const [key, defaultValue] of defaults.value.entries()) {
-          //     if (key.type === "string") {
-          //       const propName = key.value;
-          //       const propValue = props[propName]
-          //       console.log({ propValue, props})
-          //       if (isPSValue(propValue) && propValue.type === "fn") {
-          //         console.log({ propValue })
-          //       }
-          //     }
-          //   }
-          // }
 
           return ps.external(React.createElement(cType.value, props, children));
         },

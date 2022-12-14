@@ -16,3 +16,6 @@ $do:
   <>:
     - $<AboutCard>:
         gridItem: true
+        fields(defaults):
+          - $defaults.EntityDescriptionAboutField
+          - $defaults.EntityOwnerAboutField

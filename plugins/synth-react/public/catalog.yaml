@@ -9,21 +9,34 @@ catalogReactPlugin: { $resolve: '@backstage/plugin-catalog-react' }
   $Component:
     type: $catalogPlugin.EntityAboutCard
   primaryButtons:
-    EntityViewInSourceButton: $catalogPlugin.EntityViewInSourceButton
-    EntityViewInTechDocsButton: $catalogPlugin.EntityViewInTechDocsButton
+    EntityViewInSourceButton: 
+      $Component: { type: $catalogPlugin.EntityViewInSourceButton }
+    EntityViewInTechDocsButton: 
+      $Component: { type: $catalogPlugin.EntityViewInTechDocsButton }
   secondaryButtons:
-    EntityRefreshButton: $catalogPlugin.EntityRefreshButton
-    EntityEditMetadataButton: $catalogPlugin.EntityEditMetadataButton
+    EntityRefreshButton: 
+      $Component: { type: $catalogPlugin.EntityRefreshButton }
+    EntityEditMetadataButton: 
+      $Component: { type: $catalogPlugin.EntityEditMetadataButton }
   fields:
-    EntityDescriptionAboutField: $catalogPlugin.EntityDescriptionAboutField
-    EntityOwnerAboutField: $catalogPlugin.EntityOwnerAboutField
-    EntityDomainAboutField: $catalogPlugin.EntityDomainAboutField
-    EntitySystemAboutField: $catalogPlugin.EntitySystemAboutField
-    EntityParentComponentAboutField: $catalogPlugin.EntityParentComponentAboutField
-    EntityTypeAboutField: $catalogPlugin.EntityTypeAboutField
-    EntityLifecycleAboutField: $catalogPlugin.EntityLifecycleAboutField
-    EntityTagsAboutField: $catalogPlugin.EntityTagsAboutField
-    EntityLocationTargetsAboutField: $catalogPlugin.EntityLocationTargetsAboutField
+    EntityDescriptionAboutField:
+      $Component: { type: $catalogPlugin.EntityDescriptionAboutField }
+    EntityOwnerAboutField:
+      $Component: { type: $catalogPlugin.EntityOwnerAboutField }
+    EntityDomainAboutField: 
+      $Component: { type: $catalogPlugin.EntityDomainAboutField }
+    EntitySystemAboutField: 
+      $Component: { type: $catalogPlugin.EntitySystemAboutField }
+    EntityParentComponentAboutField:
+      $Component: { type: $catalogPlugin.EntityParentComponentAboutField }
+    EntityTypeAboutField:
+      $Component: { type: $catalogPlugin.EntityTypeAboutField }
+    EntityLifecycleAboutField:
+      $Component: { type: $catalogPlugin.EntityLifecycleAboutField }
+    EntityTagsAboutField:
+      $Component: { type: $catalogPlugin.EntityTagsAboutField }
+    EntityLocationTargetsAboutField:
+      $Component: { type: $catalogPlugin.EntityLocationTargetsAboutField }
 
 <EntityProvider>:
   $Component:
