@@ -17,9 +17,12 @@
 import { createServiceRef } from '../system/types';
 import { UrlReader } from '@backstage/backend-common';
 
+/** @public */
+export type UrlReaderService = UrlReader;
+
 /**
  * @public
  */
-export const urlReaderServiceRef = createServiceRef<UrlReader>({
+export const urlReaderServiceRef = createServiceRef<UrlReaderService>({
   id: 'core.urlReader',
 });

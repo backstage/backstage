@@ -19,13 +19,15 @@ import { createServiceRef } from '../system/types';
 /**
  * @public
  */
-export interface PluginMetadata {
+export interface PluginMetadataService {
   getId(): string;
 }
 
 /**
  * @public
  */
-export const pluginMetadataServiceRef = createServiceRef<PluginMetadata>({
-  id: 'core.plugin-metadata',
-});
+export const pluginMetadataServiceRef = createServiceRef<PluginMetadataService>(
+  {
+    id: 'core.plugin-metadata',
+  },
+);

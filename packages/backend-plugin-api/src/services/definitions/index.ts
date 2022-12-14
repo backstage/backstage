@@ -17,10 +17,19 @@
 import * as coreServices from './coreServices';
 
 export { coreServices };
+export type { CacheService } from './cacheServiceRef';
+export type { ConfigService } from './configServiceRef';
+export type { DatabaseService } from './databaseServiceRef';
+export type { DiscoveryService } from './discoveryServiceRef';
 export type { HttpRouterService } from './httpRouterServiceRef';
-export type { Logger } from './loggerServiceRef';
 export type {
-  BackendLifecycle,
-  BackendLifecycleShutdownHook,
+  LifecycleService,
+  LifecycleServiceShutdownHook,
 } from './lifecycleServiceRef';
-export type { PluginMetadata } from './pluginMetadataServiceRef';
+export type { LoggerService } from './loggerServiceRef';
+export type { PermissionsService } from './permissionsServiceRef';
+export type { PluginMetadataService } from './pluginMetadataServiceRef';
+export type { RootLoggerService } from './rootLoggerServiceRef';
+export type { SchedulerService } from './schedulerServiceRef';
+export type { TokenManagerService } from './tokenManagerServiceRef';
+export type { UrlReaderService } from './urlReaderServiceRef';

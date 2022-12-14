@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Logger as BackstageLogger } from '../definitions';
+import { LoggerService } from '../definitions';
 import { Logger as WinstonLogger, createLogger } from 'winston';
 import Transport, { TransportStreamOptions } from 'winston-transport';
 
 class BackstageLoggerTransport extends Transport {
   constructor(
-    private readonly backstageLogger: BackstageLogger,
+    private readonly backstageLogger: LoggerService,
     opts?: TransportStreamOptions,
   ) {
     super(opts);
@@ -35,7 +35,7 @@ class BackstageLoggerTransport extends Transport {
 
 /** @public */
 export function loggerToWinstonLogger(
-  logger: BackstageLogger,
+  logger: LoggerService,
   opts?: TransportStreamOptions,
 ): WinstonLogger {
   return createLogger({

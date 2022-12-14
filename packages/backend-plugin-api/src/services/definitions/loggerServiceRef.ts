@@ -19,14 +19,14 @@ import { createServiceRef } from '../system/types';
 /**
  * @public
  */
-export interface Logger {
+export interface LoggerService {
   info(message: string): void;
-  child(fields: { [name: string]: string }): Logger;
+  child(fields: { [name: string]: string }): LoggerService;
 }
 
 /**
  * @public
  */
-export const loggerServiceRef = createServiceRef<Logger>({
+export const loggerServiceRef = createServiceRef<LoggerService>({
   id: 'core.logger',
 });
