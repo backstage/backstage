@@ -72,12 +72,7 @@ export class FetchError extends Error {
 }
 
 // @public (undocumented)
-export enum FormFactor {
-  // (undocumented)
-  Desktop = 'desktop',
-  // (undocumented)
-  Mobile = 'mobile',
-}
+export type FormFactor = 'mobile' | 'desktop';
 
 // @public (undocumented)
 const isLighthouseAvailable: (entity: Entity) => boolean;
@@ -141,6 +136,21 @@ export type LighthouseCategoryId =
   | 'best-practices';
 
 // @public (undocumented)
+export type LighthouseConfigSettings = {
+  formFactor: FormFactor;
+  screenEmulation:
+    | {
+        mobile: boolean;
+        width: number;
+        height: number;
+        deviceScaleFactor: number;
+        disabled: boolean;
+      }
+    | undefined;
+  emulatedFormFactor: FormFactor;
+};
+
+// @public (undocumented)
 export const LighthousePage: () => JSX.Element;
 
 // @public (undocumented)
@@ -176,24 +186,11 @@ export class LighthouseRestApi implements LighthouseApi {
 export const Router: () => JSX.Element;
 
 // @public (undocumented)
-export type ScreenEmulation = {
-  mobile: boolean;
-  width: number;
-  height: number;
-  deviceScaleFactor: number;
-  disabled: boolean;
-} | null;
-
-// @public (undocumented)
 export interface TriggerAuditPayload {
   // (undocumented)
   options: {
     lighthouseConfig: {
-      settings: {
-        formFactor: FormFactor;
-        screenEmulation: ScreenEmulation;
-        emulatedFormFactor: FormFactor;
-      };
+      settings: LighthouseConfigSettings;
     };
   };
   // (undocumented)

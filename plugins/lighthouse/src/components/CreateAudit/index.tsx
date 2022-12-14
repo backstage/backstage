@@ -25,7 +25,11 @@ import {
 } from '@material-ui/core';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FormFactor, lighthouseApiRef, ScreenEmulation } from '../../api';
+import {
+  FormFactor,
+  lighthouseApiRef,
+  LighthouseConfigSettings,
+} from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 
@@ -65,9 +69,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const formFactorToScreenEmulationMap: Record<FormFactor, ScreenEmulation> = {
+const formFactorToScreenEmulationMap: Record<
+  FormFactor,
+  LighthouseConfigSettings['screenEmulation']
+> = {
   // the default is mobile, so no need to override
-  mobile: null,
+  mobile: undefined,
   // Values from lighthouse's cli "desktop" preset
   // https://github.com/GoogleChrome/lighthouse/blob/a6738e0033e7e5ca308b97c1c36f298b7d399402/lighthouse-core/config/constants.js#L71-L77
   desktop: {
@@ -87,7 +94,7 @@ export const CreateAuditContent = () => {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [url, setUrl] = useState<string>(query.get('url') || '');
-  const [formFactor, setFormFactor] = useState<FormFactor>(FormFactor.Mobile);
+  const [formFactor, setFormFactor] = useState<FormFactor>('mobile');
 
   const triggerAudit = useCallback(async (): Promise<void> => {
     setSubmitting(true);

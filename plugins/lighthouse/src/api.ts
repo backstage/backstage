@@ -86,32 +86,31 @@ export interface Website {
 export type WebsiteListResponse = LASListResponse<Website>;
 
 /** @public */
-export enum FormFactor {
-  Mobile = 'mobile',
-  Desktop = 'desktop',
-}
+export type FormFactor = 'mobile' | 'desktop';
 
 /** @public */
-export type ScreenEmulation = {
-  mobile: boolean;
-  width: number;
-  height: number;
-  deviceScaleFactor: number;
-  disabled: boolean;
-} | null;
+export type LighthouseConfigSettings = {
+  // For lighthouse 7+
+  formFactor: FormFactor;
+  screenEmulation:
+    | {
+        mobile: boolean;
+        width: number;
+        height: number;
+        deviceScaleFactor: number;
+        disabled: boolean;
+      }
+    | undefined;
+  // For lighthouse before 7
+  emulatedFormFactor: FormFactor;
+};
 
 /** @public */
 export interface TriggerAuditPayload {
   url: string;
   options: {
     lighthouseConfig: {
-      settings: {
-        // For lighthouse 7+
-        formFactor: FormFactor;
-        screenEmulation: ScreenEmulation;
-        // For lighthouse before 7
-        emulatedFormFactor: FormFactor;
-      };
+      settings: LighthouseConfigSettings;
     };
   };
 }
