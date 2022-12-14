@@ -138,13 +138,15 @@ function registerTestHooks() {
   registered = true;
 
   afterAll(async () => {
-    for (const backend of backendInstancesToCleanUp) {
-      try {
-        await backend.stop();
-      } catch (error) {
-        console.error(`Failed to stop backend after tests, ${error}`);
-      }
-    }
+    await Promise.all(
+      backendInstancesToCleanUp.map(async backend => {
+        try {
+          await backend.stop();
+        } catch (error) {
+          console.error(`Failed to stop backend after tests, ${error}`);
+        }
+      }),
+    );
     backendInstancesToCleanUp.length = 0;
   });
 }
