@@ -81,6 +81,7 @@ describe('JenkinsApi', () => {
           .mockResolvedValueOnce(project)
           .mockResolvedValueOnce(project);
         const result = await jenkinsApi.getProjects(jenkinsInfo);
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledTimes(2);
         expect(result).toHaveLength(1);
         expect(result[0]).toEqual({
           actions: [],
