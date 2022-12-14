@@ -45,9 +45,16 @@ export interface CreateSpecializedBackendOptions {
   services: (ServiceFactory | (() => ServiceFactory))[];
 }
 
-export type ServiceHolder = {
+export interface ServiceHolder {
   get<T>(api: ServiceRef<T>, pluginId: string): Promise<T> | undefined;
-};
+}
+
+/**
+ * @internal
+ */
+export interface EnumerableServiceHolder extends ServiceHolder {
+  getServiceRefs(): ServiceRef<unknown>[];
+}
 
 /**
  * @public
