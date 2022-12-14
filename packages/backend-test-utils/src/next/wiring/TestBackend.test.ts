@@ -23,6 +23,38 @@ import {
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from './TestBackend';
 
+// This bit makes sure that test backends are cleaned up properly
+let globalTestBackendHasBeenStopped = false;
+beforeAll(async () => {
+  await startTestBackend({
+    services: [],
+    features: [
+      createBackendModule({
+        moduleId: 'test.module',
+        pluginId: 'test',
+        register(env) {
+          env.registerInit({
+            deps: { lifecycle: coreServices.lifecycle },
+            async init({ lifecycle }) {
+              lifecycle.addShutdownHook({
+                fn() {
+                  globalTestBackendHasBeenStopped = true;
+                },
+              });
+            },
+          });
+        },
+      })(),
+    ],
+  });
+});
+
+afterAll(() => {
+  if (!globalTestBackendHasBeenStopped) {
+    throw new Error('Expected backend to have been stopped');
+  }
+});
+
 describe('TestBackend', () => {
   it('should get a type error if service implementation does not match', async () => {
     type Obj = { a: string; b: string };
@@ -117,7 +149,6 @@ describe('TestBackend', () => {
     const backend = await startTestBackend({
       services: [],
       features: [testModule()],
-      autoStop: 'never',
     });
 
     expect(shutdownSpy).not.toHaveBeenCalled();

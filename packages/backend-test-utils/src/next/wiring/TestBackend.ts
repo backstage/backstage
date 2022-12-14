@@ -51,7 +51,6 @@ export interface TestBackendOptions<
     },
   ];
   features?: BackendFeature[];
-  autoStop?: 'afterEach' | 'never';
 }
 
 const defaultServiceFactories = [
@@ -60,7 +59,7 @@ const defaultServiceFactories = [
   lifecycleFactory(),
 ];
 
-const backendInstances = new Array<Backend>();
+const backendInstancesToCleanUp = new Array<Backend>();
 
 /** @alpha */
 export async function startTestBackend<
@@ -71,7 +70,6 @@ export async function startTestBackend<
     services = [],
     extensionPoints = [],
     features = [],
-    autoStop = 'afterEach',
     ...otherOptions
   } = options;
 
@@ -107,9 +105,7 @@ export async function startTestBackend<
     services: factories,
   });
 
-  if (autoStop) {
-    backendInstances.push(backend);
-  }
+  backendInstancesToCleanUp.push(backend);
 
   backend.add({
     id: `---test-extension-point-registrar`,
@@ -141,15 +137,15 @@ function registerTestHooks() {
   }
   registered = true;
 
-  afterEach(async () => {
-    for (const backend of backendInstances) {
+  afterAll(async () => {
+    for (const backend of backendInstancesToCleanUp) {
       try {
         await backend.stop();
       } catch (error) {
-        console.error(`Failed to stop backend after test, ${error}`);
+        console.error(`Failed to stop backend after tests, ${error}`);
       }
     }
-    backendInstances.length = 0;
+    backendInstancesToCleanUp.length = 0;
   });
 }
 
