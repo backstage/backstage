@@ -4,13 +4,12 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { BackendLifecycle } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
-import { Logger } from '@backstage/backend-plugin-api';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { LifecycleService } from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -70,18 +69,22 @@ export type HttpRouterFactoryOptions = {
 // @public
 export const lifecycleFactory: (
   options?: undefined,
-) => ServiceFactory<BackendLifecycle>;
+) => ServiceFactory<LifecycleService>;
 
 // @public (undocumented)
-export const loggerFactory: (options?: undefined) => ServiceFactory<Logger>;
+export const loggerFactory: (
+  options?: undefined,
+) => ServiceFactory<LoggerService>;
 
 // @public (undocumented)
 export const permissionsFactory: (
   options?: undefined,
-) => ServiceFactory<PermissionAuthorizer | PermissionEvaluator>;
+) => ServiceFactory<PermissionsService>;
 
 // @public (undocumented)
-export const rootLoggerFactory: (options?: undefined) => ServiceFactory<Logger>;
+export const rootLoggerFactory: (
+  options?: undefined,
+) => ServiceFactory<LoggerService>;
 
 // @public (undocumented)
 export const schedulerFactory: (
