@@ -172,7 +172,6 @@ export class BackendInitializer {
     if (!this.#started) {
       return;
     }
-    this.#started = false;
 
     const lifecycleService = await this.#serviceHolder.get(
       coreServices.lifecycle,
