@@ -129,7 +129,7 @@ export async function startTestBackend<
 
 let registered = false;
 function registerTestHooks() {
-  if (typeof afterEach !== 'function') {
+  if (typeof afterAll !== 'function') {
     return;
   }
   if (registered) {
