@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import {
-  BackendLifecycle,
+  LifecycleService,
   createServiceFactory,
   coreServices,
   loggerToWinstonLogger,
-  BackendLifecycleShutdownHook,
+  LifecycleServiceShutdownHook,
 } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 
@@ -29,11 +29,11 @@ export class BackendLifecycleImpl {
   }
 
   #isCalled = false;
-  #shutdownTasks: Array<BackendLifecycleShutdownHook & { pluginId: string }> =
+  #shutdownTasks: Array<LifecycleServiceShutdownHook & { pluginId: string }> =
     [];
 
   addShutdownHook(
-    options: BackendLifecycleShutdownHook & { pluginId: string },
+    options: LifecycleServiceShutdownHook & { pluginId: string },
   ): void {
     this.#shutdownTasks.push(options);
   }
@@ -64,12 +64,12 @@ export class BackendLifecycleImpl {
   }
 }
 
-class PluginScopedLifecycleImpl implements BackendLifecycle {
+class PluginScopedLifecycleImpl implements LifecycleService {
   constructor(
     private readonly lifecycle: BackendLifecycleImpl,
     private readonly pluginId: string,
   ) {}
-  addShutdownHook(options: BackendLifecycleShutdownHook): void {
+  addShutdownHook(options: LifecycleServiceShutdownHook): void {
     this.lifecycle.addShutdownHook({ ...options, pluginId: this.pluginId });
   }
 }
