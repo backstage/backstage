@@ -202,4 +202,33 @@ describe('<EntityTagPicker/>', () => {
       tags: new EntityTagFilter(['tag2']),
     });
   });
+  it('removes tags from filters if there are none available', async () => {
+    const updateFilters = jest.fn();
+    const mockCatalogApiRefNoTags = {
+      getEntityFacets: async () => ({
+        facets: {
+          'metadata.tags': {},
+        },
+      }),
+    } as unknown as CatalogApi;
+
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRefNoTags]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { tags: ['tag1'] },
+          }}
+        >
+          <EntityTagPicker />
+        </MockEntityListContextProvider>
+        ,
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        tags: undefined,
+      }),
+    );
+  });
 });
