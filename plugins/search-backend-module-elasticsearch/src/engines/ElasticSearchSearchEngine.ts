@@ -254,6 +254,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
 
   async getIndexer(type: string) {
     const alias = this.constructSearchAlias(type);
+    const indexerLogger = this.logger.child({ documentType: type });
 
     const indexer = new ElasticSearchSearchEngineIndexer({
       type,
@@ -261,13 +262,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       indexSeparator: this.indexSeparator,
       alias,
       elasticSearchClientWrapper: this.elasticSearchClientWrapper,
-      logger: this.logger,
+      logger: indexerLogger,
       batchSize: this.batchSize,
     });
 
     // Attempt cleanup upon failure.
     indexer.on('error', async e => {
-      this.logger.error(`Failed to index documents for type ${type}`, e);
+      indexerLogger.error(`Failed to index documents for type ${type}`, e);
       let cleanupError: Error | undefined;
 
       // In some cases, a failure may have occurred before the indexer was able
@@ -298,11 +299,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       });
 
       if (cleanupError) {
-        this.logger.error(
+        indexerLogger.error(
           `Unable to clean up elastic index ${indexer.indexName}: ${cleanupError}`,
         );
       } else {
-        this.logger.info(`Removed partial, failed index ${indexer.indexName}`);
+        indexerLogger.info(
+          `Removed partial, failed index ${indexer.indexName}`,
+        );
       }
     });
 

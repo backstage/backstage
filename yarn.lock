@@ -7558,6 +7558,7 @@ __metadata:
     knex: ^2.0.0
     lodash: ^4.17.21
     uuid: ^8.3.2
+    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
