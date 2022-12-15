@@ -840,7 +840,9 @@ export async function buildDocs({
           context.writer.writeLine('---');
           for (const [name, value] of Object.entries(node.values)) {
             if (value) {
-              context.writer.writeLine(`${name}: ${value}`);
+              context.writer.writeLine(
+                `${name}: "${String(value).replace(/\"/g, '')}"`,
+              );
             }
           }
           context.writer.writeLine('---');
