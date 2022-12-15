@@ -205,9 +205,15 @@ export type LifecycleServiceShutdownHook = {
 // @public (undocumented)
 export interface LoggerService {
   // (undocumented)
-  child(fields: { [name: string]: string }): LoggerService;
+  child(meta: LogMeta): LoggerService;
   // (undocumented)
-  info(message: string): void;
+  debug(message: string, meta?: Error | LogMeta): void;
+  // (undocumented)
+  error(message: string, meta?: Error | LogMeta): void;
+  // (undocumented)
+  info(message: string, meta?: Error | LogMeta): void;
+  // (undocumented)
+  warn(message: string, meta?: Error | LogMeta): void;
 }
 
 // @public (undocumented)
@@ -218,6 +224,11 @@ export function loggerToWinstonLogger(
   logger: LoggerService,
   opts?: TransportStreamOptions,
 ): Logger;
+
+// @public (undocumented)
+export type LogMeta = {
+  [name: string]: unknown;
+};
 
 // @public (undocumented)
 export type PermissionsService = PermissionEvaluator | PermissionAuthorizer;
