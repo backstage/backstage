@@ -68,8 +68,8 @@ const generatedColumns: TableColumn[] = [
     title: 'Source',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>{row.source?.branchName}</p>
-        <p>{row.source?.commit.hash}</p>
+        <Typography variant="body2">{row.source?.branchName}</Typography>
+        <Typography variant="body2">{row.source?.commit.hash}</Typography>
       </Typography>
     ),
   },

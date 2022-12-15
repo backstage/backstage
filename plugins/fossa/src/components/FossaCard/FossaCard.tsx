@@ -16,6 +16,7 @@
 
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Grid, Tooltip } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
 import React, { PropsWithChildren } from 'react';
@@ -165,7 +166,7 @@ export const FossaCard = (props: { variant?: InfoCardVariants }) => {
         spacing={0}
       >
         <Grid item>
-          <p
+          <Typography
             className={
               value.issueCount > 0 || value.dependencyCount === 0
                 ? classes.numberError
@@ -173,16 +174,18 @@ export const FossaCard = (props: { variant?: InfoCardVariants }) => {
             }
           >
             {value.issueCount}
-          </p>
+          </Typography>
           {value.dependencyCount > 0 && (
-            <p className={classes.description}>Number of issues</p>
+            <Typography className={classes.description}>
+              Number of issues
+            </Typography>
           )}
           {value.dependencyCount === 0 && (
-            <p className={classes.description}>
+            <Typography className={classes.description}>
               No Dependencies.
               <br />
               Please check your FOSSA project settings.
-            </p>
+            </Typography>
           )}
         </Grid>
 
