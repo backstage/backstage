@@ -81,7 +81,12 @@ export interface IncrementalEntityProvider<TCursor, TContext, TInput = null> {
    * outside of the incremental ingestion schedule.
    */
   deltaMapper?: (payload: TInput) => {
-    delta: { added: DeferredEntity[]; removed: DeferredEntity[] } | undefined;
+    delta:
+      | {
+          added: DeferredEntity[];
+          removed: { entityRef: string }[];
+        }
+      | undefined;
   };
 }
 

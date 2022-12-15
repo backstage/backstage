@@ -339,6 +339,7 @@ export class IncrementalIngestionEngine<TInput>
     }
 
     const { logger, provider, connection } = this.options;
+    const providerName = provider.getProviderName();
     logger.info(
       `incremental-engine: Received ${this.providerEventTopic} event`,
     );
@@ -352,6 +353,34 @@ export class IncrementalIngestionEngine<TInput>
     const update = provider.deltaMapper(payload);
 
     if (update.delta) {
+      if (update.delta.added.length > 0) {
+        const ingestionRecord = await this.manager.getCurrentIngestionRecord(
+          providerName,
+        );
+
+        if (!ingestionRecord) {
+          logger.debug(
+            `incremental-engine: Skipping delta addition because incremental ingestion is restarting.`,
+          );
+        } else {
+          const mark =
+            ingestionRecord.status === 'resting'
+              ? await this.manager.getLastMark(ingestionRecord.id)
+              : await this.manager.getFirstMark(ingestionRecord.id);
+
+          if (!mark) {
+            throw new Error(
+              `Cannot apply delta, page records are missing! Please re-run incremental ingestion for ${providerName}.`,
+            );
+          }
+          await this.manager.createMarkEntities(mark.id, update.delta.added);
+        }
+      }
+
+      if (update.delta.removed.length > 0) {
+        await this.manager.deleteEntityRecordsByRef(update.delta.removed);
+      }
+
       await connection.applyMutation({
         type: 'delta',
         ...update.delta,
