@@ -26,23 +26,27 @@ class BackstageLoggerTransport extends Transport {
     super(opts);
   }
 
-  log(info: any, callback: VoidFunction) {
-    const { level, message, ...meta } = info;
+  log(info: unknown, callback: VoidFunction) {
+    if (typeof info !== 'object' || info === null) {
+      callback();
+      return;
+    }
+    const { level, message, ...meta } = info as { [name: string]: unknown };
     switch (level) {
       case 'error':
-        this.backstageLogger.error(message, meta);
+        this.backstageLogger.error(String(message), meta);
         break;
       case 'warn':
-        this.backstageLogger.warn(message, meta);
+        this.backstageLogger.warn(String(message), meta);
         break;
       case 'info':
-        this.backstageLogger.info(message, meta);
+        this.backstageLogger.info(String(message), meta);
         break;
       case 'debug':
-        this.backstageLogger.debug(message, meta);
+        this.backstageLogger.debug(String(message), meta);
         break;
       default:
-        this.backstageLogger.info(message, meta);
+        this.backstageLogger.info(String(message), meta);
     }
     callback();
   }
