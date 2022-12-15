@@ -207,13 +207,13 @@ export interface LoggerService {
   // (undocumented)
   child(meta: LogMeta): LoggerService;
   // (undocumented)
-  debug(message: string, meta?: LogMeta): void;
+  debug(message: string, meta?: Error | LogMeta): void;
   // (undocumented)
-  error(message: string, meta?: LogMeta): void;
+  error(message: string, meta?: Error | LogMeta): void;
   // (undocumented)
-  info(message: string, meta?: LogMeta): void;
+  info(message: string, meta?: Error | LogMeta): void;
   // (undocumented)
-  warn(message: string, meta?: LogMeta): void;
+  warn(message: string, meta?: Error | LogMeta): void;
 }
 
 // @public (undocumented)
@@ -226,11 +226,9 @@ export function loggerToWinstonLogger(
 ): Logger;
 
 // @public (undocumented)
-export type LogMeta =
-  | Error
-  | {
-      [name: string]: any;
-    };
+export type LogMeta = {
+  [name: string]: unknown;
+};
 
 // @public (undocumented)
 export type PermissionsService = PermissionEvaluator | PermissionAuthorizer;
