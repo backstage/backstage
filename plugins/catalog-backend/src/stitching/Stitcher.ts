@@ -207,11 +207,12 @@ export class Stitcher {
       .update({
         final_entity: JSON.stringify(entity),
         hash,
+        last_updated_at: this.database.fn.now(),
       })
       .where('entity_id', entityId)
       .where('stitch_ticket', ticket)
       .onConflict('entity_id')
-      .merge(['final_entity', 'hash']);
+      .merge(['final_entity', 'hash', 'last_updated_at']);
 
     if (amountOfRowsChanged === 0) {
       this.logger.debug(
