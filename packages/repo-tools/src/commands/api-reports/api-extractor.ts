@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-restricted-imports */
 import {
   resolve as resolvePath,
   relative as relativePath,
