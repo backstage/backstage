@@ -5,21 +5,17 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { CoreV1Api } from '@kubernetes/client-node';
 import { Credentials } from 'aws-sdk';
-import { CustomObjectsApi } from '@kubernetes/client-node';
 import type { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
-import { KubeConfig } from '@kubernetes/client-node';
 import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger } from 'winston';
-import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import type { RequestHandler } from 'express';
@@ -261,18 +257,6 @@ export type KubernetesBuilderReturn = Promise<{
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
 }>;
-
-// @alpha (undocumented)
-export class KubernetesClientProvider {
-  // (undocumented)
-  getCoreClientByClusterDetails(clusterDetails: ClusterDetails): CoreV1Api;
-  // (undocumented)
-  getCustomObjectsClient(clusterDetails: ClusterDetails): CustomObjectsApi;
-  // (undocumented)
-  getKubeConfig(clusterDetails: ClusterDetails): KubeConfig;
-  // (undocumented)
-  getMetricsClient(clusterDetails: ClusterDetails): Metrics;
-}
 
 // @alpha
 export interface KubernetesClustersSupplier {
