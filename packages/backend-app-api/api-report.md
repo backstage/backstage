@@ -25,6 +25,8 @@ export interface Backend {
   add(feature: BackendFeature): void;
   // (undocumented)
   start(): Promise<void>;
+  // (undocumented)
+  stop(): Promise<void>;
 }
 
 // @public (undocumented)

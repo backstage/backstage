@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { createSpecializedBackend } from '@backstage/backend-app-api';
+import {
+  Backend,
+  createSpecializedBackend,
+  lifecycleFactory,
+  loggerFactory,
+  rootLoggerFactory,
+} from '@backstage/backend-app-api';
 import {
   ServiceFactory,
   ServiceRef,
@@ -47,11 +53,19 @@ export interface TestBackendOptions<
   features?: BackendFeature[];
 }
 
+const defaultServiceFactories = [
+  rootLoggerFactory(),
+  loggerFactory(),
+  lifecycleFactory(),
+];
+
+const backendInstancesToCleanUp = new Array<Backend>();
+
 /** @alpha */
 export async function startTestBackend<
   TServices extends any[],
   TExtensionPoints extends any[],
->(options: TestBackendOptions<TServices, TExtensionPoints>): Promise<void> {
+>(options: TestBackendOptions<TServices, TExtensionPoints>): Promise<Backend> {
   const {
     services = [],
     extensionPoints = [],
@@ -69,21 +83,29 @@ export async function startTestBackend<
           service: ref,
           deps: {},
           factory: async () => async () => impl,
-        });
+        })();
       }
       return createServiceFactory({
         service: ref,
         deps: {},
         factory: async () => impl,
-      });
+      })();
     }
     return serviceDef as ServiceFactory;
   });
+
+  for (const factory of defaultServiceFactories) {
+    if (!factories.some(f => f.service === factory.service)) {
+      factories.push(factory);
+    }
+  }
 
   const backend = createSpecializedBackend({
     ...otherOptions,
     services: factories,
   });
+
+  backendInstancesToCleanUp.push(backend);
 
   backend.add({
     id: `---test-extension-point-registrar`,
@@ -101,4 +123,32 @@ export async function startTestBackend<
   }
 
   await backend.start();
+
+  return backend;
 }
+
+let registered = false;
+function registerTestHooks() {
+  if (typeof afterAll !== 'function') {
+    return;
+  }
+  if (registered) {
+    return;
+  }
+  registered = true;
+
+  afterAll(async () => {
+    await Promise.all(
+      backendInstancesToCleanUp.map(async backend => {
+        try {
+          await backend.stop();
+        } catch (error) {
+          console.error(`Failed to stop backend after tests, ${error}`);
+        }
+      }),
+    );
+    backendInstancesToCleanUp.length = 0;
+  });
+}
+
+registerTestHooks();
