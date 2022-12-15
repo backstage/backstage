@@ -5463,6 +5463,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
@@ -7956,7 +7957,7 @@ __metadata:
     cross-fetch: ^3.1.5
     lodash.get: ^4.4.2
     msw: ^0.49.0
-    platformscript: 1.0.0-alpha.8
+    platformscript: 1.0.0-alpha.9
     react-inspector: ^6.0.1
     react-use: ^17.2.4
     yaml: ^2.1.3
@@ -31783,12 +31784,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"platformscript@npm:1.0.0-alpha.8":
-  version: 1.0.0-alpha.8
-  resolution: "platformscript@npm:1.0.0-alpha.8"
+"platformscript@npm:1.0.0-alpha.9":
+  version: 1.0.0-alpha.9
+  resolution: "platformscript@npm:1.0.0-alpha.9"
   dependencies:
     yaml-ast-parser: 0.0.43
-  checksum: ee3c47b9f39a68fa4d5d67a056cd4d645175769425f654fc41ed92580ee599ce1a521de29e069b7772ea2aa8382707b6660cfa37f7f13314e59386ca5378d9d3
+  checksum: 371db7c05feceae482a265c9095074d49cb4b4cefd0b875ef068e8dfa8ca039414d2f119b4dbc43c9a4e84cca6afbb8475f500b6d08d0d40b45fe77d6cbccba2
   languageName: node
   linkType: hard
 
