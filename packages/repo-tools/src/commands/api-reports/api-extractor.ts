@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-restricted-imports */
-
 import {
   resolve as resolvePath,
   relative as relativePath,
@@ -227,11 +224,21 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     fs.removeSync(path);
   });
 
+  let assetTypeFile: string[] = [];
+
+  try {
+    assetTypeFile = [
+      require.resolve('@backstage/cli/asset-types/asset-types.d.ts'),
+    ];
+  } catch {
+    /** ignore */
+  }
+
   await fs.writeJson(path, {
     extends: './tsconfig.json',
     include: [
       // These two contain global definitions that are needed for stable API report generation
-      require.resolve('@backstage/cli/asset-types/asset-types.d.ts'),
+      ...assetTypeFile,
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
     // we don't exclude node_modules so that we can use the asset-types.d.ts file
