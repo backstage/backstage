@@ -15,16 +15,17 @@
  */
 
 import React, { ComponentType } from 'react';
-import { EntityRefLink, EntityRefLinkProps } from './EntityRefLink';
+import { EntityRefLinks, EntityRefLinksProps } from './EntityRefLinks';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { entityRouteRef } from '../../routes';
 
 const defaultArgs = {
-  entityRef: 'component:default/playback',
+  entityRefs: ['component:default/playback', 'user:default/fname.lname'],
 };
 
 export default {
-  title: 'Catalog /EntityRefLink',
+  title: 'Catalog /EntityRefLinks',
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(<Story />, {
@@ -35,7 +36,7 @@ export default {
   ],
 };
 
-export const Default = (args: EntityRefLinkProps) => (
-  <EntityRefLink {...args} />
-);
+export const Default = (
+  args: EntityRefLinksProps<string | CompoundEntityRef>,
+) => <EntityRefLinks {...args} />;
 Default.args = defaultArgs;

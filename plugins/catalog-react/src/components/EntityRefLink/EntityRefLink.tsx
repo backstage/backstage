@@ -25,7 +25,8 @@ import { entityRouteRef } from '../../routes';
 import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { EntityPeekAheadPopover } from '../EntityPeekAheadPopover';
+import { Tooltip } from '@material-ui/core';
+
 /**
  * Props for {@link EntityRefLink}.
  *
@@ -76,13 +77,17 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       { defaultKind },
     );
 
-    return (
-      <EntityPeekAheadPopover entityRef={`${kind}:${namespace}/${name}`}>
-        <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
-          {children}
-          {!children && (title ?? formattedEntityRefTitle)}
-        </Link>
-      </EntityPeekAheadPopover>
+    const link = (
+      <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
+        {children}
+        {!children && (title ?? formattedEntityRefTitle)}
+      </Link>
+    );
+
+    return title ? (
+      <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>
+    ) : (
+      link
     );
   },
 ) as (props: EntityRefLinkProps) => JSX.Element;

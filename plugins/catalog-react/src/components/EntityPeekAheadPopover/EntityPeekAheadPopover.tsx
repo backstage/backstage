@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { entityRouteRef } from '../../routes';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { catalogApiRef } from '../../api';
 import React, { PropsWithChildren, useEffect } from 'react';
@@ -25,7 +24,6 @@ import {
 } from 'material-ui-popup-state/hooks';
 import {
   Box,
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -34,19 +32,19 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import EmailIcon from '@material-ui/icons/Email';
-import InfoIcon from '@material-ui/icons/Info';
-import { useApiHolder, useRouteRef } from '@backstage/core-plugin-api';
+import { useApiHolder } from '@backstage/core-plugin-api';
 import {
-  isUserEntity,
   isGroupEntity,
-  UserEntity,
-  GroupEntity,
-  Entity,
+  isUserEntity,
   parseEntityRef,
 } from '@backstage/catalog-model';
-import { Link, Progress } from '@backstage/core-components';
+import { Progress } from '@backstage/core-components';
+import {
+  EntityCardActions,
+  UserCardActions,
+  GroupCardActions,
+} from './CardActionComponents';
+import { EntityNotFoundCard } from './EntityNotFoundCard';
 
 /**
  * Properties for an entity popover on hover of a component.
@@ -76,80 +74,6 @@ const useStyles = makeStyles(() => {
 });
 
 const maxTagChips = 4;
-
-const EmailCardAction = ({ email }: { email: string }) => {
-  return (
-    <Tooltip title={`Email ${email}`}>
-      <Button target="_blank" href={`mailto:${email}`} size="small">
-        <EmailIcon color="action" />
-      </Button>
-    </Tooltip>
-  );
-};
-
-const UserCardActions = ({ entity }: { entity: UserEntity }) => {
-  return (
-    <>
-      {entity.spec.profile?.email && (
-        <EmailCardAction email={entity.spec.profile.email} />
-      )}
-    </>
-  );
-};
-
-const GroupCardActions = ({ entity }: { entity: GroupEntity }) => {
-  return (
-    <>
-      {entity.spec.profile?.email && (
-        <EmailCardAction email={entity.spec.profile.email} />
-      )}
-    </>
-  );
-};
-
-/**
- * Shows an entity popover on hover of a component.
- *
- * @public
- */
-const EntityCardActions = ({ entity }: { entity: Entity }) => {
-  const entityRoute = useRouteRef(entityRouteRef);
-
-  return (
-    <>
-      <Tooltip title="Show details">
-        <Link
-          component="button"
-          to={entityRoute({
-            name: entity.metadata.name,
-            namespace: entity.metadata.namespace || 'default',
-            kind: entity.kind.toLocaleLowerCase('en-US'),
-          })}
-        >
-          <InfoIcon color="action" />
-        </Link>
-      </Tooltip>
-    </>
-  );
-};
-
-const EntityNotFoundCard = ({
-  entityRef,
-  error,
-}: {
-  entityRef: string;
-  error?: Error;
-}) => {
-  return (
-    <Card>
-      <CardContent>
-        <Alert severity="warning">
-          {entityRef} was not found {error?.message}
-        </Alert>
-      </CardContent>
-    </Card>
-  );
-};
 
 /**
  * Shows an entity popover on hover of a component.
