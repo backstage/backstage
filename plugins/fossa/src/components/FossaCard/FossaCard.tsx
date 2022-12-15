@@ -17,6 +17,7 @@
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Grid, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import { DateTime } from 'luxon';
 import React, { PropsWithChildren } from 'react';
 import useAsync from 'react-use/lib/useAsync';
@@ -195,7 +196,9 @@ export const FossaCard = (props: { variant?: InfoCardVariants }) => {
         <Grid item className={classes.lastAnalyzed}>
           Based on {value.dependencyCount} Dependencies on branch{' '}
           <Tooltip title="The default branch can be changed by a FOSSA admin.">
-            <span className={classes.branch}>{value.projectDefaultBranch}</span>
+            <Typography className={classes.branch}>
+              {value.projectDefaultBranch}
+            </Typography>
           </Tooltip>
           .
         </Grid>

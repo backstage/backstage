@@ -42,34 +42,34 @@ export const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {
     case BuildResult.Succeeded:
       return (
-        <span>
+        <Typography component="span">
           <StatusOK /> Succeeded
-        </span>
+        </Typography>
       );
     case BuildResult.PartiallySucceeded:
       return (
-        <span>
+        <Typography component="span">
           <StatusWarning /> Partially Succeeded
-        </span>
+        </Typography>
       );
     case BuildResult.Failed:
       return (
-        <span>
+        <Typography component="span">
           <StatusError /> Failed
-        </span>
+        </Typography>
       );
     case BuildResult.Canceled:
       return (
-        <span>
+        <Typography component="span">
           <StatusAborted /> Canceled
-        </span>
+        </Typography>
       );
     case BuildResult.None:
     default:
       return (
-        <span>
+        <Typography component="span">
           <StatusWarning /> Unknown
-        </span>
+        </Typography>
       );
   }
 };
@@ -81,36 +81,36 @@ export const getBuildStateComponent = (
   switch (status) {
     case BuildStatus.InProgress:
       return (
-        <span>
+        <Typography component="span">
           <StatusRunning /> In Progress
-        </span>
+        </Typography>
       );
     case BuildStatus.Completed:
       return getBuildResultComponent(result);
     case BuildStatus.Cancelling:
       return (
-        <span>
+        <Typography component="span">
           <StatusAborted /> Cancelling
-        </span>
+        </Typography>
       );
     case BuildStatus.Postponed:
       return (
-        <span>
+        <Typography component="span">
           <StatusPending /> Postponed
-        </span>
+        </Typography>
       );
     case BuildStatus.NotStarted:
       return (
-        <span>
+        <Typography component="span">
           <StatusAborted /> Not Started
-        </span>
+        </Typography>
       );
     case BuildStatus.None:
     default:
       return (
-        <span>
+        <Typography component="span">
           <StatusWarning /> Unknown
-        </span>
+        </Typography>
       );
   }
 };

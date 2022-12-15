@@ -192,7 +192,10 @@ export const ServiceDetailsCard = () => {
       {!showServiceDetails && !loading && (
         <div className={classes.warning}>
           <WarningIcon />
-          &nbsp;&nbsp;<span>This service does not exist in FireHydrant.</span>
+          &nbsp;&nbsp;
+          <Typography component="span">
+            This service does not exist in FireHydrant.
+          </Typography>
         </div>
       )}
       {showServiceDetails && (
@@ -251,7 +254,7 @@ export const ServiceDetailsCard = () => {
                 <AddIcon className={classes.icon} />
               </Box>
               <Box>
-                <span>Declare an incident</span>
+                <Typography component="span">Declare an incident</Typography>
               </Box>
             </Box>
           </MaterialButton>
@@ -267,7 +270,7 @@ export const ServiceDetailsCard = () => {
                 <WhatshotIcon className={classes.icon} />
               </Box>
               <Box>
-                <span>View all incidents</span>
+                <Typography component="span">View all incidents</Typography>
               </Box>
             </Box>
           </MaterialButton>
@@ -284,7 +287,7 @@ export const ServiceDetailsCard = () => {
                   <NotesIcon className={classes.icon} />
                 </Box>
                 <Box>
-                  <span>View Service Details</span>
+                  <Typography component="span">View Service Details</Typography>
                 </Box>
               </Box>
             </MaterialButton>
