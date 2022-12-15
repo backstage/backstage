@@ -389,7 +389,7 @@ export class IncrementalIngestionEngine<TInput>
         `incremental-engine: Processed ${this.providerEventTopic} event`,
       );
     } else {
-      logger.info(
+      logger.warn(
         `incremental-engine: Rejected ${this.providerEventTopic} event - empty or invalid`,
       );
     }

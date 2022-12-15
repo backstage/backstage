@@ -54,7 +54,9 @@ export interface IncrementalEntityProvider<TCursor, TContext, TInput = null> {
     delta:
       | {
           added: DeferredEntity[];
-          removed: DeferredEntity[];
+          removed: {
+            entityRef: string;
+          }[];
         }
       | undefined;
   };
