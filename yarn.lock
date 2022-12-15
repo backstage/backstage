@@ -21861,7 +21861,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:^7.28.0, eslint-plugin-react@npm:^7.31.11":
+"eslint-plugin-react@npm:^7.28.0":
   version: 7.31.11
   resolution: "eslint-plugin-react@npm:7.31.11"
   dependencies:
@@ -34442,7 +34442,7 @@ __metadata:
     e2e-test: "workspace:*"
     eslint: ^8.6.0
     eslint-plugin-notice: ^0.9.10
-    eslint-plugin-react: ^7.31.11
+    eslint-plugin-react: ^7.28.0
     eslint-plugin-testing-library: ^5.9.1
     fs-extra: 10.1.0
     husky: ^8.0.0
