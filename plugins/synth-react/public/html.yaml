@@ -1,6 +1,0 @@
-<h1>:
-  $B.Component:
-    type: h1
-<h2>:
-  $B.Component:
-    type: h2

@@ -1,5 +1,5 @@
 $import:
-  - names: [resolve]
+  - names: [resolve, Component]
     from: ./backstage.yaml
 
 core: { $resolve: "@material-ui/core" }
@@ -9,3 +9,4 @@ core: { $resolve: "@material-ui/core" }
 <Typography>: { $Component: { type: $core.Typography } }
 <Grid>: { $Component: { type: $core.Typography } }
 <Divider>: { $Component: { type: $core.Divider } }
+<IconButton>: { $Component: { type: $core.IconButton } }

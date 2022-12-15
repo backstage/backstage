@@ -16,6 +16,8 @@ $do:
   <>:
     - $<AboutCard>:
         gridItem: true
-        fields(defaults):
-          - $defaults.EntityDescriptionAboutField
-          - $defaults.EntityOwnerAboutField
+        primaryButtons(_):
+          - $_.<EntityViewInSourceButton>
+          - $_.<EntityViewInTechDocsButton>
+          - $_.<Button>:
+              label: Hello World

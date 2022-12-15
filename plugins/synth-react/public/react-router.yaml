@@ -1,0 +1,7 @@
+$import:
+  - names: [resolve, Component]
+    from: ./backstage.yaml
+
+reactRouterDom: { $resolve: "react-router-dom" }
+
+<Link>: { $Component: { type: $reactRouterDom.Link } }

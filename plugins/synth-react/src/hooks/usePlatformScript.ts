@@ -55,6 +55,8 @@ export function usePlatformScript(yaml: string) {
   }, [program]);
 
   if (!!result.error) {
+    // eslint-disable-next-line no-console
+    console.error(result.error);
     return {
       ...result,
       value: lastSuccessfulResult,

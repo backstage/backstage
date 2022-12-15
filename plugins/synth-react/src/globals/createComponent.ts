@@ -63,12 +63,13 @@ export const createComponent = (interpreter: PlatformScript) =>
                 ) {
                   const defaultValue = lookup(key.value, defaults);
                   if (defaultValue) {
-                    const result = yield* c.env.call(value, defaultValue);
+                    const result = yield* env.call(value, defaultValue);
                     if (result.type === 'list') {
                       const values = [];
+
                       for (const item of result.value) {
                         if (item.type === 'fn') {
-                          const fn = yield* c.env.call(item, arg);
+                          const fn = yield* env.call(item, arg);
                           values.push(ps.ps2js(fn));
                         } else {
                           values.push(ps.ps2js(item));

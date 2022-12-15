@@ -50,6 +50,8 @@ export function globals(interpreter: PlatformScript) {
       log,
       Component: createComponent(interpreter),
       resolve: createModuleResolver({
+        'react-router-dom': () =>
+          import('react-router-dom').then(exportAsExternals),
         '@material-ui/core': () =>
           import('@material-ui/core').then(exportAsExternals),
         '@backstage/core-components': () =>
