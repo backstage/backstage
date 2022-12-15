@@ -29,6 +29,7 @@ export type {
 export type { LoggerService, LogMeta } from './loggerServiceRef';
 export type { PermissionsService } from './permissionsServiceRef';
 export type { PluginMetadataService } from './pluginMetadataServiceRef';
+export type { RootHttpRouterService } from './rootHttpRouterServiceRef';
 export type { RootLoggerService } from './rootLoggerServiceRef';
 export type { SchedulerService } from './schedulerServiceRef';
 export type { TokenManagerService } from './tokenManagerServiceRef';

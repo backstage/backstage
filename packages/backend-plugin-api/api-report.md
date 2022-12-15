@@ -89,6 +89,7 @@ declare namespace coreServices {
     tokenManagerServiceRef as tokenManager,
     permissionsServiceRef as permissions,
     schedulerServiceRef as scheduler,
+    rootHttpRouterServiceRef as rootHttpRouter,
     rootLoggerServiceRef as rootLogger,
     pluginMetadataServiceRef as pluginMetadata,
     lifecycleServiceRef as lifecycle,
@@ -244,6 +245,14 @@ export interface PluginMetadataService {
 
 // @public (undocumented)
 const pluginMetadataServiceRef: ServiceRef<PluginMetadataService, 'plugin'>;
+
+// @public (undocumented)
+export interface RootHttpRouterService {
+  use(path: string, handler: Handler): void;
+}
+
+// @public (undocumented)
+const rootHttpRouterServiceRef: ServiceRef<RootHttpRouterService, 'plugin'>;
 
 // @public (undocumented)
 export type RootLoggerService = LoggerService;
