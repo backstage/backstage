@@ -54,6 +54,8 @@ export function globals(interpreter: PlatformScript) {
           import('react-router-dom').then(exportAsExternals),
         '@material-ui/core': () =>
           import('@material-ui/core').then(exportAsExternals),
+        '@material-ui/icons': () =>
+          import('@material-ui/icons').then(exportAsExternals),
         '@backstage/core-components': () =>
           import('@backstage/core-components').then(exportAsExternals),
         '@backstage/plugin-catalog': () =>

@@ -24,3 +24,12 @@ export function lookup(key: string, map: PSMap): PSValue | void {
   }
   return void 0;
 }
+
+export function has(key: string, map: PSMap): boolean {
+  for (const [_key] of map.value.entries()) {
+    if (_key.type === 'string' && _key.value === key) {
+      return true;
+    }
+  }
+  return false;
+}

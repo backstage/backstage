@@ -8,6 +8,7 @@ $import:
 
 catalogPlugin: { $resolve: '@backstage/plugin-catalog' }
 catalogReactPlugin: { $resolve: '@backstage/plugin-catalog-react' }
+coreComponents: { $resolve: '@backstage/core-components' }
 
 <AboutCard>:
   $Component:
@@ -19,7 +20,7 @@ catalogReactPlugin: { $resolve: '@backstage/plugin-catalog-react' }
       $Component: { type: $catalogPlugin.EntityViewInTechDocsButton }
     <Button>(props):
       $Component:
-        type: $catalogPlugin.IconLinkVertical
+        type: $coreComponents.IconLinkVertical
         label: $props.label
         disabled: $props.disabled
         icon: $props.icon

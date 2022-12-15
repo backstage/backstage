@@ -5,6 +5,8 @@ $import:
     from: ./catalog.yaml
   - names: [spec, metadata, kind]
     from: ./catalog-info.yaml
+  - names: [<EmojiPeople>]
+    from: ./icons.yaml
 
 $do:
   $<EntityProvider>:
@@ -21,3 +23,6 @@ $do:
           - $_.<EntityViewInTechDocsButton>
           - $_.<Button>:
               label: Hello World
+              icon: $<EmojiPeople>
+              disabled: false
+              href: "hello"

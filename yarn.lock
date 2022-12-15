@@ -7957,8 +7957,9 @@ __metadata:
     cross-fetch: ^3.1.5
     lodash.get: ^4.4.2
     msw: ^0.49.0
-    platformscript: 1.0.0-alpha.9
+    platformscript: 1.0.0-alpha.10
     react-inspector: ^6.0.1
+    react-router-dom: ^6.0.0-beta.0
     react-use: ^17.2.4
     yaml: ^2.1.3
   peerDependencies:
@@ -31784,12 +31785,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"platformscript@npm:1.0.0-alpha.9":
-  version: 1.0.0-alpha.9
-  resolution: "platformscript@npm:1.0.0-alpha.9"
+"platformscript@npm:1.0.0-alpha.10":
+  version: 1.0.0-alpha.10
+  resolution: "platformscript@npm:1.0.0-alpha.10"
   dependencies:
     yaml-ast-parser: 0.0.43
-  checksum: 371db7c05feceae482a265c9095074d49cb4b4cefd0b875ef068e8dfa8ca039414d2f119b4dbc43c9a4e84cca6afbb8475f500b6d08d0d40b45fe77d6cbccba2
+  checksum: 623a486f1fe0781f1208c34e46cd4abbe0b5616c20ca103115888157c67fee0dd7de40276948fdf33ed665a9dbe324d5accc09cf5e2eab761aa581e1f629ab86
   languageName: node
   linkType: hard
 
@@ -33292,7 +33293,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom-stable@npm:react-router-dom@^6.3.0, react-router-dom@npm:^6.3.0":
+"react-router-dom-stable@npm:react-router-dom@^6.3.0, react-router-dom@npm:^6.0.0-beta.0, react-router-dom@npm:^6.3.0":
   version: 6.4.5
   resolution: "react-router-dom@npm:6.4.5"
   dependencies:

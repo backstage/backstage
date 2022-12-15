@@ -1,0 +1,9 @@
+$import:
+  - names: [resolve, Component]
+    from: ./backstage.yaml
+
+icons: { $resolve: "@material-ui/icons" }
+
+<EmojiPeople>:
+  $Component:
+    type: $icons.EmojiPeople

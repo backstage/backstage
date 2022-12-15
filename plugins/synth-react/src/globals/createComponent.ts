@@ -126,20 +126,3 @@ function injectKeyProps(list: ps.PSList) {
     index++;
   }
 }
-
-function isPSValue(value: any): value is ps.PSValue {
-  return (
-    [
-      'string',
-      'number',
-      'boolean',
-      'map',
-      'template',
-      'ref',
-      'list',
-      'fn',
-      'fncall',
-      'external',
-    ].includes(value?.type) && Object.hasOwn(value, 'value')
-  );
-}
