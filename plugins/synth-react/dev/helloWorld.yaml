@@ -23,6 +23,8 @@ $do:
           - $_.<EntityViewInTechDocsButton>
           - $_.<Button>:
               label: Hello World
-              icon: $<EmojiPeople>
+              icon:
+                $<EmojiPeople>: true
               disabled: false
-              href: "hello"
+              href: http://example.com
+

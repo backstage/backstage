@@ -27,11 +27,25 @@ export const createComponent = (interpreter: PlatformScript) =>
         throw new TypeError(`Component expects a map argument.`);
       }
 
-      const cType = lookup('type', $cArg);
-      // let cProps;
-      // let cChildren;
+      let type: string = '';
 
-      if (!(cType && cType.value)) {
+      const props: Record<string, unknown> = {};
+
+      for (const [key, value] of $cArg.value.entries()) {
+        if (key.type === 'string') {
+          if (key.value === 'type') {
+            type = value.value;
+          } else {
+            if (value.type === 'fn') {
+              props[key.value] = c.env.call(value, $cArg);
+            } else {
+              props[key.value] = ps.ps2js(value);
+            }
+          }
+        }
+      }
+
+      if (!type) {
         throw new TypeError(`Component: { type: } must not be empty`);
       }
 
@@ -50,7 +64,6 @@ export const createComponent = (interpreter: PlatformScript) =>
 
           const $options = yield* env.eval(rest);
 
-          const props: Record<string, unknown> = {};
           let children = [];
 
           switch ($arg.type) {
@@ -104,7 +117,7 @@ export const createComponent = (interpreter: PlatformScript) =>
               children = $arg.value;
           }
 
-          return ps.external(React.createElement(cType.value, props, children));
+          return ps.external(React.createElement(type, props, children));
         },
         { name: 'props' },
       );
