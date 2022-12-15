@@ -7786,6 +7786,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-sonarqube-react@workspace:^, @backstage/plugin-sonarqube-react@workspace:plugins/sonarqube-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-sonarqube-react@workspace:plugins/sonarqube-react"
+  dependencies:
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-sonarqube@workspace:plugins/sonarqube":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-sonarqube@workspace:plugins/sonarqube"
@@ -7797,6 +7809,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/plugin-sonarqube-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2

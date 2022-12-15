@@ -15,7 +15,11 @@
  */
 
 import fetch from 'cross-fetch';
-import { FindingSummary, Metrics, SonarQubeApi } from './SonarQubeApi';
+import {
+  FindingSummary,
+  Metrics,
+  SonarQubeApi,
+} from '@backstage/plugin-sonarqube-react';
 import { InstanceUrlWrapper, FindingsWrapper } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 

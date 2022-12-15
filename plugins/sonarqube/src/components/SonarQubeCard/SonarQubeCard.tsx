@@ -15,6 +15,11 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  SONARQUBE_PROJECT_KEY_ANNOTATION,
+  sonarQubeApiRef,
+  useProjectInfo,
+} from '@backstage/plugin-sonarqube-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import BugReport from '@material-ui/icons/BugReport';
@@ -23,11 +28,6 @@ import Security from '@material-ui/icons/Security';
 import SentimentVeryDissatisfied from '@material-ui/icons/SentimentVeryDissatisfied';
 import React, { useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { sonarQubeApiRef } from '../../api';
-import {
-  SONARQUBE_PROJECT_KEY_ANNOTATION,
-  useProjectInfo,
-} from '../useProjectKey';
 import { Percentage } from './Percentage';
 import { Rating } from './Rating';
 import { RatingCard } from './RatingCard';
