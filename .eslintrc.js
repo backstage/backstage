@@ -45,12 +45,6 @@ module.exports = {
           "CallExpression[arguments.length=0] > MemberExpression[property.name='toUpperCase']",
       },
     ],
-    'react/forbid-elements': [
-      1,
-      {
-        forbid: [{ element: 'button', message: 'use MUI <Button> instead' }],
-      },
-    ],
     'testing-library/await-async-query': 'error',
     'testing-library/await-async-utils': 'error',
     'testing-library/no-await-sync-query': 'error',
@@ -243,4 +237,20 @@ module.exports = {
       }),
     ].flat(),
   },
+  overrides: [
+    {
+      files: ['**/*.[jt]s?(x)'],
+      excludedFiles: '**/*.{test,spec}.[jt]s?(x)',
+      rules: {
+        'react/forbid-elements': [
+          1,
+          {
+            forbid: [
+              { element: 'button', message: 'use MUI <Button> instead' },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
