@@ -365,6 +365,7 @@ export function registerCommands(program: Command) {
       'Bump to a specific Backstage release line or version',
       'main',
     )
+    .option('--skip-install', 'Skips yarn install step')
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 
