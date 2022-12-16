@@ -23164,8 +23164,8 @@ __metadata:
   linkType: hard
 
 "fork-ts-checker-webpack-plugin@npm:^7.0.0-alpha.8":
-  version: 7.2.13
-  resolution: "fork-ts-checker-webpack-plugin@npm:7.2.13"
+  version: 7.2.14
+  resolution: "fork-ts-checker-webpack-plugin@npm:7.2.14"
   dependencies:
     "@babel/code-frame": ^7.16.7
     chalk: ^4.1.2
@@ -23186,7 +23186,7 @@ __metadata:
   peerDependenciesMeta:
     vue-template-compiler:
       optional: true
-  checksum: 3d4694c6fee4b8b2f213d0d10a3f40da770ca0ed3aa2a3dc8d1e701ad1ecaed3a1507f77a1b0cea6ef80539b04d8e5f5f02560e688d310bcb9e8c81f684d2950
+  checksum: bf4b44e606677da14c5b8127693897003607e7f13ed93a92991665aea5ad5aa3f5629c022d95dbf9380b40bfc02d34fa42857f298525c7688194d1e94f2a2850
   languageName: node
   linkType: hard
 
