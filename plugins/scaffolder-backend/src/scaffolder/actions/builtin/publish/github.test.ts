@@ -167,9 +167,7 @@ describe('publish:github', () => {
         hasIssues: true,
       },
     });
-    expect(
-      mockOctokit.rest.repos.createInOrg,
-    ).toHaveBeenCalledWith({
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
       description: 'description',
       name: 'repo',
       org: 'owner',
@@ -194,9 +192,7 @@ describe('publish:github', () => {
         hasIssues: false,
       },
     });
-    expect(
-      mockOctokit.rest.repos.createInOrg,
-    ).toHaveBeenCalledWith({
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
       description: 'description',
       name: 'repo',
       org: 'owner',
