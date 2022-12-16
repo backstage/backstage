@@ -5245,6 +5245,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@opentelemetry/api": ^1.3.0
     "@types/core-js": ^2.5.4
     "@types/express": ^4.17.6
     "@types/git-url-parse": ^9.0.0
@@ -12458,10 +12459,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/api@npm:^1.0.1":
-  version: 1.0.4
-  resolution: "@opentelemetry/api@npm:1.0.4"
-  checksum: 793e9b5c21666b647a60c58c46c3e00ad1dac38505102b026ad0ef617571d637aca54a18533a73c1e288c95b5ac77e2db17f96467f11833ac1165338e1184260
+"@opentelemetry/api@npm:^1.0.1, @opentelemetry/api@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "@opentelemetry/api@npm:1.3.0"
+  checksum: 33d284b67b6fab20ff72961d289c6487d3cb27caf7489f0231d7030551f82871e081e744b0390751d8aef3bf1614bd79f854788901a354e15274f552581fb374
   languageName: node
   linkType: hard
 
