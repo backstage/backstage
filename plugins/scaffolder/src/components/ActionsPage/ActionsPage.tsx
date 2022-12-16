@@ -42,10 +42,9 @@ import {
   ErrorPage,
   Table as BackstageTable,
   TableColumn,
+  CodeSnippet,
 } from '@backstage/core-components';
 import { ActionExample } from '../../types';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import yaml from 'react-syntax-highlighter/dist/cjs/languages/hljs/yaml';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -84,9 +83,12 @@ const examplesColumns: TableColumn<ActionExample>[] = [
     render: ({ example }) => {
       return (
         <Grid>
-          <SyntaxHighlighter showLineNumbers style={yaml}>
-            {example}
-          </SyntaxHighlighter>
+          <CodeSnippet
+            text={example}
+            showLineNumbers
+            showCopyCodeButton
+            language="JavaScript"
+          />
         </Grid>
       );
     },
