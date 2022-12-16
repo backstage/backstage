@@ -4,9 +4,8 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "examples": "docusaurus-examples",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
+    "start": "node scripts/pre-build.js && docusaurus start",
+    "build": "node scripts/pre-build.js && docusaurus build",
     "prettier:check": "prettier --check .",
     "publish-gh-pages": "docusaurus-publish",
     "write-translations": "docusaurus-write-translations",
@@ -20,7 +19,8 @@
   "devDependencies": {
     "@spotify/prettier-config": "^14.0.0",
     "js-yaml": "^4.1.0",
-    "prettier": "^2.6.2"
+    "prettier": "^2.6.2",
+    "replace": "^1.2.2"
   },
   "prettier": "@spotify/prettier-config",
   "dependencies": {
