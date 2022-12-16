@@ -7111,7 +7111,7 @@ __metadata:
     msw: ^0.49.0
     supertest: ^6.1.3
     zod: ~3.18.0
-    zod-to-json-schema: ~3.18.0
+    zod-to-json-schema: ~3.20.0
   languageName: unknown
   linkType: soft
 
@@ -7515,7 +7515,7 @@ __metadata:
     yaml: ^2.0.0
     zen-observable: ^0.10.0
     zod: ~3.18.0
-    zod-to-json-schema: ~3.18.0
+    zod-to-json-schema: ~3.20.0
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -39233,12 +39233,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:~3.18.0":
-  version: 3.18.2
-  resolution: "zod-to-json-schema@npm:3.18.2"
+"zod-to-json-schema@npm:~3.20.0":
+  version: 3.20.1
+  resolution: "zod-to-json-schema@npm:3.20.1"
   peerDependencies:
-    zod: ^3.18.0
-  checksum: 10e84864a3ccc2e04500b9bc81369ed7c5b3ec068ea582a13369175ed40e785091a63ae7fa86ebb4ddf1bccd55c3dab32f4d3070bbcc3296e68305ff787c9df3
+    zod: ^3.20.0
+  checksum: 405a81bce92631af6ecd5021026a565d4d281c4d44f3de7d1941eaa49bbfa726c930ad7275438ce6df98504dae2ae5d640a54d49cfc74e5a56d1e1d80723ed01
   languageName: node
   linkType: hard
 
