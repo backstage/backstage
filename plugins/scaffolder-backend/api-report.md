@@ -833,6 +833,10 @@ export class TaskWorker {
 // @public (undocumented)
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
+  examples?: {
+    description: string;
+    example: string;
+  }[];
   description?: string;
   supportsDryRun?: boolean;
   schema?: {

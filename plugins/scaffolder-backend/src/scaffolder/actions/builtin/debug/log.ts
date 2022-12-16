@@ -17,6 +17,27 @@
 import { readdir, stat } from 'fs-extra';
 import { relative, join } from 'path';
 import { createTemplateAction } from '../../createTemplateAction';
+import yaml from 'yaml';
+
+const id = 'debug:log';
+
+const examples = [
+  {
+    description: 'Write a debug message',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: id,
+          id: 'write-debug-line',
+          name: 'Write log line',
+          input: {
+            message: 'Hello, there',
+          },
+        },
+      ],
+    }),
+  },
+];
 
 /**
  * Writes a message into the log or lists all files in the workspace
@@ -30,9 +51,10 @@ import { createTemplateAction } from '../../createTemplateAction';
  */
 export function createDebugLogAction() {
   return createTemplateAction<{ message?: string; listWorkspace?: boolean }>({
-    id: 'debug:log',
+    id,
     description:
       'Writes a message into the log or lists all files in the workspace.',
+    examples,
     schema: {
       input: {
         type: 'object',

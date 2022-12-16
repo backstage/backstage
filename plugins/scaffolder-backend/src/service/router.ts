@@ -292,6 +292,7 @@ export async function createRouter(
           id: action.id,
           description: action.description,
           schema: action.schema,
+          examples: action.examples,
         };
       });
       res.json(actionsList);

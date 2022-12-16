@@ -38,6 +38,23 @@ import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
 import { z } from 'zod';
 
+// @public
+export type Action = {
+  id: string;
+  description?: string;
+  schema?: {
+    input?: JSONSchema7;
+    output?: JSONSchema7;
+  };
+  examples?: ActionExample[];
+};
+
+// @public
+export type ActionExample = {
+  description: string;
+  example: string;
+};
+
 // @alpha
 export function createNextScaffolderFieldExtension<
   TReturnValue = unknown,
@@ -110,9 +127,9 @@ export type EntityPickerUiOptions =
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
   string[],
   {
-    showCounts?: boolean | undefined;
-    kinds?: string[] | undefined;
     helperText?: string | undefined;
+    kinds?: string[] | undefined;
+    showCounts?: boolean | undefined;
   }
 >;
 
@@ -120,9 +137,9 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
 export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
-    showCounts?: boolean | undefined;
-    kinds?: string[] | undefined;
     helperText?: string | undefined;
+    kinds?: string[] | undefined;
+    showCounts?: boolean | undefined;
   }
 >;
 
@@ -182,14 +199,7 @@ export interface LayoutOptions<P = any> {
 export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
 
 // @public
-export type ListActionsResponse = Array<{
-  id: string;
-  description?: string;
-  schema?: {
-    input?: JSONSchema7;
-    output?: JSONSchema7;
-  };
-}>;
+export type ListActionsResponse = Array<Action>;
 
 // @public
 export type LogEvent = {

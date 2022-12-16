@@ -71,6 +71,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "qs": "^6.9.4",
+    "react-syntax-highlighter": "^15.5.0",
     "react-use": "^17.2.4",
     "use-immer": "^0.7.0",
     "yaml": "^2.0.0",
