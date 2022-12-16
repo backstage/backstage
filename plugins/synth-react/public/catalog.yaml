@@ -1,14 +1,13 @@
 $import:
-  - names: [resolve, Component]
+  - names: [resolve, Component, <>, log]
     from: ./backstage.yaml
-  - names: [<Link>]
-    from: ./react-router.yaml
   - names: [<IconButton>]
     from: ./material-ui.yaml
 
 catalogPlugin: { $resolve: '@backstage/plugin-catalog' }
 catalogReactPlugin: { $resolve: '@backstage/plugin-catalog-react' }
 coreComponents: { $resolve: '@backstage/core-components' }
+reactRouter: { $resolve: 'react-router-dom' }
 
 <AboutCard>:
   $Component:
@@ -30,6 +29,14 @@ coreComponents: { $resolve: '@backstage/core-components' }
       $Component: { type: $catalogPlugin.EntityRefreshButton }
     <EntityEditMetadataButton>: 
       $Component: { type: $catalogPlugin.EntityEditMetadataButton }
+    <Link>(props):
+      $<IconButton>:
+        component: $reactRouter.Link
+        aria-label: $props.label
+        disabled: $props.disabled
+        title: $props.title
+        to: $props.to
+      <>: $props.<>
   fields:
     <EntityDescriptionAboutField>:
       $Component: { type: $catalogPlugin.EntityDescriptionAboutField }
@@ -49,6 +56,11 @@ coreComponents: { $resolve: '@backstage/core-components' }
       $Component: { type: $catalogPlugin.EntityTagsAboutField }
     <EntityLocationTargetsAboutField>:
       $Component: { type: $catalogPlugin.EntityLocationTargetsAboutField }
+    <Field>(props):
+      $Component:
+        type: $catalogReactPlugin.AboutField
+        label: $props.label
+        value: $props.value
 
 <EntityProvider>:
   $Component:

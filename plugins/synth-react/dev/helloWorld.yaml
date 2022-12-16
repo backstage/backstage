@@ -1,20 +1,14 @@
 $import:
-  - names: [toJS]
-    from: ./backstage.yaml
   - names: [<AboutCard>, <EntityProvider>]
     from: ./catalog.yaml
-  - names: [spec, metadata, kind]
+  - names: [entity]
     from: ./catalog-info.yaml
-  - names: [<EmojiPeople>]
+  - names: [<EmojiPeople>, <Alarm>]
     from: ./icons.yaml
 
 $do:
   $<EntityProvider>:
-    entity:
-      $toJS:
-        kind: $kind
-        metadata: $metadata
-        spec: $spec
+    entity: $entity
   <>:
     - $<AboutCard>:
         gridItem: true
@@ -27,4 +21,26 @@ $do:
                 $<EmojiPeople>: true
               disabled: false
               href: http://example.com
-
+        secondaryButtons(_):
+          - $_.<EntityRefreshButton>
+          - $_.<EntityEditMetadataButton>
+          - $_.<Link>:
+              label: Alarm
+              disabled: false
+              title: Set Alarm
+              to: http://set-alarm.com
+              <>:
+                - $<Alarm>: true
+        fields(_):
+          - $_.<EntityDescriptionAboutField>
+          - $_.<EntityOwnerAboutField>
+          - $_.<EntityDomainAboutField>
+          - $_.<EntitySystemAboutField>
+          - $_.<EntityParentComponentAboutField>
+          - $_.<EntityTypeAboutField>
+          - $_.<EntityLifecycleAboutField>
+          - $_.<EntityTagsAboutField>
+          - $_.<EntityLocationTargetsAboutField>
+          - $_.<Field>:
+              label: Seriousness
+              value: High

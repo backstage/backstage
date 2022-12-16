@@ -1,3 +1,7 @@
+$import:
+  - names: [toJS]
+    from: ./backstage.yaml
+
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
@@ -21,3 +25,9 @@ spec:
   type: library
   owner: CNCF
   lifecycle: experimental
+
+entity:
+  $toJS:
+    kind: $kind
+    metadata: $metadata
+    spec: $spec

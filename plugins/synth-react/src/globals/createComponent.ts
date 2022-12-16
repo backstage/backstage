@@ -29,7 +29,7 @@ export const createComponent = (interpreter: PlatformScript) =>
 
       let type: string = '';
 
-      const props: Record<string, unknown> = {};
+      const classProps: Record<string, unknown> = {};
 
       for (const [key, value] of $cArg.value.entries()) {
         if (key.type === 'string') {
@@ -37,9 +37,9 @@ export const createComponent = (interpreter: PlatformScript) =>
             type = value.value;
           } else {
             if (value.type === 'fn') {
-              props[key.value] = c.env.call(value, $cArg);
+              classProps[key.value] = c.env.call(value, $cArg);
             } else {
-              props[key.value] = ps.ps2js(value);
+              classProps[key.value] = ps.ps2js(value);
             }
           }
         }
@@ -62,6 +62,7 @@ export const createComponent = (interpreter: PlatformScript) =>
             }
           }
 
+          const props = { ...classProps };
           const $options = yield* env.eval(rest);
 
           let children = [];

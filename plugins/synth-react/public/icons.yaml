@@ -7,3 +7,6 @@ icons: { $resolve: "@material-ui/icons" }
 <EmojiPeople>:
   $Component:
     type: $icons.EmojiPeople
+<Alarm>:
+  $Component:
+    type: $icons.Alarm
