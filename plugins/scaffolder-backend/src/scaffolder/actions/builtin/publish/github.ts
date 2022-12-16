@@ -71,6 +71,7 @@ export function createPublishGithubAction(options: {
     dismissStaleReviews?: boolean;
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
+    requiredConversationResolution?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -107,6 +108,8 @@ export function createPublishGithubAction(options: {
           dismissStaleReviews: inputProps.dismissStaleReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+          requiredConversationResolution:
+            inputProps.requiredConversationResolution,
           repoVisibility: inputProps.repoVisibility,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
@@ -144,6 +147,7 @@ export function createPublishGithubAction(options: {
         bypassPullRequestAllowances,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
+        requiredConversationResolution = false,
         repoVisibility = 'private',
         defaultBranch = 'master',
         protectDefaultBranch = true,
@@ -211,6 +215,7 @@ export function createPublishGithubAction(options: {
         bypassPullRequestAllowances,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
+        requiredConversationResolution,
         config,
         ctx.logger,
         gitCommitMessage,

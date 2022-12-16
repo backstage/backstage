@@ -58,6 +58,12 @@ const requireBranchesToBeUpToDate = {
   description: `Require branches to be up to date before merging. The default value is 'true'`,
   type: 'boolean',
 };
+const requiredConversationResolution = {
+  title: 'Required Conversation Resolution',
+  description:
+    'Requires all conversations on code to be resolved before a pull request can be merged into this branch',
+  type: 'boolean',
+};
 const repoVisibility = {
   title: 'Repository Visibility',
   type: 'string',
@@ -216,6 +222,7 @@ export { requireCodeOwnerReviews };
 export { dismissStaleReviews };
 export { requiredStatusCheckContexts };
 export { requireBranchesToBeUpToDate };
+export { requiredConversationResolution };
 export { sourcePath };
 export { token };
 export { topics };
