@@ -21,7 +21,7 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { usePlatformScript } from '../../hooks/usePlatformScript';
@@ -30,35 +30,50 @@ import { RenderResult } from './EvalResult';
 
 const FALLBACK = '"false"';
 
+const useStyles = makeStyles(() => ({
+  main: { display: 'flex', flexDirection: 'column' },
+  fullHeight: { flexGrow: 1, display: 'flex' },
+}));
+
 export const SynthComponent = ({ yaml }: { yaml: string }) => {
+  const classes = useStyles();
   const [_yaml, setYaml] = useState(yaml || FALLBACK);
   const result = usePlatformScript(_yaml);
 
   return (
     <Page themeId="tool">
-      <Header title="Welcome to synth-react!" subtitle="Optional subtitle">
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content>
-        <ContentHeader title="Backstage Synth Playground">
+      <Header
+        title="Backstage Synth Plugin"
+        subtitle="Build Backstage UI with YAML"
+      />
+      <Content className={classes.main}>
+        <ContentHeader title="Customize Entity Cards">
           <SupportButton>You can get help in Frontside Discord</SupportButton>
         </ContentHeader>
-        <Grid container spacing={3} direction="row">
-          <Grid item sm={6}>
-            {result.value ? <RenderResult value={result.value} /> : null}
-          </Grid>
-          <Grid item sm={6}>
-            <>
-              <YAMLEditor
-                onChange={(value = FALLBACK) => setYaml(value)}
-                defaultValue={_yaml}
-                value={_yaml}
-              />
-              {result.error ? (
-                <Alert severity="error">{String(result.error)}</Alert>
-              ) : null}
-            </>
+        <Grid className={classes.fullHeight} direction="column">
+          <Grid
+            className={classes.fullHeight}
+            container
+            spacing={3}
+            direction="row"
+            alignItems="stretch"
+            alignContent="stretch"
+          >
+            <Grid item sm={6}>
+              {result.value ? <RenderResult value={result.value} /> : null}
+            </Grid>
+            <Grid className={classes.fullHeight} item sm={6}>
+              <>
+                <YAMLEditor
+                  onChange={(value = FALLBACK) => setYaml(value)}
+                  defaultValue={_yaml}
+                  value={_yaml}
+                />
+                {result.error ? (
+                  <Alert severity="error">{String(result.error)}</Alert>
+                ) : null}
+              </>
+            </Grid>
           </Grid>
         </Grid>
       </Content>

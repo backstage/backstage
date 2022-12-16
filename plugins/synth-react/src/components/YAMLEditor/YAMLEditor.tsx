@@ -44,7 +44,7 @@ export function YAMLEditor({
 
   return (
     <Editor
-      height="50vh"
+      height="100%"
       defaultLanguage={LanguageId}
       defaultValue={defaultValue}
       onMount={handleEditorMount}
