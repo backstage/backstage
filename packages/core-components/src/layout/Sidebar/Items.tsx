@@ -61,6 +61,7 @@ import { useSidebarOpenState } from './SidebarOpenStateContext';
 import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import { isLocationMatch } from './utils';
+import Button from '@material-ui/core/Button';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -424,9 +425,9 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   if (isButtonItem(props)) {
     return (
-      <button aria-label={text} {...childProps} ref={ref}>
+      <Button role="button" aria-label={text} {...childProps} ref={ref}>
         {content}
-      </button>
+      </Button>
     );
   }
 
@@ -691,7 +692,8 @@ export const SidebarExpandButton = () => {
   };
 
   return (
-    <button
+    <Button
+      role="button"
       onClick={handleClick}
       className={classes.expandButton}
       aria-label="Expand Sidebar"
@@ -700,6 +702,6 @@ export const SidebarExpandButton = () => {
       <Box className={classes.arrows}>
         {isOpen ? <DoubleArrowLeft /> : <DoubleArrowRight />}
       </Box>
-    </button>
+    </Button>
   );
 };
