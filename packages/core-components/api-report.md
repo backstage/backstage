@@ -807,6 +807,7 @@ export const ProxiedSignInPage: (
 // @public
 export type ProxiedSignInPageProps = SignInPageProps & {
   provider: string;
+  headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
 };
 
 // Warning: (ae-missing-release-tag) "Ranker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -340,6 +340,7 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
   {
     allowedOwners?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
+    allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
     allowedHosts?: string[] | undefined;
     requestUserCredentials?:
@@ -365,6 +366,7 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
   {
     allowedOwners?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
+    allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
     allowedHosts?: string[] | undefined;
     requestUserCredentials?:

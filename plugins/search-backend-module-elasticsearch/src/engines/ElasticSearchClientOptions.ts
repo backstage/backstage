@@ -25,7 +25,7 @@ import type { ConnectionOptions as TLSConnectionOptions } from 'tls';
 export const isOpenSearchCompatible = (
   opts: ElasticSearchClientOptions,
 ): opts is OpenSearchElasticSearchClientOptions => {
-  return opts?.provider === 'aws';
+  return ['aws', 'opensearch'].includes(opts?.provider ?? '');
 };
 
 /**
@@ -50,7 +50,7 @@ export type ElasticSearchClientOptions =
  */
 export interface OpenSearchElasticSearchClientOptions
   extends BaseElasticSearchClientOptions {
-  provider?: 'aws';
+  provider?: 'aws' | 'opensearch';
   auth?: OpenSearchAuth;
   connection?: OpenSearchConnectionConstructor;
   node?: string | string[] | OpenSearchNodeOptions | OpenSearchNodeOptions[];

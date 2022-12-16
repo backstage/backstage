@@ -100,4 +100,82 @@ describe('migrations', () => {
     },
     60_000,
   );
+
+  it.each(databases.eachSupportedId())(
+    '20221201085245_add_last_updated_at_in_final_entities.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(
+        knex,
+        '20221201085245_add_last_updated_at_in_final_entities.js',
+      );
+
+      await knex
+        .insert([
+          {
+            entity_id: 'my-id',
+            entity_ref: 'k:ns/n',
+            unprocessed_entity: JSON.stringify({}),
+            processed_entity: JSON.stringify({
+              apiVersion: 'a',
+              kind: 'k',
+              metadata: {
+                name: 'n',
+                namespace: 'ns',
+              },
+              spec: {
+                k: 'v',
+              },
+            }),
+            errors: '[]',
+            next_update_at: knex.fn.now(),
+            last_discovery_at: knex.fn.now(),
+          },
+        ])
+        .into('refresh_state');
+
+      await knex
+        .insert({
+          entity_id: 'my-id',
+          hash: 'd1c0c56d5fea4238e4c091d9dde4cb42d05a6b7e',
+          stitch_ticket: '52367ed7-120b-405f-b7e0-cdd90f956312',
+          final_entity:
+            '{"apiVersion":"a","kind":"k","metadata":{"name":"n","namespace":"ns","uid":"my-id","etag":"d1c0c56d5fea4238e4c091d9dde4cb42d05a6b7e"},"spec":{"k":"v"},"relations":[{"type":"looksAt","targetRef":"k:ns/other"}]}',
+        })
+        .into('final_entities');
+
+      await migrateUpOnce(knex);
+
+      await expect(knex('final_entities')).resolves.toEqual(
+        expect.arrayContaining([
+          {
+            entity_id: 'my-id',
+            hash: 'd1c0c56d5fea4238e4c091d9dde4cb42d05a6b7e',
+            stitch_ticket: '52367ed7-120b-405f-b7e0-cdd90f956312',
+            final_entity:
+              '{"apiVersion":"a","kind":"k","metadata":{"name":"n","namespace":"ns","uid":"my-id","etag":"d1c0c56d5fea4238e4c091d9dde4cb42d05a6b7e"},"spec":{"k":"v"},"relations":[{"type":"looksAt","targetRef":"k:ns/other"}]}',
+            last_updated_at: null,
+          },
+        ]),
+      );
+
+      await migrateDownOnce(knex);
+
+      await expect(knex('final_entities')).resolves.toEqual(
+        expect.arrayContaining([
+          {
+            entity_id: 'my-id',
+            hash: 'd1c0c56d5fea4238e4c091d9dde4cb42d05a6b7e',
+            stitch_ticket: '52367ed7-120b-405f-b7e0-cdd90f956312',
+            final_entity:
+              '{"apiVersion":"a","kind":"k","metadata":{"name":"n","namespace":"ns","uid":"my-id","etag":"d1c0c56d5fea4238e4c091d9dde4cb42d05a6b7e"},"spec":{"k":"v"},"relations":[{"type":"looksAt","targetRef":"k:ns/other"}]}',
+          },
+        ]),
+      );
+
+      await knex.destroy();
+    },
+    60_000,
+  );
 });

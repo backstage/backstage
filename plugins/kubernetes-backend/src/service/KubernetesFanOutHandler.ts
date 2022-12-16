@@ -274,6 +274,20 @@ export class KubernetesFanOutHandler {
             namespace,
           })
           .then(result => this.getMetricsForPods(clusterDetailsItem, result))
+          .catch(
+            (e): Promise<responseWithMetrics> =>
+              e.name === 'FetchError'
+                ? Promise.resolve([
+                    {
+                      errors: [
+                        { errorType: 'FETCH_ERROR', message: e.message },
+                      ],
+                      responses: [],
+                    },
+                    [],
+                  ])
+                : Promise.reject(e),
+          )
           .then(r => this.toClusterObjects(clusterDetailsItem, r));
       }),
     ).then(this.toObjectsByEntityResponse);

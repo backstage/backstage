@@ -32,7 +32,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import { ToggleButton } from '@material-ui/lab';
 import React, { MouseEvent, useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import {
   ALL_RELATION_PAIRS,
   Direction,

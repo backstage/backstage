@@ -25,7 +25,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
 import useMountedState from 'react-use/lib/useMountedState';

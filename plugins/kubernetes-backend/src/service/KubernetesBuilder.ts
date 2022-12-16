@@ -34,7 +34,6 @@ import {
   ObjectsByEntityRequest,
   ServiceLocatorMethod,
 } from '../types/types';
-import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
   DEFAULT_OBJECTS,
   KubernetesFanOutHandler,
@@ -211,7 +210,6 @@ export class KubernetesBuilder {
 
   protected buildFetcher(): KubernetesFetcher {
     this.fetcher = new KubernetesClientBasedFetcher({
-      kubernetesClientProvider: new KubernetesClientProvider(),
       logger: this.env.logger,
     });
 

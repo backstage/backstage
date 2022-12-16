@@ -34,6 +34,10 @@ export const RepoUrlPickerFieldSchema = makeFieldSchemaFromZod(
       .array(z.string())
       .optional()
       .describe('List of allowed owners in the given SCM platform'),
+    allowedProjects: z
+      .array(z.string())
+      .optional()
+      .describe('List of allowed projects in the given SCM platform'),
     allowedRepos: z
       .array(z.string())
       .optional()

@@ -1,5 +1,18 @@
 # @backstage/backend-common
 
+## 0.17.0-next.3
+
+### Patch Changes
+
+- 840f2113c6: Fix `GitlabUrlReader.readTree` bug when there were no matching commits
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+
 ## 0.17.0-next.2
 
 ### Patch Changes

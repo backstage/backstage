@@ -258,11 +258,13 @@ export async function initRepoPushAndProtect(
     | undefined,
   requiredStatusCheckContexts: string[],
   requireBranchesToBeUpToDate: boolean,
+  requiredConversationResolution: boolean,
   config: Config,
   logger: any,
   gitCommitMessage?: string,
   gitAuthorName?: string,
   gitAuthorEmail?: string,
+  dismissStaleReviews?: boolean,
 ) {
   const gitAuthorInfo = {
     name: gitAuthorName
@@ -302,7 +304,9 @@ export async function initRepoPushAndProtect(
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
+        requiredConversationResolution,
         enforceAdmins: protectEnforceAdmins,
+        dismissStaleReviews: dismissStaleReviews,
       });
     } catch (e) {
       assertError(e);

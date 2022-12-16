@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,19 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '../components';
 
-/** @public */
-export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 export const SONARQUBE_PROJECT_INSTANCE_SEPARATOR = '/';
 
-/** @public */
-export const isSonarQubeAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[SONARQUBE_PROJECT_KEY_ANNOTATION]);
-
 /**
+ *
  * Try to parse sonarqube information from an entity.
  *
  * If part or all info are not found, they will default to undefined
  *
- * @param entity entity to find the sonarqube information from.
- * @return a ProjectInfo properly populated.
+ * @alpha
+ * @param entity - entity to find the sonarqube information from.
+ * @returns a ProjectInfo properly populated.
  */
 export const useProjectInfo = (
   entity: Entity,

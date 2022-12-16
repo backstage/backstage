@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren } from 'react';
-import { Routes, Route, useOutlet } from 'react-router';
+import { Routes, Route, useOutlet } from 'react-router-dom';
 import { TemplateListPage } from '../TemplateListPage';
 import { TemplateWizardPage } from '../TemplateWizardPage';
 import {

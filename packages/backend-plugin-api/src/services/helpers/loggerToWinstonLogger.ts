@@ -14,28 +14,47 @@
  * limitations under the License.
  */
 
-import { Logger as BackstageLogger } from '../definitions';
+import { LoggerService } from '../definitions';
 import { Logger as WinstonLogger, createLogger } from 'winston';
 import Transport, { TransportStreamOptions } from 'winston-transport';
 
 class BackstageLoggerTransport extends Transport {
   constructor(
-    private readonly backstageLogger: BackstageLogger,
+    private readonly backstageLogger: LoggerService,
     opts?: TransportStreamOptions,
   ) {
     super(opts);
   }
 
-  log(info: { message: string }, callback: VoidFunction) {
-    // TODO: add support for levels and fields
-    this.backstageLogger.info(info.message);
+  log(info: unknown, callback: VoidFunction) {
+    if (typeof info !== 'object' || info === null) {
+      callback();
+      return;
+    }
+    const { level, message, ...meta } = info as { [name: string]: unknown };
+    switch (level) {
+      case 'error':
+        this.backstageLogger.error(String(message), meta);
+        break;
+      case 'warn':
+        this.backstageLogger.warn(String(message), meta);
+        break;
+      case 'info':
+        this.backstageLogger.info(String(message), meta);
+        break;
+      case 'debug':
+        this.backstageLogger.debug(String(message), meta);
+        break;
+      default:
+        this.backstageLogger.info(String(message), meta);
+    }
     callback();
   }
 }
 
 /** @public */
 export function loggerToWinstonLogger(
-  logger: BackstageLogger,
+  logger: LoggerService,
   opts?: TransportStreamOptions,
 ): WinstonLogger {
   return createLogger({

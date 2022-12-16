@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Routes, Route } from 'react-router';
+import { Routes, Route } from 'react-router-dom';
 import { circleCIBuildRouteRef } from '../route-refs';
 import { BuildWithStepsPage } from './BuildWithStepsPage/';
 import { BuildsPage } from './BuildsPage';

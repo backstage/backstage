@@ -54,6 +54,10 @@ export interface Config {
             skipTLSVerify?: boolean;
             /** @visibility frontend */
             skipMetricsLookup?: boolean;
+            /** @visibility secret  */
+            caData?: string;
+            /** @visibility secret  */
+            caFile?: string;
           }>;
         }
       | {

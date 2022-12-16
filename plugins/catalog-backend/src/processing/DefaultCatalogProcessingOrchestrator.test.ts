@@ -258,13 +258,22 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       },
     };
 
+    const child: Entity = {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: {
+        name: 'Test2',
+        namespace: 'test1',
+      },
+    };
+
     it('enforces catalog rules', async () => {
       const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
       const processor: jest.Mocked<CatalogProcessor> = {
         getProcessorName: jest.fn(),
         validateEntityKind: jest.fn(async () => true),
         readLocation: jest.fn(async (_l, _o, emit) => {
-          emit(processingResult.entity({ type: 't', target: 't' }, entity));
+          emit(processingResult.entity({ type: 't', target: 't' }, child));
           return true;
         }),
       };
@@ -300,7 +309,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         getProcessorName: jest.fn(),
         validateEntityKind: jest.fn(async () => true),
         readLocation: jest.fn(async (_l, _o, emit) => {
-          emit(processingResult.entity({ type: 't', target: 't' }, entity));
+          emit(processingResult.entity({ type: 't', target: 't' }, child));
           return true;
         }),
       };

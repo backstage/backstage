@@ -20,7 +20,7 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 import { stringifyError } from '@backstage/errors';
-
+import { EnumerableServiceHolder } from './types';
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`
  * @internal
@@ -31,7 +31,7 @@ export type InternalServiceRef<T> = ServiceRef<T> & {
   ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 };
 
-export class ServiceRegistry {
+export class ServiceRegistry implements EnumerableServiceHolder {
   readonly #providedFactories: Map<string, ServiceFactory>;
   readonly #loadedDefaultFactories: Map<Function, Promise<ServiceFactory>>;
   readonly #implementations: Map<
@@ -130,6 +130,10 @@ export class ServiceRegistry {
         `Failed to instantiate service '${factory.service.id}' for '${pluginId}' because the following dependent services are missing: ${missing}`,
       );
     }
+  }
+
+  getServiceRefs(): ServiceRef<unknown>[] {
+    return Array.from(this.#providedFactories.values()).map(f => f.service);
   }
 
   get<T>(ref: ServiceRef<T>, pluginId: string): Promise<T> | undefined {

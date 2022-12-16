@@ -21,7 +21,7 @@ The assets below are all in `.svg` format. Other formats are available in the
 </a>
 
 <a href="https://backstage.io/logo_assets/svg/Logo_Black.svg">
-  <img src="https://backstage.io/logo_assets/svg/Logo_Black.svg" width="600" style="background-color:white" />
+  <img src="https://backstage.io/logo_assets/svg/Logo_Black.svg" width="600" className="logoWhite" class="logoWhite" />
 </a>
 
 ## Backstage icon
@@ -37,6 +37,6 @@ The assets below are all in `.svg` format. Other formats are available in the
     <img src="https://backstage.io/logo_assets/svg/Icon_Gradient.svg" width="180" height="180" />
   </a>
   <a href="https://backstage.io/logo_assets/svg/Icon_Black.svg">
-    <img src="https://backstage.io/logo_assets/svg/Icon_Black.svg" width="180" height="180" style="background-color:white" />
+    <img src="https://backstage.io/logo_assets/svg/Icon_Black.svg" width="180" height="180" className="logoWhite" class="logoWhite" />
   </a>
 </div>

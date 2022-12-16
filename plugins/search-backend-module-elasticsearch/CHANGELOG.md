@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.1.0-next.3
+
+### Minor Changes
+
+- d09485ea79: Added support for self hosted OpenSearch via new provider
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-search-backend-node@1.1.0-next.3
+  - @backstage/plugin-search-common@1.2.0-next.3
+
 ## 1.1.0-next.2
 
 ### Minor Changes
