@@ -54,6 +54,20 @@ describe('Router', () => {
       expect(TemplateWizardPage).toHaveBeenCalled();
     });
 
+    it('should pass through the transformErrors property', async () => {
+      const transformErrorsMock = jest.fn();
+
+      await renderInTestApp(<Router transformErrors={transformErrorsMock} />, {
+        routeEntries: ['/templates/default/foo'],
+      });
+
+      const mock = TemplateWizardPage as jest.Mock;
+
+      const [{ transformErrors }] = mock.mock.calls[0];
+
+      expect(transformErrors).toEqual(transformErrors);
+    });
+
     it('should extract the fieldExtensions and pass them through', async () => {
       const mockComponent = () => null;
       const CustomFieldExtension = scaffolderPlugin.provide(

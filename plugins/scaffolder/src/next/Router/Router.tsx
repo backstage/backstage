@@ -93,7 +93,10 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         path={nextSelectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateWizardPage customFieldExtensions={fieldExtensions} />
+            <TemplateWizardPage
+              customFieldExtensions={fieldExtensions}
+              transformErrors={props.transformErrors}
+            />
           </SecretsContextProvider>
         }
       />
