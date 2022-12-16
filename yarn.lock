@@ -22508,14 +22508,14 @@ __metadata:
   linkType: hard
 
 "express-prom-bundle@npm:^6.3.6":
-  version: 6.5.0
-  resolution: "express-prom-bundle@npm:6.5.0"
+  version: 6.6.0
+  resolution: "express-prom-bundle@npm:6.6.0"
   dependencies:
     on-finished: ^2.3.0
     url-value-parser: ^2.0.0
   peerDependencies:
     prom-client: ">=12.0.0"
-  checksum: 708c83d2d4c1774679cd5fc002328b5e4ac33a33ddb9dfe6c8316873bdcb963a03b16212543f49657d7e19252d92aea9aa6b91bbcac848b237f9598d395094b5
+  checksum: 414451347abb7ed414fcecfbc35dd39ae6abf8f3d69824679640b539b5849dd53c8a94ce43c263bf6e78c3ec2646803ed843cfb5613b8385c0ded4b59465e9b7
   languageName: node
   linkType: hard
 
