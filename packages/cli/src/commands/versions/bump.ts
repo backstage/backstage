@@ -255,7 +255,7 @@ export default async (opts: OptionValues) => {
       );
     }
 
-    if (opts.skipInstall === undefined) {
+    if (!opts.skipInstall) {
       await runYarnInstall();
     } else {
       console.log();
