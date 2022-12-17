@@ -17,25 +17,28 @@ import * as ps from 'platformscript';
 import { ModuleResolvers } from './index';
 
 export function createModuleResolver(resolvers: ModuleResolvers) {
-  return ps.fn(function* ({ arg, env }) {
-    const $arg = yield* env.eval(arg);
+  return ps.fn(
+    function* resolveModule({ arg, env }) {
+      const $arg = yield* env.eval(arg);
 
-    if ($arg.type !== 'string') {
-      throw new TypeError(`Backstage.resolve expects string as an argument`);
-    }
+      if ($arg.type !== 'string') {
+        throw new TypeError(`$.resolve expects string as an argument`);
+      }
 
-    if (!($arg.value in resolvers)) {
-      throw new Error(`Unknown module: ${$arg.value}`);
-    }
+      if (!($arg.value in resolvers)) {
+        throw new Error(`Unknown module: ${$arg.value}`);
+      }
 
-    return yield {
-      type: 'action',
-      *operation(resolve, reject) {
-        resolvers[$arg.value]().then(resolve, reject);
-        yield {
-          type: 'suspend',
-        };
-      },
-    };
-  });
+      return yield {
+        type: 'action',
+        *operation(resolve, reject) {
+          resolvers[$arg.value]().then(resolve, reject);
+          yield {
+            type: 'suspend',
+          };
+        },
+      };
+    },
+    { name: 'module' },
+  );
 }
