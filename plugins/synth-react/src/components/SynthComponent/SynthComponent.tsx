@@ -17,7 +17,6 @@ import {
   Content,
   ContentHeader,
   Header,
-  HeaderLabel,
   Page,
   SupportButton,
 } from '@backstage/core-components';
@@ -31,8 +30,30 @@ import { RenderResult } from './EvalResult';
 const FALLBACK = '"false"';
 
 const useStyles = makeStyles(() => ({
-  main: { display: 'flex', flexDirection: 'column' },
-  fullHeight: { flexGrow: 1, display: 'flex' },
+  main: {
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    paddingBottom: 0,
+  },
+  fullHeight: { display: 'flex', flex: '1 1 auto', maxHeight: '100%' },
+  container: {
+    display: 'flex',
+    maxHeight: '100%',
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+    paddingBottom: 0,
+  },
+  editor: {
+    display: 'flex',
+    flex: '1 1 auto',
+    minHeight: 0,
+  },
+  error: {
+    display: 'flex',
+    flex: '1 1 auto',
+    marginTop: '12px',
+  },
 }));
 
 export const SynthComponent = ({ yaml }: { yaml: string }) => {
@@ -50,30 +71,23 @@ export const SynthComponent = ({ yaml }: { yaml: string }) => {
         <ContentHeader title="Customize Entity Cards">
           <SupportButton>You can get help in Frontside Discord</SupportButton>
         </ContentHeader>
-        <Grid className={classes.fullHeight} direction="column">
-          <Grid
-            className={classes.fullHeight}
-            container
-            spacing={3}
-            direction="row"
-            alignItems="stretch"
-            alignContent="stretch"
-          >
-            <Grid item sm={6}>
-              {result.value ? <RenderResult value={result.value} /> : null}
+        <Grid className={classes.fullHeight} container spacing={3}>
+          <Grid item sm={6}>
+            {result.value ? <RenderResult value={result.value} /> : null}
+          </Grid>
+          <Grid className={classes.container} item sm={6} container>
+            <Grid className={classes.editor}>
+              <YAMLEditor
+                onChange={(value = FALLBACK) => setYaml(value)}
+                defaultValue={_yaml}
+                value={_yaml}
+              />
             </Grid>
-            <Grid className={classes.fullHeight} item sm={6}>
-              <>
-                <YAMLEditor
-                  onChange={(value = FALLBACK) => setYaml(value)}
-                  defaultValue={_yaml}
-                  value={_yaml}
-                />
-                {result.error ? (
-                  <Alert severity="error">{String(result.error)}</Alert>
-                ) : null}
-              </>
-            </Grid>
+            {result.error ? (
+              <Grid className={classes.error}>
+                <Alert severity="error">{String(result.error)}</Alert>
+              </Grid>
+            ) : null}
           </Grid>
         </Grid>
       </Content>
