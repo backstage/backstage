@@ -68,38 +68,72 @@ function isKind(entity: Entity, kind: string) {
   return getKind(entity) === kind;
 }
 
-export function DescriptionAboutField() {
+export interface AboutFieldProps {
+  label?: string;
+  value?: string;
+  gridSizes?: Record<string, number>;
+}
+
+function propsWithDefaults(
+  props: AboutFieldProps,
+  defaults: {
+    label: string;
+    value?: string;
+    gridSizes?: Record<string, number>;
+  },
+) {
+  return {
+    label: props.label ?? defaults.label,
+    value: props.value ?? defaults.value,
+    gridSizes: props.gridSizes ?? defaults.gridSizes,
+  };
+}
+
+export const DescriptionAboutField = (props: AboutFieldProps) => {
+  const _props = propsWithDefaults(props, {
+    label: 'Description',
+    value: 'No description',
+    gridSizes: { xs: 12 },
+  });
+
   const { entity } = useEntity();
   const classes = useStyles();
 
   return (
-    <AboutField label="Description" gridSizes={{ xs: 12 }}>
+    <AboutField label={_props.label} gridSizes={_props.gridSizes}>
       <Typography variant="body2" paragraph className={classes.description}>
-        {entity?.metadata?.description || 'No description'}
+        {entity?.metadata?.description || _props.value}
       </Typography>
     </AboutField>
   );
-}
+};
 
-export function OwnerAboutField() {
+export const OwnerAboutField = (props: AboutFieldProps) => {
+  const _props = propsWithDefaults(props, {
+    label: 'Owner',
+    value: 'No owner',
+    gridSizes: { xs: 12, sm: 6, lg: 4 },
+  });
+
   const { entity } = useEntity();
-
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
 
   return (
-    <AboutField
-      label="Owner"
-      value="No Owner"
-      gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-    >
+    <AboutField {..._props}>
       {ownedByRelations.length > 0 && (
         <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
       )}
     </AboutField>
   );
-}
+};
 
-export function DomainAboutField() {
+export const DomainAboutField = (props: AboutFieldProps) => {
+  const _props = propsWithDefaults(props, {
+    label: 'Domain',
+    value: 'No Domain',
+    gridSizes: { xs: 12, sm: 6, lg: 4 },
+  });
+
   const { entity } = useEntity();
   const partOfDomainRelations = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'domain',
@@ -107,11 +141,7 @@ export function DomainAboutField() {
 
   if (isKind(entity, 'system') || partOfDomainRelations.length > 0) {
     return (
-      <AboutField
-        label="Domain"
-        value="No Domain"
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      >
+      <AboutField {..._props}>
         {partOfDomainRelations.length > 0 && (
           <EntityRefLinks
             entityRefs={partOfDomainRelations}
@@ -123,11 +153,16 @@ export function DomainAboutField() {
   }
 
   return <></>;
-}
+};
 
-export function SystemAboutField() {
+export const SystemAboutField = (props: AboutFieldProps) => {
+  const _props = propsWithDefaults(props, {
+    label: 'No System',
+    value: 'No Domain',
+    gridSizes: { xs: 12, sm: 6, lg: 4 },
+  });
+
   const { entity } = useEntity();
-
   const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'system',
   });
@@ -137,11 +172,7 @@ export function SystemAboutField() {
     partOfSystemRelations.length > 0
   ) {
     return (
-      <AboutField
-        label="System"
-        value="No System"
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      >
+      <AboutField {..._props}>
         {partOfSystemRelations.length > 0 && (
           <EntityRefLinks
             entityRefs={partOfSystemRelations}
@@ -153,9 +184,15 @@ export function SystemAboutField() {
   }
 
   return <></>;
-}
+};
 
-export function ParentComponentAboutField() {
+export const ParentComponentAboutField = (props: AboutFieldProps) => {
+  const _props = propsWithDefaults(props, {
+    label: 'Parent Component',
+    value: 'No Parent Component',
+    gridSizes: { xs: 12, sm: 6, lg: 4 },
+  });
+
   const { entity } = useEntity();
   const partOfComponentRelations = getEntityRelations(
     entity,
@@ -167,11 +204,7 @@ export function ParentComponentAboutField() {
 
   if (isKind(entity, 'component') && partOfComponentRelations.length > 0) {
     return (
-      <AboutField
-        label="Parent Component"
-        value="No Parent Component"
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      >
+      <AboutField {..._props}>
         <EntityRefLinks
           entityRefs={partOfComponentRelations}
           defaultKind="component"
@@ -181,9 +214,14 @@ export function ParentComponentAboutField() {
   }
 
   return <></>;
-}
+};
 
-export function TypeAboutField() {
+export const TypeAboutField = (props: AboutFieldProps) => {
+  const _props = propsWithDefaults(props, {
+    label: 'Type',
+    gridSizes: { xs: 12, sm: 6, lg: 4 },
+  });
+
   const { entity } = useEntity();
 
   if (
@@ -194,17 +232,22 @@ export function TypeAboutField() {
   ) {
     return (
       <AboutField
-        label="Type"
+        label={_props.label}
         value={entity?.spec?.type as string}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        gridSizes={_props.gridSizes}
       />
     );
   }
 
   return <></>;
-}
+};
 
-export function LifecycleAboutField() {
+export const LifecycleAboutField = (props: AboutFieldProps) => {
+  const _props = propsWithDefaults(props, {
+    label: 'Lifecycle',
+    gridSizes: { xs: 12, sm: 6, lg: 4 },
+  });
+
   const { entity } = useEntity();
 
   if (
@@ -212,32 +255,39 @@ export function LifecycleAboutField() {
     typeof entity?.spec?.lifecycle === 'string'
   ) {
     <AboutField
-      label="Lifecycle"
+      label={_props.label}
       value={entity?.spec?.lifecycle as string}
-      gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+      gridSizes={_props.gridSizes}
     />;
   }
 
   return <></>;
-}
+};
 
-export function TagsAboutField() {
+export const TagsAboutField = (props: AboutFieldProps) => {
+  const _props = propsWithDefaults(props, {
+    label: 'Tags',
+    value: 'No Tags',
+    gridSizes: { xs: 12, sm: 6, lg: 4 },
+  });
+
   const { entity } = useEntity();
 
   return (
-    <AboutField
-      label="Tags"
-      value="No Tags"
-      gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-    >
+    <AboutField {..._props}>
       {(entity?.metadata?.tags || []).map(t => (
         <Chip key={t} size="small" label={t} />
       ))}
     </AboutField>
   );
-}
+};
 
-export function LocationTargetsAboutField() {
+export const LocationTargetsAboutField = (props: AboutFieldProps) => {
+  const _props = propsWithDefaults(props, {
+    label: 'Targets',
+    gridSizes: { xs: 12 },
+  });
+
   const { entity } = useEntity();
 
   let entitySourceLocation:
@@ -257,7 +307,7 @@ export function LocationTargetsAboutField() {
     (entity?.spec?.targets || entity?.spec?.target)
   ) {
     return (
-      <AboutField label="Targets" gridSizes={{ xs: 12 }}>
+      <AboutField {..._props}>
         <LinksGridList
           cols={1}
           items={((entity.spec.targets as JsonArray) || [entity.spec.target])
@@ -276,4 +326,4 @@ export function LocationTargetsAboutField() {
   }
 
   return <></>;
-}
+};

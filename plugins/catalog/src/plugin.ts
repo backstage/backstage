@@ -32,7 +32,7 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { DefaultStarredEntitiesApi } from './apis';
-import { AboutCardProps } from './components/AboutCard';
+import { AboutCardProps, AboutFieldProps } from './components/AboutCard';
 import { DefaultCatalogPageProps } from './components/CatalogPage';
 import { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
 import { DependsOnComponentsCardProps } from './components/DependsOnComponentsCard';
@@ -281,97 +281,105 @@ export const EntityViewInTechDocsButton: () => JSX.Element =
     }),
   );
 
-export const EntityDescriptionAboutField: () => JSX.Element =
-  catalogPlugin.provide(
-    createComponentExtension({
-      name: 'EntityDescriptionAboutField',
-      component: {
-        lazy: () =>
-          import('./components/AboutCard').then(m => m.DescriptionAboutField),
-      },
-    }),
-  );
-
-export const EntityOwnerAboutField: () => JSX.Element = catalogPlugin.provide(
+export const EntityDescriptionAboutField: (
+  props: AboutFieldProps,
+) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
-    name: 'EntityOwnerAboutField',
-    component: {
-      lazy: () => import('./components/AboutCard').then(m => m.OwnerAboutField),
-    },
-  }),
-);
-
-export const EntityDomainAboutField: () => JSX.Element = catalogPlugin.provide(
-  createComponentExtension({
-    name: 'EntityDomainAboutField',
+    name: 'EntityDescriptionAboutField',
     component: {
       lazy: () =>
-        import('./components/AboutCard').then(m => m.DomainAboutField),
+        import('./components/AboutCard').then(m => m.DescriptionAboutField),
     },
   }),
 );
 
-export const EntitySystemAboutField: () => JSX.Element = catalogPlugin.provide(
+export const EntityOwnerAboutField: (props: AboutFieldProps) => JSX.Element =
+  catalogPlugin.provide(
+    createComponentExtension({
+      name: 'EntityOwnerAboutField',
+      component: {
+        lazy: () =>
+          import('./components/AboutCard').then(m => m.OwnerAboutField),
+      },
+    }),
+  );
+
+export const EntityDomainAboutField: (props: AboutFieldProps) => JSX.Element =
+  catalogPlugin.provide(
+    createComponentExtension({
+      name: 'EntityDomainAboutField',
+      component: {
+        lazy: () =>
+          import('./components/AboutCard').then(m => m.DomainAboutField),
+      },
+    }),
+  );
+
+export const EntitySystemAboutField: (props: AboutFieldProps) => JSX.Element =
+  catalogPlugin.provide(
+    createComponentExtension({
+      name: 'EntitySystemAboutField',
+      component: {
+        lazy: () =>
+          import('./components/AboutCard').then(m => m.SystemAboutField),
+      },
+    }),
+  );
+
+export const EntityParentComponentAboutField: (
+  props: AboutFieldProps,
+) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
-    name: 'EntitySystemAboutField',
+    name: 'EntityParentComponentAboutField',
     component: {
       lazy: () =>
-        import('./components/AboutCard').then(m => m.SystemAboutField),
+        import('./components/AboutCard').then(m => m.ParentComponentAboutField),
     },
   }),
 );
 
-export const EntityParentComponentAboutField: () => JSX.Element =
+export const EntityTypeAboutField: (props: AboutFieldProps) => JSX.Element =
   catalogPlugin.provide(
     createComponentExtension({
-      name: 'EntityParentComponentAboutField',
+      name: 'EntityTypeAboutField',
       component: {
         lazy: () =>
-          import('./components/AboutCard').then(
-            m => m.ParentComponentAboutField,
-          ),
+          import('./components/AboutCard').then(m => m.TypeAboutField),
       },
     }),
   );
 
-export const EntityTypeAboutField: () => JSX.Element = catalogPlugin.provide(
+export const EntityLifecycleAboutField: (
+  props: AboutFieldProps,
+) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
-    name: 'EntityTypeAboutField',
+    name: 'EntityLifecycleAboutField',
     component: {
-      lazy: () => import('./components/AboutCard').then(m => m.TypeAboutField),
+      lazy: () =>
+        import('./components/AboutCard').then(m => m.LifecycleAboutField),
     },
   }),
 );
 
-export const EntityLifecycleAboutField: () => JSX.Element =
+export const EntityTagsAboutField: (props: AboutFieldProps) => JSX.Element =
   catalogPlugin.provide(
     createComponentExtension({
-      name: 'EntityLifecycleAboutField',
+      name: 'EntityTagsAboutField',
       component: {
         lazy: () =>
-          import('./components/AboutCard').then(m => m.LifecycleAboutField),
+          import('./components/AboutCard').then(m => m.TagsAboutField),
       },
     }),
   );
 
-export const EntityTagsAboutField: () => JSX.Element = catalogPlugin.provide(
+export const EntityLocationTargetsAboutField: (
+  props: AboutFieldProps,
+) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
-    name: 'EntityTagsAboutField',
+    name: 'EntityLocationTargetsAboutField',
     component: {
-      lazy: () => import('./components/AboutCard').then(m => m.TagsAboutField),
+      lazy: () =>
+        import('./components/AboutCard').then(m => m.LocationTargetsAboutField),
     },
   }),
 );
-
-export const EntityLocationTargetsAboutField: () => JSX.Element =
-  catalogPlugin.provide(
-    createComponentExtension({
-      name: 'EntityLocationTargetsAboutField',
-      component: {
-        lazy: () =>
-          import('./components/AboutCard').then(
-            m => m.LocationTargetsAboutField,
-          ),
-      },
-    }),
-  );
