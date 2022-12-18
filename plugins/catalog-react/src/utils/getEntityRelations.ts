@@ -20,7 +20,6 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 
-// TODO(freben): This should be returning entity refs instead
 /**
  * Get the related entity references.
  *

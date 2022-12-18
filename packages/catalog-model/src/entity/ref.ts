@@ -138,13 +138,15 @@ export function parseEntityRef(
  * @returns The same reference on either string or compound form
  */
 export function stringifyEntityRef(
-  ref: Entity | { kind: string; namespace?: string; name: string },
+  ref: Entity | { kind: string; namespace?: string; name: string } | string,
 ): string {
   let kind;
   let namespace;
   let name;
 
-  if ('metadata' in ref) {
+  if (typeof ref === 'string') {
+    return ref;
+  } else if ('metadata' in ref) {
     kind = ref.kind;
     namespace = ref.metadata.namespace ?? DEFAULT_NAMESPACE;
     name = ref.metadata.name;
