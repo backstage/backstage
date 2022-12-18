@@ -273,7 +273,7 @@ const routes = (
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
     <Route path="/playlist" element={<PlaylistIndexPage />} />
     <Route path="/score-board" element={<ScoreBoardPage />} />
-    <Route path="/synth" element={<SynthPage />} />
+    {/* <Route path="/synth" element={<SynthPage />} /> */}
   </FlatRoutes>
 );
 

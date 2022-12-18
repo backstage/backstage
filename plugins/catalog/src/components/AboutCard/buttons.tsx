@@ -18,7 +18,6 @@ import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
   DEFAULT_NAMESPACE,
-  getEntitySourceLocation,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { IconLinkVertical, Link } from '@backstage/core-components';
@@ -28,8 +27,15 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import { ScmIntegrationIcon } from '@backstage/integration-react';
-import { useEntity, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  ScmIntegrationIcon,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import {
+  useEntity,
+  catalogApiRef,
+  getEntitySourceLocation,
+} from '@backstage/plugin-catalog-react';
 
 import { IconButton } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
@@ -92,27 +98,20 @@ export function EditMetadataButton() {
 }
 
 export function ViewInSourceButton() {
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const { entity } = useEntity();
 
-  let entitySourceLocation:
-    | {
-        type: string;
-        target: string;
-      }
-    | undefined;
-
-  try {
-    entitySourceLocation = getEntitySourceLocation(entity);
-  } catch (e) {
-    // do not throw
-  }
+  const entitySourceLocation = getEntitySourceLocation(
+    entity,
+    scmIntegrationsApi,
+  );
 
   return (
     <IconLinkVertical
       label="View Source"
       disabled={!entitySourceLocation}
-      icon={<ScmIntegrationIcon type={entitySourceLocation?.type} />}
-      href={entitySourceLocation?.target}
+      icon={<ScmIntegrationIcon type={entitySourceLocation?.integrationType} />}
+      href={entitySourceLocation?.locationTargetUrl}
     />
   );
 }
