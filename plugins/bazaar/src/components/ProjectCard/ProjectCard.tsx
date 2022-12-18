@@ -35,26 +35,18 @@ type Props = {
   project: BazaarProject;
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
-  height?: string;
+  height: 'large' | 'small';
 };
 
 type StyleProps = {
-  height?: string;
+  height: 'large' | 'small';
 };
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   description: (props: StyleProps) => ({
-    height: props.height === '7rem' ? '3.7rem' : '10.2rem',
-    display: '-webkit-box',
-    WebkitLineClamp: 7,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    '-webkit-background-clip': 'text',
-    backgroundImage: `linear-gradient(180deg, ${
-      theme.palette.textContrast
-    } 0%, ${theme.palette.textContrast} ${
-      props.height === '7rem' ? '60%' : '75%'
-    }, transparent 100%)`,
+    height: props.height === 'large' ? '10rem' : '4rem',
+    WebkitBackgroundClip: 'text',
+    backgroundImage: `linear-gradient(180deg, ${theme.palette.textContrast} 0%, ${theme.palette.textContrast} 60%, transparent 100%)`,
     color: 'transparent',
   }),
   statusTag: {
