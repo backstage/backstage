@@ -43,12 +43,11 @@ import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   graph: {
-    height: '100%',
-    position: 'absolute',
     minHeight: '100%',
+    flex: 1,
   },
   graphWrapper: {
-    position: 'relative',
+    display: 'flex',
     height: '100%',
   },
   organizationNode: {
