@@ -21,12 +21,20 @@ jobs:
     if: github.repository == 'backstage/backstage' && github.event.pull_request.user.login != 'backstage-service'
     runs-on: ubuntu-latest
     steps:
-      - uses: backstage/actions/changeset-feedback@vchangeset-patches
+      - uses: actions/checkout@v3
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history
-          diffRef: 'refs/pull/${{ github.event.pull_request.number }}/merge'
-          issue-number: ${{ steps.pr-number.outputs.pr-number }}
+          ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
+      - name: fetch base
+        run: git fetch --depth 1 origin ${{ github.base_ref }}
+      - uses: backstage/actions/changeset-feedback@v0.5.12
+        name: Generate feedback
+        with:
+          diffRef: 'origin/master'
+          marker: <!-- changeset-feedback -->
+          issue-number: ${{ github.event.pull_request.number }}
+          botUsername: github-actions[bot]
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
           installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
