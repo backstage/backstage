@@ -29,20 +29,10 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import {
-  EntityDescriptionAboutField,
-  EntityDomainAboutField,
-  EntityEditMetadataButton,
-  EntityLifecycleAboutField,
-  EntityLocationTargetsAboutField,
-  EntityOwnerAboutField,
-  EntityParentComponentAboutField,
-  EntityRefreshButton,
-  EntitySystemAboutField,
-  EntityTagsAboutField,
-  EntityTypeAboutField,
-  EntityViewInSourceButton,
-  EntityViewInTechDocsButton,
-} from '../../plugin';
+  defaultFields,
+  defaultPrimaryButtons,
+  defaultSecondaryButtons,
+} from './defaults';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -76,28 +66,6 @@ export interface AboutCardProps {
   fields?: JSX.Element[];
 }
 
-export const primaryButtons = [
-  <EntityViewInSourceButton />,
-  <EntityViewInTechDocsButton />,
-];
-
-export const secondaryButtons = [
-  <EntityRefreshButton />,
-  <EntityEditMetadataButton />,
-];
-
-export const fields = [
-  <EntityDescriptionAboutField />,
-  <EntityOwnerAboutField />,
-  <EntityDomainAboutField />,
-  <EntitySystemAboutField />,
-  <EntityParentComponentAboutField />,
-  <EntityTypeAboutField />,
-  <EntityLifecycleAboutField />,
-  <EntityTagsAboutField />,
-  <EntityLocationTargetsAboutField />,
-];
-
 /**
  * Exported publicly via the EntityAboutCard
  */
@@ -120,16 +88,16 @@ export function AboutCard(props: AboutCardProps) {
   }
 
   const actions = useElementFilter(
-    props.secondaryButtons ?? secondaryButtons,
+    props.secondaryButtons ?? defaultSecondaryButtons,
     c => c.getElements(),
   );
 
   const headerButtons = useElementFilter(
-    props.primaryButtons ?? primaryButtons,
+    props.primaryButtons ?? defaultPrimaryButtons,
     c => c.getElements(),
   );
 
-  const aboutFields = useElementFilter(props.fields ?? fields, c =>
+  const aboutFields = useElementFilter(props.fields ?? defaultFields, c =>
     c.getElements(),
   );
 

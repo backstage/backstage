@@ -15,6 +15,11 @@
  */
 
 export { AboutCard } from './AboutCard';
+export {
+  defaultPrimaryButtons,
+  defaultSecondaryButtons,
+  defaultFields,
+} from './defaults';
 export type { AboutCardProps } from './AboutCard';
 export * from './buttons';
 export * from './fields';
