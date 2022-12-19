@@ -15,7 +15,6 @@
  */
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
 
 /** @public */
 export type HeaderIconLinkRowClassKey = 'links';
@@ -33,24 +32,13 @@ const useStyles = makeStyles(
   { name: 'BackstageHeaderIconLinkRow' },
 );
 
-type Props = {
-  links: IconLinkVerticalProps[];
-};
-
 /**
  * HTML nav tag with links mapped inside
  *
  * @public
  *
  */
-export function HeaderIconLinkRow(props: Props) {
-  const { links } = props;
+export const HeaderIconLinkRow = (props: { children?: React.ReactNode }) => {
   const classes = useStyles();
-  return (
-    <nav className={classes.links}>
-      {links.map((link, index) => (
-        <IconLinkVertical key={index + 1} {...link} />
-      ))}
-    </nav>
-  );
-}
+  return <nav className={classes.links}>{props.children}</nav>;
+};

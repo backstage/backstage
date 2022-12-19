@@ -46,3 +46,9 @@ export type EntityFilter = {
 
 /** @public */
 export type UserListFilterKind = 'owned' | 'starred' | 'all';
+
+/** @public */
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+/** @public */
+export type ColumnBreakpoints = Record<Breakpoint, number>;
