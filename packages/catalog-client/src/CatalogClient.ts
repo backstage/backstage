@@ -99,7 +99,14 @@ export class CatalogClient implements CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse> {
-    const { filter = [], fields = [], offset, limit, after } = request ?? {};
+    const {
+      filter = [],
+      fields = [],
+      order,
+      offset,
+      limit,
+      after,
+    } = request ?? {};
     const params: string[] = [];
 
     // filter param can occur multiple times, for example
@@ -127,6 +134,20 @@ export class CatalogClient implements CatalogApi {
 
     if (fields.length) {
       params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+    }
+
+    if (order) {
+      for (const directive of [order].flat()) {
+        if (directive) {
+          // We could choose to always put in the + prefix, but it's not
+          // required (ascending sort is the default) and it always gets URL
+          // encoded to %2B which looks a bit less pretty - so we don't
+          const str = `${directive.order === 'desc' ? '-' : ''}${
+            directive.field
+          }`;
+          params.push(`order=${encodeURIComponent(str)}`);
+        }
+      }
     }
 
     if (offset !== undefined) {

@@ -193,6 +193,29 @@ describe('CatalogClient', () => {
 
       expect(response.items).toEqual([]);
     });
+
+    it('handles ordering properly', async () => {
+      expect.assertions(2);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          expect(req.url.search).toBe('?order=kind&order=-metadata.name');
+          return res(ctx.json([]));
+        }),
+      );
+
+      const response = await client.getEntities(
+        {
+          order: [
+            { field: 'kind', order: 'asc' },
+            { field: 'metadata.name', order: 'desc' },
+          ],
+        },
+        { token },
+      );
+
+      expect(response.items).toEqual([]);
+    });
   });
 
   describe('getEntitiesByRefs', () => {
