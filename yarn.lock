@@ -3401,7 +3401,7 @@ __metadata:
     "@google-cloud/storage": ^6.0.0
     "@keyv/memcache": ^1.3.5
     "@keyv/redis": ^2.5.3
-    "@kubernetes/client-node": 0.17.0
+    "@kubernetes/client-node": 0.18.0
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
     "@types/archiver": ^5.1.0
@@ -6734,7 +6734,7 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@google-cloud/container": ^4.0.0
     "@jest-mock/express": ^2.0.1
-    "@kubernetes/client-node": 0.17.0
+    "@kubernetes/client-node": 0.18.0
     "@types/aws4": ^1.5.1
     "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^0.19.3
@@ -6768,7 +6768,7 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@kubernetes/client-node": 0.17.0
+    "@kubernetes/client-node": 0.18.0
   languageName: unknown
   linkType: soft
 
@@ -6787,7 +6787,7 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@kubernetes/client-node": 0.17.0
+    "@kubernetes/client-node": 0.18.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
@@ -11150,33 +11150,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes/client-node@npm:0.17.0":
-  version: 0.17.0
-  resolution: "@kubernetes/client-node@npm:0.17.0"
+"@kubernetes/client-node@npm:0.18.0":
+  version: 0.18.0
+  resolution: "@kubernetes/client-node@npm:0.18.0"
   dependencies:
     "@types/js-yaml": ^4.0.1
     "@types/node": ^10.12.0
     "@types/request": ^2.47.1
-    "@types/stream-buffers": ^3.0.3
-    "@types/tar": ^4.0.3
-    "@types/underscore": ^1.8.9
     "@types/ws": ^6.0.1
     byline: ^5.0.0
     execa: 5.0.0
     isomorphic-ws: ^4.0.1
     js-yaml: ^4.1.0
     jsonpath-plus: ^0.19.0
-    openid-client: ^5.1.6
+    openid-client: ^5.3.0
     request: ^2.88.0
     rfc4648: ^1.3.0
     shelljs: ^0.8.5
     stream-buffers: ^3.0.2
     tar: ^6.1.11
     tmp-promise: ^3.0.2
-    tslib: ^1.9.3
-    underscore: ^1.9.1
+    tslib: ^2.4.1
+    underscore: ^1.13.6
     ws: ^7.3.1
-  checksum: 5a6edce96946966d8b61359ab043b42e69d1b31178133bc3bf4b5a5c9191766986e08f85d6ae814b56546ed20389817a79dca5101342543d79d750f30cba21f7
+  dependenciesMeta:
+    openid-client:
+      optional: true
+  checksum: ea973ddf793b7351da5e1beaac461b8f2ae581cb6d65b62669f248f8cb345f0d54d4b888820fb49f471bc60bace37e706120f46d10d3726a63ccaed8b6cb401b
   languageName: node
   linkType: hard
 
@@ -14767,15 +14767,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/minipass@npm:*":
-  version: 3.1.2
-  resolution: "@types/minipass@npm:3.1.2"
-  dependencies:
-    "@types/node": "*"
-  checksum: 0d01e11b5b959625385a482ad29ea16352be42506b459555b0f77fd82235e9c540946cc9c05a73fed1ae30b132914baaa4ccf257ed2cad20bc9773f0a06f4bac
-  languageName: node
-  linkType: hard
-
 "@types/mock-fs@npm:^4.10.0, @types/mock-fs@npm:^4.13.0":
   version: 4.13.1
   resolution: "@types/mock-fs@npm:4.13.1"
@@ -15366,15 +15357,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/stream-buffers@npm:^3.0.3":
-  version: 3.0.4
-  resolution: "@types/stream-buffers@npm:3.0.4"
-  dependencies:
-    "@types/node": "*"
-  checksum: 5b432b2bf963d612747b79ac317562888236d6a9ea14414fb055c24e7be9643b5e3c7b7470841fa82802aa1c1c0d752a4ba935bbc0cfb12de6b89f7e1dadee92
-  languageName: node
-  linkType: hard
-
 "@types/styled-jsx@npm:^2.2.8":
   version: 2.2.8
   resolution: "@types/styled-jsx@npm:2.2.8"
@@ -15418,16 +15400,6 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: cec88ffebaba7ce576d4945c901157a4aac360a669741abb6deacdf31435af5a679154d4f9281cc178214441ed1ac2cc800bd7a8f8588d1221984bef0c16c8aa
-  languageName: node
-  linkType: hard
-
-"@types/tar@npm:^4.0.3":
-  version: 4.0.5
-  resolution: "@types/tar@npm:4.0.5"
-  dependencies:
-    "@types/minipass": "*"
-    "@types/node": "*"
-  checksum: 476d8af8f4cffcd973de026e043271be76171f9cb07bb869ba38a193ce89ee361b59ff8484e28b57216266063d91502c5208d2ab6b976e7370d9bdf4c4dadadc
   languageName: node
   linkType: hard
 
@@ -15497,13 +15469,6 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 53e23a1f9fb14a491c00425b2a4fc443817564d77be5e1b95fcbeb6d009551b62ea82ffc3e5ca0c6b9f6b186824ca6ec46e7450c1bcd6674a46d1325f0116e24
-  languageName: node
-  linkType: hard
-
-"@types/underscore@npm:^1.8.9":
-  version: 1.11.4
-  resolution: "@types/underscore@npm:1.11.4"
-  checksum: db9f8486bc851b732259e51f42d62aad1ae2158be5724612dc125ece5f5d61c51447f9dea28284c2a0f79cb95e788d01cb5ce97709880019213e69fab0dd1696
   languageName: node
   linkType: hard
 
@@ -30544,7 +30509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^5.1.6, openid-client@npm:^5.2.1":
+"openid-client@npm:^5.2.1, openid-client@npm:^5.3.0":
   version: 5.3.1
   resolution: "openid-client@npm:5.3.1"
   dependencies:
@@ -37100,10 +37065,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:~2.4.0":
-  version: 2.4.0
-  resolution: "tslib@npm:2.4.0"
-  checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
+"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.4.1, tslib@npm:~2.4.0":
+  version: 2.4.1
+  resolution: "tslib@npm:2.4.1"
+  checksum: 19480d6e0313292bd6505d4efe096a6b31c70e21cf08b5febf4da62e95c265c8f571f7b36fcc3d1a17e068032f59c269fab3459d6cd3ed6949eafecf64315fca
   languageName: node
   linkType: hard
 
@@ -37427,10 +37392,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"underscore@npm:^1.12.1, underscore@npm:^1.9.1, underscore@npm:~1.13.2":
-  version: 1.13.4
-  resolution: "underscore@npm:1.13.4"
-  checksum: 6b04f66cd454e8793a552dc49c71e24e5208a29b9d9c0af988a96948af79103399c36fb15db43f3629bfed152f8b1fe94f44e1249e9d196069c0fc7edfadb636
+"underscore@npm:^1.12.1, underscore@npm:^1.13.6, underscore@npm:~1.13.2":
+  version: 1.13.6
+  resolution: "underscore@npm:1.13.6"
+  checksum: d5cedd14a9d0d91dd38c1ce6169e4455bb931f0aaf354108e47bd46d3f2da7464d49b2171a5cf786d61963204a42d01ea1332a903b7342ad428deaafaf70ec36
   languageName: node
   linkType: hard
 
