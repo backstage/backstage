@@ -3,4 +3,4 @@
 '@backstage/plugin-sonarqube-backend': patch
 ---
 
-Sonarqube doc change to link FE/BE changes needed
+Added links to the frontend and backend plugins in the readme.
