@@ -18,6 +18,7 @@ import {
   Entity,
   CompoundEntityRef,
   DEFAULT_NAMESPACE,
+  parseEntityRef,
 } from '@backstage/catalog-model';
 
 /**
@@ -26,7 +27,7 @@ import {
  *
  * @public */
 export function humanizeEntityRef(
-  entityRef: Entity | CompoundEntityRef,
+  entityRef: Entity | CompoundEntityRef | string,
   opts?: {
     defaultKind?: string;
     defaultNamespace?: string | false;
@@ -37,7 +38,9 @@ export function humanizeEntityRef(
   let namespace;
   let name;
 
-  if ('metadata' in entityRef) {
+  if (typeof entityRef === 'string') {
+    ({ kind, namespace, name } = parseEntityRef(entityRef));
+  } else if ('metadata' in entityRef) {
     kind = entityRef.kind;
     namespace = entityRef.metadata.namespace;
     name = entityRef.metadata.name;

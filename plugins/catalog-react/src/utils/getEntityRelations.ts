@@ -16,11 +16,10 @@
 
 import {
   Entity,
-  CompoundEntityRef,
   parseEntityRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 
-// TODO(freben): This should be returning entity refs instead
 /**
  * Get the related entity references.
  *
@@ -30,7 +29,7 @@ export function getEntityRelations(
   entity: Entity | undefined,
   relationType: string,
   filter?: { kind: string },
-): CompoundEntityRef[] {
+): string[] {
   let entityNames =
     entity?.relations
       ?.filter(r => r.type === relationType)
@@ -44,5 +43,5 @@ export function getEntityRelations(
     );
   }
 
-  return entityNames;
+  return entityNames.map(stringifyEntityRef);
 }
