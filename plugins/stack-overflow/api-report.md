@@ -8,6 +8,7 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CardExtensionProps } from '@backstage/plugin-home';
 import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 
 // @public
 export const HomePageStackOverflowQuestions: (
@@ -45,5 +46,6 @@ export const StackOverflowSearchResultListItem: (props: {
   result: any;
   icon?: ReactNode;
   rank?: number | undefined;
+  highlight?: ResultHighlight | undefined;
 }) => JSX.Element;
 ```

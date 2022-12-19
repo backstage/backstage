@@ -27,6 +27,7 @@ import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
@@ -158,7 +159,8 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
     return (
       <Box className={classes.itemContainer}>
         <Tooltip title={title} enterDelay={500} enterNextDelay={500}>
-          <button
+          <Button
+            role="button"
             onClick={handleClickDropdown}
             onTouchStart={e => e.stopPropagation()}
             className={classnames(
@@ -181,7 +183,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             ) : (
               <ArrowDropDownIcon className={classes.dropdownArrow} />
             )}
-          </button>
+          </Button>
         </Tooltip>
         {dropdownItems && showDropDown && (
           <Box className={classes.dropdown}>

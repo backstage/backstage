@@ -117,7 +117,8 @@ within your instance. The configuration options are documented in the
 
 The underlying functionality uses either the official ElasticSearch client
 version 7.x (meaning that ElasticSearch version 7 is the only one confirmed to
-be supported), or the OpenSearch client, when the `aws` provider is configured.
+be supported), or the OpenSearch client, when the `aws` or `opensearch `provider
+is configured.
 
 Should you need to create your own bespoke search experiences that require more
 than just a query translator (such as faceted search or Relay pagination), you
@@ -197,6 +198,20 @@ search:
     cloudId: backstage-elastic:asdfqwertyasdfqwertyasdfqwertyasdfqwerty==
     auth:
       username: elastic
+      password: changeme
+```
+
+### OpenSearch
+
+OpenSearch can be self hosted for example with the [official docker image](https://hub.docker.com/r/opensearchproject/opensearch). The configuration requires only the node and authentication.
+
+```yaml
+search:
+  elasticsearch:
+    provider: opensearch
+    node: http://0.0.0.0:9200
+    auth:
+      username: opensearch
       password: changeme
 ```
 

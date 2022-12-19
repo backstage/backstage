@@ -239,7 +239,7 @@ export type CatalogPermissionRule<
 // @alpha
 export const catalogPlugin: (options?: undefined) => BackendFeature;
 
-// @public (undocumented)
+// @public
 export interface CatalogProcessingEngine {
   // (undocumented)
   start(): Promise<void>;

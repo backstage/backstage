@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export { AppRouter } from './AppRouter';
+export type { AppRouterProps } from './AppRouter';
 export { createSpecializedApp } from './createSpecializedApp';
 export { defaultConfigLoader } from './defaultConfigLoader';
 export * from './types';

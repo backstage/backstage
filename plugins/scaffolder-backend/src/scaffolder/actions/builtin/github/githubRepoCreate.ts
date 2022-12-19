@@ -59,6 +59,7 @@ export function createGithubRepoCreateAction(options: {
     };
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
+    requiredConversationResolution?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -93,6 +94,8 @@ export function createGithubRepoCreateAction(options: {
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+          requiredConversationResolution:
+            inputProps.requiredConversationResolution,
           repoVisibility: inputProps.repoVisibility,
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           allowMergeCommit: inputProps.allowMergeCommit,

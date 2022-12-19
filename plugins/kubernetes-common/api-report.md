@@ -184,14 +184,7 @@ export type KubernetesErrorTypes =
   | 'UNKNOWN_ERROR';
 
 // @public (undocumented)
-export interface KubernetesFetchError {
-  // (undocumented)
-  errorType: KubernetesErrorTypes;
-  // (undocumented)
-  resourcePath?: string;
-  // (undocumented)
-  statusCode?: number;
-}
+export type KubernetesFetchError = StatusError | RawFetchError;
 
 // @public (undocumented)
 export interface KubernetesRequestAuth {
@@ -242,6 +235,14 @@ export interface PodStatusFetchResponse {
 }
 
 // @public (undocumented)
+export interface RawFetchError {
+  // (undocumented)
+  errorType: 'FETCH_ERROR';
+  // (undocumented)
+  message: string;
+}
+
+// @public (undocumented)
 export interface ReplicaSetsFetchResponse {
   // (undocumented)
   resources: Array<V1ReplicaSet>;
@@ -263,6 +264,16 @@ export interface StatefulSetsFetchResponse {
   resources: Array<V1StatefulSet>;
   // (undocumented)
   type: 'statefulsets';
+}
+
+// @public (undocumented)
+export interface StatusError {
+  // (undocumented)
+  errorType: KubernetesErrorTypes;
+  // (undocumented)
+  resourcePath?: string;
+  // (undocumented)
+  statusCode?: number;
 }
 
 // @public (undocumented)

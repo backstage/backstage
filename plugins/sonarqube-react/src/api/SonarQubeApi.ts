@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,48 @@
  * limitations under the License.
  */
 
-import { MetricKey, SonarUrlProcessorFunc } from './types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @alpha */
+export type MetricKey =
+  // alert status
+  | 'alert_status'
+
+  // bugs and rating (-> reliability)
+  | 'bugs'
+  | 'reliability_rating'
+
+  // vulnerabilities and rating (-> security)
+  | 'vulnerabilities'
+  | 'security_rating'
+
+  // code smells and rating (-> maintainability)
+  | 'code_smells'
+  | 'sqale_rating'
+
+  // security hotspots
+  | 'security_hotspots_reviewed'
+  | 'security_review_rating'
+
+  // coverage
+  | 'coverage'
+
+  // duplicated lines
+  | 'duplicated_lines_density';
+
+/** @alpha */
+export type SonarUrlProcessorFunc = (identifier: string) => string;
+
 /**
+ * @alpha
+ *
  * Define a type to make sure that all metrics are used
  */
 export type Metrics = {
   [key in MetricKey]: string | undefined;
 };
 
+/** @alpha */
 export interface FindingSummary {
   lastAnalysis: string;
   metrics: Metrics;
@@ -33,10 +65,12 @@ export interface FindingSummary {
   getSecurityHotspotsUrl: () => string;
 }
 
+/** @alpha */
 export const sonarQubeApiRef = createApiRef<SonarQubeApi>({
   id: 'plugin.sonarqube.service',
 });
 
+/** @alpha */
 export type SonarQubeApi = {
   getFindingSummary(options: {
     componentKey?: string;

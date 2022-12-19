@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  isSonarQubeAvailable,
-  SONARQUBE_PROJECT_INSTANCE_SEPARATOR,
-  SONARQUBE_PROJECT_KEY_ANNOTATION,
-  useProjectInfo,
-} from './useProjectKey';
+
 import { Entity } from '@backstage/catalog-model';
+import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '../components';
+import { useProjectInfo } from './useProjectInfo';
+import { SONARQUBE_PROJECT_INSTANCE_SEPARATOR } from './useProjectInfo';
 
 const createDummyEntity = (sonarqubeAnnotationValue: string): Entity => {
   return {
@@ -33,30 +31,6 @@ const createDummyEntity = (sonarqubeAnnotationValue: string): Entity => {
     },
   };
 };
-
-describe('isSonarQubeAvailable', () => {
-  it('returns true if sonarqube annotation defined', () => {
-    const entity = createDummyEntity('dummy');
-    expect(isSonarQubeAvailable(entity)).toBe(true);
-  });
-
-  it('returns false if sonarqube annotation empty', () => {
-    const entity = createDummyEntity('');
-    expect(isSonarQubeAvailable(entity)).toBe(false);
-  });
-
-  it('returns false if sonarqube annotation not defined', () => {
-    const entity = {
-      apiVersion: '',
-      kind: '',
-      metadata: {
-        name: 'dummy',
-        annotations: {},
-      },
-    };
-    expect(isSonarQubeAvailable(entity)).toBe(false);
-  });
-});
 
 describe('useProjectInfo', () => {
   const DUMMY_INSTANCE = 'dummyInstance';

@@ -229,22 +229,28 @@ describe('GitlabUrlReader', () => {
       path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
     );
 
-    const projectGitlabApiResponse = {
-      id: 11111111,
-      default_branch: 'main',
-    };
+    let projectGitlabApiResponse: any;
+    let commitsGitlabApiResponse: any;
+    let specificPathCommitsGitlabApiResponse: any;
 
-    const commitsGitlabApiResponse = [
-      {
-        id: 'sha123abc',
-      },
-    ];
+    beforeEach(() => {
+      projectGitlabApiResponse = {
+        id: 11111111,
+        default_branch: 'main',
+      };
 
-    const specificPathCommitsGitlabApiResponse = [
-      {
-        id: 'sha456def',
-      },
-    ];
+      commitsGitlabApiResponse = [
+        {
+          id: 'sha123abc',
+        },
+      ];
+
+      specificPathCommitsGitlabApiResponse = [
+        {
+          id: 'sha456def',
+        },
+      ];
+    });
 
     beforeEach(() => {
       worker.use(
@@ -493,6 +499,23 @@ describe('GitlabUrlReader', () => {
         );
       };
       await expect(fnGitlab).rejects.toThrow(NotFoundError);
+    });
+
+    it('should gracefully handle no matching commits', async () => {
+      commitsGitlabApiResponse = [];
+
+      const response = await gitlabProcessor.readTree(
+        'https://gitlab.com/backstage/mock/tree/main',
+      );
+
+      const files = await response.files();
+      expect(files.length).toBe(2);
+
+      const indexMarkdownFile = await files[0].content();
+      const mkDocsFile = await files[1].content();
+
+      expect(mkDocsFile.toString()).toBe('site_name: Test\n');
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
   });
 

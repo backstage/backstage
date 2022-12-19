@@ -228,6 +228,15 @@ export type AppRouteBinder = <
 ) => void;
 
 // @public
+export function AppRouter(props: AppRouterProps): JSX.Element;
+
+// @public
+export interface AppRouterProps {
+  // (undocumented)
+  children?: ReactNode;
+}
+
+// @public
 export class AppThemeSelector implements AppThemeApi {
   constructor(themes: AppTheme[]);
   // (undocumented)
@@ -259,6 +268,7 @@ export type AuthApiCreateOptions = {
 export type BackstageApp = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
+  createRoot(element: JSX.Element): ComponentType<{}>;
   getProvider(): ComponentType<{}>;
   getRouter(): ComponentType<{}>;
 };

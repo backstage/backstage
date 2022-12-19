@@ -1,7 +1,7 @@
 {
   "name": "@backstage/test-utils",
   "description": "Utilities to test Backstage plugins and apps.",
-  "version": "1.2.3-next.2",
+  "version": "1.2.3-next.4",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -52,7 +52,6 @@
     "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0",
-    "react-router": "6.0.0-beta.0 || ^6.3.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {

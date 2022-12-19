@@ -17,9 +17,12 @@
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { createServiceRef } from '../system/types';
 
+/** @public */
+export type DatabaseService = PluginDatabaseManager;
+
 /**
  * @public
  */
-export const databaseServiceRef = createServiceRef<PluginDatabaseManager>({
+export const databaseServiceRef = createServiceRef<DatabaseService>({
   id: 'core.database',
 });

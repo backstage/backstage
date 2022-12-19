@@ -17,7 +17,7 @@
 import React, { useEffect } from 'react';
 import usePrevious from 'react-use/lib/usePrevious';
 import qs from 'qs';
-import { useLocation, useOutlet } from 'react-router';
+import { useLocation, useOutlet } from 'react-router-dom';
 import {
   SearchContextProvider,
   useSearch,

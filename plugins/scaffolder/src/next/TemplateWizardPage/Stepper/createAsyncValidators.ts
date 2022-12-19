@@ -42,7 +42,7 @@ export const createAsyncValidators = (
         if (validator) {
           const fieldValidation = createFieldValidation();
           try {
-            await validator(value, fieldValidation, context);
+            await validator(value, fieldValidation, { ...context, formData });
           } catch (ex) {
             fieldValidation.addError(ex.message);
           }

@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType, ReactNode, ReactElement } from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core/styles';

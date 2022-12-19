@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-react
 
+## 0.4.8-next.3
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+
 ## 0.4.8-next.2
 
 ### Patch Changes

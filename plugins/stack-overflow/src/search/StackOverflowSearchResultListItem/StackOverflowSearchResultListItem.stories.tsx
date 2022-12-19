@@ -53,3 +53,23 @@ export const WithIcon = () => {
     />
   );
 };
+
+export const WithHighlight = () => {
+  return (
+    <StackOverflowSearchResultListItem
+      result={{
+        title: 'Customizing Spotify backstage UI',
+        text: 'Name of Author',
+        location: 'stackoverflow.question/1',
+        answers: 0,
+        tags: ['backstage'],
+      }}
+      icon={<StackOverflowIcon />}
+      highlight={{
+        fields: { title: '<xyz>Customizing</xyz> Spotify backstage ui' },
+        preTag: '<xyz>',
+        postTag: '</xyz>',
+      }}
+    />
+  );
+};

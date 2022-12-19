@@ -19,7 +19,7 @@ import {
   entityEnvelopeSchemaValidator,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { ProcessingDatabase } from '../database/types';
+import { ProviderDatabase } from '../database/types';
 import {
   EntityProvider,
   EntityProviderConnection,
@@ -33,12 +33,12 @@ class Connection implements EntityProviderConnection {
   constructor(
     private readonly config: {
       id: string;
-      processingDatabase: ProcessingDatabase;
+      providerDatabase: ProviderDatabase;
     },
   ) {}
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
-    const db = this.config.processingDatabase;
+    const db = this.config.providerDatabase;
 
     if (mutation.type === 'full') {
       this.check(mutation.entities.map(e => e.entity));
@@ -75,7 +75,7 @@ class Connection implements EntityProviderConnection {
   }
 
   async refresh(options: EntityProviderRefreshOptions): Promise<void> {
-    const db = this.config.processingDatabase;
+    const db = this.config.providerDatabase;
 
     await db.transaction(async (tx: any) => {
       return db.refreshByRefreshKeys(tx, {
@@ -96,14 +96,14 @@ class Connection implements EntityProviderConnection {
 }
 
 export async function connectEntityProviders(
-  db: ProcessingDatabase,
+  db: ProviderDatabase,
   providers: EntityProvider[],
 ) {
   await Promise.all(
     providers.map(async provider => {
       const connection = new Connection({
         id: provider.getProviderName(),
-        processingDatabase: db,
+        providerDatabase: db,
       });
       return provider.connect(connection);
     }),

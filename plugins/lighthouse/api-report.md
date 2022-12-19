@@ -72,6 +72,9 @@ export class FetchError extends Error {
 }
 
 // @public (undocumented)
+export type FormFactor = 'mobile' | 'desktop';
+
+// @public (undocumented)
 const isLighthouseAvailable: (entity: Entity) => boolean;
 export { isLighthouseAvailable };
 export { isLighthouseAvailable as isPluginApplicableToEntity };
@@ -133,6 +136,21 @@ export type LighthouseCategoryId =
   | 'best-practices';
 
 // @public (undocumented)
+export type LighthouseConfigSettings = {
+  formFactor: FormFactor;
+  screenEmulation:
+    | {
+        mobile: boolean;
+        width: number;
+        height: number;
+        deviceScaleFactor: number;
+        disabled: boolean;
+      }
+    | undefined;
+  emulatedFormFactor: FormFactor;
+};
+
+// @public (undocumented)
 export const LighthousePage: () => JSX.Element;
 
 // @public (undocumented)
@@ -172,9 +190,7 @@ export interface TriggerAuditPayload {
   // (undocumented)
   options: {
     lighthouseConfig: {
-      settings: {
-        emulatedFormFactor: string;
-      };
+      settings: LighthouseConfigSettings;
     };
   };
   // (undocumented)

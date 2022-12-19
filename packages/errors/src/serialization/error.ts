@@ -19,7 +19,7 @@ import {
   deserializeError as deserializeErrorInternal,
   serializeError as serializeErrorInternal,
 } from 'serialize-error';
-import { isError } from '../errors';
+import { isError } from '../errors/assertion';
 
 /**
  * The serialized form of an Error.
