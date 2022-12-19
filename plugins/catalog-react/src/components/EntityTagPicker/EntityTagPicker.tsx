@@ -93,9 +93,10 @@ export const EntityTagPicker = (props: EntityTagPickerProps) => {
   }, [queryParamTags]);
 
   useEffect(() => {
+    const tags = Object.keys(availableTags ?? {});
     updateFilters({
       tags:
-        selectedTags.length && Object.keys(availableTags ?? {}).length
+        selectedTags.length && tags.length
           ? new EntityTagFilter(selectedTags)
           : undefined,
     });
