@@ -224,6 +224,7 @@ export type NextCustomFieldValidator<TFieldReturnValue> = (
   field: FieldValidation_2,
   context: {
     apiHolder: ApiHolder;
+    formData: JsonObject;
   },
 ) => void | Promise<void>;
 
