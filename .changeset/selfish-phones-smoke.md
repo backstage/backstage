@@ -2,7 +2,7 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Added the catalogFilter prop to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
 
 The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
 
