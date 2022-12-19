@@ -54,7 +54,7 @@ import { debounce } from 'lodash';
  */
 export type EntityPeekAheadPopoverProps = PropsWithChildren<{
   entityRef: string;
-  delayTime: number;
+  delayTime?: number;
 }>;
 
 const useStyles = makeStyles(() => {
@@ -83,7 +83,7 @@ const maxTagChips = 4;
  * @public
  */
 export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
-  const { entityRef, children, delayTime } = props;
+  const { entityRef, children, delayTime = 500 } = props;
 
   const classes = useStyles();
   const apiHolder = useApiHolder();
