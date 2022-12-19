@@ -29,10 +29,15 @@ export const entityQueryFilterExpressionSchema = z.record(
 export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
+    /**
+     * @deprecated Use `catalogFilter` instead.
+     */
     allowedKinds: z
       .array(z.string())
       .optional()
-      .describe('List of kinds of entities to derive options from'),
+      .describe(
+        'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from',
+      ),
     defaultKind: z
       .string()
       .optional()

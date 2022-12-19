@@ -23,12 +23,15 @@ import { entityQueryFilterExpressionSchema } from '../EntityPicker/schema';
 export const OwnerPickerFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
+    /**
+     * @deprecated Use `catalogFilter` instead.
+     */
     allowedKinds: z
       .array(z.string())
       .default(['Group', 'User'])
       .optional()
       .describe(
-        'List of kinds of entities to derive options from. Defaults to Group and User',
+        'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from. Defaults to Group and User',
       ),
     allowArbitraryValues: z
       .boolean()
