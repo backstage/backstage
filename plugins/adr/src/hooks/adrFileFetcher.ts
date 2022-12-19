@@ -40,14 +40,36 @@ const useAdrApi = (
   };
 };
 
+/**
+ * Represents something that is capable of fetching a listing of adr files at a provided url
+ * and fetching the contents of an adr file at a provided url.
+ *
+ * @public
+ */
 export interface AdrFileFetcher {
+  /**
+   * A hook to get a listing of adr files that exist at the provided url
+   *
+   * @param url The url to get files from
+   */
   useGetAdrFilesAtUrl: (url: string) => any;
+
+  /**
+   * A hook to get the contents of the adr file at the provided url
+   *
+   * @param url The url of the adr file
+   */
   useReadAdrFileAtUrl: (url: string) => any;
 }
 
 const getAdrFilesEndpoint = 'getAdrFilesAtUrl';
 const readAdrFileEndpoint = 'readAdrFileAtUrl';
 
+/**
+ * An AdrFileFetcher that uses UrlReaders to fetch adr files
+ *
+ * @public
+ */
 export const urlReaderAdrFileFetcher: AdrFileFetcher = {
   useGetAdrFilesAtUrl: function (url: string) {
     const discoveryApi = useApi(discoveryApiRef);
@@ -63,6 +85,11 @@ export const urlReaderAdrFileFetcher: AdrFileFetcher = {
   },
 };
 
+/**
+ * An AdrFileFetcher that uses the useOctokitRequest hook for fetching adr files
+ *
+ * @public
+ */
 export const octokitAdrFileFetcher: AdrFileFetcher = {
   useGetAdrFilesAtUrl: (url: string) => useOctokitRequest(url),
   useReadAdrFileAtUrl: (url: string) => useOctokitRequest(url),

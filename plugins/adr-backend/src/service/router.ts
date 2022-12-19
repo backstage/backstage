@@ -18,6 +18,7 @@ import { UrlReader } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 
+/** @public */
 export async function createRouter(reader: UrlReader): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
