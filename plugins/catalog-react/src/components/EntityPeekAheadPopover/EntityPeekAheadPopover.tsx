@@ -15,7 +15,7 @@
  */
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { catalogApiRef } from '../../api';
-import React, { PropsWithChildren, useEffect } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import HoverPopover from 'material-ui-popup-state/HoverPopover';
 import {
   bindHover,
@@ -45,6 +45,7 @@ import {
   GroupCardActions,
 } from './CardActionComponents';
 import { EntityNotFoundCard } from './EntityNotFoundCard';
+import { debounce } from 'lodash';
 
 /**
  * Properties for an entity popover on hover of a component.
@@ -53,6 +54,7 @@ import { EntityNotFoundCard } from './EntityNotFoundCard';
  */
 export type EntityPeekAheadPopoverProps = PropsWithChildren<{
   entityRef: string;
+  delayTime: number;
 }>;
 
 const useStyles = makeStyles(() => {
@@ -81,7 +83,7 @@ const maxTagChips = 4;
  * @public
  */
 export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
-  const { entityRef, children } = props;
+  const { entityRef, children, delayTime } = props;
 
   const classes = useStyles();
   const apiHolder = useApiHolder();
@@ -90,6 +92,12 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
     popupId: 'entity-peek-ahead',
   });
   const compoundEntityRef = parseEntityRef(entityRef);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const debouncedHandleMouseEnter = debounce(
+    () => setIsHovered(true),
+    delayTime,
+  );
 
   const [{ loading, error, value: entity }, load] = useAsyncFn(async () => {
     const catalogApi = apiHolder.get(catalogApiRef);
@@ -105,6 +113,11 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
     return undefined;
   }, [apiHolder, compoundEntityRef]);
 
+  const handleOnMouseLeave = () => {
+    setIsHovered(false);
+    debouncedHandleMouseEnter.cancel();
+  };
+
   useEffect(() => {
     if (popupState.isOpen && !entity && !error && !loading) {
       load();
@@ -113,69 +126,82 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
 
   return (
     <>
-      <span data-testid="trigger" {...bindHover(popupState)}>
-        {children}
-      </span>
-      <HoverPopover
-        PaperProps={{
-          className: classes.popoverPaper,
-        }}
-        {...bindPopover(popupState)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
+      {' '}
+      <span
+        onMouseEnter={debouncedHandleMouseEnter}
+        onMouseLeave={handleOnMouseLeave}
       >
-        <>
-          {loading && <Progress />}
-          {!entity && !loading && (
-            <EntityNotFoundCard entityRef={entityRef} error={error} />
-          )}
-          {entity && (
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary">
-                  {compoundEntityRef.namespace}
-                </Typography>
-                <Typography variant="h5" component="div">
-                  {compoundEntityRef.name}
-                </Typography>
-                <Typography color="textSecondary">{entity.kind}</Typography>
-                <Typography className={classes.descriptionTypography} paragraph>
-                  {entity.metadata.description}
-                </Typography>
-                <Typography>{entity.spec?.type}</Typography>
-                <Box marginTop="0.5em">
-                  {(entity.metadata.tags || [])
-                    .slice(0, maxTagChips)
-                    .map(tag => {
-                      return <Chip key={tag} size="small" label={tag} />;
-                    })}
-                  {entity.metadata.tags?.length &&
-                    entity.metadata.tags?.length > maxTagChips && (
-                      <Tooltip title="Drill into the entity to see all of the tags.">
-                        <Chip key="other-tags" size="small" label="..." />
-                      </Tooltip>
+        <span data-testid="trigger" {...bindHover(popupState)}>
+          {children}
+        </span>
+      </span>
+      {isHovered && (
+        <HoverPopover
+          PaperProps={{
+            className: classes.popoverPaper,
+          }}
+          {...bindPopover(popupState)}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          <>
+            {loading && <Progress />}
+            {!entity && !loading && (
+              <EntityNotFoundCard entityRef={entityRef} error={error} />
+            )}
+            {entity && (
+              <Card>
+                <CardContent>
+                  <Typography color="textSecondary">
+                    {compoundEntityRef.namespace}
+                  </Typography>
+                  <Typography variant="h5" component="div">
+                    {compoundEntityRef.name}
+                  </Typography>
+                  <Typography color="textSecondary">{entity.kind}</Typography>
+                  <Typography
+                    className={classes.descriptionTypography}
+                    paragraph
+                  >
+                    {entity.metadata.description}
+                  </Typography>
+                  <Typography>{entity.spec?.type}</Typography>
+                  <Box marginTop="0.5em">
+                    {(entity.metadata.tags || [])
+                      .slice(0, maxTagChips)
+                      .map(tag => {
+                        return <Chip key={tag} size="small" label={tag} />;
+                      })}
+                    {entity.metadata.tags?.length &&
+                      entity.metadata.tags?.length > maxTagChips && (
+                        <Tooltip title="Drill into the entity to see all of the tags.">
+                          <Chip key="other-tags" size="small" label="..." />
+                        </Tooltip>
+                      )}
+                  </Box>
+                </CardContent>
+                <CardActions>
+                  <>
+                    {isUserEntity(entity) && (
+                      <UserCardActions entity={entity} />
                     )}
-                </Box>
-              </CardContent>
-              <CardActions>
-                <>
-                  {isUserEntity(entity) && <UserCardActions entity={entity} />}
-                  {isGroupEntity(entity) && (
-                    <GroupCardActions entity={entity} />
-                  )}
-                  <EntityCardActions entity={entity} />
-                </>
-              </CardActions>
-            </Card>
-          )}
-        </>
-      </HoverPopover>
+                    {isGroupEntity(entity) && (
+                      <GroupCardActions entity={entity} />
+                    )}
+                    <EntityCardActions entity={entity} />
+                  </>
+                </CardActions>
+              </Card>
+            )}
+          </>
+        </HoverPopover>
+      )}
     </>
   );
 };
