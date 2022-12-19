@@ -16,7 +16,6 @@
 
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-restricted-imports */
-
 import {
   resolve as resolvePath,
   relative as relativePath,
@@ -39,9 +38,19 @@ import {
   DocNode,
   IDocNodeContainerParameters,
   TSDocTagSyntaxKind,
+  TSDocConfiguration,
+  Standardization,
+  DocBlockTag,
+  DocPlainText,
+  DocLinkTag,
 } from '@microsoft/tsdoc';
 import { TSDocConfigFile } from '@microsoft/tsdoc-config';
-import { ApiPackage, ApiModel, ApiItem } from '@microsoft/api-extractor-model';
+import {
+  ApiPackage,
+  ApiModel,
+  ApiItem,
+  ApiItemKind,
+} from '@microsoft/api-extractor-model';
 import {
   IMarkdownDocumenterOptions,
   MarkdownDocumenter,
@@ -55,9 +64,10 @@ import {
 } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
+import { paths as cliPaths } from '../../lib/paths';
+import minimatch from 'minimatch';
 
-const tmpDir = resolvePath(
-  process.cwd(),
+const tmpDir = cliPaths.resolveTargetRoot(
   './node_modules/.cache/api-extractor',
 );
 
@@ -209,89 +219,32 @@ ApiReportGenerator.generateReviewFileContent =
     });
   };
 
-const PACKAGE_ROOTS = ['packages', 'plugins'];
-
-const ALLOW_WARNINGS = [
-  'packages/core-components',
-  'plugins/catalog',
-  'plugins/catalog-import',
-  'plugins/git-release-manager',
-  'plugins/jenkins',
-  'plugins/kubernetes',
-];
-
-async function resolvePackagePath(
-  packagePath: string,
-): Promise<string | undefined> {
-  const projectRoot = resolvePath(process.cwd());
-  const fullPackageDir = resolvePath(projectRoot, packagePath);
-
-  const stat = await fs.stat(fullPackageDir);
-  if (!stat.isDirectory()) {
-    return undefined;
-  }
-
-  try {
-    const packageJsonPath = join(fullPackageDir, 'package.json');
-    await fs.access(packageJsonPath);
-  } catch (_) {
-    return undefined;
-  }
-
-  return relativePath(projectRoot, fullPackageDir);
-}
-
-export async function findSpecificPackageDirs(unresolvedPackageDirs: string[]) {
-  const packageDirs = new Array<string>();
-
-  for (const unresolvedPackageDir of unresolvedPackageDirs) {
-    const packageDir = await resolvePackagePath(unresolvedPackageDir);
-    if (!packageDir) {
-      throw new Error(`'${unresolvedPackageDir}' is not a valid package path`);
-    }
-    packageDirs.push(packageDir);
-  }
-
-  if (packageDirs.length === 0) {
-    return undefined;
-  }
-
-  return packageDirs;
-}
-
-export async function findPackageDirs() {
-  const packageDirs = new Array<string>();
-  const projectRoot = resolvePath(process.cwd());
-
-  for (const packageRoot of PACKAGE_ROOTS) {
-    const dirs = await fs.readdir(resolvePath(projectRoot, packageRoot));
-    for (const dir of dirs) {
-      const packageDir = await resolvePackagePath(join(packageRoot, dir));
-      if (!packageDir) {
-        continue;
-      }
-
-      packageDirs.push(packageDir);
-    }
-  }
-
-  return packageDirs;
-}
-
 export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
-  const path = resolvePath(process.cwd(), 'tsconfig.tmp.json');
+  const path = cliPaths.resolveTargetRoot('tsconfig.tmp.json');
 
   process.once('exit', () => {
     fs.removeSync(path);
   });
 
+  let assetTypeFile: string[] = [];
+
+  try {
+    assetTypeFile = [
+      require.resolve('@backstage/cli/asset-types/asset-types.d.ts'),
+    ];
+  } catch {
+    /** ignore */
+  }
+
   await fs.writeJson(path, {
     extends: './tsconfig.json',
     include: [
       // These two contain global definitions that are needed for stable API report generation
-      'packages/cli/asset-types/asset-types.d.ts',
+      ...assetTypeFile,
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
+    // we don't exclude node_modules so that we can use the asset-types.d.ts file
+    exclude: [],
   });
 
   return path;
@@ -334,7 +287,12 @@ export async function getTsDocConfig() {
     tagName: '@ignore',
     syntaxKind: TSDocTagSyntaxKind.ModifierTag,
   });
+  tsdocConfigFile.addTagDefinition({
+    tagName: '@config',
+    syntaxKind: TSDocTagSyntaxKind.BlockTag,
+  });
   tsdocConfigFile.setSupportForTag('@ignore', true);
+  tsdocConfigFile.setSupportForTag('@config', true);
   return tsdocConfigFile;
 }
 
@@ -360,6 +318,8 @@ interface ApiExtractionOptions {
   outputDir: string;
   isLocalBuild: boolean;
   tsconfigFilePath: string;
+  allowWarnings?: boolean | string[];
+  omitMessages?: string[];
 }
 
 export async function runApiExtraction({
@@ -367,25 +327,37 @@ export async function runApiExtraction({
   outputDir,
   isLocalBuild,
   tsconfigFilePath,
+  allowWarnings = false,
+  omitMessages = [],
 }: ApiExtractionOptions) {
   await fs.remove(outputDir);
 
   const entryPoints = packageDirs.map(packageDir => {
-    return resolvePath(
-      process.cwd(),
+    return cliPaths.resolveTargetRoot(
       `./dist-types/${packageDir}/src/index.d.ts`,
     );
   });
 
   let compilerState: CompilerState | undefined = undefined;
 
+  const allowWarningPkg = Array.isArray(allowWarnings) ? allowWarnings : [];
+
+  const messagesConf: { [key: string]: { logLevel: string } } = {};
+  for (const messageCode of omitMessages) {
+    messagesConf[messageCode] = {
+      logLevel: 'none',
+    };
+  }
   const warnings = new Array<string>();
 
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
-    const projectFolder = resolvePath(process.cwd(), packageDir);
-    const packageFolder = resolvePath(
-      process.cwd(),
+    const noBail = Array.isArray(allowWarnings)
+      ? allowWarnings.some(aw => aw === packageDir || minimatch(packageDir, aw))
+      : allowWarnings;
+
+    const projectFolder = cliPaths.resolveTargetRoot(packageDir);
+    const packageFolder = cliPaths.resolveTargetRoot(
       './dist-types',
       packageDir,
     );
@@ -438,6 +410,7 @@ export async function runApiExtraction({
               logLevel: 'warning' as ExtractorLogLevel.Warning,
               addToApiReportFile: true,
             },
+            ...messagesConf,
           },
           tsdocMessageReporting: {
             default: {
@@ -528,12 +501,15 @@ export async function runApiExtraction({
     }
 
     const warningCountAfter = await countApiReportWarnings(projectFolder);
-    if (warningCountAfter > 0 && !ALLOW_WARNINGS.includes(packageDir)) {
+    if (noBail) {
+      console.log(`Skipping warnings check for ${packageDir}`);
+    }
+    if (warningCountAfter > 0 && !noBail) {
       throw new Error(
         `The API Report for ${packageDir} is not allowed to have warnings`,
       );
     }
-    if (warningCountAfter === 0 && ALLOW_WARNINGS.includes(packageDir)) {
+    if (warningCountAfter === 0 && allowWarningPkg.includes(packageDir)) {
       console.log(
         `No need to allow warnings for ${packageDir}, it does not have any`,
       );
@@ -827,6 +803,16 @@ export async function buildDocs({
     }
   }
 
+  // This class only propose is to have a different kind and be able to render links with backticks
+  class DocCodeSpanLink extends DocLinkTag {
+    static kind = 'DocCodeSpanLink';
+
+    /** @override */
+    public get kind(): string {
+      return DocCodeSpanLink.kind;
+    }
+  }
+
   // This is where we actually write the markdown and where we can hook
   // in the rendering of our own nodes.
   class CustomCustomMarkdownEmitter extends CustomMarkdownEmitter {
@@ -845,7 +831,7 @@ export async function buildDocs({
     /** @override */
     protected writeNode(
       docNode: DocNode,
-      context: IMarkdownEmitterContext,
+      context: IMarkdownEmitterContext<ICustomMarkdownEmitterOptions>,
       docNodeSiblings: boolean,
     ): void {
       switch (docNode.kind) {
@@ -854,11 +840,39 @@ export async function buildDocs({
           context.writer.writeLine('---');
           for (const [name, value] of Object.entries(node.values)) {
             if (value) {
-              context.writer.writeLine(`${name}: ${value}`);
+              context.writer.writeLine(
+                `${name}: "${String(value).replace(/\"/g, '')}"`,
+              );
             }
           }
           context.writer.writeLine('---');
           context.writer.writeLine();
+          break;
+        }
+        case 'BlockTag': {
+          const node = docNode as DocBlockTag;
+          if (node.tagName === '@config') {
+            context.writer.writeLine('## Related config ');
+          }
+          break;
+        }
+        case DocCodeSpanLink.kind: {
+          const node = docNode as DocLinkTag;
+          if (node.codeDestination) {
+            // TODO @sarabadu understand if we need `codeDestination` at all on this custom DocCodeSpanLink
+            super.writeLinkTagWithCodeDestination(node, context);
+          } else if (node.urlDestination) {
+            const linkText =
+              node.linkText !== undefined ? node.linkText : node.urlDestination;
+            const encodedLinkText = this.getEscapedText(
+              linkText.replace(/\s+/g, ' '),
+            );
+            context.writer.write('[');
+            context.writer.write(`\`${encodedLinkText}\``);
+            context.writer.write(`](${node.urlDestination})`);
+          } else if (node.linkText) {
+            this.writePlainText(node.linkText, context);
+          }
           break;
         }
         default:
@@ -884,15 +898,35 @@ export async function buildDocs({
       super(options);
 
       // It's a strict model, we gotta register the allowed usage of our new node
-      this._tsdocConfiguration.docNodeManager.registerDocNodes(
-        '@backstage/docs',
-        [{ docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter }],
-      );
-      this._tsdocConfiguration.docNodeManager.registerAllowableChildren(
-        'Paragraph',
-        [DocFrontMatter.kind],
-      );
+      (
+        this._tsdocConfiguration as TSDocConfiguration
+      ).docNodeManager.registerDocNodes('@backstage/docs', [
+        { docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter },
+      ]);
+      (
+        this._tsdocConfiguration as TSDocConfiguration
+      ).docNodeManager.registerDocNodes('@backstage/docs', [
+        { docNodeKind: DocCodeSpanLink.kind, constructor: DocCodeSpanLink },
+      ]);
+      (
+        this._tsdocConfiguration as TSDocConfiguration
+      ).docNodeManager.registerAllowableChildren('Paragraph', [
+        DocFrontMatter.kind,
+        DocCodeSpanLink.kind,
+      ]);
 
+      const def = {
+        tagName: '@config',
+        syntaxKind: TSDocTagSyntaxKind.BlockTag,
+        tagNameWithUpperCase: '@CONFIG',
+        standardization: Standardization.Extended,
+        allowMultiple: false,
+      };
+      (this._tsdocConfiguration as TSDocConfiguration).addTagDefinition(def);
+      (this._tsdocConfiguration as TSDocConfiguration).setSupportForTag(
+        def,
+        true,
+      );
       this._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
     }
 
@@ -941,8 +975,40 @@ export async function buildDocs({
         }),
       );
 
-      // Now write the actual breadcrumbs
-      super._writeBreadcrumb(output, apiItem);
+      const configuration: TSDocConfiguration = this._tsdocConfiguration;
+
+      output.appendNodeInParagraph(
+        new DocLinkTag({
+          configuration,
+          tagName: '@link',
+          linkText: 'Home',
+          urlDestination: this._getLinkFilenameForApiItem(this._apiModel),
+        }),
+      );
+
+      for (const hierarchyItem of apiItem.getHierarchy()) {
+        switch (hierarchyItem.kind) {
+          case ApiItemKind.Model:
+          case ApiItemKind.EntryPoint:
+            // We don't show the model as part of the breadcrumb because it is the root-level container.
+            // We don't show the entry point because today API Extractor doesn't support multiple entry points;
+            // this may change in the future.
+            break;
+          default:
+            output.appendNodesInParagraph([
+              new DocPlainText({
+                configuration,
+                text: ' > ',
+              }),
+              new DocCodeSpanLink({
+                configuration,
+                tagName: '@link',
+                linkText: hierarchyItem.displayName,
+                urlDestination: this._getLinkFilenameForApiItem(hierarchyItem),
+              }),
+            ]);
+        }
+      }
 
       // We wanna ignore the header that always gets written after the breadcrumb
       // This otherwise becomes more or less a duplicate of the title in the front matter
@@ -1028,10 +1094,7 @@ export async function buildDocs({
   documenter.generateFiles();
 }
 
-export async function categorizePackageDirs(
-  projectRoot: string,
-  packageDirs: any[],
-) {
+export async function categorizePackageDirs(packageDirs: any[]) {
   const dirs = packageDirs.slice();
   const tsPackageDirs = new Array<string>();
   const cliPackageDirs = new Array<string>();
@@ -1047,7 +1110,7 @@ export async function categorizePackageDirs(
           }
 
           const pkgJson = await fs
-            .readJson(resolvePath(projectRoot, dir, 'package.json'))
+            .readJson(cliPaths.resolveTargetRoot(dir, 'package.json'))
             .catch(error => {
               if (error.code === 'ENOENT') {
                 return undefined;
@@ -1101,6 +1164,7 @@ function parseHelpPage(helpPageContent: string) {
 
   let options = new Array<string>();
   let commands = new Array<string>();
+  let commandArguments = new Array<string>();
 
   while (lines.length > 0) {
     while (lines.length > 0 && !lines[0].endsWith(':')) {
@@ -1125,6 +1189,8 @@ function parseHelpPage(helpPageContent: string) {
         options = sectionItems;
       } else if (sectionName?.toLocaleLowerCase('en-US') === 'commands:') {
         commands = sectionItems;
+      } else if (sectionName?.toLocaleLowerCase('en-US') === 'arguments:') {
+        commandArguments = sectionItems;
       } else {
         throw new Error(`Unknown CLI section: ${sectionName}`);
       }
@@ -1135,6 +1201,7 @@ function parseHelpPage(helpPageContent: string) {
     usage,
     options,
     commands,
+    commandArguments,
   };
 }
 
@@ -1146,6 +1213,7 @@ interface CliHelpPage {
   usage: string | undefined;
   options: string[];
   commands: string[];
+  commandArguments: string[];
 }
 
 async function exploreCliHelpPages(
@@ -1213,19 +1281,17 @@ function generateCliReport(name: string, models: CliModel[]): string {
 }
 
 interface CliExtractionOptions {
-  projectRoot: string;
   packageDirs: string[];
   isLocalBuild: boolean;
 }
 
 export async function runCliExtraction({
-  projectRoot,
   packageDirs,
   isLocalBuild,
 }: CliExtractionOptions) {
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
-    const fullDir = resolvePath(projectRoot, packageDir);
+    const fullDir = cliPaths.resolveTargetRoot(packageDir);
     const pkgJson = await fs.readJson(resolvePath(fullDir, 'package.json'));
 
     if (!pkgJson.bin) {
@@ -1268,7 +1334,7 @@ export async function runCliExtraction({
           console.log('');
           console.log(
             `The conflicting file is ${relativePath(
-              projectRoot,
+              cliPaths.targetRoot,
               reportPath,
             )}, expecting the following content:`,
           );

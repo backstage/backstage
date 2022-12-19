@@ -44,6 +44,7 @@ const gitlabProcessor = new GitlabUrlReader(
         host: 'gitlab.com',
         apiBaseUrl: 'https://gitlab.com/api/v4',
         baseUrl: 'https://gitlab.com',
+        token: 'gl-dummy-token',
       }),
     ),
   ),
@@ -57,6 +58,7 @@ const hostedGitlabProcessor = new GitlabUrlReader(
         host: 'gitlab.mycompany.com',
         apiBaseUrl: 'https://gitlab.mycompany.com/api/v4',
         baseUrl: 'https://gitlab.mycompany.com',
+        token: 'gl-dummy-token',
       }),
     ),
   ),
@@ -227,22 +229,28 @@ describe('GitlabUrlReader', () => {
       path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
     );
 
-    const projectGitlabApiResponse = {
-      id: 11111111,
-      default_branch: 'main',
-    };
+    let projectGitlabApiResponse: any;
+    let commitsGitlabApiResponse: any;
+    let specificPathCommitsGitlabApiResponse: any;
 
-    const commitsGitlabApiResponse = [
-      {
-        id: 'sha123abc',
-      },
-    ];
+    beforeEach(() => {
+      projectGitlabApiResponse = {
+        id: 11111111,
+        default_branch: 'main',
+      };
 
-    const specificPathCommitsGitlabApiResponse = [
-      {
-        id: 'sha456def',
-      },
-    ];
+      commitsGitlabApiResponse = [
+        {
+          id: 'sha123abc',
+        },
+      ];
+
+      specificPathCommitsGitlabApiResponse = [
+        {
+          id: 'sha456def',
+        },
+      ];
+    });
 
     beforeEach(() => {
       worker.use(
@@ -492,6 +500,23 @@ describe('GitlabUrlReader', () => {
       };
       await expect(fnGitlab).rejects.toThrow(NotFoundError);
     });
+
+    it('should gracefully handle no matching commits', async () => {
+      commitsGitlabApiResponse = [];
+
+      const response = await gitlabProcessor.readTree(
+        'https://gitlab.com/backstage/mock/tree/main',
+      );
+
+      const files = await response.files();
+      expect(files.length).toBe(2);
+
+      const indexMarkdownFile = await files[0].content();
+      const mkDocsFile = await files[1].content();
+
+      expect(mkDocsFile.toString()).toBe('site_name: Test\n');
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
   });
 
   describe('search', () => {
@@ -654,6 +679,23 @@ describe('GitlabUrlReader', () => {
           ),
         ),
       ).rejects.toThrow(/^Unable to translate GitLab artifact URL:/);
+    });
+  });
+
+  describe('resolveProjectToId', () => {
+    it('should resolve the project path to a valid project id', async () => {
+      worker.use(
+        rest.get('*/api/v4/projects/some%2Fproject', (req, res, ctx) => {
+          // the private-token header must be included on API calls
+          expect(req.headers.get('private-token')).toBe('gl-dummy-token');
+          return res(ctx.status(200), ctx.json({ id: 12345 }));
+        }),
+      );
+      await expect(
+        (gitlabProcessor as any).resolveProjectToId(
+          new URL('https://gitlab.com/some/project'),
+        ),
+      ).resolves.toEqual(12345);
     });
   });
 });

@@ -16,12 +16,9 @@
 
 import express from 'express';
 import {
-  configServiceRef,
+  coreServices,
   createBackendPlugin,
-  databaseServiceRef,
-  loggerServiceRef,
   loggerToWinstonLogger,
-  httpRouterServiceRef,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
 
@@ -78,10 +75,10 @@ export const appPlugin = createBackendPlugin({
   register(env, options: AppPluginOptions) {
     env.registerInit({
       deps: {
-        logger: loggerServiceRef,
-        config: configServiceRef,
-        database: databaseServiceRef,
-        httpRouter: httpRouterServiceRef,
+        logger: coreServices.logger,
+        config: coreServices.config,
+        database: coreServices.database,
+        httpRouter: coreServices.httpRouter,
       },
       async init({ logger, config, database, httpRouter }) {
         const {

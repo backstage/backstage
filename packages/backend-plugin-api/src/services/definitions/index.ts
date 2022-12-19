@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-export { configServiceRef } from './configServiceRef';
-export { httpRouterServiceRef } from './httpRouterServiceRef';
+import * as coreServices from './coreServices';
+
+export { coreServices };
+export type { CacheService } from './cacheServiceRef';
+export type { ConfigService } from './configServiceRef';
+export type { DatabaseService } from './databaseServiceRef';
+export type { DiscoveryService } from './discoveryServiceRef';
 export type { HttpRouterService } from './httpRouterServiceRef';
-export { loggerServiceRef } from './loggerServiceRef';
-export type { Logger } from './loggerServiceRef';
-export { urlReaderServiceRef } from './urlReaderServiceRef';
-export { cacheServiceRef } from './cacheServiceRef';
-export { databaseServiceRef } from './databaseServiceRef';
-export { discoveryServiceRef } from './discoveryServiceRef';
-export { tokenManagerServiceRef } from './tokenManagerServiceRef';
-export { permissionsServiceRef } from './permissionsServiceRef';
-export { schedulerServiceRef } from './schedulerServiceRef';
-export { rootLoggerServiceRef } from './rootLoggerServiceRef';
-export { pluginMetadataServiceRef } from './pluginMetadataServiceRef';
-export { lifecycleServiceRef } from './lifecycleServiceRef';
 export type {
-  BackendLifecycle,
-  BackendLifecycleShutdownHook,
+  LifecycleService,
+  LifecycleServiceShutdownHook,
 } from './lifecycleServiceRef';
-export type { PluginMetadata } from './pluginMetadataServiceRef';
+export type { LoggerService, LogMeta } from './loggerServiceRef';
+export type { PermissionsService } from './permissionsServiceRef';
+export type { PluginMetadataService } from './pluginMetadataServiceRef';
+export type { RootLoggerService } from './rootLoggerServiceRef';
+export type { SchedulerService } from './schedulerServiceRef';
+export type { TokenManagerService } from './tokenManagerServiceRef';
+export type { UrlReaderService } from './urlReaderServiceRef';

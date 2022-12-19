@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { textContentMatcher, wrapInTestApp } from '@backstage/test-utils';
 import { PodDrawer } from './PodDrawer';
 
 describe('PodDrawer', () => {
@@ -46,8 +46,10 @@ describe('PodDrawer', () => {
     expect(getAllByText('True')).toHaveLength(4);
     expect(getByText('Exposed Ports')).toBeInTheDocument();
     expect(getByText('Nginx:')).toBeInTheDocument();
-    expect(getByText('Container Port: 80')).toBeInTheDocument();
-    expect(getByText('Protocol: TCP')).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('Container Port: 80')),
+    ).toBeInTheDocument();
+    expect(getByText(textContentMatcher('Protocol: TCP'))).toBeInTheDocument();
   });
   it('should render crashing pod', async () => {
     const { getByText, getAllByText } = render(
@@ -80,12 +82,18 @@ describe('PodDrawer', () => {
       getAllByText('containers with unready status: [side-car other-side-car]'),
     ).toHaveLength(2);
     expect(getByText('Exposed Ports')).toBeInTheDocument();
-    expect(getAllByText('Protocol: TCP')).toHaveLength(3);
+    expect(getAllByText(textContentMatcher('Protocol: TCP'))).toHaveLength(3);
     expect(getByText('Nginx:')).toBeInTheDocument();
-    expect(getByText('Container Port: 80')).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('Container Port: 80')),
+    ).toBeInTheDocument();
     expect(getByText('Side Car:')).toBeInTheDocument();
-    expect(getByText('Container Port: 81')).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('Container Port: 81')),
+    ).toBeInTheDocument();
     expect(getByText('Other Side Car:')).toBeInTheDocument();
-    expect(getByText('Container Port: 82')).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('Container Port: 82')),
+    ).toBeInTheDocument();
   });
 });

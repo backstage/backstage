@@ -16,19 +16,17 @@
 
 import { UrlReaders } from '@backstage/backend-common';
 import {
-  configServiceRef,
+  coreServices,
   createServiceFactory,
-  loggerServiceRef,
   loggerToWinstonLogger,
-  urlReaderServiceRef,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
 export const urlReaderFactory = createServiceFactory({
-  service: urlReaderServiceRef,
+  service: coreServices.urlReader,
   deps: {
-    config: configServiceRef,
-    logger: loggerServiceRef,
+    config: coreServices.config,
+    logger: coreServices.logger,
   },
   async factory() {
     return async ({ config, logger }) => {

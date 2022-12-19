@@ -20,7 +20,12 @@ import { createServiceRef } from '../system/types';
 /**
  * @public
  */
-export const configServiceRef = createServiceRef<Config>({
+export type ConfigService = Config;
+
+/**
+ * @public
+ */
+export const configServiceRef = createServiceRef<ConfigService>({
   id: 'core.root.config',
   scope: 'root',
 });

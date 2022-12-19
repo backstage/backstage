@@ -123,7 +123,7 @@ than simply letting them know they had an invalid input.
 > input change.
 
 This piggybacks the Scalability Principle and applies primarily to frontend
-development. As a general rule of thumb, frontends should be flexible enough so
+development. As a general guideline, frontends should be flexible enough so
 that the UX or design can change while touching the least amount of code
 possible. So for example, a poor unit test would verify the color of a button
 when it is hovered. This would be a poor unit test, because if you decide to
@@ -353,7 +353,7 @@ For more information:
 ### Accessing `store`, `theme`, routing, browser history, etc.
 
 The Backstage application has several core providers at its root. To run your
-test wrapped in a "dummy" Backstage application, you can use our utility
+test wrapped in a "sample" Backstage application, you can use our utility
 functions:
 
 **`wrapInTestApp`**

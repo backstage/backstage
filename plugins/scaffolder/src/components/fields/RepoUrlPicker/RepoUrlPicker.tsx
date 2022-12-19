@@ -60,12 +60,16 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
     () => uiSchema?.['ui:options']?.allowedOwners ?? [],
     [uiSchema],
   );
+  const allowedProjects = useMemo(
+    () => uiSchema?.['ui:options']?.allowedProjects ?? [],
+    [uiSchema],
+  );
   const allowedRepos = useMemo(
     () => uiSchema?.['ui:options']?.allowedRepos ?? [],
     [uiSchema],
   );
 
-  const { owner, organization, repoName } = state;
+  const { owner, organization, project, repoName } = state;
 
   useEffect(() => {
     onChange(serializeRepoPickerUrl(state));
@@ -89,6 +93,15 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
       }));
     }
   }, [setState, allowedOwners, owner]);
+
+  useEffect(() => {
+    if (allowedProjects.length > 0 && !project) {
+      setState(prevState => ({
+        ...prevState,
+        project: allowedProjects[0],
+      }));
+    }
+  }, [setState, allowedProjects, project]);
 
   useEffect(() => {
     if (allowedRepos.length > 0 && !repoName) {
@@ -169,6 +182,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
       {hostType === 'bitbucket' && (
         <BitbucketRepoPicker
           allowedOwners={allowedOwners}
+          allowedProjects={allowedProjects}
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}

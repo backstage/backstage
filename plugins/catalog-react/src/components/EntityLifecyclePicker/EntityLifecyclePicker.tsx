@@ -75,14 +75,6 @@ export const EntityLifecyclePicker = () => {
     }
   }, [queryParamLifecycles]);
 
-  useEffect(() => {
-    updateFilters({
-      lifecycles: selectedLifecycles.length
-        ? new EntityLifecycleFilter(selectedLifecycles)
-        : undefined,
-    });
-  }, [selectedLifecycles, updateFilters]);
-
   const availableLifecycles = useMemo(
     () =>
       [
@@ -94,6 +86,15 @@ export const EntityLifecyclePicker = () => {
       ].sort(),
     [backendEntities],
   );
+
+  useEffect(() => {
+    updateFilters({
+      lifecycles:
+        selectedLifecycles.length && availableLifecycles.length
+          ? new EntityLifecycleFilter(selectedLifecycles)
+          : undefined,
+    });
+  }, [selectedLifecycles, updateFilters, availableLifecycles]);
 
   if (!availableLifecycles.length) return null;
 

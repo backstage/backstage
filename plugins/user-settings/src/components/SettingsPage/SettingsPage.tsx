@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useOutlet } from 'react-router';
+import { useOutlet } from 'react-router-dom';
 import React from 'react';
 import { DefaultSettingsPage } from '../DefaultSettingsPage';
 import { useElementFilter } from '@backstage/core-plugin-api';

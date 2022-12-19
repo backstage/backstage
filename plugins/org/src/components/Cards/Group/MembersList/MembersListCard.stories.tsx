@@ -19,7 +19,7 @@ import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { MembersListCard } from './MembersListCard';
 
 export default {

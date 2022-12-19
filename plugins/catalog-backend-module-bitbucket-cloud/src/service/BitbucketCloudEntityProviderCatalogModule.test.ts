@@ -20,13 +20,7 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import {
-  configServiceRef,
-  discoveryServiceRef,
-  loggerServiceRef,
-  schedulerServiceRef,
-  tokenManagerServiceRef,
-} from '@backstage/backend-plugin-api';
+import { coreServices } from '@backstage/backend-plugin-api';
 import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
@@ -84,11 +78,11 @@ describe('bitbucketCloudEntityProviderCatalogModule', () => {
         [eventsExtensionPoint, eventsExtensionPointImpl],
       ],
       services: [
-        [configServiceRef, config],
-        [discoveryServiceRef, discovery],
-        [loggerServiceRef, getVoidLogger()],
-        [schedulerServiceRef, scheduler],
-        [tokenManagerServiceRef, tokenManager],
+        [coreServices.config, config],
+        [coreServices.discovery, discovery],
+        [coreServices.logger, getVoidLogger()],
+        [coreServices.scheduler, scheduler],
+        [coreServices.tokenManager, tokenManager],
       ],
       features: [bitbucketCloudEntityProviderCatalogModule()],
     });

@@ -268,7 +268,7 @@ async function main() {
 ```
 
 This will be run every time you restart the backend. Note that after any change
-in the URL Reader code, you need to kill the backend and restart, since the
+in the URL Reader code, you need to stop the backend and restart, since the
 `reader` instance is memoized and does not update on hot module reloading. Also,
 there are a lot of unit tests written for the URL Readers, which you can make
 use of.

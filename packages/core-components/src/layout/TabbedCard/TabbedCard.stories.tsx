@@ -16,7 +16,7 @@
 
 import Grid from '@material-ui/core/Grid';
 import React, { PropsWithChildren, useState } from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { CardTab, TabbedCard } from './TabbedCard';
 
 const cardContentStyle = { height: 200, width: 500 };

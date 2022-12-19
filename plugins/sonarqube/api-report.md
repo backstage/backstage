@@ -26,10 +26,10 @@ export const EntitySonarQubeContentPage: (
   props: SonarQubeContentPageProps,
 ) => JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const isSonarQubeAvailable: (entity: Entity) => boolean;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 
 // @public (undocumented)

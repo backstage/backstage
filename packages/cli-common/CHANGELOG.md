@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.11-next.0
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+
 ## 0.1.10
 
 ### Patch Changes

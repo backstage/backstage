@@ -23,7 +23,6 @@
 export * from './module';
 export * from './service';
 export {
-  INCREMENTAL_ENTITY_PROVIDER_ANNOTATION,
   type EntityIteratorResult,
   type IncrementalEntityProvider,
   type IncrementalEntityProviderOptions,

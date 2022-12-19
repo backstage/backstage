@@ -133,7 +133,7 @@ export class CatalogBuilder {
     ...permissionRules: Array<
       CatalogPermissionRule | Array<CatalogPermissionRule>
     >
-  ): void;
+  ): this;
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
   ): CatalogBuilder;
@@ -164,6 +164,7 @@ export class CatalogBuilder {
       errors: Error[];
     }) => Promise<void> | void;
   }): void;
+  useLegacySingleProcessorValidation(): this;
 }
 
 // @alpha
@@ -238,7 +239,7 @@ export type CatalogPermissionRule<
 // @alpha
 export const catalogPlugin: (options?: undefined) => BackendFeature;
 
-// @public (undocumented)
+// @public
 export interface CatalogProcessingEngine {
   // (undocumented)
   start(): Promise<void>;

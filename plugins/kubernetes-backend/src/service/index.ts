@@ -15,7 +15,6 @@
  */
 
 export * from './KubernetesBuilder';
-export * from './KubernetesClientProvider';
 export { DEFAULT_OBJECTS } from './KubernetesFanOutHandler';
 export { HEADER_KUBERNETES_CLUSTER, KubernetesProxy } from './KubernetesProxy';
 export * from './router';

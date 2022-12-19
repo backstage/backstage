@@ -22,6 +22,7 @@ import {
   Theme,
 } from '@material-ui/core/styles';
 import startCase from 'lodash/startCase';
+import Typography from '@material-ui/core/Typography';
 
 import {
   MetadataTable,
@@ -88,7 +89,9 @@ function renderMap(
         : startCase(key);
     return (
       <MetadataListItem key={key}>
-        {`${fmtKey}: `}
+        <Typography variant="body2" component="span">
+          {`${fmtKey}: `}
+        </Typography>
         {value}
       </MetadataListItem>
     );
@@ -122,7 +125,11 @@ function toValue(
     return <Fragment>{value ? '✅' : '❌'}</Fragment>;
   }
 
-  return <Fragment>{value}</Fragment>;
+  return (
+    <Typography variant="body2" component="span">
+      {value}
+    </Typography>
+  );
 }
 const ItemValue = ({ value, options }: { value: any; options: any }) => (
   <Fragment>{toValue(value, options)}</Fragment>

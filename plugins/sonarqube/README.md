@@ -58,3 +58,7 @@ spec:
 ```
 
 `YOUR_INSTANCE_NAME/` is optional and will query the default instance if not provided.
+
+## Links
+
+- [Sonarqube Backend](../sonarqube-backend/README.md)

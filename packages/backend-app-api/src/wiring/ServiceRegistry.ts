@@ -17,10 +17,10 @@
 import {
   ServiceFactory,
   ServiceRef,
-  pluginMetadataServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { stringifyError } from '@backstage/errors';
-
+import { EnumerableServiceHolder } from './types';
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`
  * @internal
@@ -31,7 +31,7 @@ export type InternalServiceRef<T> = ServiceRef<T> & {
   ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 };
 
-export class ServiceRegistry {
+export class ServiceRegistry implements EnumerableServiceHolder {
   readonly #providedFactories: Map<string, ServiceFactory>;
   readonly #loadedDefaultFactories: Map<Function, Promise<ServiceFactory>>;
   readonly #implementations: Map<
@@ -65,10 +65,10 @@ export class ServiceRegistry {
     pluginId: string,
   ): Promise<ServiceFactory> | undefined {
     // Special case handling of the plugin metadata service, generating a custom factory for it each time
-    if (ref.id === pluginMetadataServiceRef.id) {
+    if (ref.id === coreServices.pluginMetadata.id) {
       return Promise.resolve({
         scope: 'plugin',
-        service: pluginMetadataServiceRef,
+        service: coreServices.pluginMetadata,
         deps: {},
         factory: async () => async () => ({
           getId() {
@@ -114,7 +114,7 @@ export class ServiceRegistry {
 
   #checkForMissingDeps(factory: ServiceFactory, pluginId: string) {
     const missingDeps = Object.values(factory.deps).filter(ref => {
-      if (ref.id === pluginMetadataServiceRef.id) {
+      if (ref.id === coreServices.pluginMetadata.id) {
         return false;
       }
       if (this.#providedFactories.get(ref.id)) {
@@ -130,6 +130,10 @@ export class ServiceRegistry {
         `Failed to instantiate service '${factory.service.id}' for '${pluginId}' because the following dependent services are missing: ${missing}`,
       );
     }
+  }
+
+  getServiceRefs(): ServiceRef<unknown>[] {
+    return Array.from(this.#providedFactories.values()).map(f => f.service);
   }
 
   get<T>(ref: ServiceRef<T>, pluginId: string): Promise<T> | undefined {

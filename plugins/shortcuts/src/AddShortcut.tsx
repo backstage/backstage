@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import { SubmitHandler } from 'react-hook-form';
 import {
   Button,

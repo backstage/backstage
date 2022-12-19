@@ -86,13 +86,31 @@ export interface Website {
 export type WebsiteListResponse = LASListResponse<Website>;
 
 /** @public */
+export type FormFactor = 'mobile' | 'desktop';
+
+/** @public */
+export type LighthouseConfigSettings = {
+  // For lighthouse 7+
+  formFactor: FormFactor;
+  screenEmulation:
+    | {
+        mobile: boolean;
+        width: number;
+        height: number;
+        deviceScaleFactor: number;
+        disabled: boolean;
+      }
+    | undefined;
+  // For lighthouse before 7
+  emulatedFormFactor: FormFactor;
+};
+
+/** @public */
 export interface TriggerAuditPayload {
   url: string;
   options: {
     lighthouseConfig: {
-      settings: {
-        emulatedFormFactor: string;
-      };
+      settings: LighthouseConfigSettings;
     };
   };
 }

@@ -15,44 +15,52 @@
  */
 
 import { OptionValues } from 'commander';
-import { resolve as resolvePath } from 'path';
 import fs from 'fs-extra';
-import { spawnSync } from 'child_process';
 import {
-  findSpecificPackageDirs,
   createTemporaryTsConfig,
-  findPackageDirs,
   categorizePackageDirs,
   runApiExtraction,
   runCliExtraction,
   buildDocs,
 } from './api-extractor';
+import { findPackageDirs, paths as cliPaths } from '../../lib/paths';
+import { generateTypeDeclarations } from './generateTypeDeclarations';
 
-export default async (paths: string[], opts: OptionValues) => {
-  const tmpDir = resolvePath(
-    process.cwd(),
+type Options = {
+  ci?: boolean;
+  docs?: boolean;
+  tsc?: boolean;
+  allowWarnings?: string;
+  allowAllWarnings?: boolean;
+  omitMessages?: string;
+} & OptionValues;
+
+export const buildApiReports = async (paths: string[] = [], opts: Options) => {
+  const tmpDir = cliPaths.resolveTargetRoot(
     './node_modules/.cache/api-extractor',
   );
-  const projectRoot = resolvePath(process.cwd());
+
   const isCiBuild = opts.ci;
   const isDocsBuild = opts.docs;
   const runTsc = opts.tsc;
+  const allowWarnings = parseArrayOption(opts.allowWarnings);
+  const allowAllWarnings = opts.allowAllWarnings;
+  const omitMessages = parseArrayOption(opts.omitMessages);
 
-  const selectedPackageDirs = await findSpecificPackageDirs(paths);
+  const isAllPackages = !paths?.length;
+  const selectedPaths = isAllPackages
+    ? await getWorkspacePackagePathPatterns()
+    : paths;
+  const selectedPackageDirs = await findPackageDirs(selectedPaths);
 
-  if (selectedPackageDirs && isCiBuild) {
-    throw new Error(
-      'Package path arguments are not supported together with the --ci flag',
-    );
-  }
-  if (!selectedPackageDirs && !isCiBuild && !isDocsBuild) {
+  if (isAllPackages && !isCiBuild && !isDocsBuild) {
     console.log('');
     console.log(
       'TIP: You can generate api-reports for select packages by passing package paths:',
     );
     console.log('');
     console.log(
-      '       yarn build:api-reports packages/config packages/core-plugin-api',
+      '       yarn build:api-reports packages/config packages/core-plugin-api plugins/*',
     );
     console.log('');
   }
@@ -62,34 +70,15 @@ export default async (paths: string[], opts: OptionValues) => {
     temporaryTsConfigPath = await createTemporaryTsConfig(selectedPackageDirs);
   }
   const tsconfigFilePath =
-    temporaryTsConfigPath ?? resolvePath(projectRoot, 'tsconfig.json');
+    temporaryTsConfigPath ?? cliPaths.resolveTargetRoot('tsconfig.json');
 
   if (runTsc) {
-    await fs.remove(resolvePath(projectRoot, 'dist-types'));
-    const { status } = spawnSync(
-      'yarn',
-      [
-        'tsc',
-        ['--project', tsconfigFilePath],
-        ['--skipLibCheck', 'false'],
-        ['--incremental', 'false'],
-      ].flat(),
-      {
-        stdio: 'inherit',
-        shell: true,
-        cwd: projectRoot,
-      },
-    );
-    if (status !== 0) {
-      process.exit(status || undefined);
-    }
+    console.log('# Compiling TypeScript');
+    await generateTypeDeclarations(tsconfigFilePath);
   }
 
-  const packageDirs = selectedPackageDirs ?? (await findPackageDirs());
-
   const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
-    projectRoot,
-    packageDirs,
+    selectedPackageDirs,
   );
 
   if (tsPackageDirs.length > 0) {
@@ -99,12 +88,13 @@ export default async (paths: string[], opts: OptionValues) => {
       outputDir: tmpDir,
       isLocalBuild: !isCiBuild,
       tsconfigFilePath,
+      allowWarnings: allowAllWarnings || allowWarnings,
+      omitMessages: Array.isArray(omitMessages) ? omitMessages : [],
     });
   }
   if (cliPackageDirs.length > 0) {
     console.log('# Generating package CLI reports');
     await runCliExtraction({
-      projectRoot,
       packageDirs: cliPackageDirs,
       isLocalBuild: !isCiBuild,
     });
@@ -114,7 +104,48 @@ export default async (paths: string[], opts: OptionValues) => {
     console.log('# Generating package documentation');
     await buildDocs({
       inputDir: tmpDir,
-      outputDir: resolvePath(projectRoot, 'docs/reference'),
+      outputDir: cliPaths.resolveTargetRoot('docs/reference'),
     });
   }
 };
+
+/**
+ * Retrieves the list of package names in the "workspaces" field of the `package.json` file in the current workspace root.
+ *
+ * If the file does not exist, or the "workspaces" field is not present, returns `undefined`.
+ *
+ * @returns {Promise<string[] | undefined>} The list of package names, or `undefined` if not found.
+ */
+async function getWorkspacePackagePathPatterns() {
+  const pkgJson = await fs
+    .readJson(cliPaths.resolveTargetRoot('package.json'))
+    .catch(error => {
+      if (error.code === 'ENOENT') {
+        return undefined;
+      }
+      throw error;
+    });
+  const workspaces = pkgJson?.workspaces?.packages;
+  return workspaces;
+}
+
+/**
+ * Splits the input string on comma, and returns an array of the resulting substrings.
+ * for `undefined` or an empty string, returns an empty array.
+ *
+ * @param value A string to be split on comma.
+ * @returns An array of the resulting substrings, or an empty array if the input value is `undefined` or an empty string.
+ *
+ * @example
+ * parseOption('foo,bar,baz')
+ * // returns ['foo', 'bar', 'baz']
+ *
+ * parseOption('')
+ * // returns []
+ *
+ * parseOption()
+ * // returns []
+ */
+function parseArrayOption(value: string | undefined) {
+  return value ? value.split(',').map(s => s.trim()) : [];
+}

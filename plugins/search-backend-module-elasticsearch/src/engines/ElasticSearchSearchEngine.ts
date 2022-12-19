@@ -150,6 +150,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
     } else if (options.provider === 'aws') {
       logger.info('Initializing AWS OpenSearch search engine.');
+    } else if (options.provider === 'opensearch') {
+      logger.info('Initializing OpenSearch search engine.');
     } else {
       logger.info('Initializing ElasticSearch search engine.');
     }
@@ -252,6 +254,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
 
   async getIndexer(type: string) {
     const alias = this.constructSearchAlias(type);
+    const indexerLogger = this.logger.child({ documentType: type });
 
     const indexer = new ElasticSearchSearchEngineIndexer({
       type,
@@ -259,26 +262,50 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       indexSeparator: this.indexSeparator,
       alias,
       elasticSearchClientWrapper: this.elasticSearchClientWrapper,
-      logger: this.logger,
+      logger: indexerLogger,
       batchSize: this.batchSize,
     });
 
     // Attempt cleanup upon failure.
     indexer.on('error', async e => {
-      this.logger.error(`Failed to index documents for type ${type}`, e);
-      try {
-        const response = await this.elasticSearchClientWrapper.indexExists({
-          index: indexer.indexName,
-        });
-        const indexCreated = response.body;
-        if (indexCreated) {
-          this.logger.info(`Removing created index ${indexer.indexName}`);
-          await this.elasticSearchClientWrapper.deleteIndex({
-            index: indexer.indexName,
-          });
+      indexerLogger.error(`Failed to index documents for type ${type}`, e);
+      let cleanupError: Error | undefined;
+
+      // In some cases, a failure may have occurred before the indexer was able
+      // to complete initialization. Try up to 5 times to remove the dangling
+      // index.
+      await new Promise<void>(async done => {
+        const maxAttempts = 5;
+        let attempts = 0;
+
+        while (attempts < maxAttempts) {
+          try {
+            await this.elasticSearchClientWrapper.deleteIndex({
+              index: indexer.indexName,
+            });
+
+            attempts = maxAttempts;
+            cleanupError = undefined;
+            done();
+          } catch (err) {
+            cleanupError = err;
+          }
+
+          // Wait 1 second between retries.
+          await new Promise(okay => setTimeout(okay, 1000));
+
+          attempts++;
         }
-      } catch (error) {
-        this.logger.error(`Unable to clean up elastic index: ${error}`);
+      });
+
+      if (cleanupError) {
+        indexerLogger.error(
+          `Unable to clean up elastic index ${indexer.indexName}: ${cleanupError}`,
+        );
+      } else {
+        indexerLogger.info(
+          `Removed partial, failed index ${indexer.indexName}`,
+        );
       }
     });
 
@@ -335,6 +362,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         ),
         nextPageCursor,
         previousPageCursor,
+        numberOfResults: result.body.hits.total.value,
       };
     } catch (error) {
       if (error.meta?.body?.error?.type === 'index_not_found_exception') {
@@ -419,6 +447,25 @@ export async function createElasticSearchClientOptions(
       // @ts-ignore
       node: config.getString('node'),
       ...AWSConnection,
+      ...(sslConfig
+        ? {
+            ssl: {
+              rejectUnauthorized:
+                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+            },
+          }
+        : {}),
+    };
+  }
+  if (config.getOptionalString('provider') === 'opensearch') {
+    const authConfig = config.getConfig('auth');
+    return {
+      provider: 'opensearch',
+      node: config.getString('node'),
+      auth: {
+        username: authConfig.getString('username'),
+        password: authConfig.getString('password'),
+      },
       ...(sslConfig
         ? {
             ssl: {

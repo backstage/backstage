@@ -19,7 +19,6 @@ import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Duration } from 'luxon';
 import { v4 } from 'uuid';
-import { INCREMENTAL_ENTITY_PROVIDER_ANNOTATION } from '../types';
 import {
   IngestionRecord,
   IngestionRecordUpdate,
@@ -110,6 +109,20 @@ export class IncrementalIngestionDatabaseManager {
         .andWhere('completion_ticket', 'open')
         .first();
       return record;
+    });
+  }
+
+  /**
+   * Finds the last ingestion record for the named provider.
+   * @param provider - string
+   * @returns IngestionRecord | undefined
+   */
+  async getPreviousIngestionRecord(provider: string) {
+    return await this.client.transaction(async tx => {
+      return await tx<IngestionRecord>('ingestions')
+        .where('provider_name', provider)
+        .andWhereNot('completion_ticket', 'open')
+        .first();
     });
   }
 
@@ -286,39 +299,40 @@ export class IncrementalIngestionDatabaseManager {
    * @returns All entities to remove for this burst.
    */
   async computeRemoved(provider: string, ingestionId: string) {
+    const previousIngestion = await this.getPreviousIngestionRecord(provider);
     return await this.client.transaction(async tx => {
-      const removed: { entity: string; ref: string }[] = await tx(
-        'final_entities',
-      )
-        .select(
-          tx.ref('final_entity').as('entity'),
-          tx.ref('refresh_state.entity_ref').as('ref'),
-        )
+      const count = await tx('ingestion_mark_entities')
+        .count({ total: 'ingestion_mark_entities.ref' })
         .join(
-          'refresh_state',
-          'refresh_state.entity_id',
-          'final_entities.entity_id',
+          'ingestion_marks',
+          'ingestion_marks.id',
+          'ingestion_mark_entities.ingestion_mark_id',
         )
-        .join('search', 'search.entity_id', 'final_entities.entity_id')
-        .whereNotIn(
-          'entity_ref',
-          tx('ingestion_marks')
-            .join(
-              'ingestion_mark_entities',
-              'ingestion_marks.id',
-              'ingestion_mark_entities.ingestion_mark_id',
-            )
-            .select('ingestion_mark_entities.ref')
-            .where('ingestion_marks.ingestion_id', ingestionId),
-        )
-        .andWhere(
-          'search.key',
-          `metadata.annotations.${INCREMENTAL_ENTITY_PROVIDER_ANNOTATION}`,
-        )
-        .andWhere('search.value', provider);
-      return removed.map(entity => {
-        return { entity: JSON.parse(entity.entity) };
-      });
+        .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
+        .where('ingestions.id', ingestionId);
+
+      const total = count.reduce((acc, cur) => acc + (cur.total as number), 0);
+
+      const removed: { entityRef: string }[] = [];
+      if (previousIngestion) {
+        const stale: { ref: string }[] = await tx('ingestion_mark_entities')
+          .select('ingestion_mark_entities.ref')
+          .join(
+            'ingestion_marks',
+            'ingestion_marks.id',
+            'ingestion_mark_entities.ingestion_mark_id',
+          )
+          .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
+          .where('ingestions.id', previousIngestion.id);
+
+        removed.push(
+          ...stale.map(e => {
+            return { entityRef: e.ref };
+          }),
+        );
+      }
+
+      return { total, removed };
     });
   }
 
@@ -546,12 +560,28 @@ export class IncrementalIngestionDatabaseManager {
    * @param entities - DeferredEntity[]
    */
   async createMarkEntities(markId: string, entities: DeferredEntity[]) {
+    const refs = entities.map(e => stringifyEntityRef(e.entity));
+
     await this.client.transaction(async tx => {
+      const existingRefsArray = (
+        await tx<{ ref: string }>('ingestion_mark_entities')
+          .select('ref')
+          .whereIn('ref', refs)
+      ).map(e => e.ref);
+
+      const existingRefsSet = new Set(existingRefsArray);
+
+      const newRefs = refs.filter(e => !existingRefsSet.has(e));
+
+      await tx('ingestion_mark_entities')
+        .update('ingestion_mark_id', markId)
+        .whereIn('ref', existingRefsArray);
+
       await tx('ingestion_mark_entities').insert(
-        entities.map(entity => ({
+        newRefs.map(ref => ({
           id: v4(),
           ingestion_mark_id: markId,
-          ref: stringifyEntityRef(entity.entity),
+          ref,
         })),
       );
     });

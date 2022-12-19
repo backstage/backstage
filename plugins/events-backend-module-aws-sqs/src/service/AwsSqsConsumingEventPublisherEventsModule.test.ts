@@ -15,11 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import {
-  configServiceRef,
-  loggerServiceRef,
-  schedulerServiceRef,
-} from '@backstage/backend-plugin-api';
+import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node';
@@ -68,9 +64,9 @@ describe('awsSqsEventsModule', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       services: [
-        [configServiceRef, config],
-        [loggerServiceRef, getVoidLogger()],
-        [schedulerServiceRef, scheduler],
+        [coreServices.config, config],
+        [coreServices.logger, getVoidLogger()],
+        [coreServices.scheduler, scheduler],
       ],
       features: [awsSqsConsumingEventPublisherEventsModule()],
     });

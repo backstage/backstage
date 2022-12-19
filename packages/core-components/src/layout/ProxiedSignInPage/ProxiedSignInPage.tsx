@@ -36,6 +36,12 @@ export type ProxiedSignInPageProps = SignInPageProps & {
    * a properly configured auth provider ID in the auth backend.
    */
   provider: string;
+
+  /**
+   * Optional headers which are passed along with the request to the
+   * underlying provider
+   */
+  headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
 };
 
 /**
@@ -60,6 +66,7 @@ export const ProxiedSignInPage = (props: ProxiedSignInPageProps) => {
     const identity = new ProxiedSignInIdentity({
       provider: props.provider,
       discoveryApi,
+      headers: props.headers,
     });
 
     await identity.start();

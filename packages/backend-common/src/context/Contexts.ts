@@ -15,7 +15,6 @@
  */
 
 import { Duration } from 'luxon';
-import { AbortController, AbortSignal } from 'node-abort-controller';
 import { AbortContext } from './AbortContext';
 import { RootContext } from './RootContext';
 import { Context } from './types';

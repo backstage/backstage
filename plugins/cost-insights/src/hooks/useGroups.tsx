@@ -23,7 +23,7 @@ import React, {
 import { Alert } from '@material-ui/lab';
 import { costInsightsApiRef } from '../api';
 import { MapLoadingToProps, useLoading } from './useLoading';
-import { Group, Maybe } from '../types';
+import { Group, Maybe } from '@backstage/plugin-cost-insights-common';
 import { DefaultLoadingAction } from '../utils/loading';
 import { useApi, identityApiRef } from '@backstage/core-plugin-api';
 import { DEFAULT_NAMESPACE, parseEntityRef } from '@backstage/catalog-model';

@@ -15,9 +15,8 @@
  */
 import * as React from 'react';
 import { DetectedError, DetectedErrorsByCluster } from '../../error-detection';
-import { Chip, Typography, Grid } from '@material-ui/core';
-import EmptyStateImage from '../../assets/emptystate.svg';
-import { Table, TableColumn, InfoCard } from '@backstage/core-components';
+import { Chip } from '@material-ui/core';
+import { Table, TableColumn } from '@backstage/core-components';
 
 type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
@@ -91,31 +90,6 @@ const sortBySeverity = (a: DetectedError, b: DetectedError) => {
   return 0;
 };
 
-export const ErrorEmptyState = () => {
-  return (
-    <Grid
-      container
-      justifyContent="space-around"
-      direction="row"
-      alignItems="center"
-      spacing={2}
-    >
-      <Grid item xs={4}>
-        <Typography variant="h5">
-          Nice! There are no errors to report!
-        </Typography>
-      </Grid>
-      <Grid item xs={4}>
-        <img
-          src={EmptyStateImage}
-          alt="EmptyState"
-          data-testid="emptyStateImg"
-        />
-      </Grid>
-    </Grid>
-  );
-};
-
 export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
   const errors = Array.from(detectedErrors.values())
     .flat()
@@ -123,11 +97,7 @@ export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
 
   return (
     <>
-      {errors.length === 0 ? (
-        <InfoCard title="Error Reporting">
-          <ErrorEmptyState />
-        </InfoCard>
-      ) : (
+      {errors.length !== 0 && (
         <Table
           title="Error Reporting"
           data={errors}
