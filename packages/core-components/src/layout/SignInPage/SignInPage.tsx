@@ -18,6 +18,7 @@ import {
   BackstageIdentityResponse,
   configApiRef,
   SignInPageProps,
+  githubAuthApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 import { UserIdentity } from './UserIdentity';
@@ -35,6 +36,7 @@ import { Page } from '../Page';
 import { getSignInProviders, useSignInProviders } from './providers';
 import { GridItem, useStyles } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
+import Cookies from 'js-cookie';
 
 type MultiSignInPageProps = SignInPageProps & {
   providers: IdentityProviders;
@@ -58,6 +60,29 @@ export const MultiSignInPage = ({
   const configApi = useApi(configApiRef);
   const classes = useStyles();
 
+  const githubAuthApi = useApi(githubAuthApiRef);
+
+  // check cookie for auth
+  const cookieData = Cookies.get('authSecData');
+  if (
+    cookieData !== 'undefined' &&
+    cookieData !== '' &&
+    cookieData !== undefined
+  ) {
+    const jsonData = JSON.parse(cookieData!);
+    const authSecData = jsonData.response;
+    if (authSecData) {
+      // debugger;
+      localStorage.setItem(
+        '@backstage/core:SignInPage:provider',
+        'github-auth-provider',
+      );
+      // TODO parse auth provider from response data
+      githubAuthApi.create(authSecData);
+    }
+    // clear cookie
+    Cookies.set('authSecData', '');
+  }
   const signInProviders = getSignInProviders(providers);
   const [loading, providerElements] = useSignInProviders(
     signInProviders,

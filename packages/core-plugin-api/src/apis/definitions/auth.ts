@@ -287,6 +287,11 @@ export type SessionApi = {
   signOut(): Promise<void>;
 
   /**
+   * Create a session obj using passed in Data. This method is only used during redirect auth flow.
+   * @param data
+   */
+  create(data: any): void;
+  /**
    * Observe the current state of the auth session. Emits the current state on subscription.
    */
   sessionState$(): Observable<SessionState>;

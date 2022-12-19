@@ -128,6 +128,28 @@ export default class OAuth2
     this.scopeTransform = options.scopeTransform;
   }
 
+  // jk
+  async create(data: any) {
+    // transform data
+    const transform = res => {
+      return {
+        ...res,
+        providerInfo: {
+          idToken: res.providerInfo.idToken,
+          accessToken: res.providerInfo.accessToken,
+          scopes: OAuth2.normalizeScopes(
+            this.scopeTransform,
+            res.providerInfo.scope,
+          ),
+          expiresAt: new Date(
+            Date.now() + res.providerInfo.expiresInSeconds * 1000,
+          ),
+        },
+      };
+    };
+    await this.sessionManager.createSession(transform(data));
+  }
+
   async signIn() {
     await this.getAccessToken();
   }

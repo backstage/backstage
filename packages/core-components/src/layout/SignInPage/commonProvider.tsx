@@ -37,7 +37,8 @@ const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
   const handleLogin = async () => {
     try {
       const identityResponse = await authApi.getBackstageIdentity({
-        instantPopup: true,
+        // instantPopup: true,
+        instantPopup: false,
       });
       if (!identityResponse) {
         throw new Error(

@@ -46,6 +46,10 @@ type Options<AuthSession> = {
    */
   joinScopes?: (scopes: Set<string>) => string;
   /**
+   * Authentication flow
+   */
+  authFlow: string;
+  /**
    * Function used to transform an auth response into the session type.
    */
   sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
@@ -80,9 +84,28 @@ export class DefaultAuthConnector<AuthSession>
       sessionTransform = id => id,
     } = options;
 
+    // TODO integrate with configAPI, pass down as option
+    const isRedirect = true;
+
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
-      onAuthRequest: scopes => this.showPopup(scopes),
+      onAuthRequest: async scopes => {
+        if (isRedirect) {
+          // modal before redirect
+          const scope = this.joinScopesFunc(scopes);
+          const redirectUrl = await this.buildUrl('/start', {
+            scope,
+            origin: window.location.origin,
+            redirectUrl: window.location.href,
+            authType: 'redirect',
+          });
+          window.location.href = redirectUrl;
+          // do we need to return?
+          return 0;
+          // return this.showPopup(scopes);
+        }
+        return this.showPopup(scopes);
+      },
     });
 
     this.discoveryApi = discoveryApi;

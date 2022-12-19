@@ -51,6 +51,7 @@ export type OAuthAdapterOptions = {
   providerId: string;
   persistScopes?: boolean;
   appOrigin: string;
+  redirectUrl?: string;
   baseUrl: string;
   cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
@@ -64,7 +65,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     handlers: OAuthHandlers,
     options: Pick<
       OAuthAdapterOptions,
-      'providerId' | 'persistScopes' | 'callbackUrl'
+      'providerId' | 'persistScopes' | 'callbackUrl' | 'redirectUrl'
     >,
   ): OAuthAdapter {
     const { appUrl, baseUrl, isOriginAllowed } = config;
@@ -98,7 +99,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     const scope = req.query.scope?.toString() ?? '';
     const env = req.query.env?.toString();
     const origin = req.query.origin?.toString();
-
+    const redirectUrl = req.query.redirectUrl?.toString();
     if (!env) {
       throw new InputError('No env provided in request query parameters');
     }
@@ -109,7 +110,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce, cookieConfig);
 
-    const state: OAuthState = { nonce, env, origin };
+    const state: OAuthState = { nonce, env, origin, redirectUrl };
 
     // If scopes are persisted then we pass them through the state so that we
     // can set the cookie on successful auth
@@ -136,6 +137,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
     try {
       const state: OAuthState = readState(req.query.state?.toString() ?? '');
+      const redirectUrl = state.redirectUrl || '';
 
       if (state.origin) {
         try {
@@ -170,7 +172,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       const identity = await this.populateIdentity(response.backstageIdentity);
 
       // post message back to popup if successful
-      return postMessageResponse(res, appOrigin, {
+      return postMessageResponse(res, appOrigin, redirectUrl, {
         type: 'authorization_response',
         response: { ...response, backstageIdentity: identity },
       });
@@ -179,7 +181,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         ? error
         : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
       // post error message back to popup if failure
-      return postMessageResponse(res, appOrigin, {
+      return postMessageResponse(res, appOrigin, 'redirectUrl', {
         type: 'authorization_response',
         error: { name, message },
       });

@@ -3832,6 +3832,7 @@ __metadata:
     "@types/prop-types": ^15.7.3
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
+    js-cookie: ^3.0.1
     msw: ^0.49.0
     prop-types: ^15.7.2
     react-router-beta: "npm:react-router@6.0.0-beta.0"
@@ -3995,6 +3996,7 @@ __metadata:
     dagre: ^0.8.5
     history: ^5.0.0
     immer: ^9.0.1
+    js-cookie: ^3.0.1
     lodash: ^4.17.21
     msw: ^0.49.0
     pluralize: ^8.0.0
@@ -26598,6 +26600,13 @@ __metadata:
   version: 2.2.1
   resolution: "js-cookie@npm:2.2.1"
   checksum: 9b1fb980a1c5e624fd4b28ea4867bb30c71e04c4484bb3a42766344c533faa684de9498e443425479ec68609e96e27b60614bfe354877c449c631529b6d932f2
+  languageName: node
+  linkType: hard
+
+"js-cookie@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "js-cookie@npm:3.0.1"
+  checksum: bb48de67e2a6bd1ae3dfd6b2d5a167c33dd0c5a37e909206161eb0358c98f17cb55acd55827a58e9eea3630d89444e7479f7938ef4420dda443218b8c434a4c3
   languageName: node
   linkType: hard
 

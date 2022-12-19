@@ -63,6 +63,15 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     this.helper = new SessionScopeHelper({ sessionScopes, defaultScopes });
   }
 
+  async createSession(oAuth2Response: T): Promise<void> {
+    this.currentSession = oAuth2Response;
+    // this will initialize the session
+    const sessionData = await this.getSession({
+      instantPopup: false,
+    });
+    this.stateTracker.setIsSignedIn(true);
+  }
+
   async getSession(options: GetSessionOptions): Promise<T | undefined> {
     if (
       this.helper.sessionExistsAndHasScope(this.currentSession, options.scopes)
@@ -93,7 +102,7 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     //
     // We skip this check if an instant login popup is requested, as we need to
     // stay in a synchronous call stack from the user interaction. The downside
-    // is that that the user will sometimes be requested to log in even if they
+    // is that the user will sometimes be requested to log in even if they
     // already had an existing session.
     if (!this.currentSession && !options.instantPopup) {
       try {
