@@ -26,8 +26,9 @@ import {
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
-import { type FormProps } from '../types';
 import { nextSelectedTemplateRouteRef } from '../routes';
+import { type LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../../layouts';
+import type { FormProps } from '../types';
 
 /**
  * The Props for the Scaffolder Router
@@ -65,6 +66,16 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
     ),
   ] as NextFieldExtensionOptions[];
 
+  const customLayouts = useElementFilter(outlet, elements =>
+    elements
+      .selectByComponentData({
+        key: LAYOUTS_WRAPPER_KEY,
+      })
+      .findComponentData<LayoutOptions>({
+        key: LAYOUTS_KEY,
+      }),
+  );
+
   return (
     <Routes>
       <Route
@@ -82,7 +93,10 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           <SecretsContextProvider>
             <TemplateWizardPage
               customFieldExtensions={fieldExtensions}
-              FormProps={props.FormProps}
+              FormProps={{
+                ...props.FormProps,
+                layouts: customLayouts
+              }}
             />
           </SecretsContextProvider>
         }

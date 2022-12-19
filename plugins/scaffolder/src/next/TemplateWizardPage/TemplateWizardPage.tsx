@@ -34,7 +34,7 @@ import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { Header, Page } from '@backstage/core-components';
 import { Workflow } from '@backstage/plugin-scaffolder-react';
 
-type TemplateWizardPageProps = {
+export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
   FormProps?: FormProps;
 };

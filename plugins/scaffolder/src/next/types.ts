@@ -21,6 +21,7 @@
  */
 
 import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
+import { LayoutOptions } from '../layouts/types';
 
 /**
  * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderpage`
@@ -31,4 +32,6 @@ import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
 export type FormProps = Pick<
   SchemaFormProps,
   'transformErrors' | 'noHtml5Validate'
->;
+> & {
+  layouts?: LayoutOptions[];
+};
