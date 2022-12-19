@@ -38,6 +38,7 @@ import validator from '@rjsf/validator-ajv8';
 import { selectedTemplateRouteRef } from '../../../routes';
 import type { ErrorTransformer } from '@rjsf/utils';
 import { getDefaultFormState } from '@rjsf/utils';
+import { useFormData } from './useFormData';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -72,7 +73,8 @@ export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
-  const [formState, setFormState] = useState<Record<string, JsonValue>>({});
+  const [formState, setFormState] = useFormData();
+
   const [errors, setErrors] = useState<
     undefined | Record<string, FieldValidation>
   >();
