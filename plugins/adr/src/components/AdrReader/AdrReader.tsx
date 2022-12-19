@@ -26,9 +26,12 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { getAdrLocationUrl } from '@backstage/plugin-adr-common';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import { useOctokitRequest } from '../../hooks';
 import { adrDecoratorFactories } from './decorators';
 import { AdrContentDecorator } from './types';
+import {
+  AdrFileFetcher,
+  octokitAdrFileFetcher,
+} from '../../hooks/adrFileFetcher';
 
 /**
  * Component to fetch and render an ADR.
@@ -38,13 +41,15 @@ import { AdrContentDecorator } from './types';
 export const AdrReader = (props: {
   adr: string;
   decorators?: AdrContentDecorator[];
+  adrFileFetcher?: AdrFileFetcher;
 }) => {
-  const { adr, decorators } = props;
+  const { adr, decorators, adrFileFetcher } = props;
   const { entity } = useEntity();
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);
 
-  const { value, loading, error } = useOctokitRequest(
+  const targetAdrFileFetcher = adrFileFetcher ?? octokitAdrFileFetcher;
+  const { value, loading, error } = targetAdrFileFetcher.useReadAdrFileAtUrl(
     `${adrLocationUrl.replace(/\/$/, '')}/${adr}`,
   );
 

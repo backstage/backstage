@@ -4247,7 +4247,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-adr-backend@workspace:plugins/adr-backend":
+"@backstage/plugin-adr-backend@workspace:^, @backstage/plugin-adr-backend@workspace:plugins/adr-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-adr-backend@workspace:plugins/adr-backend"
   dependencies:
@@ -4262,6 +4262,8 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@types/marked": ^4.0.0
     "@types/supertest": ^2.0.8
+    express: ^4.18.2
+    express-promise-router: ^4.1.1
     luxon: ^3.0.0
     marked: ^4.0.14
     msw: ^0.49.0
@@ -4296,6 +4298,7 @@ __metadata:
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-adr-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
@@ -22303,6 +22306,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/plugin-adr-backend": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
@@ -22501,7 +22505,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-promise-router@npm:^4.1.0":
+"express-promise-router@npm:^4.1.0, express-promise-router@npm:^4.1.1":
   version: 4.1.1
   resolution: "express-promise-router@npm:4.1.1"
   dependencies:
@@ -22543,7 +22547,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.17.1, express@npm:^4.17.3, express@npm:^4.18.1":
+"express@npm:^4.17.1, express@npm:^4.17.3, express@npm:^4.18.1, express@npm:^4.18.2":
   version: 4.18.2
   resolution: "express@npm:4.18.2"
   dependencies:

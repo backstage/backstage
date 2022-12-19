@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * ADR backend plugin
- *
- * @packageDocumentation
- */
-
-export * from './search';
-export * from './service';
+export { createRouter } from './router';

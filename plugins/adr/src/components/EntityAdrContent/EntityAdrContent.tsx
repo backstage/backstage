@@ -44,9 +44,12 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { useOctokitRequest } from '../../hooks';
 import { rootRouteRef } from '../../routes';
 import { AdrContentDecorator, AdrReader } from '../AdrReader';
+import {
+  AdrFileFetcher,
+  octokitAdrFileFetcher,
+} from '../../hooks/adrFileFetcher';
 
 const useStyles = makeStyles((theme: Theme) => ({
   adrMenu: {
@@ -61,8 +64,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const EntityAdrContent = (props: {
   contentDecorators?: AdrContentDecorator[];
   filePathFilterFn?: AdrFilePathFilterFn;
+  adrFileFetcher?: AdrFileFetcher;
 }) => {
-  const { contentDecorators, filePathFilterFn } = props;
+  const { contentDecorators, filePathFilterFn, adrFileFetcher } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const rootLink = useRouteRef(rootRouteRef);
@@ -71,7 +75,8 @@ export const EntityAdrContent = (props: {
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const entityHasAdrs = isAdrAvailable(entity);
 
-  const { value, loading, error } = useOctokitRequest(
+  const targetAdrFileFetcher = adrFileFetcher ?? octokitAdrFileFetcher;
+  const { value, loading, error } = targetAdrFileFetcher.useGetAdrFilesAtUrl(
     getAdrLocationUrl(entity, scmIntegrations),
   );
 
@@ -142,7 +147,11 @@ export const EntityAdrContent = (props: {
               </List>
             </Grid>
             <Grid item xs={9}>
-              <AdrReader adr={selectedAdr} decorators={contentDecorators} />
+              <AdrReader
+                adr={selectedAdr}
+                adrFileFetcher={targetAdrFileFetcher}
+                decorators={contentDecorators}
+              />
             </Grid>
           </Grid>
         ) : (

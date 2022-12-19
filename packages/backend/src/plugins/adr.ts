@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-/**
- * ADR backend plugin
- *
- * @packageDocumentation
- */
+import { createRouter } from '@backstage/plugin-adr-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
-export * from './search';
-export * from './service';
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter(env.reader);
+}
