@@ -8512,6 +8512,7 @@ __metadata:
     "@microsoft/api-extractor": ^7.23.0
     "@microsoft/api-extractor-model": ^7.17.2
     "@microsoft/tsdoc": 0.14.1
+    "@microsoft/tsdoc-config": 0.16.1
     "@types/is-glob": ^4.0.2
     "@types/mock-fs": ^4.13.0
     chalk: ^4.0.0
@@ -8522,6 +8523,13 @@ __metadata:
     minimatch: ^5.1.1
     mock-fs: ^5.1.0
     ts-node: ^10.0.0
+  peerDependencies:
+    "@rushstack/node-core-library": "*"
+    prettier: ^2.8.1
+    typescript: "> 3.0.0"
+  peerDependenciesMeta:
+    prettier:
+      optional: true
   bin:
     backstage-repo-tools: bin/backstage-repo-tools
   languageName: unknown
@@ -11562,7 +11570,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/tsdoc-config@npm:~0.16.1":
+"@microsoft/tsdoc-config@npm:0.16.1, @microsoft/tsdoc-config@npm:~0.16.1":
   version: 0.16.1
   resolution: "@microsoft/tsdoc-config@npm:0.16.1"
   dependencies:
