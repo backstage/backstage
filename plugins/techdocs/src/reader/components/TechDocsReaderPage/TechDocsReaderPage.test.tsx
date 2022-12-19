@@ -73,7 +73,7 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
 
 const PageMock = () => {
   const { namespace, kind, name } = useParams();
-  return <>{`LayoutMock: ${namespace}#${kind}#${name}`}</>;
+  return <>{`PageMock: ${namespace}#${kind}#${name}`}</>;
 };
 
 jest.mock('@backstage/core-components', () => ({
@@ -189,7 +189,7 @@ describe('<TechDocsReaderPage />', () => {
       );
 
       expect(
-        rendered.getByText(`LayoutMock: ${namespace}#${kind}#${name}`),
+        rendered.getByText(`PageMock: ${namespace}#${kind}#${name}`),
       ).toBeInTheDocument();
     });
   });
