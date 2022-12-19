@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './Router';
-export * from './TemplateListPage';
-export * from './TemplateWizardPage';
+import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
 
-export type { FormProps } from './types';
+/**
+ * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderpage`
+ *
+ * @alpha
+ */
+export type FormProps = Pick<SchemaFormProps, 'transformErrors'>;

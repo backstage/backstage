@@ -36,9 +36,9 @@ import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
 import validator from '@rjsf/validator-ajv8';
 import { selectedTemplateRouteRef } from '../../../routes';
-import type { ErrorTransformer } from '@rjsf/utils';
 import { getDefaultFormState } from '@rjsf/utils';
 import { useFormData } from './useFormData';
+import { FormProps } from '../../types';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -55,12 +55,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export interface StepperProps {
+export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-  transformErrors?: ErrorTransformer;
-}
+} & FormProps;
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
 // which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because

@@ -44,12 +44,11 @@ import {
 } from '../../routes';
 import { SecretsContext } from '../../components/secrets/SecretsContext';
 import { JsonValue } from '@backstage/types';
-import type { ErrorTransformer } from '@rjsf/utils';
+import type { FormProps } from '../types';
 
-export interface TemplateWizardPageProps {
+export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
-  transformErrors?: ErrorTransformer;
-}
+} & FormProps;
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
