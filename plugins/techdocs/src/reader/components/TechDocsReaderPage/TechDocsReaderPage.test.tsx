@@ -27,6 +27,11 @@ import { techdocsApiRef, techdocsStorageApiRef } from '../../../api';
 import { rootRouteRef, rootDocsRouteRef } from '../../../routes';
 
 import { TechDocsReaderPage } from './TechDocsReaderPage';
+import { Route, useParams } from 'react-router-dom';
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+import { Page } from '@backstage/core-components';
+import { FlatRoutes } from '@backstage/core-app-api';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -65,6 +70,16 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   getStorageUrl: jest.fn(),
   syncEntityDocs: jest.fn(),
 };
+
+const PageMock = () => {
+  const { namespace, kind, name } = useParams();
+  return <>{`LayoutMock: ${namespace}#${kind}#${name}`}</>;
+};
+
+jest.mock('@backstage/core-components', () => ({
+  ...jest.requireActual('@backstage/core-components'),
+  Page: jest.fn(),
+}));
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -144,6 +159,38 @@ describe('<TechDocsReaderPage />', () => {
         rendered.container.querySelector('article'),
       ).not.toBeInTheDocument();
       expect(rendered.getByText('techdocs reader page')).toBeInTheDocument();
+    });
+  });
+
+  it('should render techdocs reader page with addons', async () => {
+    (Page as jest.Mock).mockImplementation(PageMock);
+    const name = 'test-name';
+    const namespace = 'test-namespace';
+    const kind = 'test';
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <FlatRoutes>
+            <Route
+              path="/docs/:namespace/:kind/:name/*"
+              element={<TechDocsReaderPage />}
+            >
+              <TechDocsAddons>
+                <ReportIssue />
+              </TechDocsAddons>
+            </Route>
+          </FlatRoutes>
+        </Wrapper>,
+        {
+          mountedRoutes,
+          routeEntries: ['/docs/test-namespace/test/test-name'],
+        },
+      );
+
+      expect(
+        rendered.getByText(`LayoutMock: ${namespace}#${kind}#${name}`),
+      ).toBeInTheDocument();
     });
   });
 });
