@@ -110,9 +110,9 @@ export type EntityPickerUiOptions =
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
   string[],
   {
-    helperText?: string | undefined;
-    kinds?: string[] | undefined;
     showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
   }
 >;
 
@@ -120,9 +120,9 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
 export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
-    helperText?: string | undefined;
-    kinds?: string[] | undefined;
     showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
   }
 >;
 
