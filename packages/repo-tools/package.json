@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.1.0-next.2",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -37,6 +37,7 @@
     "@microsoft/api-extractor": "^7.23.0",
     "@microsoft/api-extractor-model": "^7.17.2",
     "@microsoft/tsdoc": "0.14.1",
+    "@microsoft/tsdoc-config": "0.16.1",
     "chalk": "^4.0.0",
     "commander": "^9.1.0",
     "fs-extra": "10.1.0",
@@ -50,6 +51,16 @@
     "@types/is-glob": "^4.0.2",
     "@types/mock-fs": "^4.13.0",
     "mock-fs": "^5.1.0"
+  },
+  "peerDependencies": {
+    "@rushstack/node-core-library": "*",
+    "prettier": "^2.8.1",
+    "typescript": "> 3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "prettier": {
+      "optional": true
+    }
   },
   "files": [
     "bin",

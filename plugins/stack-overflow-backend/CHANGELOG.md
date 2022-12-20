@@ -1,5 +1,15 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.1.8
+
+### Patch Changes
+
+- fd0ca6f447: Added option to supply API Access Token. This is required in addition to an API key when trying to access the data for a private Stack Overflow Team.
+- Updated dependencies
+  - @backstage/cli@0.22.0
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/config@1.0.5
+
 ## 0.1.8-next.4
 
 ### Patch Changes

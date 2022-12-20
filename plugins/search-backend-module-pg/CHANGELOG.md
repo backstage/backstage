@@ -1,5 +1,29 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.0
+
+### Minor Changes
+
+- e48fc1f1ae: Added the option to pass a logger to `PgSearchEngine` during instantiation. You may do so as follows:
+
+  ```diff
+  const searchEngine = await PgSearchEngine.fromConfig(env.config, {
+    database: env.database,
+  + logger: env.logger,
+  });
+  ```
+
+- dff9843718: The search engine now better handles the case when it receives 0 documents at index-time. Prior to this change, the indexer would replace any existing index with an empty index, effectively deleting it. Now instead, a warning is logged, and any existing index is left alone (preserving the index from the last successful indexing attempt).
+
+### Patch Changes
+
+- c507aee8a2: Ensured typescript type checks in migration files.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/config@1.0.5
+
 ## 0.4.3-next.3
 
 ### Patch Changes

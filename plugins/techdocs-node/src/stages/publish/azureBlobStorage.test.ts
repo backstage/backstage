@@ -530,10 +530,6 @@ describe('AzureBlobStoragePublish', () => {
       app = express().use(publisher.docsRouter());
     });
 
-    afterEach(() => {
-      mockFs.restore();
-    });
-
     it('should pass expected object path to bucket', async () => {
       // Ensures leading slash is trimmed and encoded path is decoded.
       const pngResponse = await request(app).get(

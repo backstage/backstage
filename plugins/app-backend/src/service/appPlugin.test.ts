@@ -30,7 +30,7 @@ import { ConfigReader } from '@backstage/config';
 import getPort from 'get-port';
 
 describe('appPlugin', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     mockFs({
       [resolvePath(process.cwd(), 'node_modules/app')]: {
         'package.json': '{}',
@@ -42,7 +42,7 @@ describe('appPlugin', () => {
     });
   });
 
-  afterAll(() => {
+  afterEach(() => {
     mockFs.restore();
   });
 

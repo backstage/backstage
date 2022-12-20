@@ -54,6 +54,31 @@ describe('Router', () => {
       expect(TemplateWizardPage).toHaveBeenCalled();
     });
 
+    it('should pass through the FormProps property', async () => {
+      const transformErrorsMock = jest.fn();
+
+      await renderInTestApp(
+        <Router
+          FormProps={{
+            transformErrors: transformErrorsMock,
+            noHtml5Validate: true,
+          }}
+        />,
+        {
+          routeEntries: ['/templates/default/foo'],
+        },
+      );
+
+      const mock = TemplateWizardPage as jest.Mock;
+
+      const [{ FormProps }] = mock.mock.calls[0];
+
+      expect(FormProps).toEqual({
+        transformErrors: transformErrorsMock,
+        noHtml5Validate: true,
+      });
+    });
+
     it('should extract the fieldExtensions and pass them through', async () => {
       const mockComponent = () => null;
       const CustomFieldExtension = scaffolderPlugin.provide(

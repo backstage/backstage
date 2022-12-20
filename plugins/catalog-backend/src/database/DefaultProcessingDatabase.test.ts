@@ -462,12 +462,17 @@ describe('DefaultProcessingDatabase', () => {
               knexTx<DbRefreshStateReferencesRow>(
                 'refresh_state_references',
               ).select(),
-            ).resolves.toEqual([
-              expect.objectContaining({
-                source_entity_ref: 'location:default/fakelocation',
-                target_entity_ref: 'component:default/1',
-              }),
-            ]);
+            ).resolves.toEqual(
+              step.expectConflict
+                ? []
+                : [
+                    // eslint-disable-next-line jest/no-conditional-expect
+                    expect.objectContaining({
+                      source_entity_ref: 'location:default/fakelocation',
+                      target_entity_ref: 'component:default/1',
+                    }),
+                  ],
+            );
 
             expect(mockLogger.error).not.toHaveBeenCalled();
           }

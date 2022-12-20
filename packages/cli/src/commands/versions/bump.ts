@@ -255,7 +255,13 @@ export default async (opts: OptionValues) => {
       );
     }
 
-    await runYarnInstall();
+    if (!opts.skipInstall) {
+      await runYarnInstall();
+    } else {
+      console.log();
+
+      console.log(chalk.yellow(`Skipping yarn install`));
+    }
 
     if (breakingUpdates.size > 0) {
       console.log();

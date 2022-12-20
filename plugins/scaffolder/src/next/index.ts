@@ -16,3 +16,5 @@
 export * from './Router';
 export * from './TemplateListPage';
 export * from './TemplateWizardPage';
+
+export type { FormProps } from './types';

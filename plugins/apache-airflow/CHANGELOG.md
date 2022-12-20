@@ -1,5 +1,14 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.5
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+
 ## 0.2.5-next.4
 
 ### Patch Changes

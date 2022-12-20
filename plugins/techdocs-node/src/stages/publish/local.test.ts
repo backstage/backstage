@@ -85,8 +85,6 @@ describe('local publisher', () => {
 
       // Lower/upper should be treated the same.
       expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(true);
-
-      mockFs.restore();
     });
 
     it('should respect legacy casing', async () => {
@@ -110,8 +108,6 @@ describe('local publisher', () => {
 
       // Lower/upper should be treated differently.
       expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(false);
-
-      mockFs.restore();
     });
 
     it('should throw with unsafe triplet', async () => {
@@ -169,8 +165,6 @@ describe('local publisher', () => {
 
     beforeEach(() => {
       app = express().use(publisher.docsRouter());
-
-      mockFs.restore();
       mockFs({
         [resolvedDir]: {
           'unsafe.html': '<html></html>',
