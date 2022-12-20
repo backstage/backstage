@@ -48,7 +48,8 @@ import type { FormProps } from '../types';
 
 export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
-} & FormProps;
+  FormProps?: FormProps;
+};
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
@@ -138,7 +139,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
                 manifest={manifest}
                 extensions={props.customFieldExtensions}
                 onComplete={onComplete}
-                transformErrors={props.transformErrors}
+                FormProps={props.FormProps}
               />
             </InfoCard>
           )}

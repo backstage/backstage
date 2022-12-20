@@ -59,7 +59,8 @@ export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-} & FormProps;
+  FormProps?: FormProps;
+};
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
 // which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
@@ -164,7 +165,7 @@ export const Stepper = (props: StepperProps) => {
             onSubmit={handleNext}
             fields={extensions}
             showErrorList={false}
-            transformErrors={props.transformErrors}
+            {...(props.FormProps ?? {})}
           >
             <div className={styles.footer}>
               <Button

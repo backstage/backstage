@@ -45,7 +45,8 @@ export type NextRouterProps = {
     TaskPageComponent?: React.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
-} & FormProps;
+  FormProps?: FormProps;
+};
 
 /**
  * The Scaffolder Router
@@ -94,7 +95,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           <SecretsContextProvider>
             <TemplateWizardPage
               customFieldExtensions={fieldExtensions}
-              transformErrors={props.transformErrors}
+              FormProps={props.FormProps}
             />
           </SecretsContextProvider>
         }
