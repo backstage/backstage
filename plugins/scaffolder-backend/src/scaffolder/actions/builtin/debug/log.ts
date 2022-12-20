@@ -31,7 +31,22 @@ const examples = [
           id: 'write-debug-line',
           name: 'Write log line',
           input: {
-            message: 'Hello, there',
+            message: 'Hello Backstage!',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'List the workspace directory',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: id,
+          id: 'write-debug-line',
+          name: 'Write log line',
+          input: {
+            listWorkspace: true,
           },
         },
       ],
