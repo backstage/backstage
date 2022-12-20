@@ -30,8 +30,9 @@ import { TechDocsReaderPage } from './TechDocsReaderPage';
 import { Route, useParams } from 'react-router-dom';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
-import { Page } from '@backstage/core-components';
 import { FlatRoutes } from '@backstage/core-app-api';
+
+import { Page } from '@backstage/core-components';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -112,6 +113,12 @@ describe('<TechDocsReaderPage />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
+
+  beforeEach(() => {
+    const realPage = jest.requireActual('@backstage/core-components').Page;
+    (Page as jest.Mock).mockImplementation(realPage);
+  });
+
   it('should render a techdocs reader page without children', async () => {
     const rendered = await renderInTestApp(
       <Wrapper>
