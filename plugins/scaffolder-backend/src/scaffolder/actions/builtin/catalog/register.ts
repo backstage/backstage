@@ -25,7 +25,7 @@ const id = 'catalog:register';
 
 const examples = [
   {
-    description: 'Register With the catalog',
+    description: 'Register with the catalog',
     example: yaml.stringify({
       steps: [
         {
