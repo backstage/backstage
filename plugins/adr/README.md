@@ -83,7 +83,7 @@ By default, the ADR plugin will only be able to retrieve ADRs through GitHub. If
 
 1. Make sure the [ADR backend plugin](../adr-backend/README.md) is installed.
 2. [Configure an integration](https://backstage.io/docs/integrations/) for the site you would like to pull ADRs from.
-3. Set the adrFileFetcher property on EntityAdrContent to urlReadersAdrFileFetcher:
+3. Set the adrFileFetcher property on EntityAdrContent to urlReaderAdrFileFetcher:
 
 ```jsx
 // In packages/app/src/components/catalog/EntityPage.tsx
