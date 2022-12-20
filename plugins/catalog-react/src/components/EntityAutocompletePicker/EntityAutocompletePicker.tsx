@@ -27,7 +27,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityAutocompletePickerOption } from './EntityAutocompletePickerOption';
 import { EntityAutocompletePickerInput } from './EntityAutocompletePickerInput';
-import { EntityFilter } from '@backstage/plugin-catalog-react';
+import { EntityFilter } from '../../types';
 
 type KeysMatchingCondition<T, V, K> = T extends V ? K : never;
 type KeysMatching<T, V> = {
