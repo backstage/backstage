@@ -34,7 +34,7 @@ jobs:
           diffRef: 'origin/master'
           marker: <!-- changeset-feedback -->
           issue-number: ${{ github.event.pull_request.number }}
-          botUsername: github-actions[bot]
+          botUsername: backstage-goalie[bot]
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
           installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
