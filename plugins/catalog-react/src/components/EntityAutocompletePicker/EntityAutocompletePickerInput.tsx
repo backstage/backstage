@@ -22,7 +22,7 @@ const useStyles = makeStyles(
     input: {},
   },
   {
-    name: 'CatalogReactEntityTagPicker',
+    name: 'EntityAutocompletePickerInput',
   },
 );
 
