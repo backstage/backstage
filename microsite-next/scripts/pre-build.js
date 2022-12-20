@@ -30,7 +30,7 @@ async function main() {
   const referencesDir = '../docs/reference';
   if (existsSync(referencesDir)) {
     console.log('Removing HTML comments from docs/reference folder');
-    await replace({
+    replace({
       regex: '<!--(.*?)-->',
       replacement: '',
       paths: [referencesDir],
