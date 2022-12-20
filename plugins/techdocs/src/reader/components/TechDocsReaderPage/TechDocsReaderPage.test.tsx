@@ -200,4 +200,31 @@ describe('<TechDocsReaderPage />', () => {
       ).toBeInTheDocument();
     });
   });
+
+  it('should render techdocs reader page with addons and page', async () => {
+    (Page as jest.Mock).mockImplementation(PageMock);
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <FlatRoutes>
+            <Route
+              path="/docs/:namespace/:kind/:name/*"
+              element={<TechDocsReaderPage />}
+            >
+              <p>the page</p>
+              <TechDocsAddons>
+                <ReportIssue />
+              </TechDocsAddons>
+            </Route>
+          </FlatRoutes>
+        </Wrapper>,
+        {
+          mountedRoutes,
+          routeEntries: ['/docs/test-namespace/test/test-name'],
+        },
+      );
+
+      expect(rendered.getByText('the page')).toBeInTheDocument();
+    });
+  });
 });
