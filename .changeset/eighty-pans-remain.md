@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-configurable noHtml5Validate prop for NextScaffolderPage
+Added `noHtml5Validate` prop to `FormProps` on `NextScaffolderPage`
