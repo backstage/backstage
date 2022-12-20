@@ -34,7 +34,7 @@ import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
-import validator from '@rjsf/validator-ajv8';
+import validator from '@rjsf/validator-ajv6';
 import { selectedTemplateRouteRef } from '../../../routes';
 import { getDefaultFormState } from '@rjsf/utils';
 import { useFormData } from './useFormData';
