@@ -101,18 +101,6 @@ describe('Tech Insights router tests', () => {
     });
   });
 
-  describe('/checks/run', () => {
-    it('should continue to run all checks if a single one fails', async () => {
-      await request(app)
-        .post('/checks/run')
-        .query({
-          entity: 'a:a/a',
-          ids: ['check1', 'check2'],
-        })
-        .expect(500);
-    });
-  });
-
   describe('/facts/latest', () => {
     it('should be able to parse id request params for fact retrieval', async () => {
       await request(app)
