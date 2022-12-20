@@ -207,7 +207,8 @@ export function createGithubRepoCreateAction(options: {
     | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
-  repoVisibility?: 'public' | 'private' | 'internal' | undefined;
+  requiredConversationResolution?: boolean | undefined;
+  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
         | {
@@ -224,6 +225,9 @@ export function createGithubRepoCreateAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;
@@ -253,6 +257,7 @@ export function createGithubRepoPushAction(options: {
     | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
+  requiredConversationResolution?: boolean | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
 }>;
@@ -296,7 +301,7 @@ export function createPublishBitbucketAction(options: {
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'public' | 'private' | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   enableLFS?: boolean | undefined;
   token?: string | undefined;
@@ -313,7 +318,7 @@ export function createPublishBitbucketCloudAction(options: {
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'public' | 'private' | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
 }>;
@@ -326,7 +331,7 @@ export function createPublishBitbucketServerAction(options: {
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'public' | 'private' | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   enableLFS?: boolean | undefined;
   token?: string | undefined;
@@ -392,7 +397,8 @@ export function createPublishGithubAction(options: {
   dismissStaleReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
-  repoVisibility?: 'public' | 'private' | 'internal' | undefined;
+  requiredConversationResolution?: boolean | undefined;
+  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
         | {
@@ -409,6 +415,9 @@ export function createPublishGithubAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;
@@ -438,7 +447,7 @@ export function createPublishGitlabAction(options: {
 }): TemplateAction<{
   repoUrl: string;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'public' | 'private' | 'internal' | undefined;
+  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
   gitCommitMessage?: string | undefined;
@@ -459,7 +468,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   sourcePath?: string | undefined;
   targetPath?: string | undefined;
   token?: string | undefined;
-  commitAction?: 'create' | 'update' | 'delete' | undefined;
+  commitAction?: 'update' | 'delete' | 'create' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
   assignee?: string | undefined;
@@ -833,11 +842,11 @@ export class TaskWorker {
 // @public (undocumented)
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
+  description?: string;
   examples?: {
     description: string;
     example: string;
   }[];
-  description?: string;
   supportsDryRun?: boolean;
   schema?: {
     input?: Schema;
