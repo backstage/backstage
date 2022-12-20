@@ -168,10 +168,9 @@ export class CatalogBuilder {
 }
 
 // @public (undocumented)
-export interface CatalogCollatorEntityTransformer {
-  // (undocumented)
-  transform(entity: Entity, locationTemplate: string): CatalogEntityDocument;
-}
+export type CatalogCollatorEntityTransformer = (
+  entity: Entity,
+) => Omit<CatalogEntityDocument, 'location' | 'authorization'>;
 
 // @alpha
 export const catalogConditions: Conditions<{
@@ -357,6 +356,9 @@ export class DefaultCatalogCollator {
 }
 
 // @public (undocumented)
+export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer;
+
+// @public (undocumented)
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   static fromConfig(
@@ -366,7 +368,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   getCollator(): Promise<Readable>;
   // (undocumented)
-  readonly type: string;
+  readonly type = 'software-catalog';
   // (undocumented)
   readonly visibilityPermission: Permission;
 }
@@ -375,7 +377,6 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
 export type DefaultCatalogCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
-  type?: string;
   locationTemplate?: string;
   filter?: GetEntitiesRequest['filter'];
   batchSize?: number;

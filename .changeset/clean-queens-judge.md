@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Refactored catalog collator, extracted abstract class and entity processor to make it possible to re-use functionality
+The process of adding or modifying fields in the software-catalog search index has been simplified. For more details, see [how to customize fields in the Software Catalog index](../docs/features/search/how-to-guides.md#how-to-customize-fields-in-the-software-catalog-index).

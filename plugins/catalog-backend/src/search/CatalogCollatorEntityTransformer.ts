@@ -18,6 +18,6 @@ import { Entity } from '@backstage/catalog-model';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 
 /** @public */
-export interface CatalogCollatorEntityTransformer {
-  transform(entity: Entity, locationTemplate: string): CatalogEntityDocument;
-}
+export type CatalogCollatorEntityTransformer = (
+  entity: Entity,
+) => Omit<CatalogEntityDocument, 'location' | 'authorization'>;

@@ -114,6 +114,42 @@ of the `SearchType` component.
 
 > Check out the documentation around [integrating search into plugins](../../plugins/integrating-search-into-plugins.md#create-a-collator) for how to create your own collator.
 
+## How to customize fields in the Software Catalog index
+
+Sometimes you will might want to have ability to control
+which data passes to search index in catalog collator, or to customize data for specific kind.
+You can easily do that by passing `entityTransformer` callback to `DefaultCatalogCollatorFactory`.
+You can either just simply amend default behaviour, or even to write completely new document
+(which should follow some required basic structure though).
+
+> `authorization` and `location` cannot be modified via a `entityTransformer`, `location` can be modified only through `locationTemplate`.
+
+```diff
+// packages/backend/src/plugins/search.ts
+
+const entityTransformer: CatalogCollatorEntityTransformer = (entity: Entity) => {
+  if (entity.kind === 'SomeKind') {
+    return {
+      // customize here output for 'SomeKind' kind
+    };
+  }
+
+  return {
+    // and customize default output
+    ...defaultCatalogCollatorEntityTransformer(entity),
+    text: 'my super cool text',
+  };
+};
+
+indexBuilder.addCollator({
+  collator: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
++   entityTransformer,
+  }),
+});
+```
+
 ## How to limit what can be searched in the Software Catalog
 
 The Software Catalog includes a wealth of information about the components,

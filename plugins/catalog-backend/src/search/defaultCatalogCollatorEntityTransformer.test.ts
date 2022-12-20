@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DefaultCatalogCollatorEntityTransformer } from './DefaultCatalogCollatorEntityTransformer';
+import { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
 
 const entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -46,26 +46,18 @@ const userEntity = {
   },
 };
 
-const locationTemplate = '/catalog/:namespace/:kind/:name';
-
 describe('DefaultCatalogCollatorEntityTransformer', () => {
-  const entityTransformer = new DefaultCatalogCollatorEntityTransformer();
-
   describe('transform', () => {
     it('maps a returned entity', async () => {
-      const document = entityTransformer.transform(entity, locationTemplate);
+      const document = defaultCatalogCollatorEntityTransformer(entity);
 
       expect(document).toMatchObject({
         title: entity.metadata.title,
-        location: '/catalog/namespace/component/test-entity',
         text: entity.metadata.description,
         namespace: entity.metadata.namespace,
         componentType: entity.spec.type,
         lifecycle: entity.spec.lifecycle,
         owner: entity.spec.owner,
-        authorization: {
-          resourceRef: 'component:namespace/test-entity',
-        },
       });
     });
 
@@ -84,59 +76,29 @@ describe('DefaultCatalogCollatorEntityTransformer', () => {
         },
       };
 
-      const document = entityTransformer.transform(
-        entityWithoutTitle,
-        locationTemplate,
-      );
+      const document =
+        defaultCatalogCollatorEntityTransformer(entityWithoutTitle);
 
       expect(document).toMatchObject({
         title: entity.metadata.name,
-        location: '/catalog/default/component/test-entity',
         text: entity.metadata.description,
         namespace: 'default',
         componentType: 'other',
         lifecycle: '',
         owner: '',
-        authorization: {
-          resourceRef: 'component:default/test-entity',
-        },
-      });
-    });
-
-    it('maps a returned entity with custom locationTemplate', async () => {
-      const document = entityTransformer.transform(entity, '/catalog/:name');
-
-      expect(document).toMatchObject({
-        title: entity.metadata.title,
-        location: '/catalog/test-entity',
-        text: entity.metadata.description,
-        namespace: entity.metadata.namespace,
-        componentType: entity.spec.type,
-        lifecycle: entity.spec.lifecycle,
-        owner: entity.spec.owner,
-        authorization: {
-          resourceRef: 'component:namespace/test-entity',
-        },
       });
     });
 
     it('maps a returned user entity', async () => {
-      const document = entityTransformer.transform(
-        userEntity,
-        locationTemplate,
-      );
+      const document = defaultCatalogCollatorEntityTransformer(userEntity);
 
       expect(document).toMatchObject({
         title: userEntity.metadata.name,
-        location: '/catalog/default/user/test-user-entity',
         text: `${userEntity.metadata.description} : ${userEntity.spec.profile.displayName}`,
         namespace: 'default',
         componentType: 'other',
         lifecycle: '',
         owner: '',
-        authorization: {
-          resourceRef: 'user:default/test-user-entity',
-        },
       });
     });
 
@@ -146,22 +108,15 @@ describe('DefaultCatalogCollatorEntityTransformer', () => {
         spec: undefined,
       };
 
-      const document = entityTransformer.transform(
-        testEntity,
-        locationTemplate,
-      );
+      const document = defaultCatalogCollatorEntityTransformer(testEntity);
 
       expect(document).toMatchObject({
         title: userEntity.metadata.name,
-        location: '/catalog/default/user/test-user-entity',
         text: userEntity.metadata.description,
         namespace: 'default',
         componentType: 'other',
         lifecycle: '',
         owner: '',
-        authorization: {
-          resourceRef: 'user:default/test-user-entity',
-        },
       });
     });
 
@@ -180,22 +135,15 @@ describe('DefaultCatalogCollatorEntityTransformer', () => {
         },
       };
 
-      const document = entityTransformer.transform(
-        groupEntity,
-        locationTemplate,
-      );
+      const document = defaultCatalogCollatorEntityTransformer(groupEntity);
 
       expect(document).toMatchObject({
         title: groupEntity.metadata.name,
-        location: '/catalog/default/group/test-group-entity',
         text: `${groupEntity.metadata.description} : ${groupEntity.spec.profile.displayName}`,
         namespace: 'default',
         componentType: 'other',
         lifecycle: '',
         owner: '',
-        authorization: {
-          resourceRef: 'group:default/test-group-entity',
-        },
       });
     });
   });

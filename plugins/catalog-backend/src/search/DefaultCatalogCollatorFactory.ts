@@ -32,13 +32,13 @@ import {
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
 import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
-import { DefaultCatalogCollatorEntityTransformer } from './DefaultCatalogCollatorEntityTransformer';
+import { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 /** @public */
 export type DefaultCatalogCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
-  type?: string;
   locationTemplate?: string;
   filter?: GetEntitiesRequest['filter'];
   batchSize?: number;
@@ -48,7 +48,7 @@ export type DefaultCatalogCollatorFactoryOptions = {
 
 /** @public */
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
-  public readonly type: string;
+  public readonly type = 'software-catalog';
   public readonly visibilityPermission: Permission =
     catalogEntityReadPermission;
 
@@ -70,7 +70,6 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     const {
       batchSize,
       discovery,
-      type,
       locationTemplate,
       filter,
       catalogClient,
@@ -78,7 +77,6 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
       entityTransformer,
     } = options;
 
-    this.type = type ?? 'software-catalog';
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';
     this.filter = filter;
@@ -87,7 +85,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
       catalogClient || new CatalogClient({ discoveryApi: discovery });
     this.tokenManager = tokenManager;
     this.entityTransformer =
-      entityTransformer ?? new DefaultCatalogCollatorEntityTransformer();
+      entityTransformer ?? defaultCatalogCollatorEntityTransformer;
   }
 
   async getCollator(): Promise<Readable> {
@@ -119,8 +117,31 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
       entitiesRetrieved += entities.length;
 
       for (const entity of entities) {
-        yield this.entityTransformer.transform(entity, this.locationTemplate);
+        yield {
+          ...this.entityTransformer(entity),
+          authorization: {
+            resourceRef: stringifyEntityRef(entity),
+          },
+          location: this.applyArgsToFormat(this.locationTemplate, {
+            namespace: entity.metadata.namespace || 'default',
+            kind: entity.kind,
+            name: entity.metadata.name,
+          }),
+        };
       }
     }
+  }
+
+  private applyArgsToFormat(
+    format: string,
+    args: Record<string, string>,
+  ): string {
+    let formatted = format;
+
+    for (const [key, value] of Object.entries(args)) {
+      formatted = formatted.replace(`:${key}`, value);
+    }
+
+    return formatted.toLowerCase();
   }
 }
