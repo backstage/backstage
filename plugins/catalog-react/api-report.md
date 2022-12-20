@@ -262,6 +262,7 @@ export const EntityPeekAheadPopover: (
 // @public
 export type EntityPeekAheadPopoverProps = PropsWithChildren<{
   entityRef: string;
+  delayTime?: number;
 }>;
 
 // @public (undocumented)
