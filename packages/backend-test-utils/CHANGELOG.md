@@ -1,5 +1,18 @@
 # @backstage/backend-test-utils
 
+## 0.1.31
+
+### Patch Changes
+
+- afa3bf5657: Backends started with `startTestBackend` are now automatically stopped after all tests have run.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.4
+  - @backstage/cli@0.22.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/config@1.0.5
+
 ## 0.1.31-next.4
 
 ### Patch Changes

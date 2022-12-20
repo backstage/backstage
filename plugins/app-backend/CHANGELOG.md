@@ -1,5 +1,18 @@
 # @backstage/plugin-app-backend
 
+## 0.3.39
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/config-loader@1.1.7
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
 ## 0.3.39-next.3
 
 ### Patch Changes

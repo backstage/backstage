@@ -1,5 +1,58 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.9.0
+
+### Minor Changes
+
+- a20a0ea698: Added `requiredConversationResolution` template option to `github:repo:create`, `github:repo:push` and `publish:github`
+- b32005e98a: Deprecated the `taskWorkers` option in RouterOptions in favor of `concurrentTasksLimit` which sets the limit of concurrent tasks in a single TaskWorker
+
+  TaskWorker can now run multiple (defaults to 10) tasks concurrently using the `concurrentTasksLimit` option available in both `RouterOptions` and `CreateWorkerOptions`.
+
+  To use the option to create a TaskWorker:
+
+  ```diff
+  const worker = await TaskWorker.create({
+      taskBroker,
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+      additionalTemplateFilters,
+  +   concurrentTasksLimit: 10 // (1 to Infinity)
+  });
+  ```
+
+- fc51bd8aa0: Add support for disabling Github repository wiki, issues and projects
+- 0053d07bee: Update the `github:publish` action to allow passing wether to dismiss stale reviews on the protected default branch.
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 26404430bc: Use Json types from @backstage/types
+- b07ccffad0: Backend now returns 'ui:options' value from template metadata, it can be used by all your custom scaffolder components.
+- 309f2daca4: Updated dependency `esbuild` to `^0.16.0`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-catalog-node@1.3.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/errors@1.1.4
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/integration@1.4.1
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/plugin-scaffolder-common@1.2.3
+
 ## 1.9.0-next.3
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.32
+
+### Patch Changes
+
+- 0b54dbaf7d: Internal tweak to adapt to `kafkajs` 2.2.3
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
 ## 0.2.32-next.3
 
 ### Patch Changes

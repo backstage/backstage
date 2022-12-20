@@ -1,5 +1,17 @@
 # @backstage/plugin-search-common
 
+## 1.2.0
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults (total number of results for a given query) can now be provided by each search engine and consumed as part of the search results response
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/types@1.0.2
+
 ## 1.2.0-next.3
 
 ### Patch Changes

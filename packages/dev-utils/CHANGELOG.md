@@ -1,5 +1,24 @@
 # @backstage/dev-utils
 
+## 1.0.9
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/core-app-api@1.3.0
+  - @backstage/test-utils@1.2.3
+  - @backstage/app-defaults@1.0.9
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/integration-react@1.1.7
+  - @backstage/catalog-model@1.1.4
+  - @backstage/theme@0.2.16
+
 ## 1.0.9-next.4
 
 ### Patch Changes

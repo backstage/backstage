@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-node
 
+## 1.3.0
+
+### Minor Changes
+
+- eacc8e2b55: Make it possible for entity providers to supply only entity refs, instead of full entities, in `delta` mutation deletions.
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/plugin-catalog-common@1.0.9
+
 ## 1.3.0-next.3
 
 ### Patch Changes
