@@ -26,7 +26,7 @@ import {
   rootRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
-} from '../../routes';
+} from '@backstage/plugin-scaffolder-react';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from './createValidator';
 

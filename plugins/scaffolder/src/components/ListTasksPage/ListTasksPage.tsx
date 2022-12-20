@@ -29,7 +29,7 @@ import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
 import React, { useState } from 'react';
 import { scaffolderApiRef } from '../../api';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTask } from '../../types';
 import { OwnerListPicker } from './OwnerListPicker';
 import {

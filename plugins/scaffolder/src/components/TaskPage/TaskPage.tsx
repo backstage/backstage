@@ -51,7 +51,7 @@ import {
   rootRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
-} from '../../routes';
+} from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskErrors } from './TaskErrors';

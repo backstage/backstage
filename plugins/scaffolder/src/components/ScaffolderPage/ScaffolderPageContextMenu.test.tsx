@@ -18,7 +18,7 @@ import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
 
 describe('ScaffolderPageContextMenu', () => {

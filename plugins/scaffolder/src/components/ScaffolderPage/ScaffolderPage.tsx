@@ -34,7 +34,7 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import React, { ComponentType } from 'react';
-import { registerComponentRouteRef } from '../../routes';
+import { registerComponentRouteRef } from '@backstage/plugin-scaffolder-react';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';

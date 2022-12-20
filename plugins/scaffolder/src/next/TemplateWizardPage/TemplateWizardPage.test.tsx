@@ -23,7 +23,7 @@ import {
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { scaffolderApiRef } from '../../api';
-import { nextRouteRef, rootRouteRef } from '../../routes';
+import { nextRouteRef, rootRouteRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderApi } from '../../types';
 import { TemplateWizardPage } from './TemplateWizardPage';
 

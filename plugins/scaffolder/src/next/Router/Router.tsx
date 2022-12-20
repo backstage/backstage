@@ -28,7 +28,7 @@ import {
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
-import { nextSelectedTemplateRouteRef } from '../../routes';
+import { nextSelectedTemplateRouteRef } from '@backstage/plugin-scaffolder-react';
 import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
 import type { FormProps } from '../types';
 

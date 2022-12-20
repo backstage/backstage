@@ -41,7 +41,7 @@ import {
   nextRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
-} from '../../routes';
+} from '@backstage/plugin-scaffolder-react';
 import { SecretsContext } from '../../components/secrets/SecretsContext';
 import { JsonValue } from '@backstage/types';
 import type { FormProps } from '../types';

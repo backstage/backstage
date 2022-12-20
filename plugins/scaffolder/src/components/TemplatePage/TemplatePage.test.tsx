@@ -24,7 +24,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { scaffolderApiRef } from '../../api';
 import { ScaffolderApi } from '../../types';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef } from '@backstage/plugin-scaffolder-react';
 import { TemplatePage } from './TemplatePage';
 import {
   featureFlagsApiRef,

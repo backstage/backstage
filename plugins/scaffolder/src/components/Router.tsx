@@ -43,7 +43,7 @@ import {
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
-} from '../routes';
+} from '@backstage/plugin-scaffolder-react';
 import { ListTasksPage } from './ListTasksPage';
 import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
 import { ReviewStepProps } from './types';

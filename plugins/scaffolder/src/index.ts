@@ -62,12 +62,14 @@ export {
   scaffolderPlugin,
 } from './plugin';
 export * from './components';
+
 export {
   rootRouteRef,
   nextRouteRef,
   selectedTemplateRouteRef,
   nextSelectedTemplateRouteRef,
-} from './routes';
+} from '@backstage/plugin-scaffolder-react';
+
 export type { TaskPageProps } from './components/TaskPage';
 
 /** next exports */

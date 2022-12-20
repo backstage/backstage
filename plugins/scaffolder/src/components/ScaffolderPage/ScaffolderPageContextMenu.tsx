@@ -32,7 +32,7 @@ import {
   actionsRouteRef,
   editRouteRef,
   scaffolderListTaskRouteRef,
-} from '../../routes';
+} from '@backstage/plugin-scaffolder-react';
 
 const useStyles = makeStyles({
   button: {

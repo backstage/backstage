@@ -25,7 +25,7 @@ import {
 } from '@backstage/test-utils';
 import { TemplateCard } from './TemplateCard';
 import React from 'react';
-import { nextRouteRef } from '../../../routes';
+import { nextRouteRef } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 

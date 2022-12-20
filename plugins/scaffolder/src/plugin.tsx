@@ -40,7 +40,7 @@ import {
   registerComponentRouteRef,
   rootRouteRef,
   viewTechDocRouteRef,
-} from './routes';
+} from '@backstage/plugin-scaffolder-react';
 import {
   createApiFactory,
   createPlugin,

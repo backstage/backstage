@@ -35,7 +35,7 @@ import {
 import { CategoryPicker } from './CategoryPicker';
 import { RegisterExistingButton } from './RegisterExistingButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { registerComponentRouteRef } from '../../routes';
+import { registerComponentRouteRef } from '@backstage/plugin-scaffolder-react';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
 
 export type TemplateListPageProps = {
