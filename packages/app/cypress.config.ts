@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const { defineConfig } = require('cypress')
+import { defineConfig } from 'cypress';
 
 module.exports = defineConfig({
   e2e: {
-    "baseUrl": "http://localhost:3000",
-    "fixturesFolder": false,
-    "supportFile": "cypress/**/*.js"
-  }
+    baseUrl: 'http://localhost:3000',
+    fixturesFolder: false,
+    supportFile: 'cypress/**/*.js',
+  },
 });
