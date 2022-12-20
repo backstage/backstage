@@ -103,7 +103,7 @@ export async function createRouter<
         checks,
         entities,
       }: { checks: string[]; entities: CompoundEntityRef[] } = req.body;
-      let error = undefined;
+      const errors: string[] = [];
       const tasks = entities.map(async entity => {
         const entityTriplet =
           typeof entity === 'string' ? entity : stringifyEntityRef(entity);
@@ -116,7 +116,7 @@ export async function createRouter<
         } catch (e: any) {
           const errorMessage = `Failed to run check for entity ${entityTriplet} due to error: ${e.message}`;
           logger.error(errorMessage);
-          error = errorMessage;
+          errors.push(errorMessage);
           return {
             entity: entityTriplet,
             results: [],
@@ -124,8 +124,8 @@ export async function createRouter<
         }
       });
       const results = await Promise.all(tasks);
-      if (error) {
-        return res.status(500).send({ error, results });
+      if (errors.length > 0) {
+        return res.status(500).send({ errors, results });
       }
       return res.json(results);
     });
