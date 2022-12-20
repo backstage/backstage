@@ -66,7 +66,7 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
   }
 
   let temporaryTsConfigPath: string | undefined;
-  if (selectedPackageDirs) {
+  if (!isAllPackages) {
     temporaryTsConfigPath = await createTemporaryTsConfig(selectedPackageDirs);
   }
   const tsconfigFilePath =
