@@ -127,9 +127,9 @@ export type EntityPickerUiOptions =
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
   string[],
   {
-    helperText?: string | undefined;
-    kinds?: string[] | undefined;
     showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
   }
 >;
 
@@ -137,9 +137,9 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
 export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
-    helperText?: string | undefined;
-    kinds?: string[] | undefined;
     showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
   }
 >;
 
@@ -357,10 +357,10 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
       | {
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                azure?: string[] | undefined;
                 gerrit?: string[] | undefined;
               }
             | undefined;
@@ -383,10 +383,10 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
       | {
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                azure?: string[] | undefined;
                 gerrit?: string[] | undefined;
               }
             | undefined;
