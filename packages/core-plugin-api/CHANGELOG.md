@@ -1,5 +1,37 @@
 # @backstage/core-plugin-api
 
+## 1.2.0
+
+### Minor Changes
+
+- 9a1864976a: Added a new `display` property to the `AlertMessage` which can accept the values `permanent` or `transient`.
+
+  Here's a rough example of how to trigger an alert using the new `display` property:
+
+  ```ts
+  import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+  const ExampleTransient = () => {
+    const alertApi = useApi(alertApiRef);
+    alertApi.post({
+      message: 'Example of Transient Alert',
+      severity: 'success',
+      display: 'transient',
+    });
+  };
+  ```
+
+### Patch Changes
+
+- d56127c712: useRouteRef - Limit re-resolving to location pathname changes only
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
 ## 1.2.0-next.2
 
 ### Minor Changes

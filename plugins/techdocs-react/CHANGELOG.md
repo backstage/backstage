@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.0
+
+### Minor Changes
+
+- 786f1b1419: Support older versions of react-router
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/version-bridge@1.0.3
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
 ## 1.0.7-next.4
 
 ### Patch Changes

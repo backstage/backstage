@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.2.14
+
+### Patch Changes
+
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.9.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
 ## 0.2.14-next.3
 
 ### Patch Changes

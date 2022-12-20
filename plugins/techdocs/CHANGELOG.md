@@ -1,5 +1,29 @@
 # @backstage/plugin-techdocs
 
+## 1.4.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- a19cffbeed: Update search links to only have header as linkable text
+- 5d3058355d: Add `react/forbid-elements` linter rule for button, suggest MUI `Button`
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 786f1b1419: Support older versions of react-router
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.1.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/plugin-search-react@1.3.0
+  - @backstage/core-components@0.12.1
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/integration-react@1.1.7
+  - @backstage/integration@1.4.1
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/theme@0.2.16
+
 ## 1.4.1-next.4
 
 ### Patch Changes

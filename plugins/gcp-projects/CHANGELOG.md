@@ -1,5 +1,18 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.31
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 5fb6d5e92e: Updated dependency `@react-hookz/web` to `^19.0.0`.
+- 146378c146: Updated dependency `@react-hookz/web` to `^20.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/theme@0.2.16
+
 ## 0.3.31-next.4
 
 ### Patch Changes

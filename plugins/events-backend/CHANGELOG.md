@@ -1,5 +1,41 @@
 # @backstage/plugin-events-backend
 
+## 0.2.0
+
+### Minor Changes
+
+- cf41eedf43: **BREAKING:** Remove required field `router` at `HttpPostIngressEventPublisher.fromConfig`
+  and replace it with `bind(router: Router)`.
+  Additionally, the path prefix `/http` will be added inside `HttpPostIngressEventPublisher`.
+
+  ```diff
+  // at packages/backend/src/plugins/events.ts
+     const eventsRouter = Router();
+  -  const httpRouter = Router();
+  -  eventsRouter.use('/http', httpRouter);
+
+     const http = HttpPostIngressEventPublisher.fromConfig({
+       config: env.config,
+       logger: env.logger,
+  -    router: httpRouter,
+     });
+  +  http.bind(eventsRouter);
+  ```
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- cf41eedf43: Introduce a new interface `RequestDetails` to abstract `Request`
+  providing access to request body and headers.
+
+  **BREAKING:** Replace `request: Request` with `request: RequestDetails` at `RequestValidator`.
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/plugin-events-node@0.2.0
+  - @backstage/config@1.0.5
+
 ## 0.2.0-next.3
 
 ### Patch Changes

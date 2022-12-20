@@ -1,5 +1,22 @@
 # @backstage/plugin-bazaar
 
+## 0.2.1
+
+### Patch Changes
+
+- 9b1891061c: `HomePageBazaarInfoCard` is now displaying `title` instead of `name`. Title is a string that doesn't have to be URL friendly.
+  The BazaarOverviewCard have the new property `fullHeight`. Link in `BazaarOverviewCard`is moved to header in card.
+- 312962da30: Add `title` as optional parameter to `BazaarOverviewCard`
+- Updated dependencies
+  - @backstage/plugin-catalog@1.7.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/cli@0.22.0
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/catalog-model@1.1.4
+
 ## 0.2.1-next.4
 
 ### Patch Changes
