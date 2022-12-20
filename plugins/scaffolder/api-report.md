@@ -267,7 +267,8 @@ export type NextRouterProps = {
     TaskPageComponent?: React_2.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
-} & FormProps;
+  FormProps?: FormProps;
+};
 
 // @alpha
 export const NextScaffolderPage: (
