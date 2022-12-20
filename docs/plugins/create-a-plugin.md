@@ -11,13 +11,14 @@ A Backstage Plugin adds functionality to Backstage.
 To create a new plugin, make sure you've run `yarn install` and installed
 dependencies, then run the following on your command line (a shortcut to
 invoking the
-[`backstage-cli create-plugin`](../local-dev/cli-commands.md#create-plugin))
+[`backstage-cli new --select plugin`](../local-dev/cli-commands.md#new))
 from the root of your project.
 
 ```bash
 yarn new --select plugin
 ```
 
+// Todo: change the asses to show the output of the new command
 ![](../assets/getting-started/create-plugin_output.png)
 
 This will create a new Backstage Plugin based on the ID that was provided. It

@@ -116,7 +116,7 @@ yarn clean # Remove all output folders and @backstage/cli cache
 
 yarn diff # Make sure all plugins are up to date with the latest plugin template
 
-yarn create-plugin # Create a new plugin
+yarn new # Create a new module
 ```
 
 > See
