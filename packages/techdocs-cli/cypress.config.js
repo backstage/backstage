@@ -21,19 +21,9 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       initPlugin(on, config);
     },
+    excludeSpecPattern: ['**/__snapshots__/*', '**/__image_snapshots__/*'],
   },
-  excludeSpecPattern: ['**/__snapshots__/*', '**/__image_snapshots__/*'],
-  env: {
-    mkDocsBaseUrl: 'http://localhost:8000',
-    backstageBaseUrl: 'http://localhost:3000',
-    'cypress-plugin-snapshots': {
-      autoCleanUp: false,
-      imageConfig: {
-        resizeDevicePixelRatio: true,
-        threshold: 0.01,
-      },
-    },
-  },
+
   viewportWidth: 1920,
   viewportHeight: 1080,
   includeShadowDom: true,
