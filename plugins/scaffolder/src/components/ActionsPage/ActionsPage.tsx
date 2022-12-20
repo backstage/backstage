@@ -27,6 +27,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Grid,
   makeStyles,
 } from '@material-ui/core';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
@@ -39,7 +40,11 @@ import {
   Header,
   Page,
   ErrorPage,
+  Table as BackstageTable,
+  TableColumn,
+  CodeSnippet,
 } from '@backstage/core-components';
+import { ActionExample } from '../../types';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -66,6 +71,29 @@ const useStyles = makeStyles(theme => ({
     },
   },
 }));
+
+const examplesColumns: TableColumn<ActionExample>[] = [
+  {
+    title: 'Description',
+    field: 'description',
+    width: '20%',
+  },
+  {
+    title: 'Example',
+    render: ({ example }) => {
+      return (
+        <Grid>
+          <CodeSnippet
+            text={example}
+            showLineNumbers
+            showCopyCodeButton
+            language="JavaScript"
+          />
+        </Grid>
+      );
+    },
+  },
+];
 
 export const ActionsPage = () => {
   const api = useApi(scaffolderApiRef);
@@ -178,6 +206,24 @@ export const ActionsPage = () => {
           <Box pb={2}>
             <Typography variant="h5">Output</Typography>
             {renderTable(action.schema.output)}
+          </Box>
+        )}
+        {action.examples && (
+          <Box pb={2}>
+            <Typography variant="h5">Examples</Typography>
+            <BackstageTable
+              data={action.examples}
+              columns={examplesColumns}
+              options={{
+                search: false,
+                showTitle: false,
+                toolbar: false,
+                loadingType: 'linear',
+                header: true,
+                padding: 'dense',
+                paging: false,
+              }}
+            />
           </Box>
         )}
       </Box>
