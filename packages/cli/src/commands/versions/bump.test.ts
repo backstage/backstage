@@ -122,10 +122,12 @@ describe('bump', () => {
       },
     }));
   });
+
   afterEach(() => {
     mockFs.restore();
     jest.resetAllMocks();
   });
+
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
