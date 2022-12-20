@@ -1,5 +1,72 @@
 # @backstage/plugin-catalog-backend
 
+## 1.6.0
+
+### Minor Changes
+
+- 16891a212c: Added new `POST /entities/by-refs` endpoint, which allows you to efficiently
+  batch-fetch entities by their entity ref. This can be useful e.g. in graphql
+  resolvers or similar contexts where you need to fetch many entities at the same
+  time.
+- 273ba3a77f: Deprecated Prometheus metrics in favour of OpenTelemtry metrics.
+- c395abb5b2: The catalog no longer stops after the first processor `validateEntityKind`
+  method returns `true` when validating entity kind shapes. Instead, it continues
+  through all registered processors that have this method, and requires that _at
+  least one_ of them returned true.
+
+  The old behavior of stopping early made it harder to extend existing core kinds
+  with additional fields, since the `BuiltinKindsEntityProcessor` is always
+  present at the top of the processing chain and ensures that your additional
+  validation code would never be run.
+
+  This is technically a breaking change, although it should not affect anybody
+  under normal circumstances, except if you had problematic validation code that
+  you were unaware that it was not being run. That code may now start to exhibit
+  those problems.
+
+  If you need to disable this new behavior, `CatalogBuilder` as used in your
+  `packages/backend/src/plugins/catalog.ts` file now has a
+  `useLegacySingleProcessorValidation()` method to go back to the old behavior.
+
+  ```diff
+   const builder = await CatalogBuilder.create(env);
+  +builder.useLegacySingleProcessorValidation();
+  ```
+
+- 3072ebfdd7: The search table also holds the original entity value now and the facets endpoint fetches the filtered entity data from the search table.
+
+### Patch Changes
+
+- ba13ff663c: Added a new `catalog.rules[].location` configuration that makes it possible to configure catalog rules to only apply to specific locations, either via exact match or a glob pattern.
+- d8593ce0e6: Do not use deprecated `LocationSpec` from the `@backstage/plugin-catalog-node` package
+- c507aee8a2: Ensured typescript type checks in migration files.
+- 2a8e3cc0b5: Optimize `Stitcher` process to be more memory efficient
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- eacc8e2b55: Make it possible for entity providers to supply only entity refs, instead of full entities, in `delta` mutation deletions.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 5b3e2afa45: Fixed deprecated use of `substr` into `substring`.
+- 71147d5c16: Internal code reorganization.
+- 93870e4df1: Track the last time the final entity changed with new timestamp "last updated at" data in final entities database, which gets updated with the time when final entity is updated.
+- 20a5161f04: Adds MySQL support for the catalog-backend
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- e982f77fe3: Registered shutdown hook in experimental catalog plugin.
+- b3fac9c107: Ignore attempts at emitting the current entity as a child of itself.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-catalog-node@1.3.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-node@0.7.2
+  - @backstage/errors@1.1.4
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/plugin-catalog-common@1.0.9
+  - @backstage/plugin-scaffolder-common@1.2.3
+
 ## 1.6.0-next.3
 
 ### Patch Changes

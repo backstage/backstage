@@ -1,5 +1,40 @@
 # @backstage/plugin-sonarqube
 
+## 0.6.0
+
+### Minor Changes
+
+- 6b59903bfa: Parts of plugin-sonarqube have been moved into a new plugin-sonarqube-react package. Additionally some types that were
+  previously internal to plugin-sonarqube have been made public and will allow access for third-parties. As the sonarqube
+  plugin has not yet reached 1.0 breaking changes are expected in the future. As such exports of plugin-sonarqube-react
+  require importing via the `/alpha` entrypoint:
+
+  ```ts
+  import { sonarQubeApiRef } from '@backstage/plugin-sonarqube-react/alpha';
+
+  const sonarQubeApi = useApi(sonarQubeApiRef);
+  ```
+
+  Moved from plugin-sonarqube to plugin-sonarqube-react:
+
+  - isSonarQubeAvailable
+  - SONARQUBE_PROJECT_KEY_ANNOTATION
+
+  Exports that been introduced to plugin-sonarqube-react are documented in the [API report](https://github.com/backstage/backstage/blob/master/plugins/sonarqube-react/api-report.md).
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 17a8e32f39: Updated dependency `rc-progress` to `3.4.1`.
+- 3dee2f5ad0: Added links to the frontend and backend plugins in the readme.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/plugin-sonarqube-react@0.1.0
+  - @backstage/catalog-model@1.1.4
+  - @backstage/theme@0.2.16
+
 ## 0.5.1-next.4
 
 ### Patch Changes

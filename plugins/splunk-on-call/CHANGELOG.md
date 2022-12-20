@@ -1,5 +1,18 @@
 # @backstage/plugin-splunk-on-call
 
+## 0.4.1
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/theme@0.2.16
+
 ## 0.4.1-next.4
 
 ### Patch Changes

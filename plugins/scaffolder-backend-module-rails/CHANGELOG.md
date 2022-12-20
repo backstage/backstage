@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.7
+
+### Patch Changes
+
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- 27b23a86ad: Added more (optional) arguments to the `createFetchRailsAction` to be passed to `rails new`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.9.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
 ## 0.4.7-next.3
 
 ### Patch Changes

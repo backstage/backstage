@@ -59,6 +59,7 @@ export function createGithubRepoCreateAction(options: {
     };
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
+    requiredConversationResolution?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -75,6 +76,9 @@ export function createGithubRepoCreateAction(options: {
           access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
         }
     >;
+    hasProjects?: boolean;
+    hasWiki?: boolean;
+    hasIssues?: boolean;
     token?: string;
     topics?: string[];
   }>({
@@ -93,6 +97,8 @@ export function createGithubRepoCreateAction(options: {
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+          requiredConversationResolution:
+            inputProps.requiredConversationResolution,
           repoVisibility: inputProps.repoVisibility,
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           allowMergeCommit: inputProps.allowMergeCommit,
@@ -100,6 +106,9 @@ export function createGithubRepoCreateAction(options: {
           allowRebaseMerge: inputProps.allowRebaseMerge,
           allowAutoMerge: inputProps.allowAutoMerge,
           collaborators: inputProps.collaborators,
+          hasProjects: inputProps.hasProjects,
+          hasWiki: inputProps.hasWiki,
+          hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
         },
@@ -125,6 +134,9 @@ export function createGithubRepoCreateAction(options: {
         allowRebaseMerge = true,
         allowAutoMerge = false,
         collaborators,
+        hasProjects = undefined,
+        hasWiki = undefined,
+        hasIssues = undefined,
         topics,
         token: providedToken,
       } = ctx.input;
@@ -157,6 +169,9 @@ export function createGithubRepoCreateAction(options: {
         allowAutoMerge,
         access,
         collaborators,
+        hasProjects,
+        hasWiki,
+        hasIssues,
         topics,
         ctx.logger,
       );

@@ -1,5 +1,33 @@
 # @backstage/plugin-explore
 
+## 0.3.43
+
+### Patch Changes
+
+- c8f49ed4d0: Update search links to only have header as linkable text
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- ea4a5be8f3: Adds styling to graph forcing it to always fill out the available space.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 4dec6f16be: Added new `@backstage/plugin-explore-backend` & `@backstage/plugin-explore-common` packages.
+
+  This deprecates the `ExploreToolsConfig` API (in `@backstage/plugin-explore-react`) which is replaced by the `ExploreApi` & `ExploreClient`. The list of `ExploreTool` data can now be provided on the backend by either using the supplied `StaticExploreToolProvider` or by implementing a custom `ExploreToolProvider`. See the [explore-backend README](https://github.com/backstage/backstage/blob/master/plugins/explore-backend/README.md) for full details.
+
+  NOTE: Existing installations that have customized the `ExploreToolConfig` will continue to work through the new `ExploreClient`. However, existing data should be migrated over to new `explore-backend` plugin as `ExploreToolConfig` will be removed in the future.
+
+  BREAKING CHANGE: If you have previously installed the `explore` plugin, but not yet customized the `ExploreToolConfig` API in your `packages/app`, this will result in an empty list of tools.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/plugin-search-react@1.3.0
+  - @backstage/core-components@0.12.1
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/plugin-explore-react@0.0.24
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/catalog-model@1.1.4
+  - @backstage/theme@0.2.16
+
 ## 0.3.43-next.4
 
 ### Patch Changes

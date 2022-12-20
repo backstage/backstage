@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-restricted-imports */
 import {
   resolve as resolvePath,
   relative as relativePath,
@@ -24,7 +22,7 @@ import {
   join,
 } from 'path';
 import { execFile } from 'child_process';
-import prettier from 'prettier';
+import type prettierType from 'prettier';
 import fs from 'fs-extra';
 import {
   Extractor,
@@ -213,10 +211,19 @@ ApiReportGenerator.generateReviewFileContent =
       collector,
       ...moreArgs,
     );
-    return prettier.format(content, {
-      ...require('@spotify/prettier-config'),
-      parser: 'markdown',
-    });
+
+    try {
+      const prettier = require('prettier') as typeof prettierType;
+
+      const config = prettier.resolveConfig.sync(cliPaths.targetRoot) ?? {};
+      return prettier.format(content, {
+        ...config,
+        parser: 'markdown',
+      });
+    } catch (e) {
+      // console.warn('Failed to format API report with prettier', e);
+      return content;
+    }
   };
 
 export async function createTemporaryTsConfig(includedPackageDirs: string[]) {

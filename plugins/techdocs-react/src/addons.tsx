@@ -27,6 +27,10 @@ import {
 
 import { TechDocsAddonLocations, TechDocsAddonOptions } from './types';
 
+/**
+ * Key for each addon.
+ * @public
+ */
 export const TECHDOCS_ADDONS_KEY = 'techdocs.addons.addon.v1';
 
 /**
