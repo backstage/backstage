@@ -38,7 +38,7 @@ auth:
         connection: ${AUTH_AUTH0_CONNECTION}
         connectionScope: ${AUTH_AUTH0_CONNECTION_SCOPE}
   session:
-    secret: 'supersecret'
+    secret: ${AUTH_SESSION_SECRET}
 ```
 
 The Auth0 provider is a structure with three configuration keys:
