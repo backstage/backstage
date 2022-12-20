@@ -76,6 +76,7 @@ export type { TaskPageProps } from './components/TaskPage';
 export { NextScaffolderPage } from './plugin';
 export type { NextRouterProps } from './next';
 export type { TemplateGroupFilter } from './next';
+export type { FormProps } from './next';
 export {
   createNextScaffolderFieldExtension,
   type NextCustomFieldValidator,

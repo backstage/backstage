@@ -1,5 +1,22 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.5
+
+### Patch Changes
+
+- 2db8acffe7: Kubernetes plugin now gracefully surfaces transport-level errors (like DNS or timeout, or other socket errors) occurring while fetching data. This will be merged into any data that is fetched successfully, fixing a bug where the whole page would be empty if any fetch operation encountered such an error.
+- 365f887717: Removed rendering for ErrorEmptyState in ErrorReporting component, so nothing is rendered when there are no errors. Also removed Divider on Kubernetes page.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 9ce7866ecd: Updated dependency `@kubernetes/client-node` to `0.18.0`.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.5.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/theme@0.2.16
+
 ## 0.7.5-next.4
 
 ### Patch Changes

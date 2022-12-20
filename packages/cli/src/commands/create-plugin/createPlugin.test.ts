@@ -22,7 +22,7 @@ import { movePlugin } from './createPlugin';
 const id = 'testPluginMock';
 
 describe('createPlugin', () => {
-  afterAll(() => {
+  afterEach(() => {
     mockFs.restore();
   });
 

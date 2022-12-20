@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-node
 
+## 1.4.3
+
+### Patch Changes
+
+- 0a61aab172: Bump dependency @azure/identity to next minor
+- e40790d0c2: Add support for specifying an S3 bucket's account ID and retrieving the credentials from the `aws` app config section. This is now the preferred way to configure AWS credentials for Techdocs.
+- 37931c33ce: Upgrade to AWS SDK for Javascript v3
+
+  Techdocs support for AWS S3 now requires defining the AWS region to connect to.
+  If `techdocs.publisher.awsS3.region` is missing from the config, the AWS environment variable `AWS_REGION` will be used.
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/integration-aws-node@0.1.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
 ## 1.4.3-next.3
 
 ### Patch Changes

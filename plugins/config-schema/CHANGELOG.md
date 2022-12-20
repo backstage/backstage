@@ -1,5 +1,20 @@
 # @backstage/plugin-config-schema
 
+## 0.1.35
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+  - @backstage/theme@0.2.16
+
 ## 0.1.35-next.4
 
 ### Patch Changes

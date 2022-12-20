@@ -1,5 +1,18 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.1.1
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- dd008a10c1: Upgrade to AWS SDK for Javascript v3
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/plugin-events-node@0.2.0
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
 ## 0.1.1-next.3
 
 ### Patch Changes

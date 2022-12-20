@@ -1,5 +1,19 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.14
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-node@0.7.2
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/config@1.0.5
+
 ## 0.5.14-next.3
 
 ### Patch Changes

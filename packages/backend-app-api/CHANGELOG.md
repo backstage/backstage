@@ -1,5 +1,22 @@
 # @backstage/backend-app-api
 
+## 0.2.4
+
+### Patch Changes
+
+- cb1c2781c0: Updated logger implementations to match interface changes.
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- afa3bf5657: Added `.stop()` method to `Backend`.
+- d6dbf1792b: Added `lifecycleFactory` implementation.
+- 05a928e296: Updated usages of types from `@backstage/backend-plugin-api`.
+- 5260d8fc7d: Root scoped services are now always initialized, regardless of whether they're used by any features.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/plugin-permission-node@0.7.2
+  - @backstage/errors@1.1.4
+  - @backstage/backend-plugin-api@0.2.0
+
 ## 0.2.4-next.3
 
 ### Patch Changes

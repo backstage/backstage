@@ -23,6 +23,7 @@ import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
+import { metrics } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import {
@@ -257,62 +258,123 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
 // Helps wrap the timing and logging behaviors
 function progressTracker() {
-  const stitchedEntities = createCounterMetric({
+  // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
+  const promStitchedEntities = createCounterMetric({
     name: 'catalog_stitched_entities_count',
-    help: 'Amount of entities stitched',
+    help: 'Amount of entities stitched. DEPRECATED, use OpenTelemetry metrics instead',
   });
-  const processedEntities = createCounterMetric({
+  const promProcessedEntities = createCounterMetric({
     name: 'catalog_processed_entities_count',
-    help: 'Amount of entities processed',
+    help: 'Amount of entities processed, DEPRECATED, use OpenTelemetry metrics instead',
     labelNames: ['result'],
   });
-  const processingDuration = createSummaryMetric({
+  const promProcessingDuration = createSummaryMetric({
     name: 'catalog_processing_duration_seconds',
-    help: 'Time spent executing the full processing flow',
+    help: 'Time spent executing the full processing flow, DEPRECATED, use OpenTelemetry metrics instead',
     labelNames: ['result'],
   });
-  const processorsDuration = createSummaryMetric({
+  const promProcessorsDuration = createSummaryMetric({
     name: 'catalog_processors_duration_seconds',
-    help: 'Time spent executing catalog processors',
+    help: 'Time spent executing catalog processors, DEPRECATED, use OpenTelemetry metrics instead',
     labelNames: ['result'],
   });
-  const processingQueueDelay = createSummaryMetric({
+  const promProcessingQueueDelay = createSummaryMetric({
     name: 'catalog_processing_queue_delay_seconds',
-    help: 'The amount of delay between being scheduled for processing, and the start of actually being processed',
+    help: 'The amount of delay between being scheduled for processing, and the start of actually being processed, DEPRECATED, use OpenTelemetry metrics instead',
   });
 
+  const meter = metrics.getMeter('default');
+  const stitchedEntities = meter.createCounter(
+    'catalog.stitched.entities.count',
+    {
+      description: 'Amount of entities stitched',
+    },
+  );
+
+  const processedEntities = meter.createCounter(
+    'catalog.processed.entities.count',
+    { description: 'Amount of entities processed' },
+  );
+
+  const processingDuration = meter.createHistogram(
+    'catalog.processing.duration',
+    {
+      description: 'Time spent executing the full processing flow',
+      unit: 'seconds',
+    },
+  );
+
+  const processorsDuration = meter.createHistogram(
+    'catalog.processors.duration',
+    {
+      description: 'Time spent executing catalog processors',
+      unit: 'seconds',
+    },
+  );
+
+  const processingQueueDelay = meter.createHistogram(
+    'catalog.processing.queue.delay',
+    {
+      description:
+        'The amount of delay between being scheduled for processing, and the start of actually being processed',
+      unit: 'seconds',
+    },
+  );
+
   function processStart(item: RefreshStateItem, logger: Logger) {
+    const startTime = process.hrtime();
+    const endOverallTimer = promProcessingDuration.startTimer();
+    const endProcessorsTimer = promProcessorsDuration.startTimer();
+
     logger.debug(`Processing ${item.entityRef}`);
 
     if (item.nextUpdateAt) {
-      processingQueueDelay.observe(-item.nextUpdateAt.diffNow().as('seconds'));
+      const seconds = -item.nextUpdateAt.diffNow().as('seconds');
+      promProcessingQueueDelay.observe(seconds);
+      processingQueueDelay.record(seconds);
     }
 
-    const endOverallTimer = processingDuration.startTimer();
-    const endProcessorsTimer = processorsDuration.startTimer();
+    function endTime() {
+      const delta = process.hrtime(startTime);
+      return delta[0] + delta[1] / 1e9;
+    }
 
     function markProcessorsCompleted(result: EntityProcessingResult) {
       endProcessorsTimer({ result: result.ok ? 'ok' : 'failed' });
+      processorsDuration.record(endTime(), {
+        result: result.ok ? 'ok' : 'failed',
+      });
     }
 
     function markSuccessfulWithNoChanges() {
       endOverallTimer({ result: 'unchanged' });
-      processedEntities.inc({ result: 'unchanged' }, 1);
+      promProcessedEntities.inc({ result: 'unchanged' }, 1);
+
+      processingDuration.record(endTime(), { result: 'unchanged' });
+      processedEntities.add(1, { result: 'unchanged' });
     }
 
     function markSuccessfulWithErrors() {
       endOverallTimer({ result: 'errors' });
-      processedEntities.inc({ result: 'errors' }, 1);
+      promProcessedEntities.inc({ result: 'errors' }, 1);
+
+      processingDuration.record(endTime(), { result: 'errors' });
+      processedEntities.add(1, { result: 'errors' });
     }
 
     function markSuccessfulWithChanges(stitchedCount: number) {
       endOverallTimer({ result: 'changed' });
-      stitchedEntities.inc(stitchedCount);
-      processedEntities.inc({ result: 'changed' }, 1);
+      promStitchedEntities.inc(stitchedCount);
+      promProcessedEntities.inc({ result: 'changed' }, 1);
+
+      processingDuration.record(endTime(), { result: 'changed' });
+      stitchedEntities.add(stitchedCount);
+      processedEntities.add(1, { result: 'changed' });
     }
 
     function markFailed(error: Error) {
-      processedEntities.inc({ result: 'failed' }, 1);
+      promProcessedEntities.inc({ result: 'failed' }, 1);
+      processedEntities.add(1, { result: 'failed' });
       logger.warn(`Processing of ${item.entityRef} failed`, error);
     }
 

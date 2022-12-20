@@ -1,5 +1,40 @@
 # @backstage/cli
 
+## 0.22.0
+
+### Minor Changes
+
+- 736f893f72: The Jest configuration that was previously enabled with `BACKSTAGE_NEXT_TESTS` is now enabled by default. To revert to the old configuration you can now instead set `BACKSTAGE_OLD_TESTS`.
+
+  This new configuration uses the `babel` coverage provider rather than `v8`. It used to be that `v8` worked better when using Sucrase for transpilation, but now that we have switched to SWC, `babel` seems to work better. In addition, the new configuration also enables source maps by default, as they no longer have a negative impact on code coverage accuracy, and it also enables a modified Jest runtime with additional caching of script objects.
+
+### Patch Changes
+
+- 91d050c140: changed tests created by create-plugin to follow eslint-rules best practices particularly testing-library/prefer-screen-queries and testing-library/render-result-naming-convention
+- 43b2b9c791: Removed the unused dependency on `@sucrase/jest-plugin`.
+- dd721148b5: Updated Jest coverage configuration to only apply either in the root project or package configuration, depending on whether repo or package tests are run.
+- 5850ef9b84: Fix webpack dev server issue where it wasn't serving `index.html` from correct endpoint on subsequent requests.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 459a3457e1: Bump `msw` version in default plugin/app templates
+- c27eabef6b: Adds new web-library package option when generating a new plugin
+- 8fffe42708: JSX and React Fast Refresh transforms are no longer enabled when bundling backend code.
+- 309f2daca4: Updated dependency `esbuild` to `^0.16.0`.
+- ee14bab716: Updated dependency `minimatch` to `5.1.1` and switch version range to `^`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- ed0cf59c59: Updated dependency `@rollup/plugin-commonjs` to `^23.0.0`.
+- 16b7c2fccd: Updated dependency `@rollup/plugin-yaml` to `^4.0.0`.
+- 086c0bbb45: Updated dependency `@rollup/plugin-json` to `^5.0.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- d9d9a7a134: Removed all copyright notices from package templates.
+- 8e0358e18d: Added `--skip-install` parameter to `backstage-cli versions:bump`
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/config-loader@1.1.7
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.5
+
 ## 0.22.0-next.4
 
 ### Minor Changes
