@@ -174,7 +174,7 @@ describe('Stepper', () => {
         manifest={manifest}
         extensions={[]}
         onComplete={jest.fn()}
-        transformErrors={transformErrors}
+        FormProps={{ transformErrors }}
       />,
     );
 
