@@ -20,4 +20,7 @@ import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
  *
  * @alpha
  */
-export type FormProps = Pick<SchemaFormProps, 'transformErrors'>;
+export type FormProps = Pick<
+  SchemaFormProps,
+  'transformErrors' | 'noHtml5Validate'
+>;

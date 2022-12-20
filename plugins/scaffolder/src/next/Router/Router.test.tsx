@@ -54,11 +54,16 @@ describe('Router', () => {
       expect(TemplateWizardPage).toHaveBeenCalled();
     });
 
-    it('should pass through the transformErrors property', async () => {
+    it('should pass through the FormProps property', async () => {
       const transformErrorsMock = jest.fn();
 
       await renderInTestApp(
-        <Router FormProps={{ transformErrors: transformErrorsMock }} />,
+        <Router
+          FormProps={{
+            transformErrors: transformErrorsMock,
+            noHtml5Validate: true,
+          }}
+        />,
         {
           routeEntries: ['/templates/default/foo'],
         },
@@ -66,13 +71,12 @@ describe('Router', () => {
 
       const mock = TemplateWizardPage as jest.Mock;
 
-      const [
-        {
-          FormProps: { transformErrors },
-        },
-      ] = mock.mock.calls[0];
+      const [{ FormProps }] = mock.mock.calls[0];
 
-      expect(transformErrors).toEqual(transformErrors);
+      expect(FormProps).toEqual({
+        transformErrors: transformErrorsMock,
+        noHtml5Validate: true,
+      });
     });
 
     it('should extract the fieldExtensions and pass them through', async () => {
