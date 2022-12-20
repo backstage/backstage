@@ -87,7 +87,8 @@ describe('buildApiReports', () => {
     mockFs.restore();
     jest.clearAllMocks();
   });
-  it('should run whitout any options', async () => {
+
+  it('should run without any options', async () => {
     const opts = {};
     const paths: string[] = [];
 
