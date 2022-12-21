@@ -12806,7 +12806,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/commons@npm:^1.6.0, @sinonjs/commons@npm:^1.7.0, @sinonjs/commons@npm:^1.8.3":
+"@sinonjs/commons@npm:^1.7.0":
   version: 1.8.3
   resolution: "@sinonjs/commons@npm:1.8.3"
   dependencies:
@@ -12839,17 +12839,6 @@ __metadata:
   dependencies:
     "@sinonjs/commons": ^1.7.0
   checksum: 7d3aef54e17c1073101cb64d953157c19d62a40e261a30923fa1ee337b049c5f29cc47b1f0c477880f42b5659848ba9ab897607ac8ea4acd5c30ddcfac57fca6
-  languageName: node
-  linkType: hard
-
-"@sinonjs/samsam@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "@sinonjs/samsam@npm:6.1.1"
-  dependencies:
-    "@sinonjs/commons": ^1.6.0
-    lodash.get: ^4.4.2
-    type-detect: ^4.0.8
-  checksum: a09b0914bf573f0da82bd03c64ba413df81a7c173818dc3f0a90c2652240ac835ef583f4d52f0b215e626633c91a4095c255e0669f6ead97241319f34f05e7fc
   languageName: node
   linkType: hard
 
@@ -16732,19 +16721,19 @@ __metadata:
   linkType: hard
 
 "aws-sdk-mock@npm:^5.2.1":
-  version: 5.7.0
-  resolution: "aws-sdk-mock@npm:5.7.0"
+  version: 5.8.0
+  resolution: "aws-sdk-mock@npm:5.8.0"
   dependencies:
-    aws-sdk: ^2.1122.0
-    sinon: ^13.0.2
+    aws-sdk: ^2.1231.0
+    sinon: ^14.0.1
     traverse: ^0.6.6
-  checksum: 9ac22cffc2e99c64af7aa29d2b4030ff8fdbb36d98cb27008952371d159ce974d31538fded372484e5d89e3fa9c22df0b7835d635a325734696a68c96a09e668
+  checksum: c0b06d63d375a6f6664a5860815bdcc21cbe752f227f3617db8bd9042e48604e5cc26834876909c8fc1e68ac937166f4cb0637b3cb565d05c9a64aa025fe3407
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.1122.0, aws-sdk@npm:^2.814.0, aws-sdk@npm:^2.840.0, aws-sdk@npm:^2.948.0":
-  version: 2.1224.0
-  resolution: "aws-sdk@npm:2.1224.0"
+"aws-sdk@npm:^2.1231.0, aws-sdk@npm:^2.814.0, aws-sdk@npm:^2.840.0, aws-sdk@npm:^2.948.0":
+  version: 2.1279.0
+  resolution: "aws-sdk@npm:2.1279.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -16756,7 +16745,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: 990b4db8b72462432cfd75b4fe2c71ff8b24abed2b0d6b6441d51211167afd00b002ff91d7c3ff02379b34f6e5dcae72bdf9e31f55a9c105f50ad96cfc8f08da
+  checksum: ee8e8ee7baea9abaa0e1d08294be8ff00795b9db606101ef69a45d1465dac936187e43079fbe7a28ff4a463c8f9cd728d9bfee3e3974b0b5b88eb437dc81295b
   languageName: node
   linkType: hard
 
@@ -29463,7 +29452,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nise@npm:^5.1.1, nise@npm:^5.1.2":
+"nise@npm:^5.1.2":
   version: 5.1.2
   resolution: "nise@npm:5.1.2"
   dependencies:
@@ -34755,21 +34744,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon@npm:^13.0.2":
-  version: 13.0.2
-  resolution: "sinon@npm:13.0.2"
-  dependencies:
-    "@sinonjs/commons": ^1.8.3
-    "@sinonjs/fake-timers": ^9.1.2
-    "@sinonjs/samsam": ^6.1.1
-    diff: ^5.0.0
-    nise: ^5.1.1
-    supports-color: ^7.2.0
-  checksum: 237f21c8c4a8b31574c71b1b9f4c0f74a63dde5c0e86bd116effa4ce63c52467bd45fb4034a8fa32656a7919d9b19fc7b108ca9e1e6e3144f3735da96dad2877
-  languageName: node
-  linkType: hard
-
-"sinon@npm:^14.0.2":
+"sinon@npm:^14.0.1, sinon@npm:^14.0.2":
   version: 14.0.2
   resolution: "sinon@npm:14.0.2"
   dependencies:
