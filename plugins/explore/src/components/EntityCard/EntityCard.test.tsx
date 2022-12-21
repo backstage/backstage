@@ -18,9 +18,9 @@ import { DomainEntity } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { DomainCard } from './DomainCard';
+import { EntityCard } from './EntityCard';
 
-describe('<DomainCard />', () => {
+describe('<EntityCard />', () => {
   it('renders a domain card', async () => {
     const entity: DomainEntity = {
       apiVersion: 'backstage.io/v1alpha1',
@@ -35,7 +35,7 @@ describe('<DomainCard />', () => {
       },
     };
     const { getByText } = await renderInTestApp(
-      <DomainCard entity={entity} />,
+      <EntityCard entity={entity} />,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,

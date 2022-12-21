@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { DomainEntity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
+import { EntityCard } from '../EntityCard';
 import {
   Content,
   ContentHeader,
@@ -29,9 +30,10 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { EntityCard } from '../EntityCard';
 
-const Body = () => {
+const Body = (props: { kind: string }) => {
+  const { kind } = props;
+  const kindPlural = `${kind}s`;
   const catalogApi = useApi(catalogApiRef);
   const {
     value: entities,
@@ -39,9 +41,9 @@ const Body = () => {
     error,
   } = useAsync(async () => {
     const response = await catalogApi.getEntities({
-      filter: { kind: 'domain' },
+      filter: { kind },
     });
-    return response.items as DomainEntity[];
+    return response.items as Entity[];
   }, [catalogApi]);
 
   if (loading) {
@@ -50,7 +52,7 @@ const Body = () => {
 
   if (error) {
     return (
-      <WarningPanel severity="error" title="Could not load domains.">
+      <WarningPanel severity="error" title={`Could not load ${kindPlural}.`}>
         {error.message}
       </WarningPanel>
     );
@@ -60,13 +62,13 @@ const Body = () => {
     return (
       <EmptyState
         missing="info"
-        title="No domains to display"
-        description="You haven't added any domains yet."
+        title={`No ${kindPlural} to display`}
+        description={`You haven't added any ${kindPlural} yet.`}
         action={
           <Button
             variant="contained"
             color="primary"
-            href="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain"
+            href={`https://backstage.io/docs/features/software-catalog/descriptor-format#kind-${kind}`}
           >
             Read more
           </Button>
@@ -85,13 +87,23 @@ const Body = () => {
 };
 
 /** @public */
-export const DomainExplorerContent = (props: { title?: string }) => {
+export const EntityExplorerContent = (props: {
+  tabTitle?: string;
+  kind: string;
+}) => {
+  const { kind, tabTitle } = props;
   return (
     <Content noPadding>
-      <ContentHeader title={props.title ?? 'Domains'}>
-        <SupportButton>Discover the domains in your ecosystem.</SupportButton>
+      <ContentHeader
+        title={
+          tabTitle || `${kind[0].toLocaleUpperCase()}${kind.substring(1)}s`
+        }
+      >
+        <SupportButton>
+          Discover the {kind.toLocaleLowerCase()}s in your ecosystem.
+        </SupportButton>
       </ContentHeader>
-      <Body />
+      <Body kind={kind.toLocaleLowerCase()} />
     </Content>
   );
 };

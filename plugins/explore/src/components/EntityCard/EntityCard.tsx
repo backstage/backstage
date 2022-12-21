@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DomainEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   EntityRefLinks,
   entityRouteParams,
@@ -35,7 +35,7 @@ import { Button, ItemCardHeader } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 /** @public */
-export const DomainCard = (props: { entity: DomainEntity }) => {
+export const EntityCard = (props: { entity: Entity }) => {
   const { entity } = props;
 
   const catalogEntityRoute = useRouteRef(entityRouteRef);

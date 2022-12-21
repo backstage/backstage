@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { DomainExplorerContent } from '../DomainExplorerContent';
 import { ExploreLayout } from '../ExploreLayout';
 import { GroupsExplorerContent } from '../GroupsExplorerContent';
 import { ToolExplorerContent } from '../ToolExplorerContent';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { EntityExplorerContent } from '../EntityExplorerContent';
 
 export const DefaultExplorePage = () => {
   const configApi = useApi(configApiRef);
@@ -32,7 +32,10 @@ export const DefaultExplorePage = () => {
       subtitle="Discover solutions available in your ecosystem"
     >
       <ExploreLayout.Route path="domains" title="Domains">
-        <DomainExplorerContent />
+        <EntityExplorerContent kind="domain" />
+      </ExploreLayout.Route>
+      <ExploreLayout.Route path="systems" title="Systems">
+        <EntityExplorerContent kind="system" />
       </ExploreLayout.Route>
       <ExploreLayout.Route path="groups" title="Groups">
         <GroupsExplorerContent />
