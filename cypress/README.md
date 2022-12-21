@@ -15,7 +15,7 @@ You can run the e2e tests locally pointing at your local running version like so
 ```sh
 cd cypress
 yarn install
-yarn cypress run
+yarn run cy:run
 ```
 
 Note that the tests expect to run against a built application, so you'll want to

@@ -29,7 +29,8 @@
     "test": "backstage-cli package test",
     "test:e2e": "backstage-cli test --config e2e-test.config.js",
     "test:e2e:ci": "backstage-cli test --config e2e-test.config.js --watchAll=false --ci",
-    "test:cypress": "cypress open",
+    "cy:dev": "cypress open",
+    "cy:run": "cypress run",
     "prepack": "./scripts/prepack.sh"
   },
   "bin": {
