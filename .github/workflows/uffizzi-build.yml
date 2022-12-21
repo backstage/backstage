@@ -34,6 +34,10 @@ jobs:
 
       - name: yarn build
         run: |
+          yarn tsc:full
+
+      - name: yarn build
+        run: |
           yarn build:all
 
       - name: Set up Docker Buildx
