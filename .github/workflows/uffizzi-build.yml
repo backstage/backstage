@@ -55,6 +55,11 @@ jobs:
           images: registry.uffizzi.com/${{ env.UUID_TAG_APP }}
           tags: type=raw,value=60d
 
+      - name: Add examples directory to Dockerfile
+        run: |
+          echo "COPY examples /app/examples" >> ./example-app/packages/backend/Dockerfile
+          cat ./example-app/packages/backend/Dockerfile
+
       - name: Build Image
         uses: docker/build-push-action@v2
         with:
