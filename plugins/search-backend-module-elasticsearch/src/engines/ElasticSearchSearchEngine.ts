@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { awsGetCredentials, createAWSConnection } from 'aws-os-connection';
-import { Config } from '@backstage/config';
 import {
   IndexableDocument,
   IndexableResult,
@@ -23,15 +21,18 @@ import {
   SearchEngine,
   SearchQuery,
 } from '@backstage/plugin-search-common';
+import { awsGetCredentials, createAWSConnection } from 'aws-os-connection';
+import { isEmpty, isNumber, isNaN as nan } from 'lodash';
+
+import { Config } from '@backstage/config';
+import { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
+import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
+import { ElasticSearchCustomIndexTemplate } from './types';
+import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
+import { Logger } from 'winston';
 import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
-import { isEmpty, isNaN as nan, isNumber } from 'lodash';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
-import { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
-import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
-import { ElasticSearchCustomIndexTemplate } from './types';
-import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 
 export type { ElasticSearchClientOptions };
 
@@ -63,7 +64,7 @@ export type ElasticSearchQueryTranslator = (
 ) => ElasticSearchConcreteQuery;
 
 /**
- * Options for instansiate ElasticSearchSearchEngine
+ * Options for instantiate ElasticSearchSearchEngine
  * @public
  */
 export type ElasticSearchOptions = {
@@ -150,6 +151,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
     } else if (options.provider === 'aws') {
       logger.info('Initializing AWS OpenSearch search engine.');
+    } else if (options.provider === 'opensearch') {
+      logger.info('Initializing OpenSearch search engine.');
     } else {
       logger.info('Initializing ElasticSearch search engine.');
     }
@@ -252,6 +255,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
 
   async getIndexer(type: string) {
     const alias = this.constructSearchAlias(type);
+    const indexerLogger = this.logger.child({ documentType: type });
 
     const indexer = new ElasticSearchSearchEngineIndexer({
       type,
@@ -259,13 +263,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       indexSeparator: this.indexSeparator,
       alias,
       elasticSearchClientWrapper: this.elasticSearchClientWrapper,
-      logger: this.logger,
+      logger: indexerLogger,
       batchSize: this.batchSize,
     });
 
     // Attempt cleanup upon failure.
     indexer.on('error', async e => {
-      this.logger.error(`Failed to index documents for type ${type}`, e);
+      indexerLogger.error(`Failed to index documents for type ${type}`, e);
       let cleanupError: Error | undefined;
 
       // In some cases, a failure may have occurred before the indexer was able
@@ -296,11 +300,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       });
 
       if (cleanupError) {
-        this.logger.error(
+        indexerLogger.error(
           `Unable to clean up elastic index ${indexer.indexName}: ${cleanupError}`,
         );
       } else {
-        this.logger.info(`Removed partial, failed index ${indexer.indexName}`);
+        indexerLogger.info(
+          `Removed partial, failed index ${indexer.indexName}`,
+        );
       }
     });
 
@@ -442,6 +448,25 @@ export async function createElasticSearchClientOptions(
       // @ts-ignore
       node: config.getString('node'),
       ...AWSConnection,
+      ...(sslConfig
+        ? {
+            ssl: {
+              rejectUnauthorized:
+                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+            },
+          }
+        : {}),
+    };
+  }
+  if (config.getOptionalString('provider') === 'opensearch') {
+    const authConfig = config.getConfig('auth');
+    return {
+      provider: 'opensearch',
+      node: config.getString('node'),
+      auth: {
+        username: authConfig.getString('username'),
+        password: authConfig.getString('password'),
+      },
       ...(sslConfig
         ? {
             ssl: {

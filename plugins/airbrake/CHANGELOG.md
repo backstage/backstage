@@ -1,5 +1,44 @@
 # @backstage/plugin-airbrake
 
+## 0.3.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/dev-utils@1.0.10
+  - @backstage/plugin-catalog-react@1.2.3
+
+## 0.3.12
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 151c0e1477: Remove the `object-hash` dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/test-utils@1.2.3
+  - @backstage/dev-utils@1.0.9
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/theme@0.2.16
+
+## 0.3.12-next.4
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/dev-utils@1.0.9-next.4
+  - @backstage/test-utils@1.2.3-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+
 ## 0.3.12-next.3
 
 ### Patch Changes

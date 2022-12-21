@@ -84,7 +84,7 @@ describe('eventPlugin', () => {
 
     const response = await request(app)
       .post('/http/fake')
-      .timeout(100)
+      .timeout(1000)
       .send({ test: 'fake' });
     expect(response.status).toBe(202);
 

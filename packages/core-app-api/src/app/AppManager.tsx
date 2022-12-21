@@ -17,15 +17,10 @@
 import { AppConfig, Config } from '@backstage/config';
 import React, {
   ComponentType,
-  createContext,
   PropsWithChildren,
-  ReactElement,
-  useContext,
   useMemo,
   useRef,
-  useState,
 } from 'react';
-import { Route, Routes } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import {
   ApiProvider,
@@ -34,7 +29,6 @@ import {
   LocalStorageFeatureFlags,
 } from '../apis';
 import {
-  useApi,
   AnyApiFactory,
   ApiHolder,
   IconComponent,
@@ -44,7 +38,6 @@ import {
   AppThemeApi,
   ConfigApi,
   featureFlagsApiRef,
-  IdentityApi,
   identityApiRef,
   BackstagePlugin,
 } from '@backstage/core-plugin-api';
@@ -61,7 +54,6 @@ import {
   routingV2Collector,
 } from '../routing/collectors';
 import { RoutingProvider } from '../routing/RoutingProvider';
-import { RouteTracker } from '../routing/RouteTracker';
 import {
   validateRouteParameters,
   validateRouteBindings,
@@ -74,53 +66,20 @@ import {
   AppContext,
   AppOptions,
   BackstageApp,
-  SignInPageProps,
 } from './types';
 import { AppThemeProvider } from './AppThemeProvider';
 import { defaultConfigLoader } from './defaultConfigLoader';
 import { ApiRegistry } from '../apis/system/ApiRegistry';
 import { resolveRouteBindings } from './resolveRouteBindings';
-import { BackstageRouteObject } from '../routing/types';
 import { isReactRouterBeta } from './isReactRouterBeta';
+import { InternalAppContext } from './InternalAppContext';
+import { AppRouter, getBasePath } from './AppRouter';
 
 type CompatiblePlugin =
   | BackstagePlugin
   | (Omit<BackstagePlugin, 'getFeatureFlags'> & {
       output(): Array<{ type: 'feature-flag'; name: string }>;
     });
-
-const InternalAppContext = createContext<{
-  routeObjects: BackstageRouteObject[];
-}>({ routeObjects: [] });
-
-/**
- * Get the app base path from the configured app baseUrl.
- *
- * The returned path does not have a trailing slash.
- */
-function getBasePath(configApi: Config) {
-  if (!isReactRouterBeta()) {
-    // When using rr v6 stable the base path is handled through the
-    // basename prop on the router component instead.
-    return '';
-  }
-
-  return readBasePath(configApi);
-}
-
-/**
- * Read the configured base path.
- *
- * The returned path does not have a trailing slash.
- */
-function readBasePath(configApi: ConfigApi) {
-  let { pathname } = new URL(
-    configApi.getOptionalString('app.baseUrl') ?? '/',
-    'http://sample.dev', // baseUrl can be specified as just a path
-  );
-  pathname = pathname.replace(/\/*$/, '');
-  return pathname;
-}
 
 function useConfigLoader(
   configLoader: AppConfigLoader | undefined,
@@ -289,7 +248,23 @@ export class AppManager implements BackstageApp {
     return this.components;
   }
 
+  createRoot(element: JSX.Element): ComponentType<{}> {
+    const AppProvider = this.getProvider();
+    const AppRoot = () => {
+      return <AppProvider>{element}</AppProvider>;
+    };
+    return AppRoot;
+  }
+
+  #getProviderCalled = false;
   getProvider(): ComponentType<{}> {
+    if (this.#getProviderCalled) {
+      throw new Error(
+        'app.getProvider() or app.createRoot() has already been called, and can only be called once',
+      );
+    }
+    this.#getProviderCalled = true;
+
     const appContext = new AppContextImpl(this);
 
     // We only validate routes once
@@ -413,7 +388,10 @@ export class AppManager implements BackstageApp {
                 basePath={getBasePath(loadedConfig.api)}
               >
                 <InternalAppContext.Provider
-                  value={{ routeObjects: routing.objects }}
+                  value={{
+                    routeObjects: routing.objects,
+                    appIdentityProxy: this.appIdentityProxy,
+                  }}
                 >
                   {children}
                 </InternalAppContext.Provider>
@@ -427,104 +405,6 @@ export class AppManager implements BackstageApp {
   }
 
   getRouter(): ComponentType<{}> {
-    const { Router: RouterComponent, SignInPage: SignInPageComponent } =
-      this.components;
-
-    // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
-    const SignInPageWrapper = ({
-      component: Component,
-      children,
-    }: {
-      component: ComponentType<SignInPageProps>;
-      children: ReactElement;
-    }) => {
-      const [identityApi, setIdentityApi] = useState<IdentityApi>();
-      const configApi = useApi(configApiRef);
-      const basePath = getBasePath(configApi);
-
-      if (!identityApi) {
-        return <Component onSignInSuccess={setIdentityApi} />;
-      }
-
-      this.appIdentityProxy.setTarget(identityApi, {
-        signOutTargetUrl: basePath || '/',
-      });
-      return children;
-    };
-
-    const AppRouter = ({ children }: PropsWithChildren<{}>) => {
-      const configApi = useApi(configApiRef);
-      const basePath = readBasePath(configApi);
-      const mountPath = `${basePath}/*`;
-      const { routeObjects } = useContext(InternalAppContext);
-
-      // If the app hasn't configured a sign-in page, we just continue as guest.
-      if (!SignInPageComponent) {
-        this.appIdentityProxy.setTarget(
-          {
-            getUserId: () => 'guest',
-            getIdToken: async () => undefined,
-            getProfile: () => ({
-              email: 'guest@example.com',
-              displayName: 'Guest',
-            }),
-            getProfileInfo: async () => ({
-              email: 'guest@example.com',
-              displayName: 'Guest',
-            }),
-            getBackstageIdentity: async () => ({
-              type: 'user',
-              userEntityRef: 'user:default/guest',
-              ownershipEntityRefs: ['user:default/guest'],
-            }),
-            getCredentials: async () => ({}),
-            signOut: async () => {},
-          },
-          { signOutTargetUrl: basePath || '/' },
-        );
-
-        if (isReactRouterBeta()) {
-          return (
-            <RouterComponent>
-              <RouteTracker routeObjects={routeObjects} />
-              <Routes>
-                <Route path={mountPath} element={<>{children}</>} />
-              </Routes>
-            </RouterComponent>
-          );
-        }
-
-        return (
-          <RouterComponent basename={basePath}>
-            <RouteTracker routeObjects={routeObjects} />
-            {children}
-          </RouterComponent>
-        );
-      }
-
-      if (isReactRouterBeta()) {
-        return (
-          <RouterComponent>
-            <RouteTracker routeObjects={routeObjects} />
-            <SignInPageWrapper component={SignInPageComponent}>
-              <Routes>
-                <Route path={mountPath} element={<>{children}</>} />
-              </Routes>
-            </SignInPageWrapper>
-          </RouterComponent>
-        );
-      }
-
-      return (
-        <RouterComponent basename={basePath}>
-          <RouteTracker routeObjects={routeObjects} />
-          <SignInPageWrapper component={SignInPageComponent}>
-            <>{children}</>
-          </SignInPageWrapper>
-        </RouterComponent>
-      );
-    };
-
     return AppRouter;
   }
 

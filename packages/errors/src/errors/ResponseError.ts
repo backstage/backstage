@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { deserializeError } from '../serialization';
+import { deserializeError } from '../serialization/error';
 import {
   ErrorResponseBody,
   parseErrorResponseBody,

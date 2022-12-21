@@ -223,10 +223,19 @@ export interface PodStatusFetchResponse {
 }
 
 /** @public */
-export interface KubernetesFetchError {
+export type KubernetesFetchError = StatusError | RawFetchError;
+
+/** @public */
+export interface StatusError {
   errorType: KubernetesErrorTypes;
   statusCode?: number;
   resourcePath?: string;
+}
+
+/** @public */
+export interface RawFetchError {
+  errorType: 'FETCH_ERROR';
+  message: string;
 }
 
 /** @public */

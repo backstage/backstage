@@ -17,11 +17,11 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import { useOutlet } from 'react-router';
+import { useOutlet } from 'react-router-dom';
 import { CatalogPage } from './CatalogPage';
 
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useOutlet: jest.fn().mockReturnValue('Route Children'),
 }));
 

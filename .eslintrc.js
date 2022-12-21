@@ -18,7 +18,7 @@ var path = require('path');
 
 module.exports = {
   root: true,
-  plugins: ['notice', 'testing-library'],
+  plugins: ['@spotify', 'notice', 'react', 'testing-library'],
   rules: {
     'notice/notice': [
       'error',
@@ -237,4 +237,20 @@ module.exports = {
       }),
     ].flat(),
   },
+  overrides: [
+    {
+      files: ['**/*.[jt]s?(x)'],
+      excludedFiles: '**/*.{test,spec}.[jt]s?(x)',
+      rules: {
+        'react/forbid-elements': [
+          1,
+          {
+            forbid: [
+              { element: 'button', message: 'use MUI <Button> instead' },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };

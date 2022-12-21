@@ -1,5 +1,32 @@
 # @backstage/backend-plugin-api
 
+## 0.2.0
+
+### Minor Changes
+
+- 884d749b14: **BREAKING**: All core service references are now exported via a single `coreServices` object. For example, the `loggerServiceRef` is now accessed via `coreServices.logger` instead.
+- a025190552: **BREAKING**: All service interfaces are now suffixed with `*Service`.
+
+### Patch Changes
+
+- cb1c2781c0: Updated `LoggerService` interface with more log methods and meta.
+- d6dbf1792b: Added initial support for registering shutdown hooks via `lifecycleServiceRef`.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/config@1.0.5
+
+## 0.2.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.0-next.3
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/config@1.0.5-next.1
+
 ## 0.2.0-next.2
 
 ### Minor Changes

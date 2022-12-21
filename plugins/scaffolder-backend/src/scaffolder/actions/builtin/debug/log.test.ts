@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import mock from 'mock-fs';
+import mockFs from 'mock-fs';
 import os from 'os';
 import { Writable } from 'stream';
 import { createDebugLogAction } from './log';
@@ -40,7 +40,7 @@ describe('debug:log', () => {
   const action = createDebugLogAction();
 
   beforeEach(() => {
-    mock({
+    mockFs({
       [`${mockContext.workspacePath}/README.md`]: '',
       [`${mockContext.workspacePath}/a-directory/index.md`]: '',
     });
@@ -48,7 +48,7 @@ describe('debug:log', () => {
   });
 
   afterEach(() => {
-    mock.restore();
+    mockFs.restore();
   });
 
   it('should do nothing', async () => {

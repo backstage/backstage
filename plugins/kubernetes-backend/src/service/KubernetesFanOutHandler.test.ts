@@ -20,8 +20,14 @@ import {
   CustomResource,
   FetchResponseWrapper,
   ObjectFetchParams,
+  KubernetesServiceLocator,
 } from '../types/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 
 const fetchObjectsForService = jest.fn();
 const fetchPodMetricsByNamespaces = jest.fn();
@@ -749,6 +755,122 @@ describe('getKubernetesObjectsByEntity', () => {
           resources: resourcesByCluster('other-cluster'),
         },
       ],
+    });
+  });
+  it('fails when fetcher rejects with a non-FetchError', async () => {
+    const nonFetchError = new Error('not a fetch error');
+    getClustersByEntity.mockResolvedValue({
+      clusters: [
+        {
+          name: 'test-cluster',
+          authProvider: 'serviceAccount',
+          skipMetricsLookup: true,
+        },
+      ],
+    });
+    fetchObjectsForService.mockRejectedValue(nonFetchError);
+
+    const sut = getKubernetesFanOutHandler([]);
+
+    const result = sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+    await expect(result).rejects.toThrow(nonFetchError);
+  });
+  describe('with a real fetcher', () => {
+    const worker = setupServer();
+    setupRequestMockHandlers(worker);
+    it('fetch error short-circuits requests to a single cluster, recovering across the fleet', async () => {
+      const pods = [{ metadata: { name: 'pod-name' } }];
+      const services = [{ metadata: { name: 'service-name' } }];
+      worker.use(
+        rest.get('https://works/api/v1/pods', (_, res, ctx) =>
+          res(ctx.json({ items: pods })),
+        ),
+        rest.get('https://works/api/v1/services', (_, res, ctx) =>
+          res(ctx.json({ items: services })),
+        ),
+        rest.get('https://fails/api/v1/pods', (_, res) =>
+          res.networkError('socket error'),
+        ),
+        rest.get('https://fails/api/v1/services', (_, res, ctx) =>
+          res(ctx.json({ items: services })),
+        ),
+      );
+      const fleet: jest.Mocked<KubernetesServiceLocator> = {
+        getClustersByEntity: jest.fn().mockResolvedValue({
+          clusters: [
+            {
+              name: 'works',
+              url: 'https://works',
+              authProvider: 'serviceAccount',
+              serviceAccountToken: 'token',
+              skipMetricsLookup: true,
+            },
+            {
+              name: 'fails',
+              url: 'https://fails',
+              authProvider: 'serviceAccount',
+              serviceAccountToken: 'token',
+              skipMetricsLookup: true,
+            },
+          ],
+        }),
+      };
+      const logger = getVoidLogger();
+      const sut = new KubernetesFanOutHandler({
+        logger,
+        fetcher: new KubernetesClientBasedFetcher({ logger }),
+        serviceLocator: fleet,
+        customResources: [],
+        objectTypesToFetch: [
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'pods',
+            objectType: 'pods',
+          },
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'services',
+            objectType: 'services',
+          },
+        ],
+      });
+
+      const result = await sut.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      const expected: ObjectsByEntityResponse = {
+        items: [
+          {
+            cluster: { name: 'works' },
+            resources: [
+              { type: 'pods', resources: pods },
+              { type: 'services', resources: services },
+            ],
+            podMetrics: [],
+            errors: [],
+          },
+          {
+            cluster: { name: 'fails' },
+            resources: [],
+            podMetrics: [],
+            errors: [
+              {
+                errorType: 'FETCH_ERROR',
+                message:
+                  'request to https://fails/api/v1/pods?labelSelector=backstage.io/kubernetes-id=test-component failed, reason: socket error',
+              },
+            ],
+          },
+        ],
+      };
+      expect(result).toStrictEqual(expected);
     });
   });
 });

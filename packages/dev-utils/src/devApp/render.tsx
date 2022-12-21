@@ -46,7 +46,7 @@ import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
-import { createRoutesFromChildren, Route } from 'react-router';
+import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 
 export function isReactRouterBeta(): boolean {

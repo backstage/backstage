@@ -1,5 +1,29 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- c507aee8a2: Ensured typescript type checks in migration files.
+- 9b1891061c: Column `title` has replaced column `name` for `BazaarProject` in database
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-test-utils@0.1.31
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/config@1.0.5
+
+## 0.2.2-next.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-test-utils@0.1.31-next.4
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.3
+
 ## 0.2.2-next.3
 
 ### Patch Changes

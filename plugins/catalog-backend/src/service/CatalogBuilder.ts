@@ -96,6 +96,8 @@ import {
   RESOURCE_TYPE_CATALOG_ENTITY,
 } from '@backstage/plugin-catalog-common';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
+import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
+import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 
 /** @public */
 export type CatalogEnvironment = {
@@ -431,6 +433,14 @@ export class CatalogBuilder {
       logger,
       refreshInterval: this.processingInterval,
     });
+    const providerDatabase = new DefaultProviderDatabase({
+      database: dbClient,
+      logger,
+    });
+    const catalogDatabase = new DefaultCatalogDatabase({
+      database: dbClient,
+      logger,
+    });
     const integrations = ScmIntegrations.fromConfig(config);
     const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
@@ -520,7 +530,7 @@ export class CatalogBuilder {
       permissionEvaluator,
     );
     const refreshService = new AuthorizedRefreshService(
-      new DefaultRefreshService({ database: processingDatabase }),
+      new DefaultRefreshService({ database: catalogDatabase }),
       permissionEvaluator,
     );
     const router = await createRouter({
@@ -534,7 +544,7 @@ export class CatalogBuilder {
       permissionIntegrationRouter,
     });
 
-    await connectEntityProviders(processingDatabase, entityProviders);
+    await connectEntityProviders(providerDatabase, entityProviders);
 
     return {
       processingEngine,

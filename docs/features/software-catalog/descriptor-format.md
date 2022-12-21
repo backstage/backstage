@@ -703,7 +703,7 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: {{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 ```
 
@@ -1309,3 +1309,7 @@ resolved relative to the location of this Location entity itself.
 A list of targets as strings. They can all be either absolute paths/URLs
 (depending on the type), or relative paths such as `./details/catalog-info.yaml`
 which are resolved relative to the location of this Location entity itself.
+
+### `spec.presence` [optional]
+
+Describes whether the target of a location is required to exist or not. It defaults to `'required'` if not specified, can also be `'optional'`.

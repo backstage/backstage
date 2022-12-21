@@ -68,8 +68,10 @@ export function createPublishGithubAction(options: {
         }
       | undefined;
     requireCodeOwnerReviews?: boolean;
+    dismissStaleReviews?: boolean;
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
+    requiredConversationResolution?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -86,6 +88,9 @@ export function createPublishGithubAction(options: {
           access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
         }
     >;
+    hasProjects?: boolean | undefined;
+    hasWiki?: boolean | undefined;
+    hasIssues?: boolean | undefined;
     token?: string;
     topics?: string[];
   }>({
@@ -103,8 +108,11 @@ export function createPublishGithubAction(options: {
           access: inputProps.access,
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          dismissStaleReviews: inputProps.dismissStaleReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+          requiredConversationResolution:
+            inputProps.requiredConversationResolution,
           repoVisibility: inputProps.repoVisibility,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
@@ -119,6 +127,9 @@ export function createPublishGithubAction(options: {
           allowAutoMerge: inputProps.allowAutoMerge,
           sourcePath: inputProps.sourcePath,
           collaborators: inputProps.collaborators,
+          hasProjects: inputProps.hasProjects,
+          hasWiki: inputProps.hasWiki,
+          hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
         },
@@ -138,9 +149,11 @@ export function createPublishGithubAction(options: {
         homepage,
         access,
         requireCodeOwnerReviews = false,
+        dismissStaleReviews = false,
         bypassPullRequestAllowances,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
+        requiredConversationResolution = false,
         repoVisibility = 'private',
         defaultBranch = 'master',
         protectDefaultBranch = true,
@@ -154,6 +167,9 @@ export function createPublishGithubAction(options: {
         allowRebaseMerge = true,
         allowAutoMerge = false,
         collaborators,
+        hasProjects = undefined,
+        hasWiki = undefined,
+        hasIssues = undefined,
         topics,
         token: providedToken,
       } = ctx.input;
@@ -186,6 +202,9 @@ export function createPublishGithubAction(options: {
         allowAutoMerge,
         access,
         collaborators,
+        hasProjects,
+        hasWiki,
+        hasIssues,
         topics,
         ctx.logger,
       );
@@ -208,11 +227,13 @@ export function createPublishGithubAction(options: {
         bypassPullRequestAllowances,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
+        requiredConversationResolution,
         config,
         ctx.logger,
         gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
+        dismissStaleReviews,
       );
 
       ctx.output('remoteUrl', remoteUrl);

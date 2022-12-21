@@ -299,14 +299,43 @@ export type BackstageApp = {
   getSystemIcon(key: string): IconComponent | undefined;
 
   /**
+   * Creates the root component that renders the entire app.
+   *
+   * @remarks
+   *
+   * This method must only be called once, and you have to provide it the entire
+   * app element tree. The element tree will be analyzed to discover plugins,
+   * routes, and other app features. The returned component will render all
+   * of the app elements wrapped within the app context provider.
+   *
+   * @example
+   * ```tsx
+   * export default app.createRoot(
+   *   <>
+   *     <AlertDisplay />
+   *     <OAuthRequestDialog />
+   *     <AppRouter>
+   *       <Root>{routes}</Root>
+   *     </AppRouter>
+   *   </>,
+   * );
+   * ```
+   */
+  createRoot(element: JSX.Element): ComponentType<{}>;
+
+  /**
    * Provider component that should wrap the Router created with getRouter()
    * and any other components that need to be within the app context.
+   *
+   * @deprecated Use {@link BackstageApp.createRoot} instead.
    */
   getProvider(): ComponentType<{}>;
 
   /**
    * Router component that should wrap the App Routes create with getRoutes()
    * and any other components that should only be available while signed in.
+   *
+   * @deprecated Import and use the {@link AppRouter} component from `@backstage/core-app-api` instead
    */
   getRouter(): ComponentType<{}>;
 };

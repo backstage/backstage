@@ -1,5 +1,44 @@
 # @backstage/plugin-home
 
+## 0.4.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/plugin-catalog-react@1.2.3
+  - @backstage/plugin-stack-overflow@0.1.9
+
+## 0.4.28
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- edf2404e9f: Adjusted the description's empty state on the starred entities table,
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/plugin-stack-overflow@0.1.8
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/theme@0.2.16
+
+## 0.4.28-next.4
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/plugin-stack-overflow@0.1.8-next.4
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+
 ## 0.4.28-next.3
 
 ### Patch Changes

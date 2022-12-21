@@ -20,11 +20,12 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 
+/** @public */
+export type PermissionsService = PermissionEvaluator | PermissionAuthorizer;
+
 /**
  * @public
  */
-export const permissionsServiceRef = createServiceRef<
-  PermissionEvaluator | PermissionAuthorizer
->({
+export const permissionsServiceRef = createServiceRef<PermissionsService>({
   id: 'core.permissions',
 });

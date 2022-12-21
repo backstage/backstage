@@ -81,6 +81,15 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
   });
 
+  it('should rollback transaction if no documents indexed', async () => {
+    await TestPipeline.fromIndexer(indexer).withDocuments([]).execute();
+
+    expect(database.getTransaction).toHaveBeenCalledTimes(1);
+    expect(database.insertDocuments).not.toHaveBeenCalled();
+    expect(database.completeInsert).not.toHaveBeenCalled();
+    expect(tx.rollback).toHaveBeenCalled();
+  });
+
   it('should close out stream and bubble up error on prepare', async () => {
     const expectedError = new Error('Prepare error');
     const documents = [

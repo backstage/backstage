@@ -207,6 +207,7 @@ export function createGithubRepoCreateAction(options: {
     | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
+  requiredConversationResolution?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
@@ -224,6 +225,9 @@ export function createGithubRepoCreateAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;
@@ -243,6 +247,7 @@ export function createGithubRepoPushAction(options: {
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  dismissStaleReviews?: boolean | undefined;
   bypassPullRequestAllowances?:
     | {
         users?: string[];
@@ -252,6 +257,7 @@ export function createGithubRepoPushAction(options: {
     | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
+  requiredConversationResolution?: boolean | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
 }>;
@@ -388,8 +394,10 @@ export function createPublishGithubAction(options: {
       }
     | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  dismissStaleReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
+  requiredConversationResolution?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
@@ -407,6 +415,9 @@ export function createPublishGithubAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;

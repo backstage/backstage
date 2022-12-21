@@ -18,13 +18,13 @@ import React from 'react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { SettingsPage } from './SettingsPage';
 import { UserSettingsTab } from '../UserSettingsTab';
-import { useOutlet } from 'react-router';
+import { useOutlet } from 'react-router-dom';
 import { SettingsLayout } from '../SettingsLayout';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useOutlet: jest.fn().mockReturnValue(undefined),
 }));
 

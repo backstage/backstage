@@ -157,6 +157,56 @@ describe('publish:github', () => {
       allow_auto_merge: false,
       visibility: 'private',
     });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        hasWiki: true,
+        hasProjects: true,
+        hasIssues: true,
+      },
+    });
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      visibility: 'private',
+      has_wiki: true,
+      has_projects: true,
+      has_issues: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        hasWiki: false,
+        hasProjects: false,
+        hasIssues: false,
+      },
+    });
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      visibility: 'private',
+      has_wiki: false,
+      has_projects: false,
+      has_issues: false,
+    });
   });
 
   it('should call the githubApis with the correct values for createForAuthenticatedUser', async () => {
@@ -221,6 +271,56 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        hasWiki: true,
+        hasProjects: true,
+        hasIssues: true,
+      },
+    });
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      has_wiki: true,
+      has_projects: true,
+      has_issues: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        hasWiki: false,
+        hasProjects: false,
+        hasIssues: false,
+      },
+    });
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      has_wiki: false,
+      has_projects: false,
+      has_issues: false,
     });
   });
 
@@ -670,7 +770,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -690,7 +792,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: true,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -710,7 +814,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 
@@ -736,7 +842,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -756,7 +864,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: false,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -776,7 +886,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 
@@ -802,7 +914,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -811,6 +925,7 @@ describe('publish:github', () => {
         ...mockContext.input,
         requiredStatusCheckContexts: ['statusCheck'],
         requireBranchesToBeUpToDate: true,
+        requiredConversationResolution: false,
       },
     });
 
@@ -823,7 +938,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -844,7 +961,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
 
     await action.handler({
@@ -864,7 +983,9 @@ describe('publish:github', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 
@@ -920,6 +1041,149 @@ describe('publish:github', () => {
       owner: 'owner',
       repo: 'repo',
       names: ['node.js'],
+    });
+  });
+
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of dismissStaleReviews', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repo',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        dismissStaleReviews: true,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        dismissStaleReviews: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+    });
+  });
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredConversationResolution', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repo',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredConversationResolution: true,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: true,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredConversationResolution: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
     });
   });
 });

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { Logger, loggerToWinstonLogger } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { Config } from '@backstage/config';
+import {
+  ConfigService,
+  LoggerService,
+  SchedulerService,
+  loggerToWinstonLogger,
+} from '@backstage/backend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 import {
   EntityProvider,
@@ -46,10 +49,10 @@ export class WrapperProviders {
 
   constructor(
     private readonly options: {
-      config: Config;
-      logger: Logger;
+      config: ConfigService;
+      logger: LoggerService;
       client: Knex;
-      scheduler: PluginTaskScheduler;
+      scheduler: SchedulerService;
       applyDatabaseMigrations?: typeof applyDatabaseMigrations;
     },
   ) {}

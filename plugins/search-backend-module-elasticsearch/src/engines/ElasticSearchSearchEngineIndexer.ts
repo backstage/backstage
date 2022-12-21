@@ -15,13 +15,13 @@
  */
 
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
-import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Readable } from 'stream';
-import { Logger } from 'winston';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
+import { IndexableDocument } from '@backstage/plugin-search-common';
+import { Logger } from 'winston';
+import { Readable } from 'stream';
 
 /**
- * Options for instansiate ElasticSearchSearchEngineIndexer
+ * Options for instantiate ElasticSearchSearchEngineIndexer
  * @public
  */
 export type ElasticSearchSearchEngineIndexerOptions = {
@@ -130,6 +130,24 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
 
     // Wait for the bulk helper to finish processing.
     const result = await this.bulkResult;
+
+    // Warn that no documents were indexed, early return so that alias swapping
+    // does not occur, and clean up the empty index we just created.
+    if (this.processed === 0) {
+      this.logger.warn(
+        `Index for ${this.type} was not ${
+          this.removableIndices.length ? 'replaced' : 'created'
+        }: indexer received 0 documents`,
+      );
+      try {
+        await this.elasticSearchClientWrapper.deleteIndex({
+          index: this.indexName,
+        });
+      } catch (error) {
+        this.logger.error(`Unable to clean up elastic index: ${error}`);
+      }
+      return;
+    }
 
     // Rotate main alias upon completion. Apply permanent secondary alias so
     // stale indices can be referenced for deletion in case initial attempt

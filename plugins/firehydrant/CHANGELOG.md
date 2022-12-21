@@ -1,5 +1,34 @@
 # @backstage/plugin-firehydrant
 
+## 0.1.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/plugin-catalog-react@1.2.3
+
+## 0.1.29
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/theme@0.2.16
+
+## 0.1.29-next.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+
 ## 0.1.29-next.3
 
 ### Patch Changes
