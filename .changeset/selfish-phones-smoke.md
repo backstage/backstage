@@ -1,5 +1,9 @@
 ---
 '@backstage/plugin-scaffolder': minor
+'@backstage/plugin-scaffolder-backend-module-cookiecutter': patch
+'@backstage/plugin-scaffolder-backend-module-rails': patch
+'@backstage/plugin-scaffolder-backend-module-yeoman': patch
+'@backstage/plugin-scaffolder-backend': patch
 ---
 
 Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
