@@ -32,6 +32,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { errorHandler } from '@backstage/backend-common';
+import { serializeError } from '@backstage/errors/dist';
 
 /**
  * @public
@@ -103,7 +104,6 @@ export async function createRouter<
         checks,
         entities,
       }: { checks: string[]; entities: CompoundEntityRef[] } = req.body;
-      const errors: string[] = [];
       const tasks = entities.map(async entity => {
         const entityTriplet =
           typeof entity === 'string' ? entity : stringifyEntityRef(entity);
@@ -114,19 +114,16 @@ export async function createRouter<
             results,
           };
         } catch (e: any) {
-          const errorMessage = `Failed to run check for entity ${entityTriplet} due to error: ${e.message}`;
-          logger.error(errorMessage);
-          errors.push(errorMessage);
+          const error = serializeError(e);
+          logger.error(`${error.name}: ${error.message}`);
           return {
             entity: entityTriplet,
+            error: error,
             results: [],
           };
         }
       });
       const results = await Promise.all(tasks);
-      if (errors.length > 0) {
-        return res.json({ errors, results });
-      }
       return res.json(results);
     });
   } else {
