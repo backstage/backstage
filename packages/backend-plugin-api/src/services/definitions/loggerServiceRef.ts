@@ -19,14 +19,23 @@ import { createServiceRef } from '../system/types';
 /**
  * @public
  */
-export interface Logger {
-  info(message: string): void;
-  child(fields: { [name: string]: string }): Logger;
+export type LogMeta = { [name: string]: unknown };
+
+/**
+ * @public
+ */
+export interface LoggerService {
+  error(message: string, meta?: Error | LogMeta): void;
+  warn(message: string, meta?: Error | LogMeta): void;
+  info(message: string, meta?: Error | LogMeta): void;
+  debug(message: string, meta?: Error | LogMeta): void;
+
+  child(meta: LogMeta): LoggerService;
 }
 
 /**
  * @public
  */
-export const loggerServiceRef = createServiceRef<Logger>({
+export const loggerServiceRef = createServiceRef<LoggerService>({
   id: 'core.logger',
 });

@@ -1,5 +1,15 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.33
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 03843259b4: Documented the `createRouter` method.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/config@1.0.5
+
 ## 0.2.33-next.3
 
 ### Patch Changes

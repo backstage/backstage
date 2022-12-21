@@ -17,24 +17,37 @@
 import { createRootLogger } from '@backstage/backend-common';
 import {
   createServiceFactory,
-  Logger,
+  LoggerService,
   coreServices,
 } from '@backstage/backend-plugin-api';
+import { LogMeta } from '@backstage/backend-plugin-api';
 import { Logger as WinstonLogger } from 'winston';
 
-class BackstageLogger implements Logger {
+class BackstageLogger implements LoggerService {
   static fromWinston(logger: WinstonLogger): BackstageLogger {
     return new BackstageLogger(logger);
   }
 
   private constructor(private readonly winston: WinstonLogger) {}
 
-  info(message: string, ...meta: any[]): void {
-    this.winston.info(message, ...meta);
+  error(message: string, meta?: LogMeta): void {
+    this.winston.error(message, meta);
   }
 
-  child(fields: { [name: string]: string }): Logger {
-    return new BackstageLogger(this.winston.child(fields));
+  warn(message: string, meta?: LogMeta): void {
+    this.winston.warn(message, meta);
+  }
+
+  info(message: string, meta?: LogMeta): void {
+    this.winston.info(message, meta);
+  }
+
+  debug(message: string, meta?: LogMeta): void {
+    this.winston.debug(message, meta);
+  }
+
+  child(meta: LogMeta): LoggerService {
+    return new BackstageLogger(this.winston.child(meta));
   }
 }
 

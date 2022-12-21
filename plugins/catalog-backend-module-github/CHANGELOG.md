@@ -1,5 +1,40 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.2.2
+
+### Patch Changes
+
+- 70fa5ec3ec: Fixes the assignment of group member references in `GithubMultiOrgProcessor` so membership relations are resolved correctly.
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- fe93cce743: Added the githubCredentialsProvider property to the GithubLocationAnalyzerOptions to be able to override the GithubCredentialsProvider.
+- a0fd4af94a: Handle GitHub `push` events at the `GithubEntityProvider` by subscribing to the topic `github.push.`
+
+  Implements `EventSubscriber` to receive events for the topic `github.push`.
+
+  On `github.push`, the affected repository will be refreshed.
+  This includes adding new Location entities, refreshing existing ones,
+  and removing obsolete ones.
+
+  Please find more information at
+  https://backstage.io/docs/integrations/github/discovery#installation-with-events-support
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 754b5854df: Fix incorrectly exported GithubOrgEntityProvider as a type
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-catalog-node@1.3.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/errors@1.1.4
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/plugin-events-node@0.2.0
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/plugin-catalog-common@1.0.9
+
 ## 0.2.2-next.3
 
 ### Patch Changes

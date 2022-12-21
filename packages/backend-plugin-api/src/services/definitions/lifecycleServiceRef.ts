@@ -19,24 +19,24 @@ import { createServiceRef } from '../system/types';
 /**
  * @public
  **/
-export type BackendLifecycleShutdownHook = {
+export type LifecycleServiceShutdownHook = {
   fn: () => void | Promise<void>;
 };
 
 /**
  * @public
  **/
-export interface BackendLifecycle {
+export interface LifecycleService {
   /**
    * Register a function to be called when the backend is shutting down.
    */
-  addShutdownHook(options: BackendLifecycleShutdownHook): void;
+  addShutdownHook(options: LifecycleServiceShutdownHook): void;
 }
 
 /**
  * @public
  */
-export const lifecycleServiceRef = createServiceRef<BackendLifecycle>({
+export const lifecycleServiceRef = createServiceRef<LifecycleService>({
   id: 'core.lifecycle',
   scope: 'plugin',
 });

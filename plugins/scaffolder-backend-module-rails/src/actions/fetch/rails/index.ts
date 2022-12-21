@@ -103,6 +103,31 @@ export function createFetchRailsAction(options: {
                     description: 'Skip test files',
                     type: 'boolean',
                   },
+                  skipActionCable: {
+                    title: 'skipActionCable',
+                    description: 'Skip Action Cable files',
+                    type: 'boolean',
+                  },
+                  skipActionMailer: {
+                    title: 'skipActionMailer',
+                    description: 'Skip Action Mailer files',
+                    type: 'boolean',
+                  },
+                  skipActionMailbox: {
+                    title: 'skipActionMailbox',
+                    description: 'Skip Action Mailbox gem',
+                    type: 'boolean',
+                  },
+                  skipActiveStorage: {
+                    title: 'skipActiveStorage',
+                    description: 'Skip Active Storage files',
+                    type: 'boolean',
+                  },
+                  skipActionText: {
+                    title: 'skipActionText',
+                    description: 'Skip Action Text gem',
+                    type: 'boolean',
+                  },
                   force: {
                     title: 'force',
                     description: 'Overwrite files that already exist',

@@ -1,5 +1,21 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.1.0
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults is now provided alongside the query result
+- dff9843718: The search engine now better handles the case when it receives 0 documents at index-time. Prior to this change, the indexer would replace any existing index with an empty index, effectively deleting it. Now instead, a warning is logged, and any existing index is left alone (preserving the index from the last successful indexing attempt).
+- d09485ea79: Added support for self hosted OpenSearch via new provider
+
+### Patch Changes
+
+- 45eb4d23cf: Fixed a bug that prevented indices from being cleaned up under some circumstances, which could have led to shard exhaustion.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.0
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/config@1.0.5
+
 ## 1.1.0-next.3
 
 ### Minor Changes

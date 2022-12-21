@@ -19,8 +19,41 @@ import {
   createExtensionPoint,
   createServiceFactory,
   createServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from './TestBackend';
+
+// This bit makes sure that test backends are cleaned up properly
+let globalTestBackendHasBeenStopped = false;
+beforeAll(async () => {
+  await startTestBackend({
+    services: [],
+    features: [
+      createBackendModule({
+        moduleId: 'test.module',
+        pluginId: 'test',
+        register(env) {
+          env.registerInit({
+            deps: { lifecycle: coreServices.lifecycle },
+            async init({ lifecycle }) {
+              lifecycle.addShutdownHook({
+                fn() {
+                  globalTestBackendHasBeenStopped = true;
+                },
+              });
+            },
+          });
+        },
+      })(),
+    ],
+  });
+});
+
+afterAll(() => {
+  if (!globalTestBackendHasBeenStopped) {
+    throw new Error('Expected backend to have been stopped');
+  }
+});
 
 describe('TestBackend', () => {
   it('should get a type error if service implementation does not match', async () => {
@@ -93,5 +126,33 @@ describe('TestBackend', () => {
     });
 
     expect(testFn).toHaveBeenCalledWith('winning');
+  });
+
+  it('should stop the test backend', async () => {
+    const shutdownSpy = jest.fn();
+
+    const testModule = createBackendModule({
+      moduleId: 'test.module',
+      pluginId: 'test',
+      register(env) {
+        env.registerInit({
+          deps: {
+            lifecycle: coreServices.lifecycle,
+          },
+          async init({ lifecycle }) {
+            lifecycle.addShutdownHook({ fn: shutdownSpy });
+          },
+        });
+      },
+    });
+
+    const backend = await startTestBackend({
+      services: [],
+      features: [testModule()],
+    });
+
+    expect(shutdownSpy).not.toHaveBeenCalled();
+    await backend.stop();
+    expect(shutdownSpy).toHaveBeenCalled();
   });
 });

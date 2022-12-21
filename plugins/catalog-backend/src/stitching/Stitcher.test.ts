@@ -110,6 +110,8 @@ describe('Stitcher', () => {
       });
 
       expect(entity.metadata.etag).toEqual(entities[0].hash);
+      const last_updated_at = entities[0].last_updated_at;
+      expect(last_updated_at).not.toBeNull();
       const firstHash = entities[0].hash;
 
       const search = await db<DbSearchRow>('search');
@@ -127,7 +129,12 @@ describe('Stitcher', () => {
             original_value: 'a',
             value: 'a',
           },
-          { entity_id: 'my-id', key: 'kind', original_value: 'k', value: 'k' },
+          {
+            entity_id: 'my-id',
+            key: 'kind',
+            original_value: 'k',
+            value: 'k',
+          },
           {
             entity_id: 'my-id',
             key: 'metadata.name',
@@ -227,7 +234,12 @@ describe('Stitcher', () => {
             original_value: 'a',
             value: 'a',
           },
-          { entity_id: 'my-id', key: 'kind', original_value: 'k', value: 'k' },
+          {
+            entity_id: 'my-id',
+            key: 'kind',
+            original_value: 'k',
+            value: 'k',
+          },
           {
             entity_id: 'my-id',
             key: 'metadata.name',

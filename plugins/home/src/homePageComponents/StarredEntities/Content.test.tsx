@@ -82,4 +82,62 @@ describe('StarredEntitiesContent', () => {
       '/catalog/default/component/mock-starred-entity-2',
     );
   });
+
+  it('should display call to action message if no entities are starred', async () => {
+    const mockedApi = new MockStarredEntitiesApi();
+
+    const mockCatalogApi = {
+      getEntities: jest
+        .fn()
+        .mockImplementation(async () => ({ items: entities })),
+    };
+
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockedApi],
+        ]}
+      >
+        <Content />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(
+      getByText('Click the star beside an entity name to add it to this list!'),
+    ).toBeInTheDocument();
+  });
+
+  it('should display user provided message if no entities are starred', async () => {
+    const mockedApi = new MockStarredEntitiesApi();
+
+    const mockCatalogApi = {
+      getEntities: jest
+        .fn()
+        .mockImplementation(async () => ({ items: entities })),
+    };
+
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockedApi],
+        ]}
+      >
+        <Content noStarredEntitiesMessage="foo" />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(getByText('foo')).toBeInTheDocument();
+  });
 });

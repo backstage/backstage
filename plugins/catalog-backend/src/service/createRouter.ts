@@ -41,6 +41,7 @@ import {
   parseEntityTransformParams,
 } from './request';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
+import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { LocationService, RefreshOptions, RefreshService } from './types';
 import {
   disallowReadonlyMode,
@@ -113,6 +114,7 @@ export async function createRouter(
         const { entities, pageInfo } = await entitiesCatalog.entities({
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query),
+          order: parseEntityOrderParams(req.query),
           pagination: parseEntityPaginationParams(req.query),
           authorizationToken: getBearerToken(req.header('authorization')),
         });

@@ -191,6 +191,7 @@ type BranchProtectionOptions = {
     apps?: string[];
   };
   requireBranchesToBeUpToDate?: boolean;
+  requiredConversationResolution?: boolean;
   defaultBranch?: string;
   enforceAdmins?: boolean;
   dismissStaleReviews?: boolean;
@@ -205,6 +206,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   bypassPullRequestAllowances,
   requiredStatusCheckContexts = [],
   requireBranchesToBeUpToDate = true,
+  requiredConversationResolution = false,
   defaultBranch = 'master',
   enforceAdmins = true,
   dismissStaleReviews = false,
@@ -237,6 +239,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
           bypass_pull_request_allowances: bypassPullRequestAllowances,
           dismiss_stale_reviews: dismissStaleReviews,
         },
+        required_conversation_resolution: requiredConversationResolution,
       });
     } catch (e) {
       assertError(e);

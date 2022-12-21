@@ -99,6 +99,48 @@ export type EntityFilterQuery =
 export type EntityFieldsQuery = string[];
 
 /**
+ * Dot-separated field based ordering directives, controlling the sort order of
+ * the output entities.
+ *
+ * @remarks
+ *
+ * Each field is a dot-separated path into an entity's keys. The order is either
+ * ascending (`asc`, lexicographical order) or descending (`desc`, reverse
+ * lexicographical order). The ordering is case insensitive.
+ *
+ * If more than one order directive is given, later directives have lower
+ * precedence (they are applied only when directives of higher precedence have
+ * equal values).
+ *
+ * Example:
+ *
+ * ```
+ * [
+ *   { field: 'kind', order: 'asc' },
+ *   { field: 'metadata.name', order: 'desc' },
+ * ]
+ * ```
+ *
+ * This will order the output first by kind ascending, and then within each kind
+ * (if there's more than one of a given kind) by their name descending.
+ *
+ * When given a field that does NOT exist on all entities in the result set,
+ * those entities that do not have the field will always be sorted last in that
+ * particular order step, no matter what the desired order was.
+ *
+ * @public
+ */
+export type EntityOrderQuery =
+  | {
+      field: string;
+      order: 'asc' | 'desc';
+    }
+  | Array<{
+      field: string;
+      order: 'asc' | 'desc';
+    }>;
+
+/**
  * The request type for {@link CatalogClient.getEntities}.
  *
  * @public
@@ -113,6 +155,10 @@ export interface GetEntitiesRequest {
    * declarations.
    */
   fields?: EntityFieldsQuery;
+  /**
+   *If given, order the result set by those directives.
+   */
+  order?: EntityOrderQuery;
   /**
    * If given, skips over the first N items in the result set.
    */

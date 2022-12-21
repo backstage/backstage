@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-restricted-imports */
-
 import {
   resolve as resolvePath,
   relative as relativePath,
@@ -25,7 +22,7 @@ import {
   join,
 } from 'path';
 import { execFile } from 'child_process';
-import prettier from 'prettier';
+import type prettierType from 'prettier';
 import fs from 'fs-extra';
 import {
   Extractor,
@@ -66,7 +63,6 @@ import {
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { paths as cliPaths } from '../../lib/paths';
-
 import minimatch from 'minimatch';
 
 const tmpDir = cliPaths.resolveTargetRoot(
@@ -215,10 +211,19 @@ ApiReportGenerator.generateReviewFileContent =
       collector,
       ...moreArgs,
     );
-    return prettier.format(content, {
-      ...require('@spotify/prettier-config'),
-      parser: 'markdown',
-    });
+
+    try {
+      const prettier = require('prettier') as typeof prettierType;
+
+      const config = prettier.resolveConfig.sync(cliPaths.targetRoot) ?? {};
+      return prettier.format(content, {
+        ...config,
+        parser: 'markdown',
+      });
+    } catch (e) {
+      // console.warn('Failed to format API report with prettier', e);
+      return content;
+    }
   };
 
 export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
@@ -228,13 +233,25 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     fs.removeSync(path);
   });
 
+  let assetTypeFile: string[] = [];
+
+  try {
+    assetTypeFile = [
+      require.resolve('@backstage/cli/asset-types/asset-types.d.ts'),
+    ];
+  } catch {
+    /** ignore */
+  }
+
   await fs.writeJson(path, {
     extends: './tsconfig.json',
     include: [
       // These two contain global definitions that are needed for stable API report generation
-      'packages/cli/asset-types/asset-types.d.ts',
+      ...assetTypeFile,
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
+    // we don't exclude node_modules so that we can use the asset-types.d.ts file
+    exclude: [],
   });
 
   return path;
@@ -830,7 +847,9 @@ export async function buildDocs({
           context.writer.writeLine('---');
           for (const [name, value] of Object.entries(node.values)) {
             if (value) {
-              context.writer.writeLine(`${name}: ${value}`);
+              context.writer.writeLine(
+                `${name}: "${String(value).replace(/\"/g, '')}"`,
+              );
             }
           }
           context.writer.writeLine('---');

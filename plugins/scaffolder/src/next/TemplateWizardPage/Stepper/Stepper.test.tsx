@@ -174,7 +174,7 @@ describe('Stepper', () => {
         manifest={manifest}
         extensions={[]}
         onComplete={jest.fn()}
-        transformErrors={transformErrors}
+        FormProps={{ transformErrors }}
       />,
     );
 
@@ -187,6 +187,38 @@ describe('Stepper', () => {
     });
 
     expect(getByText('invalid postcode')).toBeInTheDocument();
+  });
+
+  it('should grab the initial formData from the query', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              firstName: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      ],
+      title: 'initialize formData',
+    };
+
+    const mockFormData = { firstName: 'John' };
+
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: `?formData=${JSON.stringify(mockFormData)}`,
+      },
+    });
+
+    const { getByRole } = await renderInTestApp(
+      <Stepper manifest={manifest} extensions={[]} onComplete={jest.fn()} />,
+    );
+
+    expect(getByRole('textbox', { name: 'firstName' })).toHaveValue('John');
   });
 
   it('should initialize formState with undefined form values', async () => {

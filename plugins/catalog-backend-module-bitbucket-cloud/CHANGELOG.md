@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.1.6
+
+### Patch Changes
+
+- ce08e1798e: Refresh (potentially) updated catalog files on `repo:push` more efficiently.
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 4eb0bce299: Fix repo:push topic not matching `BitbucketCloudEventRouter`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-catalog-node@1.3.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/plugin-events-node@0.2.0
+  - @backstage/integration@1.4.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/plugin-catalog-common@1.0.9
+
 ## 0.1.6-next.3
 
 ### Patch Changes
