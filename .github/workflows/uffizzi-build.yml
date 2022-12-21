@@ -32,7 +32,7 @@ jobs:
 
       - name: Use Uffizzi's backstage app config
         run: |
-          cp -f ./.github/uffizzi/uffizzi.production.app-config.yaml ./app-config.production.yaml;
+          cp -f ./.github/uffizzi/uffizzi.production.app-config.yaml ./app-config.yaml
 
       - name: typescript build
         run: |
