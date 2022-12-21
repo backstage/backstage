@@ -12,3 +12,11 @@ backend:
     keys:
       # random mock key for uffizi deployments
       - secret: 5TXvdjVZFxF7qf9K5RAYRDoGrLzJooqa
+auth:
+  environment: production
+  providers: {}
+
+catalog:
+  locations:
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
