@@ -92,7 +92,7 @@ const useStyles = makeStyles(theme => ({
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
 
-export const Modal = ({ toggleModal }: SearchModalProps) => {
+export const Modal = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const { transitions } = useTheme();
@@ -107,9 +107,8 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
   });
 
   const handleSearchResultClick = useCallback(() => {
-    toggleModal();
     setTimeout(focusContent, transitions.duration.leavingScreen);
-  }, [toggleModal, focusContent, transitions]);
+  }, [focusContent, transitions]);
 
   const handleSearchBarKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -188,7 +187,7 @@ export const SearchModal = (props: SearchModalProps) => {
       {open && (
         <SearchContextProvider inheritParentContextIfAvailable>
           {(children && children({ toggleModal })) ?? (
-            <Modal toggleModal={toggleModal} />
+            <Modal />
           )}
         </SearchContextProvider>
       )}

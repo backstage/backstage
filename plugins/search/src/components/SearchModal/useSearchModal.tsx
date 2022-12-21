@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useCallback, useContext, useState } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useContext,
+  useState,
+  useEffect,
+} from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   createVersionedContext,
   createVersionedValueMap,
@@ -96,7 +103,8 @@ export const SearchModalProvider = (props: SearchModalProviderProps) => {
 
 /**
  * Use this hook to manage the state of {@link SearchModal}
- * and change its visibility.
+ * and change its visibility. Monitors route changes setting the hidden state
+ * to avoid having to call toggleModal on every result click.
  *
  * @public
  *
@@ -105,10 +113,6 @@ export const SearchModalProvider = (props: SearchModalProviderProps) => {
  * functions for changing the visibility of the modal.
  */
 export function useSearchModal(initialState = false) {
-  // Check for any existing parent context.
-  const parentContext = useContext(SearchModalContext);
-  const parentContextValue = parentContext?.atVersion(1);
-
   const [state, setState] = useState({
     hidden: !initialState,
     open: initialState,
@@ -132,8 +136,32 @@ export function useSearchModal(initialState = false) {
     [],
   );
 
+  // Check for any existing parent context.
+  const parentContext = useContext(SearchModalContext);
+  const parentContextValue = parentContext?.atVersion(1);
+  const isParentContextPresent = !!parentContextValue?.state;
+
+  // Monitor route pathname changes to automatically hide the modal.
+  const { pathname } = useLocation();
+  const [openedPathname, setOpenedPathname] = useState<string | null>(null);
+  const { open, hidden } = state;
+  const isModalOpened = !isParentContextPresent && open && !hidden;
+  useEffect(() => {
+    if (isModalOpened) {
+      setOpenedPathname(pathname);
+    }
+  }, [isModalOpened, pathname]);
+  useEffect(() => {
+    if (isModalOpened && openedPathname && openedPathname !== pathname) {
+      setState(prevState => ({
+        open: prevState.open,
+        hidden: true,
+      }));
+    }
+  }, [isModalOpened, openedPathname, pathname]);
+
   // Inherit from parent context, if set.
-  return parentContextValue?.state
+  return isParentContextPresent
     ? parentContextValue
     : { state, toggleModal, setOpen };
 }
