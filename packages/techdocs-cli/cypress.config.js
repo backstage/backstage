@@ -21,7 +21,6 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       initPlugin(on, config);
     },
-
     excludeSpecPattern: ['**/__snapshots__/*', '**/__image_snapshots__/*'],
   },
   viewportWidth: 1920,
