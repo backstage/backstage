@@ -178,7 +178,9 @@ export class Lockfile {
       }
 
       // Get rid of and signal any invalid ranges upfront
-      const invalid = allEntries.filter(e => !semver.validRange(e.range));
+      const invalid = allEntries.filter(
+        e => !semver.validRange(e.range) && !e.range.startsWith('workspace:'),
+      );
       result.invalidRanges.push(
         ...invalid.map(({ range }) => ({ name, range })),
       );
