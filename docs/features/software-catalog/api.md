@@ -156,7 +156,7 @@ Some more real world usable examples:
 
 ### Ordering
 
-By default the entities are returned in an undefined, but stable, order. You can
+By default the entities are returned in an undefined, but stable order. You can
 pass in one or more `order` query parameters to affect that ordering.
 
 Each parameter starts either with `asc:` for ascending lexicographical order or
