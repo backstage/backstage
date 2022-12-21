@@ -124,10 +124,6 @@ export async function createRouter<
         }
       });
       const results = await Promise.all(tasks);
-      const noResults = results.flatMap(r => r.results).length === 0;
-      if (errors.length > 0 && noResults) {
-        return res.status(500).send({ errors, results });
-      }
       if (errors.length > 0) {
         return res.json({ errors, results });
       }
