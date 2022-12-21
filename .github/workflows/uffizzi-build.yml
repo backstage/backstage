@@ -58,7 +58,6 @@ jobs:
       - name: Add examples directory to Dockerfile
         run: |
           echo "COPY examples /examples" >> ./example-app/packages/backend/Dockerfile
-          cat ./example-app/packages/backend/Dockerfile
 
       - name: Build Image
         uses: docker/build-push-action@v2
