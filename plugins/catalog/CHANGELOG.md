@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog
 
+## 1.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/integration-react@1.1.8
+  - @backstage/plugin-catalog-react@1.2.3
+  - @backstage/plugin-search-react@1.3.1
+
 ## 1.7.0
 
 ### Minor Changes

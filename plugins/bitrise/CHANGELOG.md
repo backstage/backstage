@@ -1,5 +1,13 @@
 # @backstage/plugin-bitrise
 
+## 0.1.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/plugin-catalog-react@1.2.3
+
 ## 0.1.39
 
 ### Patch Changes

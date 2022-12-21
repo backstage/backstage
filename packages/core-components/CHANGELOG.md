@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.12.2
+
+### Patch Changes
+
+- Fixing the UPPERCASED links in the sidebar
+
 ## 0.12.1
 
 ### Patch Changes
