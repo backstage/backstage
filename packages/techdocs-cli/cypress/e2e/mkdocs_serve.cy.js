@@ -40,9 +40,9 @@ describe('TechDocs Live Preview - MkDocs Serve', () => {
     cy.get('.md-footer').should('have.length', 1);
   });
 
-  it('toMatchImageSnapshot - MkDocs Page', () => {
+  it('matchImage - MkDocs Page', () => {
     cy.visit(Cypress.env('mkDocsBaseUrl')).then(() => {
-      cy.document().toMatchImageSnapshot();
+      cy.document().matchImage();
     });
   });
 });
