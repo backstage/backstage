@@ -197,14 +197,13 @@ export class CatalogClient implements CatalogApi {
     request: GetEntitiesByRefsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesByRefsResponse> {
-    const params: string[] = [];
+    const body: any = { entityRefs: request.entityRefs };
     if (request.fields?.length) {
-      params.push(`fields=${request.fields.map(encodeURIComponent).join(',')}`);
+      body.fields = request.fields;
     }
 
     const baseUrl = await this.discoveryApi.getBaseUrl('catalog');
-    const query = params.length ? `?${params.join('&')}` : '';
-    const url = `${baseUrl}/entities/by-refs${query}`;
+    const url = `${baseUrl}/entities/by-refs`;
 
     const response = await this.fetchApi.fetch(url, {
       headers: {
@@ -212,7 +211,7 @@ export class CatalogClient implements CatalogApi {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'POST',
-      body: JSON.stringify({ entityRefs: request.entityRefs }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {

@@ -256,31 +256,26 @@ The request body is JSON, on the form
 
 ```json
 {
-  "entityRefs": ["component:default/foo", "api:default/bar"]
+  "entityRefs": ["component:default/foo", "api:default/bar"],
+  "fields": ["kind", "metadata.name"]
 }
 ```
 
-where each entry is an entity ref that you want to fetch.
+where each `entityRefs` entry is an entity ref that you want to fetch. The
+`fields` array is optional and works the same way as the `GET /entities` fields
+above, e.g. it's used to fetch only certain slices of each entity.
 
 The return type is JSON, on the form
 
 ```json
 {
-  "items": [
-    { "apiVersion": "backstage.io/v1alpha1", "kind": "Component", ... },
-    null
-  ]
+  "items": [{ "kind": "Component", "metadata": { "name": "foo" } }, null]
 }
 ```
 
 where the `items` array has _the same length_ and _the same order_ as the input
 `entityRefs` array. Each element contains the corresponding entity data, or
 `null` if no entity existed in the catalog with that ref.
-
-You can also add `fields` query parameters in the exact same way as `GET
-/entities` above, to fetch only certain slices of each entity. At this point you
-can only specify these as query parameters on the URL, not in the request body.
-Providing them in the body may be added in the future.
 
 ## Locations
 
