@@ -129,10 +129,10 @@ export type BreadcrumbsStyledBoxClassKey = 'root';
 // @public
 export function BrokenImageIcon(props: IconComponentProps): JSX.Element;
 
-// @public
+// @public @deprecated
 export const Button: (props: ButtonProps) => JSX.Element;
 
-// @public
+// @public @deprecated
 export type ButtonProps = ButtonProps_2 & Omit<LinkProps, 'variant' | 'color'>;
 
 // @public (undocumented)
@@ -628,6 +628,13 @@ export function LinearGauge(props: Props_11): JSX.Element | null;
 //
 // @public
 export const Link: (props: LinkProps) => JSX.Element;
+
+// @public
+export const LinkButton: (props: LinkButtonProps) => JSX.Element;
+
+// @public
+export type LinkButtonProps = ButtonProps_2 &
+  Omit<LinkProps, 'variant' | 'color'>;
 
 // Warning: (ae-missing-release-tag) "LinkProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
