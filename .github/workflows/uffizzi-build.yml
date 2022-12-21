@@ -24,8 +24,9 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
-        run: |
-          yarn install
+        uses: backstage/actions/yarn-install@v0.5.12
+        with:
+          cache-prefix: linux-v16
 
       - name: Use Uffizzi's backstage app config
         run: |
