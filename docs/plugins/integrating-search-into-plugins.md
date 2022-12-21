@@ -336,7 +336,7 @@ benefit. Issues and pull requests welcome.
 
 #### Custom search results
 
-Search results throughout Backstage are rendered as lists so that list items can easily be customized; although a default result list item is available, plugins are in the best position to provide custom result list items that surface relevant information only known to the plugin.
+Search results throughout Backstage are rendered as lists so that list items can easily be customized; although a [default result list item](https://backstage.io/storybook/?path=/story/plugins-search-defaultresultlistitem--default) is available, plugins are in the best position to provide custom result list items that surface relevant information only known to the plugin.
 
 The example below imagines `YourCustomSearchResult` as a type of search result that contains associated `tags` which could be rendered as chips below the title/text.
 
@@ -408,9 +408,9 @@ export const CustomSearchResultListItem = (
 
 The optional use of the `<HighlightedSearchResultText>` component makes it possible to highlight relevant parts of the result based on the user's search query.
 
-**Note on Analytics**: In order to track and improve search experiences across Backstage, it's important to understand when and what users search for, as well as what they click on after searching. When implementing a custom result component, it's your responsibility to instrument it according to search analytics conventions. In particular:
+**Note on Analytics**: In order for app integrators to track and improve search experiences across Backstage, it's important for them to understand when and what users search for, as well as what they click on after searching. When providing a custom result component, it's your responsibility as a plugin developer to instrument it according to search analytics conventions. In particular:
 
-- You must use the `analytics.captureEvent` method, from the `useAnalytics()` hook.
+- You must use the `analytics.captureEvent` method, from the `useAnalytics()` hook (detailed [plugin analytics docs are here](./analytics.md)).
 - You must ensure that the action of the event, representing a click on a search result item, is `discover`, and the subject is the `title` of the clicked result. In addition, the `to` attribute should be set to the result's `location`, and the `value` of the event must be set to the `rank` (passed in as a prop).
 - You must ensure that the aforementioned `captureEvent` method is called when a user clicks the link; you should further ensure that the `noTrack` prop is added to the link (which disables default link click tracking, in favor of this custom instrumentation).
 
