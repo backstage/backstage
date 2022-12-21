@@ -8226,7 +8226,7 @@ __metadata:
     "@microsoft/api-documenter": ^7.17.11
     "@microsoft/api-extractor": ^7.23.0
     "@microsoft/api-extractor-model": ^7.17.2
-    "@microsoft/tsdoc": 0.14.1
+    "@microsoft/tsdoc": 0.14.2
     "@microsoft/tsdoc-config": 0.16.2
     "@types/is-glob": ^4.0.2
     "@types/mock-fs": ^4.13.0
