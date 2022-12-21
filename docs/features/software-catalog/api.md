@@ -277,6 +277,11 @@ where the `items` array has _the same length_ and _the same order_ as the input
 `entityRefs` array. Each element contains the corresponding entity data, or
 `null` if no entity existed in the catalog with that ref.
 
+You can also add `fields` query parameters in the exact same way as `GET
+/entities` above, to fetch only certain slices of each entity. At this point you
+can only specify these as query parameters on the URL, not in the request body.
+Providing them in the body may be added in the future.
+
 ## Locations
 
 TODO
