@@ -1,5 +1,14 @@
 # @backstage/plugin-playlist
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/plugin-catalog-react@1.2.3
+  - @backstage/plugin-search-react@1.3.1
+
 ## 0.1.3
 
 ### Patch Changes
