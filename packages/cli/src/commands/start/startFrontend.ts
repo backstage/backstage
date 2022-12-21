@@ -21,7 +21,7 @@ import { serveBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
 import { Lockfile } from '../../lib/versioning';
-import { includedFilter } from '../versions/lint';
+import { forbiddenDuplicatesFilter, includedFilter } from '../versions/lint';
 
 interface StartAppOptions {
   verifyVersions?: boolean;
@@ -37,9 +37,9 @@ export async function startFrontend(options: StartAppOptions) {
     const result = lockfile.analyze({
       filter: includedFilter,
     });
-    const problemPackages = [...result.newVersions, ...result.newRanges].map(
-      ({ name }) => name,
-    );
+    const problemPackages = [...result.newVersions, ...result.newRanges]
+      .map(({ name }) => name)
+      .filter(forbiddenDuplicatesFilter);
 
     if (problemPackages.length > 1) {
       console.log(
