@@ -34,11 +34,11 @@ jobs:
         run: |
           cp -f ./.github/uffizzi/uffizzi.production.app-config.yaml ./app-config.production.yaml;
 
-      - name: yarn build
+      - name: typescript build
         run: |
           yarn tsc:full
 
-      - name: yarn build
+      - name: backstage build
         run: |
           yarn build:all
 
@@ -59,7 +59,7 @@ jobs:
       - name: Build Image
         uses: docker/build-push-action@v2
         with:
-          context: example-app
+          context: .
           file: packages/backend/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
