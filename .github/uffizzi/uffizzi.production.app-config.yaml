@@ -25,6 +25,10 @@ backend:
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
+  reading:
+    allow:
+      - host: github.com
+      - host: raw.githubusercontent.com
 
 auth:
   environment: production
