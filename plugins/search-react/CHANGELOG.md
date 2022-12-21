@@ -1,5 +1,23 @@
 # @backstage/plugin-search-react
 
+## 1.3.0
+
+### Minor Changes
+
+- 29ebc43a0b: The `value` of a search analytics event is now set as the total number of search results (when available)
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- a19cffbeed: Update search links to only have header as linkable text
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/version-bridge@1.0.3
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/theme@0.2.16
+
 ## 1.3.0-next.4
 
 ### Patch Changes

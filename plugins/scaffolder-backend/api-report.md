@@ -225,6 +225,9 @@ export function createGithubRepoCreateAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;
@@ -412,6 +415,9 @@ export function createPublishGithubAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;

@@ -88,6 +88,9 @@ export function createPublishGithubAction(options: {
           access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
         }
     >;
+    hasProjects?: boolean | undefined;
+    hasWiki?: boolean | undefined;
+    hasIssues?: boolean | undefined;
     token?: string;
     topics?: string[];
   }>({
@@ -124,6 +127,9 @@ export function createPublishGithubAction(options: {
           allowAutoMerge: inputProps.allowAutoMerge,
           sourcePath: inputProps.sourcePath,
           collaborators: inputProps.collaborators,
+          hasProjects: inputProps.hasProjects,
+          hasWiki: inputProps.hasWiki,
+          hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
         },
@@ -161,6 +167,9 @@ export function createPublishGithubAction(options: {
         allowRebaseMerge = true,
         allowAutoMerge = false,
         collaborators,
+        hasProjects = undefined,
+        hasWiki = undefined,
+        hasIssues = undefined,
         topics,
         token: providedToken,
       } = ctx.input;
@@ -193,6 +202,9 @@ export function createPublishGithubAction(options: {
         allowAutoMerge,
         access,
         collaborators,
+        hasProjects,
+        hasWiki,
+        hasIssues,
         topics,
         ctx.logger,
       );

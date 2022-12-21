@@ -42,7 +42,7 @@ const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
 const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
 
 describe('command entrypoint', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     mockFs({
       [`${__dirname}/package.json`]: '', // required by `findPaths(__dirname)`
       'templates/': mockFs.load(path.resolve(__dirname, '../templates/')),

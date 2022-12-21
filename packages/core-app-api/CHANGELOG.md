@@ -1,5 +1,75 @@
 # @backstage/core-app-api
 
+## 1.3.0
+
+### Minor Changes
+
+- e0d9c9559a: Added a new `AppRouter` component and `app.createRoot()` method that replaces `app.getRouter()` and `app.getProvider()`, which are now deprecated. The new `AppRouter` component is a drop-in replacement for the old router component, while the new `app.createRoot()` method is used instead of the old provider component.
+
+  An old app setup might look like this:
+
+  ```tsx
+  const app = createApp(/* ... */);
+
+  const AppProvider = app.getProvider();
+  const AppRouter = app.getRouter();
+
+  const routes = ...;
+
+  const App = () => (
+    <AppProvider>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </AppProvider>
+  );
+
+  export default App;
+  ```
+
+  With these new APIs, the setup now looks like this:
+
+  ```tsx
+  import { AppRouter } from '@backstage/core-app-api';
+
+  const app = createApp(/* ... */);
+
+  const routes = ...;
+
+  export default app.createRoot(
+    <>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </>,
+  );
+  ```
+
+  Note that `app.createRoot()` accepts a React element, rather than a component.
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- b4b5b02315: Tweak feature flag registration so that it happens immediately before the first rendering of the app, rather than just after.
+- 6870b43dd1: Fix for the automatic rewriting of base URLs.
+- 203271b746: Prevent duplicate feature flag components from rendering in the settings when using <FeatureFlagged /> components
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- 653d7912ac: Made `WebStorage` notify its subscribers when `localStorage` values change in other tabs/windows
+- 63310e3987: Apps will now rewrite the `app.baseUrl` configuration to match the current `location.origin`. The `backend.baseUrl` will also be rewritten in the same way when the `app.baseUrl` and `backend.baseUrl` have matching origins. This will reduce the need for separate frontend builds for different environments.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/version-bridge@1.0.3
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
 ## 1.3.0-next.4
 
 ### Minor Changes

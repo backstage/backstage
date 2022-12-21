@@ -132,6 +132,21 @@ const collaborators = {
     oneOf: [{ required: ['user'] }, { required: ['team'] }],
   },
 };
+const hasProjects = {
+  title: 'Enable projects',
+  type: 'boolean',
+  description: `Enable projects for the repository. The default value is 'true' unless the organization has disabled repository projects`,
+};
+const hasWiki = {
+  title: 'Enable the wiki',
+  type: 'boolean',
+  description: `Enable the wiki for the repository. The default value is 'true'`,
+};
+const hasIssues = {
+  title: 'Enable issues',
+  type: 'boolean',
+  description: `Enable issues for the repository. The default value is 'true'`,
+};
 const token = {
   title: 'Authentication Token',
   type: 'string',
@@ -223,6 +238,9 @@ export { dismissStaleReviews };
 export { requiredStatusCheckContexts };
 export { requireBranchesToBeUpToDate };
 export { requiredConversationResolution };
+export { hasProjects };
+export { hasIssues };
+export { hasWiki };
 export { sourcePath };
 export { token };
 export { topics };

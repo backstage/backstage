@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.9.0
+
+### Minor Changes
+
+- 2db8acffe7: Kubernetes plugin now gracefully surfaces transport-level errors (like DNS or timeout, or other socket errors) occurring while fetching data. This will be merged into any data that is fetched successfully, fixing a bug where the whole page would be empty if any fetch operation encountered such an error.
+
+### Patch Changes
+
+- 22e20b3a59: Clusters declared in the app-config can now have their CA configured via a local filesystem path using the `caFile` property.
+- 9ce7866ecd: Updated dependency `@kubernetes/client-node` to `0.18.0`.
+- b585179770: Added Kubernetes proxy API route to backend Kubernetes plugin, allowing Backstage plugin developers to read/write new information from Kubernetes (if proper credentials are provided).
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.5.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-test-utils@0.1.31
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
 ## 0.8.1-next.4
 
 ### Patch Changes

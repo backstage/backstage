@@ -154,6 +154,29 @@ Some more real world usable examples:
 
   `/entities?fields=kind,metadata.namespace,metadata.name`
 
+### Ordering
+
+By default the entities are returned in an undefined, but stable order. You can
+pass in one or more `order` query parameters to affect that ordering.
+
+Each parameter starts either with `asc:` for ascending lexicographical order or
+`desc:` for descending (reverse) lexicographical order, followed by a
+dot-separated path into an entity's keys. The ordering is case insensitive. If
+more than one order directive is given, later directives have lower precedence
+(they are applied only when directives of higher precedence have equal values).
+
+Example:
+
+```text
+/entities?order=asc:kind&order=desc:metadata.name
+```
+
+This will order the output first by kind ascending, and then within each kind
+(if there's more than one of a given kind) by their name descending. When given
+a field that does NOT exist on all entities in the result set, those entities
+that do not have the field will always be sorted last in that particular order
+step, no matter what the desired order was.
+
 #### Pagination
 
 You may pass the `offset` and `limit` query parameters to do classical

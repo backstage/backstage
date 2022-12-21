@@ -1,5 +1,25 @@
 # @backstage/test-utils
 
+## 1.2.3
+
+### Patch Changes
+
+- 5e238ed56a: The test utility for the plugin context called `MockPluginProvider` has been created. It will be handy in the cases when you use
+  `__experimentalConfigure` in your plugin. It is experimental and exported through `@backstage/test-utils/alpha`.
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- 830687539f: Sync components in @backstage/core-components with the Component Design Guidelines
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-app-api@1.3.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-react@0.4.8
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+  - @backstage/theme@0.2.16
+
 ## 1.2.3-next.4
 
 ### Patch Changes

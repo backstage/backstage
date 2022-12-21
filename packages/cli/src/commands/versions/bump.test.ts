@@ -122,10 +122,12 @@ describe('bump', () => {
       },
     }));
   });
+
   afterEach(() => {
     mockFs.restore();
     jest.resetAllMocks();
   });
+
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
@@ -197,6 +199,102 @@ describe('bump', () => {
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
+
+    const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
+    expect(lockfileContents).toBe(lockfileMockResult);
+
+    const packageA = await fs.readJson('/packages/a/package.json');
+    expect(packageA).toEqual({
+      name: 'a',
+      dependencies: {
+        '@backstage/core': '^1.0.6',
+      },
+    });
+    const packageB = await fs.readJson('/packages/b/package.json');
+    expect(packageB).toEqual({
+      name: 'b',
+      dependencies: {
+        '@backstage/core': '^1.0.6',
+        '@backstage/theme': '^2.0.0',
+      },
+    });
+  });
+
+  it('should bump backstage dependencies but not them installed', async () => {
+    mockFs({
+      '/yarn.lock': lockfileMock,
+      '/package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      '/packages/a/package.json': JSON.stringify({
+        name: 'a',
+        dependencies: {
+          '@backstage/core': '^1.0.5',
+        },
+      }),
+      '/packages/b/package.json': JSON.stringify({
+        name: 'b',
+        dependencies: {
+          '@backstage/core': '^1.0.3',
+          '@backstage/theme': '^1.0.0',
+        },
+      }),
+    });
+
+    jest
+      .spyOn(paths, 'resolveTargetRoot')
+      .mockImplementation((...path) => resolvePath('/', ...path));
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    worker.use(
+      rest.get(
+        'https://versions.backstage.io/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              packages: [],
+            }),
+          ),
+      ),
+    );
+    const { log: logs } = await withLogCollector(['log'], async () => {
+      await bump({
+        pattern: null,
+        release: 'main',
+        skipInstall: true,
+      } as unknown as Command);
+    });
+    expect(logs.filter(Boolean)).toEqual([
+      'Using default pattern glob @backstage/*',
+      'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/core-api',
+      'Some packages are outdated, updating',
+      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
+      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
+      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
+      'bumping @backstage/core in a to ^1.0.6',
+      'bumping @backstage/core in b to ^1.0.6',
+      'bumping @backstage/theme in b to ^2.0.0',
+      'Skipping yarn install',
+      '⚠️  The following packages may have breaking changes:',
+      '  @backstage/theme : 1.0.0 ~> 2.0.0',
+      '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
+      'Version bump complete!',
+    ]);
+
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(3);
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core-api');
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
+
+    expect(runObj.run).not.toHaveBeenCalledWith(
       'yarn',
       ['install'],
       expect.any(Object),

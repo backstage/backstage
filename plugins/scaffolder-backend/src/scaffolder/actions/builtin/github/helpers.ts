@@ -122,6 +122,9 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           }
       )[]
     | undefined,
+  hasProjects: boolean | undefined,
+  hasWiki: boolean | undefined,
+  hasIssues: boolean | undefined,
   topics: string[] | undefined,
   logger: Logger,
 ) {
@@ -144,6 +147,9 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
           homepage: homepage,
+          has_projects: hasProjects,
+          has_wiki: hasWiki,
+          has_issues: hasIssues,
         })
       : client.rest.repos.createForAuthenticatedUser({
           name: repo,
@@ -155,6 +161,9 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
           homepage: homepage,
+          has_projects: hasProjects,
+          has_wiki: hasWiki,
+          has_issues: hasIssues,
         });
 
   let newRepo;

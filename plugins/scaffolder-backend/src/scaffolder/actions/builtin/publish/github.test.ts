@@ -157,6 +157,56 @@ describe('publish:github', () => {
       allow_auto_merge: false,
       visibility: 'private',
     });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        hasWiki: true,
+        hasProjects: true,
+        hasIssues: true,
+      },
+    });
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      visibility: 'private',
+      has_wiki: true,
+      has_projects: true,
+      has_issues: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        hasWiki: false,
+        hasProjects: false,
+        hasIssues: false,
+      },
+    });
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      visibility: 'private',
+      has_wiki: false,
+      has_projects: false,
+      has_issues: false,
+    });
   });
 
   it('should call the githubApis with the correct values for createForAuthenticatedUser', async () => {
@@ -221,6 +271,56 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        hasWiki: true,
+        hasProjects: true,
+        hasIssues: true,
+      },
+    });
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      has_wiki: true,
+      has_projects: true,
+      has_issues: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        hasWiki: false,
+        hasProjects: false,
+        hasIssues: false,
+      },
+    });
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      has_wiki: false,
+      has_projects: false,
+      has_issues: false,
     });
   });
 
