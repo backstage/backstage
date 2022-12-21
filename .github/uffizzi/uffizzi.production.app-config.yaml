@@ -13,7 +13,7 @@ backend:
   database:
     client: pg
     connection:
-      host: ${POSTGRES_HOST}
+      host: db
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
       port: 5432
