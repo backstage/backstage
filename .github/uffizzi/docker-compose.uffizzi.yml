@@ -14,7 +14,6 @@ services:
       POSTGRES_HOST: localhost
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
-      GITHUB_TOKEN: abc
       NODE_ENV: production
     deploy:
       resources:
