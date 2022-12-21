@@ -22,22 +22,21 @@ describe('parseEntityOrderParams', () => {
   });
 
   it('handles parameters with various orders', () => {
-    expect(parseEntityOrderParams({ order: ['a', '+b', '-c'] })).toEqual([
+    expect(
+      parseEntityOrderParams({ order: ['asc:a', 'desc:b', 'asc:c:d'] }),
+    ).toEqual([
       { field: 'a', order: 'asc' },
-      { field: 'b', order: 'asc' },
-      { field: 'c', order: 'desc' },
+      { field: 'b', order: 'desc' },
+      { field: 'c:d', order: 'asc' },
     ]);
   });
 
-  it('rejects missing order or key', () => {
-    expect(() => parseEntityOrderParams({ order: [''] })).toThrow(
-      'Invalid order parameter "", no field given',
-    );
-    expect(() => parseEntityOrderParams({ order: ['+'] })).toThrow(
-      'Invalid order parameter "+", no field given',
-    );
-    expect(() => parseEntityOrderParams({ order: ['-'] })).toThrow(
-      'Invalid order parameter "-", no field given',
-    );
-  });
+  it.each(['', ':', 'ascii:', 'ascii:ebcdic', ':colon'])(
+    'rejects missing/bad order or key, %p',
+    order => {
+      expect(() => parseEntityOrderParams({ order: [order] })).toThrow(
+        `Invalid order parameter "${order}", expected "<asc or desc>:<field name>"`,
+      );
+    },
+  );
 });

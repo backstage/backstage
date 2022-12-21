@@ -139,13 +139,11 @@ export class CatalogClient implements CatalogApi {
     if (order) {
       for (const directive of [order].flat()) {
         if (directive) {
-          // We could choose to always put in the + prefix, but it's not
-          // required (ascending sort is the default) and it always gets URL
-          // encoded to %2B which looks a bit less pretty - so we don't
-          const str = `${directive.order === 'desc' ? '-' : ''}${
-            directive.field
-          }`;
-          params.push(`order=${encodeURIComponent(str)}`);
+          params.push(
+            `order=${encodeURIComponent(directive.order)}:${encodeURIComponent(
+              directive.field,
+            )}`,
+          );
         }
       }
     }

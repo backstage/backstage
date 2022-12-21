@@ -22,27 +22,16 @@ export function parseEntityOrderParams(
   params: Record<string, unknown>,
 ): EntityOrder[] | undefined {
   return parseStringsParam(params.order, 'order')?.map(item => {
-    let order: 'asc' | 'desc';
-    let field: string;
-    switch (item[0]) {
-      case '+':
-        order = 'asc';
-        field = item.slice(1).trim();
-        break;
-      case '-':
-        order = 'desc';
-        field = item.slice(1).trim();
-        break;
-      default:
-        order = 'asc';
-        field = item.trim();
-        break;
+    const match = item.match(/^(asc|desc):(.+)$/);
+    if (!match) {
+      throw new InputError(
+        `Invalid order parameter "${item}", expected "<asc or desc>:<field name>"`,
+      );
     }
 
-    if (!field) {
-      throw new InputError(`Invalid order parameter "${item}", no field given`);
-    }
-
-    return { field, order };
+    return {
+      order: match[1] as 'asc' | 'desc',
+      field: match[2],
+    };
   });
 }

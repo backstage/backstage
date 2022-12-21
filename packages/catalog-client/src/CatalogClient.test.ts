@@ -199,7 +199,9 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?order=kind&order=-metadata.name');
+          expect(req.url.search).toBe(
+            '?order=asc:kind&order=desc:metadata.name',
+          );
           return res(ctx.json([]));
         }),
       );
