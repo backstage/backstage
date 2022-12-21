@@ -8,8 +8,7 @@ x-uffizzi:
 services:
   backstage:
     image: '${BACKSTAGE_IMAGE}'
-    depends_on:
-      - db
+
     environment:
       POSTGRES_HOST: localhost
       POSTGRES_USER: postgres
