@@ -3,7 +3,3 @@
 ---
 
 Fixed bug in `EntityTagPicker` that filtered on unavailable tags for the selected kind.
-
-Fixed bug in `EntityOwnerPicker` that filtered on unavailable tags for the selected kind.
-
-Fixed bug in `EntityLifecyclePicker` that filtered on unavailable tags for the selected kind.
