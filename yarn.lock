@@ -12339,10 +12339,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-hookz/deep-equal@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@react-hookz/deep-equal@npm:1.0.3"
-  checksum: d482b43746a0371094b90e1957d3e3a6aa70cbe8bd9cd88c759d8dcf21c2c1f57fbd1846b2103bccc20600e77d04d44e35c320ba9001fb5382c70a9a3385d34a
+"@react-hookz/deep-equal@npm:^1.0.3, @react-hookz/deep-equal@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@react-hookz/deep-equal@npm:1.0.4"
+  checksum: 0923e364d309e32ee54e0850471a86488faf149d7a04ee838552cf5d54f493964623a8d742880ec82410cc1105530123f056e66dfc72b7da235d4cc93fad708f
   languageName: node
   linkType: hard
 
@@ -12363,10 +12363,10 @@ __metadata:
   linkType: hard
 
 "@react-hookz/web@npm:^20.0.0":
-  version: 20.0.2
-  resolution: "@react-hookz/web@npm:20.0.2"
+  version: 20.0.3
+  resolution: "@react-hookz/web@npm:20.0.3"
   dependencies:
-    "@react-hookz/deep-equal": ^1.0.3
+    "@react-hookz/deep-equal": ^1.0.4
   peerDependencies:
     js-cookie: ^3.0.1
     react: ^16.8 || ^17 || ^18
@@ -12374,7 +12374,7 @@ __metadata:
   peerDependenciesMeta:
     js-cookie:
       optional: true
-  checksum: 38e9f660d247cd434d1de428f9ae49baf243f65187af3ebe2d4cd8ac1ecd660e37c64cec916dc9e9d4b7d609071b4c31d486ace3193e506fda64b11db96c5321
+  checksum: b4942f422fc36c93138b9735ee9ef768214f9f32fca73e4b3d545e490bd043e92f2ee0ce65c0ffc57f7c47a8cec9742e6f80e9e06bf875a805ba606dffa06f3d
   languageName: node
   linkType: hard
 
