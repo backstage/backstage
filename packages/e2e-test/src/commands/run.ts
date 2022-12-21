@@ -43,6 +43,24 @@ const templatePackagePaths = [
   'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
 ];
 
+export async function create({ output }: { output: string }) {
+  const outputDir = resolvePath(process.cwd(), output);
+
+  const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
+  print(`CLI E2E test root: ${rootDir}\n`);
+
+  print('Building dist workspace');
+  const workspaceDir = await buildDistWorkspace('workspace', rootDir);
+
+  // // Otherwise yarn will refuse to install with CI=true
+  process.env.YARN_ENABLE_IMMUTABLE_INSTALLS = 'false';
+
+  print('Creating a Backstage App');
+  const appDir = await createApp('test-app', workspaceDir, rootDir);
+
+  await fs.move(appDir, outputDir, { overwrite: true });
+}
+
 export async function run() {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
   print(`CLI E2E test root: ${rootDir}\n`);

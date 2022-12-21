@@ -15,8 +15,9 @@
  */
 
 import { Command } from 'commander';
-import { run } from './run';
+import { run, create } from './run';
 
 export function registerCommands(program: Command) {
   program.command('run').description('Run e2e tests').action(run);
+  program.command('create').option('-o, --output <path>').action(create);
 }

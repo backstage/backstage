@@ -28,7 +28,7 @@ jobs:
       - name: backstage create-app | delete if already exists
         run: |
           rm -rf ./example-app
-          npx @backstage/create-app
+          node ./packages/e2e-test/.bin/e2e-test create -o ./example-app
         env:
           BACKSTAGE_APP_NAME: example-app
 
