@@ -55,10 +55,10 @@ const testFileTwoContent = 'testFileTwo content';
 const genericFileContent = 'file content';
 
 const mockUrlReader: UrlReader = {
-  read: function (): Promise<Buffer> {
+  read() {
     throw new Error('read not implemented.');
   },
-  readUrl: function (url: string): Promise<ReadUrlResponse> {
+  readUrl(url: string) {
     switch (url) {
       case 'testFileOne':
         return makeFileContent(testFileOneContent);
@@ -68,13 +68,13 @@ const mockUrlReader: UrlReader = {
         return makeFileContent(genericFileContent);
     }
   },
-  readTree: function (): Promise<ReadTreeResponse> {
+  readTree() {
     const result: ReadTreeResponse = {
       files: async () => testingUrlFakeFileTree,
-      archive: function (): Promise<NodeJS.ReadableStream> {
+      archive() {
         throw new Error('Function not implemented.');
       },
-      dir: function (): Promise<string> {
+      dir() {
         throw new Error('Function not implemented.');
       },
       etag: '',
@@ -83,7 +83,7 @@ const mockUrlReader: UrlReader = {
     const resultPromise = async () => result;
     return resultPromise();
   },
-  search: function (): Promise<SearchResponse> {
+  search() {
     throw new Error('search not implemented.');
   },
 };

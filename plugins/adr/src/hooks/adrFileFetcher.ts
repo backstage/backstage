@@ -71,13 +71,13 @@ const readAdrFileEndpoint = 'readAdrFileAtUrl';
  * @public
  */
 export const urlReaderAdrFileFetcher: AdrFileFetcher = {
-  useGetAdrFilesAtUrl: function (url: string) {
+  useGetAdrFilesAtUrl(url: string) {
     const discoveryApi = useApi(discoveryApiRef);
     return useAsync<any>(useAdrApi(getAdrFilesEndpoint, url, discoveryApi), [
       url,
     ]);
   },
-  useReadAdrFileAtUrl: function (url: string) {
+  useReadAdrFileAtUrl(url: string) {
     const discoveryApi = useApi(discoveryApiRef);
     return useAsync<any>(useAdrApi(readAdrFileEndpoint, url, discoveryApi), [
       url,
