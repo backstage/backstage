@@ -10,7 +10,7 @@ services:
     image: '${BACKSTAGE_IMAGE}'
 
     environment:
-      POSTGRES_HOST: localhost
+      POSTGRES_HOST: db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
       NODE_ENV: production
