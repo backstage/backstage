@@ -15,5 +15,7 @@
  */
 
 export * from './EntityExplorerContent';
+export * from './GroupsExplorerContent';
+export * from './DefaultExplorePage';
 export * from './ExploreLayout';
 export * from './ToolSearchResultListItem';
