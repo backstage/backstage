@@ -18,8 +18,6 @@ from the root of your project.
 yarn new --select plugin
 ```
 
-[//]: # 'Todo: change the asses to show the output of the new command'
-
 ![](../assets/getting-started/create-plugin_output.png)
 
 This will create a new Backstage Plugin based on the ID that was provided. It
