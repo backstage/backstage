@@ -25,21 +25,17 @@ jobs:
           node-version: 16.x
           registry-url: https://registry.npmjs.org/
 
-      - name: backstage create-app | delete if already exists
+      - name: yarn install
         run: |
-          rm -rf ./example-app
-          node ./packages/e2e-test/.bin/e2e-test create -o ./example-app
-        env:
-          BACKSTAGE_APP_NAME: example-app
+          yarn install
+
+      - name: Use Uffizzi's backstage app config
+        run: |
+          cp -f ./backstage/.github/uffizzi/uffizzi.production.app-config.yaml ./app-config.production.yaml;
 
       - name: yarn build
         run: |
           yarn build:all
-        working-directory: ./example-app
-
-      - name: Use Uffizzi's backstage app config
-        run: |
-          cp ./backstage/.github/uffizzi/uffizzi.production.app-config.yaml ./example-app/app-config.production.yaml;
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -55,15 +51,11 @@ jobs:
           images: registry.uffizzi.com/${{ env.UUID_TAG_APP }}
           tags: type=raw,value=60d
 
-      - name: Add examples directory to Dockerfile
-        run: |
-          echo "COPY examples /examples" >> ./example-app/packages/backend/Dockerfile
-
       - name: Build Image
         uses: docker/build-push-action@v2
         with:
           context: example-app
-          file: example-app/packages/backend/Dockerfile
+          file: packages/backend/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
