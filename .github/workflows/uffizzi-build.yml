@@ -8,6 +8,8 @@ on:
 
 jobs:
   build-backstage:
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
     name: Build PR image
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
