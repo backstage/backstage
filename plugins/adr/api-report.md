@@ -22,9 +22,7 @@ export type AdrContentDecorator = (adrInfo: {
 
 // @public
 export interface AdrFileFetcher {
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   useGetAdrFilesAtUrl: (url: string) => any;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   useReadAdrFileAtUrl: (url: string) => any;
 }
 

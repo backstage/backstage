@@ -50,14 +50,14 @@ export interface AdrFileFetcher {
   /**
    * A hook to get a listing of adr files that exist at the provided url
    *
-   * @param url The url to get files from
+   * @param url - The url to get files from
    */
   useGetAdrFilesAtUrl: (url: string) => any;
 
   /**
    * A hook to get the contents of the adr file at the provided url
    *
-   * @param url The url of the adr file
+   * @param url - The url of the adr file
    */
   useReadAdrFileAtUrl: (url: string) => any;
 }
