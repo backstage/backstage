@@ -168,7 +168,7 @@ describe('AuditView', () => {
         expect(
           rendered.getByText(formatTime(a.timeCreated)).parentElement
             ?.parentElement,
-        ).toHaveAttribute('href', `${basePath}/audits/${a.id}`);
+        ).toHaveAttribute('href', `${basePath}/audit/${a.id}`);
       });
     });
   });
