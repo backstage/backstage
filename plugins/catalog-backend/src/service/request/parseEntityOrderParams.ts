@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-export { CATALOG_FILTER_EXISTS } from './api';
-export type {
-  AddLocationRequest,
-  AddLocationResponse,
-  CatalogApi,
-  CatalogRequestOptions,
-  EntityFieldsQuery,
-  EntityFilterQuery,
-  EntityOrderQuery,
-  GetEntitiesByRefsRequest,
-  GetEntitiesByRefsResponse,
-  GetEntitiesRequest,
-  GetEntitiesResponse,
-  GetEntityAncestorsRequest,
-  GetEntityAncestorsResponse,
-  GetEntityFacetsRequest,
-  GetEntityFacetsResponse,
-  Location,
-  ValidateEntityResponse,
-} from './api';
-export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';
+import { InputError } from '@backstage/errors';
+import { EntityOrder } from '../../catalog/types';
+import { parseStringsParam } from './common';
+
+export function parseEntityOrderParams(
+  params: Record<string, unknown>,
+): EntityOrder[] | undefined {
+  return parseStringsParam(params.order, 'order')?.map(item => {
+    const match = item.match(/^(asc|desc):(.+)$/);
+    if (!match) {
+      throw new InputError(
+        `Invalid order parameter "${item}", expected "<asc or desc>:<field name>"`,
+      );
+    }
+
+    return {
+      order: match[1] as 'asc' | 'desc',
+      field: match[2],
+    };
+  });
+}

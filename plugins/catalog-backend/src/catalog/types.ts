@@ -39,6 +39,14 @@ export type EntityPagination = {
 };
 
 /**
+ * A sorting rule for entities.
+ */
+export type EntityOrder = {
+  field: string;
+  order: 'asc' | 'desc';
+};
+
+/**
  * Matches rows in the search table.
  * @public
  */
@@ -71,6 +79,7 @@ export type PageInfo =
 export type EntitiesRequest = {
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
+  order?: EntityOrder[];
   pagination?: EntityPagination;
   authorizationToken?: string;
 };
