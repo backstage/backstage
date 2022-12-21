@@ -11,6 +11,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
+import express from 'express';
 import { Logger } from 'winston';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -43,6 +44,9 @@ export type AdrParserContext = {
 
 // @public
 export const createMadrParser: (options?: MadrParserOptions) => AdrParser;
+
+// @public (undocumented)
+export function createRouter(reader: UrlReader): Promise<express.Router>;
 
 // @public
 export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {

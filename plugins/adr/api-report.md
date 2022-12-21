@@ -21,6 +21,14 @@ export type AdrContentDecorator = (adrInfo: {
 };
 
 // @public
+export interface AdrFileFetcher {
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  useGetAdrFilesAtUrl: (url: string) => any;
+  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  useReadAdrFileAtUrl: (url: string) => any;
+}
+
+// @public
 export const adrPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
@@ -31,7 +39,11 @@ export const adrPlugin: BackstagePlugin<
 
 // @public
 export const AdrReader: {
-  (props: { adr: string; decorators?: AdrContentDecorator[] }): JSX.Element;
+  (props: {
+    adr: string;
+    decorators?: AdrContentDecorator[];
+    adrFileFetcher?: AdrFileFetcher;
+  }): JSX.Element;
   decorators: Readonly<{
     createRewriteRelativeLinksDecorator(): AdrContentDecorator;
     createRewriteRelativeEmbedsDecorator(): AdrContentDecorator;
@@ -50,7 +62,14 @@ export function AdrSearchResultListItem(props: {
 export const EntityAdrContent: (props: {
   contentDecorators?: AdrContentDecorator[] | undefined;
   filePathFilterFn?: AdrFilePathFilterFn | undefined;
+  adrFileFetcher?: AdrFileFetcher | undefined;
 }) => JSX.Element;
 
 export { isAdrAvailable };
+
+// @public
+export const octokitAdrFileFetcher: AdrFileFetcher;
+
+// @public
+export const urlReaderAdrFileFetcher: AdrFileFetcher;
 ```
