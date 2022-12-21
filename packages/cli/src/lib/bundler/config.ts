@@ -216,7 +216,7 @@ export async function createConfig(
           cache: {
             type: 'filesystem',
             buildDependencies: {
-              config: [__filename],
+              config: [`${cliPaths.ownDir}/`],
             },
           },
         }
