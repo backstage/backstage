@@ -18,7 +18,6 @@ import {
   ReadTreeResponse,
   ReadTreeResponseFile,
   ReadUrlResponse,
-  SearchResponse,
   UrlReader,
 } from '@backstage/backend-common';
 import express from 'express';
