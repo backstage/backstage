@@ -18,6 +18,7 @@ import fs from 'fs-extra';
 import semver from 'semver';
 import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
 import { stringify as legacyStringifyLockfile } from '@yarnpkg/lockfile';
+import { ExtendedPackage } from '../monorepo';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
 
@@ -164,8 +165,11 @@ export class Lockfile {
   }
 
   /** Analyzes the lockfile to identify possible actions and warnings for the entries */
-  analyze(options?: { filter?: (name: string) => boolean }): AnalyzeResult {
-    const { filter } = options ?? {};
+  analyze(options: {
+    filter?: (name: string) => boolean;
+    localPackages: Map<string, ExtendedPackage>;
+  }): AnalyzeResult {
+    const { filter, localPackages } = options;
     const result: AnalyzeResult = {
       invalidRanges: [],
       newVersions: [],
@@ -195,38 +199,52 @@ export class Lockfile {
       const versions = Array.from(new Set(entries.map(e => e.version)))
         .map(v => {
           // Translate workspace:^ references to the actual version
-          return v === '0.0.0-use.local'
-            ? require(`${name}/package.json`).version
-            : v;
+          if (v === '0.0.0-use.local') {
+            const local = localPackages.get(name);
+            if (!local) {
+              throw new Error(`No local package found for ${name}`);
+            }
+            if (!local.packageJson.version) {
+              throw new Error(`No version found for local package ${name}`);
+            }
+            return {
+              entryVersion: v,
+              actualVersion: local.packageJson.version,
+            };
+          }
+          return { entryVersion: v, actualVersion: v };
         })
-        .sort((v1, v2) => semver.rcompare(v1, v2));
+        .sort((v1, v2) => semver.rcompare(v1.actualVersion, v2.actualVersion));
 
       // If we're not using at least 2 different versions we're done
       if (versions.length < 2) {
         continue;
       }
 
+      // TODO(Rugvip): Support bumping into workspace ranges too
       const acceptedVersions = new Set<string>();
       for (const { version, range } of entries) {
         // Finds the highest matching version from the the known versions
         // TODO(Rugvip): We may want to select the version that satisfies the most ranges rather than the highest one
-        const acceptedVersion = versions.find(v => semver.satisfies(v, range));
+        const acceptedVersion = versions.find(v =>
+          semver.satisfies(v.actualVersion, range),
+        );
         if (!acceptedVersion) {
           throw new Error(
             `No existing version was accepted for range ${range}, searching through ${versions}, for package ${name}`,
           );
         }
 
-        if (acceptedVersion !== version) {
+        if (acceptedVersion.entryVersion !== version) {
           result.newVersions.push({
             name,
             range,
-            newVersion: acceptedVersion,
+            newVersion: acceptedVersion.entryVersion,
             oldVersion: version,
           });
         }
 
-        acceptedVersions.add(acceptedVersion);
+        acceptedVersions.add(acceptedVersion.actualVersion);
       }
 
       // If all ranges were able to accept the same version, we're done

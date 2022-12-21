@@ -22,6 +22,7 @@ import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
 import { Lockfile } from '../../lib/versioning';
 import { forbiddenDuplicatesFilter, includedFilter } from '../versions/lint';
+import { PackageGraph } from '../../lib/monorepo';
 
 interface StartAppOptions {
   verifyVersions?: boolean;
@@ -36,6 +37,9 @@ export async function startFrontend(options: StartAppOptions) {
     const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
     const result = lockfile.analyze({
       filter: includedFilter,
+      localPackages: PackageGraph.fromPackages(
+        await PackageGraph.listTargetPackages(),
+      ),
     });
     const problemPackages = [...result.newVersions, ...result.newRanges]
       .map(({ name }) => name)
