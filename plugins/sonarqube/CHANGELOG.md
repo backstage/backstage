@@ -1,5 +1,13 @@
 # @backstage/plugin-sonarqube
 
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/plugin-catalog-react@1.2.3
+
 ## 0.6.0
 
 ### Minor Changes
