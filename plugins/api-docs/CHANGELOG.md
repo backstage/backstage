@@ -1,5 +1,14 @@
 # @backstage/plugin-api-docs
 
+## 0.8.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/plugin-catalog@1.7.1
+  - @backstage/plugin-catalog-react@1.2.3
+
 ## 0.8.12
 
 ### Patch Changes
