@@ -316,7 +316,7 @@ sparklines
 Splunk
 Spotifiers
 spotify
-Spotify
+# Spotify
 sqlite
 sqs
 squidfunk
