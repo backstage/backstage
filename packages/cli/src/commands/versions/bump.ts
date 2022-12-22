@@ -201,7 +201,7 @@ export default async (opts: OptionValues) => {
           lockfile.remove(name, range);
         }
       }
-      await lockfile.save();
+      await lockfile.save(lockfilePath);
     }
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();

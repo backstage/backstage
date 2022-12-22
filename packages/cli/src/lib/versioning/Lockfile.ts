@@ -26,14 +26,28 @@ type LockfileData = {
   [entry: string]: {
     version: string;
     resolved?: string;
-    integrity?: string;
+    integrity?: string /* old */;
+    checksum?: string /* new */;
     dependencies?: { [name: string]: string };
+    peerDependencies?: { [name: string]: string };
   };
 };
 
 type LockfileQueryEntry = {
   range: string;
   version: string;
+  dataKey: string;
+};
+
+type LockfileDiffEntry = {
+  name: string;
+  range: string;
+};
+
+type LockfileDiff = {
+  added: LockfileDiffEntry[];
+  changed: LockfileDiffEntry[];
+  removed: LockfileDiffEntry[];
 };
 
 /** Entries that have an invalid version range, for example an npm tag */
@@ -65,20 +79,6 @@ type AnalyzeResult = {
   newRanges: AnalyzeResultNewRange[];
 };
 
-function parseLockfile(lockfileContents: string) {
-  try {
-    return {
-      object: parseSyml(lockfileContents),
-      type: 'success',
-    };
-  } catch (err) {
-    return {
-      object: null,
-      type: err,
-    };
-  }
-}
-
 // the new yarn header is handled out of band of the parsing
 // https://github.com/yarnpkg/berry/blob/0c5974f193a9397630e9aee2b3876cca62611149/packages/yarnpkg-core/sources/Project.ts#L1741-L1746
 const NEW_HEADER = `${[
@@ -86,11 +86,6 @@ const NEW_HEADER = `${[
   `# Manual changes might be lost - proceed with caution!\n`,
 ].join(``)}\n`;
 
-function stringifyLockfile(data: LockfileData, legacy: boolean) {
-  return legacy
-    ? legacyStringifyLockfile(data)
-    : NEW_HEADER + stringifySyml(data);
-}
 // taken from yarn parser package
 // https://github.com/yarnpkg/berry/blob/0c5974f193a9397630e9aee2b3876cca62611149/packages/yarnpkg-parsers/sources/syml.ts#L136
 const LEGACY_REGEX = /^(#.*(\r?\n))*?#\s+yarn\s+lockfile\s+v1\r?\n/i;
@@ -111,13 +106,19 @@ const SPECIAL_OBJECT_KEYS = [
 export class Lockfile {
   static async load(path: string) {
     const lockfileContents = await fs.readFile(path, 'utf8');
-    const legacy = LEGACY_REGEX.test(lockfileContents);
-    const lockfile = parseLockfile(lockfileContents);
-    if (lockfile.type !== 'success') {
-      throw new Error(`Failed yarn.lock parse with ${lockfile.type}`);
+    return Lockfile.parse(lockfileContents);
+  }
+
+  static parse(content: string) {
+    const legacy = LEGACY_REGEX.test(content);
+
+    let data: LockfileData;
+    try {
+      data = parseSyml(content);
+    } catch (err) {
+      throw new Error(`Failed yarn.lock parse, ${err}`);
     }
 
-    const data = lockfile.object as LockfileData;
     const packages = new Map<string, LockfileQueryEntry[]>();
 
     for (const [key, value] of Object.entries(data)) {
@@ -140,15 +141,14 @@ export class Lockfile {
         if (range.startsWith('npm:')) {
           range = range.slice('npm:'.length);
         }
-        queries.push({ range, version: value.version });
+        queries.push({ range, version: value.version, dataKey: key });
       }
     }
 
-    return new Lockfile(path, packages, data, legacy);
+    return new Lockfile(packages, data, legacy);
   }
 
   private constructor(
-    private readonly path: string,
     private readonly packages: Map<string, LockfileQueryEntry[]>,
     private readonly data: LockfileData,
     private readonly legacy: boolean = false,
@@ -340,11 +340,91 @@ export class Lockfile {
     }
   }
 
-  async save() {
-    await fs.writeFile(this.path, this.toString(), 'utf8');
+  createSimplifiedDependencyGraph(): Map<string, Set<string>> {
+    const graph = new Map<string, Set<string>>();
+
+    for (const [name, entries] of this.packages) {
+      const dependencies = new Set(
+        entries.flatMap(e => {
+          const data = this.data[e.dataKey];
+          return [
+            ...Object.keys(data?.dependencies ?? {}),
+            ...Object.keys(data?.peerDependencies ?? {}),
+          ];
+        }),
+      );
+      graph.set(name, dependencies);
+    }
+
+    return graph;
+  }
+
+  /**
+   * Diff with another lockfile, returning entries that have been
+   * added, changed, and removed compared to the other lockfile.
+   */
+  diff(otherLockfile: Lockfile): LockfileDiff {
+    const diff = {
+      added: new Array<{ name: string; range: string }>(),
+      changed: new Array<{ name: string; range: string }>(),
+      removed: new Array<{ name: string; range: string }>(),
+    };
+
+    // Keeps track of packages that only exist in this lockfile
+    const remainingOldNames = new Set(this.packages.keys());
+
+    for (const [name, otherQueries] of otherLockfile.packages) {
+      remainingOldNames.delete(name);
+
+      const thisQueries = this.packages.get(name);
+      // If the packages doesn't exist in this lockfile, add all entries
+      if (!thisQueries) {
+        diff.removed.push(...otherQueries.map(q => ({ name, range: q.range })));
+        continue;
+      }
+
+      const remainingOldRanges = new Set(thisQueries.map(q => q.range));
+
+      for (const otherQuery of otherQueries) {
+        remainingOldRanges.delete(otherQuery.range);
+
+        const thisQuery = thisQueries.find(q => q.range === otherQuery.range);
+        if (!thisQuery) {
+          diff.removed.push({ name, range: otherQuery.range });
+          continue;
+        }
+
+        const otherPkg = otherLockfile.data[otherQuery.dataKey];
+        const thisPkg = this.data[thisQuery.dataKey];
+        if (otherPkg && thisPkg) {
+          const thisCheck = thisPkg.integrity || thisPkg.checksum;
+          const otherCheck = otherPkg.integrity || otherPkg.checksum;
+          if (thisCheck !== otherCheck) {
+            diff.changed.push({ name, range: otherQuery.range });
+          }
+        }
+      }
+
+      for (const thisRange of remainingOldRanges) {
+        diff.added.push({ name, range: thisRange });
+      }
+    }
+
+    for (const name of remainingOldNames) {
+      const queries = this.packages.get(name) ?? [];
+      diff.added.push(...queries.map(q => ({ name, range: q.range })));
+    }
+
+    return diff;
+  }
+
+  async save(path: string) {
+    await fs.writeFile(path, this.toString(), 'utf8');
   }
 
   toString() {
-    return stringifyLockfile(this.data, this.legacy);
+    return this.legacy
+      ? legacyStringifyLockfile(this.data)
+      : NEW_HEADER + stringifySyml(this.data);
   }
 }
