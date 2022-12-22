@@ -37,7 +37,7 @@ jobs:
 
       - name: typescript build
         run: |
-          yarn tsc:full
+          yarn tsc
 
       - name: backstage build
         run: |
