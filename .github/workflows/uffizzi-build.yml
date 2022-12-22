@@ -41,7 +41,7 @@ jobs:
 
       - name: backstage build
         run: |
-          yarn build:all
+          yarn workspace backend build
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
