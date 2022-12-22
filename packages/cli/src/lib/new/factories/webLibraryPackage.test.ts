@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, join as joinPath } from 'path';
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
@@ -73,7 +73,7 @@ describe('webLibraryPackage factory', () => {
       '',
       `Creating web-library package ${expectedwebLibraryPackageName}`,
       'Checking Prerequisites:',
-      `availability  packages/${expectedwebLibraryPackageName}`,
+      `availability  ${joinPath('packages', expectedwebLibraryPackageName)}`,
       'creating      temp dir',
       'Executing Template:',
       'copying       .eslintrc.js',
@@ -82,7 +82,7 @@ describe('webLibraryPackage factory', () => {
       'templating    index.ts.hbs',
       'copying       setupTests.ts',
       'Installing:',
-      `moving        packages/${expectedwebLibraryPackageName}`,
+      `moving        ${joinPath('packages', expectedwebLibraryPackageName)}`,
     ]);
 
     await expect(
