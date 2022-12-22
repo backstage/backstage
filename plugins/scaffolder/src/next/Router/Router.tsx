@@ -20,17 +20,17 @@ import { TemplateWizardPage } from '../TemplateWizardPage';
 import {
   FIELD_EXTENSION_WRAPPER_KEY,
   FIELD_EXTENSION_KEY,
-  DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
   NextFieldExtensionOptions,
   FieldExtensionOptions,
-} from '../../extensions';
+  type FormProps,
+} from '@backstage/plugin-scaffolder-react';
 
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { nextSelectedTemplateRouteRef } from '@backstage/plugin-scaffolder-react';
 import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
-import type { FormProps } from '../types';
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 /**
  * The Props for the Scaffolder Router

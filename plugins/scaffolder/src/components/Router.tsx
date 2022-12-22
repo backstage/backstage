@@ -24,13 +24,7 @@ import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
 import { SecretsContextProvider } from './secrets/SecretsContext';
 import { TemplateEditorPage } from './TemplateEditorPage';
-
-import {
-  DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
-  FIELD_EXTENSION_KEY,
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FieldExtensionOptions,
-} from '../extensions';
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../extensions/default';
 import {
   useElementFilter,
   useRouteRef,
@@ -43,6 +37,9 @@ import {
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
+  FIELD_EXTENSION_KEY,
+  FIELD_EXTENSION_WRAPPER_KEY,
+  FieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { ListTasksPage } from './ListTasksPage';
 import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';

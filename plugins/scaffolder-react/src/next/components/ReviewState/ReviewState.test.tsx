@@ -17,7 +17,7 @@
 import React from 'react';
 import { ReviewState } from './ReviewState';
 import { render } from '@testing-library/react';
-import { ParsedTemplateSchema } from './useTemplateSchema';
+import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 
 describe('ReviewState', () => {
   it('should render the text as normal with no options', () => {

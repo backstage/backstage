@@ -18,7 +18,7 @@ jest.mock('./TemplateCard', () => ({ TemplateCard: jest.fn(() => null) }));
 import React from 'react';
 import { TemplateGroup } from './TemplateGroup';
 import { render } from '@testing-library/react';
-import { TemplateCard } from './TemplateCard';
+import { TemplateCard } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 describe('TemplateGroup', () => {

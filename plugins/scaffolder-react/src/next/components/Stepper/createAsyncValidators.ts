@@ -17,9 +17,9 @@
 import { FieldValidation } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { NextCustomFieldValidator } from '../../../extensions';
 import { Draft07 as JSONSchema } from 'json-schema-library';
-import { createFieldValidation } from './schema';
+import { createFieldValidation } from '../../lib';
+import { NextCustomFieldValidator } from '../../extensions';
 
 export const createAsyncValidators = (
   rootSchema: JsonObject,

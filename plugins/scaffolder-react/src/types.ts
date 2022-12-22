@@ -13,3 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { JsonObject } from '@backstage/types';
+
+/**
+ * The shape of each entry of parameters which gets rendered
+ * as a separate step in the wizard input
+ *
+ * @public
+ */
+export type TemplateParameterSchema = {
+  title: string;
+  description?: string;
+  steps: Array<{
+    title: string;
+    description?: string;
+    schema: JsonObject;
+  }>;
+};

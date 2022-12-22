@@ -21,10 +21,7 @@ import {
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { UIOptionsType } from '@rjsf/utils';
-import { FieldExtensionComponent } from '../../extensions';
-
-export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
-export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
+import { FieldExtensionComponent, FIELD_EXTENSION_KEY } from '../../extensions';
 
 /**
  * Method for creating field extensions that can be used in the scaffolder

@@ -16,14 +16,18 @@
 import React from 'react';
 import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject } from '@backstage/types';
-import { ParsedTemplateSchema } from './useTemplateSchema';
 import { Draft07 as JSONSchema } from 'json-schema-library';
+import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 
 interface ReviewStateProps {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
 }
 
+/**
+ * The ReviewState component used by the Stepper
+ * @alpha
+ */
 export const ReviewState = (props: ReviewStateProps) => {
   const reviewData = Object.fromEntries(
     Object.entries(props.formState).map(([key, value]) => {

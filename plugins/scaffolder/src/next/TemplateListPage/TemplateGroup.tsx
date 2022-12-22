@@ -22,7 +22,10 @@ import {
   Link,
 } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
-import { TemplateCard, TemplateCardProps } from './TemplateCard';
+import {
+  TemplateCard,
+  TemplateCardProps,
+} from '@backstage/plugin-scaffolder-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export interface TemplateGroupProps {

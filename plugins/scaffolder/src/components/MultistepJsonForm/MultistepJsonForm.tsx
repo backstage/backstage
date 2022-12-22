@@ -39,8 +39,10 @@ import * as fieldOverrides from './FieldOverrides';
 import { LayoutOptions } from '../../layouts';
 import { ReviewStepProps } from '../types';
 import { ReviewStep } from './ReviewStep';
-import { selectedTemplateRouteRef } from '@backstage/plugin-scaffolder-react';
-import { extractSchemaFromStep } from '../../next/TemplateWizardPage/Stepper/schema';
+import {
+  selectedTemplateRouteRef,
+  extractSchemaFromStep,
+} from '@backstage/plugin-scaffolder-react';
 
 const Form = withTheme(MuiTheme);
 

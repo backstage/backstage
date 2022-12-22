@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateParameterSchema } from '../../../types';
 import { useTemplateSchema } from './useTemplateSchema';
 import { renderHook } from '@testing-library/react-hooks';
 import { TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
+import { TemplateParameterSchema } from '../../types';
 
 describe('useTemplateSchema', () => {
   it('should generate the correct schema', () => {

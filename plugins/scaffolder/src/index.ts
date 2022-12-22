@@ -36,19 +36,8 @@ export type {
   ScaffolderTask,
   ScaffolderTaskOutput,
   ScaffolderTaskStatus,
-  TemplateParameterSchema,
 } from './types';
-export {
-  createScaffolderFieldExtension,
-  ScaffolderFieldExtensions,
-} from './extensions';
-export type {
-  CustomFieldExtensionSchema,
-  CustomFieldValidator,
-  FieldExtensionOptions,
-  FieldExtensionComponentProps,
-  FieldExtensionComponent,
-} from './extensions';
+
 export { createScaffolderLayout, ScaffolderLayouts } from './layouts';
 export type { LayoutOptions, LayoutTemplate, LayoutComponent } from './layouts';
 export {
@@ -64,10 +53,23 @@ export {
 export * from './components';
 
 export {
+  createScaffolderFieldExtension,
+  ScaffolderFieldExtensions,
   rootRouteRef,
   nextRouteRef,
   selectedTemplateRouteRef,
   nextSelectedTemplateRouteRef,
+  createNextScaffolderFieldExtension,
+  type TemplateParameterSchema,
+  type NextCustomFieldValidator,
+  type NextFieldExtensionOptions,
+  type NextFieldExtensionComponentProps,
+  type FormProps,
+  type CustomFieldExtensionSchema,
+  type CustomFieldValidator,
+  type FieldExtensionOptions,
+  type FieldExtensionComponentProps,
+  type FieldExtensionComponent,
 } from '@backstage/plugin-scaffolder-react';
 
 export type { TaskPageProps } from './components/TaskPage';
@@ -76,10 +78,3 @@ export type { TaskPageProps } from './components/TaskPage';
 export { NextScaffolderPage } from './plugin';
 export type { NextRouterProps } from './next';
 export type { TemplateGroupFilter } from './next';
-export type { FormProps } from './next';
-export {
-  createNextScaffolderFieldExtension,
-  type NextCustomFieldValidator,
-  type NextFieldExtensionOptions,
-  type NextFieldExtensionComponentProps,
-} from './extensions';

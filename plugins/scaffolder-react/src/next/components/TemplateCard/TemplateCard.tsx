@@ -42,7 +42,7 @@ import React from 'react';
 import {
   nextSelectedTemplateRouteRef,
   viewTechDocRouteRef,
-} from '@backstage/plugin-scaffolder-react';
+} from '../../../routes';
 import { CardHeader } from './CardHeader';
 import { CardLink } from './CardLink';
 

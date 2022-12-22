@@ -33,7 +33,7 @@ import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
-import { ReviewState } from './ReviewState';
+import { ReviewState } from '../ReviewState';
 import validator from '@rjsf/validator-ajv6';
 import { selectedTemplateRouteRef } from '../../../routes';
 import { useFormData } from '../../hooks/useFormData';

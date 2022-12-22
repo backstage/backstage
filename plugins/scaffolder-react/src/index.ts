@@ -16,5 +16,5 @@
 
 export * from './routes';
 export * from './extensions';
-
 export * from './next';
+export * from './types';

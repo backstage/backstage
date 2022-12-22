@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
+import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 
@@ -69,22 +70,6 @@ export type ScaffolderTaskOutput = {
   links?: ScaffolderOutputLink[];
 } & {
   [key: string]: unknown;
-};
-
-/**
- * The shape of each entry of parameters which gets rendered
- * as a separate step in the wizard input
- *
- * @public
- */
-export type TemplateParameterSchema = {
-  title: string;
-  description?: string;
-  steps: Array<{
-    title: string;
-    description?: string;
-    schema: JsonObject;
-  }>;
 };
 
 /**

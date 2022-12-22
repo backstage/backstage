@@ -15,6 +15,13 @@
  */
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import {
+  nextRouteRef,
+  registerComponentRouteRef,
+  rootRouteRef,
+  viewTechDocRouteRef,
+  createScaffolderFieldExtension,
+} from '@backstage/plugin-scaffolder-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
 import {
   EntityPicker,
@@ -34,13 +41,6 @@ import {
   RepoUrlPicker,
   RepoUrlPickerSchema,
 } from './components/fields/RepoUrlPicker/RepoUrlPicker';
-import { createScaffolderFieldExtension } from './extensions';
-import {
-  nextRouteRef,
-  registerComponentRouteRef,
-  rootRouteRef,
-  viewTechDocRouteRef,
-} from '@backstage/plugin-scaffolder-react';
 import {
   createApiFactory,
   createPlugin,

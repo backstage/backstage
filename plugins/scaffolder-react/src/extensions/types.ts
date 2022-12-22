@@ -15,12 +15,6 @@
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { FieldValidation, FieldProps } from '@rjsf/core';
-import {
-  UIOptionsType,
-  FieldProps as FieldPropsV5,
-  UiSchema as UiSchemaV5,
-  FieldValidation as FieldValidationV5,
-} from '@rjsf/utils';
 import { JSONSchema7 } from 'json-schema';
 
 /**

@@ -16,8 +16,8 @@
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { UiSchema } from '@rjsf/utils';
-import { TemplateParameterSchema } from '../../../types';
-import { extractSchemaFromStep } from './schema';
+import { TemplateParameterSchema } from '../../types';
+import { extractSchemaFromStep } from '../lib';
 
 export interface ParsedTemplateSchema {
   uiSchema: UiSchema;
@@ -26,6 +26,7 @@ export interface ParsedTemplateSchema {
   title: string;
   description?: string;
 }
+
 export const useTemplateSchema = (
   manifest: TemplateParameterSchema,
 ): { steps: ParsedTemplateSchema[] } => {

@@ -17,4 +17,4 @@ export * from './Router';
 export * from './TemplateListPage';
 export * from './TemplateWizardPage';
 
-export type { FormProps } from './types';
+export type { FormProps } from '@backstage/plugin-scaffolder-react';

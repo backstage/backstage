@@ -30,7 +30,6 @@ import {
   ListActionsResponse,
   LogEvent,
   ScaffolderApi,
-  TemplateParameterSchema,
   ScaffolderScaffoldOptions,
   ScaffolderScaffoldResponse,
   ScaffolderStreamLogsOptions,
@@ -40,6 +39,8 @@ import {
   ScaffolderDryRunOptions,
   ScaffolderDryRunResponse,
 } from './types';
+
+import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import queryString from 'qs';
 
 /**
