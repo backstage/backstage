@@ -99,7 +99,14 @@ export class CatalogClient implements CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse> {
-    const { filter = [], fields = [], offset, limit, after } = request ?? {};
+    const {
+      filter = [],
+      fields = [],
+      order,
+      offset,
+      limit,
+      after,
+    } = request ?? {};
     const params: string[] = [];
 
     // filter param can occur multiple times, for example
@@ -127,6 +134,18 @@ export class CatalogClient implements CatalogApi {
 
     if (fields.length) {
       params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+    }
+
+    if (order) {
+      for (const directive of [order].flat()) {
+        if (directive) {
+          params.push(
+            `order=${encodeURIComponent(directive.order)}:${encodeURIComponent(
+              directive.field,
+            )}`,
+          );
+        }
+      }
     }
 
     if (offset !== undefined) {
