@@ -46,7 +46,7 @@ import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
-import { createRoutesFromChildren, Route } from 'react-router';
+import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 
 export function isReactRouterBeta(): boolean {
@@ -165,9 +165,9 @@ export class DevAppBuilder {
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
-    const dummyRouteRef = createRouteRef({ id: 'dummy' });
-    const DummyPage = () => <Box p={3}>Page belonging to another plugin.</Box>;
-    attachComponentData(DummyPage, 'core.mountPoint', dummyRouteRef);
+    const fakeRouteRef = createRouteRef({ id: 'fake' });
+    const FakePage = () => <Box p={3}>Page belonging to another plugin.</Box>;
+    attachComponentData(FakePage, 'core.mountPoint', fakeRouteRef);
 
     const apis = [...this.apis];
     if (!apis.some(api => api.api.id === scmIntegrationsApiRef.id)) {
@@ -188,7 +188,7 @@ export class DevAppBuilder {
         for (const plugin of this.plugins ?? []) {
           const targets: Record<string, RouteRef<any>> = {};
           for (const routeKey of Object.keys(plugin.externalRoutes)) {
-            targets[routeKey] = dummyRouteRef;
+            targets[routeKey] = fakeRouteRef;
           }
           bind(plugin.externalRoutes, targets);
         }
@@ -215,7 +215,7 @@ export class DevAppBuilder {
               </Sidebar>
               <FlatRoutes>
                 {this.routes}
-                <Route path="/_external_route" element={<DummyPage />} />
+                <Route path="/_external_route" element={<FakePage />} />
               </FlatRoutes>
             </SidebarPage>
           </AppRouter>

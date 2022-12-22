@@ -1,5 +1,33 @@
 # @backstage/plugin-events-backend-test-utils
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.2.0
+
+## 0.1.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.2.0-next.3
+
+## 0.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.2.0-next.2
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.2.0-next.1
+
 ## 0.1.1-next.0
 
 ### Patch Changes

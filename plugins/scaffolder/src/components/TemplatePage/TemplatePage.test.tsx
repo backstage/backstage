@@ -21,7 +21,7 @@ import {
 } from '@backstage/test-utils';
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import React from 'react';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { scaffolderApiRef } from '../../api';
 import { ScaffolderApi } from '../../types';
 import { rootRouteRef } from '../../routes';

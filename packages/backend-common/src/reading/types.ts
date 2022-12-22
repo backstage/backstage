@@ -17,7 +17,6 @@
 import { Readable } from 'stream';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import { AbortSignal } from 'node-abort-controller';
 
 /**
  * A generic interface for fetching plain data from URLs.

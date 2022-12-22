@@ -17,8 +17,10 @@ import { Entity as Entity_2 } from '@backstage/plugin-cost-insights-common';
 import { ForwardRefExoticComponent } from 'react';
 import { Group as Group_2 } from '@backstage/plugin-cost-insights-common';
 import { Maybe as Maybe_2 } from '@backstage/plugin-cost-insights-common';
+import { Metric as Metric_2 } from '@backstage/plugin-cost-insights-common';
 import { MetricData as MetricData_2 } from '@backstage/plugin-cost-insights-common';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
+import { Product as Product_2 } from '@backstage/plugin-cost-insights-common';
 import { Project as Project_2 } from '@backstage/plugin-cost-insights-common';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
@@ -233,8 +235,8 @@ export type ChartData = {
 // @public (undocumented)
 export type ConfigContextProps = {
   baseCurrency: Intl.NumberFormat;
-  metrics: Metric[];
-  products: Product[];
+  metrics: Metric_2[];
+  products: Product_2[];
   icons: Icon[];
   engineerCost: number;
   engineerThreshold: number;
@@ -426,21 +428,21 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
   getCatalogEntityDailyCost(
     entityRef: string,
     intervals: string,
-  ): Promise<Cost>;
+  ): Promise<Cost_2>;
   // (undocumented)
-  getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
+  getDailyMetricData(metric: string, intervals: string): Promise<MetricData_2>;
   // (undocumented)
-  getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
+  getGroupDailyCost(group: string, intervals: string): Promise<Cost_2>;
   // (undocumented)
-  getGroupProjects(group: string): Promise<Project[]>;
+  getGroupProjects(group: string): Promise<Project_2[]>;
   // (undocumented)
   getLastCompleteBillingDate(): Promise<string>;
   // (undocumented)
-  getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
+  getProductInsights(options: ProductInsightsOptions): Promise<Entity_2>;
   // (undocumented)
-  getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
+  getProjectDailyCost(project: string, intervals: string): Promise<Cost_2>;
   // (undocumented)
-  getUserGroups(userId: string): Promise<Group[]>;
+  getUserGroups(userId: string): Promise<Group_2[]>;
 }
 
 // @public @deprecated (undocumented)

@@ -15,7 +15,6 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { AbortController } from 'node-abort-controller';
 import { LocalTaskWorker } from './LocalTaskWorker';
 
 describe('LocalTaskWorker', () => {

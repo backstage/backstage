@@ -1,5 +1,49 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+  - @backstage/plugin-tech-insights-common@0.2.9
+
+## 0.3.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.0-next.3
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/config@1.0.5-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-tech-insights-common@0.2.9-next.1
+
+## 0.3.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-tasks@0.4.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-tech-insights-common@0.2.9-next.1
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/backend-tasks@0.4.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-tech-insights-common@0.2.9-next.1
+
 ## 0.3.7-next.0
 
 ### Patch Changes

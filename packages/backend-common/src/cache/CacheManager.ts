@@ -102,7 +102,7 @@ export class CacheManager {
       getClient: (opts = {}): CacheClient => {
         const concreteClient = this.getClientWithTtl(pluginId, opts.defaultTtl);
 
-        // Always provide an error handler to avoid killing the process.
+        // Always provide an error handler to avoid stopping the process.
         concreteClient.on('error', (err: Error) => {
           // In all cases, just log the error.
           this.logger.error(err);

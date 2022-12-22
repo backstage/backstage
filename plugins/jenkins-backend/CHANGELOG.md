@@ -1,5 +1,65 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.29
+
+### Patch Changes
+
+- cfe2b98fbe: Remove unnecessary dependency `promise-any-polyfill`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 9447b0fb46: added support for standalone jenkins projects
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/plugin-jenkins-common@0.1.11
+
+## 0.1.29-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.3
+  - @backstage/plugin-jenkins-common@0.1.11-next.3
+
+## 0.1.29-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-jenkins-common@0.1.11-next.2
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
+## 0.1.29-next.1
+
+### Patch Changes
+
+- cfe2b98fbe: Remove unnecessary dependency promise-any-polyfill
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-jenkins-common@0.1.11-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
 ## 0.1.29-next.0
 
 ### Patch Changes

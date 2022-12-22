@@ -147,37 +147,56 @@ describe('<EntityKindPicker/>', () => {
     });
   });
 
-  it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
-    const rendered = await renderWithEffects(
+  it('renders unknown kinds provided in query parameters', async () => {
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{
-            updateFilters,
-            queryParameters: { kind: 'component' },
-          }}
+          value={{ queryParameters: { kind: 'FROb' } }}
         >
           <EntityKindPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('component'),
-    });
-    rendered.rerender(
+
+    expect(screen.getByText('FROb')).toBeInTheDocument();
+  });
+
+  it('limits kinds when allowedKinds is set', async () => {
+    await renderWithEffects(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider
-          value={{
-            updateFilters,
-            queryParameters: { kind: 'domain' },
-          }}
-        >
-          <EntityKindPicker />
+        <MockEntityListContextProvider>
+          <EntityKindPicker allowedKinds={['component', 'domain']} />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('domain'),
-    });
+
+    const input = screen.getByTestId('select');
+    fireEvent.click(input);
+
+    expect(
+      screen.getByRole('option', { name: 'Component' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: 'Template' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders kind from the query parameter even when not in allowedKinds', async () => {
+    await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ queryParameters: { kind: 'Frob' } }}
+        >
+          <EntityKindPicker allowedKinds={['domain']} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(screen.getByText('Frob')).toBeInTheDocument();
+
+    const input = screen.getByTestId('select');
+    fireEvent.click(input);
+    expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
   });
 });

@@ -411,3 +411,6 @@ zoomable
 zsh
 Lainfiesta
 allowlisted
+Dominik
+Henneke
+Kuang

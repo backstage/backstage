@@ -45,13 +45,21 @@ class Index extends React.Component {
                   ship high-quality code quickly — without compromising
                   autonomy.
                 </Block.Paragraph>
-                <Block.LinkButton
-                  href={
-                    'https://github.com/backstage/backstage#getting-started'
-                  }
-                >
-                  GitHub
-                </Block.LinkButton>
+                <Block.Container wrapped>
+                  <Block.LinkButton
+                    style={{ marginRight: '2rem' }}
+                    href={
+                      'https://github.com/backstage/backstage#getting-started'
+                    }
+                  >
+                    GitHub
+                  </Block.LinkButton>
+                  <Block.LinkButton
+                    href={'https://info.backstage.spotify.com/office-hours'}
+                  >
+                    Office Hours
+                  </Block.LinkButton>
+                </Block.Container>
               </Block.TextBox>
               <Block.Graphics>
                 <Block.Graphic

@@ -36,7 +36,12 @@ async function findLockFiles() {
 
   if (!files.length) {
     // List all lock files that are in the root or in an immediate subdirectory
-    files = ['yarn.lock', 'cypress/yarn.lock', 'microsite/yarn.lock'];
+    files = [
+      'yarn.lock',
+      'cypress/yarn.lock',
+      'microsite/yarn.lock',
+      'microsite-next/yarn.lock',
+    ];
   }
 
   return files.map(file => ({

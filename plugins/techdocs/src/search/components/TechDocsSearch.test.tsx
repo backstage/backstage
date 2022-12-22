@@ -16,6 +16,7 @@
 import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import Button from '@material-ui/core/Button';
 import {
   act,
   fireEvent,
@@ -136,9 +137,9 @@ describe('<TechDocsSearch />', () => {
       const [entityName, setEntityName] = useState(entityId);
       return wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
-          <button onClick={() => setEntityName(newEntityId)}>
+          <Button onClick={() => setEntityName(newEntityId)}>
             Update Entity
-          </button>
+          </Button>
           <TechDocsSearch entityId={entityName} debounceTime={0} />
         </ApiProvider>,
       );

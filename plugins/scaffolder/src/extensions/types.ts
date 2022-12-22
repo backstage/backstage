@@ -23,6 +23,7 @@ import {
 } from '@rjsf/utils';
 import { PropsWithChildren } from 'react';
 import { JSONSchema7 } from 'json-schema';
+import { JsonObject } from '@backstage/types';
 
 /**
  * Field validation type for Custom Field Extensions.
@@ -100,7 +101,7 @@ export interface NextFieldExtensionComponentProps<
 export type NextCustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
   field: FieldValidationV5,
-  context: { apiHolder: ApiHolder },
+  context: { apiHolder: ApiHolder; formData: JsonObject },
 ) => void | Promise<void>;
 
 /**

@@ -23,7 +23,7 @@ import {
   MarkdownContent,
 } from '@backstage/core-components';
 import { NextFieldExtensionOptions } from '../../extensions';
-import { Navigate, useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AnalyticsContext,
@@ -44,12 +44,12 @@ import {
 } from '../../routes';
 import { SecretsContext } from '../../components/secrets/SecretsContext';
 import { JsonValue } from '@backstage/types';
-import type { ErrorTransformer } from '@rjsf/utils';
+import type { FormProps } from '../types';
 
-export interface TemplateWizardPageProps {
+export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
-  transformErrors?: ErrorTransformer;
-}
+  FormProps?: FormProps;
+};
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
@@ -139,7 +139,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
                 manifest={manifest}
                 extensions={props.customFieldExtensions}
                 onComplete={onComplete}
-                transformErrors={props.transformErrors}
+                FormProps={props.FormProps}
               />
             </InfoCard>
           )}

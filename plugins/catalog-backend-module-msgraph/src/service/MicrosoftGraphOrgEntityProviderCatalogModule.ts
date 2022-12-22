@@ -15,11 +15,9 @@
  */
 
 import {
-  configServiceRef,
+  coreServices,
   createBackendModule,
-  loggerServiceRef,
   loggerToWinstonLogger,
-  schedulerServiceRef,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import {
@@ -72,9 +70,9 @@ export const microsoftGraphOrgEntityProviderCatalogModule = createBackendModule(
       env.registerInit({
         deps: {
           catalog: catalogProcessingExtensionPoint,
-          config: configServiceRef,
-          logger: loggerServiceRef,
-          scheduler: schedulerServiceRef,
+          config: coreServices.config,
+          logger: coreServices.logger,
+          scheduler: coreServices.scheduler,
         },
         async init({ catalog, config, logger, scheduler }) {
           catalog.addEntityProvider(

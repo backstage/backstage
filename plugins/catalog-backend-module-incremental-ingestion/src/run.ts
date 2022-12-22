@@ -27,7 +27,7 @@ import {
   tokenManagerFactory,
   urlReaderFactory,
 } from '@backstage/backend-app-api';
-import { configServiceRef } from '@backstage/backend-plugin-api';
+import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend';
@@ -62,7 +62,7 @@ async function main() {
 
   await startTestBackend({
     services: [
-      [configServiceRef, new ConfigReader(config)],
+      [coreServices.config, new ConfigReader(config)],
       databaseFactory(),
       discoveryFactory(),
       httpRouterFactory(),

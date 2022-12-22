@@ -188,8 +188,7 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const commitSha = (await commitsGitlabResponse.json())[0].id;
-
+    const commitSha = (await commitsGitlabResponse.json())[0]?.id ?? '';
     if (etag && etag === commitSha) {
       throw new NotModifiedError();
     }
@@ -311,6 +310,7 @@ export class GitlabUrlReader implements UrlReader {
       `${
         pathToProject.origin
       }${relativePath}/api/v4/projects/${encodeURIComponent(project)}`,
+      getGitLabRequestOptions(this.integration.config),
     );
     const data = await result.json();
     if (!result.ok) {

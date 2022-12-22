@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, Product } from '../types';
+import { Entity, Product } from '@backstage/plugin-cost-insights-common';
 import { findAlways } from '../utils/assert';
 
 type mockEntityRenderer<T> = (entity: T) => T;

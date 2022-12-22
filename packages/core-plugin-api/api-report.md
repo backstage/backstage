@@ -29,6 +29,7 @@ export const alertApiRef: ApiRef<AlertApi>;
 export type AlertMessage = {
   message: string;
   severity?: 'success' | 'info' | 'warning' | 'error';
+  display?: 'permanent' | 'transient';
 };
 
 // @public

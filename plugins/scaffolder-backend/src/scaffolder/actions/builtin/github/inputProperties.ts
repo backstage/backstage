@@ -38,6 +38,12 @@ const requireCodeOwnerReviews = {
     'Require an approved review in PR including files with a designated Code Owner',
   type: 'boolean',
 };
+const dismissStaleReviews = {
+  title: 'Dismiss Stale Reviews',
+  description:
+    'New reviewable commits pushed to a matching branch will dismiss pull request review approvals.',
+  type: 'boolean',
+};
 const requiredStatusCheckContexts = {
   title: 'Required Status Check Contexts',
   description:
@@ -50,6 +56,12 @@ const requiredStatusCheckContexts = {
 const requireBranchesToBeUpToDate = {
   title: 'Require Branches To Be Up To Date?',
   description: `Require branches to be up to date before merging. The default value is 'true'`,
+  type: 'boolean',
+};
+const requiredConversationResolution = {
+  title: 'Required Conversation Resolution',
+  description:
+    'Requires all conversations on code to be resolved before a pull request can be merged into this branch',
   type: 'boolean',
 };
 const repoVisibility = {
@@ -119,6 +131,21 @@ const collaborators = {
     },
     oneOf: [{ required: ['user'] }, { required: ['team'] }],
   },
+};
+const hasProjects = {
+  title: 'Enable projects',
+  type: 'boolean',
+  description: `Enable projects for the repository. The default value is 'true' unless the organization has disabled repository projects`,
+};
+const hasWiki = {
+  title: 'Enable the wiki',
+  type: 'boolean',
+  description: `Enable the wiki for the repository. The default value is 'true'`,
+};
+const hasIssues = {
+  title: 'Enable issues',
+  type: 'boolean',
+  description: `Enable issues for the repository. The default value is 'true'`,
 };
 const token = {
   title: 'Authentication Token',
@@ -207,8 +234,13 @@ export { bypassPullRequestAllowances };
 export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };
+export { dismissStaleReviews };
 export { requiredStatusCheckContexts };
 export { requireBranchesToBeUpToDate };
+export { requiredConversationResolution };
+export { hasProjects };
+export { hasIssues };
+export { hasWiki };
 export { sourcePath };
 export { token };
 export { topics };

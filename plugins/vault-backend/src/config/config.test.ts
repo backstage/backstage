@@ -40,6 +40,7 @@ describe('GetVaultConfig', () => {
     const vaultConfig = getVaultConfig(config);
     expect(vaultConfig).toStrictEqual({
       baseUrl: 'http://www.example.com',
+      publicUrl: undefined,
       token: '123',
       kvVersion: 2,
       secretEngine: 'secrets',
@@ -59,6 +60,7 @@ describe('GetVaultConfig', () => {
     const vaultConfig = getVaultConfig(config);
     expect(vaultConfig).toStrictEqual({
       baseUrl: 'http://www.example.com',
+      publicUrl: undefined,
       token: '123',
       kvVersion: 1,
       secretEngine: 'test',

@@ -26,11 +26,13 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { Stitcher } from '../stitching/Stitcher';
+import { buildEntitySearch } from '../stitching/buildEntitySearch';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
+import { EntitiesRequest } from '../catalog/types';
 
 describe('DefaultEntitiesCatalog', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
   const stitch = jest.fn();
   const stitcher: Stitcher = { stitch } as any;
@@ -100,29 +102,14 @@ describe('DefaultEntitiesCatalog', () => {
       stitch_ticket: '',
     });
 
-    await insertSearchRow(knex, id, null, entity);
-  }
-
-  async function insertSearchRow(
-    knex: Knex,
-    id: string,
-    previousKey: string | null,
-    previousValue: Object,
-  ) {
-    return Promise.all(
-      Object.entries(previousValue).map(async ([key, value]) => {
-        const currentKey = `${previousKey ? `${previousKey}.` : ``}${key}`;
-        if (typeof value === 'object') {
-          await insertSearchRow(knex, id, currentKey, value);
-        } else {
-          await knex<DbSearchRow>('search').insert({
-            entity_id: id,
-            key: currentKey,
-            value: value,
-          });
-        }
-      }),
-    );
+    for (const row of buildEntitySearch(id, entity)) {
+      await knex<DbSearchRow>('search').insert({
+        entity_id: id,
+        key: row.key,
+        value: row.value,
+        original_value: row.original_value,
+      });
+    }
   }
 
   afterEach(() => {
@@ -268,7 +255,7 @@ describe('DefaultEntitiesCatalog', () => {
 
   describe('entities', () => {
     it.each(databases.eachSupportedId())(
-      'should return correct entity for simple filter',
+      'should return correct entity for simple filter, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
         const entity1: Entity = {
@@ -298,10 +285,11 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity2);
       },
+      60_000,
     );
 
     it.each(databases.eachSupportedId())(
-      'should return correct entity for negation filter',
+      'should return correct entity for negation filter, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
         const entity1: Entity = {
@@ -333,10 +321,11 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity1);
       },
+      60_000,
     );
 
     it.each(databases.eachSupportedId())(
-      'should return correct entities for nested filter',
+      'should return correct entities for nested filter, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
         const entity1: Entity = {
@@ -402,10 +391,11 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities).toContainEqual(entity2);
         expect(entities).toContainEqual(entity4);
       },
+      60_000,
     );
 
     it.each(databases.eachSupportedId())(
-      'should return correct entities for complex negation filter',
+      'should return correct entities for complex negation filter, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
         const entity1: Entity = {
@@ -443,10 +433,11 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(1);
         expect(entities).toContainEqual(entity1);
       },
+      60_000,
     );
 
     it.each(databases.eachSupportedId())(
-      'should return no matches for an empty values array',
+      'should return no matches for an empty values array, %p',
       // NOTE: An empty values array is not a sensible input in a realistic scenario.
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
@@ -475,6 +466,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         expect(entities.length).toBe(0);
       },
+      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -531,12 +523,105 @@ describe('DefaultEntitiesCatalog', () => {
           },
         ]);
       },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'can order and combine with filtering, %p',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+
+        const entity1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n1' },
+          spec: { a: 'foo' },
+        };
+        const entity2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n2' },
+          spec: { a: 'bar' },
+        };
+        const entity3: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n3' },
+          spec: { a: 'bar', b: 'lonely' },
+        };
+        const entity4: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n4' },
+          spec: { a: 'baz', b: 'only' },
+        };
+        await addEntityToSearch(knex, entity1);
+        await addEntityToSearch(knex, entity2);
+        await addEntityToSearch(knex, entity3);
+        await addEntityToSearch(knex, entity4);
+
+        const catalog = new DefaultEntitiesCatalog(knex, stitcher);
+
+        function f(request: EntitiesRequest): Promise<string[]> {
+          return catalog
+            .entities(request)
+            .then(response => response.entities.map(e => e.metadata.name));
+        }
+
+        await expect(
+          f({ order: [{ field: 'metadata.name', order: 'asc' }] }),
+        ).resolves.toEqual(['n1', 'n2', 'n3', 'n4']);
+
+        await expect(
+          f({ order: [{ field: 'metadata.name', order: 'desc' }] }),
+        ).resolves.toEqual(['n4', 'n3', 'n2', 'n1']);
+
+        await expect(
+          f({
+            order: [
+              { field: 'spec.a', order: 'asc' },
+              { field: 'metadata.name', order: 'desc' },
+            ],
+          }),
+        ).resolves.toEqual(['n3', 'n2', 'n4', 'n1']);
+
+        await expect(
+          f({
+            filter: { not: { key: 'spec.b', values: ['lonely'] } },
+            order: [
+              { field: 'spec.a', order: 'asc' },
+              { field: 'metadata.name', order: 'desc' },
+            ],
+          }),
+        ).resolves.toEqual(['n2', 'n4', 'n1']);
+
+        // only n3 and n4 has spec.b, nulls (no match) always goes last no matter the order
+        await expect(
+          f({
+            order: [
+              { field: 'spec.b', order: 'asc' },
+              { field: 'metadata.name', order: 'asc' },
+            ],
+          }),
+        ).resolves.toEqual(['n3', 'n4', 'n1', 'n2']);
+
+        // only n3 and n4 has spec.b, nulls (no match) always goes last no matter the order
+        await expect(
+          f({
+            order: [
+              { field: 'spec.b', order: 'desc' },
+              { field: 'metadata.name', order: 'asc' },
+            ],
+          }),
+        ).resolves.toEqual(['n4', 'n3', 'n1', 'n2']);
+      },
+      60_000,
     );
   });
 
   describe('entitiesBatch', () => {
     it.each(databases.eachSupportedId())(
-      'queries for entities by ref, including duplicates, and gracefully returns null for missing entities',
+      'queries for entities by ref, including duplicates, and gracefully returns null for missing entities, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
 
@@ -585,12 +670,13 @@ describe('DefaultEntitiesCatalog', () => {
           'k:default/two',
         ]);
       },
+      60_000,
     );
   });
 
   describe('removeEntityByUid', () => {
     it.each(databases.eachSupportedId())(
-      'also clears parent hashes',
+      'also clears parent hashes, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
 
@@ -673,12 +759,13 @@ describe('DefaultEntitiesCatalog', () => {
           new Set(['k:default/unrelated1', 'k:default/unrelated2']),
         );
       },
+      60_000,
     );
   });
 
   describe('facets', () => {
     it.each(databases.eachSupportedId())(
-      'can filter and collect properly',
+      'can filter and collect properly, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
 
@@ -711,10 +798,11 @@ describe('DefaultEntitiesCatalog', () => {
           },
         });
       },
+      60_000,
     );
 
     it.each(databases.eachSupportedId())(
-      'can match on annotations and labels with dots in them',
+      'can match on annotations and labels with dots in them, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
 
@@ -757,10 +845,11 @@ describe('DefaultEntitiesCatalog', () => {
           },
         });
       },
+      60_000,
     );
 
     it.each(databases.eachSupportedId())(
-      'can match on strings in arrays',
+      'can match on strings in arrays, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
 
@@ -792,12 +881,13 @@ describe('DefaultEntitiesCatalog', () => {
           facets: {
             'metadata.tags': expect.arrayContaining([
               { value: 'java', count: 2 },
-              { value: 'rust', count: 1 },
               { value: 'node', count: 1 },
+              { value: 'rust', count: 1 },
             ]),
           },
         });
       },
+      60_000,
     );
   });
 });

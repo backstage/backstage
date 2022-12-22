@@ -1,5 +1,240 @@
 # example-backend
 
+## 0.2.78
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.9.0
+  - @backstage/plugin-azure-devops-backend@0.3.18
+  - @backstage/plugin-kubernetes-backend@0.9.0
+  - @backstage/plugin-catalog-backend@1.6.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.7
+  - @backstage/plugin-search-backend@1.2.0
+  - @backstage/plugin-search-backend-module-elasticsearch@1.1.0
+  - @backstage/plugin-search-backend-node@1.1.0
+  - @backstage/plugin-playlist-backend@0.2.2
+  - @backstage/plugin-search-backend-module-pg@0.5.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-app-backend@0.3.39
+  - @backstage/plugin-catalog-node@1.3.0
+  - @backstage/plugin-events-backend@0.2.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/plugin-permission-backend@0.5.14
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-node@0.7.2
+  - @backstage/plugin-kafka-backend@0.2.32
+  - @backstage/plugin-jenkins-backend@0.1.29
+  - @backstage/plugin-events-node@0.2.0
+  - @backstage/integration@1.4.1
+  - @backstage/plugin-auth-backend@0.17.2
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/plugin-azure-sites-backend@0.1.1
+  - @backstage/plugin-code-coverage-backend@0.2.5
+  - @backstage/plugin-graphql-backend@0.1.29
+  - @backstage/plugin-proxy-backend@0.2.33
+  - @backstage/plugin-rollbar-backend@0.1.36
+  - @backstage/plugin-techdocs-backend@1.5.0
+  - @backstage/plugin-todo-backend@0.1.36
+  - @backstage/plugin-explore-backend@0.0.1
+  - @backstage/plugin-search-common@1.2.0
+  - example-app@0.2.78
+  - @backstage/plugin-badges-backend@0.1.33
+  - @backstage/plugin-tech-insights-backend@0.5.5
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.23
+  - @backstage/plugin-tech-insights-node@0.3.7
+
+## 0.2.78-next.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.7-next.3
+  - @backstage/plugin-scaffolder-backend@1.9.0-next.3
+  - @backstage/backend-tasks@0.4.0-next.3
+  - @backstage/plugin-permission-backend@0.5.14-next.3
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/plugin-permission-node@0.7.2-next.3
+  - @backstage/plugin-playlist-backend@0.2.2-next.4
+  - @backstage/plugin-search-backend@1.2.0-next.3
+  - @backstage/plugin-kubernetes-backend@0.8.1-next.4
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/plugin-search-backend-module-elasticsearch@1.1.0-next.3
+  - @backstage/plugin-techdocs-backend@1.5.0-next.3
+  - example-app@0.2.78-next.4
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/plugin-app-backend@0.3.39-next.3
+  - @backstage/plugin-auth-backend@0.17.2-next.3
+  - @backstage/plugin-auth-node@0.2.8-next.3
+  - @backstage/plugin-azure-devops-backend@0.3.18-next.3
+  - @backstage/plugin-azure-sites-backend@0.1.1-next.3
+  - @backstage/plugin-badges-backend@0.1.33-next.3
+  - @backstage/plugin-catalog-node@1.3.0-next.3
+  - @backstage/plugin-code-coverage-backend@0.2.5-next.3
+  - @backstage/plugin-events-backend@0.2.0-next.3
+  - @backstage/plugin-events-node@0.2.0-next.3
+  - @backstage/plugin-explore-backend@0.0.1-next.2
+  - @backstage/plugin-graphql-backend@0.1.29-next.3
+  - @backstage/plugin-jenkins-backend@0.1.29-next.3
+  - @backstage/plugin-kafka-backend@0.2.32-next.3
+  - @backstage/plugin-proxy-backend@0.2.33-next.3
+  - @backstage/plugin-rollbar-backend@0.1.36-next.3
+  - @backstage/plugin-search-backend-module-pg@0.4.3-next.3
+  - @backstage/plugin-search-backend-node@1.1.0-next.3
+  - @backstage/plugin-search-common@1.2.0-next.3
+  - @backstage/plugin-tech-insights-backend@0.5.5-next.3
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.23-next.3
+  - @backstage/plugin-tech-insights-node@0.3.7-next.3
+  - @backstage/plugin-todo-backend@0.1.36-next.3
+
+## 0.2.78-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - example-app@0.2.78-next.3
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-tasks@0.4.0-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/plugin-app-backend@0.3.39-next.2
+  - @backstage/plugin-auth-backend@0.17.2-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/plugin-azure-devops-backend@0.3.18-next.2
+  - @backstage/plugin-azure-sites-backend@0.1.1-next.2
+  - @backstage/plugin-badges-backend@0.1.33-next.2
+  - @backstage/plugin-catalog-backend@1.6.0-next.2
+  - @backstage/plugin-catalog-node@1.3.0-next.2
+  - @backstage/plugin-code-coverage-backend@0.2.5-next.2
+  - @backstage/plugin-events-backend@0.2.0-next.2
+  - @backstage/plugin-events-node@0.2.0-next.2
+  - @backstage/plugin-explore-backend@0.0.1-next.1
+  - @backstage/plugin-graphql-backend@0.1.29-next.2
+  - @backstage/plugin-jenkins-backend@0.1.29-next.2
+  - @backstage/plugin-kafka-backend@0.2.32-next.2
+  - @backstage/plugin-kubernetes-backend@0.8.1-next.3
+  - @backstage/plugin-permission-backend@0.5.14-next.2
+  - @backstage/plugin-permission-common@0.7.2-next.1
+  - @backstage/plugin-permission-node@0.7.2-next.2
+  - @backstage/plugin-playlist-backend@0.2.2-next.3
+  - @backstage/plugin-proxy-backend@0.2.33-next.2
+  - @backstage/plugin-rollbar-backend@0.1.36-next.2
+  - @backstage/plugin-scaffolder-backend@1.9.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.7-next.2
+  - @backstage/plugin-search-backend@1.2.0-next.2
+  - @backstage/plugin-search-backend-module-elasticsearch@1.1.0-next.2
+  - @backstage/plugin-search-backend-module-pg@0.4.3-next.2
+  - @backstage/plugin-search-backend-node@1.1.0-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/plugin-tech-insights-backend@0.5.5-next.2
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.23-next.2
+  - @backstage/plugin-tech-insights-node@0.3.7-next.2
+  - @backstage/plugin-techdocs-backend@1.4.2-next.2
+  - @backstage/plugin-todo-backend@0.1.36-next.2
+
+## 0.2.78-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-azure-devops-backend@0.3.18-next.2
+  - @backstage/plugin-search-backend@1.2.0-next.2
+  - @backstage/plugin-search-backend-module-elasticsearch@1.1.0-next.2
+  - @backstage/plugin-search-backend-node@1.1.0-next.2
+  - @backstage/plugin-catalog-backend@1.6.0-next.2
+  - @backstage/plugin-playlist-backend@0.2.2-next.2
+  - @backstage/plugin-search-backend-module-pg@0.4.3-next.2
+  - @backstage/plugin-app-backend@0.3.39-next.2
+  - @backstage/plugin-catalog-node@1.3.0-next.2
+  - @backstage/plugin-events-backend@0.2.0-next.2
+  - @backstage/plugin-scaffolder-backend@1.9.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - example-app@0.2.78-next.2
+  - @backstage/plugin-techdocs-backend@1.4.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.7-next.2
+  - @backstage/backend-tasks@0.4.0-next.2
+  - @backstage/plugin-auth-backend@0.17.2-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/plugin-azure-sites-backend@0.1.1-next.2
+  - @backstage/plugin-badges-backend@0.1.33-next.2
+  - @backstage/plugin-code-coverage-backend@0.2.5-next.2
+  - @backstage/plugin-explore-backend@0.0.1-next.1
+  - @backstage/plugin-graphql-backend@0.1.29-next.2
+  - @backstage/plugin-jenkins-backend@0.1.29-next.2
+  - @backstage/plugin-kafka-backend@0.2.32-next.2
+  - @backstage/plugin-kubernetes-backend@0.8.1-next.2
+  - @backstage/plugin-permission-backend@0.5.14-next.2
+  - @backstage/plugin-permission-node@0.7.2-next.2
+  - @backstage/plugin-proxy-backend@0.2.33-next.2
+  - @backstage/plugin-rollbar-backend@0.1.36-next.2
+  - @backstage/plugin-tech-insights-backend@0.5.5-next.2
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.23-next.2
+  - @backstage/plugin-tech-insights-node@0.3.7-next.2
+  - @backstage/plugin-todo-backend@0.1.36-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/plugin-events-node@0.2.0-next.2
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
+## 0.2.78-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-catalog-backend@1.6.0-next.1
+  - @backstage/plugin-kafka-backend@0.2.32-next.1
+  - @backstage/backend-tasks@0.4.0-next.1
+  - @backstage/plugin-search-backend-node@1.0.5-next.1
+  - @backstage/plugin-jenkins-backend@0.1.29-next.1
+  - @backstage/plugin-scaffolder-backend@1.8.1-next.1
+  - @backstage/plugin-explore-backend@0.0.1-next.0
+  - @backstage/plugin-proxy-backend@0.2.33-next.1
+  - @backstage/plugin-app-backend@0.3.39-next.1
+  - @backstage/plugin-auth-backend@0.17.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.1
+  - @backstage/plugin-azure-devops-backend@0.3.18-next.1
+  - @backstage/plugin-azure-sites-backend@0.1.1-next.1
+  - @backstage/plugin-badges-backend@0.1.33-next.1
+  - @backstage/plugin-catalog-node@1.2.2-next.1
+  - @backstage/plugin-code-coverage-backend@0.2.5-next.1
+  - @backstage/plugin-events-backend@0.2.0-next.1
+  - @backstage/plugin-graphql-backend@0.1.29-next.1
+  - @backstage/plugin-kubernetes-backend@0.8.1-next.1
+  - @backstage/plugin-permission-backend@0.5.14-next.1
+  - @backstage/plugin-permission-node@0.7.2-next.1
+  - @backstage/plugin-playlist-backend@0.2.2-next.1
+  - @backstage/plugin-rollbar-backend@0.1.36-next.1
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.7-next.1
+  - @backstage/plugin-search-backend@1.1.2-next.1
+  - @backstage/plugin-search-backend-module-elasticsearch@1.0.5-next.1
+  - @backstage/plugin-search-backend-module-pg@0.4.3-next.1
+  - @backstage/plugin-tech-insights-backend@0.5.5-next.1
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.23-next.1
+  - @backstage/plugin-tech-insights-node@0.3.7-next.1
+  - @backstage/plugin-techdocs-backend@1.4.2-next.1
+  - @backstage/plugin-todo-backend@0.1.36-next.1
+  - example-app@0.2.78-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/plugin-events-node@0.2.0-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
 ## 0.2.78-next.0
 
 ### Patch Changes

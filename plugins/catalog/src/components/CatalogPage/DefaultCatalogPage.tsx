@@ -39,7 +39,6 @@ import {
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
-import { CatalogKindHeader } from '../CatalogKindHeader';
 import { useCatalogPluginOptions } from '../../options';
 
 /**
@@ -73,17 +72,15 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
 
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
-      <EntityListProvider>
-        <Content>
-          <ContentHeader
-            titleComponent={<CatalogKindHeader initialFilter={initialKind} />}
-          >
-            <CreateButton
-              title={createButtonTitle}
-              to={createComponentLink && createComponentLink()}
-            />
-            <SupportButton>All your software catalog entities</SupportButton>
-          </ContentHeader>
+      <Content>
+        <ContentHeader title="">
+          <CreateButton
+            title={createButtonTitle}
+            to={createComponentLink && createComponentLink()}
+          />
+          <SupportButton>All your software catalog entities</SupportButton>
+        </ContentHeader>
+        <EntityListProvider>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
               <EntityKindPicker initialFilter={initialKind} />
@@ -103,8 +100,8 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
-        </Content>
-      </EntityListProvider>
+        </EntityListProvider>
+      </Content>
     </PageWithHeader>
   );
 }

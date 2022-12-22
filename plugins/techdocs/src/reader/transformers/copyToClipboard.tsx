@@ -23,6 +23,8 @@ import {
   SvgIcon,
   Tooltip,
 } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import type { Transformer } from './transformer';
 
 const CopyToClipboardTooltip = withStyles(theme => ({
   tooltip: {
@@ -65,14 +67,12 @@ const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
       onClose={handleClose}
       leaveDelay={1000}
     >
-      <button className="md-clipboard md-icon" onClick={handleClick}>
+      <Button className="md-clipboard md-icon" onClick={handleClick}>
         <CopyToClipboardIcon />
-      </button>
+      </Button>
     </CopyToClipboardTooltip>
   );
 };
-
-import type { Transformer } from './transformer';
 
 /**
  * Recreates copy-to-clipboard functionality attached to <code> snippets that

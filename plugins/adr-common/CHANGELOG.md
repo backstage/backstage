@@ -1,5 +1,41 @@
 # @backstage/plugin-adr-common
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.1
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/catalog-model@1.1.4
+
+## 0.2.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/plugin-search-common@1.2.0-next.3
+
+## 0.2.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+
+## 0.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
 ## 0.2.4-next.0
 
 ### Patch Changes

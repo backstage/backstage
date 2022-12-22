@@ -75,14 +75,6 @@ export const EntityOwnerPicker = () => {
     }
   }, [queryParamOwners]);
 
-  useEffect(() => {
-    updateFilters({
-      owners: selectedOwners.length
-        ? new EntityOwnerFilter(selectedOwners)
-        : undefined,
-    });
-  }, [selectedOwners, updateFilters]);
-
   const availableOwners = useMemo(
     () =>
       [
@@ -98,6 +90,15 @@ export const EntityOwnerPicker = () => {
       ].sort(),
     [backendEntities],
   );
+
+  useEffect(() => {
+    updateFilters({
+      owners:
+        selectedOwners.length && availableOwners.length
+          ? new EntityOwnerFilter(selectedOwners)
+          : undefined,
+    });
+  }, [selectedOwners, updateFilters, availableOwners]);
 
   if (!availableOwners.length) return null;
 

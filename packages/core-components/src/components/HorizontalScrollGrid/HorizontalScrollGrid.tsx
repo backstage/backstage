@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles, Theme } from '@material-ui/core/styles';
@@ -227,7 +227,7 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
   };
 
   return (
-    <div {...otherProps} className={classes.root}>
+    <Box {...otherProps} className={classes.root}>
       <Grid
         container
         direction="row"
@@ -237,12 +237,12 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
       >
         {children}
       </Grid>
-      <div
+      <Box
         className={classNames(classes.fade, classes.fadeLeft, {
           [classes.fadeHidden]: scrollLeft === 0,
         })}
       />
-      <div
+      <Box
         className={classNames(classes.fade, classes.fadeRight, {
           [classes.fadeHidden]: scrollRight === 0,
         })}
@@ -265,6 +265,6 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
           <ChevronRightIcon />
         </IconButton>
       )}
-    </div>
+    </Box>
   );
 }

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-techdocs",
   "description": "The Backstage plugin that renders technical documentation for your components",
-  "version": "1.4.1-next.0",
+  "version": "1.4.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -61,13 +61,13 @@
     "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0",
-    "react-router": "6.0.0-beta.0 || ^6.3.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",

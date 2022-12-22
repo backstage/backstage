@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 import {
-  configServiceRef,
   createBackendPlugin,
-  databaseServiceRef,
-  loggerServiceRef,
+  coreServices,
   loggerToWinstonLogger,
-  permissionsServiceRef,
-  urlReaderServiceRef,
-  httpRouterServiceRef,
-  lifecycleServiceRef,
 } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
@@ -73,13 +67,13 @@ export const catalogPlugin = createBackendPlugin({
 
     env.registerInit({
       deps: {
-        logger: loggerServiceRef,
-        config: configServiceRef,
-        reader: urlReaderServiceRef,
-        permissions: permissionsServiceRef,
-        database: databaseServiceRef,
-        httpRouter: httpRouterServiceRef,
-        lifecycle: lifecycleServiceRef,
+        logger: coreServices.logger,
+        config: coreServices.config,
+        reader: coreServices.urlReader,
+        permissions: coreServices.permissions,
+        database: coreServices.database,
+        httpRouter: coreServices.httpRouter,
+        lifecycle: coreServices.lifecycle,
       },
       async init({
         logger,

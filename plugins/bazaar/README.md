@@ -80,13 +80,15 @@ export const homePage = (
 +       </Grid>
 
 +       <Grid item xs={12} >
-+         <BazaarOverviewCard order='random' fullWidth fullHeight />
++         <BazaarOverviewCard title='My Orgs Projects' order='random' fullWidth fullHeight />
 +       </Grid>
 
         {/* ...other homepage items */}
 ```
 
-The properties `fullHeight` and `fullWidth` are optional and can be used to adjust the cards styling.
+The property `title` is optional and can be used to customize the title in the card header. If no title is submitted the default titles `Bazaar Random Projects` or `Bazaar Latest Projects` are displayed.
+
+The properties `fullHeight` and `fullWidth` are also optional and can be used to adjust the cards styling.
 
 ## How does the Bazaar work?
 

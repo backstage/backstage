@@ -17,7 +17,7 @@
 import mockFs from 'mock-fs';
 import { resolve as resolvePath } from 'path';
 import fetch from 'node-fetch';
-import { configServiceRef } from '@backstage/backend-plugin-api';
+import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
 import {
@@ -30,7 +30,7 @@ import { ConfigReader } from '@backstage/config';
 import getPort from 'get-port';
 
 describe('appPlugin', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     mockFs({
       [resolvePath(process.cwd(), 'node_modules/app')]: {
         'package.json': '{}',
@@ -42,7 +42,7 @@ describe('appPlugin', () => {
     });
   });
 
-  afterAll(() => {
+  afterEach(() => {
     mockFs.restore();
   });
 
@@ -51,7 +51,7 @@ describe('appPlugin', () => {
     await startTestBackend({
       services: [
         [
-          configServiceRef,
+          coreServices.config,
           new ConfigReader({
             backend: {
               listen: { port },

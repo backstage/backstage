@@ -1,5 +1,20 @@
 # @backstage/errors
 
+## 1.1.4
+
+### Patch Changes
+
+- ac6cc9f7bd: Removed a circular import
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+
 ## 1.1.4-next.0
 
 ### Patch Changes

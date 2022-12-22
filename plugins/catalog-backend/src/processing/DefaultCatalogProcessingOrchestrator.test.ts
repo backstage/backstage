@@ -97,6 +97,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       parser: defaultEntityDataParser,
       policy: EntityPolicies.allOf([]),
       rulesEnforcer: { isAllowed: () => true },
+      legacySingleProcessorValidation: false,
     });
 
     it('runs a minimal processing', async () => {
@@ -190,6 +191,54 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         ok: true,
       });
     });
+
+    it('runs all processor validations when asked to', async () => {
+      const validate = jest.fn(async () => true);
+      const processor1: Partial<CatalogProcessor> = {
+        validateEntityKind: validate,
+      };
+      const processor2: Partial<CatalogProcessor> = {
+        validateEntityKind: validate,
+      };
+
+      const legacy = new DefaultCatalogProcessingOrchestrator({
+        processors: [
+          processor1 as CatalogProcessor,
+          processor2 as CatalogProcessor,
+        ],
+        integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        logger: getVoidLogger(),
+        parser: defaultEntityDataParser,
+        policy: EntityPolicies.allOf([]),
+        rulesEnforcer: { isAllowed: () => true },
+        legacySingleProcessorValidation: true,
+      });
+
+      const modern = new DefaultCatalogProcessingOrchestrator({
+        processors: [
+          processor1 as CatalogProcessor,
+          processor2 as CatalogProcessor,
+        ],
+        integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        logger: getVoidLogger(),
+        parser: defaultEntityDataParser,
+        policy: EntityPolicies.allOf([]),
+        rulesEnforcer: { isAllowed: () => true },
+        legacySingleProcessorValidation: false,
+      });
+
+      await expect(legacy.process({ entity })).resolves.toMatchObject({
+        ok: true,
+      });
+      expect(validate).toHaveBeenCalledTimes(1);
+
+      validate.mockClear();
+
+      await expect(modern.process({ entity })).resolves.toMatchObject({
+        ok: true,
+      });
+      expect(validate).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('rules', () => {
@@ -209,13 +258,22 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       },
     };
 
+    const child: Entity = {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: {
+        name: 'Test2',
+        namespace: 'test1',
+      },
+    };
+
     it('enforces catalog rules', async () => {
       const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
       const processor: jest.Mocked<CatalogProcessor> = {
         getProcessorName: jest.fn(),
         validateEntityKind: jest.fn(async () => true),
         readLocation: jest.fn(async (_l, _o, emit) => {
-          emit(processingResult.entity({ type: 't', target: 't' }, entity));
+          emit(processingResult.entity({ type: 't', target: 't' }, child));
           return true;
         }),
       };
@@ -231,6 +289,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         parser,
         policy: EntityPolicies.allOf([]),
         rulesEnforcer,
+        legacySingleProcessorValidation: false,
       });
 
       rulesEnforcer.isAllowed.mockReturnValueOnce(true);
@@ -250,7 +309,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         getProcessorName: jest.fn(),
         validateEntityKind: jest.fn(async () => true),
         readLocation: jest.fn(async (_l, _o, emit) => {
-          emit(processingResult.entity({ type: 't', target: 't' }, entity));
+          emit(processingResult.entity({ type: 't', target: 't' }, child));
           return true;
         }),
       };
@@ -272,6 +331,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         parser,
         policy: EntityPolicies.allOf([new FailingEntityPolicy()]),
         rulesEnforcer,
+        legacySingleProcessorValidation: false,
       });
 
       await expect(

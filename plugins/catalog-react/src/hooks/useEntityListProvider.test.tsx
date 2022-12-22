@@ -28,7 +28,7 @@ import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { catalogApiRef } from '../api';
 import { starredEntitiesApiRef, MockStarredEntitiesApi } from '../apis';
 import { EntityKindPicker, UserListPicker } from '../components';
@@ -166,7 +166,7 @@ describe('<EntityListProvider />', () => {
         location: `/catalog?${query}`,
       },
     });
-    await waitFor(() => !!result.current.queryParameters);
+    await act(() => waitFor(() => !!result.current.queryParameters));
     expect(result.current.queryParameters).toEqual({
       kind: 'component',
       type: 'service',
