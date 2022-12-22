@@ -56,15 +56,8 @@ export {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
   rootRouteRef,
-  nextRouteRef,
   selectedTemplateRouteRef,
-  nextSelectedTemplateRouteRef,
-  createNextScaffolderFieldExtension,
   type TemplateParameterSchema,
-  type NextCustomFieldValidator,
-  type NextFieldExtensionOptions,
-  type NextFieldExtensionComponentProps,
-  type FormProps,
   type CustomFieldExtensionSchema,
   type CustomFieldValidator,
   type FieldExtensionOptions,
@@ -78,3 +71,62 @@ export type { TaskPageProps } from './components/TaskPage';
 export { NextScaffolderPage } from './plugin';
 export type { NextRouterProps } from './next';
 export type { TemplateGroupFilter } from './next';
+
+// These types in the future can be removed from being exported out of this package and be imported
+// instead from @backstage/plugin-scaffolder-react. They have to be redeclared here to keep the alpha
+// annotation in order to not polluted the main export surface.
+import {
+  nextRouteRef as nextRouteRefTemp,
+  nextSelectedTemplateRouteRef as nextSelectedTemplateRouteRefTemp,
+  createNextScaffolderFieldExtension as createNextScaffolderFieldExtensionTemp,
+  type NextCustomFieldValidator as NextCustomFieldValidatorTemp,
+  type NextFieldExtensionOptions as NextFieldExtensionOptionsTemp,
+  type NextFieldExtensionComponentProps as NextFieldExtensionComponentPropsTemp,
+  type FormProps as FormPropsTemp,
+} from '@backstage/plugin-scaffolder-react';
+
+/**
+ * @alpha
+ */
+const nextRouteRef = nextRouteRefTemp;
+/**
+ * @alpha
+ */
+const nextSelectedTemplateRouteRef = nextSelectedTemplateRouteRefTemp;
+/**
+ * @alpha
+ */
+const createNextScaffolderFieldExtension =
+  createNextScaffolderFieldExtensionTemp;
+/**
+ * @alpha
+ */
+type NextCustomFieldValidator<T> = NextCustomFieldValidatorTemp<T>;
+/**
+ * @alpha
+ */
+type NextFieldExtensionOptions<
+  TFieldReturnValue = unknown,
+  TInputProps = unknown,
+> = NextFieldExtensionOptionsTemp<TFieldReturnValue, TInputProps>;
+/**
+ * @alpha
+ */
+type NextFieldExtensionComponentProps<
+  TFieldReturnValue,
+  TUiOptions = {},
+> = NextFieldExtensionComponentPropsTemp<TFieldReturnValue, TUiOptions>;
+/**
+ * @alpha
+ */
+type FormProps = FormPropsTemp;
+
+export {
+  nextRouteRef,
+  nextSelectedTemplateRouteRef,
+  createNextScaffolderFieldExtension,
+  type NextCustomFieldValidator,
+  type NextFieldExtensionOptions,
+  type NextFieldExtensionComponentProps,
+  type FormProps,
+};
