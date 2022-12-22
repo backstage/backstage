@@ -78,7 +78,7 @@ describe('<EntityPeekAheadPopover/>', () => {
     expect(screen.queryByText('service2')).toBeNull();
     fireEvent.mouseOver(screen.getByTestId('popover2'));
     expect(
-      await screen.findByText(/service2 was not found/),
+      await screen.findByText('Error: service2 was not found'),
     ).toBeInTheDocument();
   });
 });
