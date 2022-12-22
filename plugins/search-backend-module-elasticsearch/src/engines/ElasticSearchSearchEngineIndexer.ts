@@ -60,6 +60,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private readonly sourceStream: Readable;
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private bulkResult: Promise<any>;
+  private bulkClientError?: Error;
 
   constructor(options: ElasticSearchSearchEngineIndexerOptions) {
     super({ batchSize: options.batchSize });
@@ -93,6 +94,11 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
         };
       },
       refreshOnCompletion: that.indexName,
+    });
+
+    // Safely catch errors thrown by the bulk helper client, e.g. HTTP timeouts
+    this.bulkResult.catch(e => {
+      this.bulkClientError = e;
     });
   }
 
@@ -197,6 +203,11 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
    * backpressure in other parts of the indexing pipeline.
    */
   private isReady(): Promise<void> {
+    // Early exit if the underlying ES client encountered an error.
+    if (this.bulkClientError) {
+      return Promise.reject(this.bulkClientError);
+    }
+
     return new Promise(resolve => {
       const interval = setInterval(() => {
         if (this.received === this.processed) {
