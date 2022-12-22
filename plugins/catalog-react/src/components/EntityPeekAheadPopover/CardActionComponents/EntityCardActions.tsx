@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { entityRouteRef } from '../../../routes';
-import { Tooltip } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/Info';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -30,19 +30,17 @@ export const EntityCardActions = ({ entity }: { entity: Entity }) => {
   const entityRoute = useRouteRef(entityRouteRef);
 
   return (
-    <>
-      <Tooltip title="Show details">
-        <Link
-          component="button"
-          to={entityRoute({
-            name: entity.metadata.name,
-            namespace: entity.metadata.namespace || 'default',
-            kind: entity.kind.toLocaleLowerCase('en-US'),
-          })}
-        >
-          <InfoIcon color="action" />
-        </Link>
-      </Tooltip>
-    </>
+    <IconButton
+      component={Link}
+      aria-label="Show"
+      title="Show details"
+      to={entityRoute({
+        name: entity.metadata.name,
+        namespace: entity.metadata.namespace || 'default',
+        kind: entity.kind.toLocaleLowerCase('en-US'),
+      })}
+    >
+      <InfoIcon />
+    </IconButton>
   );
 };

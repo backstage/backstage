@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, Tooltip } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
 import EmailIcon from '@material-ui/icons/Email';
 import React from 'react';
+import { Link } from '@backstage/core-components';
 
 /**
  * Email Card action link
@@ -24,10 +25,14 @@ import React from 'react';
  */
 export const EmailCardAction = ({ email }: { email: string }) => {
   return (
-    <Tooltip title={`Email ${email}`}>
-      <Button target="_blank" href={`mailto:${email}`} size="small">
-        <EmailIcon color="action" />
-      </Button>
-    </Tooltip>
+    <IconButton
+      component={Link}
+      aria-label="Email"
+      title={`Email ${email}`}
+      to={`mailto:${email}`}
+      target="_blank"
+    >
+      <EmailIcon />
+    </IconButton>
   );
 };

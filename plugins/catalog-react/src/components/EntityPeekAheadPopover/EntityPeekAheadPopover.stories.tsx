@@ -22,9 +22,15 @@ import {
 import Button from '@material-ui/core/Button';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
-import { CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { entityRouteRef } from '../../routes';
 import { CatalogApi } from '@backstage/catalog-client';
+import { Table, TableColumn } from '@backstage/core-components';
+import { EntityRefLink } from '../EntityRefLink';
 
 const mockCatalogApi = {
   getEntityByRef: async (entityRef: CompoundEntityRef) => {
@@ -136,4 +142,56 @@ export const SlowCatalogItem = (args: EntityPeekAheadPopoverProps) => (
 );
 SlowCatalogItem.args = {
   entityRef: 'component:default/slow.catalog.item',
+};
+
+const columns: TableColumn<CompoundEntityRef>[] = [
+  {
+    title: 'entity',
+    render: entityRef => {
+      return (
+        <EntityPeekAheadPopover entityRef={stringifyEntityRef(entityRef)}>
+          <EntityRefLink entityRef={entityRef} />
+        </EntityPeekAheadPopover>
+      );
+    },
+  },
+  {
+    title: 'owner',
+    render: () => {
+      return (
+        <EntityPeekAheadPopover entityRef="user:default/fname.lname">
+          <EntityRefLink
+            entityRef={parseEntityRef('user:default/fname.lname')}
+          />
+        </EntityPeekAheadPopover>
+      );
+    },
+  },
+  {
+    title: 'name',
+    render: entityRef => stringifyEntityRef(entityRef),
+  },
+];
+export const TableOfItems = (args: { data: CompoundEntityRef[] }) => (
+  <Table columns={columns} data={args.data} />
+);
+
+TableOfItems.args = {
+  data: [
+    {
+      name: 'playback',
+      kind: 'component',
+      namespace: 'default',
+    },
+    {
+      name: 'playback',
+      kind: 'component',
+      namespace: 'default',
+    },
+    {
+      name: 'playback',
+      kind: 'component',
+      namespace: 'default',
+    },
+  ],
 };
