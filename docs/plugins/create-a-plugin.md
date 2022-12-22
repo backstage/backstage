@@ -15,7 +15,7 @@ invoking the
 from the root of your project.
 
 ```bash
-yarn new --select plugin
+yarn create-plugin
 ```
 
 ![](../assets/getting-started/create-plugin_output.png)
