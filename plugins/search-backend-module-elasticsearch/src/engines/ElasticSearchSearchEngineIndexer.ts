@@ -217,11 +217,27 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
 
     // Otherwise, continue periodically checking the stream queue to see if
     // ES has consumed the documents and continue when it's ready for more.
-    return new Promise(resolve => {
+    return new Promise((isReady, abort) => {
+      let streamLengthChecks = 0;
       const interval = setInterval(() => {
+        streamLengthChecks++;
+
         if (this.sourceStream.readableLength < this.configuredBatchSize) {
           clearInterval(interval);
-          resolve();
+          isReady();
+        }
+
+        // Do not allow this interval to loop endlessly; anything longer than 5
+        // minutes likely indicates an unrecoverable error in ES; direct the
+        // user to inspect ES logs for more clues and abort in order to allow
+        // the index to be cleaned up.
+        if (streamLengthChecks >= 6000) {
+          clearInterval(interval);
+          abort(
+            new Error(
+              'Exceeded 5 minutes waiting for elastic to be ready to accept more documents. Check the elastic logs for possible problems.',
+            ),
+          );
         }
       }, 50);
     });
