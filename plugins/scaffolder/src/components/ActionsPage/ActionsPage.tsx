@@ -29,9 +29,13 @@ import {
   TableRow,
   Grid,
   makeStyles,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@material-ui/core';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import classNames from 'classnames';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { useApi } from '@backstage/core-plugin-api';
 import {
@@ -209,22 +213,28 @@ export const ActionsPage = () => {
           </Box>
         )}
         {action.examples && (
-          <Box pb={2}>
-            <Typography variant="h5">Examples</Typography>
-            <BackstageTable
-              data={action.examples}
-              columns={examplesColumns}
-              options={{
-                search: false,
-                showTitle: false,
-                toolbar: false,
-                loadingType: 'linear',
-                header: true,
-                padding: 'dense',
-                paging: false,
-              }}
-            />
-          </Box>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h5">Examples</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box pb={2}>
+                <BackstageTable
+                  data={action.examples}
+                  columns={examplesColumns}
+                  options={{
+                    search: false,
+                    showTitle: false,
+                    toolbar: false,
+                    loadingType: 'linear',
+                    header: true,
+                    padding: 'dense',
+                    paging: false,
+                  }}
+                />
+              </Box>
+            </AccordionDetails>
+          </Accordion>
         )}
       </Box>
     );
