@@ -2,6 +2,9 @@ app:
   title: Backstage Uffizzi Environment
   baseUrl: ${UFFIZZI_URL}
 
+organization:
+  name: My Company
+
 backend:
   baseUrl: ${UFFIZZI_URL}
   auth:
@@ -11,20 +14,19 @@ backend:
   listen:
     port: 7007
   database:
-    client: pg
-    connection:
-      host: db
-      user: ${POSTGRES_USER}
-      password: ${POSTGRES_PASSWORD}
-      port: 5432
+    client: better-sqlite3
+    connection: ':memory:'
   cache:
     store: memory
   cors:
-    origin: http://localhost:3000
+    origin: ${UFFIZZI_URL}
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
+    # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
+    # Default Helmet Content-Security-Policy values can be removed by setting the key to false
+
 auth:
   environment: production
   providers: {}
@@ -33,6 +35,74 @@ catalog:
   locations:
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
+
+proxy:
+  '/circleci/api':
+    target: https://circleci.com/api/v1.1
+    headers:
+      Circle-Token: ${CIRCLECI_AUTH_TOKEN}
+
+  '/jenkins/api':
+    target: http://localhost:8080
+    headers:
+      Authorization: ${JENKINS_BASIC_AUTH_HEADER}
+
+  '/travisci/api':
+    target: https://api.travis-ci.com
+    changeOrigin: true
+    headers:
+      Authorization: ${TRAVISCI_AUTH_TOKEN}
+      travis-api-version: '3'
+
+  '/newrelic/apm/api':
+    target: https://api.newrelic.com/v2
+    headers:
+      X-Api-Key: ${NEW_RELIC_REST_API_KEY}
+
+  '/newrelic/api':
+    target: https://api.newrelic.com
+    headers:
+      X-Api-Key: ${NEW_RELIC_USER_KEY}
+
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization: Token token=${PAGERDUTY_TOKEN}
+
+  '/buildkite/api':
+    target: https://api.buildkite.com/v2/
+    headers:
+      Authorization: ${BUILDKITE_TOKEN}
+
+  '/sentry/api':
+    target: https://sentry.io/api/
+    allowedMethods: ['GET']
+    headers:
+      Authorization: ${SENTRY_TOKEN}
+
+  '/ilert':
+    target: https://api.ilert.com
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+    headers:
+      Authorization: ${ILERT_AUTH_HEADER}
+
+  '/airflow':
+    target: https://your.airflow.instance.com/api/v1
+    headers:
+      Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
+
+  '/gocd':
+    target: https://your.gocd.instance.com/go/api
+    allowedMethods: ['GET']
+    allowedHeaders: ['Authorization']
+    headers:
+      Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
+
+  '/dynatrace':
+    target: https://your.dynatrace.instance.com/api/v2
+    headers:
+      Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 
 techdocs:
   builder: 'local' # Alternatives - 'external'
@@ -68,6 +138,7 @@ kubernetes:
   clusterLocatorMethods:
     - type: 'config'
       clusters: []
+
 kafka:
   clientId: backstage
   clusters:
@@ -75,13 +146,45 @@ kafka:
       dashboardUrl: https://akhq.io/
       brokers:
         - localhost:9092
+
 allure:
   baseUrl: http://localhost:5050/allure-docker-service
+
 integrations:
   github:
     - host: github.com
       token: ${GITHUB_TOKEN}
-scaffolder: {}
+  ### Example for how to add your GitHub Enterprise instance using the API:
+  # - host: ghe.example.net
+  #   apiBaseUrl: https://ghe.example.net/api/v3
+  #   token: ${GHE_TOKEN}
+  ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+  # - host: ghe.example.net
+  #   rawBaseUrl: https://ghe.example.net/raw
+  #   token: ${GHE_TOKEN}
+  gitlab:
+    - host: gitlab.com
+      token: ${GITLAB_TOKEN}
+  ### Example for how to add a bitbucket cloud integration
+  # bitbucketCloud:
+  #   - username: ${BITBUCKET_USERNAME}
+  #     appPassword: ${BITBUCKET_APP_PASSWORD}
+  ### Example for how to add your bitbucket server instance using the API:
+  # - host: server.bitbucket.com
+  #   apiBaseUrl: server.bitbucket.com
+  #   username: ${BITBUCKET_SERVER_USERNAME}
+  #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
+  azure:
+    - host: dev.azure.com
+      token: ${AZURE_TOKEN}
+  #  googleGcs:
+  #    clientEmail: 'example@example.com'
+  #    privateKey: ${GCS_PRIVATE_KEY}
+  awsS3:
+    - host: amazonaws.com
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+
 costInsights:
   engineerCost: 200000
   engineerThreshold: 0.5
@@ -151,3 +254,6 @@ apacheAirflow:
 
 gocd:
   baseUrl: https://your.gocd.instance.com
+
+permission:
+  enabled: true
