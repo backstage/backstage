@@ -195,7 +195,7 @@ b@^2:
   version: 2.0.1
 `;
 
-const mockANewLocal = `${newHeader}
+const mockANewLocal = `${MODERN_HEADER}
 a@^1:
   version: 1.0.1
   dependencies:
@@ -210,7 +210,7 @@ b@^2:
   version: 2.0.0
 `;
 
-const mockANewLocalDedup = `${newHeader}
+const mockANewLocalDedup = `${MODERN_HEADER}
 a@^1:
   version: 1.0.1
   dependencies:
@@ -314,7 +314,7 @@ describe('New Lockfile', () => {
     await expect(fs.readFile('/yarn.lock', 'utf8')).resolves.toBe(
       mockANewLocal,
     );
-    await expect(lockfile.save()).resolves.toBeUndefined();
+    await expect(lockfile.save('/yarn.lock')).resolves.toBeUndefined();
     await expect(fs.readFile('/yarn.lock', 'utf8')).resolves.toBe(
       mockANewLocalDedup,
     );
