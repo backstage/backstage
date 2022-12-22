@@ -56,8 +56,9 @@ describe('<DefaultExplorePage />', () => {
 
     await waitFor(() => {
       const elements = getAllByRole('tab');
-      expect(elements.length).toBe(3);
+      expect(elements.length).toBe(4);
       expect(getByText(elements[0], 'Domains')).toBeInTheDocument();
+      expect(getByText(elements[1], 'Systems')).toBeInTheDocument();
       expect(getByText(elements[1], 'Groups')).toBeInTheDocument();
       expect(getByText(elements[2], 'Tools')).toBeInTheDocument();
     });
