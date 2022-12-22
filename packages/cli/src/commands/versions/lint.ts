@@ -18,6 +18,7 @@ import { OptionValues } from 'commander';
 import { Lockfile } from '../../lib/versioning';
 import { paths } from '../../lib/paths';
 import partition from 'lodash/partition';
+import { PackageGraph } from '../../lib/monorepo';
 
 // Packages that we try to avoid duplicates for
 const INCLUDED = [/^@backstage\//];
@@ -55,6 +56,9 @@ export default async (cmd: OptionValues) => {
   const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
   const result = lockfile.analyze({
     filter: includedFilter,
+    localPackages: PackageGraph.fromPackages(
+      await PackageGraph.listTargetPackages(),
+    ),
   });
 
   logArray(
