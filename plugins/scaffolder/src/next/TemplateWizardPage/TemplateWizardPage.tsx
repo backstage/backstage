@@ -35,7 +35,7 @@ import {
 import { scaffolderApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
-import { Stepper } from './Stepper';
+import { Stepper } from '@backstage/plugin-scaffolder-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
   nextRouteRef,
