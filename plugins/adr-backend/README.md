@@ -4,7 +4,7 @@ This ADR backend plugin is primarily responsible for the following:
 
 - Provides a `DefaultAdrCollatorFactory`, which can be used in the search backend to index ADR documents associated with entities to your Backstage Search.
 
-- Provides endpoints that use UrlReaders for getting a ADR documents (used in the [ADR frontend plugin](../adr/README.md)).
+- Provides endpoints that use UrlReaders for getting ADR documents (used in the [ADR frontend plugin](../adr/README.md)).
 
 ## Indexing ADR documents for search
 
