@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
-import { DiscoveryApi } from '@backstage/plugin-permission-common';
+import {
+  discoveryApiRef,
+  useApi,
+  DiscoveryApi,
+} from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { useOctokitRequest } from './useOctokitRequest';
 
