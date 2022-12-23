@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { TemplateGroup } from './TemplateGroup';
+export { TemplateGroup, type TemplateGroupProps } from './TemplateGroup';

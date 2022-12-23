@@ -54,6 +54,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * The Props for {@link Stepper} component
+ * @alpha
+ */
 export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
@@ -67,6 +71,7 @@ export type StepperProps = {
 const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
 
 /**
+ * The `Stepper` component is the Wizard that is rendered when a user selects a template
  * @alpha
  */
 export const Stepper = (props: StepperProps) => {

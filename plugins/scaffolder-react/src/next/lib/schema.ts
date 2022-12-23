@@ -99,8 +99,8 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
 }
 
 /**
- * @alpha
  * Takes a step from a Backstage Template Manifest and converts it to a JSON Schema and UI Schema for rjsf
+ * @alpha
  */
 export const extractSchemaFromStep = (
   inputStep: JsonObject,
@@ -112,8 +112,8 @@ export const extractSchemaFromStep = (
 };
 
 /**
- * @alpha
  * Creates a field validation object for use in react jsonschema form
+ * @alpha
  */
 export const createFieldValidation = (): FieldValidation => {
   const fieldValidation: FieldValidation = {

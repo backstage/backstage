@@ -19,13 +19,17 @@ import { JsonObject } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 
-interface ReviewStateProps {
+/**
+ * The props for the {@link ReviewState} component.
+ * @alpha
+ */
+export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
-}
+};
 
 /**
- * The ReviewState component used by the Stepper
+ * The component used by the {@link Stepper} to render the review step.
  * @alpha
  */
 export const ReviewState = (props: ReviewStateProps) => {

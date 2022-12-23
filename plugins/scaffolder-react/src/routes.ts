@@ -19,11 +19,13 @@ import {
   createSubRouteRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const registerComponentRouteRef = createExternalRouteRef({
   id: 'register-component',
   optional: true,
 });
 
+/** @public */
 export const viewTechDocRouteRef = createExternalRouteRef({
   id: 'view-techdoc',
   optional: true,
@@ -37,6 +39,7 @@ export const rootRouteRef = createRouteRef({
 
 /**
  * @deprecated This is the old template route, can be deleted before next major release
+ * @public
  */
 export const legacySelectedTemplateRouteRef = createSubRouteRef({
   id: 'scaffolder/legacy/selected-template',
@@ -63,30 +66,35 @@ export const nextSelectedTemplateRouteRef = createSubRouteRef({
   path: '/templates/:namespace/:templateName',
 });
 
+/** @public */
 export const scaffolderTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/task',
   parent: rootRouteRef,
   path: '/tasks/:taskId',
 });
 
+/** @alpha */
 export const nextScaffolderTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/next/task',
   parent: nextRouteRef,
   path: '/tasks/:taskId',
 });
 
+/** @public */
 export const scaffolderListTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/list-tasks',
   parent: rootRouteRef,
   path: '/tasks',
 });
 
+/** @public */
 export const actionsRouteRef = createSubRouteRef({
   id: 'scaffolder/actions',
   parent: rootRouteRef,
   path: '/actions',
 });
 
+/** @public */
 export const editRouteRef = createSubRouteRef({
   id: 'scaffolder/edit',
   parent: rootRouteRef,

@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { Dispatch } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
@@ -20,13 +21,12 @@ import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SetStateAction } from 'react';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
 
-// Warning: (ae-missing-release-tag) "actionsRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const actionsRouteRef: SubRouteRef<undefined>;
 
@@ -64,8 +64,6 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   },
 ) => void | Promise<void>;
 
-// Warning: (ae-missing-release-tag) "editRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const editRouteRef: SubRouteRef<undefined>;
 
@@ -75,14 +73,10 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
   schema: JsonObject;
 };
 
-// Warning: (ae-missing-release-tag) "FIELD_EXTENSION_KEY" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
 
-// Warning: (ae-missing-release-tag) "FIELD_EXTENSION_WRAPPER_KEY" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 
 // @public
@@ -118,8 +112,6 @@ export type FormProps = Pick<
   'transformErrors' | 'noHtml5Validate'
 >;
 
-// Warning: (ae-missing-release-tag) "legacySelectedTemplateRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
 export const legacySelectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:templateName'>
@@ -162,9 +154,7 @@ export type NextFieldExtensionOptions<
 // @alpha (undocumented)
 export const nextRouteRef: RouteRef<undefined>;
 
-// Warning: (ae-missing-release-tag) "nextScaffolderTaskRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha (undocumented)
 export const nextScaffolderTaskRouteRef: SubRouteRef<
   PathParams<'/tasks/:taskId'>
 >;
@@ -174,15 +164,31 @@ export const nextSelectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:namespace/:templateName'>
 >;
 
-// Warning: (ae-missing-release-tag) "registerComponentRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @alpha
+export interface ParsedTemplateSchema {
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  mergedSchema: JsonObject;
+  // (undocumented)
+  schema: JsonObject;
+  // (undocumented)
+  title: string;
+  // (undocumented)
+  uiSchema: UiSchema;
+}
+
 // @public (undocumented)
 export const registerComponentRouteRef: ExternalRouteRef<undefined, true>;
 
-// Warning: (ae-forgotten-export) The symbol "ReviewStateProps" needs to be exported by the entry point index.d.ts
-//
 // @alpha
 export const ReviewState: (props: ReviewStateProps) => JSX.Element;
+
+// @alpha
+export type ReviewStateProps = {
+  schemas: ParsedTemplateSchema[];
+  formState: JsonObject;
+};
 
 // @public (undocumented)
 export const rootRouteRef: RouteRef<undefined>;
@@ -190,13 +196,9 @@ export const rootRouteRef: RouteRef<undefined>;
 // @public
 export const ScaffolderFieldExtensions: React_2.ComponentType;
 
-// Warning: (ae-missing-release-tag) "scaffolderListTaskRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const scaffolderListTaskRouteRef: SubRouteRef<undefined>;
 
-// Warning: (ae-missing-release-tag) "scaffolderTaskRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const scaffolderTaskRouteRef: SubRouteRef<PathParams<'/tasks/:taskId'>>;
 
@@ -205,10 +207,16 @@ export const selectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:namespace/:templateName'>
 >;
 
-// Warning: (ae-forgotten-export) The symbol "StepperProps" needs to be exported by the entry point index.d.ts
-//
-// @alpha (undocumented)
+// @alpha
 export const Stepper: (props: StepperProps) => JSX.Element;
+
+// @alpha
+export type StepperProps = {
+  manifest: TemplateParameterSchema;
+  extensions: NextFieldExtensionOptions<any, any>[];
+  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  FormProps?: FormProps;
+};
 
 // @alpha
 export const TemplateCard: (props: TemplateCardProps) => JSX.Element;
@@ -219,6 +227,21 @@ export interface TemplateCardProps {
   deprecated?: boolean;
   // (undocumented)
   template: TemplateEntityV1beta3;
+}
+
+// @alpha
+export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element;
+
+// @alpha
+export interface TemplateGroupProps {
+  // (undocumented)
+  components?: {
+    CardComponent?: React_2.ComponentType<TemplateCardProps>;
+  };
+  // (undocumented)
+  templates: TemplateEntityV1beta3[];
+  // (undocumented)
+  title: React_2.ReactNode;
 }
 
 // @public
@@ -232,8 +255,17 @@ export type TemplateParameterSchema = {
   }>;
 };
 
-// Warning: (ae-missing-release-tag) "viewTechDocRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @alpha
+export const useFormData: () => [
+  Record<string, any>,
+  Dispatch<SetStateAction<Record<string, any>>>,
+];
+
+// @alpha
+export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
+  steps: ParsedTemplateSchema[];
+};
+
 // @public (undocumented)
 export const viewTechDocRouteRef: ExternalRouteRef<
   {

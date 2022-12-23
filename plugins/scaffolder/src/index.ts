@@ -87,23 +87,28 @@ import {
 
 /**
  * @alpha
+ * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
  */
 const nextRouteRef = nextRouteRefTemp;
 /**
  * @alpha
+ * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
  */
 const nextSelectedTemplateRouteRef = nextSelectedTemplateRouteRefTemp;
 /**
  * @alpha
+ * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
  */
 const createNextScaffolderFieldExtension =
   createNextScaffolderFieldExtensionTemp;
 /**
  * @alpha
+ * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
  */
 type NextCustomFieldValidator<T> = NextCustomFieldValidatorTemp<T>;
 /**
  * @alpha
+ * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
  */
 type NextFieldExtensionOptions<
   TFieldReturnValue = unknown,
@@ -111,6 +116,7 @@ type NextFieldExtensionOptions<
 > = NextFieldExtensionOptionsTemp<TFieldReturnValue, TInputProps>;
 /**
  * @alpha
+ * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
  */
 type NextFieldExtensionComponentProps<
   TFieldReturnValue,
@@ -118,6 +124,7 @@ type NextFieldExtensionComponentProps<
 > = NextFieldExtensionComponentPropsTemp<TFieldReturnValue, TUiOptions>;
 /**
  * @alpha
+ * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
  */
 type FormProps = FormPropsTemp;
 

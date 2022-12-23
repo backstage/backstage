@@ -13,24 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import qs from 'qs';
-import { useState } from 'react';
-
-/**
- * This hook is used to get the formData from the query string.
- * @alpha
- */
-export const useFormData = () => {
-  return useState<Record<string, any>>(() => {
-    const query = qs.parse(window.location.search, {
-      ignoreQueryPrefix: true,
-    });
-
-    try {
-      return JSON.parse(query.formData as string);
-    } catch (e) {
-      return {};
-    }
-  });
-};
+export { useFormData } from './useFormData';
+export {
+  useTemplateSchema,
+  type ParsedTemplateSchema,
+} from './useTemplateSchema';

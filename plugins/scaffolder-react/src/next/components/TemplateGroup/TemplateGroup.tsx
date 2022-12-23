@@ -25,6 +25,10 @@ import { Typography } from '@material-ui/core';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateCardProps, TemplateCard } from '../TemplateCard';
 
+/**
+ * The props for the {@link TemplateGroup} component.
+ * @alpha
+ */
 export interface TemplateGroupProps {
   templates: TemplateEntityV1beta3[];
   title: React.ReactNode;
@@ -33,6 +37,10 @@ export interface TemplateGroupProps {
   };
 }
 
+/**
+ * The `TemplateGroup` component is used to display a group of templates with a title.
+ * @alpha
+ */
 export const TemplateGroup = (props: TemplateGroupProps) => {
   const { templates, title, components: { CardComponent } = {} } = props;
   const titleComponent =

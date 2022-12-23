@@ -19,6 +19,10 @@ import { UiSchema } from '@rjsf/utils';
 import { TemplateParameterSchema } from '../../types';
 import { extractSchemaFromStep } from '../lib';
 
+/**
+ * This is the parsed template schema that is returned from the {@link useTemplateSchema} hook.
+ * @alpha
+ */
 export interface ParsedTemplateSchema {
   uiSchema: UiSchema;
   mergedSchema: JsonObject;
@@ -27,6 +31,12 @@ export interface ParsedTemplateSchema {
   description?: string;
 }
 
+/**
+ * This hook will parse the template schema and return the steps with the
+ * parsed schema and uiSchema. Filtering out any steps or properties that
+ * are not enabled with feature flags.
+ * @alpha
+ */
 export const useTemplateSchema = (
   manifest: TemplateParameterSchema,
 ): { steps: ParsedTemplateSchema[] } => {

@@ -83,7 +83,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 }));
 
 /**
- * The Props for the Template Card component
+ * The Props for the {@link TemplateCard} component
  * @alpha
  */
 export interface TemplateCardProps {
@@ -92,7 +92,7 @@ export interface TemplateCardProps {
 }
 
 /**
- * The Template Card component that is rendered in a list for each template
+ * The `TemplateCard` component that is rendered in a list for each template
  * @alpha
  */
 export const TemplateCard = (props: TemplateCardProps) => {
