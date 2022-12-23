@@ -27,7 +27,7 @@ import { TemplateCard } from './TemplateCard';
 import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { nextRouteRef } from '../../../routes';
+import { nextRouteRef } from '../../routes';
 
 describe('TemplateCard', () => {
   it('should render the card title', async () => {

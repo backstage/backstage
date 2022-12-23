@@ -39,10 +39,8 @@ import {
 } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
-import {
-  nextSelectedTemplateRouteRef,
-  viewTechDocRouteRef,
-} from '../../../routes';
+import { nextSelectedTemplateRouteRef } from '../../routes';
+import { viewTechDocRouteRef } from '../../../routes';
 import { CardHeader } from './CardHeader';
 import { CardLink } from './CardLink';
 

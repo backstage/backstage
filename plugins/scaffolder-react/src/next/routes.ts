@@ -13,9 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './components';
-export * from './extensions';
-export * from './types';
-export * from './lib';
-export * from './hooks';
-export * from './routes';
+
+import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
+
+/** @alpha */
+export const nextRouteRef = createRouteRef({
+  id: 'scaffolder/next',
+});
+
+/** @alpha */
+export const nextSelectedTemplateRouteRef = createSubRouteRef({
+  id: 'scaffolder/next/selected-template',
+  parent: nextRouteRef,
+  path: '/templates/:namespace/:templateName',
+});
+
+/** @alpha */
+export const nextScaffolderTaskRouteRef = createSubRouteRef({
+  id: 'scaffolder/next/task',
+  parent: nextRouteRef,
+  path: '/tasks/:taskId',
+});
