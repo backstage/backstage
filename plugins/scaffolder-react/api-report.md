@@ -202,6 +202,28 @@ export const scaffolderListTaskRouteRef: SubRouteRef<undefined>;
 // @public (undocumented)
 export const scaffolderTaskRouteRef: SubRouteRef<PathParams<'/tasks/:taskId'>>;
 
+// @public
+export interface ScaffolderUseTemplateSecrets {
+  // (undocumented)
+  setSecrets: (input: Record<string, string>) => void;
+}
+
+// @public
+export const SecretsContext: React_2.Context<
+  SecretsContextContents | undefined
+>;
+
+// @public
+export type SecretsContextContents = {
+  secrets: Record<string, string>;
+  setSecrets: React_2.Dispatch<React_2.SetStateAction<Record<string, string>>>;
+};
+
+// @public
+export const SecretsContextProvider: ({
+  children,
+}: PropsWithChildren<{}>) => JSX.Element;
+
 // @public (undocumented)
 export const selectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:namespace/:templateName'>
@@ -265,6 +287,9 @@ export const useFormData: () => [
 export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
   steps: ParsedTemplateSchema[];
 };
+
+// @public
+export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 
 // @public (undocumented)
 export const viewTechDocRouteRef: ExternalRouteRef<

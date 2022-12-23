@@ -13,5 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { useTemplateSecrets } from './SecretsContext';
-export type { ScaffolderUseTemplateSecrets } from './SecretsContext';
+export {
+  useTemplateSecrets,
+  SecretsContext,
+  SecretsContextProvider,
+  type ScaffolderUseTemplateSecrets,
+  type SecretsContextContents,
+} from './SecretsContext';

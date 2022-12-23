@@ -21,13 +21,18 @@ import React, {
   PropsWithChildren,
 } from 'react';
 
-type SecretsContextContents = {
+/**
+ * The contents of the {@link SecretsContext}.
+ * @public
+ */
+export type SecretsContextContents = {
   secrets: Record<string, string>;
   setSecrets: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 };
 
 /**
- * The actual context object.
+ * The context to hold the Secrets.
+ * @public
  */
 export const SecretsContext = createContext<SecretsContextContents | undefined>(
   undefined,
@@ -35,7 +40,6 @@ export const SecretsContext = createContext<SecretsContextContents | undefined>(
 
 /**
  * The Context Provider that holds the state for the secrets.
- *
  * @public
  */
 export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
@@ -57,7 +61,8 @@ export interface ScaffolderUseTemplateSecrets {
 }
 
 /**
- * Hook to access the secrets context.
+ * Hook to access the secrets context to be able to set secrets that are
+ * passed to the Scaffolder backend.
  * @public
  */
 export const useTemplateSecrets = (): ScaffolderUseTemplateSecrets => {

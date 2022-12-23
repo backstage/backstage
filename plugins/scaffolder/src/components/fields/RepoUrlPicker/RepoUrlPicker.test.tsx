@@ -29,7 +29,7 @@ import { ScaffolderApi } from '../../../types';
 import {
   SecretsContextProvider,
   SecretsContext,
-} from '../../secrets/SecretsContext';
+} from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 
 describe('RepoUrlPicker', () => {

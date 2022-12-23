@@ -41,9 +41,9 @@ import {
   selectedTemplateRouteRef,
   Stepper,
   NextFieldExtensionOptions,
+  SecretsContext,
   type FormProps,
 } from '@backstage/plugin-scaffolder-react';
-import { SecretsContext } from '../../components/secrets/SecretsContext';
 import { JsonValue } from '@backstage/types';
 
 export type TemplateWizardPageProps = {
