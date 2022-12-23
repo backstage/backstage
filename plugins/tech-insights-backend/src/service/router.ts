@@ -32,7 +32,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { errorHandler } from '@backstage/backend-common';
-import { serializeError } from '@backstage/errors/dist';
+import { serializeError } from '@backstage/errors';
 
 /**
  * @public
