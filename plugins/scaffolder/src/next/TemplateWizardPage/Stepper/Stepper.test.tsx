@@ -20,6 +20,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { JsonValue } from '@backstage/types';
+import { NextFieldExtensionComponentProps } from '../../../extensions/types';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -108,6 +109,98 @@ describe('Stepper', () => {
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(
       'im a test value',
     );
+  });
+
+  it('should merge nested formData correctly in multiple steps', async () => {
+    const Repo = ({
+      onChange,
+    }: NextFieldExtensionComponentProps<{ repository: string }, any>) => (
+      <input
+        aria-label="repo"
+        type="text"
+        onChange={e => onChange({ repository: e.target.value })}
+        defaultValue=""
+      />
+    );
+
+    const Owner = ({
+      onChange,
+    }: NextFieldExtensionComponentProps<{ owner: string }, any>) => (
+      <input
+        aria-label="owner"
+        type="text"
+        onChange={e => onChange({ owner: e.target.value })}
+        defaultValue=""
+      />
+    );
+
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              first: {
+                type: 'object',
+                'ui:field': 'Repo',
+              },
+            },
+          },
+        },
+        {
+          title: 'Step 2',
+          schema: {
+            properties: {
+              second: {
+                type: 'object',
+                'ui:field': 'Owner',
+              },
+            },
+          },
+        },
+      ],
+      title: 'React JSON Schema Form Test',
+    };
+
+    const onComplete = jest.fn(async (values: Record<string, JsonValue>) => {
+      expect(values).toEqual({
+        first: { repository: 'Repo' },
+        second: { owner: 'Owner' },
+      });
+    });
+
+    const { getByRole } = await renderInTestApp(
+      <Stepper
+        manifest={manifest}
+        onComplete={onComplete}
+        extensions={[
+          { name: 'Repo', component: Repo },
+          { name: 'Owner', component: Owner },
+        ]}
+      />,
+    );
+
+    await fireEvent.change(getByRole('textbox', { name: 'repo' }), {
+      target: { value: 'Repo' },
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    await fireEvent.change(getByRole('textbox', { name: 'owner' }), {
+      target: { value: 'Owner' },
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Review' }));
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Create' }));
+    });
+
+    expect(onComplete).toHaveBeenCalled();
   });
 
   it('should render custom field extensions properly', async () => {
