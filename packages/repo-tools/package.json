@@ -35,9 +35,6 @@
     "@manypkg/get-packages": "^1.1.3",
     "@microsoft/api-documenter": "^7.17.11",
     "@microsoft/api-extractor": "^7.23.0",
-    "@microsoft/api-extractor-model": "^7.17.2",
-    "@microsoft/tsdoc": "0.14.1",
-    "@microsoft/tsdoc-config": "0.16.2",
     "chalk": "^4.0.0",
     "commander": "^9.1.0",
     "fs-extra": "10.1.0",
@@ -53,6 +50,9 @@
     "mock-fs": "^5.1.0"
   },
   "peerDependencies": {
+    "@microsoft/api-extractor-model": "*",
+    "@microsoft/tsdoc": "*",
+    "@microsoft/tsdoc-config": "*",
     "@rushstack/node-core-library": "*",
     "prettier": "^2.8.1",
     "typescript": "> 3.0.0"
