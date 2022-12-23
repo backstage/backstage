@@ -25,7 +25,7 @@ import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
 /**
  * The field template from \@rjsf/core which is a react component that gets passed \@rjsf/core field related props.
  *
- * @public
+ * @alpha
  */
 export type NextLayoutTemplate<T = any> = NonNullable<
   SchemaFormProps<T>['uiSchema']
@@ -34,7 +34,7 @@ export type NextLayoutTemplate<T = any> = NonNullable<
 /**
  * The type of layouts that is passed to the TemplateForms
  *
- * @public
+ * @alpha
  */
 export interface NextLayoutOptions<P = any> {
   name: string;

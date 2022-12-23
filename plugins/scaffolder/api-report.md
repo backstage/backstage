@@ -159,7 +159,9 @@ export interface FieldSchema<TReturn, TUiOptions> {
 export type FormProps = Pick<
   FormProps_3,
   'transformErrors' | 'noHtml5Validate'
->;
+> & {
+  layouts?: NextLayoutOptions[];
+};
 
 // @public
 export type LayoutComponent<_TInputProps> = () => null;
@@ -526,6 +528,15 @@ export type TemplateParameterSchema = TemplateParameterSchema_2;
 // @public
 export const TemplateTypePicker: () => JSX.Element | null;
 
+<<<<<<< HEAD
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
+=======
+// @public
+export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
+
+// Warnings were encountered during analysis:
+//
+// src/next/types.d.ts:23:5 - (ae-forgotten-export) The symbol "NextLayoutOptions" needs to be exported by the entry point index.d.ts
+>>>>>>> 55041019c8 (export NextLayoutOptions)
 ```
