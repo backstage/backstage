@@ -197,6 +197,56 @@ export function makeFieldSchemaFromZod<
     : never
 >;
 
+<<<<<<< HEAD
+=======
+// @alpha
+export type NextCustomFieldValidator<TFieldReturnValue> = (
+  data: TFieldReturnValue,
+  field: FieldValidation_2,
+  context: {
+    apiHolder: ApiHolder;
+    formData: JsonObject;
+  },
+) => void | Promise<void>;
+
+// @alpha
+export interface NextFieldExtensionComponentProps<
+  TFieldReturnValue,
+  TUiOptions = {},
+> extends PropsWithChildren<FieldProps_2<TFieldReturnValue>> {
+  // (undocumented)
+  uiSchema?: UiSchema<TFieldReturnValue> & {
+    'ui:options'?: TUiOptions & UIOptionsType;
+  };
+}
+
+// @alpha
+export type NextFieldExtensionOptions<
+  TFieldReturnValue = unknown,
+  TInputProps = unknown,
+> = {
+  name: string;
+  component: (
+    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+  ) => JSX.Element | null;
+  validation?: NextCustomFieldValidator<TFieldReturnValue>;
+  schema?: CustomFieldExtensionSchema;
+};
+
+// @alpha
+export interface NextLayoutOptions<P = any> {
+  // (undocumented)
+  component: NextLayoutTemplate<P>;
+  // (undocumented)
+  name: string;
+}
+
+// @alpha
+export type NextLayoutTemplate<T = any> = NonNullable<
+  FormProps_3<T>['uiSchema']
+>['ui:ObjectFieldTemplate'];
+
+>>>>>>> a3e361fbb8 (run api-report)
 // @alpha (undocumented)
 export const nextRouteRef: RouteRef<undefined>;
 
@@ -534,9 +584,12 @@ export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
 =======
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
+<<<<<<< HEAD
 
 // Warnings were encountered during analysis:
 //
 // src/next/types.d.ts:23:5 - (ae-forgotten-export) The symbol "NextLayoutOptions" needs to be exported by the entry point index.d.ts
 >>>>>>> 55041019c8 (export NextLayoutOptions)
+=======
+>>>>>>> a3e361fbb8 (run api-report)
 ```
