@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { CacheClient, UrlReader } from '@backstage/backend-common';
+import { NotModifiedError, stringifyError } from '@backstage/errors';
+import { Logger } from 'winston';
 import express from 'express';
 import Router from 'express-promise-router';
 
+export type AdrRouterOptions = {
+  reader: UrlReader;
+  cacheClient: CacheClient;
+  logger: Logger;
+};
+
 /** @public */
-export async function createRouter(reader: UrlReader): Promise<express.Router> {
+export async function createRouter(
+  options: AdrRouterOptions,
+): Promise<express.Router> {
+  const { reader, cacheClient, logger } = options;
+
   const router = Router();
   router.use(express.json());
 
@@ -31,17 +43,46 @@ export async function createRouter(reader: UrlReader): Promise<express.Router> {
       return;
     }
 
-    const treeGetResponse = await reader.readTree(urlToProcess);
-    const files = await treeGetResponse.files();
-    const fileData = files.map(file => {
-      return {
-        type: 'file',
-        name: file.path.substring(file.path.lastIndexOf('/') + 1),
-        path: file.path,
-      };
-    });
+    const cachedTree = (await cacheClient.get(urlToProcess)) as {
+      data: {
+        type: string;
+        name: string;
+        path: string;
+      }[];
+      etag: string;
+    };
+    const cachedData = cachedTree?.data;
 
-    res.json({ data: fileData });
+    try {
+      const treeGetResponse = await reader.readTree(urlToProcess, {
+        etag: cachedTree?.etag,
+      });
+      const files = await treeGetResponse.files();
+      const data = files.map(file => {
+        return {
+          type: 'file',
+          name: file.path.substring(file.path.lastIndexOf('/') + 1),
+          path: file.path,
+        };
+      });
+
+      await cacheClient.set(urlToProcess, {
+        data,
+        etag: treeGetResponse.etag,
+      });
+
+      res.json({ data });
+    } catch (error: any) {
+      if (cachedData && error.name === NotModifiedError.name) {
+        res.json({ data: cachedData });
+        return;
+      }
+
+      const message = stringifyError(error);
+      logger.error(`Unable to fetch ADRs from ${urlToProcess}: ${message}`);
+      res.statusCode = 500;
+      res.json({ message });
+    }
   });
 
   router.get('/file', async (req, res) => {
@@ -52,10 +93,35 @@ export async function createRouter(reader: UrlReader): Promise<express.Router> {
       return;
     }
 
-    const fileGetResponse = await reader.readUrl(urlToProcess);
-    const fileBuffer = await fileGetResponse.buffer();
+    const cachedFileContent = (await cacheClient.get(urlToProcess)) as {
+      data: string;
+      etag: string;
+    };
 
-    res.json({ data: fileBuffer.toString() });
+    try {
+      const fileGetResponse = await reader.readUrl(urlToProcess, {
+        etag: cachedFileContent?.etag,
+      });
+      const fileBuffer = await fileGetResponse.buffer();
+      const data = fileBuffer.toString();
+
+      await cacheClient.set(urlToProcess, {
+        data,
+        etag: fileGetResponse.etag,
+      });
+
+      res.json({ data });
+    } catch (error) {
+      if (cachedFileContent && error.name === NotModifiedError.name) {
+        res.json({ data: cachedFileContent.data });
+        return;
+      }
+
+      const message = stringifyError(error);
+      logger.error(`Unable to fetch ADRs from ${urlToProcess}: ${message}`);
+      res.statusCode = 500;
+      res.json({ message });
+    }
   });
 
   return router;

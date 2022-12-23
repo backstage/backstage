@@ -15,6 +15,7 @@
  */
 
 import {
+  CacheClient,
   ReadTreeResponse,
   ReadTreeResponseFile,
   ReadUrlResponse,
@@ -23,6 +24,7 @@ import {
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
+import { Logger } from 'winston';
 
 const listEndpointName = '/list';
 const fileEndpointName = '/file';
@@ -90,13 +92,39 @@ const mockUrlReader: UrlReader = {
   },
 };
 
+class MockCacheClient implements CacheClient {
+  private itemRegistry: { [key: string]: any };
+
+  constructor() {
+    this.itemRegistry = {};
+  }
+
+  async get(key: string) {
+    return this.itemRegistry[key];
+  }
+
+  async set(key: string, value: any) {
+    this.itemRegistry[key] = value;
+  }
+
+  async delete(key: string) {
+    delete this.itemRegistry[key];
+  }
+}
+
 describe('createRouter', () => {
   let app: express.Express;
 
   beforeEach(async () => {
     jest.resetAllMocks();
 
-    const router = await createRouter(mockUrlReader);
+    const router = await createRouter({
+      reader: mockUrlReader,
+      cacheClient: new MockCacheClient(),
+      logger: {
+        error: (message: any) => message,
+      } as Logger,
+    });
     app = express().use(router);
   });
 

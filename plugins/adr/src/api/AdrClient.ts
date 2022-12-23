@@ -51,7 +51,7 @@ export class AdrClient implements AdrApi {
     const data = await result.json();
 
     if (!result.ok) {
-      throw new Error(data.error.message);
+      throw new Error(`${data.message}`);
     }
     return data;
   }
