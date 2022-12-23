@@ -199,6 +199,8 @@ describe('Stepper', () => {
     await act(async () => {
       await fireEvent.click(getByRole('button', { name: 'Create' }));
     });
+
+    expect(onComplete).toHaveBeenCalled();
   });
 
   it('should render custom field extensions properly', async () => {
