@@ -102,7 +102,8 @@ export const Stepper = (props: StepperProps) => {
   };
 
   const handleChange = useCallback(
-    (e: IChangeEvent) => setFormState(e.formData),
+    (e: IChangeEvent) =>
+      setFormState(current => ({ ...current, ...e.formData })),
     [setFormState],
   );
 
