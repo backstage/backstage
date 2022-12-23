@@ -23,7 +23,7 @@ export async function createRouter(reader: UrlReader): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
 
-  router.get('/getAdrFilesAtUrl', async (req, res) => {
+  router.get('/list', async (req, res) => {
     const urlToProcess = req.query.url as string;
     if (!urlToProcess) {
       res.statusCode = 400;
@@ -44,7 +44,7 @@ export async function createRouter(reader: UrlReader): Promise<express.Router> {
     res.json({ data: fileData });
   });
 
-  router.get('/readAdrFileAtUrl', async (req, res) => {
+  router.get('/file', async (req, res) => {
     const urlToProcess = req.query.url as string;
     if (!urlToProcess) {
       res.statusCode = 400;

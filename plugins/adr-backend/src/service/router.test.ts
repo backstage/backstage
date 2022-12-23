@@ -24,6 +24,9 @@ import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
 
+const listEndpointName = '/list';
+const fileEndpointName = '/file';
+
 const makeBufferFromString = (string: string) => async () =>
   Buffer.from(string);
 
@@ -97,16 +100,14 @@ describe('createRouter', () => {
     app = express().use(router);
   });
 
-  describe('GET /getAdrFilesAtUrl', () => {
+  describe(`GET ${listEndpointName}`, () => {
     it('returns bad request (400) when no url is provided', async () => {
-      const urlNotSpecifiedRequest = await request(app).get(
-        '/getAdrFilesAtUrl',
-      );
+      const urlNotSpecifiedRequest = await request(app).get(listEndpointName);
       const urlNotSpecifiedStatus = urlNotSpecifiedRequest.status;
       const urlNotSpecifiedMessage = urlNotSpecifiedRequest.body.message;
 
       const urlNotFilledRequest = await request(app).get(
-        '/getAdrFilesAtUrl?url=',
+        `${listEndpointName}?url=`,
       );
       const urlNotFilledStatus = urlNotFilledRequest.status;
       const urlNotFilledMessage = urlNotFilledRequest.body.message;
@@ -122,7 +123,7 @@ describe('createRouter', () => {
     });
 
     it('returns the correct listing when reading a url', async () => {
-      const result = await request(app).get('/getAdrFilesAtUrl?url=testing');
+      const result = await request(app).get(`${listEndpointName}?url=testing`);
       const { status, body, error } = result;
 
       const expectedStatusCode = 200;
@@ -152,16 +153,14 @@ describe('createRouter', () => {
     });
   });
 
-  describe('GET /readAdrFileAtUrl', () => {
+  describe(`GET ${fileEndpointName}`, () => {
     it('returns bad request (400) when no url is provided', async () => {
-      const urlNotSpecifiedRequest = await request(app).get(
-        '/readAdrFileAtUrl',
-      );
+      const urlNotSpecifiedRequest = await request(app).get(fileEndpointName);
       const urlNotSpecifiedStatus = urlNotSpecifiedRequest.status;
       const urlNotSpecifiedMessage = urlNotSpecifiedRequest.body.message;
 
       const urlNotFilledRequest = await request(app).get(
-        '/readAdrFileAtUrl?url=',
+        `${fileEndpointName}?url=`,
       );
       const urlNotFilledStatus = urlNotFilledRequest.status;
       const urlNotFilledMessage = urlNotFilledRequest.body.message;
@@ -178,14 +177,14 @@ describe('createRouter', () => {
 
     it('returns the correct file contents when reading a url', async () => {
       const fileOneResponse = await request(app).get(
-        '/readAdrFileAtUrl?url=testFileOne',
+        `${fileEndpointName}?url=testFileOne`,
       );
       const fileOneStatus = fileOneResponse.status;
       const fileOneBody = fileOneResponse.body;
       const fileOneError = fileOneResponse.error;
 
       const fileTwoResponse = await request(app).get(
-        '/readAdrFileAtUrl?url=testFileTwo',
+        `${fileEndpointName}?url=testFileTwo`,
       );
       const fileTwoStatus = fileTwoResponse.status;
       const fileTwoBody = fileTwoResponse.body;

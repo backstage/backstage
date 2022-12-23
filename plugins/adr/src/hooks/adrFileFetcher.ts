@@ -62,8 +62,8 @@ export interface AdrFileFetcher {
   useReadAdrFileAtUrl: (url: string) => any;
 }
 
-const getAdrFilesEndpoint = 'getAdrFilesAtUrl';
-const readAdrFileEndpoint = 'readAdrFileAtUrl';
+const getAdrFilesEndpoint = 'list';
+const readAdrFileEndpoint = 'file';
 
 /**
  * An AdrFileFetcher that uses UrlReaders to fetch adr files
