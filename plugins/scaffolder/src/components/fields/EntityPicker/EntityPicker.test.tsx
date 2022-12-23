@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -34,7 +35,13 @@ describe('<EntityPicker />', () => {
   const schema = {};
   const required = false;
   let uiSchema: {
-    'ui:options': { allowedKinds?: string[]; defaultKind?: string };
+    'ui:options': {
+      allowedKinds?: string[];
+      defaultKind?: string;
+      allowArbitraryValues?: boolean;
+      defaultNamespace?: string | false;
+      catalogFilter?: EntityFilterQuery;
+    };
   };
   const rawErrors: string[] = [];
   const formData = undefined;
@@ -66,7 +73,7 @@ describe('<EntityPicker />', () => {
 
   afterEach(() => jest.resetAllMocks());
 
-  describe('without allowedKinds', () => {
+  describe('without allowedKinds and catalogFilter', () => {
     beforeEach(() => {
       uiSchema = { 'ui:options': {} };
       props = {
@@ -133,6 +140,99 @@ describe('<EntityPicker />', () => {
         filter: {
           kind: ['User'],
         },
+      });
+    });
+  });
+
+  describe('with catalogFilter', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('searches for a specific group entity', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        filter: [
+          {
+            kind: ['Group'],
+            'metadata.name': 'test-entity',
+          },
+          {
+            kind: ['User'],
+            'metadata.name': 'test-entity',
+          },
+        ],
+      });
+    });
+  });
+
+  describe('catalogFilter should take precedence over allowedKinds', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-group',
+            },
+          ],
+          allowedKinds: ['User'],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('searches for a Group entity', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        filter: [
+          {
+            kind: ['Group'],
+            'metadata.name': 'test-group',
+          },
+        ],
       });
     });
   });

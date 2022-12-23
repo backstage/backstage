@@ -8,6 +8,9 @@ on:
 
 jobs:
   build-backstage:
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+      UFFIZZI_URL: https://uffizzi.com
     name: Build PR image
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
@@ -16,8 +19,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-        with:
-          path: backstage
 
       - name: setup-node
         uses: actions/setup-node@v3
@@ -25,21 +26,22 @@ jobs:
           node-version: 16.x
           registry-url: https://registry.npmjs.org/
 
-      - name: backstage create-app | delete if already exists
-        run: |
-          rm -rf ./example-app
-          npx @backstage/create-app
-        env:
-          BACKSTAGE_APP_NAME: example-app
-
-      - name: yarn build
-        run: |
-          yarn build:all
-        working-directory: ./example-app
+      - name: yarn install
+        uses: backstage/actions/yarn-install@v0.5.12
+        with:
+          cache-prefix: linux-v16
 
       - name: Use Uffizzi's backstage app config
         run: |
-          cp ./backstage/.github/uffizzi/uffizzi.production.app-config.yaml ./example-app/app-config.production.yaml;
+          cp -f ./.github/uffizzi/uffizzi.production.app-config.yaml ./app-config.yaml
+
+      - name: typescript build
+        run: |
+          yarn tsc
+
+      - name: backstage build
+        run: |
+          yarn workspace example-backend build
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -58,8 +60,8 @@ jobs:
       - name: Build Image
         uses: docker/build-push-action@v2
         with:
-          context: example-app
-          file: example-app/packages/backend/Dockerfile
+          context: .
+          file: packages/backend/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
