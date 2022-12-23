@@ -49,6 +49,7 @@
     "@backstage/plugin-playlist": "workspace:^",
     "@backstage/plugin-rollbar": "workspace:^",
     "@backstage/plugin-scaffolder": "workspace:^",
+    "@backstage/plugin-scaffolder-react": "workspace:^",
     "@backstage/plugin-search": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",

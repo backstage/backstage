@@ -57,6 +57,8 @@ export {
   ScaffolderFieldExtensions,
   rootRouteRef,
   selectedTemplateRouteRef,
+  useTemplateSecrets,
+  type ScaffolderUseTemplateSecrets,
   type TemplateParameterSchema,
   type CustomFieldExtensionSchema,
   type CustomFieldValidator,
@@ -71,69 +73,3 @@ export type { TaskPageProps } from './components/TaskPage';
 export { NextScaffolderPage } from './plugin';
 export type { NextRouterProps } from './next';
 export type { TemplateGroupFilter } from './next';
-
-// These types in the future can be removed from being exported out of this package and be imported
-// instead from @backstage/plugin-scaffolder-react. They have to be redeclared here to keep the alpha
-// annotation in order to not polluted the main export surface.
-import {
-  nextRouteRef as nextRouteRefTemp,
-  nextSelectedTemplateRouteRef as nextSelectedTemplateRouteRefTemp,
-  createNextScaffolderFieldExtension as createNextScaffolderFieldExtensionTemp,
-  type NextCustomFieldValidator as NextCustomFieldValidatorTemp,
-  type NextFieldExtensionOptions as NextFieldExtensionOptionsTemp,
-  type NextFieldExtensionComponentProps as NextFieldExtensionComponentPropsTemp,
-  type FormProps as FormPropsTemp,
-} from '@backstage/plugin-scaffolder-react';
-
-/**
- * @alpha
- * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
- */
-const nextRouteRef = nextRouteRefTemp;
-/**
- * @alpha
- * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
- */
-const nextSelectedTemplateRouteRef = nextSelectedTemplateRouteRefTemp;
-/**
- * @alpha
- * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
- */
-const createNextScaffolderFieldExtension =
-  createNextScaffolderFieldExtensionTemp;
-/**
- * @alpha
- * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
- */
-type NextCustomFieldValidator<T> = NextCustomFieldValidatorTemp<T>;
-/**
- * @alpha
- * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
- */
-type NextFieldExtensionOptions<
-  TFieldReturnValue = unknown,
-  TInputProps = unknown,
-> = NextFieldExtensionOptionsTemp<TFieldReturnValue, TInputProps>;
-/**
- * @alpha
- * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
- */
-type NextFieldExtensionComponentProps<
-  TFieldReturnValue,
-  TUiOptions = {},
-> = NextFieldExtensionComponentPropsTemp<TFieldReturnValue, TUiOptions>;
-/**
- * @alpha
- * @deprecated Please import from `@backstage/plugin-scaffolder-react` instead
- */
-type FormProps = FormPropsTemp;
-
-export {
-  nextRouteRef,
-  nextSelectedTemplateRouteRef,
-  createNextScaffolderFieldExtension,
-  type NextCustomFieldValidator,
-  type NextFieldExtensionOptions,
-  type NextFieldExtensionComponentProps,
-  type FormProps,
-};
