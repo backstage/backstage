@@ -13,4 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './useOctokitRequest';
+
+export { AdrClient } from './AdrClient';
+export type { AdrClientOptions } from './AdrClient';
+export { adrApiRef } from './types';
+export type {
+  AdrApi,
+  AdrFileInfo,
+  AdrListResult,
+  AdrReadResult,
+} from './types';

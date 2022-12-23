@@ -28,10 +28,8 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { adrDecoratorFactories } from './decorators';
 import { AdrContentDecorator } from './types';
-import {
-  AdrFileFetcher,
-  octokitAdrFileFetcher,
-} from '../../hooks/adrFileFetcher';
+import { adrApiRef } from '../../api';
+import useAsync from 'react-use/lib/useAsync';
 
 /**
  * Component to fetch and render an ADR.
@@ -41,16 +39,17 @@ import {
 export const AdrReader = (props: {
   adr: string;
   decorators?: AdrContentDecorator[];
-  adrFileFetcher?: AdrFileFetcher;
 }) => {
-  const { adr, decorators, adrFileFetcher } = props;
+  const { adr, decorators } = props;
   const { entity } = useEntity();
   const scmIntegrations = useApi(scmIntegrationsApiRef);
+  const adrApi = useApi(adrApiRef);
   const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);
 
-  const targetAdrFileFetcher = adrFileFetcher ?? octokitAdrFileFetcher;
-  const { value, loading, error } = targetAdrFileFetcher.useReadAdrFileAtUrl(
-    `${adrLocationUrl.replace(/\/$/, '')}/${adr}`,
+  const url = `${adrLocationUrl.replace(/\/$/, '')}/${adr}`;
+  const { value, loading, error } = useAsync(
+    async () => adrApi.readAdr(url),
+    [url],
   );
 
   const adrContent = useMemo(() => {

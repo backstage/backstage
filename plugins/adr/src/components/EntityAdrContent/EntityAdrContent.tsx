@@ -46,10 +46,8 @@ import {
 
 import { rootRouteRef } from '../../routes';
 import { AdrContentDecorator, AdrReader } from '../AdrReader';
-import {
-  AdrFileFetcher,
-  octokitAdrFileFetcher,
-} from '../../hooks/adrFileFetcher';
+import { adrApiRef } from '../../api';
+import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles((theme: Theme) => ({
   adrMenu: {
@@ -64,20 +62,21 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const EntityAdrContent = (props: {
   contentDecorators?: AdrContentDecorator[];
   filePathFilterFn?: AdrFilePathFilterFn;
-  adrFileFetcher?: AdrFileFetcher;
 }) => {
-  const { contentDecorators, filePathFilterFn, adrFileFetcher } = props;
+  const { contentDecorators, filePathFilterFn } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const rootLink = useRouteRef(rootRouteRef);
   const [adrList, setAdrList] = useState<string[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const scmIntegrations = useApi(scmIntegrationsApiRef);
+  const adrApi = useApi(adrApiRef);
   const entityHasAdrs = isAdrAvailable(entity);
 
-  const targetAdrFileFetcher = adrFileFetcher ?? octokitAdrFileFetcher;
-  const { value, loading, error } = targetAdrFileFetcher.useGetAdrFilesAtUrl(
-    getAdrLocationUrl(entity, scmIntegrations),
+  const url = getAdrLocationUrl(entity, scmIntegrations);
+  const { value, loading, error } = useAsync(
+    async () => adrApi.listAdrs(url),
+    [url],
   );
 
   const selectedAdr =
@@ -147,11 +146,7 @@ export const EntityAdrContent = (props: {
               </List>
             </Grid>
             <Grid item xs={9}>
-              <AdrReader
-                adr={selectedAdr}
-                adrFileFetcher={targetAdrFileFetcher}
-                decorators={contentDecorators}
-              />
+              <AdrReader adr={selectedAdr} decorators={contentDecorators} />
             </Grid>
           </Grid>
         ) : (
