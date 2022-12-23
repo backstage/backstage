@@ -46,6 +46,7 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   urlReader: UrlReader;
   logger: Logger;
+  catalogApi?: CatalogApi;
 }
 
 export interface CodeCoverageApi {
@@ -59,7 +60,8 @@ export const makeRouter = async (
 
   const codeCoverageDatabase = await CodeCoverageDatabase.create(database);
   const codecovUrl = await discovery.getExternalBaseUrl('code-coverage');
-  const catalogApi: CatalogApi = new CatalogClient({ discoveryApi: discovery });
+  const catalogApi =
+    options.catalogApi ?? new CatalogClient({ discoveryApi: discovery });
   const scm = ScmIntegrations.fromConfig(config);
 
   const router = Router();
@@ -167,10 +169,10 @@ export const makeRouter = async (
    * /report?entity=component:default/mycomponent&coverageType=cobertura
    */
   router.post('/report', async (req, res) => {
-    const { entity, coverageType } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string);
-    if (!entityLookup) {
-      throw new NotFoundError(`No entity found matching ${entity}`);
+    const { entity: entityRef, coverageType } = req.query;
+    const entity = await catalogApi.getEntityByRef(entityRef as string);
+    if (!entity) {
+      throw new NotFoundError(`No entity found matching ${entityRef}`);
     }
 
     let converter: Converter;
@@ -185,7 +187,7 @@ export const makeRouter = async (
     }
 
     const { sourceLocation, vcs, scmFiles, body } =
-      await utils.processCoveragePayload(entityLookup, req);
+      await utils.processCoveragePayload(entity, req);
 
     const files = converter.convert(body, scmFiles);
     if (!files || files.length === 0) {
@@ -193,7 +195,7 @@ export const makeRouter = async (
     }
 
     const coverage = await utils.buildCoverage(
-      entityLookup,
+      entity,
       sourceLocation,
       vcs,
       files,
@@ -204,7 +206,7 @@ export const makeRouter = async (
       links: [
         {
           rel: 'coverage',
-          href: `${codecovUrl}/report?entity=${entity}`,
+          href: `${codecovUrl}/report?entity=${entityRef}`,
         },
       ],
     });
