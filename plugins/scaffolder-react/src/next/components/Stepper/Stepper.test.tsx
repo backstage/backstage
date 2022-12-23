@@ -392,4 +392,47 @@ describe('Stepper', () => {
       await fireEvent.click(getByRole('button', { name: 'Make' }));
     });
   });
+
+  describe('Scaffolder Layouts', () => {
+    it('should render the step in the scaffolder layout', async () => {
+      const ScaffolderLayout: LayoutTemplate = ({ properties }) => (
+        <>
+          <h1>A Scaffolder Layout</h1>
+          {properties.map((prop, i) => (
+            <div key={i}>{prop.content}</div>
+          ))}
+        </>
+      );
+
+      const manifest: TemplateParameterSchema = {
+        steps: [
+          {
+            title: 'Step 1',
+            schema: {
+              type: 'object',
+              'ui:ObjectFieldTemplate': 'Layout',
+              properties: {
+                field1: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        ],
+        title: 'scaffolder layouts',
+      };
+
+      const { getByText, getByRole } = await renderInTestApp(
+        <Stepper
+          manifest={manifest}
+          extensions={[]}
+          onComplete={jest.fn()}
+          layouts={[{ name: 'Layout', component: ScaffolderLayout }]}
+        />,
+      );
+
+      expect(getByText('A Scaffolder Layout')).toBeInTheDocument();
+      expect(getByRole('textbox', { name: 'field1' })).toBeInTheDocument();
+    });
+  });
 });

@@ -21,7 +21,25 @@
  */
 
 import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
-import { LayoutOptions } from '../layouts/types';
+
+/**
+ * The field template from \@rjsf/core which is a react component that gets passed \@rjsf/core field related props.
+ *
+ * @public
+ */
+export type NextLayoutTemplate<T = any> = NonNullable<
+  SchemaFormProps<T>['uiSchema']
+>['ui:ObjectFieldTemplate'];
+
+/**
+ * The type of layouts that is passed to the TemplateForms
+ *
+ * @public
+ */
+export interface NextLayoutOptions<P = any> {
+  name: string;
+  component: NextLayoutTemplate<P>;
+}
 
 /**
  * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderpage`
@@ -33,5 +51,5 @@ export type FormProps = Pick<
   SchemaFormProps,
   'transformErrors' | 'noHtml5Validate'
 > & {
-  layouts?: LayoutOptions[];
+  layouts?: NextLayoutOptions[];
 };

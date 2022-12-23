@@ -28,11 +28,14 @@ import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
-import type { FormProps } from '../../types';
+import type { FormProps, LayoutOptions } from '../../types';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import { useFormDataFromQuery } from '../../hooks/useFormDataFromQuery';
 import validator from '@rjsf/validator-ajv6';
+import { useFormDataFromQuery } from '../../hooks';
+import type { FormProps } from '../../types';
+import { selectedTemplateRouteRef } from '../../../routes';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -65,6 +68,7 @@ export type StepperProps = {
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
   };
+  layouts?: LayoutOptions[];
 };
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -76,17 +80,15 @@ const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
  * The `Stepper` component is the Wizard that is rendered when a user selects a template
  * @alpha
  */
-
 export const Stepper = (stepperProps: StepperProps) => {
-  const { components = {}, ...props } = stepperProps;
+  const { layouts = [], components = {}, ...props } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
     createButtonText = 'Create',
     reviewButtonText = 'Review',
   } = components;
-
   const analytics = useAnalytics();
-  const { steps } = useTemplateSchema(props.manifest);
+  const { steps } = useTemplateSchema(props.manifest, layouts);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useFormDataFromQuery(props.initialState);
@@ -177,7 +179,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             fields={extensions}
             showErrorList={false}
             onChange={handleChange}
-            {...(props.FormProps ?? {})}
+            {...(formProps ?? {})}
           >
             <div className={styles.footer}>
               <Button

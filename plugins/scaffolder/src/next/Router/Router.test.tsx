@@ -76,6 +76,7 @@ describe('Router', () => {
       expect(FormProps).toEqual({
         transformErrors: transformErrorsMock,
         noHtml5Validate: true,
+        layouts: [],
       });
     });
 
