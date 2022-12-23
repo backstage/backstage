@@ -186,6 +186,7 @@ export class DocsBuilder {
       etag: newEtag,
       logger: this.logger,
       logStream: this.logStream,
+      entity: this.entity,
     });
 
     // Remove Prepared directory since it is no longer needed.
