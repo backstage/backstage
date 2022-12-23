@@ -159,22 +159,43 @@ export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
  */
 export const getMkdocsYml = async (
   inputDir: string,
+  entity: Entity,
 ): Promise<{ path: string; content: string }> => {
   let mkdocsYmlPath: string;
   let mkdocsYmlFileString: string;
   try {
     mkdocsYmlPath = path.join(inputDir, 'mkdocs.yaml');
-    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-  } catch {
-    try {
-      mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    if (await fs.pathExists(mkdocsYmlPath)) {
       mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-    } catch (error) {
-      throw new ForwardedError(
-        'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation',
-        error,
-      );
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+      };
     }
+
+    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    if (await fs.pathExists(mkdocsYmlPath)) {
+      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+      };
+    }
+
+    // No mkdocs file, use default
+    const defaultMkdocsContent =
+      `site_name: ${entity.metadata.title ?? entity.metadata.name}\n` +
+      'docs_dir: docs\n' +
+      'plugins:\n' +
+      '  - techdocs-core\n';
+
+    await fs.writeFile(mkdocsYmlPath, defaultMkdocsContent);
+    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+  } catch (error) {
+    throw new ForwardedError(
+      'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation',
+      error,
+    );
   }
 
   return {
