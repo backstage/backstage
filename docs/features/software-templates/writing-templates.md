@@ -165,11 +165,11 @@ this:
   "firstName": {
     "ui:autofocus": true,
     "ui:emptyValue": "",
-    "ui:autocomplete": "family-name"
+    "ui:autocomplete": "given-name"
   },
   "lastName": {
     "ui:emptyValue": "",
-    "ui:autocomplete": "given-name"
+    "ui:autocomplete": "family-name"
   },
   "nicknames": {
     "ui:options":{
@@ -211,12 +211,12 @@ spec:
           default: Chuck
           ui:autofocus: true
           ui:emptyValue: ''
-          ui:autocomplete: family-name
+          ui:autocomplete: given-name
         lastName:
           type: string
           title: Last name
           ui:emptyValue: ''
-          ui:autocomplete: given-name
+          ui:autocomplete: family-name
         nicknames:
           type: array
           items:
