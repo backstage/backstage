@@ -34,19 +34,17 @@ import {
 import { scaffolderApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
-import {
-  Stepper,
-  NextFieldExtensionOptions,
-} from '@backstage/plugin-scaffolder-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
   nextRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
+  Stepper,
+  NextFieldExtensionOptions,
+  type FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { SecretsContext } from '../../components/secrets/SecretsContext';
 import { JsonValue } from '@backstage/types';
-import type { FormProps } from '@backstage/plugin-scaffolder-react';
 
 export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];

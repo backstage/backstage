@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 import React from 'react';
-import { TemplateGroup } from './TemplateGroup';
+
 import { Entity } from '@backstage/catalog-model';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { Progress, Link } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { TemplateGroup } from '@backstage/plugin-scaffolder-react';
 
 /**
  * @alpha
