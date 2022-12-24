@@ -149,7 +149,7 @@ When using a custom pattern, the target is composed of five parts:
 
 - The base instance URL, `https://dev.azure.com` in this case
 - The organization name which is required, `myorg` in this case
-- The project name which is required, `myproject` in this case
+- The project name which is optional, `myproject` in this case. This defaults to \*, which scans all the projects where the token has access to.
 - The repository blob to scan, which accepts \* wildcard tokens and must be
   added after `_git/`. This can simply be `*` to scan all repositories in the
   project.

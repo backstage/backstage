@@ -176,8 +176,9 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   }
 
   private createObjectUrl(file: CodeSearchResultItem): string {
-    const baseUrl = `https://${this.config.host}/${this.config.organization}`;
-    const encodedUri = `${baseUrl}/${file.project.name}/_git/${file.repository.name}?path=${file.path}`;
-    return encodedUri;
+    const baseUrl = `https://${this.config.host}/${this.config.organization}/${file.project.name}`;
+    return encodeURI(
+      `${baseUrl}/_git/${file.repository.name}?path=${file.path}`,
+    );
   }
 }
