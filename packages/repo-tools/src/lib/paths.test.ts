@@ -15,7 +15,7 @@
  */
 
 import mockFs from 'mock-fs';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, join as joinPath } from 'path';
 import { resolvePackagePath, paths, findPackageDirs } from './paths';
 
 describe('paths', () => {
@@ -61,15 +61,15 @@ describe('paths', () => {
     });
     it('should return the path to the package if it exists and has a package.json', async () => {
       expect(await resolvePackagePath('packages/package-a')).toBe(
-        'packages/package-a',
+        joinPath('packages', 'package-a'),
       );
       expect(await resolvePackagePath('packages/package-b')).toBe(
-        'packages/package-b',
+        joinPath('packages', 'package-b'),
       );
     });
     it('should work with absolute paths', async () => {
       expect(await resolvePackagePath('/root/packages/package-a')).toBe(
-        'packages/package-a',
+        joinPath('packages', 'package-a'),
       );
     });
     it('should return undefined if the pat is not a directory', async () => {
@@ -79,19 +79,19 @@ describe('paths', () => {
   describe('findPackageDirs', () => {
     it('should return only the given packages', async () => {
       expect(await findPackageDirs(['packages/package-a'])).toEqual([
-        'packages/package-a',
+        joinPath('packages', 'package-a'),
       ]);
     });
     it('should return only the given packages when using glob patterns', async () => {
       expect(await findPackageDirs(['packages/*'])).toEqual([
-        'packages/package-a',
-        'packages/package-b',
+        joinPath('packages', 'package-a'),
+        joinPath('packages', 'package-b'),
       ]);
       expect(await findPackageDirs(['packages/*', 'plugins/*'])).toEqual([
-        'packages/package-a',
-        'packages/package-b',
-        'plugins/plugin-a',
-        'plugins/plugin-b',
+        joinPath('packages', 'package-a'),
+        joinPath('packages', 'package-b'),
+        joinPath('plugins', 'plugin-a'),
+        joinPath('plugins', 'plugin-b'),
       ]);
     });
     it('should return only the given packages when using absolute paths', async () => {
@@ -100,15 +100,18 @@ describe('paths', () => {
           '/root/packages/package-a',
           '/root/plugins/plugin-b',
         ]),
-      ).toEqual(['packages/package-a', 'plugins/plugin-b']);
+      ).toEqual([
+        joinPath('packages', 'package-a'),
+        joinPath('plugins', 'plugin-b'),
+      ]);
     });
     it('should return only the given packages when using absolute paths with glob patterns', async () => {
       expect(
         await findPackageDirs(['/root/packages/*', '/root/plugins/*-a']),
       ).toEqual([
-        'packages/package-a',
-        'packages/package-b',
-        'plugins/plugin-a',
+        joinPath('packages', 'package-a'),
+        joinPath('packages', 'package-b'),
+        joinPath('plugins', 'plugin-a'),
       ]);
     });
   });

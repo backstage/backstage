@@ -250,4 +250,33 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     // Final deletion shouldn't be called.
     expect(deleteSpy).not.toHaveBeenCalled();
   });
+
+  it('handles bulk client rejection', async () => {
+    // Given an ES client wrapper that rejects an error
+    const expectedError = new Error('HTTP Timeout');
+    const mockClientWrapper = ElasticSearchClientWrapper.fromClientOptions({
+      node: 'http://localhost:9200',
+      Connection: mock.getConnection(),
+    });
+    mockClientWrapper.bulk = jest.fn().mockRejectedValue(expectedError);
+
+    // And a search engine indexer that uses that client wrapper
+    indexer = new ElasticSearchSearchEngineIndexer({
+      type: 'some-type',
+      indexPrefix: '',
+      indexSeparator: '-index__',
+      alias: 'some-type-index__search',
+      logger: getVoidLogger(),
+      elasticSearchClientWrapper: mockClientWrapper,
+      batchSize: 1000,
+    });
+
+    // When the indexer is run in the test pipeline
+    const { error } = await TestPipeline.fromIndexer(indexer)
+      .withDocuments([{ title: 'a', location: 'a', text: '/a' }])
+      .execute();
+
+    // Then the pipeline should have received the expected error
+    expect(error).toBe(expectedError);
+  });
 });

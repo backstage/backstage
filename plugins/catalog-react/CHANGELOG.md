@@ -11,6 +11,7 @@
 
 ### Patch Changes
 
+- 2cb9998: Fixed bug in `EntityOwnerPicker` and `EntityLifecyclePicker` that filtered on unavailable tags for the selected kind.
 - 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
 - 6ffa47bb0a: Cleanup and small fixes for the kind selector
 - 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
