@@ -127,6 +127,19 @@ export interface Config {
           knexConfig?: object;
         };
       };
+      /**
+       * admin is used to set the parameters for the admin database
+       * This is necessary when using the `ensureExists` option which creates the database if needed.
+       * If this is not set, then the `user` and `password` fields will be used to access the `postgres` database.
+       */
+      admin?: {
+        /** username for the admin database */
+        user?: string;
+        /** password for the admin database */
+        password?: string;
+        /** name of the admin database */
+        database?: string;
+      };
     };
 
     /** Cache connection configuration, select cache type using the `store` field */

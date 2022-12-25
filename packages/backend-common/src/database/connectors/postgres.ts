@@ -110,9 +110,17 @@ export async function ensurePgDatabaseExists(
   dbConfig: Config,
   ...databases: Array<string>
 ) {
+  const adminDBConfig =
+    dbConfig.getOptionalConfig('connection.admin') || ({} as Config);
+  const baseConfig = dbConfig.getConfig('connection');
   const admin = createPgDatabaseClient(dbConfig, {
     connection: {
-      database: 'postgres',
+      user:
+        adminDBConfig.getOptionalString('user') || baseConfig.getString('user'),
+      password:
+        adminDBConfig.getOptionalString('password') ||
+        baseConfig.getString('password'),
+      database: adminDBConfig.getOptionalString('database') || 'postgres',
     },
   });
 
