@@ -22,6 +22,7 @@ const DATA = {
   one: 1,
   true: true,
   false: false,
+  stringFalse: 'false',
   null: null,
   string: 'string',
   emptyString: '',
@@ -53,6 +54,7 @@ function expectValidValues(config: ConfigReader) {
   expect(config.getOptional('true')).toBe(true);
   expect(config.getBoolean('true')).toBe(true);
   expect(config.getBoolean('false')).toBe(false);
+  expect(config.getBoolean('stringFalse')).toBe(false);
   expect(config.getString('string')).toBe('string');
   expect(config.get('strings')).toEqual(['string1', 'string2']);
   expect(config.getStringArray('strings')).toEqual(['string1', 'string2']);
