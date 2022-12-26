@@ -141,10 +141,12 @@ export function parseMysqlConnectionString(
  * Creates the missing mysql database if it does not exist
  *
  * @param dbConfig - The database config
+ * @param _adminDbConfig - The admin database config
  * @param databases - The names of the databases to create
  */
 export async function ensureMysqlDatabaseExists(
   dbConfig: Config,
+  _adminDbConfig: Config,
   ...databases: Array<string>
 ) {
   const admin = createMysqlDatabaseClient(dbConfig, {

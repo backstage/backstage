@@ -16,7 +16,7 @@
 
 import knexFactory, { Knex } from 'knex';
 
-import { Config } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
 import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
@@ -104,25 +104,27 @@ function requirePgConnectionString() {
  * Creates the missing Postgres database if it does not exist
  *
  * @param dbConfig - The database config
+ * @param adminConfig - The admin database config
  * @param databases - The name of the databases to create
  */
 export async function ensurePgDatabaseExists(
   dbConfig: Config,
+  adminConfig: Config,
   ...databases: Array<string>
 ) {
-  const adminDbConfig =
-    dbConfig.getOptionalConfig('connection.admin') || ({} as Config);
-  const baseConfig = dbConfig.getConfig('connection');
-  const admin = createPgDatabaseClient(dbConfig, {
-    connection: {
-      user:
-        adminDbConfig.getOptionalString('user') || baseConfig.getString('user'),
-      password:
-        adminDbConfig.getOptionalString('password') ||
-        baseConfig.getString('password'),
-      database: adminDbConfig.getOptionalString('database') || 'postgres',
-    },
-  });
+  let databaseOverride = {};
+  // For backwards compatibility, we need to ensure that if the database name in adminConnection is not set, it should be defaulted to `postgres`
+  if (!adminConfig.getOptionalString('connection.database')) {
+    databaseOverride = {
+      connection: {
+        database: 'postgres',
+      },
+    };
+  }
+  const mergedConfig = new ConfigReader(
+    mergeDatabaseConfig(dbConfig.get(), adminConfig.get(), databaseOverride),
+  );
+  const admin = createPgDatabaseClient(mergedConfig);
 
   try {
     const ensureDatabase = async (database: string) => {

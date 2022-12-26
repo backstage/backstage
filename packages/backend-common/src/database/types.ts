@@ -79,6 +79,7 @@ export interface DatabaseConnector {
    */
   ensureDatabaseExists?(
     dbConfig: Config,
+    adminDbConfig: Config,
     ...databases: Array<string>
   ): Promise<void>;
 

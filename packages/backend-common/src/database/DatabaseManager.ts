@@ -219,11 +219,12 @@ export class DatabaseManager {
    */
   private getConnectionConfig(
     pluginId: string,
+    connectionKey: string = 'connection',
   ): Partial<Knex.StaticConnectionConfig> {
     const { client, overridden } = this.getClientType(pluginId);
 
     let baseConnection = normalizeConnection(
-      this.config.get('connection'),
+      this.config.get(connectionKey),
       this.config.getString('client'),
     );
 
@@ -247,7 +248,7 @@ export class DatabaseManager {
 
     // get and normalize optional plugin specific database connection
     const connection = normalizeConnection(
-      this.config.getOptional(`${pluginPath(pluginId)}.connection`),
+      this.config.getOptional(`${pluginPath(pluginId)}.${connectionKey}`),
       client,
     );
 
@@ -265,14 +266,18 @@ export class DatabaseManager {
    * client type.
    *
    * @param pluginId - The plugin that the database config should correspond with
+   * @param connectionKey - The key to use for the connection config. Defaults to `connection`
    */
-  private getConfigForPlugin(pluginId: string): Knex.Config {
+  private getConfigForPlugin(
+    pluginId: string,
+    connectionKey: string = 'connection',
+  ): Knex.Config {
     const { client } = this.getClientType(pluginId);
 
     return {
       ...this.getAdditionalKnexConfig(pluginId),
       client,
-      connection: this.getConnectionConfig(pluginId),
+      connection: this.getConnectionConfig(pluginId, connectionKey),
     };
   }
 
@@ -317,10 +322,18 @@ export class DatabaseManager {
         this.getConfigForPlugin(pluginId) as JsonObject,
       );
 
+      const adminPluginConfig = new ConfigReader(
+        this.getConfigForPlugin(pluginId, 'adminConnection') as JsonObject,
+      );
+
       const databaseName = this.getDatabaseName(pluginId);
       if (databaseName && this.getEnsureExistsConfig(pluginId)) {
         try {
-          await ensureDatabaseExists(pluginConfig, databaseName);
+          await ensureDatabaseExists(
+            pluginConfig,
+            adminPluginConfig,
+            databaseName,
+          );
         } catch (error) {
           throw new Error(
             `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,

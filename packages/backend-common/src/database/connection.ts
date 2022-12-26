@@ -71,12 +71,14 @@ export function createDatabaseClient(
  */
 export async function ensureDatabaseExists(
   dbConfig: Config,
+  adminDbConfig: Config,
   ...databases: Array<string>
 ): Promise<void> {
   const client: DatabaseClient = dbConfig.getString('client');
 
   return ConnectorMapping[client]?.ensureDatabaseExists?.(
     dbConfig,
+    adminDbConfig,
     ...databases,
   );
 }
