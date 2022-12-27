@@ -63,7 +63,7 @@ Additionally, we launched a new [Special Interest Groups (SIGs)](https://github.
 
 Our plan is to open more SIGs in 2023 to engage more with the community and to keep driving towards cohesive growth for the community and project.
 
-Last but not least, we cannot miss the first ever conference fully dedicated to Backstage: BackstageCon. What was special there? SO much. But in particular, two things: seeing everyone in real life and the incredible mood and conversations between maintainers, adopters, partners and enthusiasts. It’s hard to emanate just how positive and amazing the vibes were in a blog, but you can read our recap [here](https://backstage.io/blog/2022/10/28/backstagecon-kubecon-2022) or watch the sessions [here](https://www.youtube.com/playlist?list=PLj6h78yzYM2OKySsTuiip3BqmdYZQRnSf). And in the meantime, here are some great numbers from the event:
+Last but not least, we mustn't overlook the first ever conference fully dedicated to Backstage: BackstageCon. What was special there? SO much. But in particular two things: seeing everyone in real life and the incredible mood and conversations between maintainers, adopters, partners and enthusiasts. It’s hard to express just how positive and amazing the vibes were in a blog, but you can read our recap [here](https://backstage.io/blog/2022/10/28/backstagecon-kubecon-2022) or watch the sessions [here](https://www.youtube.com/playlist?list=PLj6h78yzYM2OKySsTuiip3BqmdYZQRnSf). And in the meantime, here are some great numbers from the event:
 
 - 250 attendees or a 100% full venue and packed room.
 - 14 sessions
