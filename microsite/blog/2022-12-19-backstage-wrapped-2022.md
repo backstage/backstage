@@ -61,7 +61,7 @@ Additionally, we launched a new [Special Interest Groups (SIGs)](https://github.
 - The [Catalog SIG](https://github.com/backstage/community/blob/main/sigs/sig-catalog/README.md), covering all aspects of the systems and components related to the Software Catalog.
 - The [Adoption SIG](https://github.com/backstage/community/blob/main/sigs/sig-adoption/README.md), covering all aspects of the adoption journey of Backstage.
 
-Our plan is to open more SIGs in the 2023 to engage more with the community and to keep driving towards cohesive growth for the community and project.
+Our plan is to open more SIGs in 2023 to engage more with the community and to keep driving towards cohesive growth for the community and project.
 
 Last but not least, we cannot miss the first ever conference fully dedicated to Backstage: BackstageCon. What was special there? SO much. But in particular, two things: seeing everyone in real life and the incredible mood and conversations between maintainers, adopters, partners and enthusiasts. It’s hard to emanate just how positive and amazing the vibes were in a blog, but you can read our recap [here](https://backstage.io/blog/2022/10/28/backstagecon-kubecon-2022) or watch the sessions [here](https://www.youtube.com/playlist?list=PLj6h78yzYM2OKySsTuiip3BqmdYZQRnSf). And in the meantime, here are some great numbers from the event:
 
