@@ -106,6 +106,7 @@ export default async function generate(opts: OptionValues) {
     logger,
     etag: opts.etag,
     ...(process.env.LOG_LEVEL === 'debug' ? { logStream: stdout } : {}),
+    siteName: opts.siteName,
   });
 
   logger.info('Done!');

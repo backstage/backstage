@@ -524,7 +524,7 @@ describe('helpers', () => {
       mockFs({ [key]: mkdocsYml });
       const { path: mkdocsPath, content } = await getMkdocsYml(
         inputDir,
-        mockEntity,
+        mockEntity.metadata.title,
       );
 
       expect(mkdocsPath).toBe(key);
@@ -536,7 +536,7 @@ describe('helpers', () => {
       mockFs({ [key]: mkdocsYml });
       const { path: mkdocsPath, content } = await getMkdocsYml(
         inputDir,
-        mockEntity,
+        mockEntity.metadata.title,
       );
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
@@ -547,7 +547,7 @@ describe('helpers', () => {
       mockFs({ [key]: mkdocsDefaultYml });
       const { path: mkdocsPath, content } = await getMkdocsYml(
         inputDir,
-        mockEntity,
+        mockEntity.metadata.title,
       );
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsDefaultYml.toString());
@@ -555,7 +555,9 @@ describe('helpers', () => {
 
     it('throws when neither .yml nor .yaml nor default file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
-      await expect(getMkdocsYml(invalidInputDir, mockEntity)).rejects.toThrow(
+      await expect(
+        getMkdocsYml(invalidInputDir, mockEntity.metadata.title),
+      ).rejects.toThrow(
         /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation/,
       );
     });

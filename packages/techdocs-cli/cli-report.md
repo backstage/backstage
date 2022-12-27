@@ -33,6 +33,7 @@ Options:
   --no-docker
   --techdocs-ref <HOST_TYPE:URL>
   --etag <ETAG>
+  --site-name
   -v --verbose
   --omitTechdocsCoreMkdocsPlugin
   --legacyCopyReadmeMdToIndexMd
@@ -98,6 +99,7 @@ Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
   --no-docker
+  --site-name
   --mkdocs-port <PORT>
   -v --verbose
   --preview-app-bundle-path <PATH_TO_BUNDLE>
@@ -115,6 +117,7 @@ Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
   --no-docker
+  --site-name
   -p, --port <PORT>
   -v --verbose
   -h, --help
