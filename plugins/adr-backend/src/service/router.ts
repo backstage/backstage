@@ -20,6 +20,7 @@ import { Logger } from 'winston';
 import express from 'express';
 import Router from 'express-promise-router';
 
+/** @public */
 export type AdrRouterOptions = {
   reader: UrlReader;
   cacheClient: CacheClient;

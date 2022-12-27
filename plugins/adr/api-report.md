@@ -7,10 +7,36 @@
 
 import { AdrDocument } from '@backstage/plugin-adr-common';
 import { AdrFilePathFilterFn } from '@backstage/plugin-adr-common';
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { isAdrAvailable } from '@backstage/plugin-adr-common';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+
+// @public
+export interface AdrApi {
+  listAdrs(url: string): Promise<AdrListResult>;
+  readAdr(url: string): Promise<AdrReadResult>;
+}
+
+// @public
+export const adrApiRef: ApiRef<AdrApi>;
+
+// @public
+export class AdrClient implements AdrApi {
+  constructor(options: AdrClientOptions);
+  // (undocumented)
+  listAdrs(url: string): Promise<AdrListResult>;
+  // (undocumented)
+  readAdr(url: string): Promise<AdrReadResult>;
+}
+
+// @public
+export interface AdrClientOptions {
+  // (undocumented)
+  discoveryApi: DiscoveryApi;
+}
 
 // @public
 export type AdrContentDecorator = (adrInfo: {
@@ -21,10 +47,16 @@ export type AdrContentDecorator = (adrInfo: {
 };
 
 // @public
-export interface AdrFileFetcher {
-  useGetAdrFilesAtUrl: (url: string) => any;
-  useReadAdrFileAtUrl: (url: string) => any;
-}
+export type AdrFileInfo = {
+  type: string;
+  path: string;
+  name: string;
+};
+
+// @public
+export type AdrListResult = {
+  data: AdrFileInfo[];
+};
 
 // @public
 export const adrPlugin: BackstagePlugin<
@@ -37,15 +69,16 @@ export const adrPlugin: BackstagePlugin<
 
 // @public
 export const AdrReader: {
-  (props: {
-    adr: string;
-    decorators?: AdrContentDecorator[];
-    adrFileFetcher?: AdrFileFetcher;
-  }): JSX.Element;
+  (props: { adr: string; decorators?: AdrContentDecorator[] }): JSX.Element;
   decorators: Readonly<{
     createRewriteRelativeLinksDecorator(): AdrContentDecorator;
     createRewriteRelativeEmbedsDecorator(): AdrContentDecorator;
   }>;
+};
+
+// @public
+export type AdrReadResult = {
+  data: string;
 };
 
 // @public
@@ -60,14 +93,7 @@ export function AdrSearchResultListItem(props: {
 export const EntityAdrContent: (props: {
   contentDecorators?: AdrContentDecorator[] | undefined;
   filePathFilterFn?: AdrFilePathFilterFn | undefined;
-  adrFileFetcher?: AdrFileFetcher | undefined;
 }) => JSX.Element;
 
 export { isAdrAvailable };
-
-// @public
-export const octokitAdrFileFetcher: AdrFileFetcher;
-
-// @public
-export const urlReaderAdrFileFetcher: AdrFileFetcher;
 ```

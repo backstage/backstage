@@ -15,3 +15,4 @@
  */
 
 export { createRouter } from './router';
+export type { AdrRouterOptions } from './router';
