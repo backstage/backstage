@@ -4,16 +4,18 @@ Welcome to the ADR plugin!
 
 This plugin allows you to browse ADRs associated with your entities as well as a way to discover ADRs across others entities via Backstage Search. Use this to learn from the past experience of other projects to guide your own architecture decisions.
 
-NOTE: By default, this plugin only supports entities/ADRs registered via GitHub integration. To get ADRs from other sites, see the [Using ADR plugin with sites other than GitHub](#using-adr-plugin-with-sites-other-than-github) section.
-
 ## Setup
 
-Install this plugin:
+1. Install this plugin:
 
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/app add @backstage/plugin-adr
 ```
+
+2. Make sure the [ADR backend plugin](../adr-backend/README.md) is installed.
+
+3. [Configure integrations](https://backstage.io/docs/integrations/) for all sites you would like to pull ADRs from.
 
 ### Entity Pages
 
@@ -75,29 +77,6 @@ case 'adr':
       result={document}
     />
   );
-```
-
-## Using ADR plugin with sites other than GitHub
-
-By default, the ADR plugin will only be able to retrieve ADRs through GitHub. If you would like to use it with other sites (for instance, AzureDevops):
-
-1. Make sure the [ADR backend plugin](../adr-backend/README.md) is installed.
-2. [Configure an integration](https://backstage.io/docs/integrations/) for the site you would like to pull ADRs from.
-3. Set the adrFileFetcher property on EntityAdrContent to urlReaderAdrFileFetcher:
-
-```jsx
-// In packages/app/src/components/catalog/EntityPage.tsx
-import { EntityAdrContent, isAdrAvailable, urlReaderAdrFileFetcher } from '@backstage/plugin-adr';
-
-...
-
-const serviceEntityPage = (
-  <EntityLayout>
-    {/* other tabs... */}
-    <EntityLayout.Route if={isAdrAvailable} path="/adrs" title="ADRs">
-      <EntityAdrContent adrFileFetcher={urlReaderAdrFileFetcher} />
-    </EntityLayout.Route>
-  </EntityLayout>
 ```
 
 ## Custom ADR formats
