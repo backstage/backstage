@@ -1,5 +1,22 @@
 # @backstage/plugin-explore
 
+## 0.3.45-next.0
+
+### Patch Changes
+
+- d318d4f659: Makes the `GroupsDiagram` not grown on screen on its own.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/plugin-catalog-react@1.2.4-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.24
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/plugin-search-react@1.3.2-next.0
+
 ## 0.3.44
 
 ### Patch Changes
