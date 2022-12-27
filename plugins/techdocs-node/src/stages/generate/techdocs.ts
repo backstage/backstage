@@ -96,13 +96,13 @@ export class TechdocsGenerator implements GeneratorBase {
       etag,
       logger: childLogger,
       logStream,
-      entity,
+      siteName,
     } = options;
 
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
     const { path: mkdocsYmlPath, content } = await getMkdocsYml(
       inputDir,
-      entity,
+      siteName,
     );
 
     // validate the docs_dir first

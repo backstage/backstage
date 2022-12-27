@@ -54,7 +54,7 @@ export type GeneratorRunOptions = {
   etag?: string;
   logger: Logger;
   logStream?: Writable;
-  entity: Entity;
+  siteName?: string;
 };
 
 // @public
@@ -85,6 +85,15 @@ export const getLocationForEntity: (
   entity: Entity,
   scmIntegration: ScmIntegrationRegistry,
 ) => ParsedLocationAnnotation;
+
+// @public
+export const getMkdocsYml: (
+  inputDir: string,
+  siteName?: string,
+) => Promise<{
+  path: string;
+  content: string;
+}>;
 
 // @public
 export type MigrateRequest = {
