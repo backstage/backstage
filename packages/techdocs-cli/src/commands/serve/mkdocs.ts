@@ -19,6 +19,7 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import { createLogger } from '../../lib/utility';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { LogFunc, waitForSignal } from '../../lib/run';
+import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
@@ -26,6 +27,9 @@ export default async function serveMkdocs(opts: OptionValues) {
   const dockerAddr = `http://0.0.0.0:${opts.port}`;
   const localAddr = `http://127.0.0.1:${opts.port}`;
   const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
+
+  await getMkdocsYml('./', opts.siteName);
+
   // We want to open browser only once based on a log.
   let boolOpenBrowserTriggered = false;
 

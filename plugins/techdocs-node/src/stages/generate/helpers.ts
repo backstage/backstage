@@ -151,15 +151,49 @@ export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
 ]);
 
 /**
+ * Generates a mkdocs.yml configuration file
+ *
+ * @param inputDir - base dir to where the mkdocs.yml file will be created
+ * @param siteName - name of site to be used in mkdocs.yml for the
+ * required `site_name` property, default value is "Table of Contents"
+ */
+export const generateMkdocsYml = async (
+  inputDir: string,
+  siteName?: string,
+) => {
+  try {
+    // TODO(awanlin): Use a provided default mkdocs.yml
+    // from config or some specified location. If this is
+    // not provided then fall back to generating bare
+    // minimum mkdocs.yml file
+
+    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    const defaultSiteName = siteName ?? 'Table of Contents';
+    const defaultMkdocsContent =
+      `site_name: ${defaultSiteName}\n` +
+      'docs_dir: docs\n' +
+      'plugins:\n' +
+      '  - techdocs-core\n';
+
+    await fs.writeFile(mkdocsYmlPath, defaultMkdocsContent);
+  } catch (error) {
+    throw new ForwardedError('Could not generate mkdocs.yml file', error);
+  }
+};
+
+/**
  * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
  * depending on which is present (MkDocs supports both as of v1.2.2).
+ * @public
  *
  * @param inputDir - base dir to be searched for either an mkdocs.yml or
  *   mkdocs.yaml file.
+ * @param siteName - name of site to be used in mkdocs.yml for the
+ * required `site_name` property, default value is "Table of Contents"
  */
 export const getMkdocsYml = async (
   inputDir: string,
-  entity: Entity,
+  siteName?: string,
 ): Promise<{ path: string; content: string }> => {
   let mkdocsYmlPath: string;
   let mkdocsYmlFileString: string;
@@ -182,14 +216,8 @@ export const getMkdocsYml = async (
       };
     }
 
-    // No mkdocs file, use default
-    const defaultMkdocsContent =
-      `site_name: ${entity.metadata.title ?? entity.metadata.name}\n` +
-      'docs_dir: docs\n' +
-      'plugins:\n' +
-      '  - techdocs-core\n';
-
-    await fs.writeFile(mkdocsYmlPath, defaultMkdocsContent);
+    // No mkdocs file, generate it
+    await generateMkdocsYml(inputDir, siteName);
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
   } catch (error) {
     throw new ForwardedError(
