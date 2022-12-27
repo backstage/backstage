@@ -22,6 +22,14 @@ const DATA = {
   one: 1,
   true: true,
   false: false,
+  yes: 'yes',
+  no: 'no',
+  y: 'y',
+  n: 'n',
+  on: 'on',
+  off: 'off',
+  zeroString: '0',
+  oneString: '1',
   stringFalse: 'false',
   null: null,
   string: 'string',
@@ -55,6 +63,16 @@ function expectValidValues(config: ConfigReader) {
   expect(config.getBoolean('true')).toBe(true);
   expect(config.getBoolean('false')).toBe(false);
   expect(config.getBoolean('stringFalse')).toBe(false);
+  expect(config.getBoolean('zero')).toBe(false);
+  expect(config.getBoolean('one')).toBe(true);
+  expect(config.getBoolean('zeroString')).toBe(false);
+  expect(config.getBoolean('oneString')).toBe(true);
+  expect(config.getBoolean('yes')).toBe(true);
+  expect(config.getBoolean('no')).toBe(false);
+  expect(config.getBoolean('y')).toBe(true);
+  expect(config.getBoolean('n')).toBe(false);
+  expect(config.getBoolean('on')).toBe(true);
+  expect(config.getBoolean('off')).toBe(false);
   expect(config.getString('string')).toBe('string');
   expect(config.get('strings')).toEqual(['string1', 'string2']);
   expect(config.getStringArray('strings')).toEqual(['string1', 'string2']);
