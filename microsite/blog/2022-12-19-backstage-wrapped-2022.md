@@ -33,7 +33,7 @@ Before we go any further, let’s take a quick look at some more numbers, mainly
 - Backstage stars increased from 14k to almost 20k
 - And lastly, we welcomed over 550 adopters into our community.
 
-All of these people driving all enormous growth and maturity for the project is represented in the chart below, which shows cumulative activities per month for Backstage:
+All of these people driving the enormous growth and maturity of the project are represented in the chart below, which shows cumulative activities per month for Backstage:
 
 ![Main Github metrics for Backstage.io.](assets/2022-12-19/github-metrics-for-backstage-io.png)
 
