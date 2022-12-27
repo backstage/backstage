@@ -1,5 +1,16 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.8
+
 ## 0.1.3
 
 ### Patch Changes

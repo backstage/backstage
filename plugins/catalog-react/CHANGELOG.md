@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-react
 
+## 1.2.4-next.0
+
+### Patch Changes
+
+- 37426f6f5e: Fixed bug in `EntityTagPicker` that filtered on unavailable tags for the selected kind.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.10-next.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-react@0.4.8
+
 ## 1.2.3
 
 ### Patch Changes
