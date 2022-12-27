@@ -7,7 +7,7 @@ authorImageURL:
 
 If 2021 was the year of growth for the Backstage project and community, 2022 can be easily defined as the year of maturity. Both the project and the community continued to grow at an incredible pace and the platform is now more stable, more secure, and more powerful than ever.
 
-Our community is full of people from across the globe that brings incredible engagement and positive vibes to the project. And we finally got to experience this for the first time IRL during [BackstageCon](https://www.youtube.com/playlist?list=PLj6h78yzYM2OKySsTuiip3BqmdYZQRnSf), the very first in-person conference fully dedicated to Backstage, where hundreds of enthusiasts, the maintainers, adopters, and partners joined the event confirming the great momentum and the traction in the market.
+Our community is full of people from across the globe who bring incredible engagement and positive vibes to the project. And we finally got to experience this for the first time in real life during [BackstageCon](https://www.youtube.com/playlist?list=PLj6h78yzYM2OKySsTuiip3BqmdYZQRnSf), the very first in-person conference fully dedicated to Backstage, where hundreds of enthusiasts, the maintainers, adopters, and partners joined the event confirming the great momentum and the traction in the market.
 
 But before anticipating too much, let’s share some stats of this amazing 2022.
 
