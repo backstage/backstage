@@ -15,7 +15,7 @@ But before anticipating too much, let’s share some stats of this amazing 2022.
 
 ## We grew … a lot!
 
-Last year we celebrated 75 [public adopters](https://github.com/backstage/backstage/blob/master/ADOPTERS.md) and today we have over 600 adopters, confirming the interest around Backstage across all the industries, sectors, and dimensions. Companies like [Toyota North America](https://aws.amazon.com/solutions/case-studies/toyota-ecs-case-study/), Deutsche Bank, Mercedes-Benz.io, Procter & Gamble, Siemens, LinkedIn, and many more joined the community this year and are actively contributing in growing the product and its maturity.
+Last year we celebrated 75 [public adopters](https://github.com/backstage/backstage/blob/master/ADOPTERS.md) and today we have over 600 adopters, confirming the interest around Backstage across all the industries, sectors, and dimensions. Companies like [Toyota North America](https://aws.amazon.com/solutions/case-studies/toyota-ecs-case-study/), Deutsche Bank, Mercedes-Benz, Procter & Gamble, Siemens, LinkedIn, and many more joined the community this year and are actively contributing in growing the product and its maturity.
 
 ![Accelerated growth of Public Backstage Adopters, from January 2021–December 2022.](assets/2022-12-19/public-backstage-adopters-2022.png)
 
