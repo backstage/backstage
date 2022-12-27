@@ -43,7 +43,7 @@ Wow… that’s a lot of activity. We’ve generated this animation showing all 
 
 ## But wait… there’s more
 
-The growth of the community is so exciting to see. And with all this community growth, comes growth and maturity of the product, making Backstage better able to support adopters in their developer experience challenges. The Backstage open source project has almost [100 plugins](https://backstage.io/plugins), each one implementing a Backstage with a tool or service to improve not only adopters’ Backstage apps, but their unique developer experiences. And almost each week we are aware of a new one being contributed, that is amazing.
+The growth of the community is so exciting to see. And with all this community growth, comes growth and maturity of the product, making Backstage better able to support adopters in their developer experience challenges. The Backstage open source project has almost [100 plugins](https://backstage.io/plugins), each one amending Backstage with a tool or service to improve not only adopters’ Backstage apps, but their unique developer experiences. And almost every week we learn of a new one being contributed, which is amazing.
 
 The Backstage platform itself is leaving 2022 more mature than ever, thanks to a few of these amazing milestones:
 
