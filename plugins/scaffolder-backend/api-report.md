@@ -195,6 +195,12 @@ export function createGithubRepoCreateAction(options: {
   gitAuthorEmail?: string | undefined;
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
+  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+  squashMergeCommitMessage?:
+    | 'PR_BODY'
+    | 'COMMIT_MESSAGES'
+    | 'BLANK'
+    | undefined;
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
@@ -383,6 +389,12 @@ export function createPublishGithubAction(options: {
   gitAuthorEmail?: string | undefined;
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
+  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+  squashMergeCommitMessage?:
+    | 'PR_BODY'
+    | 'COMMIT_MESSAGES'
+    | 'BLANK'
+    | undefined;
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   sourcePath?: string | undefined;

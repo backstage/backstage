@@ -49,6 +49,8 @@ export function createGithubRepoCreateAction(options: {
     gitAuthorEmail?: string;
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
+    squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
     requireCodeOwnerReviews?: boolean;
@@ -103,6 +105,8 @@ export function createGithubRepoCreateAction(options: {
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           allowMergeCommit: inputProps.allowMergeCommit,
           allowSquashMerge: inputProps.allowSquashMerge,
+          squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
+          squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
           allowRebaseMerge: inputProps.allowRebaseMerge,
           allowAutoMerge: inputProps.allowAutoMerge,
           collaborators: inputProps.collaborators,
@@ -131,6 +135,8 @@ export function createGithubRepoCreateAction(options: {
         deleteBranchOnMerge = false,
         allowMergeCommit = true,
         allowSquashMerge = true,
+        squashMergeCommitTitle = 'COMMIT_OR_PR_TITLE',
+        squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,
         collaborators,
@@ -165,6 +171,8 @@ export function createGithubRepoCreateAction(options: {
         deleteBranchOnMerge,
         allowMergeCommit,
         allowSquashMerge,
+        squashMergeCommitTitle,
+        squashMergeCommitMessage,
         allowRebaseMerge,
         allowAutoMerge,
         access,
