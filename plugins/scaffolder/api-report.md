@@ -552,7 +552,9 @@ export interface ScaffolderDryRunResponse {
 }
 
 // @public
-export const ScaffolderFieldExtensions: React_2.ComponentType;
+export const ScaffolderFieldExtensions: React_2.ComponentType<
+  React_2.PropsWithChildren<{}>
+>;
 
 // @public
 export interface ScaffolderGetIntegrationsListOptions {

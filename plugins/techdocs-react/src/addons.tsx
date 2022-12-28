@@ -43,7 +43,9 @@ export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
  * TechDocs Addon registry.
  * @public
  */
-export const TechDocsAddons: React.ComponentType = () => null;
+export const TechDocsAddons: React.ComponentType<
+  React.PropsWithChildren<{}>
+> = () => null;
 
 attachComponentData(TechDocsAddons, TECHDOCS_ADDONS_WRAPPER_KEY, true);
 
@@ -71,7 +73,9 @@ export function createTechDocsAddonExtension<TComponentProps>(
  * Create a TechDocs addon implementation.
  * @public
  */
-export function createTechDocsAddonExtension<TComponentProps>(
+export function createTechDocsAddonExtension<
+  TComponentProps extends React.PropsWithChildren<{}>,
+>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<(props: TComponentProps) => JSX.Element | null> {
   const { name, component: TechDocsAddon } = options;
