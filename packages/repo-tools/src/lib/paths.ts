@@ -52,10 +52,10 @@ export async function resolvePackagePath(
 export async function findPackageDirs(selectedPaths: string[] = []) {
   const packageDirs = new Array<string>();
   for (const packageRoot of selectedPaths) {
-    const fullPath = paths.resolveTargetRoot(packageRoot);
-
     // if the path contain any glob notation we resolve all the paths to process one by one
-    const dirs = isGlob(fullPath) ? await glob(fullPath) : [fullPath];
+    const dirs = isGlob(packageRoot)
+      ? await glob(packageRoot, { cwd: paths.targetRoot })
+      : [packageRoot];
     for (const dir of dirs) {
       const packageDir = await resolvePackagePath(dir);
       if (!packageDir) {

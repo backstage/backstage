@@ -21,7 +21,7 @@ import { resolvePackagePath, paths, findPackageDirs } from './paths';
 describe('paths', () => {
   jest.spyOn(paths, 'targetRoot', 'get').mockReturnValue(normalize('/root'));
   jest.spyOn(paths, 'resolveTargetRoot').mockImplementation((...path) => {
-    return resolvePath('/root', ...path);
+    return resolvePath(normalize('/root'), ...path);
   });
 
   beforeEach(() => {
