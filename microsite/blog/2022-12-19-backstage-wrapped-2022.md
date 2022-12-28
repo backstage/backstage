@@ -2,10 +2,10 @@
 title: Backstage Wrapped 2022
 author: Francesco Corti, Suzanne Daniels
 authorURL: https://github.com/fcorti
-authorImageURL:
+authorImageURL: https://avatars.githubusercontent.com/u/6010860?v=4
 ---
 
-![wrapped header image](assets/22-12-19/wrapped.png)
+![wrapped header image](assets/2022-12-19/wrapped.png)
 
 If 2021 was the year of growth for the Backstage project and community, 2022 can be easily defined as the year of maturity. Both the project and the community continued to grow at an incredible pace and the platform is now more stable, more secure, and more powerful than ever.
 
