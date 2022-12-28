@@ -134,7 +134,6 @@ ApiReportGenerator.generateReviewFileContent =
     ...moreArgs: any[]
   ) {
     const program = collector.program as Program;
-
     // The purpose of this override is to allow the @ignore tag to be used to ignore warnings
     // of the form "Warning: (ae-forgotten-export) The symbol "FooBar" needs to be exported by the entry point index.d.ts"
     patchFileMessageFetcher(
@@ -166,7 +165,16 @@ ApiReportGenerator.generateReviewFileContent =
           }
 
           // The local name of the symbol within the file, rather than the exported name
-          const localName = (sourceFile as any).identifiers?.get(symbolName);
+          let localName = (sourceFile as any).identifiers?.get(symbolName);
+
+          if (!localName) {
+            // Sometimes the symbol name is suffixed with a number to disambiguate,
+            // e.g. "Props_14" instead of "Props" if there are multiple Props interfaces
+            // so we tyry to strip that suffix and look up the symbol again.
+            const [, trimmedSymbolName] = symbolName.match(/(.*)_\d+/) || [];
+            localName = (sourceFile as any).identifiers?.get(trimmedSymbolName);
+          }
+
           if (!localName) {
             throw new Error(
               `Unable to find local name of "${symbolName}" in ${sourceFile.fileName}`,
