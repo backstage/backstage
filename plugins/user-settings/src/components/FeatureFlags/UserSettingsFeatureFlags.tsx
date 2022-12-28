@@ -83,7 +83,7 @@ export const UserSettingsFeatureFlags = () => {
       <Grid item xs={6} md={8}>
         <Typography variant="h5">Feature Flags</Typography>
       </Grid>
-      {10 && (
+      {featureFlags.length >= 10 && (
         <Grid item xs={6} md={4}>
           <TextField
             label="Filter"
