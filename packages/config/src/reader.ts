@@ -290,17 +290,13 @@ export class ConfigReader implements Config {
     if (typeof value === 'boolean' || value === undefined) {
       return value;
     }
-    let boolean;
     if (/^(?:y|yes|true|1|on)$/i.test(value as string) || value === 1) {
-      boolean = true;
-    } else if (/^(?:n|no|false|0|off)$/i.test(value as string) || value === 0) {
-      boolean = false;
-    } else {
-      throw new Error(
-        errors.convert(this.fullKey(key), this.context, 'boolean'),
-      );
+      return true;
     }
-    return boolean;
+    if (/^(?:n|no|false|0|off)$/i.test(value as string) || value === 0) {
+      return false;
+    }
+    throw new Error(errors.convert(this.fullKey(key), this.context, 'boolean'));
   }
 
   /** {@inheritdoc Config.getString} */
