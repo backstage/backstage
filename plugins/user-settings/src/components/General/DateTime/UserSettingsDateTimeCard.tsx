@@ -15,19 +15,16 @@
  */
 
 import React from 'react';
-
 import { InfoCard } from '@backstage/core-components';
-
 import { List } from '@material-ui/core';
-
-import { UserSettingsHourCycleSwitch } from './UserSettingsHourCycleSwitch';
+import { UserSettingsHourCycleToggle } from './UserSettingsHourCycleToggle';
 
 /** @public */
 export const UserSettingsDateTimeCard = () => {
   return (
     <InfoCard title="Date & Time" variant="gridItem">
       <List dense>
-        <UserSettingsHourCycleSwitch />
+        <UserSettingsHourCycleToggle />
       </List>
     </InfoCard>
   );

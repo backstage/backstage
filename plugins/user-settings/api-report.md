@@ -30,6 +30,32 @@ export const DefaultProviderSettings: (props: {
   configuredProviders: string[];
 }) => JSX.Element;
 
+// @public
+export enum HourCycle {
+  // (undocumented)
+  H11 = 'h11',
+  // (undocumented)
+  H23 = 'h23',
+}
+
+// @public (undocumented)
+export const hourCycleConfigs: Record<
+  HourCycle,
+  {
+    title: string;
+  }
+>;
+
+// @public (undocumented)
+export interface HourCycleState {
+  // (undocumented)
+  hourCycle: HourCycle | undefined;
+  // (undocumented)
+  isLoading: boolean;
+  // (undocumented)
+  setHourCycle: (value: HourCycle | undefined) => void;
+}
+
 // @public (undocumented)
 export const ProviderSettingsItem: (props: {
   title: string;
@@ -71,11 +97,7 @@ export type SettingsLayoutRouteProps = {
 };
 
 // @public (undocumented)
-export function use24HourTimeState(): [
-  boolean,
-  (value: boolean) => void,
-  boolean,
-];
+export function useHourCycleState(): HourCycleState;
 
 // @public @deprecated (undocumented)
 export const USER_SETTINGS_TAB_KEY = 'plugin.user-settings.settingsLayoutRoute';

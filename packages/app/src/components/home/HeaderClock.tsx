@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { ClockConfig, HeaderWorldClock } from '@backstage/plugin-home';
-import { use24HourTimeState } from '@backstage/plugin-user-settings';
+import { useHourCycleState } from '@backstage/plugin-user-settings';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -37,12 +37,12 @@ const clockConfigs: ClockConfig[] = [
 ];
 
 export function HeaderClock() {
-  const [is24HourTime] = use24HourTimeState();
+  const { hourCycle } = useHourCycleState();
 
   const timeFormat: Intl.DateTimeFormatOptions = {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: !is24HourTime,
+    hourCycle,
   };
 
   return (

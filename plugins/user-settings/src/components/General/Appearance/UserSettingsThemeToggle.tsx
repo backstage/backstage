@@ -19,14 +19,9 @@ import useObservable from 'react-use/lib/useObservable';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import {
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  Tooltip,
-  makeStyles,
-} from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
+import { UserSettingItem } from '../Common/UserSettingItem';
 
 type ThemeIconProps = {
   id: string;
@@ -49,39 +44,6 @@ type TooltipToggleButtonProps = {
   value: string;
 };
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    width: '100%',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 8,
-    paddingRight: 16,
-  },
-  list: {
-    width: 'initial',
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-      padding: `0 0 12px`,
-    },
-  },
-  listItemText: {
-    paddingRight: 0,
-    paddingLeft: 0,
-  },
-  listItemSecondaryAction: {
-    position: 'relative',
-    transform: 'unset',
-    top: 'auto',
-    right: 'auto',
-    paddingLeft: 16,
-    [theme.breakpoints.down('xs')]: {
-      paddingLeft: 0,
-    },
-  },
-}));
-
 // ToggleButtonGroup uses React.children.map instead of context
 // so wrapping with Tooltip breaks ToggleButton functionality.
 const TooltipToggleButton = ({
@@ -99,7 +61,6 @@ const TooltipToggleButton = ({
 
 /** @public */
 export const UserSettingsThemeToggle = () => {
-  const classes = useStyles();
   const appThemeApi = useApi(appThemeApiRef);
   const themeId = useObservable(
     appThemeApi.activeThemeId$(),
@@ -120,49 +81,35 @@ export const UserSettingsThemeToggle = () => {
   };
 
   return (
-    <ListItem
-      className={classes.list}
-      classes={{ container: classes.container }}
-    >
-      <ListItemText
-        className={classes.listItemText}
-        primary="Theme"
-        secondary="Change the theme mode"
-      />
-      <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          value={themeId ?? 'auto'}
-          onChange={handleSetTheme}
-        >
-          {themeIds.map(theme => {
-            const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
-            return (
-              <TooltipToggleButton
-                key={theme.id}
-                title={`Select ${theme.title}`}
-                value={theme.id}
-              >
-                <>
-                  {theme.title}&nbsp;
-                  <ThemeIcon
-                    id={theme.id}
-                    icon={themeIcon}
-                    activeId={themeId}
-                  />
-                </>
-              </TooltipToggleButton>
-            );
-          })}
-          <Tooltip placement="top" arrow title="Select auto theme">
-            <ToggleButton value="auto" selected={themeId === undefined}>
-              Auto&nbsp;
-              <AutoIcon color={themeId === undefined ? 'primary' : undefined} />
-            </ToggleButton>
-          </Tooltip>
-        </ToggleButtonGroup>
-      </ListItemSecondaryAction>
-    </ListItem>
+    <UserSettingItem primaryText="Theme" secondaryText="Change the theme mode">
+      <ToggleButtonGroup
+        exclusive
+        size="small"
+        value={themeId ?? 'auto'}
+        onChange={handleSetTheme}
+      >
+        {themeIds.map(theme => {
+          const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
+          return (
+            <TooltipToggleButton
+              key={theme.id}
+              title={`Select ${theme.title}`}
+              value={theme.id}
+            >
+              <>
+                {theme.title}&nbsp;
+                <ThemeIcon id={theme.id} icon={themeIcon} activeId={themeId} />
+              </>
+            </TooltipToggleButton>
+          );
+        })}
+        <Tooltip placement="top" arrow title="Select auto theme">
+          <ToggleButton value="auto" selected={themeId === undefined}>
+            Auto&nbsp;
+            <AutoIcon color={themeId === undefined ? 'primary' : undefined} />
+          </ToggleButton>
+        </Tooltip>
+      </ToggleButtonGroup>
+    </UserSettingItem>
   );
 };
