@@ -18,7 +18,6 @@ import {
   resolve as resolvePath,
   relative as relativePath,
   basename,
-  dirname,
   join,
 } from 'path';
 import { execFile } from 'child_process';
@@ -70,32 +69,7 @@ const tmpDir = cliPaths.resolveTargetRoot(
 );
 
 /**
- * All of this monkey patching below is because MUI has these bare package.json file as a method
- * for making TypeScript accept imports like `@material-ui/core/Button`, and improve tree-shaking
- * by declaring them side effect free.
- *
- * The package.json lookup logic in api-extractor really doesn't like that though, as it enforces
- * that the 'name' field exists in all package.json files that it discovers. This below is just
- * making sure that we ignore those file package.json files instead of crashing.
- */
-const {
-  PackageJsonLookup,
-} = require('@rushstack/node-core-library/lib/PackageJsonLookup');
-
-const old = PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor;
-PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor =
-  function tryGetPackageJsonFilePathForPatch(path: string) {
-    if (
-      path.includes('@material-ui') &&
-      !dirname(path).endsWith('@material-ui')
-    ) {
-      return undefined;
-    }
-    return old.call(this, path);
-  };
-
-/**
- * Another monkey patch where we apply prettier to the API reports. This has to be patched into
+ * All of this monkey patching below is for apply prettier to the API reports. This has to be patched into
  * the middle of the process as API Extractor does a comparison of the contents of the old
  * and new files during generation. This inserts the formatting just before that comparison.
  */

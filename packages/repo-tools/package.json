@@ -53,7 +53,6 @@
     "@microsoft/api-extractor-model": "*",
     "@microsoft/tsdoc": "*",
     "@microsoft/tsdoc-config": "*",
-    "@rushstack/node-core-library": "*",
     "prettier": "^2.8.1",
     "typescript": "> 3.0.0"
   },
