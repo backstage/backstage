@@ -1,8 +1,7 @@
 ---
 title: Backstage Wrapped 2022
-author: Francesco Corti, Suzanne Daniels
+author: Francesco Corti & Suzanne Daniels
 authorURL: https://github.com/fcorti
-authorImageURL: https://avatars.githubusercontent.com/u/6010860?v=4
 ---
 
 ![wrapped header image](assets/2022-12-19/wrapped.png)
@@ -41,7 +40,7 @@ All of these people driving the enormous growth and maturity of the project are 
 
 Wow… that’s a lot of activity. We’ve generated this animation showing all of your contributions to the Backstage repository in 2022, look at this project grow:
 
-<iframe width="780" height="440" src="https://youtu.be/GoWBvHpH5Cg" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+<iframe width="780" height="440" src="https://www.youtube.com/embed/GoWBvHpH5Cg" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
 
 ## But wait… there’s more
 
