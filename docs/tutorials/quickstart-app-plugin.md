@@ -29,8 +29,8 @@ title: Adding Custom Plugin to Existing Monorepo App
 
 # The Skeleton Plugin
 
-1. Start by using the built in creator. From the terminal and root of your
-   project run: `yarn create-plugin`
+1. Start by using the built-in creator. From the terminal and root of your
+   project run: `yarn new --select plugin`
 1. Enter a plugin ID. I used `github-playground`
 1. When the process finishes, let's start the backend:
    `yarn --cwd packages/backend start`
