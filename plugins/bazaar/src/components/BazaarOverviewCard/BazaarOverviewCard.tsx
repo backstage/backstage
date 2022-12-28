@@ -146,7 +146,7 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
         catalogEntities={unlinkedCatalogEntities || []}
         useTablePagination={false}
         gridSize={fullWidth ? 2 : 4}
-        height={fullHeight ? '13rem' : '7rem'}
+        height={fullHeight ? 'large' : 'small'}
       />
     </InfoCard>
   );
