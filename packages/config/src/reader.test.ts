@@ -105,9 +105,6 @@ function expectValidValues(config: ConfigReader) {
 }
 
 function expectInvalidValues(config: ConfigReader) {
-  expect(() => config.getBoolean('zero')).toThrow(
-    "Invalid type in config for key 'zero' in 'ctx', got number, wanted boolean",
-  );
   expect(() => config.getBoolean('string')).toThrow(
     "Unable to convert config value for key 'string' in 'ctx' to a boolean",
   );
