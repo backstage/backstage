@@ -159,9 +159,7 @@ export interface FieldSchema<TReturn, TUiOptions> {
 export type FormProps = Pick<
   FormProps_3,
   'transformErrors' | 'noHtml5Validate'
-> & {
-  layouts?: NextLayoutOptions[];
-};
+>;
 
 // @public
 export type LayoutComponent<_TInputProps> = () => null;

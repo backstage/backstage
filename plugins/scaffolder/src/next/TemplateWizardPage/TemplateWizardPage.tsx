@@ -25,17 +25,19 @@ import {
 import {
   scaffolderApiRef,
   useTemplateSecrets,
-  NextFieldExtensionOptions,
+  type NextFieldExtensionOptions,
+  Workflow
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
 import { type FormProps } from '../types';
 import { nextRouteRef } from '../routes';
 import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { Header, Page } from '@backstage/core-components';
-import { Workflow } from '@backstage/plugin-scaffolder-react';
+import type { LayoutOptions } from '../../layouts/types';
 
 export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
   FormProps?: FormProps;
 };
 

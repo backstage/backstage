@@ -50,6 +50,4 @@ export interface NextLayoutOptions<P = any> {
 export type FormProps = Pick<
   SchemaFormProps,
   'transformErrors' | 'noHtml5Validate'
-> & {
-  layouts?: NextLayoutOptions[];
-};
+>;

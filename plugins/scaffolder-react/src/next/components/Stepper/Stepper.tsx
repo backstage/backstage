@@ -31,11 +31,8 @@ import { createAsyncValidators } from './createAsyncValidators';
 import type { FormProps, LayoutOptions } from '../../types';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
-import { useFormDataFromQuery } from '../../hooks/useFormDataFromQuery';
 import validator from '@rjsf/validator-ajv6';
 import { useFormDataFromQuery } from '../../hooks';
-import type { FormProps } from '../../types';
-import { selectedTemplateRouteRef } from '../../../routes';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -179,7 +176,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             fields={extensions}
             showErrorList={false}
             onChange={handleChange}
-            {...(formProps ?? {})}
+            {...(props.FormProps ?? {})}
           >
             <div className={styles.footer}>
               <Button
