@@ -7068,6 +7068,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-bitbucket-cloud-common": "workspace:^"
+    "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    express: ^4.18.1
+    express-promise-router: ^4.1.0
+    msw: ^0.49.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-cookiecutter@workspace:plugins/scaffolder-backend-module-cookiecutter":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-cookiecutter@workspace:plugins/scaffolder-backend-module-cookiecutter"
@@ -22041,6 +22064,7 @@ __metadata:
     "@backstage/plugin-proxy-backend": "workspace:^"
     "@backstage/plugin-rollbar-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-rails": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^"

@@ -298,6 +298,18 @@ export namespace Models {
     typeof ParticipantStateEnum[keyof typeof ParticipantStateEnum];
 
   /**
+   * The Pipelines configuration for a repository.
+   * @public
+   */
+  export interface PipelinesConfig extends ModelObject {
+    /**
+     * Whether Pipelines is enabled for the repository.
+     */
+    enabled?: boolean;
+    repository?: Repository;
+  }
+
+  /**
    * A Bitbucket project.
    *             Projects are used by teams to organize repositories.
    * @public

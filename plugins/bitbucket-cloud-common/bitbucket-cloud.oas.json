@@ -3315,7 +3315,7 @@
     "/repositories/{workspace}/{repo_slug}/commits/{revision}": {
       "get": {
         "tags": ["Commits"],
-        "description": "These are the repository's commits. They are paginated and returned\nin reverse chronological order, similar to the output of `git log`.\nLike these tools, the DAG can be filtered.\n\n#### GET /repositories/{workspace}/{repo_slug}/commits/master\n\nReturns all commits on rev `master` (similar to `git log master`).\n\n#### GET /repositories/{workspace}/{repo_slug}/commits/dev?include=foo&exclude=master\n\nReturns all commits on ref `dev` or `foo`, except those that are reachable on\n`master` (similar to `git log dev foo ^master`).\n\nAn optional `path` parameter can be specified that will limit the\nresults to commits that affect that path. `path` can either be a file\nor a directory. If a directory is specified, commits are returned that\nhave modified any file in the directory tree rooted by `path`. It is\nimportant to note that if the `path` parameter is specified, the commits\nreturned by this endpoint may no longer be a DAG, parent commits that\ndo not modify the path will be omitted from the response.\n\n#### GET /repositories/{workspace}/{repo_slug}/commits/dev?path=README.md&include=foo&include=bar&exclude=master\n\nReturns all commits that are on refs `dev` or `foo` or `bar`, but not on `master`\nthat changed the file README.md.\n\n#### GET /repositories/{workspace}/{repo_slug}/commits/dev?path=src/&include=foo&exclude=master\n\nReturns all commits that are on refs `dev` or `foo`, but not on `master`\nthat changed to a file in any file in the directory src or its children.\n\nBecause the response could include a very large number of commits, it\nis paginated. Follow the 'next' link in the response to navigate to the\nnext page of commits. As with other paginated resources, do not\nconstruct your own links.\n\nWhen the include and exclude parameters are more than can fit in a\nquery string, clients can use a `x-www-form-urlencoded` POST instead.",
+        "description": "These are the repository's commits. They are paginated and returned\nin reverse chronological order, similar to the output of `git log`.\nLike these tools, the DAG can be filtered.\n\n#### GET /repositories/{workspace}/{repo_slug}/commits/master\n\nReturns all commits on ref `master` (similar to `git log master`).\n\n#### GET /repositories/{workspace}/{repo_slug}/commits/dev?include=foo&exclude=master\n\nReturns all commits on ref `dev` or `foo`, except those that are reachable on\n`master` (similar to `git log dev foo ^master`).\n\nAn optional `path` parameter can be specified that will limit the\nresults to commits that affect that path. `path` can either be a file\nor a directory. If a directory is specified, commits are returned that\nhave modified any file in the directory tree rooted by `path`. It is\nimportant to note that if the `path` parameter is specified, the commits\nreturned by this endpoint may no longer be a DAG, parent commits that\ndo not modify the path will be omitted from the response.\n\n#### GET /repositories/{workspace}/{repo_slug}/commits/dev?path=README.md&include=foo&include=bar&exclude=master\n\nReturns all commits that are on refs `dev` or `foo` or `bar`, but not on `master`\nthat changed the file README.md.\n\n#### GET /repositories/{workspace}/{repo_slug}/commits/dev?path=src/&include=foo&exclude=master\n\nReturns all commits that are on refs `dev` or `foo`, but not on `master`\nthat changed to a file in any file in the directory src or its children.\n\nBecause the response could include a very large number of commits, it\nis paginated. Follow the 'next' link in the response to navigate to the\nnext page of commits. As with other paginated resources, do not\nconstruct your own links.\n\nWhen the include and exclude parameters are more than can fit in a\nquery string, clients can use a `x-www-form-urlencoded` POST instead.",
         "summary": "List commits for revision",
         "responses": {
           "200": {
@@ -3402,7 +3402,7 @@
         {
           "name": "revision",
           "in": "path",
-          "description": "The commit's SHA1.",
+          "description": "A commit SHA1 or ref name.",
           "required": true,
           "schema": {
             "type": "string"
@@ -8506,6 +8506,58 @@
           }
         }
       ]
+    },
+    "/repositories/{workspace}/{repo_slug}/pipelines-config/caches": {
+      "delete": {
+        "tags": ["Pipelines"],
+        "summary": "Delete caches",
+        "description": "Delete repository cache versions by name.",
+        "operationId": "deleteRepositoryPipelineCaches",
+        "parameters": [
+          {
+            "name": "workspace",
+            "description": "The account.",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "repo_slug",
+            "description": "The repository.",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "description": "The cache name.",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The caches were deleted."
+          },
+          "404": {
+            "description": "The workspace, repository or cache name was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "/repositories/{workspace}/{repo_slug}/pipelines-config/caches/": {
       "get": {
@@ -18980,7 +19032,7 @@
       "description": "A workspace is where you create repositories, collaborate on\nyour code, and organize different streams of work in your Bitbucket\nCloud account. Workspaces replace the use of teams and users in API\ncalls.\n"
     }
   ],
-  "x-revision": "607fbe8bfcb2",
+  "x-revision": "b3e968485931",
   "x-atlassian-narrative": {
     "documents": [
       {
@@ -19809,7 +19861,7 @@
               "state": {
                 "type": "string",
                 "description": "Provides some indication of the status of this commit",
-                "enum": ["INPROGRESS", "STOPPED", "FAILED", "SUCCESSFUL"]
+                "enum": ["FAILED", "SUCCESSFUL", "INPROGRESS", "STOPPED"]
               },
               "updated_on": {
                 "type": "string",
@@ -20675,31 +20727,31 @@
             "type": "string",
             "description": "The event identifier.",
             "enum": [
-              "issue:created",
-              "repo:commit_status_updated",
+              "pullrequest:rejected",
+              "repo:fork",
               "pullrequest:comment_created",
+              "pullrequest:changes_request_removed",
               "pullrequest:created",
               "pullrequest:unapproved",
-              "repo:commit_status_created",
-              "repo:created",
-              "pullrequest:changes_request_created",
-              "pullrequest:comment_updated",
-              "pullrequest:changes_request_removed",
-              "pullrequest:comment_deleted",
-              "repo:imported",
               "repo:commit_comment_created",
-              "project:updated",
-              "repo:updated",
-              "issue:updated",
-              "pullrequest:rejected",
-              "pullrequest:fulfilled",
-              "issue:comment_created",
-              "repo:fork",
-              "pullrequest:updated",
-              "repo:push",
               "pullrequest:approved",
+              "repo:push",
+              "pullrequest:updated",
+              "repo:commit_status_updated",
+              "issue:created",
+              "issue:updated",
+              "pullrequest:comment_updated",
               "repo:deleted",
-              "repo:transfer"
+              "repo:imported",
+              "pullrequest:comment_deleted",
+              "repo:updated",
+              "project:updated",
+              "repo:transfer",
+              "repo:commit_status_created",
+              "issue:comment_created",
+              "pullrequest:changes_request_created",
+              "repo:created",
+              "pullrequest:fulfilled"
             ]
           },
           "label": {
@@ -25442,31 +25494,31 @@
                 "items": {
                   "type": "string",
                   "enum": [
-                    "issue:created",
-                    "repo:commit_status_updated",
+                    "pullrequest:rejected",
+                    "repo:fork",
                     "pullrequest:comment_created",
+                    "pullrequest:changes_request_removed",
                     "pullrequest:created",
                     "pullrequest:unapproved",
-                    "repo:commit_status_created",
-                    "repo:created",
-                    "pullrequest:changes_request_created",
-                    "pullrequest:comment_updated",
-                    "pullrequest:changes_request_removed",
-                    "pullrequest:comment_deleted",
-                    "repo:imported",
                     "repo:commit_comment_created",
-                    "project:updated",
-                    "repo:updated",
-                    "issue:updated",
-                    "pullrequest:rejected",
-                    "pullrequest:fulfilled",
-                    "issue:comment_created",
-                    "repo:fork",
-                    "pullrequest:updated",
-                    "repo:push",
                     "pullrequest:approved",
+                    "repo:push",
+                    "pullrequest:updated",
+                    "repo:commit_status_updated",
+                    "issue:created",
+                    "issue:updated",
+                    "pullrequest:comment_updated",
                     "repo:deleted",
-                    "repo:transfer"
+                    "repo:imported",
+                    "pullrequest:comment_deleted",
+                    "repo:updated",
+                    "project:updated",
+                    "repo:transfer",
+                    "repo:commit_status_created",
+                    "issue:comment_created",
+                    "pullrequest:changes_request_created",
+                    "repo:created",
+                    "pullrequest:fulfilled"
                   ]
                 },
                 "minItems": 1,

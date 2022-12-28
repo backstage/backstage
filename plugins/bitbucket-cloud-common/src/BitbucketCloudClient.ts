@@ -69,6 +69,67 @@ export class BitbucketCloudClient {
     );
   }
 
+  async createRepository(
+    workspace: string,
+    repo_slug: string,
+    repository: Models.Repository,
+  ): Promise<Models.Repository> {
+    const workspaceEnc = encodeURIComponent(workspace);
+    const url = this.createUrl(`/repositories/${workspaceEnc}/${repo_slug}`);
+
+    return await this.post(url, {
+      body: JSON.stringify(repository),
+    } as RequestInit).then((response: Response) =>
+      response
+        .json()
+        .then((repositoryResponse: Models.Repository) => repositoryResponse),
+    );
+  }
+
+  async updatePipelinesConfig(
+    workspace: string,
+    repo_slug: string,
+    pipelinesConfig: Models.PipelinesConfig,
+  ): Promise<Models.PipelinesConfig> {
+    const workspaceEnc = encodeURIComponent(workspace);
+    const url = this.createUrl(
+      `/repositories/${workspaceEnc}/${repo_slug}/pipelines_config`,
+    );
+
+    return await this.put(url, {
+      body: JSON.stringify(pipelinesConfig),
+    } as RequestInit).then((response: Response) =>
+      response
+        .json()
+        .then(
+          (pipelinesConfigResponse: Models.PipelinesConfig) =>
+            pipelinesConfigResponse,
+        ),
+    );
+
+    // // Create request object to pass
+    // const requestOptions: RequestInit = {
+    //   method: 'PUT',
+    //   body: JSON.stringify({
+    //     enabled: true,
+    //     repository: {
+    //       type: 'repository_pipelines_configuration',
+    //       slug: repo_slug,
+    //     } as Models.Repository,
+    //   }),
+    // };
+
+    // let response: Response;
+    // try {
+    //   response = await this.request(
+    //     new Request(url.toString(), requestOptions),
+    //   );
+    // } catch (e) {
+    //   throw new Error(`Unable to enable pipelines, ${e}`);
+    // }
+    // return response;
+  }
+
   private createUrl(endpoint: string, options?: RequestOptions): URL {
     const request = new URL(this.config.apiBaseUrl + endpoint);
     for (const key in options) {
@@ -87,21 +148,61 @@ export class BitbucketCloudClient {
   }
 
   private async get(url: URL): Promise<Response> {
-    return this.request(new Request(url.toString(), { method: 'GET' }));
+    return this.request(
+      new Request(url.toString(), {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      }),
+    );
+  }
+
+  private async put(url: URL, options: RequestInit): Promise<Response> {
+    return this.request(
+      new Request(url.toString(), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...this.getAuthHeaders(),
+        },
+        ...options,
+      }),
+    );
+  }
+
+  private async post(url: URL, options: RequestInit): Promise<Response> {
+    return this.request(
+      new Request(url.toString(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...this.getAuthHeaders(),
+        },
+        ...options,
+      }),
+    );
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, { headers: this.getAuthHeaders() }).then(
-      (response: Response) => {
+    return fetch(req)
+      .then((response: Response) => {
         if (!response.ok) {
-          throw new Error(
-            `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
-          );
+          throw response;
         }
-
         return response;
-      },
-    );
+      })
+      .catch((error: Response) => {
+        return error.text().then((responseText: String) => {
+          throw new Error(
+            `Unexpected response for ${req.method} ${
+              req.url
+            }. Expected 200 but got ${error.status} - ${
+              error.statusText
+            }: ${responseText} \n Headers: ${JSON.stringify(
+              req.headers,
+            )} \n Body: ${req.body}`,
+          );
+        });
+      });
   }
 
   private getAuthHeaders(): Record<string, string> {

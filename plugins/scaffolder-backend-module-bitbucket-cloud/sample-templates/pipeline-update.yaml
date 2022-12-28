@@ -1,0 +1,43 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: bitbucket-cloud-pipeline-update
+  title: Test Bitbucket pipeline-update template
+  description: Demo creating repository via API
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Choose a repository location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - bitbucket.org
+    - title: Fill in some repository details
+      properties:
+        enable:
+          title: Enable pipelines
+          type: boolean
+          description: Enable pipelines for the given repo
+
+  steps:
+    - id: updatePipelines
+      name: Update Pipelines
+      action: bitbucketCloud:pipeline:update
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        enable: ${{ parameters.enable }}
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}

@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: bitbucket-cloud-example-templates
+  description: A collection of all Backstage example templates
+spec:
+  targets:
+    - ./bitbucket-cloud-repo-create.yaml
+    - ./pipeline-update.yaml
+# For local development of a template, you can reference your local templates here.
+# Examples:
+#
+#   - ./local-template/template.yaml
+#   - ../all-templates/local/template.yaml

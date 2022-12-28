@@ -1,0 +1,72 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: bitbucket-cloud-repo-create
+  title: Test Bitbucket repo create template
+  description: Demo creating repository via API
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Choose a repository location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - bitbucket.org
+    - title: Fill in some repository details
+      properties:
+        description:
+          title: Description
+          type: string
+          description: Give the repository a description
+        isPrivate:
+          title: Repository Privacy
+          type: boolean
+          description: Should the repository be private?
+          ui:widget: radio
+          default: true
+        defaultBranch:
+          title: Default Branch
+          type: string
+          description: The default branch for the repository
+          default: master
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        # owner:
+        #   title: Owner
+        #   type: string
+        #   description: Owner of the component
+        #   ui:field: OwnerPicker
+        #   ui:options:
+        #     catalogFilter:
+        #       kind: Group
+
+  steps:
+    - id: create
+      name: Create Repo
+      action: bitbucketCloud:repo:create
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        description: ${{ parameters.description }}
+        defaultBranch: ${{ parameters.defaultBranch }}
+        isPrivate: ${{ parameters.isPrivate }}
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
