@@ -1,5 +1,59 @@
 # @backstage/plugin-scaffolder
 
+## 1.10.0-next.0
+
+### Minor Changes
+
+- e4c0240445: Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+
+  The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
+
+  - Get all entities of kind `Group`
+
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+    ```
+
+  - Get entities of kind `Group` and spec.type `team`
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+            spec.type: team
+    ```
+
+### Patch Changes
+
+- 3c112f6967: rollback `@rjsf/validator-ajv8` to `@rjsf/validator-v6`
+- 223e2c5f03: add `onChange` handler to`Stepper` component
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.4-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/plugin-catalog-react@1.2.4-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/config@1.0.5
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/integration-react@1.1.9-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10-next.0
+  - @backstage/plugin-permission-react@0.4.8
+
 ## 1.9.1
 
 ### Patch Changes

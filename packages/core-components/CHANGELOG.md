@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.12.3-next.0
+
+### Patch Changes
+
+- f2ea446de0: Applied fix from v1.9.1
+- Updated dependencies
+  - @backstage/config@1.0.5
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
 ## 0.12.2
 
 ### Patch Changes
