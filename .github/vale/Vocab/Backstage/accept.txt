@@ -82,6 +82,7 @@ dependabot
 deps
 destructured
 destructuring
+Deutsche
 dev
 devops
 devs
