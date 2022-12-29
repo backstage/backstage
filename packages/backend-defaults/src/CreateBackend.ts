@@ -22,6 +22,7 @@ import {
   databaseFactory,
   discoveryFactory,
   httpRouterFactory,
+  rootHttpRouterFactory,
   lifecycleFactory,
   rootLifecycleFactory,
   loggerFactory,
@@ -45,6 +46,7 @@ export const defaultServiceFactories = [
   tokenManagerFactory,
   urlReaderFactory,
   httpRouterFactory,
+  rootHttpRouterFactory,
   lifecycleFactory,
   rootLifecycleFactory,
 ];
