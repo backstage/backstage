@@ -36,6 +36,9 @@ catalog:
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
 
+    - type: url
+      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
+
 proxy:
   '/circleci/api':
     target: https://circleci.com/api/v1.1
