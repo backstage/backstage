@@ -15,13 +15,13 @@
  */
 
 import mockFs from 'mock-fs';
-import { resolve as resolvePath, join as joinPath } from 'path';
+import { resolve as resolvePath, join as joinPath, normalize } from 'path';
 import { resolvePackagePath, paths, findPackageDirs } from './paths';
 
 describe('paths', () => {
-  jest.spyOn(paths, 'targetRoot', 'get').mockReturnValue('/root');
+  jest.spyOn(paths, 'targetRoot', 'get').mockReturnValue(normalize('/root'));
   jest.spyOn(paths, 'resolveTargetRoot').mockImplementation((...path) => {
-    return resolvePath('/root', ...path);
+    return resolvePath(normalize('/root'), ...path);
   });
 
   beforeEach(() => {
