@@ -63,6 +63,9 @@ export const rootHttpRouterFactory = createServiceFactory({
 
     return {
       use: (path: string, handler: Handler) => {
+        if (path.match(/^[/\s]*$/)) {
+          throw new Error(`Root router path may not be empty`);
+        }
         const conflictingPath = findConflictingPath(existingPaths, path);
         if (conflictingPath) {
           throw new Error(
