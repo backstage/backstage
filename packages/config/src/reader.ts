@@ -290,8 +290,8 @@ export class ConfigReader implements Config {
     if (typeof value === 'boolean' || value === undefined) {
       return value;
     }
-   const valueString = String(value).trim();
-   
+    const valueString = String(value).trim();
+
     if (/^(?:y|yes|true|1|on)$/i.test(valueString)) {
       return true;
     }
