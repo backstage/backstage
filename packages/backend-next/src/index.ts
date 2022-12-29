@@ -26,42 +26,52 @@ const backend = createBackend({
       deps: {
         healthcheck: coreServices.healthcheck,
         metrics: coreServices.metrics,
+        config: coreServices.config,
+        logger: coreServices.logger,
       },
-      factory({healthcheck, metrics}) {
-        return HttpRouter.create({
+      factory({ healthcheck, metrics, config, logger }) {
+        return HttpRouter.fromConfig(config, {
+          logger,
           middleware: [
             createHealthcheckMiddleware(healthcheck),
             createMetricsMiddleware(metrics),
-          ]
-        })
-      }
-    }),
-    httpRouterFactory({
-      deps: {
-        healthcheck: coreServices.healthcheck,
-        metrics: coreServices.metrics,
+          ],
+        });
       },
-      factory({healthcheck, metrics}) {
-        return RootHttpRouter.create({
-          indexPluginId: 'app',
-          middleware: [
-            createHealthcheckMiddleware(healthcheck),
-            createMetricsMiddleware(metrics),
-          ]
-        })
-      }
     }),
     httpRouterFactory({
-      middlewareFactories: [{
+      middlewareFactory: {
         deps: {
+          healthcheck: coreServices.healthcheck,
           metrics: coreServices.metrics,
         },
-        factory({healthcheck, metrics}) {
-          return createMetricsMiddleware(metrics)
-        }
-      }]
-    })
-  ]
+        factory({ healthcheck, metrics }) {
+          return RootHttpRouter.create({
+            indexPluginId: 'app',
+            middleware: [
+              createHealthcheckMiddleware(healthcheck),
+              createMetricsMiddleware(metrics),
+            ],
+          });
+        },
+      },
+    }),
+    httpRouterFactory({
+      middlewareFactories: [
+        {
+          deps: {
+            metrics: coreServices.metrics,
+          },
+          factory({ healthcheck, metrics }) {
+            return createMetricsMiddleware(metrics);
+          },
+        },
+      ],
+    }),
+    httpRouterFactory({
+      middlewareFactories: [MetricsMiddleware.factory({})],
+    }),
+  ],
 });
 
 export const healthcheckServiceModule = createBackendServiceModule({
@@ -80,7 +90,7 @@ export const healthcheckServiceModule = createBackendServiceModule({
 });
 
 interface HealthChecksService {
-  add(() => Promise<void>): void;
+  add(cb: () => Promise<void>): void;
   check(): Promise<void>;
 }
 export const healthcheckPlugin = createBackendPlugin({
@@ -91,22 +101,21 @@ export const healthcheckPlugin = createBackendPlugin({
         rootHttpRouter: coreServices.rootHttpRouter,
         healthchecks: coreServices.healthchecks,
       },
-      async init({rootHttpRouter, healthchecks}) {
+      async init({ rootHttpRouter, healthchecks }) {
         rootHttpRouter.use(createHealthcheckMiddleware(healthchecks));
-      }
-    })
-  }
-})
-
+      },
+    });
+  },
+});
 
 backend.add(httpRouterFactory(), {
   deps: {
     healthcheck: coreServices.healthcheck,
     metrics: coreServices.metrics,
   },
-  decorate(ext, {healthcheck, metrics}) {
+  decorate(ext, { healthcheck, metrics }) {
     ext.addMiddleware(createHealthcheckMiddleware(healthcheck));
-  }
+  },
 });
 
 backend.add(healthcheckServiceModule());
