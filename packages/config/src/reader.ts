@@ -290,10 +290,12 @@ export class ConfigReader implements Config {
     if (typeof value === 'boolean' || value === undefined) {
       return value;
     }
-    if (/^(?:y|yes|true|1|on)$/i.test(value as string) || value === 1) {
+   const valueString = String(value).trim();
+   
+    if (/^(?:y|yes|true|1|on)$/i.test(valueString)) {
       return true;
     }
-    if (/^(?:n|no|false|0|off)$/i.test(value as string) || value === 0) {
+    if (/^(?:n|no|false|0|off)$/i.test(valueString)) {
       return false;
     }
     throw new Error(errors.convert(this.fullKey(key), this.context, 'boolean'));
