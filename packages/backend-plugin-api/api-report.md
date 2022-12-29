@@ -82,6 +82,7 @@ export namespace coreServices {
   const logger: ServiceRef<LoggerService, 'plugin'>;
   const permissions: ServiceRef<PermissionsService, 'plugin'>;
   const pluginMetadata: ServiceRef<PluginMetadataService, 'plugin'>;
+  const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root'>;
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin'>;
@@ -264,6 +265,11 @@ export type ReadUrlResponse = {
   stream?(): Readable;
   etag?: string;
 };
+
+// @public (undocumented)
+export interface RootHttpRouterService {
+  use(path: string, handler: Handler): void;
+}
 
 // @public (undocumented)
 export interface RootLifecycleService extends LifecycleService {}
