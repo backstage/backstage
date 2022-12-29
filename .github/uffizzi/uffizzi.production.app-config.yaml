@@ -37,7 +37,14 @@ catalog:
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
 
     - type: url
-      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+      rules:
+        - allow: [User, Group]
+
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+      rules:
+        - allow: [Template]
 
 proxy:
   '/circleci/api':
