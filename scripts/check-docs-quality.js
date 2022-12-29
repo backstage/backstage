@@ -99,7 +99,7 @@ async function main() {
   if (process.argv.includes('--ci-args')) {
     process.stdout.write(
       // Workaround for not being able to pass arguments to the vale action
-      JSON.stringify(['--config=.github/vale/config.ini', ...files]),
+      JSON.stringify([...files]),
     );
     return;
   }
