@@ -36,39 +36,7 @@ export {
 } from './plugin';
 export * from './components';
 
-/** @deprecated - use imports from @backstage/plugin-scaffolder-react instead */
-export {
-  createScaffolderFieldExtension,
-  ScaffolderFieldExtensions,
-  rootRouteRef,
-  selectedTemplateRouteRef,
-  useTemplateSecrets,
-  scaffolderApiRef,
-  /** @deprecated - use imports from @backstage/plugin-scaffolder-react instead */
-  type ScaffolderApi,
-  /** @deprecated */
-  type ScaffolderUseTemplateSecrets,
-  /** @deprecated */
-  type TemplateParameterSchema,
-  type CustomFieldExtensionSchema,
-  type CustomFieldValidator,
-  type FieldExtensionOptions,
-  type FieldExtensionComponentProps,
-  type FieldExtensionComponent,
-  type ListActionsResponse,
-  type LogEvent,
-  type ScaffolderDryRunOptions,
-  type ScaffolderDryRunResponse,
-  type ScaffolderGetIntegrationsListOptions,
-  type ScaffolderGetIntegrationsListResponse,
-  type ScaffolderOutputLink,
-  type ScaffolderScaffoldOptions,
-  type ScaffolderScaffoldResponse,
-  type ScaffolderStreamLogsOptions,
-  type ScaffolderTask,
-  type ScaffolderTaskOutput,
-  type ScaffolderTaskStatus,
-} from '@backstage/plugin-scaffolder-react';
+export * from './deprecated';
 
 export type { TaskPageProps } from './components/TaskPage';
 
