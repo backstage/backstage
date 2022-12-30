@@ -293,13 +293,11 @@ export type Cursor = {
    */
   sortFields: EntitySortField[];
   /**
-   * The value of the cursor of the last item returned.
-   * This is used for performing pagination.
+   * The values of the fields of a specific item used for paginating the data.
    */
-  sortFieldIds: string[];
-
+  sortFieldValues: string[];
   /**
-   * A filter to apply on the full list of entities.
+   * A filter to be applied to the full list of entities.
    */
   filter?: EntityFilter;
   /**
@@ -307,15 +305,15 @@ export type Cursor = {
    */
   isPrevious: boolean;
   /**
-   * Filter the data by name.
+   * Used for filtering the data by name.
    */
   query?: string;
   /**
-   * Sort field id of the first item.
-   * The catalog uses this field internally for understanding when the beginning
+   * The value of the fields of the first returned item used for paginating the data.
+   * The catalog uses this field internally to understand if the beginning
    * of the list has been reached when performing cursor based pagination.
    */
-  firstFieldId: string;
+  firstSortFieldValues?: string[];
   /**
    * The number of items that match the provided filters
    */
