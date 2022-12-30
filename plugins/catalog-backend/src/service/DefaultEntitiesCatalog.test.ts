@@ -80,8 +80,7 @@ describe('DefaultEntitiesCatalog', () => {
     return id;
   }
 
-  async function addEntityToSearch(knex: Knex, entity: Entity) {
-    const id = uuid();
+  async function addEntityToSearch(knex: Knex, entity: Entity, id = uuid()) {
     const entityRef = stringifyEntityRef(entity);
     const entityJson = JSON.stringify(entity);
 
@@ -599,7 +598,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response2.entities).toEqual([entityFrom('C'), entityFrom('D')]);
         expect(response2.nextCursor).toBeDefined();
         expect(response2.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response2.totalItems).toBe(names.length);
 
         // third request (forward)
         const request3: PaginatedEntitiesCursorRequest = {
@@ -610,7 +609,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response3.entities).toEqual([entityFrom('E'), entityFrom('F')]);
         expect(response3.nextCursor).toBeDefined();
         expect(response3.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response3.totalItems).toBe(names.length);
 
         // fourth request (backwards)
         const request4: PaginatedEntitiesCursorRequest = {
@@ -621,7 +620,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response4.entities).toEqual([entityFrom('C'), entityFrom('D')]);
         expect(response4.nextCursor).toBeDefined();
         expect(response4.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response4.totalItems).toBe(names.length);
 
         // fifth request (backwards)
         const request5: PaginatedEntitiesCursorRequest = {
@@ -632,7 +631,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response5.entities).toEqual([entityFrom('A'), entityFrom('B')]);
         expect(response5.nextCursor).toBeDefined();
         expect(response5.prevCursor).toBeUndefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response5.totalItems).toBe(names.length);
 
         // sixth request (forward)
         const request6: PaginatedEntitiesCursorRequest = {
@@ -643,7 +642,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response6.entities).toEqual([entityFrom('C'), entityFrom('D')]);
         expect(response6.nextCursor).toBeDefined();
         expect(response6.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response6.totalItems).toBe(names.length);
 
         // seventh request (forward)
         const request7: PaginatedEntitiesCursorRequest = {
@@ -654,7 +653,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response7.entities).toEqual([entityFrom('E'), entityFrom('F')]);
         expect(response7.nextCursor).toBeDefined();
         expect(response7.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response7.totalItems).toBe(names.length);
 
         // seventh.2 request (forward with a different limit)
         const request7bis: PaginatedEntitiesCursorRequest = {
@@ -669,7 +668,7 @@ describe('DefaultEntitiesCatalog', () => {
         ]);
         expect(response7bis.nextCursor).toBeUndefined();
         expect(response7bis.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response7bis.totalItems).toBe(names.length);
 
         // last request (forward)
         const request8: PaginatedEntitiesCursorRequest = {
@@ -680,7 +679,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response8.entities).toEqual([entityFrom('G')]);
         expect(response8.nextCursor).toBeUndefined();
         expect(response8.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response8.totalItems).toBe(names.length);
       },
     );
 
@@ -751,7 +750,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response2.entities).toEqual([entityFrom('E'), entityFrom('D')]);
         expect(response2.nextCursor).toBeDefined();
         expect(response2.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response2.totalItems).toBe(names.length);
 
         // third request (forward)
         const request3: PaginatedEntitiesCursorRequest = {
@@ -762,7 +761,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response3.entities).toEqual([entityFrom('C'), entityFrom('B')]);
         expect(response3.nextCursor).toBeDefined();
         expect(response3.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response3.totalItems).toBe(names.length);
 
         // fourth request (backwards)
         const request4: PaginatedEntitiesCursorRequest = {
@@ -774,7 +773,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response4.entities).toEqual([entityFrom('E'), entityFrom('D')]);
         expect(response4.nextCursor).toBeDefined();
         expect(response4.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response4.totalItems).toBe(names.length);
 
         // fifth request (backwards)
         const request5: PaginatedEntitiesCursorRequest = {
@@ -785,7 +784,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response5.entities).toEqual([entityFrom('G'), entityFrom('F')]);
         expect(response5.nextCursor).toBeDefined();
         expect(response5.prevCursor).toBeUndefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response5.totalItems).toBe(names.length);
 
         // sixth request (forward)
         const request6: PaginatedEntitiesCursorRequest = {
@@ -796,7 +795,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response6.entities).toEqual([entityFrom('E'), entityFrom('D')]);
         expect(response6.nextCursor).toBeDefined();
         expect(response6.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response6.totalItems).toBe(names.length);
 
         // seventh request (forward)
         const request7: PaginatedEntitiesCursorRequest = {
@@ -807,7 +806,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response7.entities).toEqual([entityFrom('C'), entityFrom('B')]);
         expect(response7.nextCursor).toBeDefined();
         expect(response7.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response7.totalItems).toBe(names.length);
 
         // seventh.2 request (forward with a different limit)
         const request7bis: PaginatedEntitiesCursorRequest = {
@@ -822,7 +821,7 @@ describe('DefaultEntitiesCatalog', () => {
         ]);
         expect(response7bis.nextCursor).toBeUndefined();
         expect(response7bis.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response7bis.totalItems).toBe(names.length);
 
         // last request (forward)
         const request8: PaginatedEntitiesCursorRequest = {
@@ -833,7 +832,7 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response8.entities).toEqual([entityFrom('A')]);
         expect(response8.nextCursor).toBeUndefined();
         expect(response8.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
+        expect(response8.totalItems).toBe(names.length);
       },
     );
 
@@ -924,6 +923,105 @@ describe('DefaultEntitiesCatalog', () => {
         };
         const response = await catalog.paginatedEntities(request);
         expect(response).toEqual({ totalItems: 20, entities: [] });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should paginate results accordingly in case of clashing items, %p',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+
+        function entityFrom(name: string, namespace?: string) {
+          return {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name, ...(!!namespace && { namespace }) },
+            spec: { should_include_this: 'yes' },
+          };
+        }
+
+        await Promise.all([
+          addEntityToSearch(knex, entityFrom('AA')),
+          addEntityToSearch(knex, entityFrom('AA', 'namespace2')),
+          addEntityToSearch(knex, entityFrom('AA', 'namespace3')),
+          addEntityToSearch(knex, entityFrom('AA', 'namespace4')),
+          addEntityToSearch(knex, entityFrom('CC')),
+          addEntityToSearch(knex, entityFrom('DD')),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog(knex);
+
+        const limit = 2;
+
+        // initial request
+        const request1: PaginatedEntitiesInitialRequest = {
+          limit,
+          sortFields: [{ field: 'metadata.name' }],
+        };
+        const response1 = await catalog.paginatedEntities(request1);
+        expect(response1.entities).toMatchObject([
+          entityFrom('AA'),
+          entityFrom('AA'),
+        ]);
+        expect(response1.nextCursor).toBeDefined();
+        expect(response1.prevCursor).toBeUndefined();
+        expect(response1.totalItems).toBe(6);
+
+        // second request (forward)
+        const request2: PaginatedEntitiesCursorRequest = {
+          cursor: response1.nextCursor!,
+          limit,
+        };
+        const response2 = await catalog.paginatedEntities(request2);
+        expect(response2.entities).toMatchObject([
+          entityFrom('AA'),
+          entityFrom('AA'),
+        ]);
+        expect(response2.nextCursor).toBeDefined();
+        expect(response2.prevCursor).toBeDefined();
+        expect(response2.totalItems).toBe(6);
+
+        // third request (forward)
+        const request3: PaginatedEntitiesCursorRequest = {
+          cursor: response2.nextCursor!,
+          limit,
+        };
+        const response3 = await catalog.paginatedEntities(request3);
+        expect(response3.entities).toEqual([
+          entityFrom('CC'),
+          entityFrom('DD'),
+        ]);
+        expect(response3.nextCursor).toBeUndefined();
+        expect(response3.prevCursor).toBeDefined();
+        expect(response3.totalItems).toBe(6);
+
+        // forth request (backward)
+        const request4: PaginatedEntitiesCursorRequest = {
+          cursor: response3.prevCursor!,
+          limit,
+        };
+        const response4 = await catalog.paginatedEntities(request4);
+        expect(response4.entities).toMatchObject([
+          entityFrom('AA'),
+          entityFrom('AA'),
+        ]);
+        expect(response4.nextCursor).toBeDefined();
+        expect(response4.prevCursor).toBeDefined();
+        expect(response4.totalItems).toBe(6);
+
+        // fifth request (backward)
+        const request5: PaginatedEntitiesCursorRequest = {
+          cursor: response4.prevCursor!,
+          limit,
+        };
+        const response5 = await catalog.paginatedEntities(request5);
+        expect(response5.entities).toMatchObject([
+          entityFrom('AA'),
+          entityFrom('AA'),
+        ]);
+        expect(response5.nextCursor).toBeDefined();
+        expect(response5.prevCursor).toBeUndefined();
+        expect(response5.totalItems).toBe(6);
       },
     );
   });
