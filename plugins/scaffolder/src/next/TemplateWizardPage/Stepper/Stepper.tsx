@@ -26,9 +26,9 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { withTheme } from '@rjsf/core-v5';
+import { type IChangeEvent, withTheme } from '@rjsf/core-v5';
 import { ErrorSchema, FieldValidation } from '@rjsf/utils';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { NextFieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
@@ -36,7 +36,6 @@ import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
 import validator from '@rjsf/validator-ajv6';
 import { selectedTemplateRouteRef } from '../../../routes';
-import { getDefaultFormState } from '@rjsf/utils';
 import { useFormData } from './useFormData';
 import { FormProps } from '../../types';
 
@@ -102,6 +101,12 @@ export const Stepper = (props: StepperProps) => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
+  const handleChange = useCallback(
+    (e: IChangeEvent) =>
+      setFormState(current => ({ ...current, ...e.formData })),
+    [setFormState],
+  );
+
   const handleNext = async ({
     formData,
   }: {
@@ -111,18 +116,7 @@ export const Stepper = (props: StepperProps) => {
     // to display it's own loading? Or should we grey out the entire form.
     setErrors(undefined);
 
-    const schema = steps[activeStep]?.schema;
-    const rootSchema = steps[activeStep]?.mergedSchema;
-
-    const newFormData = getDefaultFormState(
-      validator,
-      schema,
-      formData,
-      rootSchema,
-      true,
-    );
-
-    const returnedValidation = await validation(newFormData);
+    const returnedValidation = await validation(formData);
 
     const hasErrors = Object.values(returnedValidation).some(
       i => i.__errors?.length,
@@ -138,7 +132,7 @@ export const Stepper = (props: StepperProps) => {
         return stepNum;
       });
     }
-    setFormState(current => ({ ...current, ...newFormData }));
+    setFormState(current => ({ ...current, ...formData }));
   };
 
   return (
@@ -165,6 +159,7 @@ export const Stepper = (props: StepperProps) => {
             onSubmit={handleNext}
             fields={extensions}
             showErrorList={false}
+            onChange={handleChange}
             {...(props.FormProps ?? {})}
           >
             <div className={styles.footer}>

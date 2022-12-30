@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- 1e1a9fe979: Fixed a bug that could cause an indexing process to silently fail, timeout, and accumulate stale indices.
+- 56633804dd: Fixed a bug that could cause the backstage backend to unexpectedly terminate when client errors were encountered during the indexing process.
+- aa33a06894: Improved index throughput by optimizing when and how many documents were made available to the bulk client.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.1-next.0
+  - @backstage/config@1.0.5
+  - @backstage/plugin-search-common@1.2.0
+
 ## 1.1.0
 
 ### Minor Changes

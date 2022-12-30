@@ -28,7 +28,7 @@ lowercase characters separated by dashes, for example `carmen`, if it's a
 package that adds an integration with a system named Carmen, for example. The
 full NPM package name would then be something like
 `@internal/plugin-carmen-backend`, depending on the other flags passed to the
-`create-plugin` command, and your settings for the `create-plugin` command in
+`new` command, and your settings for the `new` command in
 your root `package.json`.
 
 Creating the plugin will take a little while, so be patient. It will helpfully

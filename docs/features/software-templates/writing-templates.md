@@ -44,8 +44,8 @@ spec:
           description: Owner of the component
           ui:field: OwnerPicker
           ui:options:
-            allowedKinds:
-              - Group
+            catalogFilter:
+              kind: Group
     - title: Choose a location
       required:
         - repoUrl
@@ -165,11 +165,11 @@ this:
   "firstName": {
     "ui:autofocus": true,
     "ui:emptyValue": "",
-    "ui:autocomplete": "family-name"
+    "ui:autocomplete": "given-name"
   },
   "lastName": {
     "ui:emptyValue": "",
-    "ui:autocomplete": "given-name"
+    "ui:autocomplete": "family-name"
   },
   "nicknames": {
     "ui:options":{
@@ -211,12 +211,12 @@ spec:
           default: Chuck
           ui:autofocus: true
           ui:emptyValue: ''
-          ui:autocomplete: family-name
+          ui:autocomplete: given-name
         lastName:
           type: string
           title: Last name
           ui:emptyValue: ''
-          ui:autocomplete: given-name
+          ui:autocomplete: family-name
         nicknames:
           type: array
           items:
@@ -459,7 +459,7 @@ an owner for them. Ideally, users should be able to select an owner when they go
 through the scaffolder form from the users and groups already known to
 Backstage. The `OwnerPicker` is a custom field that generates a searchable list
 of groups and/or users already in the catalog to pick an owner from. You can
-specify which of the two kinds are listed in the `allowedKinds` option:
+specify which of the two kinds (or both) are listed in the `catalogFilter.kind` option:
 
 ```yaml
 owner:
@@ -468,8 +468,8 @@ owner:
   description: Owner of the component
   ui:field: OwnerPicker
   ui:options:
-    allowedKinds:
-      - Group
+    catalogFilter:
+      kind: [Group, User]
 ```
 
 ## `spec.steps` - `Action[]`

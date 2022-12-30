@@ -15,7 +15,7 @@
  */
 
 import mockFs from 'mock-fs';
-import { resolve as resolvePath } from 'path';
+import { normalize, resolve as resolvePath } from 'path';
 import * as pathsLib from '../../lib/paths';
 
 import {
@@ -46,9 +46,11 @@ jest.mock('./api-extractor', () => ({
 
 const projectPaths = pathsLib.paths;
 
-jest.spyOn(projectPaths, 'targetRoot', 'get').mockReturnValue('/root');
+jest
+  .spyOn(projectPaths, 'targetRoot', 'get')
+  .mockReturnValue(normalize('/root'));
 jest.spyOn(projectPaths, 'resolveTargetRoot').mockImplementation((...path) => {
-  return resolvePath('/root', ...path);
+  return resolvePath(normalize('/root'), ...path);
 });
 
 describe('buildApiReports', () => {
@@ -95,36 +97,35 @@ describe('buildApiReports', () => {
     await buildApiReports(paths, opts);
 
     expect(categorizePackageDirs).toHaveBeenCalledWith([
-      'packages/package-a',
-      'packages/package-b',
-      'plugins/plugin-a',
-      'plugins/plugin-b',
-      'plugins/plugin-c',
+      normalize('packages/package-a'),
+      normalize('packages/package-b'),
+      normalize('plugins/plugin-a'),
+      normalize('plugins/plugin-b'),
+      normalize('plugins/plugin-c'),
     ]);
 
     expect(generateTypeDeclarations).not.toHaveBeenCalled();
     expect(runApiExtraction).toHaveBeenCalledWith({
       packageDirs: [
-        'packages/package-a',
-        'packages/package-b',
-        'plugins/plugin-a',
-        'plugins/plugin-b',
-        'plugins/plugin-c',
+        normalize('packages/package-a'),
+        normalize('packages/package-b'),
+        normalize('plugins/plugin-a'),
+        normalize('plugins/plugin-b'),
+        normalize('plugins/plugin-c'),
       ],
-      tsconfigFilePath: '/root/tsconfig.json',
+      tsconfigFilePath: resolvePath('/root/tsconfig.json'),
       allowWarnings: [],
       omitMessages: [],
       isLocalBuild: true,
-      outputDir: '/root/node_modules/.cache/api-extractor',
+      outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
     });
     expect(runCliExtraction).toHaveBeenCalledWith({
       packageDirs: [
-        'packages/package-a',
-        'packages/package-b',
-        'plugins/plugin-a',
-        'plugins/plugin-b',
-
-        'plugins/plugin-c',
+        normalize('packages/package-a'),
+        normalize('packages/package-b'),
+        normalize('plugins/plugin-a'),
+        normalize('plugins/plugin-b'),
+        normalize('plugins/plugin-c'),
       ],
       isLocalBuild: true,
     });
@@ -140,19 +141,19 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
-        'packages/package-a',
+        normalize('packages/package-a'),
       ]);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [normalize('packages/package-a')],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
       expect(runCliExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a'],
+        packageDirs: [normalize('packages/package-a')],
         isLocalBuild: true,
       });
 
@@ -165,20 +166,26 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
-        'packages/package-a',
-        'packages/package-b',
+        normalize('packages/package-a'),
+        normalize('packages/package-b'),
       ]);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
       expect(runCliExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
         isLocalBuild: true,
       });
 
@@ -191,20 +198,26 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
-        'packages/package-a',
-        'packages/package-b',
+        normalize('packages/package-a'),
+        normalize('packages/package-b'),
       ]);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
       expect(runCliExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
         isLocalBuild: true,
       });
 
@@ -218,28 +231,28 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
-        'packages/package-a',
-        'packages/package-b',
-        'plugins/plugin-a',
+        normalize('packages/package-a'),
+        normalize('packages/package-b'),
+        normalize('plugins/plugin-a'),
       ]);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: [
-          'packages/package-a',
-          'packages/package-b',
-          'plugins/plugin-a',
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+          normalize('plugins/plugin-a'),
         ],
-        tsconfigFilePath: '/root/tsconfig.json',
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
       expect(runCliExtraction).toHaveBeenCalledWith({
         packageDirs: [
-          'packages/package-a',
-          'packages/package-b',
-          'plugins/plugin-a',
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+          normalize('plugins/plugin-a'),
         ],
         isLocalBuild: true,
       });
@@ -254,31 +267,31 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(categorizePackageDirs).toHaveBeenCalledWith([
-        'packages/package-a',
-        'plugins/plugin-a',
-        'plugins/plugin-b',
-        'plugins/plugin-c',
+        normalize('packages/package-a'),
+        normalize('plugins/plugin-a'),
+        normalize('plugins/plugin-b'),
+        normalize('plugins/plugin-c'),
       ]);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
         packageDirs: [
-          'packages/package-a',
-          'plugins/plugin-a',
-          'plugins/plugin-b',
-          'plugins/plugin-c',
+          normalize('packages/package-a'),
+          normalize('plugins/plugin-a'),
+          normalize('plugins/plugin-b'),
+          normalize('plugins/plugin-c'),
         ],
-        tsconfigFilePath: '/root/tsconfig.json',
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: [],
         omitMessages: [],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
       expect(runCliExtraction).toHaveBeenCalledWith({
         packageDirs: [
-          'packages/package-a',
-          'plugins/plugin-a',
-          'plugins/plugin-b',
-          'plugins/plugin-c',
+          normalize('packages/package-a'),
+          normalize('plugins/plugin-a'),
+          normalize('plugins/plugin-b'),
+          normalize('plugins/plugin-c'),
         ],
         isLocalBuild: true,
       });
@@ -296,12 +309,15 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: ['packages/package-a'],
         omitMessages: [],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
     });
 
@@ -314,12 +330,15 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: ['packages/package-a', 'packages/package-b'],
         omitMessages: [],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
     });
 
@@ -332,12 +351,15 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: ['packages/package-a', 'packages/package-b'],
         omitMessages: [],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
     });
   });
@@ -351,12 +373,15 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: true,
         omitMessages: [],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
     });
   });
@@ -370,12 +395,15 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: [],
         omitMessages: ['ae-missing-release-tag'],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
     });
 
@@ -388,12 +416,15 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: [],
         omitMessages: ['ae-missing-release-tag', 'ae-missing-annotations'],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
     });
 
@@ -406,12 +437,15 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: [],
         omitMessages: ['ae-missing-release-tag', 'ae-missing-annotations'],
         isLocalBuild: true,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
     });
   });
@@ -425,15 +459,21 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(runApiExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
-        tsconfigFilePath: '/root/tsconfig.json',
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
+        tsconfigFilePath: resolvePath('/root/tsconfig.json'),
         allowWarnings: [],
         omitMessages: [],
         isLocalBuild: false,
-        outputDir: '/root/node_modules/.cache/api-extractor',
+        outputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
       });
       expect(runCliExtraction).toHaveBeenCalledWith({
-        packageDirs: ['packages/package-a', 'packages/package-b'],
+        packageDirs: [
+          normalize('packages/package-a'),
+          normalize('packages/package-b'),
+        ],
         isLocalBuild: false,
       });
     });
@@ -448,8 +488,8 @@ describe('buildApiReports', () => {
       await buildApiReports(paths, opts);
 
       expect(buildDocs).toHaveBeenCalledWith({
-        inputDir: '/root/node_modules/.cache/api-extractor',
-        outputDir: '/root/docs/reference',
+        inputDir: resolvePath('/root/node_modules/.cache/api-extractor'),
+        outputDir: resolvePath('/root/docs/reference'),
       });
     });
   });
