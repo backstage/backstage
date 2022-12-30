@@ -36,3 +36,4 @@ export {
 } from './components/Router';
 export * from './components/Cards';
 export { GITHUB_ACTIONS_ANNOTATION } from './components/getProjectNameFromEntity';
+export { registerDrawers } from './drawers';

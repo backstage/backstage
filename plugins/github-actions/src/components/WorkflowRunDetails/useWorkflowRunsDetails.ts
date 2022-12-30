@@ -22,22 +22,25 @@ export const useWorkflowRunsDetails = ({
   hostname,
   owner,
   repo,
+  id,
 }: {
   hostname?: string;
   owner: string;
   repo: string;
+  id?: string;
 }) => {
   const api = useApi(githubActionsApiRef);
-  const { id } = useRouteRefParams(buildRouteRef);
+  const params = useRouteRefParams(buildRouteRef);
+  const buildId = id ?? params.id;
   const details = useAsync(async () => {
     return repo && owner
       ? api.getWorkflowRun({
           hostname,
           owner,
           repo,
-          id: parseInt(id, 10),
+          id: parseInt(buildId, 10),
         })
       : Promise.reject(new Error('No repo/owner provided'));
-  }, [repo, owner, id]);
+  }, [repo, owner, buildId]);
   return details;
 };

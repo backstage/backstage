@@ -22,13 +22,16 @@ export const useWorkflowRunJobs = ({
   hostname,
   owner,
   repo,
+  id,
 }: {
   hostname?: string;
   owner: string;
   repo: string;
+  id?: string;
 }): AsyncState<Jobs> => {
   const api = useApi(githubActionsApiRef);
-  const { id } = useRouteRefParams(buildRouteRef);
+  const params = useRouteRefParams(buildRouteRef);
+  const buildId = id ?? params.id;
 
   return useAsync(async () => {
     if (!repo || !owner) {
@@ -39,7 +42,7 @@ export const useWorkflowRunJobs = ({
       hostname,
       owner,
       repo,
-      id: parseInt(id, 10),
+      id: parseInt(buildId, 10),
     });
 
     return {
@@ -62,5 +65,5 @@ export const useWorkflowRunJobs = ({
         })),
       })),
     };
-  }, [repo, owner, id]);
+  }, [repo, owner, buildId]);
 };
