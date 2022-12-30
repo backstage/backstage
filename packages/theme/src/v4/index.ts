@@ -27,4 +27,3 @@ export type {
   BackstageThemeOptions,
   SimpleV4ThemeOptions,
 } from './types';
-export { colorVariants, genPageTheme, pageTheme, shapes } from './pageTheme';
