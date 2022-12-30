@@ -17,10 +17,20 @@
 import {
   Backend,
   createSpecializedBackend,
+  cacheFactory,
+  configFactory,
+  databaseFactory,
+  discoveryFactory,
+  httpRouterFactory,
   lifecycleFactory,
-  rootLifecycleFactory,
   loggerFactory,
+  permissionsFactory,
+  rootHttpRouterFactory,
+  rootLifecycleFactory,
   rootLoggerFactory,
+  schedulerFactory,
+  tokenManagerFactory,
+  urlReaderFactory,
 } from '@backstage/backend-app-api';
 import {
   ServiceFactory,
@@ -55,10 +65,20 @@ export interface TestBackendOptions<
 }
 
 const defaultServiceFactories = [
-  rootLoggerFactory(),
-  loggerFactory(),
+  cacheFactory(),
+  configFactory(),
+  databaseFactory(),
+  discoveryFactory(),
+  httpRouterFactory(),
   lifecycleFactory(),
+  loggerFactory(),
+  permissionsFactory(),
+  rootHttpRouterFactory(),
   rootLifecycleFactory(),
+  rootLoggerFactory(),
+  schedulerFactory(),
+  tokenManagerFactory(),
+  urlReaderFactory(),
 ];
 
 const backendInstancesToCleanUp = new Array<Backend>();

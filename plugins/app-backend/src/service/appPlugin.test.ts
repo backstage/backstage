@@ -20,12 +20,6 @@ import fetch from 'node-fetch';
 import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
-import {
-  databaseFactory,
-  httpRouterFactory,
-  loggerFactory,
-  rootLoggerFactory,
-} from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import getPort from 'get-port';
 
@@ -59,10 +53,6 @@ describe('appPlugin', () => {
             },
           }),
         ],
-        loggerFactory(),
-        rootLoggerFactory(),
-        databaseFactory(),
-        httpRouterFactory(),
       ],
       features: [
         appPlugin({
