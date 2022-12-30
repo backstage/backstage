@@ -21,7 +21,6 @@ import {
   join,
 } from 'path';
 import { execFile } from 'child_process';
-import type prettierType from 'prettier';
 import fs from 'fs-extra';
 import {
   Extractor,
@@ -195,7 +194,7 @@ ApiReportGenerator.generateReviewFileContent =
     );
 
     try {
-      const prettier = require('prettier') as typeof prettierType;
+      const prettier = require('prettier') as typeof import('prettier');
 
       const config = prettier.resolveConfig.sync(cliPaths.targetRoot) ?? {};
       return prettier.format(content, {
@@ -203,7 +202,6 @@ ApiReportGenerator.generateReviewFileContent =
         parser: 'markdown',
       });
     } catch (e) {
-      // console.warn('Failed to format API report with prettier', e);
       return content;
     }
   };
@@ -416,6 +414,7 @@ export async function runApiExtraction({
       configObjectFullPath: projectFolder,
       packageJsonFullPath: resolvePath(projectFolder, 'package.json'),
       tsdocConfigFile: await getTsDocConfig(),
+      ignoreMissingEntryPoint: true,
     });
 
     // The `packageFolder` needs to point to the location within `dist-types` in order for relative
