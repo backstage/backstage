@@ -16,7 +16,11 @@
 
 import { createRouteRef } from '@backstage/core-plugin-api';
 
+import icon from './assets/graphiql.icon.svg';
+
 /** @public */
 export const graphiQLRouteRef = createRouteRef({
   id: 'graphiql-root',
+  title: 'GraphiQL',
+  icon,
 });
