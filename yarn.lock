@@ -3382,6 +3382,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
+    "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
     winston: ^3.2.1
