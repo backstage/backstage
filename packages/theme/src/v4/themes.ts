@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createTheme } from './baseTheme';
+import { createV4Theme } from './baseTheme';
 import { pageTheme } from './pageTheme';
 import { yellow } from '@material-ui/core/colors';
 
@@ -23,7 +23,7 @@ import { yellow } from '@material-ui/core/colors';
  *
  * @public
  */
-export const lightTheme = createTheme({
+export const lightTheme = createV4Theme({
   palette: {
     type: 'light',
     background: {
@@ -101,7 +101,7 @@ export const lightTheme = createTheme({
  *
  * @public
  */
-export const darkTheme = createTheme({
+export const darkTheme = createV4Theme({
   palette: {
     type: 'dark',
     background: {

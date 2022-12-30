@@ -15,14 +15,11 @@
  */
 
 import { createTheme as createMuiTheme } from '@material-ui/core/styles';
+import { Theme, ThemeOptions } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { Overrides } from '@material-ui/core/styles/overrides';
-import {
-  BackstageTheme,
-  BackstageThemeOptions,
-  SimpleThemeOptions,
-} from './types';
 import { pageTheme as defaultPageThemes } from './pageTheme';
+import { SimpleV4ThemeOptions } from './types';
 
 const DEFAULT_HTML_FONT_SIZE = 16;
 const DEFAULT_FONT_FAMILY =
@@ -33,9 +30,9 @@ const DEFAULT_FONT_FAMILY =
  *
  * @public
  */
-export function createThemeOptions(
-  options: SimpleThemeOptions,
-): BackstageThemeOptions {
+export function createV4ThemeOptions(
+  options: SimpleV4ThemeOptions,
+): ThemeOptions {
   const {
     palette,
     htmlFontSize = DEFAULT_HTML_FONT_SIZE,
@@ -103,7 +100,7 @@ export function createThemeOptions(
  *
  * @public
  */
-export function createThemeOverrides(theme: BackstageTheme): Overrides {
+export function createV4ThemeOverrides(theme: Theme): Overrides {
   return {
     MuiCssBaseline: {
       '@global': {
@@ -291,10 +288,10 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
  *
  * @public
  */
-export function createTheme(options: SimpleThemeOptions): BackstageTheme {
-  const themeOptions = createThemeOptions(options);
-  const baseTheme = createMuiTheme(themeOptions) as BackstageTheme;
-  const overrides = createThemeOverrides(baseTheme);
+export function createV4Theme(options: SimpleV4ThemeOptions): Theme {
+  const themeOptions = createV4ThemeOptions(options);
+  const baseTheme = createMuiTheme(themeOptions);
+  const overrides = createV4ThemeOverrides(baseTheme);
   const theme = { ...baseTheme, overrides };
   return theme;
 }
