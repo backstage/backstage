@@ -22,6 +22,7 @@
 
 export * from './v4';
 export * from './v5';
+export { colorVariants, genPageTheme, pageTheme, shapes } from './pageTheme';
 export type {
   BackstagePaletteAdditions,
   PageTheme,
