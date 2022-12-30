@@ -61,6 +61,7 @@ import DomainIcon from '@material-ui/icons/Apartment';
 import ResourceIcon from '@material-ui/icons/Work';
 import SystemIcon from '@material-ui/icons/Category';
 import UserIcon from '@material-ui/icons/Person';
+import { InteractiveSidebarWrapper } from './InteractiveSidebar';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -90,7 +91,7 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({ children }: PropsWithChildren<{}>) => (
+const LegacySidebar = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
@@ -182,3 +183,9 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     {children}
   </SidebarPage>
 );
+
+const useInteractiveSidebar = true;
+
+export const Root = useInteractiveSidebar
+  ? InteractiveSidebarWrapper
+  : LegacySidebar;

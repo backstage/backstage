@@ -6073,6 +6073,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/plugin-interactive-drawers": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
@@ -6374,6 +6375,55 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-interactive-drawers@workspace:^, @backstage/plugin-interactive-drawers@workspace:plugins/interactive-drawers":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-interactive-drawers@workspace:plugins/interactive-drawers"
+  dependencies:
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/plugin-search": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/plugin-search-react": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@types/react-beautiful-dnd": ^13.0.0
+    "@types/use-persisted-state": ^0.3.0
+    react-beautiful-dnd: ^13.0.0
+    react-use: ^17.2.4
+    use-persisted-state: ^0.3.3
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-router: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-interactive-sidebar@workspace:^, @backstage/plugin-interactive-sidebar@workspace:plugins/interactive-sidebar":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-interactive-sidebar@workspace:plugins/interactive-sidebar"
+  dependencies:
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/plugin-interactive-drawers": "workspace:^"
+    "@backstage/plugin-search": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/plugin-search-react": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@types/react-beautiful-dnd": ^13.0.0
+    "@types/use-persisted-state": ^0.3.0
+    react-beautiful-dnd: ^13.0.0
+    react-use: ^17.2.4
+    use-persisted-state: ^0.3.3
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-router: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -14751,6 +14801,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-beautiful-dnd@npm:^13.0.0":
+  version: 13.1.3
+  resolution: "@types/react-beautiful-dnd@npm:13.1.3"
+  dependencies:
+    "@types/react": "*"
+  checksum: e09860672c15666ee3d3acfad3dfc2ebd8fceb29b5468e12b7543af74d0e19f2eb9c4be187adb33c5d6816f47b0db958a8c0160b15826b92f6df1e8e3e34657a
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:^17":
   version: 17.0.17
   resolution: "@types/react-dom@npm:17.0.17"
@@ -15198,6 +15257,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/use-persisted-state@npm:^0.3.0":
+  version: 0.3.1
+  resolution: "@types/use-persisted-state@npm:0.3.1"
+  dependencies:
+    "@types/react": "*"
+  checksum: 7adccfa371a1a1d29d65011173c5678c44507ea94b13407965169bdb63fea096a9efbb8447c4b9884c81f7eee02faa35b284ab8097f9ee87955e383f98f41562
+  languageName: node
+  linkType: hard
+
 "@types/uuid@npm:^8.0.0":
   version: 8.3.4
   resolution: "@types/uuid@npm:8.3.4"
@@ -15545,6 +15613,15 @@ __metadata:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
   checksum: 88f931ae71f42609db4ca81453d9d68774a57938c06827423588c7e8dabc0c5e0dfce18ca790d5ca078b69b68372ab5a929344333ca7915b27f6a6f66470c5d8
+  languageName: node
+  linkType: hard
+
+"@use-it/event-listener@npm:^0.1.2":
+  version: 0.1.7
+  resolution: "@use-it/event-listener@npm:0.1.7"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 6d29f72fd4da0d3a2b015389b646d9b2f7e0ff9d04b2781bad70a81477f7ee3e79256b4abbd4d4bbd9f871d38ca6f7b48b9104e504d176b88f3a149a32fcaf99
   languageName: node
   linkType: hard
 
@@ -21919,6 +21996,7 @@ __metadata:
     "@backstage/plugin-azure-devops": "workspace:^"
     "@backstage/plugin-azure-sites": "workspace:^"
     "@backstage/plugin-badges": "workspace:^"
+    "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-graph": "workspace:^"
     "@backstage/plugin-catalog-import": "workspace:^"
@@ -21935,6 +22013,8 @@ __metadata:
     "@backstage/plugin-gocd": "workspace:^"
     "@backstage/plugin-graphiql": "workspace:^"
     "@backstage/plugin-home": "workspace:^"
+    "@backstage/plugin-interactive-drawers": "workspace:^"
+    "@backstage/plugin-interactive-sidebar": "workspace:^"
     "@backstage/plugin-jenkins": "workspace:^"
     "@backstage/plugin-kafka": "workspace:^"
     "@backstage/plugin-kubernetes": "workspace:^"
@@ -37435,6 +37515,17 @@ __metadata:
   peerDependencies:
     react: ^16.8.0
   checksum: 39ede232b8c95e6e1ff4f9d9b3f45826b6c1a51a8baae562f49867c569929323ec1e100186aa5111b84f6650bcf273746faf2739091cbe13d6c2e8d3306cc254
+  languageName: node
+  linkType: hard
+
+"use-persisted-state@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "use-persisted-state@npm:0.3.3"
+  dependencies:
+    "@use-it/event-listener": ^0.1.2
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0
+  checksum: ab637e526180aca1b487f7da38926b864d4ad524b28176e9e2ce58c441bc49f29c91e324eeb75ad579f8468c17f990793c0fff69f55b138d1be9ed8ddb79ecee
   languageName: node
   linkType: hard
 
