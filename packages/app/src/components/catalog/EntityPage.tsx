@@ -41,7 +41,6 @@ import {
   isAzureDevOpsAvailable,
   isAzurePipelinesAvailable,
 } from '@backstage/plugin-azure-devops';
-import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   EntityAboutCard,
   EntityDependsOnComponentsCard,
@@ -104,7 +103,6 @@ import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
 } from '@backstage/plugin-pagerduty';
-import { EntityPlaylistDialog } from '@backstage/plugin-playlist';
 import {
   EntityRollbarContent,
   isRollbarAvailable,
@@ -114,8 +112,6 @@ import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
-import BadgeIcon from '@material-ui/icons/CallToAction';
-import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 
 import {
   EntityGithubInsightsContent,
@@ -146,7 +142,7 @@ import {
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 import { EntityScoreCardContent } from '@oriflame/backstage-plugin-score-card';
 
-import React, { ReactNode, useMemo, useState } from 'react';
+import React from 'react';
 
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
@@ -154,49 +150,10 @@ import {
   ReportIssue,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { EntityCostInsightsContent } from '@backstage/plugin-cost-insights';
+import { makePageEntries, makePageSwitch } from './page-entries';
+import { EntityLayoutWrapper } from './EntityLayoutWrapper';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
-
-const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
-  const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
-  const [playlistDialogOpen, setPlaylistDialogOpen] = useState(false);
-
-  const extraMenuItems = useMemo(() => {
-    return [
-      {
-        title: 'Badges',
-        Icon: BadgeIcon,
-        onClick: () => setBadgesDialogOpen(true),
-      },
-      {
-        title: 'Add to playlist',
-        Icon: PlaylistAddIcon,
-        onClick: () => setPlaylistDialogOpen(true),
-      },
-    ];
-  }, []);
-
-  return (
-    <>
-      <EntityLayout
-        UNSTABLE_extraContextMenuItems={extraMenuItems}
-        UNSTABLE_contextMenuOptions={{
-          disableUnregister: 'visible',
-        }}
-      >
-        {props.children}
-      </EntityLayout>
-      <EntityBadgesDialog
-        open={badgesDialogOpen}
-        onClose={() => setBadgesDialogOpen(false)}
-      />
-      <EntityPlaylistDialog
-        open={playlistDialogOpen}
-        onClose={() => setPlaylistDialogOpen(false)}
-      />
-    </>
-  );
-};
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -400,216 +357,201 @@ const overviewContent = (
   </Grid>
 );
 
-const serviceEntityPage = (
-  <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
-      {overviewContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/ci-cd" title="CI/CD">
-      {cicdContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/errors" title="Errors">
-      {errorsContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/api" title="API">
-      <Grid container spacing={3} alignItems="stretch">
-        <Grid item xs={12} md={6}>
-          <EntityProvidedApisCard />
+export const componentPageEntries = makePageEntries({
+  overview: {
+    path: '/',
+    title: 'Overview',
+    content: overviewContent,
+  },
+  cicd: {
+    path: '/ci-cd',
+    title: 'CI/CD',
+    content: cicdContent,
+  },
+  lighthouse: {
+    path: '/lighthouse',
+    title: 'Lighthouse',
+    content: <EntityLighthouseContent />,
+  },
+  errors: {
+    path: '/errors',
+    title: 'Errors',
+    content: errorsContent,
+  },
+  api: {
+    path: '/api',
+    title: 'API',
+    content: (
+      <>
+        <Grid container spacing={3} alignItems="stretch">
+          <Grid item xs={12} md={6}>
+            <EntityProvidedApisCard />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <EntityConsumedApisCard />
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <EntityConsumedApisCard />
+      </>
+    ),
+  },
+  dependencies: {
+    path: '/dependencies',
+    title: 'Dependencies',
+    content: (
+      <>
+        <Grid container spacing={3} alignItems="stretch">
+          <Grid item xs={12} md={6}>
+            <EntityDependsOnComponentsCard variant="gridItem" />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <EntityDependsOnResourcesCard variant="gridItem" />
+          </Grid>
         </Grid>
-      </Grid>
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/dependencies" title="Dependencies">
-      <Grid container spacing={3} alignItems="stretch">
-        <Grid item xs={12} md={6}>
-          <EntityDependsOnComponentsCard variant="gridItem" />
+      </>
+    ),
+  },
+  docs: {
+    path: '/docs',
+    title: 'Docs',
+    content: techdocsContent,
+  },
+  newrelic: {
+    path: '/newrelic-dashboard',
+    title: 'New Relic Dashboard',
+    if: isNewRelicDashboardAvailable,
+    content: <EntityNewRelicDashboardContent />,
+  },
+  kubernetes: {
+    path: '/kubernetes',
+    title: 'Kubernetes',
+    content: <EntityKubernetesContent />,
+  },
+  azureGitTags: {
+    path: '/git-tags',
+    title: 'Git Tags',
+    content: <EntityAzureGitTagsContent />,
+    if: isAzureDevOpsAvailable,
+  },
+  pullRequests: {
+    path: '/pull-requests',
+    title: 'Pull Requests',
+    content: pullRequestsContent,
+  },
+  codeInsights: {
+    path: '/code-insights',
+    title: 'Code Insights',
+    content: <EntityGithubInsightsContent />,
+  },
+  techInsights: {
+    path: '/tech-insights',
+    title: 'Scorecards',
+    content: (
+      <>
+        <Grid container spacing={3} alignItems="stretch">
+          <Grid item xs={12} md={6}>
+            <EntityTechInsightsScorecardCard
+              title="Scorecard 1"
+              description="This is a sample scorecard no. 1"
+              checksId={['titleCheck']}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <EntityTechInsightsScorecardCard
+              title="Scorecard 2"
+              checksId={['techDocsCheck']}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <EntityDependsOnResourcesCard variant="gridItem" />
-        </Grid>
-      </Grid>
-    </EntityLayout.Route>
+      </>
+    ),
+  },
+  codeCoverage: {
+    path: '/code-coverage',
+    title: 'Code Coverage',
+    content: <EntityCodeCoverageContent />,
+  },
+  kafka: {
+    path: '/kafka',
+    title: 'Kafka',
+    content: <EntityKafkaContent />,
+  },
+  todos: {
+    path: '/todos',
+    title: 'TODOs',
+    content: <EntityTodoContent />,
+  },
+  costs: {
+    path: '/costs',
+    title: 'Costs',
+    content: <EntityCostInsightsContent />,
+  },
+  dynatrace: {
+    path: '/dynatrace',
+    title: 'Dynatrace',
+    content: <DynatraceTab />,
+    if: isDynatraceAvailable,
+  },
+});
 
-    <EntityLayout.Route path="/docs" title="Docs">
-      {techdocsContent}
-    </EntityLayout.Route>
+export const serviceComponentPageEntries = [
+  componentPageEntries.overview,
+  componentPageEntries.cicd,
+  componentPageEntries.errors,
+  componentPageEntries.api,
+  componentPageEntries.dependencies,
+  componentPageEntries.docs,
+  componentPageEntries.newrelic,
+  componentPageEntries.kubernetes,
+  componentPageEntries.pullRequests,
+  componentPageEntries.codeInsights,
+  componentPageEntries.techInsights,
+  componentPageEntries.codeCoverage,
+  componentPageEntries.kafka,
+  componentPageEntries.todos,
+  componentPageEntries.costs,
+  componentPageEntries.dynatrace,
+];
 
-    <EntityLayout.Route
-      if={isNewRelicDashboardAvailable}
-      path="/newrelic-dashboard"
-      title="New Relic Dashboard"
-    >
-      <EntityNewRelicDashboardContent />
-    </EntityLayout.Route>
+export const websiteComponentPageEntries = [
+  componentPageEntries.overview,
+  componentPageEntries.cicd,
+  componentPageEntries.lighthouse,
+  componentPageEntries.errors,
+  componentPageEntries.dependencies,
+  componentPageEntries.docs,
+  componentPageEntries.newrelic,
+  componentPageEntries.kubernetes,
+  componentPageEntries.dynatrace,
+  componentPageEntries.azureGitTags,
+  componentPageEntries.pullRequests,
+  componentPageEntries.codeInsights,
+  componentPageEntries.codeCoverage,
+  componentPageEntries.todos,
+];
 
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
-      <EntityKubernetesContent />
-    </EntityLayout.Route>
+export const defaultPageEntries = [
+  componentPageEntries.overview,
+  componentPageEntries.docs,
+  componentPageEntries.todos,
+];
 
-    <EntityLayout.Route path="/pull-requests" title="Pull Requests">
-      {pullRequestsContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/code-insights" title="Code Insights">
-      <EntityGithubInsightsContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/tech-insights" title="Scorecards">
-      <Grid container spacing={3} alignItems="stretch">
-        <Grid item xs={12} md={6}>
-          <EntityTechInsightsScorecardCard
-            title="Scorecard 1"
-            description="This is a sample scorecard no. 1"
-            checksId={['titleCheck']}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <EntityTechInsightsScorecardCard
-            title="Scorecard 2"
-            checksId={['techDocsCheck']}
-          />
-        </Grid>
-      </Grid>
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/code-coverage" title="Code Coverage">
-      <EntityCodeCoverageContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/kafka" title="Kafka">
-      <EntityKafkaContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/todos" title="TODOs">
-      <EntityTodoContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/costs" title="Costs">
-      <EntityCostInsightsContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route
-      path="/dynatrace"
-      title="Dynatrace"
-      if={isDynatraceAvailable}
-    >
-      <DynatraceTab />
-    </EntityLayout.Route>
-  </EntityLayoutWrapper>
-);
-
-const websiteEntityPage = (
-  <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
-      {overviewContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/ci-cd" title="CI/CD">
-      {cicdContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/lighthouse" title="Lighthouse">
-      <EntityLighthouseContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/errors" title="Errors">
-      {errorsContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/dependencies" title="Dependencies">
-      <Grid container spacing={3} alignItems="stretch">
-        <Grid item md={6}>
-          <EntityDependsOnComponentsCard variant="gridItem" />
-        </Grid>
-        <Grid item md={6}>
-          <EntityDependsOnResourcesCard variant="gridItem" />
-        </Grid>
-      </Grid>
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/docs" title="Docs">
-      {techdocsContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route
-      if={isNewRelicDashboardAvailable}
-      path="/newrelic-dashboard"
-      title="New Relic Dashboard"
-    >
-      <EntityNewRelicDashboardContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
-      <EntityKubernetesContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route
-      path="/dynatrace"
-      title="Dynatrace"
-      if={isDynatraceAvailable}
-    >
-      <DynatraceTab />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route
-      if={isAzureDevOpsAvailable}
-      path="/git-tags"
-      title="Git Tags"
-    >
-      <EntityAzureGitTagsContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/pull-requests" title="Pull Requests">
-      {pullRequestsContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/code-insights" title="Code Insights">
-      <EntityGithubInsightsContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/code-coverage" title="Code Coverage">
-      <EntityCodeCoverageContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/todos" title="TODOs">
-      <EntityTodoContent />
-    </EntityLayout.Route>
-  </EntityLayoutWrapper>
-);
-
-const defaultEntityPage = (
-  <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
-      {overviewContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/docs" title="Docs">
-      {techdocsContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/todos" title="TODOs">
-      <EntityTodoContent />
-    </EntityLayout.Route>
-  </EntityLayoutWrapper>
-);
+export const componentPageSwitch = makePageSwitch([
+  {
+    if: isComponentType('service'),
+    entries: serviceComponentPageEntries,
+  },
+  {
+    if: isComponentType('website'),
+    entries: websiteComponentPageEntries,
+  },
+  {
+    entries: defaultPageEntries,
+  },
+]);
 
 const componentPage = (
   <EntitySwitch>
-    <EntitySwitch.Case if={isComponentType('service')}>
-      {serviceEntityPage}
-    </EntitySwitch.Case>
-
-    <EntitySwitch.Case if={isComponentType('website')}>
-      {websiteEntityPage}
-    </EntitySwitch.Case>
-
-    <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
+    {componentPageSwitch.map(({ entitySwitchCase }) => entitySwitchCase)}
   </EntitySwitch>
 );
 
@@ -767,6 +709,10 @@ export const entityPage = (
     <EntitySwitch.Case if={isKind('system')} children={systemPage} />
     <EntitySwitch.Case if={isKind('domain')} children={domainPage} />
 
-    <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
+    <EntitySwitch.Case>
+      <EntityLayoutWrapper>
+        {defaultPageEntries.map(({ route }) => route)}
+      </EntityLayoutWrapper>
+    </EntitySwitch.Case>
   </EntitySwitch>
 );
