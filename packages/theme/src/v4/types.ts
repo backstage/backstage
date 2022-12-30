@@ -21,6 +21,7 @@ import {
 } from '@material-ui/core/styles/createPalette';
 import {
   BackstagePaletteAdditions,
+  BackstageThemeAdditions,
   PageTheme,
   PageThemeSelector,
 } from '../types';
@@ -93,13 +94,7 @@ declare module '@material-ui/core/styles/createPalette' {
 }
 
 declare module '@material-ui/core/styles/createTheme' {
-  interface Theme {
-    page: PageTheme;
-    getPageTheme: (selector: PageThemeSelector) => PageTheme;
-  }
+  interface Theme extends BackstageThemeAdditions {}
 
-  interface ThemeOptions {
-    page: PageTheme;
-    getPageTheme: (selector: PageThemeSelector) => PageTheme;
-  }
+  interface ThemeOptions extends BackstageThemeAdditions {}
 }
