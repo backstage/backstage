@@ -22730,9 +22730,9 @@ __metadata:
   linkType: hard
 
 "fast-json-patch@npm:^3.0.0-1":
-  version: 3.0.0-1
-  resolution: "fast-json-patch@npm:3.0.0-1"
-  checksum: d4a8dff174357a90f3e2b79812df4bcc179143524e7eb1ab84a3bd5a80bd283f6be53996abe5c38527aeb28e994f0d03084c9ce5fcd8eb3e2881986e991105aa
+  version: 3.1.1
+  resolution: "fast-json-patch@npm:3.1.1"
+  checksum: c4525b61b2471df60d4b025b4118b036d99778a93431aa44d1084218182841d82ce93056f0f3bbd731a24e6a8e69820128adf1873eb2199a26c62ef58d137833
   languageName: node
   linkType: hard
 
