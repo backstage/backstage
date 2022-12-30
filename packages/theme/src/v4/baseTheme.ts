@@ -18,7 +18,7 @@ import { createTheme as createMuiTheme } from '@material-ui/core/styles';
 import { Theme, ThemeOptions } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { Overrides } from '@material-ui/core/styles/overrides';
-import { pageTheme as defaultPageThemes } from './pageTheme';
+import { pageTheme as defaultPageThemes } from '../pageTheme';
 import { SimpleV4ThemeOptions } from './types';
 
 const DEFAULT_HTML_FONT_SIZE = 16;
