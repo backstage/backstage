@@ -21,6 +21,7 @@
  */
 
 export * from './v4';
+export * from './v5';
 export type {
   BackstagePaletteAdditions,
   PageTheme,
