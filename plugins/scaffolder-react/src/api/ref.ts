@@ -17,6 +17,7 @@
 import { createApiRef } from '@backstage/core-plugin-api';
 import { ScaffolderApi } from './types';
 
+/** @public */
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
 });

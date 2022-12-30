@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/core-plugin-api';
 import { Dispatch } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -17,12 +18,15 @@ import type { FormProps as FormProps_2 } from '@rjsf/core-v5';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
+import { Observable } from '@backstage/types';
 import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
 import { SubRouteRef } from '@backstage/core-plugin-api';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
@@ -117,6 +121,29 @@ export const legacySelectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:templateName'>
 >;
 
+// @public
+export type ListActionsResponse = Array<{
+  id: string;
+  description?: string;
+  schema?: {
+    input?: JSONSchema7;
+    output?: JSONSchema7;
+  };
+}>;
+
+// @public
+export type LogEvent = {
+  type: 'log' | 'completion';
+  body: {
+    message: string;
+    stepId?: string;
+    status?: ScaffolderTaskStatus;
+  };
+  createdAt: string;
+  id: string;
+  taskId: string;
+};
+
 // @alpha
 export type NextCustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
@@ -194,13 +221,145 @@ export type ReviewStateProps = {
 export const rootRouteRef: RouteRef<undefined>;
 
 // @public
+export interface ScaffolderApi {
+  // (undocumented)
+  dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
+  getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse>;
+  // (undocumented)
+  getTask(taskId: string): Promise<ScaffolderTask>;
+  // (undocumented)
+  getTemplateParameterSchema(
+    templateRef: string,
+  ): Promise<TemplateParameterSchema>;
+  listActions(): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks?(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
+    tasks: ScaffolderTask[];
+  }>;
+  scaffold(
+    options: ScaffolderScaffoldOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
+  // (undocumented)
+  streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
+}
+
+// @public (undocumented)
+export const scaffolderApiRef: ApiRef<ScaffolderApi>;
+
+// @public (undocumented)
+export interface ScaffolderDryRunOptions {
+  // (undocumented)
+  directoryContents: {
+    path: string;
+    base64Content: string;
+  }[];
+  // (undocumented)
+  secrets?: Record<string, string>;
+  // (undocumented)
+  template: JsonValue;
+  // (undocumented)
+  values: JsonObject;
+}
+
+// @public (undocumented)
+export interface ScaffolderDryRunResponse {
+  // (undocumented)
+  directoryContents: Array<{
+    path: string;
+    base64Content: string;
+    executable: boolean;
+  }>;
+  // (undocumented)
+  log: Array<Pick<LogEvent, 'body'>>;
+  // (undocumented)
+  output: ScaffolderTaskOutput;
+  // (undocumented)
+  steps: TaskStep[];
+}
+
+// @public
 export const ScaffolderFieldExtensions: React_2.ComponentType;
+
+// @public
+export interface ScaffolderGetIntegrationsListOptions {
+  // (undocumented)
+  allowedHosts: string[];
+}
+
+// @public
+export interface ScaffolderGetIntegrationsListResponse {
+  // (undocumented)
+  integrations: {
+    type: string;
+    title: string;
+    host: string;
+  }[];
+}
 
 // @public (undocumented)
 export const scaffolderListTaskRouteRef: SubRouteRef<undefined>;
 
 // @public (undocumented)
+export type ScaffolderOutputLink = {
+  title?: string;
+  icon?: string;
+  url?: string;
+  entityRef?: string;
+};
+
+// @public
+export interface ScaffolderScaffoldOptions {
+  // (undocumented)
+  secrets?: Record<string, string>;
+  // (undocumented)
+  templateRef: string;
+  // (undocumented)
+  values: Record<string, JsonValue>;
+}
+
+// @public
+export interface ScaffolderScaffoldResponse {
+  // (undocumented)
+  taskId: string;
+}
+
+// @public
+export interface ScaffolderStreamLogsOptions {
+  // (undocumented)
+  after?: number;
+  // (undocumented)
+  taskId: string;
+}
+
+// @public
+export type ScaffolderTask = {
+  id: string;
+  spec: TaskSpec;
+  status: 'failed' | 'completed' | 'processing' | 'open' | 'cancelled';
+  lastHeartbeatAt: string;
+  createdAt: string;
+};
+
+// @public (undocumented)
+export type ScaffolderTaskOutput = {
+  links?: ScaffolderOutputLink[];
+} & {
+  [key: string]: unknown;
+};
+
+// @public (undocumented)
 export const scaffolderTaskRouteRef: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+
+// @public
+export type ScaffolderTaskStatus =
+  | 'open'
+  | 'processing'
+  | 'failed'
+  | 'completed'
+  | 'skipped';
 
 // @public
 export interface ScaffolderUseTemplateSecrets {

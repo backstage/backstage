@@ -140,12 +140,6 @@ export class ScaffolderClient implements ScaffolderApi {
     return schema;
   }
 
-  /**
-   * Executes the scaffolding of a component, given a template and its
-   * parameter values.
-   *
-   * @param options - The {@link ScaffolderScaffoldOptions} the scaffolding.
-   */
   async scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse> {
