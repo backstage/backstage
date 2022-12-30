@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
-import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
+import { TemplateParameterSchema } from '../types';
 
 /**
  * The status of each task in a Scaffolder Job
@@ -156,7 +156,6 @@ export interface ScaffolderDryRunResponse {
   steps: TaskStep[];
   output: ScaffolderTaskOutput;
 }
-
 /**
  * An API to interact with the scaffolder backend.
  *

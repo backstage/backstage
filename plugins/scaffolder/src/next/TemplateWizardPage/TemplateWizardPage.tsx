@@ -31,7 +31,7 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { scaffolderApiRef } from '../../api';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';

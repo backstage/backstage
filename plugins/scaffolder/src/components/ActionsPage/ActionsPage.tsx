@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { scaffolderApiRef } from '../../api';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import {
   Typography,
   Paper,

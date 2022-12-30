@@ -16,7 +16,6 @@
 
 import { parseEntityRef } from '@backstage/catalog-model';
 import {
-  createApiRef,
   DiscoveryApi,
   FetchApi,
   IdentityApi,
@@ -38,19 +37,10 @@ import {
   ScaffolderTask,
   ScaffolderDryRunOptions,
   ScaffolderDryRunResponse,
-} from './types';
+  TemplateParameterSchema,
+} from '@backstage/plugin-scaffolder-react';
 
-import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import queryString from 'qs';
-
-/**
- * Utility API reference for the {@link ScaffolderApi}.
- *
- * @public
- */
-export const scaffolderApiRef = createApiRef<ScaffolderApi>({
-  id: 'plugin.scaffolder.service',
-});
 
 /**
  * An API to interact with the scaffolder backend.

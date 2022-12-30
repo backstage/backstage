@@ -23,12 +23,12 @@ import {
   scmAuthApiRef,
   ScmAuthApi,
 } from '@backstage/integration-react';
-import { scaffolderApiRef } from '../../../api';
-import { ScaffolderApi } from '../../../types';
 
 import {
   SecretsContextProvider,
   SecretsContext,
+  scaffolderApiRef,
+  ScaffolderApi,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 

@@ -22,9 +22,11 @@ import {
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { scaffolderApiRef } from '../../api';
-import { ScaffolderApi } from '../../types';
-import { rootRouteRef } from '@backstage/plugin-scaffolder-react';
+import {
+  rootRouteRef,
+  scaffolderApiRef,
+  ScaffolderApi,
+} from '@backstage/plugin-scaffolder-react';
 import { TemplatePage } from './TemplatePage';
 import {
   featureFlagsApiRef,

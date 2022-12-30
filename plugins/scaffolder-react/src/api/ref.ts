@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-export * from './routes';
-export * from './extensions';
-export * from './types';
-export * from './secrets';
-export * from './api';
+import { createApiRef } from '@backstage/core-plugin-api';
+import { ScaffolderApi } from './types';
 
-export * from './next';
+export const scaffolderApiRef = createApiRef<ScaffolderApi>({
+  id: 'plugin.scaffolder.service',
+});

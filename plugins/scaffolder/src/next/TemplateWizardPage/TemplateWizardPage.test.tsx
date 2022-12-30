@@ -22,9 +22,12 @@ import {
 } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { scaffolderApiRef } from '../../api';
-import { nextRouteRef, rootRouteRef } from '@backstage/plugin-scaffolder-react';
-import { ScaffolderApi } from '../../types';
+import {
+  nextRouteRef,
+  rootRouteRef,
+  ScaffolderApi,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
 import { TemplateWizardPage } from './TemplateWizardPage';
 
 jest.mock('react-router-dom', () => {

@@ -21,8 +21,9 @@ import {
   rootRouteRef,
   viewTechDocRouteRef,
   createScaffolderFieldExtension,
+  scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
-import { scaffolderApiRef, ScaffolderClient } from './api';
+import { ScaffolderClient } from './api';
 import {
   EntityPicker,
   EntityPickerSchema,

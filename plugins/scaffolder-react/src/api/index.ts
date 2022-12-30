@@ -13,11 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './routes';
-export * from './extensions';
+export * from './ref';
 export * from './types';
-export * from './secrets';
-export * from './api';
-
-export * from './next';
