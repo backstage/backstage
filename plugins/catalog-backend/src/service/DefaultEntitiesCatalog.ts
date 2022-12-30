@@ -20,8 +20,8 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
-import lodash from 'lodash';
 import { Knex } from 'knex';
+import { isEqual } from 'lodash';
 import {
   EntitiesBatchRequest,
   EntitiesBatchResponse,
@@ -331,8 +331,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const db = this.database;
     const limit = request?.limit ?? 20;
 
-    const cursor: Omit<Cursor, 'sortFieldIds'> & { sortFieldIds?: string[] } = {
-      firstFieldId: '',
+    const cursor: Omit<Cursor, 'sortFieldValues'> & {
+      sortFieldValues?: string[];
+    } = {
       sortFields: [defaultSortField],
       isPrevious: false,
       ...parseCursorFromRequest(request),
@@ -346,11 +347,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       ...cursor.sortFields[0],
     };
 
-    const sortFieldId = cursor.sortFieldIds?.[0];
+    const [sortFieldId, metadataSortFieldId] = cursor.sortFieldValues || [];
 
     const dbQuery = db('search')
       .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
-      .where('key', sortField.field);
+      .where('search.key', sortField.field);
 
     if (cursor.filter) {
       parseFilter(cursor.filter, dbQuery, db, false, 'search.entity_id');
@@ -368,18 +369,36 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isOrderingDescending = sortField.order === 'desc';
     if (sortFieldId) {
-      dbQuery.andWhere(
-        'value',
-        isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-        sortFieldId,
-      );
+      dbQuery
+        .andWhere(
+          'value',
+          isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+          sortFieldId,
+        )
+        .orWhere(function nested() {
+          this.where('value', '=', sortFieldId).andWhere(
+            'search.entity_id',
+            isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+            metadataSortFieldId,
+          );
+        });
     }
 
     dbQuery
-      .orderBy(
-        'value',
-        isFetchingBackwards ? invertOrder(sortField.order) : sortField.order,
-      )
+      .orderBy([
+        {
+          column: 'value',
+          order: isFetchingBackwards
+            ? invertOrder(sortField.order)
+            : sortField.order,
+        },
+        {
+          column: 'search.entity_id',
+          order: isFetchingBackwards
+            ? invertOrder(sortField.order)
+            : sortField.order,
+        },
+      ])
       // fetch an extra item to check if there are more items.
       .limit(isFetchingBackwards ? limit : limit + 1);
 
@@ -409,15 +428,22 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       rows.length -= 1;
     }
 
-    const isInitialRequest = cursor.firstFieldId === '';
+    const isInitialRequest = cursor.firstSortFieldValues === undefined;
 
-    const firstFieldId = cursor.firstFieldId || rows[0]?.value;
+    const firstSortFieldValues = cursor.firstSortFieldValues || [
+      rows[0]?.value,
+      rows[0]?.entity_id,
+    ];
 
     const nextCursor = hasMoreResults
       ? encodeCursor({
           ...cursor,
-          sortFieldIds: [rows[rows.length - 1].value],
-          firstFieldId,
+          sortFieldValues: [
+            // TODO generalize
+            rows[rows.length - 1].value,
+            rows[rows.length - 1].entity_id,
+          ],
+          firstSortFieldValues,
           isPrevious: false,
           totalItems,
         })
@@ -426,11 +452,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const prevCursor =
       !isInitialRequest &&
       rows.length > 0 &&
-      rows[0].value !== cursor.firstFieldId
+      !isEqual(sortFieldsFromRow(rows[0]), cursor.firstSortFieldValues)
         ? encodeCursor({
             ...cursor,
-            sortFieldIds: [rows[0].value],
-            firstFieldId: cursor.firstFieldId,
+            // TODO generalize
+            sortFieldValues: [rows[0].value, rows[0].entity_id],
+            firstSortFieldValues: cursor.firstSortFieldValues,
             isPrevious: true,
             totalItems,
           })
@@ -651,4 +678,8 @@ function parseCursorFromRequest(
 
 function invertOrder(order: EntitySortField['order']) {
   return order === 'asc' ? 'desc' : 'asc';
+}
+
+function sortFieldsFromRow(row: DbSearchRow) {
+  return [row.value, row.entity_id];
 }
