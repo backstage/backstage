@@ -104,3 +104,13 @@ export type PageTheme = {
   backgroundImage: string;
   fontColor: string;
 };
+
+/**
+ * Backstage specific additions to the material-ui theme.
+ *
+ * @public
+ */
+export type BackstageThemeAdditions = {
+  page: PageTheme;
+  getPageTheme: (selector: PageThemeSelector) => PageTheme;
+};

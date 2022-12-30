@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  BackstagePaletteAdditions,
-  PageTheme,
-  PageThemeSelector,
-} from '../types';
+import { BackstagePaletteAdditions, BackstageThemeAdditions } from '../types';
 
 declare module '@mui/material/styles/createPalette' {
   interface Palette extends BackstagePaletteAdditions {}
@@ -27,15 +23,9 @@ declare module '@mui/material/styles/createPalette' {
 }
 
 declare module '@mui/material/styles/createTheme' {
-  interface Theme {
-    pageTheme: PageTheme;
-    getPageTheme: (selector: PageThemeSelector) => PageTheme;
-  }
+  interface Theme extends BackstageThemeAdditions {}
 
-  interface ThemeOptions {
-    pageTheme: PageTheme;
-    getPageTheme: (selector: PageThemeSelector) => PageTheme;
-  }
+  interface ThemeOptions extends BackstageThemeAdditions {}
 }
 
 // This is a workaround for missing methods in React 17 that MUI v5 depends on
