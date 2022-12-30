@@ -35,4 +35,13 @@ export type {
 export { createExternalRouteRef } from './ExternalRouteRef';
 export { useRouteRef } from './useRouteRef';
 export { useRouteRefParams } from './useRouteRefParams';
+export type {
+  RoutePart,
+  RouteDescriptor,
+  RouteDescriptorFunc,
+} from './useRouteDescriptor';
+export {
+  useRouteDescriptor,
+  isCompleteRouteDescriptor,
+} from './useRouteDescriptor';
 export { useRouteObjects } from './useRouteObjects';
