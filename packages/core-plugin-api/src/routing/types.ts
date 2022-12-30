@@ -84,6 +84,9 @@ export type RouteRef<Params extends AnyParams = any> = {
   $$routeRefType: 'absolute'; // See routeRefType above
 
   params: ParamKeys<Params>;
+
+  title?: string;
+  icon?: JSX.Element | React.ComponentType<{ className?: string }> | string;
 };
 
 /**

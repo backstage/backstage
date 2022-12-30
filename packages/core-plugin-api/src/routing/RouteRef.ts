@@ -22,6 +22,21 @@ import {
   OptionalParams,
 } from './types';
 
+/** @public */
+export interface RouteRefConfig<ParamKey extends string> {
+  /** The id of the route ref, used to identify it when printed */
+  id: string;
+
+  /** A list of parameter names that the path that this route ref is bound to must contain */
+  params?: ParamKey[];
+
+  /** Route title, useful routes "Apps" */
+  title?: string;
+
+  /** Route icon, useful for routes to "Apps" */
+  icon?: JSX.Element | React.ComponentType<{ className?: string }> | string;
+}
+
 /**
  * @internal
  */
@@ -35,11 +50,13 @@ export class RouteRefImpl<Params extends AnyParams>
   constructor(
     private readonly id: string,
     readonly params: ParamKeys<Params>,
+    readonly title: string | undefined,
+    readonly icon:
+      | JSX.Element
+      | React.ComponentType<{ className?: string }>
+      | string
+      | undefined,
   ) {}
-
-  get title() {
-    return this.id;
-  }
 
   toString() {
     return `routeRef{type=absolute,id=${this.id}}`;
@@ -60,14 +77,11 @@ export function createRouteRef<
   // to only the elements of params. Defaulting to never makes sure we end up with
   // Param = {} if the params array is empty.
   ParamKey extends string = never,
->(config: {
-  /** The id of the route ref, used to identify it when printed */
-  id: string;
-  /** A list of parameter names that the path that this route ref is bound to must contain */
-  params?: ParamKey[];
-}): RouteRef<OptionalParams<Params>> {
+>(config: RouteRefConfig<ParamKey>): RouteRef<OptionalParams<Params>> {
   return new RouteRefImpl(
     config.id,
     (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
+    config.title,
+    config.icon,
   );
 }
