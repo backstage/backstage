@@ -81,7 +81,7 @@ export interface BackstageTheme extends Theme {
  */
 export type SimpleV4ThemeOptions = {
   palette: PaletteOptions;
-  defaultPageTheme: string;
+  defaultPageTheme?: string;
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
   htmlFontSize?: number;
