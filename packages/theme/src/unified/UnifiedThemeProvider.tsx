@@ -42,11 +42,13 @@ export interface UnifiedThemeProviderProps {
  *
  * @public
  */
-export function UnifiedThemeProvider(props: UnifiedThemeProviderProps) {
+export function UnifiedThemeProvider(
+  props: UnifiedThemeProviderProps,
+): JSX.Element {
   const { children, theme, noCssBaseline } = props;
 
   let result = noCssBaseline ? (
-    children
+    <>{children}</>
   ) : (
     <>
       <CssBaseline />

@@ -8,7 +8,6 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import { Palette } from '@material-ui/core/styles/createPalette';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { PaletteOptions as PaletteOptions_2 } from '@mui/material/styles/createPalette';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { Theme } from '@mui/material/styles';
 import { Theme as Theme_2 } from '@material-ui/core';
@@ -411,7 +410,7 @@ export interface UnifiedThemeOptions {
 // @public
 export function UnifiedThemeProvider(
   props: UnifiedThemeProviderProps,
-): React_2.ReactNode;
+): JSX.Element;
 
 // @public
 export interface UnifiedThemeProviderProps {
