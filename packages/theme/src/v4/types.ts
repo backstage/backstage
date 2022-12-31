@@ -24,7 +24,7 @@ import {
   BackstageThemeAdditions,
   PageTheme,
   PageThemeSelector,
-} from '../types';
+} from '../base/types';
 
 /**
  * The full Backstage palette.
