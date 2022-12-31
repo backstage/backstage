@@ -20,6 +20,7 @@ import {
   ThemeProvider as Mui4Provider,
 } from '@material-ui/core/styles';
 import {
+  StyledEngineProvider,
   Theme as Mui5Theme,
   ThemeProvider as Mui5Provider,
 } from '@mui/material/styles';
@@ -63,7 +64,11 @@ export function UnifiedThemeProvider(
 
   const v5Theme = theme.getTheme('v5');
   if (v5Theme) {
-    result = <Mui5Provider theme={v5Theme as Mui5Theme}>{result}</Mui5Provider>;
+    result = (
+      <StyledEngineProvider injectFirst>
+        <Mui5Provider theme={v5Theme as Mui5Theme}>{result}</Mui5Provider>
+      </StyledEngineProvider>
+    );
   }
 
   return result;
