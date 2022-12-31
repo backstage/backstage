@@ -6,8 +6,12 @@
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { Palette } from '@material-ui/core/styles/createPalette';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
+import { PaletteOptions as PaletteOptions_2 } from '@mui/material/styles';
+import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { Theme } from '@material-ui/core';
 import { ThemeOptions } from '@material-ui/core';
+import { ThemeOptions as ThemeOptions_2 } from '@mui/material/styles';
 
 // @public @deprecated
 export type BackstagePalette = Palette & BackstagePaletteAdditions;
@@ -100,7 +104,64 @@ export interface BackstageThemeOptions extends ThemeOptions {
 }
 
 // @public
+export interface BaseThemeOptionsInput<PaletteOptions> {
+  // (undocumented)
+  defaultPageTheme?: string;
+  // (undocumented)
+  fontFamily?: string;
+  // (undocumented)
+  htmlFontSize?: number;
+  // (undocumented)
+  pageTheme?: Record<string, PageTheme>;
+  // (undocumented)
+  palette: PaletteOptions;
+}
+
+// @public
 export const colorVariants: Record<string, string[]>;
+
+// @public
+export function createBaseThemeOptions<PaletteOptions>(
+  options: BaseThemeOptionsInput<PaletteOptions>,
+): {
+  palette: PaletteOptions;
+  typography: {
+    htmlFontSize: number;
+    fontFamily: string;
+    h1: {
+      fontSize: number;
+      fontWeight: number;
+      marginBottom: number;
+    };
+    h2: {
+      fontSize: number;
+      fontWeight: number;
+      marginBottom: number;
+    };
+    h3: {
+      fontSize: number;
+      fontWeight: number;
+      marginBottom: number;
+    };
+    h4: {
+      fontWeight: number;
+      fontSize: number;
+      marginBottom: number;
+    };
+    h5: {
+      fontWeight: number;
+      fontSize: number;
+      marginBottom: number;
+    };
+    h6: {
+      fontWeight: number;
+      fontSize: number;
+      marginBottom: number;
+    };
+  };
+  page: PageTheme;
+  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
+};
 
 // @public @deprecated (undocumented)
 export const createTheme: typeof createV4Theme;
@@ -124,6 +185,9 @@ export function createV4ThemeOverrides(theme: Theme): Overrides;
 
 // @public
 export const darkTheme: Theme;
+
+// @public
+export const defaultComponentThemes: ThemeOptions_2['components'];
 
 // @public
 export function genPageTheme(props: {
@@ -162,9 +226,39 @@ export type SimpleThemeOptions = SimpleV4ThemeOptions;
 // @public
 export type SimpleV4ThemeOptions = {
   palette: PaletteOptions;
-  defaultPageTheme: string;
+  defaultPageTheme?: string;
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
   htmlFontSize?: number;
 };
+
+// @public
+export type SimpleV5ThemeOptions = {
+  palette: PaletteOptions_2;
+  defaultPageTheme?: string;
+  pageTheme?: Record<string, PageTheme>;
+  fontFamily?: string;
+  htmlFontSize?: number;
+};
+
+// @public
+export interface UnifiedTheme {
+  // (undocumented)
+  getTheme(version: string): unknown | undefined;
+}
+
+// @public
+export function UnifiedThemeProvider(
+  props: UnifiedThemeProviderProps,
+): React_2.ReactNode;
+
+// @public
+export interface UnifiedThemeProviderProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  noCssBaseline?: boolean;
+  // (undocumented)
+  theme: UnifiedTheme;
+}
 ```
