@@ -88,13 +88,13 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
       sizeSmall: ({ theme }) => ({
         padding: theme.spacing(1.5, 2, 1.5, 2.5),
       }),
-      head: {
+      head: ({ theme }) => ({
         wordBreak: 'break-word',
         overflow: 'hidden',
-        color: 'rgb(179, 179, 179)',
+        color: theme.palette.textSubtle,
         fontWeight: 'normal',
         lineHeight: '1',
-      },
+      }),
     },
   },
   MuiTabs: {

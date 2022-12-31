@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { Theme as Mui5Theme } from '@mui/material/styles';
 import { createTheme as createMuiTheme } from '@material-ui/core/styles';
 import { GridProps, SwitchProps, Theme, ThemeOptions } from '@material-ui/core';
-import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { SimpleV4ThemeOptions } from './types';
 import { createBaseThemeOptions } from '../base';
 import { defaultComponentThemes } from '../v5';
+import { transformV5ComponentThemesToV4 } from '../compat/overrides';
 
 /**
  * A helper for creating theme options.
@@ -47,185 +48,11 @@ export function createV4ThemeOptions(
  * @public
  */
 export function createV4ThemeOverrides(theme: Theme): Overrides {
-  return {
-    MuiCssBaseline: {
-      '@global': {
-        html: {
-          height: '100%',
-          fontFamily: theme.typography.fontFamily,
-        },
-        body: {
-          height: '100%',
-          fontFamily: theme.typography.fontFamily,
-          'overscroll-behavior-y': 'none',
-        },
-        a: {
-          color: 'inherit',
-          textDecoration: 'none',
-        },
-      },
-    },
-    MuiTableRow: {
-      // Alternating row backgrounds
-      root: {
-        '&:nth-of-type(odd)': {
-          backgroundColor: theme.palette.background.default,
-        },
-      },
-      // Use pointer for hoverable rows
-      hover: {
-        '&:hover': {
-          cursor: 'pointer',
-        },
-      },
-      // Alternating head backgrounds
-      head: {
-        '&:nth-of-type(odd)': {
-          backgroundColor: theme.palette.background.paper,
-        },
-      },
-    },
-    // Tables are more dense than default mui tables
-    MuiTableCell: {
-      root: {
-        wordBreak: 'break-word',
-        overflow: 'hidden',
-        verticalAlign: 'middle',
-        lineHeight: '1',
-        margin: 0,
-        padding: theme.spacing(3, 2, 3, 2.5),
-        borderBottom: 0,
-      },
-      sizeSmall: {
-        padding: theme.spacing(1.5, 2, 1.5, 2.5),
-      },
-      head: {
-        wordBreak: 'break-word',
-        overflow: 'hidden',
-        fontWeight: 'normal',
-        lineHeight: '1',
-      },
-    },
-    MuiTabs: {
-      // Tabs are smaller than default mui tab rows
-      root: {
-        minHeight: 24,
-      },
-    },
-    MuiTab: {
-      // Tabs are smaller and have a hover background
-      root: {
-        color: theme.palette.link,
-        minHeight: 24,
-        textTransform: 'initial',
-        letterSpacing: '0.07em',
-        '&:hover': {
-          color: darken(theme.palette.link, 0.3),
-          background: lighten(theme.palette.link, 0.95),
-        },
-        [theme.breakpoints.up('md')]: {
-          minWidth: 120,
-          fontSize: theme.typography.pxToRem(14),
-          fontWeight: 500,
-        },
-      },
-      textColorPrimary: {
-        color: theme.palette.link,
-      },
-    },
-    MuiTableSortLabel: {
-      // No color change on hover, just rely on the arrow showing up instead.
-      root: {
-        color: 'inherit',
-        '&:hover': {
-          color: 'inherit',
-        },
-      },
-      // Bold font for highlighting selected column
-      active: {
-        fontWeight: 'bold',
-      },
-    },
-    MuiListItemText: {
-      dense: {
-        // Default dense list items to adding ellipsis for really long str...
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-      },
-    },
-    MuiButton: {
-      text: {
-        // Text buttons have less padding by default, but we want to keep the original padding
-        padding: undefined,
-      },
-    },
-    MuiChip: {
-      root: {
-        backgroundColor: '#D9D9D9',
-        // By default there's no margin, but it's usually wanted, so we add some trailing margin
-        marginRight: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-        color: theme.palette.grey[900],
-      },
-      outlined: {
-        color: theme.palette.text.primary,
-      },
-      label: {
-        lineHeight: `${theme.spacing(2.5)}px`,
-        fontWeight: theme.typography.fontWeightMedium,
-        fontSize: `${theme.spacing(1.75)}px`,
-      },
-      labelSmall: {
-        fontSize: `${theme.spacing(1.5)}px`,
-      },
-      deleteIcon: {
-        color: theme.palette.grey[500],
-        width: `${theme.spacing(3)}px`,
-        height: `${theme.spacing(3)}px`,
-        margin: `0 ${theme.spacing(0.75)}px 0 -${theme.spacing(0.75)}px`,
-      },
-      deleteIconSmall: {
-        width: `${theme.spacing(2)}px`,
-        height: `${theme.spacing(2)}px`,
-        margin: `0 ${theme.spacing(0.5)}px 0 -${theme.spacing(0.5)}px`,
-      },
-    },
-    MuiCard: {
-      root: {
-        // When cards have a forced size, such as when they are arranged in a
-        // CSS grid, the content needs to flex such that the actions (buttons
-        // etc) end up at the bottom of the card instead of just below the body
-        // contents.
-        display: 'flex',
-        flexDirection: 'column',
-      },
-    },
-    MuiCardHeader: {
-      root: {
-        // Reduce padding between header and content
-        paddingBottom: 0,
-      },
-    },
-    MuiCardContent: {
-      root: {
-        // When cards have a forced size, such as when they are arranged in a
-        // CSS grid, the content needs to flex such that the actions (buttons
-        // etc) end up at the bottom of the card instead of just below the body
-        // contents.
-        flexGrow: 1,
-        '&:last-child': {
-          paddingBottom: undefined,
-        },
-      },
-    },
-    MuiCardActions: {
-      root: {
-        // We default to putting the card actions at the end
-        justifyContent: 'flex-end',
-      },
-    },
-  };
+  return transformV5ComponentThemesToV4(
+    // Safe but we have to make sure we don't use mui5 specific stuff in the default component themes
+    theme as unknown as Mui5Theme,
+    defaultComponentThemes,
+  ).overrides;
 }
 
 /**
