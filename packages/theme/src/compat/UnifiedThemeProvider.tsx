@@ -26,13 +26,23 @@ import {
 import CssBaseline from '@mui/material/CssBaseline';
 import { UnifiedTheme } from './types';
 
-interface ThemeProviderProps {
+/**
+ * Props for {@link UnifiedThemeProvider}.
+ *
+ * @public
+ */
+export interface UnifiedThemeProviderProps {
   children: ReactNode;
   theme: UnifiedTheme;
   noCssBaseline?: boolean;
 }
 
-export function UnifiedThemeProvider(props: ThemeProviderProps) {
+/**
+ * Provides themes for all MUI versions supported by the provided unified theme.
+ *
+ * @public
+ */
+export function UnifiedThemeProvider(props: UnifiedThemeProviderProps) {
   const { children, theme, noCssBaseline } = props;
 
   let result = noCssBaseline ? (

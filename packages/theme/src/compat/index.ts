@@ -15,4 +15,5 @@
  */
 
 export { UnifiedThemeProvider } from './UnifiedThemeProvider';
+export type { UnifiedThemeProviderProps } from './UnifiedThemeProvider';
 export type { UnifiedTheme } from './types';

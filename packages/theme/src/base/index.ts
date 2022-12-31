@@ -15,6 +15,7 @@
  */
 
 export { createBaseThemeOptions } from './createBaseThemeOptions';
+export type { BaseThemeOptionsInput } from './createBaseThemeOptions';
 export { colorVariants, genPageTheme, pageTheme, shapes } from './pageTheme';
 export type {
   BackstagePaletteAdditions,
