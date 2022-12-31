@@ -24,31 +24,3 @@ export * from './compat';
 export * from './base';
 export * from './v4';
 export * from './v5';
-
-import {
-  createV4Theme,
-  createV4ThemeOptions,
-  createV4ThemeOverrides,
-} from './v4';
-import type { SimpleV4ThemeOptions } from './v4';
-
-/**
- * @public
- * @deprecated Use {@link createV4Theme} instead.
- */
-export const createTheme = createV4Theme;
-/**
- * @public
- * @deprecated Use {@link createV4ThemeOptions} instead.
- */
-export const createThemeOptions = createV4ThemeOptions;
-/**
- * @public
- * @deprecated Use {@link createV4ThemeOverrides} instead.
- */
-export const createThemeOverrides = createV4ThemeOverrides;
-/**
- * @public
- * @deprecated Use {@link SimpleV4ThemeOptions} instead.
- */
-export type SimpleThemeOptions = SimpleV4ThemeOptions;
