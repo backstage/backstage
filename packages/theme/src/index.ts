@@ -21,14 +21,9 @@
  */
 
 export * from './compat';
+export * from './base';
 export * from './v4';
 export * from './v5';
-export { colorVariants, genPageTheme, pageTheme, shapes } from './pageTheme';
-export type {
-  BackstagePaletteAdditions,
-  PageTheme,
-  PageThemeSelector,
-} from './types';
 
 import {
   createV4Theme,

@@ -19,7 +19,7 @@ import {
   BackstagePaletteAdditions,
   BackstageThemeAdditions,
   PageTheme,
-} from '../types';
+} from '../base/types';
 
 /**
  * A simpler configuration for creating a new theme that just tweaks some parts

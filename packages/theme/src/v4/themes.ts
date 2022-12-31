@@ -15,7 +15,7 @@
  */
 
 import { createV4Theme } from './baseTheme';
-import { pageTheme } from '../pageTheme';
+import { pageTheme } from '../base/pageTheme';
 import { yellow } from '@material-ui/core/colors';
 
 /**
