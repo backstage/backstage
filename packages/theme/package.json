@@ -32,8 +32,11 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@material-ui/core": "^4.12.2",
-    "@mui/material": "^5.11.2"
+    "@mui/material": "^5.11.2",
+    "@mui/styles": "^5.11.2"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
