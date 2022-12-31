@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { MultiThemeProvider } from './MultiThemeProvider';
-export type { MultiThemeHolder } from './types';
+export { UnifiedThemeProvider } from './UnifiedThemeProvider';
+export type { UnifiedTheme } from './types';
