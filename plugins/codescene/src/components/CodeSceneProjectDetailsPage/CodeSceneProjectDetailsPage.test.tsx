@@ -15,8 +15,6 @@
  */
 import React from 'react';
 import { CodeSceneProjectDetailsPage } from './CodeSceneProjectDetailsPage';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -90,9 +88,7 @@ describe('CodeSceneProjectDetailsPage', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ThemeProvider theme={lightTheme}>
-          <CodeSceneProjectDetailsPage />
-        </ThemeProvider>
+        <CodeSceneProjectDetailsPage />
       </ApiProvider>,
     );
     expect(rendered.getByText('CodeScene: test-project')).toBeInTheDocument();
