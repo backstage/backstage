@@ -15,16 +15,12 @@
  */
 
 import { createTheme as createMuiTheme } from '@material-ui/core/styles';
-import { Theme, ThemeOptions } from '@material-ui/core';
+import { GridProps, SwitchProps, Theme, ThemeOptions } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { Overrides } from '@material-ui/core/styles/overrides';
-import { pageTheme as defaultPageThemes } from '../base/pageTheme';
 import { SimpleV4ThemeOptions } from './types';
-
-const DEFAULT_HTML_FONT_SIZE = 16;
-const DEFAULT_FONT_FAMILY =
-  '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
-const DEFAULT_PAGE_THEME = 'home';
+import { createBaseThemeOptions } from '../base';
+import { defaultComponentThemes } from '../v5';
 
 /**
  * A helper for creating theme options.
@@ -34,65 +30,14 @@ const DEFAULT_PAGE_THEME = 'home';
 export function createV4ThemeOptions(
   options: SimpleV4ThemeOptions,
 ): ThemeOptions {
-  const {
-    palette,
-    htmlFontSize = DEFAULT_HTML_FONT_SIZE,
-    fontFamily = DEFAULT_FONT_FAMILY,
-    defaultPageTheme = DEFAULT_PAGE_THEME,
-    pageTheme = defaultPageThemes,
-  } = options;
-
-  if (!pageTheme[defaultPageTheme]) {
-    throw new Error(`${defaultPageTheme} is not defined in pageTheme.`);
-  }
-
   return {
-    palette,
     props: {
-      MuiGrid: {
-        spacing: 2,
-      },
-      MuiSwitch: {
-        color: 'primary',
-      },
+      MuiGrid: defaultComponentThemes?.MuiGrid
+        ?.defaultProps as Partial<GridProps>,
+      MuiSwitch: defaultComponentThemes?.MuiSwitch
+        ?.defaultProps as Partial<SwitchProps>,
     },
-    typography: {
-      htmlFontSize,
-      fontFamily,
-      h6: {
-        fontWeight: 700,
-        fontSize: 20,
-        marginBottom: 2,
-      },
-      h5: {
-        fontWeight: 700,
-        fontSize: 24,
-        marginBottom: 4,
-      },
-      h4: {
-        fontWeight: 700,
-        fontSize: 28,
-        marginBottom: 6,
-      },
-      h3: {
-        fontSize: 32,
-        fontWeight: 700,
-        marginBottom: 6,
-      },
-      h2: {
-        fontSize: 40,
-        fontWeight: 700,
-        marginBottom: 8,
-      },
-      h1: {
-        fontSize: 54,
-        fontWeight: 700,
-        marginBottom: 10,
-      },
-    },
-    page: pageTheme[defaultPageTheme],
-    getPageTheme: ({ themeId }) =>
-      pageTheme[themeId] ?? pageTheme[defaultPageTheme],
+    ...createBaseThemeOptions(options),
   };
 }
 
