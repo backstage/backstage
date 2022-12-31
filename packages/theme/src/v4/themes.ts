@@ -18,18 +18,20 @@ import { createV4Theme } from './baseTheme';
 import { palettes } from '../base';
 
 /**
- * The default Backstage light theme.
+ * The old MUI v4 Backstage light theme.
  *
  * @public
+ * @deprecated Use {@link themes.light} instead.
  */
 export const lightTheme = createV4Theme({
   palette: palettes.light,
 });
 
 /**
- * The default Backstage dark theme.
+ * The old MUI v4 Backstage dark theme.
  *
  * @public
+ * @deprecated Use {@link themes.dark} instead.
  */
 export const darkTheme = createV4Theme({
   palette: palettes.dark,
