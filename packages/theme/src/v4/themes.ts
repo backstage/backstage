@@ -15,8 +15,7 @@
  */
 
 import { createV4Theme } from './baseTheme';
-import { pageTheme } from '../base/pageTheme';
-import { yellow } from '@material-ui/core/colors';
+import { palettes } from '../base';
 
 /**
  * The default Backstage light theme.
@@ -24,76 +23,7 @@ import { yellow } from '@material-ui/core/colors';
  * @public
  */
 export const lightTheme = createV4Theme({
-  palette: {
-    type: 'light',
-    background: {
-      default: '#F8F8F8',
-    },
-    status: {
-      ok: '#1DB954',
-      warning: '#FF9800',
-      error: '#E22134',
-      running: '#2E77D0',
-      pending: '#FFED51',
-      aborted: '#757575',
-    },
-    bursts: {
-      fontColor: '#FEFEFE',
-      slackChannelText: '#ddd',
-      backgroundColor: {
-        default: '#7C3699',
-      },
-      gradient: {
-        linear: 'linear-gradient(-137deg, #4BB8A5 0%, #187656 100%)',
-      },
-    },
-    primary: {
-      main: '#2E77D0',
-    },
-    banner: {
-      info: '#2E77D0',
-      error: '#E22134',
-      text: '#FFFFFF',
-      link: '#000000',
-      closeButtonColor: '#FFFFFF',
-      warning: '#FF9800',
-    },
-    border: '#E6E6E6',
-    textContrast: '#000000',
-    textVerySubtle: '#DDD',
-    textSubtle: '#6E6E6E',
-    highlight: '#FFFBCC',
-    errorBackground: '#FFEBEE',
-    warningBackground: '#F59B23',
-    infoBackground: '#ebf5ff',
-    errorText: '#CA001B',
-    infoText: '#004e8a',
-    warningText: '#000000',
-    linkHover: '#2196F3',
-    link: '#0A6EBE',
-    gold: yellow.A700,
-    navigation: {
-      background: '#171717',
-      indicator: '#9BF0E1',
-      color: '#b5b5b5',
-      selectedColor: '#FFF',
-      navItem: {
-        hoverBackground: '#404040',
-      },
-      submenu: {
-        background: '#404040',
-      },
-    },
-    pinSidebarButton: {
-      icon: '#181818',
-      background: '#BDBDBD',
-    },
-    tabbar: {
-      indicator: '#9BF0E1',
-    },
-  },
-  defaultPageTheme: 'home',
-  pageTheme,
+  palette: palettes.light,
 });
 
 /**
@@ -102,78 +32,5 @@ export const lightTheme = createV4Theme({
  * @public
  */
 export const darkTheme = createV4Theme({
-  palette: {
-    type: 'dark',
-    background: {
-      default: '#333333',
-    },
-    status: {
-      ok: '#71CF88',
-      warning: '#FFB84D',
-      error: '#F84C55',
-      running: '#3488E3',
-      pending: '#FEF071',
-      aborted: '#9E9E9E',
-    },
-    bursts: {
-      fontColor: '#FEFEFE',
-      slackChannelText: '#ddd',
-      backgroundColor: {
-        default: '#7C3699',
-      },
-      gradient: {
-        linear: 'linear-gradient(-137deg, #4BB8A5 0%, #187656 100%)',
-      },
-    },
-    primary: {
-      main: '#9CC9FF',
-      dark: '#82BAFD',
-    },
-    secondary: {
-      main: '#FF88B2',
-    },
-    banner: {
-      info: '#2E77D0',
-      error: '#E22134',
-      text: '#FFFFFF',
-      link: '#000000',
-      closeButtonColor: '#FFFFFF',
-      warning: '#FF9800',
-    },
-    border: '#E6E6E6',
-    textContrast: '#FFFFFF',
-    textVerySubtle: '#727272',
-    textSubtle: '#CCCCCC',
-    highlight: '#FFFBCC',
-    errorBackground: '#FFEBEE',
-    warningBackground: '#F59B23',
-    infoBackground: '#ebf5ff',
-    errorText: '#CA001B',
-    infoText: '#004e8a',
-    warningText: '#000000',
-    linkHover: '#82BAFD',
-    link: '#9CC9FF',
-    gold: yellow.A700,
-    navigation: {
-      background: '#424242',
-      indicator: '#9BF0E1',
-      color: '#b5b5b5',
-      selectedColor: '#FFF',
-      navItem: {
-        hoverBackground: '#404040',
-      },
-      submenu: {
-        background: '#404040',
-      },
-    },
-    pinSidebarButton: {
-      icon: '#404040',
-      background: '#BDBDBD',
-    },
-    tabbar: {
-      indicator: '#9BF0E1',
-    },
-  },
-  defaultPageTheme: 'home',
-  pageTheme,
+  palette: palettes.dark,
 });
