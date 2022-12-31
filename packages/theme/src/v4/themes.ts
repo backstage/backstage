@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createV4Theme } from './baseTheme';
+import { createTheme } from './baseTheme';
 import { palettes } from '../base';
 
 /**
@@ -23,7 +23,7 @@ import { palettes } from '../base';
  * @public
  * @deprecated Use {@link themes.light} instead.
  */
-export const lightTheme = createV4Theme({
+export const lightTheme = createTheme({
   palette: palettes.light,
 });
 
@@ -33,6 +33,6 @@ export const lightTheme = createV4Theme({
  * @public
  * @deprecated Use {@link themes.dark} instead.
  */
-export const darkTheme = createV4Theme({
+export const darkTheme = createTheme({
   palette: palettes.dark,
 });

@@ -78,8 +78,9 @@ export interface BackstageTheme extends Theme {
  * of the backstage one.
  *
  * @public
+ * @deprecated Use {@link BaseThemeOptionsInput} instead.
  */
-export type SimpleV4ThemeOptions = {
+export type SimpleThemeOptions = {
   palette: PaletteOptions;
   defaultPageTheme?: string;
   pageTheme?: Record<string, PageTheme>;
