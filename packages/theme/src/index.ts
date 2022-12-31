@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-export * from './compat';
+export * from './unified';
 export * from './base';
 export * from './v4';
 export * from './v5';
