@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { PageTheme, PageThemeSelector } from '../types';
-import { pageTheme as defaultPageThemes } from '../pageTheme';
+import { PageTheme, PageThemeSelector } from './types';
+import { pageTheme as defaultPageThemes } from './pageTheme';
 
 const DEFAULT_HTML_FONT_SIZE = 16;
 const DEFAULT_FONT_FAMILY =
@@ -55,35 +55,35 @@ export function createBaseThemeOptions<PaletteOptions>(
     typography: {
       htmlFontSize,
       fontFamily,
-      h6: {
+      h1: {
+        fontSize: 54,
         fontWeight: 700,
-        fontSize: 20,
-        marginBottom: 2,
-      },
-      h5: {
-        fontWeight: 700,
-        fontSize: 24,
-        marginBottom: 4,
-      },
-      h4: {
-        fontWeight: 700,
-        fontSize: 28,
-        marginBottom: 6,
-      },
-      h3: {
-        fontSize: 32,
-        fontWeight: 700,
-        marginBottom: 6,
+        marginBottom: 10,
       },
       h2: {
         fontSize: 40,
         fontWeight: 700,
         marginBottom: 8,
       },
-      h1: {
-        fontSize: 54,
+      h3: {
+        fontSize: 32,
         fontWeight: 700,
-        marginBottom: 10,
+        marginBottom: 6,
+      },
+      h4: {
+        fontWeight: 700,
+        fontSize: 28,
+        marginBottom: 6,
+      },
+      h5: {
+        fontWeight: 700,
+        fontSize: 24,
+        marginBottom: 4,
+      },
+      h6: {
+        fontWeight: 700,
+        fontSize: 20,
+        marginBottom: 2,
       },
     },
     page: pageTheme[defaultPageTheme],

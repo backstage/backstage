@@ -28,9 +28,9 @@ import {
   ThemeOptions as ThemeOptionsV5,
 } from '@mui/material/styles';
 import { transformV5ComponentThemesToV4 } from './overrides';
-import { PageTheme } from '../types';
+import { PageTheme } from '../base/types';
 import { defaultComponentThemes } from '../v5';
-import { createBaseThemeOptions } from './createBaseThemeOptions';
+import { createBaseThemeOptions } from '../base/createBaseThemeOptions';
 import { UnifiedTheme } from './types';
 
 export class UnifiedThemeHolder implements UnifiedTheme {
