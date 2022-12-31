@@ -16,14 +16,14 @@
 
 export { darkTheme, lightTheme } from './themes';
 export {
-  createV4Theme,
-  createV4ThemeOptions,
-  createV4ThemeOverrides,
+  createTheme,
+  createThemeOptions,
+  createThemeOverrides,
 } from './baseTheme';
 export type {
   BackstagePalette,
   BackstagePaletteOptions,
   BackstageTheme,
   BackstageThemeOptions,
-  SimpleV4ThemeOptions,
+  SimpleThemeOptions,
 } from './types';

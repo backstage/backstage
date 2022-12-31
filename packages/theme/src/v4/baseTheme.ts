@@ -18,19 +18,18 @@ import { Theme as Mui5Theme } from '@mui/material/styles';
 import { createTheme as createMuiTheme } from '@material-ui/core/styles';
 import { GridProps, SwitchProps, Theme, ThemeOptions } from '@material-ui/core';
 import { Overrides } from '@material-ui/core/styles/overrides';
-import { SimpleV4ThemeOptions } from './types';
+import { SimpleThemeOptions } from './types';
 import { createBaseThemeOptions } from '../base';
 import { defaultComponentThemes } from '../v5';
 import { transformV5ComponentThemesToV4 } from '../compat/overrides';
 
 /**
- * A helper for creating theme options.
+ * An old helper for creating MUI v4 theme options.
  *
  * @public
+ * @deprecated Use {@link createBaseThemeOptions} instead.
  */
-export function createV4ThemeOptions(
-  options: SimpleV4ThemeOptions,
-): ThemeOptions {
+export function createThemeOptions(options: SimpleThemeOptions): ThemeOptions {
   return {
     props: {
       MuiGrid: defaultComponentThemes?.MuiGrid
@@ -43,11 +42,12 @@ export function createV4ThemeOptions(
 }
 
 /**
- * A helper for creating theme overrides.
+ * * An old helper for creating MUI v4 theme overrides.
  *
  * @public
+ * @deprecated Use {@link defaultComponentThemes} with {@link transformV5ComponentThemesToV4} instead.
  */
-export function createV4ThemeOverrides(theme: Theme): Overrides {
+export function createThemeOverrides(theme: Theme): Overrides {
   return transformV5ComponentThemesToV4(
     // Safe but we have to make sure we don't use mui5 specific stuff in the default component themes
     theme as unknown as Mui5Theme,
@@ -56,15 +56,16 @@ export function createV4ThemeOverrides(theme: Theme): Overrides {
 }
 
 /**
- * Creates a Backstage MUI theme using a palette. The theme is created with the
- * common Backstage options and component styles.
+ * The old method to create a Backstage MUI v4 theme using a palette.
+ * The theme is created with the common Backstage options and component styles.
  *
  * @public
+ * @deprecated Use {@link createUnifiedTheme} instead.
  */
-export function createV4Theme(options: SimpleV4ThemeOptions): Theme {
-  const themeOptions = createV4ThemeOptions(options);
+export function createTheme(options: SimpleThemeOptions): Theme {
+  const themeOptions = createThemeOptions(options);
   const baseTheme = createMuiTheme(themeOptions);
-  const overrides = createV4ThemeOverrides(baseTheme);
+  const overrides = createThemeOverrides(baseTheme);
   const theme = { ...baseTheme, overrides };
   return theme;
 }
