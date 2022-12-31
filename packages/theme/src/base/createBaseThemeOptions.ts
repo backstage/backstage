@@ -22,6 +22,11 @@ const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
 const DEFAULT_PAGE_THEME = 'home';
 
+/**
+ * Options for {@link createBaseThemeOptions}.
+ *
+ * @public
+ */
 export interface BaseThemeOptionsInput<PaletteOptions> {
   palette: PaletteOptions;
   defaultPageTheme?: string;

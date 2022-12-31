@@ -51,12 +51,24 @@ declare module '@mui/material/styles/createTheme' {
 // See https://github.com/mui/material-ui/issues/35287
 declare global {
   namespace React {
-    type React = typeof import('react');
+    interface DOMAttributes<T> {
+      // onResize?: ReactEventHandler<T> | undefined;
+      // onResizeCapture?: ReactEventHandler<T> | undefined;
 
-    interface DOMAttributes<T extends React.SyntheticEvent> {
-      onResize?: React.EventHandler<T> | undefined;
-      onResizeCapture?: React.EventHandler<T> | undefined;
+      onResize?: (event: Event) => void;
+      onResizeCapture?: (event: Event) => void;
       nonce?: string | undefined;
     }
   }
 }
+// declare global {
+//   namespace React {
+//     type React = typeof import('react');
+
+//     interface DOMAttributes<T extends React.SyntheticEvent> {
+//       onResize?: React.EventHandler<T> | undefined;
+//       onResizeCapture?: React.EventHandler<T> | undefined;
+//       nonce?: string | undefined;
+//     }
+//   }
+// }
