@@ -14,26 +14,10 @@
  * limitations under the License.
  */
 
-import { PaletteOptions } from '@mui/material/styles';
 import {
   BackstagePaletteAdditions,
   BackstageThemeAdditions,
-  PageTheme,
 } from '../base/types';
-
-/**
- * A simpler configuration for creating a new theme that just tweaks some parts
- * of the backstage one.
- *
- * @public
- */
-export type SimpleV5ThemeOptions = {
-  palette: PaletteOptions;
-  defaultPageTheme?: string;
-  pageTheme?: Record<string, PageTheme>;
-  fontFamily?: string;
-  htmlFontSize?: number;
-};
 
 declare module '@mui/material/styles/createPalette' {
   interface Palette extends BackstagePaletteAdditions {}
@@ -52,23 +36,9 @@ declare module '@mui/material/styles/createTheme' {
 declare global {
   namespace React {
     interface DOMAttributes<T> {
-      // onResize?: ReactEventHandler<T> | undefined;
-      // onResizeCapture?: ReactEventHandler<T> | undefined;
-
       onResize?: (event: Event) => void;
       onResizeCapture?: (event: Event) => void;
       nonce?: string | undefined;
     }
   }
 }
-// declare global {
-//   namespace React {
-//     type React = typeof import('react');
-
-//     interface DOMAttributes<T extends React.SyntheticEvent> {
-//       onResize?: React.EventHandler<T> | undefined;
-//       onResizeCapture?: React.EventHandler<T> | undefined;
-//       nonce?: string | undefined;
-//     }
-//   }
-// }
