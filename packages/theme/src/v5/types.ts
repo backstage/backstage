@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-import { BackstagePaletteAdditions, BackstageThemeAdditions } from '../types';
+import { PaletteOptions } from '@mui/material/styles';
+import {
+  BackstagePaletteAdditions,
+  BackstageThemeAdditions,
+  PageTheme,
+} from '../types';
+
+/**
+ * A simpler configuration for creating a new theme that just tweaks some parts
+ * of the backstage one.
+ *
+ * @public
+ */
+export type SimpleV5ThemeOptions = {
+  palette: PaletteOptions;
+  defaultPageTheme?: string;
+  pageTheme?: Record<string, PageTheme>;
+  fontFamily?: string;
+  htmlFontSize?: number;
+};
 
 declare module '@mui/material/styles/createPalette' {
   interface Palette extends BackstagePaletteAdditions {}

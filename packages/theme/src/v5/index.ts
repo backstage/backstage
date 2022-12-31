@@ -15,3 +15,4 @@
  */
 
 export * from './types';
+export { defaultComponentThemes } from './defaultComponentThemes';
