@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export { UnifiedThemeProvider } from './UnifiedThemeProvider';
-export { themes } from './themes';
-export type { UnifiedThemeProviderProps } from './UnifiedThemeProvider';
-export type { UnifiedTheme } from './types';
+import { palettes } from '../base';
+import { createUnifiedTheme } from './UnifiedTheme';
+
+export const themes = {
+  light: createUnifiedTheme({ palette: palettes.light }),
+  dark: createUnifiedTheme({ palette: palettes.dark }),
+};
