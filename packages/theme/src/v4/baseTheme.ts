@@ -21,7 +21,7 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import { SimpleThemeOptions } from './types';
 import { createBaseThemeOptions } from '../base';
 import { defaultComponentThemes } from '../v5';
-import { transformV5ComponentThemesToV4 } from '../compat/overrides';
+import { transformV5ComponentThemesToV4 } from '../unified/overrides';
 
 /**
  * An old helper for creating MUI v4 theme options.
