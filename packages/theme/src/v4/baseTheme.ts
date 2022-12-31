@@ -24,6 +24,7 @@ import { SimpleV4ThemeOptions } from './types';
 const DEFAULT_HTML_FONT_SIZE = 16;
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
+const DEFAULT_PAGE_THEME = 'home';
 
 /**
  * A helper for creating theme options.
@@ -37,7 +38,7 @@ export function createV4ThemeOptions(
     palette,
     htmlFontSize = DEFAULT_HTML_FONT_SIZE,
     fontFamily = DEFAULT_FONT_FAMILY,
-    defaultPageTheme,
+    defaultPageTheme = DEFAULT_PAGE_THEME,
     pageTheme = defaultPageThemes,
   } = options;
 
