@@ -17,6 +17,11 @@
 import { palettes } from '../base';
 import { createUnifiedTheme } from './UnifiedTheme';
 
+/**
+ * Built-in Backstage MUI themes.
+ *
+ * @public
+ */
 export const themes = {
   light: createUnifiedTheme({ palette: palettes.light }),
   dark: createUnifiedTheme({ palette: palettes.dark }),

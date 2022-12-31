@@ -43,7 +43,11 @@ function adaptV5Override(theme: Theme, overrides: V5Override): V4Override {
   return overrides as V4Override;
 }
 
-// Transform v5 theme overrides into a v4 theme, by converting the callback-based overrides
+/**
+ * Transform MUI v5 component themes into a v4 theme props and overrides.
+ *
+ * @public
+ */
 export function transformV5ComponentThemesToV4(
   theme: Theme,
   components: ThemeOptions['components'] = {},

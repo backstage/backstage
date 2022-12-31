@@ -70,9 +70,7 @@ export interface UnifiedThemeOptions {
  *
  * @public
  */
-export function createUnifiedTheme(
-  options: UnifiedThemeOptions,
-): UnifiedThemeHolder {
+export function createUnifiedTheme(options: UnifiedThemeOptions): UnifiedTheme {
   const themeOptions = createBaseThemeOptions(options);
   const components = { ...defaultComponentThemes, ...options.components };
   const v5Theme = createV5Theme({ ...themeOptions, components });
@@ -88,7 +86,9 @@ export function createUnifiedTheme(
  *
  * @public
  */
-export function createUnifiedThemeFromV4(options: ThemeOptionsV4) {
+export function createUnifiedThemeFromV4(
+  options: ThemeOptionsV4,
+): UnifiedTheme {
   const v4Theme = createV4Theme(options);
   const v5Theme = adaptV4Theme(options as any);
 
