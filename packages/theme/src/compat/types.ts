@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-export interface MultiThemeHolder {
-  getThemeForVersion(version: string): unknown | undefined;
+/**
+ * A container of one theme for multiple different MUI versions.
+ *
+ * Currently known keys are 'v4' and 'v5'.
+ *
+ * @public
+ */
+export interface UnifiedTheme {
+  getTheme(version: string): unknown | undefined;
 }

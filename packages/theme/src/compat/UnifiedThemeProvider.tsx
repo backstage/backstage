@@ -24,15 +24,15 @@ import {
   ThemeProvider as Mui5Provider,
 } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { MultiThemeHolder } from './types';
+import { UnifiedTheme } from './types';
 
 interface ThemeProviderProps {
   children: ReactNode;
-  theme: MultiThemeHolder;
+  theme: UnifiedTheme;
   noCssBaseline?: boolean;
 }
 
-export function MultiThemeProvider(props: ThemeProviderProps) {
+export function UnifiedThemeProvider(props: ThemeProviderProps) {
   const { children, theme, noCssBaseline } = props;
 
   let result = noCssBaseline ? (
@@ -44,12 +44,12 @@ export function MultiThemeProvider(props: ThemeProviderProps) {
     </>
   );
 
-  const v4Theme = theme.getThemeForVersion('v4');
+  const v4Theme = theme.getTheme('v4');
   if (v4Theme) {
     result = <Mui4Provider theme={v4Theme as Mui4Theme}>{result}</Mui4Provider>;
   }
 
-  const v5Theme = theme.getThemeForVersion('v5');
+  const v5Theme = theme.getTheme('v5');
   if (v5Theme) {
     result = <Mui5Provider theme={v5Theme as Mui5Theme}>{result}</Mui5Provider>;
   }

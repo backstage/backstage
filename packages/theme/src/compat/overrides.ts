@@ -16,7 +16,7 @@
 
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ComponentsProps } from '@material-ui/core/styles/props';
-import { ComponentsOverrides, Theme } from '@mui/material/styles';
+import { ComponentsOverrides, Theme, ThemeOptions } from '@mui/material/styles';
 
 type V5Override = ComponentsOverrides[keyof ComponentsOverrides];
 type V4Override = Overrides[keyof Overrides];
@@ -46,7 +46,7 @@ function adaptV5Override(theme: Theme, overrides: V5Override): V4Override {
 // Transform v5 theme overrides into a v4 theme, by converting the callback-based overrides
 export function transformV5ComponentThemesToV4(
   theme: Theme,
-  components: Theme['components'] = {},
+  components: ThemeOptions['components'] = {},
 ): { overrides: Overrides; props: ComponentsProps } {
   const overrides: Record<string, V4Override> = {};
   const props: Record<string, ComponentsProps[keyof ComponentsProps]> = {};
