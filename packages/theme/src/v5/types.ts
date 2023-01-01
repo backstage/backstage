@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Theme } from '@mui/material/styles';
 import {
   BackstagePaletteAdditions,
   BackstageThemeAdditions,
@@ -29,6 +30,10 @@ declare module '@mui/material/styles/createTheme' {
   interface Theme extends BackstageThemeAdditions {}
 
   interface ThemeOptions extends BackstageThemeAdditions {}
+}
+
+declare module '@mui/private-theming/defaultTheme' {
+  interface DefaultTheme extends Theme {}
 }
 
 // This is a workaround for missing methods in React 17 that MUI v5 depends on
