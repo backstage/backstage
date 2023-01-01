@@ -107,10 +107,8 @@ describe('transformV5ComponentThemesToV4', () => {
       transformV5ComponentThemesToV4(mockTheme, {
         MuiCssBaseline: {
           styleOverrides: theme => ({
-            '@global': {
-              html: {
-                color: theme.palette.primary.main,
-              },
+            html: {
+              color: theme.palette.primary.main,
             },
           }),
           defaultProps: {
