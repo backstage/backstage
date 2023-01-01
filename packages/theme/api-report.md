@@ -221,6 +221,7 @@ export const palettes: {
     mode: 'light';
     background: {
       default: string;
+      paper: string;
     };
     status: {
       ok: string;
@@ -289,6 +290,7 @@ export const palettes: {
     mode: 'dark';
     background: {
       default: string;
+      paper: string;
     };
     status: {
       ok: string;
