@@ -43,7 +43,6 @@ declare global {
     interface DOMAttributes<T> {
       onResize?: (event: Event) => void;
       onResizeCapture?: (event: Event) => void;
-      nonce?: string | undefined;
     }
   }
 }
