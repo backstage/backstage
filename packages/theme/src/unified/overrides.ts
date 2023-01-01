@@ -17,18 +17,26 @@
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ComponentsProps } from '@material-ui/core/styles/props';
 import { ComponentsOverrides, Theme, ThemeOptions } from '@mui/material/styles';
+import { CSSProperties } from 'react';
 
 type V5Override = ComponentsOverrides[keyof ComponentsOverrides];
 type V4Override = Overrides[keyof Overrides];
+type StaticStyleRules = Record<
+  string,
+  CSSProperties | Record<string, CSSProperties>
+>;
 
 // Converts callback-based overrides to static styles, e.g.
 // { root: theme => ({ color: theme.color }) } -> { root: { color: 'red' } }
-function adaptV5Override(theme: Theme, overrides: V5Override): V4Override {
-  if (!overrides) {
-    return overrides as V4Override;
+function adaptV5Override(
+  theme: Theme,
+  overrides: V5Override,
+): StaticStyleRules | undefined {
+  if (!overrides || typeof overrides === 'string') {
+    return undefined;
   }
   if (typeof overrides === 'function') {
-    return overrides(theme) as V4Override;
+    return overrides(theme) as StaticStyleRules;
   }
   if (typeof overrides === 'object') {
     return Object.fromEntries(
@@ -40,7 +48,42 @@ function adaptV5Override(theme: Theme, overrides: V5Override): V4Override {
       }),
     );
   }
-  return overrides as V4Override;
+  return overrides as StaticStyleRules;
+}
+
+const stateStyleKeyPattern = /^&.Mui-([\w-]+)$/;
+
+// Move state style overrides to the top level, e.g.
+// { root: { '&.Mui-active': { color: 'red' } } } -> { active: { color: 'red' } }
+function extractV5StateOverrides(
+  overrides: StaticStyleRules | undefined,
+): StaticStyleRules | undefined {
+  let output = overrides;
+  if (!overrides || typeof overrides !== 'object') {
+    return output;
+  }
+  for (const className of Object.keys(overrides)) {
+    const styles = overrides[className];
+    if (!styles || typeof styles !== 'object') {
+      continue;
+    }
+    for (const _styleKey of Object.keys(styles)) {
+      const styleKey = _styleKey as keyof typeof styles;
+      const match = styleKey.match(stateStyleKeyPattern);
+      if (match) {
+        const [, state] = match;
+        const { [styleKey]: stateStyles, ...restStyles } = styles;
+        if (stateStyles) {
+          output = {
+            ...output,
+            [className]: restStyles,
+            [state]: stateStyles,
+          };
+        }
+      }
+    }
+  }
+  return output;
 }
 
 /**
@@ -61,9 +104,8 @@ export function transformV5ComponentThemesToV4(
       continue;
     }
     if ('styleOverrides' in component) {
-      overrides[name] = adaptV5Override(
-        theme,
-        component.styleOverrides as V5Override,
+      overrides[name] = extractV5StateOverrides(
+        adaptV5Override(theme, component.styleOverrides as V5Override),
       );
     }
     if ('defaultProps' in component) {
