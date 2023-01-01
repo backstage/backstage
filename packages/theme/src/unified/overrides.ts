@@ -19,12 +19,33 @@ import { ComponentsProps } from '@material-ui/core/styles/props';
 import { ComponentsOverrides, Theme, ThemeOptions } from '@mui/material/styles';
 import { CSSProperties } from 'react';
 
-type V5Override = ComponentsOverrides[keyof ComponentsOverrides];
+type V5Override = ComponentsOverrides[Exclude<
+  keyof ComponentsOverrides,
+  'MuiCssBaseline'
+>];
 type V4Override = Overrides[keyof Overrides];
 type StaticStyleRules = Record<
   string,
   CSSProperties | Record<string, CSSProperties>
 >;
+
+// Converts callback-based overrides to static styles, e.g.
+// { root: theme => ({ color: theme.color }) } -> { root: { color: 'red' } }
+function adaptV5CssBaselineOverride(
+  theme: Theme,
+  overrides: ComponentsOverrides['MuiCssBaseline'],
+): StaticStyleRules | undefined {
+  if (!overrides || typeof overrides === 'string') {
+    return undefined;
+  }
+
+  const styles = typeof overrides === 'function' ? overrides(theme) : overrides;
+  if (styles) {
+    return { '@global': styles } as StaticStyleRules;
+  }
+
+  return undefined;
+}
 
 // Converts callback-based overrides to static styles, e.g.
 // { root: theme => ({ color: theme.color }) } -> { root: { color: 'red' } }
@@ -34,9 +55,6 @@ function adaptV5Override(
 ): StaticStyleRules | undefined {
   if (!overrides || typeof overrides === 'string') {
     return undefined;
-  }
-  if (typeof overrides === 'function') {
-    return overrides(theme) as StaticStyleRules;
   }
   if (typeof overrides === 'object') {
     return Object.fromEntries(
@@ -104,9 +122,16 @@ export function transformV5ComponentThemesToV4(
       continue;
     }
     if ('styleOverrides' in component) {
-      overrides[name] = extractV5StateOverrides(
-        adaptV5Override(theme, component.styleOverrides as V5Override),
-      );
+      if (name === 'MuiCssBaseline') {
+        overrides[name] = adaptV5CssBaselineOverride(
+          theme,
+          component.styleOverrides as ComponentsOverrides['MuiCssBaseline'],
+        );
+      } else {
+        overrides[name] = extractV5StateOverrides(
+          adaptV5Override(theme, component.styleOverrides as V5Override),
+        );
+      }
     }
     if ('defaultProps' in component) {
       props[name] = component.defaultProps;
