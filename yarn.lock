@@ -13956,11 +13956,11 @@ __metadata:
   linkType: hard
 
 "@types/codemirror@npm:^5.0.0":
-  version: 5.60.5
-  resolution: "@types/codemirror@npm:5.60.5"
+  version: 5.60.6
+  resolution: "@types/codemirror@npm:5.60.6"
   dependencies:
     "@types/tern": "*"
-  checksum: 423b6378b6415b626d9f54d37d69477f96940b30a695d4ec36402feb59a96f7ab42d1c17b8472fbb222a0966f6061deee234e37bcd3e34c75836e989dc95929d
+  checksum: 10b8c2a689f9ed610b0048d9d5ded1a7eb90c45014156b84b41c4f52f4720172414f7172d56f13c8a0b35d429704fb9d240414cf205776c807caa39105b33481
   languageName: node
   linkType: hard
 
