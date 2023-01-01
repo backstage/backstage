@@ -135,4 +135,33 @@ describe('transformV5ComponentThemesToV4', () => {
       },
     });
   });
+
+  it('transform state styles', () => {
+    expect(
+      transformV5ComponentThemesToV4(mockTheme, {
+        MuiButton: {
+          styleOverrides: {
+            root: {
+              color: 'green',
+              '&.Mui-disabled': {
+                color: 'red',
+              },
+            },
+          },
+        },
+      }),
+    ).toEqual({
+      overrides: {
+        MuiButton: {
+          root: {
+            color: 'green',
+          },
+          disabled: {
+            color: 'red',
+          },
+        },
+      },
+      props: {},
+    });
+  });
 });

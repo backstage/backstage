@@ -139,11 +139,11 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
         '&:focus': {
           color: 'inherit',
         },
-      },
-      // Bold font for highlighting selected column
-      active: {
-        fontWeight: 'bold',
-        color: 'inherit',
+        // Bold font for highlighting selected column
+        '&.Mui-active': {
+          fontWeight: 'bold',
+          color: 'inherit',
+        },
       },
     },
   },
