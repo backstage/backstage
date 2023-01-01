@@ -16,6 +16,7 @@
 
 import React, { ReactNode } from 'react';
 import {
+  StylesProvider as Mui4StylesProvider,
   Theme as Mui4Theme,
   ThemeProvider as Mui4Provider,
 } from '@material-ui/core/styles';
@@ -24,8 +25,20 @@ import {
   Theme as Mui5Theme,
   ThemeProvider as Mui5Provider,
 } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import {
+  StylesProvider as Mui5StylesProvider,
+  createGenerateClassName,
+} from '@mui/styles';
+import Mui4CssBaseline from '@material-ui/core/CssBaseline';
+import Mui5CssBaseline from '@mui/material/CssBaseline';
 import { UnifiedTheme } from './types';
+
+const generateV4ClassName = createGenerateClassName({
+  seed: 'm4',
+});
+const generateV5ClassName = createGenerateClassName({
+  seed: 'm5',
+});
 
 /**
  * Props for {@link UnifiedThemeProvider}.
@@ -46,28 +59,42 @@ export interface UnifiedThemeProviderProps {
 export function UnifiedThemeProvider(
   props: UnifiedThemeProviderProps,
 ): JSX.Element {
-  const { children, theme, noCssBaseline } = props;
+  const { children, theme, noCssBaseline = false } = props;
 
-  let result = noCssBaseline ? (
-    <>{children}</>
-  ) : (
+  const v4Theme = theme.getTheme('v4');
+  const v5Theme = theme.getTheme('v5');
+
+  let cssBaseline: JSX.Element | undefined = undefined;
+  if (!noCssBaseline) {
+    if (v5Theme) {
+      cssBaseline = <Mui5CssBaseline enableColorScheme />;
+    } else if (v4Theme) {
+      cssBaseline = <Mui4CssBaseline />;
+    }
+  }
+
+  let result = (
     <>
-      <CssBaseline />
+      {cssBaseline}
       {children}
     </>
   );
 
-  const v4Theme = theme.getTheme('v4');
   if (v4Theme) {
-    result = <Mui4Provider theme={v4Theme as Mui4Theme}>{result}</Mui4Provider>;
+    result = (
+      <Mui4StylesProvider generateClassName={generateV4ClassName} injectFirst>
+        <Mui4Provider theme={v4Theme as Mui4Theme}>{result}</Mui4Provider>
+      </Mui4StylesProvider>
+    );
   }
 
-  const v5Theme = theme.getTheme('v5');
   if (v5Theme) {
     result = (
-      <StyledEngineProvider injectFirst>
-        <Mui5Provider theme={v5Theme as Mui5Theme}>{result}</Mui5Provider>
-      </StyledEngineProvider>
+      <Mui5StylesProvider generateClassName={generateV5ClassName}>
+        <StyledEngineProvider injectFirst>
+          <Mui5Provider theme={v5Theme as Mui5Theme}>{result}</Mui5Provider>
+        </StyledEngineProvider>
+      </Mui5StylesProvider>
     );
   }
 
