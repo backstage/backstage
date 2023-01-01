@@ -24,20 +24,18 @@ import { darken, lighten, ThemeOptions } from '@mui/material/styles';
 export const defaultComponentThemes: ThemeOptions['components'] = {
   MuiCssBaseline: {
     styleOverrides: theme => ({
-      '@global': {
-        html: {
-          height: '100%',
-          fontFamily: theme.typography.fontFamily,
-        },
-        body: {
-          height: '100%',
-          fontFamily: theme.typography.fontFamily,
-          'overscroll-behavior-y': 'none',
-        },
-        a: {
-          color: 'inherit',
-          textDecoration: 'none',
-        },
+      html: {
+        height: '100%',
+        fontFamily: theme.typography.fontFamily,
+      },
+      body: {
+        height: '100%',
+        fontFamily: theme.typography.fontFamily,
+        overscrollBehaviorY: 'none',
+      },
+      a: {
+        color: 'inherit',
+        textDecoration: 'none',
       },
     }),
   },
