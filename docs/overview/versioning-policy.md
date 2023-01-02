@@ -116,9 +116,8 @@ For packages at version `1.0.0` or above, the following policy also applies:
   before it can be removed.
 - The release of breaking changes document a clear upgrade path in the
   changelog, both when deprecations are introduced and when they are removed.
-- Exports that have been marked as `@alpha` or `@beta` may receive breaking
-  changes without a deprecation period, but the changes must still adhere to
-  semver.
+- Breaking changes to `@alpha` or `@beta` exports must result in at least a minor
+  version bump, and may be done without a deprecation period.
 
 ### Changes that are Not Considered Breaking
 

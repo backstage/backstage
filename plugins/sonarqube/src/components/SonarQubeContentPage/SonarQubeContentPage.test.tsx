@@ -16,8 +16,6 @@
 
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import {
   isSonarQubeAvailable,
@@ -44,7 +42,7 @@ const Providers = ({
         kind: 'Component',
       }}
     >
-      <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
+      {children}
     </EntityProvider>
   </TestApiProvider>
 );
