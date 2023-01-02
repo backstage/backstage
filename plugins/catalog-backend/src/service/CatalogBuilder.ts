@@ -453,10 +453,11 @@ export class CatalogBuilder {
       legacySingleProcessorValidation: this.legacySingleProcessorValidation,
     });
     const stitcher = new Stitcher(dbClient, logger);
-    const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog(
-      dbClient,
+    const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
+      database: dbClient,
+      logger,
       stitcher,
-    );
+    });
 
     let permissionEvaluator: PermissionEvaluator;
     if ('authorizeConditional' in permissions) {

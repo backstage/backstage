@@ -21,7 +21,8 @@ import {
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-import { isEqual } from 'lodash';
+import { isEqual, chunk as lodashChunk } from 'lodash';
+import { Logger } from 'winston';
 import {
   EntitiesBatchRequest,
   EntitiesBatchResponse,
@@ -183,10 +184,15 @@ function parseFilter(
 }
 
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
-  constructor(
-    private readonly database: Knex,
-    private readonly stitcher: Stitcher,
-  ) {}
+  private readonly database: Knex;
+  private readonly logger: Logger;
+  private readonly stitcher: Stitcher;
+
+  constructor(options: { database: Knex; logger: Logger; stitcher: Stitcher }) {
+    this.database = options.database;
+    this.logger = options.logger;
+    this.stitcher = options.stitcher;
+  }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
@@ -298,7 +304,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   ): Promise<EntitiesBatchResponse> {
     const lookup = new Map<string, Entity>();
 
-    for (const chunk of lodash.chunk(request.entityRefs, 200)) {
+    for (const chunk of lodashChunk(request.entityRefs, 200)) {
       let query = this.database<DbFinalEntitiesRow>('final_entities')
         .innerJoin<DbRefreshStateRow>('refresh_state', {
           'refresh_state.entity_id': 'final_entities.entity_id',
@@ -341,7 +347,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isFetchingBackwards = cursor.isPrevious;
 
-    // TODO(vinzscam): log if multiple sort fields are provided
+    if (cursor.sortFields.length > 1) {
+      this.logger.warn(`Only one sort field is supported, ignoring the rest`);
+    }
 
     const sortField: EntitySortField = {
       ...defaultSortField,
