@@ -32408,11 +32408,11 @@ __metadata:
   linkType: hard
 
 "prom-client@npm:^14.0.1":
-  version: 14.1.0
-  resolution: "prom-client@npm:14.1.0"
+  version: 14.1.1
+  resolution: "prom-client@npm:14.1.1"
   dependencies:
     tdigest: ^0.1.1
-  checksum: 88f8e67020c0af07d09ab8f15caaa2a3d0810b01d903d0977d82947d3b0100a539db77bcccfde0bf2449a85060475f7fb05b64e7c34951c8a54b84240ae7ae81
+  checksum: 7ff3e85636b1f0ca590b38ad7c7c5f9998b985c06a1c572ffffc69f052d5b4baf84c9124923e3824c63f78b5e8400081c6472173d04382ca296ebdf36d774a88
   languageName: node
   linkType: hard
 
