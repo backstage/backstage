@@ -18,7 +18,6 @@ import {
   Backend,
   createSpecializedBackend,
   cacheFactory,
-  configFactory,
   databaseFactory,
   discoveryFactory,
   httpRouterFactory,
@@ -38,7 +37,9 @@ import {
   createServiceFactory,
   BackendFeature,
   ExtensionPoint,
+  coreServices,
 } from '@backstage/backend-plugin-api';
+import { ConfigReader } from '@backstage/config';
 
 /** @alpha */
 export interface TestBackendOptions<
@@ -65,8 +66,12 @@ export interface TestBackendOptions<
 }
 
 const defaultServiceFactories = [
+  createServiceFactory({
+    service: coreServices.config,
+    deps: {},
+    factory: async () => new ConfigReader({}, 'test'),
+  })(),
   cacheFactory(),
-  configFactory(),
   databaseFactory(),
   discoveryFactory(),
   httpRouterFactory(),
