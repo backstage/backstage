@@ -23,6 +23,7 @@ import {
   discoveryFactory,
   httpRouterFactory,
   lifecycleFactory,
+  rootLifecycleFactory,
   loggerFactory,
   permissionsFactory,
   rootLoggerFactory,
@@ -45,6 +46,7 @@ export const defaultServiceFactories = [
   urlReaderFactory,
   httpRouterFactory,
   lifecycleFactory,
+  rootLifecycleFactory,
 ];
 
 /**

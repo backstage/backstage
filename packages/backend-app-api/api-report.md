@@ -83,6 +83,11 @@ export const permissionsFactory: (
   options?: undefined,
 ) => ServiceFactory<PermissionsService>;
 
+// @public
+export const rootLifecycleFactory: (
+  options?: undefined,
+) => ServiceFactory<LifecycleService>;
+
 // @public (undocumented)
 export const rootLoggerFactory: (
   options?: undefined,
