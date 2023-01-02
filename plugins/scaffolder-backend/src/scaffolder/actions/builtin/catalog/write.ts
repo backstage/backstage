@@ -19,6 +19,8 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import * as yaml from 'yaml';
 import { Entity } from '@backstage/catalog-model';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import { z } from 'zod';
+import { convertZodtoJson } from '../../../tasks';
 
 const id = 'catalog:write';
 
@@ -56,28 +58,24 @@ const examples = [
  * Writes a catalog descriptor file containing the provided entity to a path in the workspace.
  * @public
  */
+
 export function createCatalogWriteAction() {
+  const inputSchema = convertZodtoJson(
+    z.object({
+      filePath: z.string().optional().describe('Defaults to catalog-info.yaml'),
+      entity: z
+        .string()
+        .optional()
+        .describe('You can provide the same values used in the Entity schema.'),
+    }),
+  );
+
   return createTemplateAction<{ filePath?: string; entity: Entity }>({
     id,
     description: 'Writes the catalog-info.yaml for your template',
     examples,
     schema: {
-      input: {
-        type: 'object',
-        properties: {
-          filePath: {
-            title: 'Catalog file path',
-            description: 'Defaults to catalog-info.yaml',
-            type: 'string',
-          },
-          entity: {
-            title: 'Entity info to write catalog-info.yaml',
-            description:
-              'You can provide the same values used in the Entity schema.',
-            type: 'object',
-          },
-        },
-      },
+      input: inputSchema,
     },
     supportsDryRun: true,
     async handler(ctx) {

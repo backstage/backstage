@@ -69,8 +69,10 @@ export function createCatalogRegisterAction(options: {
     }
 >;
 
-// @public
-export function createCatalogWriteAction(): TemplateAction_2<{
+// Warning: (ae-missing-release-tag) "createCatalogWriteAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function createCatalogWriteAction(): TemplateAction<{
   filePath?: string | undefined;
   entity: Entity;
 }>;
