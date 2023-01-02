@@ -246,7 +246,6 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 
 // @public
 export type GithubTeam = {
-  databaseId: number;
   slug: string;
   combinedSlug: string;
   name?: string;

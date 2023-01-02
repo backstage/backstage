@@ -90,10 +90,6 @@ export const defaultOrganizationTeamTransformer: TeamTransformer =
       'github.com/team-slug': team.combinedSlug,
     };
 
-    if (team.databaseId) {
-      annotations['github.com/team-id'] = `${team.databaseId}`;
-    }
-
     if (team.editTeamUrl) {
       annotations['backstage.io/edit-url'] = team.editTeamUrl;
     }

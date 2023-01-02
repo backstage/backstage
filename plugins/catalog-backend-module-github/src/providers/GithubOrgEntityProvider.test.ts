@@ -630,6 +630,26 @@ describe('GithubOrgEntityProvider', () => {
       mockClient
         .mockResolvedValueOnce({
           organization: {
+            team: {
+              slug: 'team',
+              combinedSlug: 'blah/team',
+              name: 'Team',
+              description: 'The one and only team',
+              avatarUrl: 'http://example.com/team.jpeg',
+              parentTeam: {
+                slug: 'parent',
+                combinedSlug: '',
+                members: { pageInfo: { hasNextPage: false }, nodes: [] },
+              },
+              members: {
+                pageInfo: { hasNextPage: false },
+                nodes: [{ login: 'a' }, { login: 'githubuser' }],
+              },
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
             membersWithRole: {
               pageInfo: { hasNextPage: false },
               nodes: [
@@ -637,6 +657,13 @@ describe('GithubOrgEntityProvider', () => {
                   login: 'a',
                   name: 'b',
                   bio: 'c',
+                  email: 'd',
+                  avatarUrl: 'e',
+                },
+                {
+                  login: 'githubuser',
+                  name: 'githubuser',
+                  bio: 'githubuser',
                   email: 'd',
                   avatarUrl: 'e',
                 },
@@ -662,7 +689,7 @@ describe('GithubOrgEntityProvider', () => {
                   },
                   members: {
                     pageInfo: { hasNextPage: false },
-                    nodes: [{ login: 'a' }],
+                    nodes: [{ login: 'a' }, { login: 'githubuser' }],
                   },
                 },
               ],
@@ -680,7 +707,7 @@ describe('GithubOrgEntityProvider', () => {
           action: 'edited',
           changes: {
             name: {
-              from: 'mygroup',
+              from: 'mygroup with spaces',
             },
           },
           team: {
@@ -704,11 +731,10 @@ describe('GithubOrgEntityProvider', () => {
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-        entities: [
+        added: [
           {
+            locationKey: 'github-org-provider:my-id',
             entity: {
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'User',
               metadata: {
                 annotations: {
                   'backstage.io/managed-by-location':
@@ -717,24 +743,50 @@ describe('GithubOrgEntityProvider', () => {
                     'url:https://github.com/a',
                   'github.com/user-login': 'a',
                 },
-                description: 'c',
                 name: 'a',
+                description: 'c',
               },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'User',
               spec: {
-                memberOf: ['team'],
                 profile: {
                   displayName: 'b',
                   email: 'd',
                   picture: 'e',
                 },
+                memberOf: ['team'],
               },
             },
-            locationKey: 'github-org-provider:my-id',
           },
           {
+            locationKey: 'github-org-provider:my-id',
             entity: {
+              metadata: {
+                annotations: {
+                  'backstage.io/managed-by-location':
+                    'url:https://github.com/githubuser',
+                  'backstage.io/managed-by-origin-location':
+                    'url:https://github.com/githubuser',
+                  'github.com/user-login': 'githubuser',
+                },
+                name: 'githubuser',
+                description: 'githubuser',
+              },
               apiVersion: 'backstage.io/v1alpha1',
-              kind: 'Group',
+              kind: 'User',
+              spec: {
+                profile: {
+                  displayName: 'githubuser',
+                  email: 'd',
+                  picture: 'e',
+                },
+                memberOf: ['team'],
+              },
+            },
+          },
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: {
               metadata: {
                 annotations: {
                   'backstage.io/managed-by-location':
@@ -746,21 +798,50 @@ describe('GithubOrgEntityProvider', () => {
                 name: 'team',
                 description: 'The one and only team',
               },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
               spec: {
-                children: [],
-                parent: 'parent',
+                type: 'team',
                 profile: {
                   displayName: 'Team',
                   picture: 'http://example.com/team.jpeg',
                 },
-                type: 'team',
-                members: ['a'],
+                children: [],
+                parent: 'parent',
+                members: ['a', 'githubuser'],
               },
             },
-            locationKey: 'github-org-provider:my-id',
           },
         ],
-        type: 'full',
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: {
+              metadata: {
+                annotations: {
+                  'backstage.io/managed-by-location':
+                    'url:https://github.com/orgs/backstage/teams/mygroup-with-spaces',
+                  'backstage.io/managed-by-origin-location':
+                    'url:https://github.com/orgs/backstage/teams/mygroup-with-spaces',
+                },
+                name: 'mygroup-with-spaces',
+              },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
+              spec: {
+                type: 'team',
+                profile: {
+                  displayName: 'Team',
+                  picture: 'http://example.com/team.jpeg',
+                },
+                children: [],
+                parent: 'parent',
+                members: ['a', 'githubuser'],
+              },
+            },
+          },
+        ],
+        type: 'delta',
       });
     });
 
@@ -797,6 +878,26 @@ describe('GithubOrgEntityProvider', () => {
       mockClient
         .mockResolvedValueOnce({
           organization: {
+            team: {
+              slug: 'team',
+              combinedSlug: 'blah/team',
+              name: 'Team',
+              description: 'The one and only team',
+              avatarUrl: 'http://example.com/team.jpeg',
+              parentTeam: {
+                slug: 'parent',
+                combinedSlug: '',
+                members: { pageInfo: { hasNextPage: false }, nodes: [] },
+              },
+              members: {
+                pageInfo: { hasNextPage: false },
+                nodes: [{ login: 'a' }, { login: 'githubuser' }],
+              },
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
             membersWithRole: {
               pageInfo: { hasNextPage: false },
               nodes: [
@@ -804,6 +905,13 @@ describe('GithubOrgEntityProvider', () => {
                   login: 'a',
                   name: 'b',
                   bio: 'c',
+                  email: 'd',
+                  avatarUrl: 'e',
+                },
+                {
+                  login: 'githubuser',
+                  name: 'githubuser',
+                  bio: 'githubuser',
                   email: 'd',
                   avatarUrl: 'e',
                 },
@@ -829,7 +937,7 @@ describe('GithubOrgEntityProvider', () => {
                   },
                   members: {
                     pageInfo: { hasNextPage: false },
-                    nodes: [{ login: 'a' }],
+                    nodes: [{ login: 'a' }, { login: 'githubuser' }],
                   },
                 },
               ],
@@ -867,37 +975,36 @@ describe('GithubOrgEntityProvider', () => {
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-        entities: [
+        added: [
           {
+            locationKey: 'github-org-provider:my-id',
             entity: {
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'User',
               metadata: {
                 annotations: {
                   'backstage.io/managed-by-location':
-                    'url:https://github.com/a',
+                    'url:https://github.com/githubuser',
                   'backstage.io/managed-by-origin-location':
-                    'url:https://github.com/a',
-                  'github.com/user-login': 'a',
+                    'url:https://github.com/githubuser',
+                  'github.com/user-login': 'githubuser',
                 },
-                description: 'c',
-                name: 'a',
+                name: 'githubuser',
+                description: 'githubuser',
               },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'User',
               spec: {
-                memberOf: ['team'],
                 profile: {
-                  displayName: 'b',
+                  displayName: 'githubuser',
                   email: 'd',
                   picture: 'e',
                 },
+                memberOf: ['team'],
               },
             },
-            locationKey: 'github-org-provider:my-id',
           },
           {
+            locationKey: 'github-org-provider:my-id',
             entity: {
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'Group',
               metadata: {
                 annotations: {
                   'backstage.io/managed-by-location':
@@ -909,21 +1016,78 @@ describe('GithubOrgEntityProvider', () => {
                 name: 'team',
                 description: 'The one and only team',
               },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
               spec: {
-                children: [],
-                parent: 'parent',
+                type: 'team',
                 profile: {
                   displayName: 'Team',
                   picture: 'http://example.com/team.jpeg',
                 },
-                type: 'team',
-                members: ['a'],
+                children: [],
+                parent: 'parent',
+                members: ['a', 'githubuser'],
               },
             },
-            locationKey: 'github-org-provider:my-id',
           },
         ],
-        type: 'full',
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: {
+              metadata: {
+                annotations: {
+                  'backstage.io/managed-by-location':
+                    'url:https://github.com/githubuser',
+                  'backstage.io/managed-by-origin-location':
+                    'url:https://github.com/githubuser',
+                  'github.com/user-login': 'githubuser',
+                },
+                name: 'githubuser',
+                description: 'githubuser',
+              },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'User',
+              spec: {
+                profile: {
+                  displayName: 'githubuser',
+                  email: 'd',
+                  picture: 'e',
+                },
+                memberOf: ['team'],
+              },
+            },
+          },
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: {
+              metadata: {
+                annotations: {
+                  'backstage.io/managed-by-location':
+                    'url:https://github.com/orgs/backstage/teams/team',
+                  'backstage.io/managed-by-origin-location':
+                    'url:https://github.com/orgs/backstage/teams/team',
+                  'github.com/team-slug': 'blah/team',
+                },
+                name: 'team',
+                description: 'The one and only team',
+              },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
+              spec: {
+                type: 'team',
+                profile: {
+                  displayName: 'Team',
+                  picture: 'http://example.com/team.jpeg',
+                },
+                children: [],
+                parent: 'parent',
+                members: ['a', 'githubuser'],
+              },
+            },
+          },
+        ],
+        type: 'delta',
       });
     });
 
@@ -960,13 +1124,33 @@ describe('GithubOrgEntityProvider', () => {
       mockClient
         .mockResolvedValueOnce({
           organization: {
+            team: {
+              slug: 'team',
+              combinedSlug: 'blah/team',
+              name: 'Team',
+              description: 'The one and only team',
+              avatarUrl: 'http://example.com/team.jpeg',
+              parentTeam: {
+                slug: 'parent',
+                combinedSlug: '',
+                members: { pageInfo: { hasNextPage: false }, nodes: [] },
+              },
+              members: {
+                pageInfo: { hasNextPage: false },
+                nodes: [{ login: 'a' }],
+              },
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
             membersWithRole: {
               pageInfo: { hasNextPage: false },
               nodes: [
                 {
-                  login: 'a',
-                  name: 'b',
-                  bio: 'c',
+                  login: 'githubuser',
+                  name: 'githubuser',
+                  bio: 'githubuser',
                   email: 'd',
                   avatarUrl: 'e',
                 },
@@ -978,24 +1162,7 @@ describe('GithubOrgEntityProvider', () => {
           organization: {
             teams: {
               pageInfo: { hasNextPage: false },
-              nodes: [
-                {
-                  slug: 'team',
-                  combinedSlug: 'blah/team',
-                  name: 'Team',
-                  description: 'The one and only team',
-                  avatarUrl: 'http://example.com/team.jpeg',
-                  parentTeam: {
-                    slug: 'parent',
-                    combinedSlug: '',
-                    members: { pageInfo: { hasNextPage: false }, nodes: [] },
-                  },
-                  members: {
-                    pageInfo: { hasNextPage: false },
-                    nodes: [{ login: 'a' }],
-                  },
-                },
-              ],
+              nodes: [],
             },
           },
         });
@@ -1030,37 +1197,36 @@ describe('GithubOrgEntityProvider', () => {
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-        entities: [
+        added: [
           {
+            locationKey: 'github-org-provider:my-id',
             entity: {
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'User',
               metadata: {
                 annotations: {
                   'backstage.io/managed-by-location':
-                    'url:https://github.com/a',
+                    'url:https://github.com/githubuser',
                   'backstage.io/managed-by-origin-location':
-                    'url:https://github.com/a',
-                  'github.com/user-login': 'a',
+                    'url:https://github.com/githubuser',
+                  'github.com/user-login': 'githubuser',
                 },
-                description: 'c',
-                name: 'a',
+                name: 'githubuser',
+                description: 'githubuser',
               },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'User',
               spec: {
-                memberOf: ['team'],
                 profile: {
-                  displayName: 'b',
+                  displayName: 'githubuser',
                   email: 'd',
                   picture: 'e',
                 },
+                memberOf: [],
               },
             },
-            locationKey: 'github-org-provider:my-id',
           },
           {
+            locationKey: 'github-org-provider:my-id',
             entity: {
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'Group',
               metadata: {
                 annotations: {
                   'backstage.io/managed-by-location':
@@ -1072,21 +1238,78 @@ describe('GithubOrgEntityProvider', () => {
                 name: 'team',
                 description: 'The one and only team',
               },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
               spec: {
-                children: [],
-                parent: 'parent',
+                type: 'team',
                 profile: {
                   displayName: 'Team',
                   picture: 'http://example.com/team.jpeg',
                 },
-                type: 'team',
+                children: [],
+                parent: 'parent',
                 members: ['a'],
               },
             },
-            locationKey: 'github-org-provider:my-id',
           },
         ],
-        type: 'full',
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: {
+              metadata: {
+                annotations: {
+                  'backstage.io/managed-by-location':
+                    'url:https://github.com/githubuser',
+                  'backstage.io/managed-by-origin-location':
+                    'url:https://github.com/githubuser',
+                  'github.com/user-login': 'githubuser',
+                },
+                name: 'githubuser',
+                description: 'githubuser',
+              },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'User',
+              spec: {
+                profile: {
+                  displayName: 'githubuser',
+                  email: 'd',
+                  picture: 'e',
+                },
+                memberOf: [],
+              },
+            },
+          },
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: {
+              metadata: {
+                annotations: {
+                  'backstage.io/managed-by-location':
+                    'url:https://github.com/orgs/backstage/teams/team',
+                  'backstage.io/managed-by-origin-location':
+                    'url:https://github.com/orgs/backstage/teams/team',
+                  'github.com/team-slug': 'blah/team',
+                },
+                name: 'team',
+                description: 'The one and only team',
+              },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
+              spec: {
+                type: 'team',
+                profile: {
+                  displayName: 'Team',
+                  picture: 'http://example.com/team.jpeg',
+                },
+                children: [],
+                parent: 'parent',
+                members: ['a'],
+              },
+            },
+          },
+        ],
+        type: 'delta',
       });
     });
   });

@@ -31,6 +31,7 @@ import {
   GithubTeam,
   createAddEntitiesOperation,
   createRemoveEntitiesOperation,
+  createReplaceEntitiesOperation,
 } from './github';
 import fetch from 'node-fetch';
 
@@ -206,7 +207,6 @@ describe('github', () => {
             pageInfo: { hasNextPage: false },
             nodes: [
               {
-                databaseId: 1,
                 slug: 'team',
                 combinedSlug: 'blah/team',
                 name: 'Team',
@@ -214,7 +214,6 @@ describe('github', () => {
                 avatarUrl: 'http://example.com/team.jpeg',
                 editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
                 parentTeam: {
-                  databaseId: 2,
                   slug: 'parent',
                   combinedSlug: '',
                   members: [],
@@ -239,7 +238,6 @@ describe('github', () => {
               description: 'The one and only team',
               annotations: {
                 'github.com/team-slug': 'blah/team',
-                'github.com/team-id': '1',
                 'backstage.io/edit-url':
                   'http://example.com/orgs/blah/teams/team/edit',
               },
@@ -309,7 +307,6 @@ describe('github', () => {
             pageInfo: { hasNextPage: false },
             nodes: [
               {
-                databaseId: 1,
                 slug: 'team',
                 combinedSlug: 'blah/team',
                 name: 'Team',
@@ -317,7 +314,6 @@ describe('github', () => {
                 avatarUrl: 'http://example.com/team.jpeg',
                 editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
                 parentTeam: {
-                  databaseId: 3,
                   slug: 'parent',
                   combinedSlug: '',
                   members: [],
@@ -376,7 +372,6 @@ describe('github', () => {
             pageInfo: { hasNextPage: false },
             nodes: [
               {
-                databaseId: 1,
                 slug: 'team',
                 combinedSlug: 'blah/team',
                 name: 'Team',
@@ -384,7 +379,6 @@ describe('github', () => {
                 avatarUrl: 'http://example.com/team.jpeg',
                 editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
                 parentTeam: {
-                  databaseId: 3,
                   slug: 'parent',
                   combinedSlug: '',
                   members: [],
@@ -395,7 +389,6 @@ describe('github', () => {
                 },
               },
               {
-                databaseId: 2,
                 slug: 'team',
                 combinedSlug: 'blah/team',
                 name: 'aa',
@@ -403,7 +396,6 @@ describe('github', () => {
                 avatarUrl: 'http://example.com/team.jpeg',
                 editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
                 parentTeam: {
-                  databaseId: 3,
                   slug: 'parent',
                   combinedSlug: '',
                   members: [],
@@ -464,7 +456,6 @@ describe('github', () => {
       const input: QueryResponse = {
         organization: {
           team: {
-            databaseId: 1,
             slug: '',
             combinedSlug: '',
             members: {
@@ -632,6 +623,43 @@ describe('github', () => {
           },
         ],
         added: [],
+      });
+    });
+  });
+  describe('createReplaceEntitiesOperation', () => {
+    it('create a function to replace deferred entities to a delta operation', () => {
+      const operation = createReplaceEntitiesOperation('my-id', 'host');
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+      expect(operation('org', [userEntity])).toEqual({
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
       });
     });
   });

@@ -40,6 +40,8 @@ import {
   OrganizationMemberAddedEvent,
   OrganizationMemberRemovedEvent,
   TeamEvent,
+  TeamEditedEvent,
+  MembershipEvent,
 } from '@octokit/webhooks-types';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
@@ -58,7 +60,10 @@ import { TeamTransformer, UserTransformer } from '../lib';
 import {
   createAddEntitiesOperation,
   createRemoveEntitiesOperation,
+  createReplaceEntitiesOperation,
   DeferredEntitiesBuilder,
+  getOrganizationTeam,
+  getOrganizationTeamsFromUsers,
 } from '../lib/github';
 
 /**
@@ -255,6 +260,11 @@ export class GithubOrgEntityProvider
       this.options.gitHubConfig.host,
     );
 
+    const replaceEntitiesOperation = createReplaceEntitiesOperation(
+      this.options.id,
+      this.options.gitHubConfig.host,
+    );
+
     // handle change users in the org
     // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#organization
     if (params.topic.includes('organization')) {
@@ -283,14 +293,21 @@ export class GithubOrgEntityProvider
             : removeEntitiesOperation;
         await this.onTeamChangeInOrganization(teamEvent, createDeltaOperation);
       } else if (teamEvent.action === 'edited') {
-        this.onEventToRebuildOrg();
+        await this.onTeamEditedInOrganization(
+          teamEvent,
+          replaceEntitiesOperation,
+        );
       }
     }
 
     // handle change membership in the org
     // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#membership
     if (params.topic.includes('membership')) {
-      this.onEventToRebuildOrg();
+      const membershipEvent = params.eventPayload as MembershipEvent;
+      this.onMembershipChangedInOrganization(
+        membershipEvent,
+        replaceEntitiesOperation,
+      );
     }
 
     return;
@@ -299,6 +316,143 @@ export class GithubOrgEntityProvider
   /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.supportsEventTopics} */
   supportsEventTopics(): string[] {
     return ['github.organization', 'github.team', 'github.membership'];
+  }
+
+  private async onTeamEditedInOrganization(
+    event: TeamEditedEvent,
+    createDeltaOperation: DeferredEntitiesBuilder,
+  ) {
+    if (!this.connection) {
+      throw new Error('Not initialized');
+    }
+
+    const teamSlug = event.team.slug;
+    const { headers, type: tokenType } =
+      await this.credentialsProvider.getCredentials({
+        url: this.options.orgUrl,
+      });
+    const client = graphql.defaults({
+      baseUrl: this.options.gitHubConfig.apiBaseUrl,
+      headers,
+    });
+
+    const { org } = parseGithubOrgUrl(this.options.orgUrl);
+    const { group } = await getOrganizationTeam(
+      client,
+      org,
+      teamSlug,
+      this.options.teamTransformer,
+    );
+
+    const { users } = await getOrganizationUsers(
+      client,
+      org,
+      tokenType,
+      this.options.userTransformer,
+    );
+
+    const usersFromChangedGroup = group.spec.members || [];
+    const usersToRebuild = users.filter(u =>
+      usersFromChangedGroup.includes(u.metadata.name),
+    );
+
+    const { groups } = await getOrganizationTeamsFromUsers(
+      client,
+      org,
+      usersToRebuild.map(u => u.metadata.name),
+      this.options.teamTransformer,
+    );
+
+    assignGroupsToUsers(usersToRebuild, groups);
+    buildOrgHierarchy(groups);
+
+    const oldName = event.changes.name?.from || '';
+    const oldSlug = oldName.toLowerCase().replaceAll(/\s/gi, '-');
+
+    const { removed } = createDeltaOperation(org, [
+      {
+        ...group,
+        metadata: {
+          name: oldSlug,
+        },
+      },
+    ]);
+    const { added } = createDeltaOperation(org, [...usersToRebuild, ...groups]);
+    await this.connection.applyMutation({
+      type: 'delta',
+      removed,
+      added,
+    });
+  }
+
+  private async onMembershipChangedInOrganization(
+    event: MembershipEvent,
+    createDeltaOperation: DeferredEntitiesBuilder,
+  ) {
+    if (!this.connection) {
+      throw new Error('Not initialized');
+    }
+
+    // The docs are saying I will receive the slug for the removed event,
+    // but the types don't reflect that,
+    // so I will just check to be sure the slug is there
+    // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#membership
+    if (!('slug' in event.team)) {
+      return;
+    }
+
+    const teamSlug = event.team.slug;
+    const userLogin = event.member.login;
+    const { headers, type: tokenType } =
+      await this.credentialsProvider.getCredentials({
+        url: this.options.orgUrl,
+      });
+    const client = graphql.defaults({
+      baseUrl: this.options.gitHubConfig.apiBaseUrl,
+      headers,
+    });
+
+    const { org } = parseGithubOrgUrl(this.options.orgUrl);
+    const { group } = await getOrganizationTeam(
+      client,
+      org,
+      teamSlug,
+      this.options.teamTransformer,
+    );
+
+    const { users } = await getOrganizationUsers(
+      client,
+      org,
+      tokenType,
+      this.options.userTransformer,
+    );
+
+    const usersToRebuild = users.filter(u => u.metadata.name === userLogin);
+
+    const { groups } = await getOrganizationTeamsFromUsers(
+      client,
+      org,
+      [userLogin],
+      this.options.teamTransformer,
+    );
+
+    // we include group because the removed event need to update the old group too
+    if (!groups.some(g => g.metadata.name === group.metadata.name)) {
+      groups.push(group);
+    }
+
+    assignGroupsToUsers(usersToRebuild, groups);
+    buildOrgHierarchy(groups);
+
+    const { added, removed } = createDeltaOperation(org, [
+      ...usersToRebuild,
+      ...groups,
+    ]);
+    await this.connection.applyMutation({
+      type: 'delta',
+      removed,
+      added,
+    });
   }
 
   private async onTeamChangeInOrganization(
@@ -311,13 +465,7 @@ export class GithubOrgEntityProvider
 
     const organizationTeamTransformer =
       this.options.teamTransformer || defaultOrganizationTeamTransformer;
-    const {
-      id: databaseId,
-      name,
-      html_url: url,
-      description,
-      slug,
-    } = event.team;
+    const { name, html_url: url, description, slug } = event.team;
     const org = event.organization.login;
     const { headers } = await this.credentialsProvider.getCredentials({
       url: this.options.orgUrl,
@@ -329,7 +477,6 @@ export class GithubOrgEntityProvider
 
     const group = (await organizationTeamTransformer(
       {
-        databaseId,
         name,
         slug,
         editTeamUrl: `${url}/edit`,
@@ -353,16 +500,6 @@ export class GithubOrgEntityProvider
       removed,
       added,
     });
-  }
-
-  private onEventToRebuildOrg() {
-    try {
-      this.read(this.options).then(() => {
-        this.options.logger.debug('Event process finished');
-      });
-    } catch (e) {
-      this.options.logger.debug(`Event process error ${e}`);
-    }
   }
 
   private async onMemberChangeInOrganization(
