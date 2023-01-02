@@ -17,19 +17,10 @@
 import {
   Backend,
   createSpecializedBackend,
-  cacheFactory,
-  databaseFactory,
-  discoveryFactory,
-  httpRouterFactory,
   lifecycleFactory,
-  loggerFactory,
-  permissionsFactory,
-  rootHttpRouterFactory,
   rootLifecycleFactory,
+  loggerFactory,
   rootLoggerFactory,
-  schedulerFactory,
-  tokenManagerFactory,
-  urlReaderFactory,
 } from '@backstage/backend-app-api';
 import {
   ServiceFactory,
@@ -37,9 +28,7 @@ import {
   createServiceFactory,
   BackendFeature,
   ExtensionPoint,
-  coreServices,
 } from '@backstage/backend-plugin-api';
-import { ConfigReader } from '@backstage/config';
 
 /** @alpha */
 export interface TestBackendOptions<
@@ -66,24 +55,10 @@ export interface TestBackendOptions<
 }
 
 const defaultServiceFactories = [
-  createServiceFactory({
-    service: coreServices.config,
-    deps: {},
-    factory: async () => new ConfigReader({}, 'test'),
-  })(),
-  cacheFactory(),
-  databaseFactory(),
-  discoveryFactory(),
-  httpRouterFactory(),
-  lifecycleFactory(),
-  loggerFactory(),
-  permissionsFactory(),
-  rootHttpRouterFactory(),
-  rootLifecycleFactory(),
   rootLoggerFactory(),
-  schedulerFactory(),
-  tokenManagerFactory(),
-  urlReaderFactory(),
+  loggerFactory(),
+  lifecycleFactory(),
+  rootLifecycleFactory(),
 ];
 
 const backendInstancesToCleanUp = new Array<Backend>();
