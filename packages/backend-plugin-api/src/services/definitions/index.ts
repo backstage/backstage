@@ -32,4 +32,15 @@ export type { PluginMetadataService } from './pluginMetadataServiceRef';
 export type { RootLoggerService } from './rootLoggerServiceRef';
 export type { SchedulerService } from './schedulerServiceRef';
 export type { TokenManagerService } from './tokenManagerServiceRef';
-export type { UrlReaderService } from './urlReaderServiceRef';
+export type {
+  ReadTreeOptions,
+  ReadTreeResponse,
+  ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
+  ReadUrlResponse,
+  ReadUrlOptions,
+  SearchOptions,
+  SearchResponse,
+  SearchResponseFile,
+  UrlReaderService,
+} from './urlReaderServiceRef';
