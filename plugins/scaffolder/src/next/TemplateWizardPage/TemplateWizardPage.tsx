@@ -42,11 +42,11 @@ import {
   Stepper,
   NextFieldExtensionOptions,
   SecretsContext,
-  type FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
+import { FormProps } from '../types';
 
-export type TemplateWizardPageProps = {
+type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
   FormProps?: FormProps;
 };

@@ -42,5 +42,8 @@ export type { TaskPageProps } from './components/TaskPage';
 
 /** next exports */
 export { NextScaffolderPage } from './plugin';
-export type { NextRouterProps } from './next';
-export type { TemplateGroupFilter } from './next';
+export {
+  type TemplateGroupFilter,
+  type NextRouterProps,
+  type FormProps,
+} from './next';
