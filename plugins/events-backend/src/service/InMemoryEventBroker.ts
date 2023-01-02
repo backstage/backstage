@@ -42,7 +42,18 @@ export class InMemoryEventBroker implements EventBroker {
     );
 
     const subscribed = this.subscribers[params.topic] ?? [];
-    subscribed.forEach(subscriber => subscriber.onEvent(params));
+    await Promise.all(
+      subscribed.map(async subscriber => {
+        try {
+          await subscriber.onEvent(params);
+        } catch (error) {
+          this.logger.error(
+            `Subscriber "${subscriber.constructor.name}" failed to process event`,
+            error,
+          );
+        }
+      }),
+    );
   }
 
   subscribe(
