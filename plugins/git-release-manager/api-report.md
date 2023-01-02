@@ -66,7 +66,6 @@ declare namespace components {
     ResponseStepListItem,
   };
 }
-export { components };
 
 declare namespace constants {
   export {
@@ -76,7 +75,6 @@ declare namespace constants {
     TAG_OBJECT_MESSAGE,
   };
 }
-export { constants };
 
 // Warning: (ae-forgotten-export) The symbol "GetBranchResult" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createMockBranch" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -285,20 +283,14 @@ declare namespace helpers {
     validateTagName,
   };
 }
-export { helpers };
 
 // @public (undocumented)
 const InfoCardPlus: (props: { children?: React_2.ReactNode }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "internals" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const internals: {
-  components: typeof components;
-  constants: typeof constants;
-  helpers: typeof helpers;
-  testHelpers: typeof testHelpers;
-};
+declare namespace internals {
+  export { components, constants, helpers, testHelpers };
+}
+export { internals };
 
 // Warning: (ae-missing-release-tag) "isCalverTagParts" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -725,7 +717,6 @@ const TEST_IDS: {
 declare namespace testHelpers {
   export { stats, testHelpers_2 as testHelpers, testIds };
 }
-export { testHelpers };
 
 declare namespace testHelpers_2 {
   export {

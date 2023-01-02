@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * A Backstage plugin that helps you manage releases in git
- *
- * @packageDocumentation
- */
-
-export {
-  gitReleaseManagerPlugin,
-  GitReleaseManagerPage,
-  gitReleaseManagerApiRef,
-} from './plugin';
-
-import * as internals from './internals';
-
-export { internals };
-
-export type {
-  ComponentConfig,
-  CreateRcOnSuccessArgs,
-  PatchOnSuccessArgs,
-  PromoteRcOnSuccessArgs,
-  ResponseStep,
-  AlertError,
-} from './types/types';
-
-export type { Project } from './contexts/ProjectContext';
+export { components, constants, helpers, testHelpers } from './plugin';
