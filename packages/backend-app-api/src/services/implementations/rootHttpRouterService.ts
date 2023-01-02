@@ -42,8 +42,9 @@ export const rootHttpRouterFactory = createServiceFactory({
   service: coreServices.rootHttpRouter,
   deps: {
     config: coreServices.config,
+    lifecycle: coreServices.rootLifecycle,
   },
-  async factory({ config }, options?: RootHttpRouterFactoryOptions) {
+  async factory({ config, lifecycle }, options?: RootHttpRouterFactoryOptions) {
     const indexPath = options?.indexPath ?? '/api/app';
 
     const namedRouter = Router();
@@ -57,7 +58,26 @@ export const rootHttpRouterFactory = createServiceFactory({
 
     service.addRouter('', namedRouter).addRouter('', indexRouter);
 
-    await service.start();
+    const server = await service.start();
+    // Stop method isn't part of the public API, let's fix that once we move the implementation here.
+    const stoppableServer = server as typeof server & {
+      stop: (cb: (error?: Error) => void) => void;
+    };
+
+    lifecycle.addShutdownHook({
+      async fn() {
+        await new Promise<void>((resolve, reject) => {
+          stoppableServer.stop((error?: Error) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve();
+            }
+          });
+        });
+      },
+      labels: { service: 'rootHttpRouter' },
+    });
 
     const existingPaths = new Array<string>();
 
