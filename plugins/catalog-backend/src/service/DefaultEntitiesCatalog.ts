@@ -50,7 +50,7 @@ import {
 } from './util';
 
 const defaultSortField: EntitySortField = {
-  field: 'metadata.name',
+  field: 'metadata.uid',
   order: 'asc',
 };
 
@@ -267,13 +267,15 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isFetchingBackwards = cursor.isPrevious;
 
-    // TODO(vinzscam): at the moment only a single sortField is supported
+    // TODO(vinzscam): log if multiple sort fields are provided
+
     const sortField: EntitySortField = {
       ...defaultSortField,
       ...cursor.sortFields[0],
     };
 
-    const [sortFieldId, metadataSortFieldId] = cursor.sortFieldValues || [];
+    const [sortFieldValue, metadataSortFieldValue] =
+      cursor.sortFieldValues || [];
 
     const dbQuery = db('search')
       .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
@@ -294,20 +296,20 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const countQuery = dbQuery.clone();
 
     const isOrderingDescending = sortField.order === 'desc';
-    if (sortFieldId) {
-      dbQuery
-        .andWhere(
-          'value',
+
+    if (sortFieldValue) {
+      dbQuery.andWhere(
+        'value',
+        isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+        sortFieldValue,
+      );
+      dbQuery.orWhere(function nested() {
+        this.where('value', '=', sortFieldValue).andWhere(
+          'search.entity_id',
           isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-          sortFieldId,
-        )
-        .orWhere(function nested() {
-          this.where('value', '=', sortFieldId).andWhere(
-            'search.entity_id',
-            isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-            metadataSortFieldId,
-          );
-        });
+          metadataSortFieldValue,
+        );
+      });
     }
 
     dbQuery
@@ -356,19 +358,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isInitialRequest = cursor.firstSortFieldValues === undefined;
 
+    const firstRow = rows[0];
+    const lastRow = rows[rows.length - 1];
+
     const firstSortFieldValues = cursor.firstSortFieldValues || [
-      rows[0]?.value,
-      rows[0]?.entity_id,
+      firstRow?.value,
+      firstRow?.entity_id,
     ];
 
     const nextCursor = hasMoreResults
       ? encodeCursor({
           ...cursor,
-          sortFieldValues: [
-            // TODO generalize
-            rows[rows.length - 1].value,
-            rows[rows.length - 1].entity_id,
-          ],
+          sortFieldValues: sortFieldsFromRow(lastRow),
           firstSortFieldValues,
           isPrevious: false,
           totalItems,
@@ -378,11 +379,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const prevCursor =
       !isInitialRequest &&
       rows.length > 0 &&
-      !isEqual(sortFieldsFromRow(rows[0]), cursor.firstSortFieldValues)
+      !isEqual(sortFieldsFromRow(firstRow), cursor.firstSortFieldValues)
         ? encodeCursor({
             ...cursor,
-            // TODO generalize
-            sortFieldValues: [rows[0].value, rows[0].entity_id],
+            sortFieldValues: sortFieldsFromRow(firstRow),
             firstSortFieldValues: cursor.firstSortFieldValues,
             isPrevious: true,
             totalItems,
@@ -575,5 +575,5 @@ function invertOrder(order: EntitySortField['order']) {
 }
 
 function sortFieldsFromRow(row: DbSearchRow) {
-  return [row.value, row.entity_id];
+  return [row.value!, row.entity_id];
 }
