@@ -53,15 +53,31 @@ export class PluginTaskSchedulerJanitor {
 
   private async runOnce() {
     const dbNull = this.knex.raw('null');
+    let tasks = [];
+    const configClient = this.knex.client.config.client;
 
-    const tasks = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
-      .where('current_run_expires_at', '<', this.knex.fn.now())
-      .update({
-        current_run_ticket: dbNull,
-        current_run_started_at: dbNull,
-        current_run_expires_at: dbNull,
-      })
-      .returning(['id']);
+    if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
+      const now = await this.knex.select(this.knex.fn.now());
+      tasks = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
+        .select('*')
+        .where('current_run_expires_at', '<', now);
+      await this.knex<DbTasksRow>(DB_TASKS_TABLE)
+        .where('current_run_expires_at', '<', now)
+        .update({
+          current_run_ticket: dbNull,
+          current_run_started_at: dbNull,
+          current_run_expires_at: dbNull,
+        });
+    } else {
+      tasks = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
+        .where('current_run_expires_at', '<', this.knex.fn.now())
+        .update({
+          current_run_ticket: dbNull,
+          current_run_started_at: dbNull,
+          current_run_expires_at: dbNull,
+        })
+        .returning(['id']);
+    }
 
     // In rare cases, knex drivers may ignore "returning", and return the number
     // of rows changed instead
