@@ -409,7 +409,10 @@ export class CatalogBuilder {
       parser,
       policy,
     });
-    const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog(dbClient);
+    const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
+      database: dbClient,
+      logger,
+    });
 
     let permissionEvaluator: PermissionEvaluator;
     if ('authorizeConditional' in permissions) {

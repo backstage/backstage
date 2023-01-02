@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
@@ -160,7 +161,10 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntity(parent, [{ entity: grandparent }]);
         await addEntity(root, [{ entity: parent }]);
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
         const result = await catalog.entityAncestry('k:default/root');
         expect(result.rootEntityRef).toEqual('k:default/root');
 
@@ -190,7 +194,10 @@ describe('DefaultEntitiesCatalog', () => {
       'should throw error if the entity does not exist, %p',
       async databaseId => {
         await createDatabase(databaseId);
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
         await expect(() =>
           catalog.entityAncestry('k:default/root'),
         ).rejects.toThrow('No such entity k:default/root');
@@ -233,7 +240,10 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntity(parent2, [{ entity: grandparent }]);
         await addEntity(root, [{ entity: parent1 }, { entity: parent2 }]);
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
         const result = await catalog.entityAncestry('k:default/root');
         expect(result.rootEntityRef).toEqual('k:default/root');
 
@@ -289,7 +299,10 @@ describe('DefaultEntitiesCatalog', () => {
         };
         await addEntityToSearch(entity1);
         await addEntityToSearch(entity2);
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const testFilter = {
           key: 'spec.test',
@@ -322,7 +335,10 @@ describe('DefaultEntitiesCatalog', () => {
         };
         await addEntityToSearch(entity1);
         await addEntityToSearch(entity2);
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const testFilter = {
           not: {
@@ -369,7 +385,10 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity2);
         await addEntityToSearch(entity3);
         await addEntityToSearch(entity4);
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const testFilter1 = {
           key: 'metadata.org',
@@ -424,7 +443,10 @@ describe('DefaultEntitiesCatalog', () => {
         };
         await addEntityToSearch(entity1);
         await addEntityToSearch(entity2);
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const testFilter1 = {
           key: 'metadata.org',
@@ -466,7 +488,10 @@ describe('DefaultEntitiesCatalog', () => {
         };
         await addEntityToSearch(entity1);
         await addEntityToSearch(entity2);
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const testFilter = {
           key: 'kind',
@@ -508,7 +533,10 @@ describe('DefaultEntitiesCatalog', () => {
           },
           [],
         );
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const { entities } = await catalog.entities();
 
@@ -571,7 +599,10 @@ describe('DefaultEntitiesCatalog', () => {
           entities.concat(notFoundEntities).map(e => addEntityToSearch(e)),
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const filter = {
           key: 'spec.should_include_this',
@@ -721,7 +752,10 @@ describe('DefaultEntitiesCatalog', () => {
           entities.concat(notFoundEntities).map(e => addEntityToSearch(e)),
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const filter = {
           key: 'spec.should_include_this',
@@ -872,7 +906,10 @@ describe('DefaultEntitiesCatalog', () => {
           entities.concat(notFoundEntities).map(e => addEntityToSearch(e)),
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const filter = {
           key: 'spec.should_include_this',
@@ -914,7 +951,10 @@ describe('DefaultEntitiesCatalog', () => {
             ),
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const request: PaginatedEntitiesInitialRequest = {
           limit: 0,
@@ -947,7 +987,10 @@ describe('DefaultEntitiesCatalog', () => {
           addEntityToSearch(entityFrom('DD')),
         ]);
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const limit = 2;
 
@@ -1046,7 +1089,10 @@ describe('DefaultEntitiesCatalog', () => {
           addEntityToSearch(entityFrom('DD'), 'id3'),
         ]);
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         const limit = 2;
 
@@ -1169,7 +1215,10 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntity(unrelated, []);
         await knex('refresh_state').update({ result_hash: 'not-changed' });
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
         await catalog.removeEntityByUid(uid);
 
         await expect(
@@ -1211,7 +1260,10 @@ describe('DefaultEntitiesCatalog', () => {
           metadata: { name: 'two' },
           spec: {},
         });
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         await expect(catalog.facets({ facets: ['kind'] })).resolves.toEqual({
           facets: {
@@ -1249,7 +1301,10 @@ describe('DefaultEntitiesCatalog', () => {
           },
           spec: {},
         });
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         await expect(
           catalog.facets({
@@ -1293,7 +1348,10 @@ describe('DefaultEntitiesCatalog', () => {
           },
           spec: {},
         });
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+        });
 
         await expect(
           catalog.facets({

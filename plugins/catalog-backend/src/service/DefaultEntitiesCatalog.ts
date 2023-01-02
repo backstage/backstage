@@ -22,6 +22,7 @@ import {
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { get, countBy, identity, isEqual } from 'lodash';
+import { Logger } from 'winston';
 import {
   Cursor,
   EntitiesCatalog,
@@ -177,7 +178,13 @@ function parseFilter(
 }
 
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
-  constructor(private readonly database: Knex) {}
+  private readonly database: Knex;
+  private readonly logger: Logger;
+
+  constructor(options: { database: Knex; logger: Logger }) {
+    this.database = options.database;
+    this.logger = options.logger;
+  }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
@@ -267,7 +274,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isFetchingBackwards = cursor.isPrevious;
 
-    // TODO(vinzscam): log if multiple sort fields are provided
+    if (cursor.sortFields.length > 1) {
+      this.logger.warn(`Only one sort field is supported, ignoring the rest`);
+    }
 
     const sortField: EntitySortField = {
       ...defaultSortField,
