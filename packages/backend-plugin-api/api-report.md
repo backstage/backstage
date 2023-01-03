@@ -70,33 +70,25 @@ export interface BackendRegistrationPoints {
 export type CacheService = PluginCacheManager;
 
 // @public (undocumented)
-const cacheServiceRef: ServiceRef<PluginCacheManager, 'plugin'>;
-
-// @public (undocumented)
 export type ConfigService = Config;
 
-// @public (undocumented)
-const configServiceRef: ServiceRef<Config, 'root'>;
-
-declare namespace coreServices {
-  export {
-    configServiceRef as config,
-    httpRouterServiceRef as httpRouter,
-    loggerServiceRef as logger,
-    urlReaderServiceRef as urlReader,
-    cacheServiceRef as cache,
-    databaseServiceRef as database,
-    discoveryServiceRef as discovery,
-    tokenManagerServiceRef as tokenManager,
-    permissionsServiceRef as permissions,
-    schedulerServiceRef as scheduler,
-    rootLifecycleServiceRef as rootLifecycle,
-    rootLoggerServiceRef as rootLogger,
-    pluginMetadataServiceRef as pluginMetadata,
-    lifecycleServiceRef as lifecycle,
-  };
+// @public
+export namespace coreServices {
+  const cache: ServiceRef<PluginCacheManager, 'plugin'>;
+  const config: ServiceRef<Config, 'root'>;
+  const database: ServiceRef<PluginDatabaseManager, 'plugin'>;
+  const discovery: ServiceRef<DiscoveryService, 'plugin'>;
+  const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
+  const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
+  const logger: ServiceRef<LoggerService, 'plugin'>;
+  const permissions: ServiceRef<PermissionsService, 'plugin'>;
+  const pluginMetadata: ServiceRef<PluginMetadataService, 'plugin'>;
+  const rootLifecycle: ServiceRef<LifecycleService, 'root'>;
+  const rootLogger: ServiceRef<LoggerService, 'root'>;
+  const scheduler: ServiceRef<PluginTaskScheduler, 'plugin'>;
+  const tokenManager: ServiceRef<TokenManager, 'plugin'>;
+  const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
 }
-export { coreServices };
 
 // @public
 export function createBackendModule<
@@ -165,17 +157,11 @@ export function createServiceRef<T>(options: {
 // @public (undocumented)
 export type DatabaseService = PluginDatabaseManager;
 
-// @public (undocumented)
-const databaseServiceRef: ServiceRef<PluginDatabaseManager, 'plugin'>;
-
 // @public
 export type DiscoveryService = {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
 };
-
-// @public (undocumented)
-const discoveryServiceRef: ServiceRef<DiscoveryService, 'plugin'>;
 
 // @public
 export type ExtensionPoint<T> = {
@@ -192,15 +178,9 @@ export interface HttpRouterService {
 }
 
 // @public (undocumented)
-const httpRouterServiceRef: ServiceRef<HttpRouterService, 'plugin'>;
-
-// @public (undocumented)
 export interface LifecycleService {
   addShutdownHook(options: LifecycleServiceShutdownHook): void;
 }
-
-// @public (undocumented)
-const lifecycleServiceRef: ServiceRef<LifecycleService, 'plugin'>;
 
 // @public (undocumented)
 export type LifecycleServiceShutdownHook = {
@@ -208,7 +188,7 @@ export type LifecycleServiceShutdownHook = {
   labels?: Record<string, string>;
 };
 
-// @public (undocumented)
+// @public
 export interface LoggerService {
   // (undocumented)
   child(meta: LogMeta): LoggerService;
@@ -221,9 +201,6 @@ export interface LoggerService {
   // (undocumented)
   warn(message: string, meta?: Error | LogMeta): void;
 }
-
-// @public (undocumented)
-const loggerServiceRef: ServiceRef<LoggerService, 'plugin'>;
 
 // @public (undocumented)
 export function loggerToWinstonLogger(
@@ -240,16 +217,10 @@ export type LogMeta = {
 export type PermissionsService = PermissionEvaluator | PermissionAuthorizer;
 
 // @public (undocumented)
-const permissionsServiceRef: ServiceRef<PermissionsService, 'plugin'>;
-
-// @public (undocumented)
 export interface PluginMetadataService {
   // (undocumented)
   getId(): string;
 }
-
-// @public (undocumented)
-const pluginMetadataServiceRef: ServiceRef<PluginMetadataService, 'plugin'>;
 
 // @public
 export type ReadTreeOptions = {
@@ -299,19 +270,10 @@ export type ReadUrlResponse = {
 export type RootLifecycleService = LifecycleService;
 
 // @public (undocumented)
-const rootLifecycleServiceRef: ServiceRef<LifecycleService, 'root'>;
-
-// @public (undocumented)
 export type RootLoggerService = LoggerService;
 
 // @public (undocumented)
-const rootLoggerServiceRef: ServiceRef<LoggerService, 'root'>;
-
-// @public (undocumented)
 export type SchedulerService = PluginTaskScheduler;
-
-// @public (undocumented)
-const schedulerServiceRef: ServiceRef<PluginTaskScheduler, 'plugin'>;
 
 // @public
 export type SearchOptions = {
@@ -374,9 +336,6 @@ export type ServiceRef<
 export type TokenManagerService = TokenManager;
 
 // @public (undocumented)
-const tokenManagerServiceRef: ServiceRef<TokenManager, 'plugin'>;
-
-// @public (undocumented)
 export type TypesToServiceRef<T> = {
   [key in keyof T]: ServiceRef<T[key]>;
 };
@@ -387,7 +346,4 @@ export type UrlReaderService = {
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };
-
-// @public (undocumented)
-const urlReaderServiceRef: ServiceRef<UrlReaderService, 'plugin'>;
 ```

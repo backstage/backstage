@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-
 /**
  * @public
  */
 export type LogMeta = { [name: string]: unknown };
 
 /**
+ * A service that provides a logging facility.
+ *
  * @public
  */
 export interface LoggerService {
@@ -32,10 +32,3 @@ export interface LoggerService {
 
   child(meta: LogMeta): LoggerService;
 }
-
-/**
- * @public
- */
-export const loggerServiceRef = createServiceRef<LoggerService>({
-  id: 'core.logger',
-});

@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
+import { Handler } from 'express';
 
 /**
  * @public
  */
-export interface PluginMetadataService {
-  getId(): string;
+export interface HttpRouterService {
+  use(handler: Handler): void;
 }
-
-/**
- * @public
- */
-export const pluginMetadataServiceRef = createServiceRef<PluginMetadataService>(
-  {
-    id: 'core.plugin-metadata',
-  },
-);

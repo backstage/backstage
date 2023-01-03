@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { LoggerService } from './loggerServiceRef';
-
-/** @public */
-export type RootLoggerService = LoggerService;
+import { Config } from '@backstage/config';
 
 /**
  * @public
  */
-export const rootLoggerServiceRef = createServiceRef<RootLoggerService>({
-  id: 'core.root.logger',
-  scope: 'root',
-});
+export type ConfigService = Config;

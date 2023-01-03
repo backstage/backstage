@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { TokenManager } from '@backstage/backend-common';
 
 /** @public */
-export type SchedulerService = PluginTaskScheduler;
-
-/**
- * @public
- */
-export const schedulerServiceRef = createServiceRef<SchedulerService>({
-  id: 'core.scheduler',
-});
+export type TokenManagerService = TokenManager;

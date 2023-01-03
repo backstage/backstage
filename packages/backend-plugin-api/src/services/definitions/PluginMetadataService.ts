@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { createServiceRef } from '../system/types';
-
-/** @public */
-export type DatabaseService = PluginDatabaseManager;
-
 /**
  * @public
  */
-export const databaseServiceRef = createServiceRef<DatabaseService>({
-  id: 'core.database',
-});
+export interface PluginMetadataService {
+  getId(): string;
+}

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
 import { Readable } from 'stream';
 
 /**
@@ -280,10 +279,3 @@ export type SearchResponseFile = {
    */
   content(): Promise<Buffer>;
 };
-
-/**
- * @public
- */
-export const urlReaderServiceRef = createServiceRef<UrlReaderService>({
-  id: 'core.urlReader',
-});

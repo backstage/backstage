@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import {
-  PermissionAuthorizer,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { PluginDatabaseManager } from '@backstage/backend-common';
 
 /** @public */
-export type PermissionsService = PermissionEvaluator | PermissionAuthorizer;
-
-/**
- * @public
- */
-export const permissionsServiceRef = createServiceRef<PermissionsService>({
-  id: 'core.permissions',
-});
+export type DatabaseService = PluginDatabaseManager;
