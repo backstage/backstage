@@ -38,10 +38,7 @@ export namespace coreServices {
    */
   export const config = createServiceRef<
     import('./ConfigService').ConfigService
-  >({
-    id: 'core.root.config',
-    scope: 'root',
-  });
+  >({ id: 'core.config', scope: 'root' });
 
   /**
    * The service reference for the plugin scoped {@link DatabaseService}.
@@ -50,9 +47,7 @@ export namespace coreServices {
    */
   export const database = createServiceRef<
     import('./DatabaseService').DatabaseService
-  >({
-    id: 'core.database',
-  });
+  >({ id: 'core.database' });
 
   /**
    * The service reference for the plugin scoped {@link DiscoveryService}.
@@ -61,9 +56,7 @@ export namespace coreServices {
    */
   export const discovery = createServiceRef<
     import('./DiscoveryService').DiscoveryService
-  >({
-    id: 'core.discovery',
-  });
+  >({ id: 'core.discovery' });
 
   /**
    * The service reference for the plugin scoped {@link HttpRouterService}.
@@ -81,10 +74,7 @@ export namespace coreServices {
    */
   export const lifecycle = createServiceRef<
     import('./LifecycleService').LifecycleService
-  >({
-    id: 'core.lifecycle',
-    scope: 'plugin',
-  });
+  >({ id: 'core.lifecycle' });
 
   /**
    * The service reference for the plugin scoped {@link LoggerService}.
@@ -93,9 +83,7 @@ export namespace coreServices {
    */
   export const logger = createServiceRef<
     import('./LoggerService').LoggerService
-  >({
-    id: 'core.logger',
-  });
+  >({ id: 'core.logger' });
 
   /**
    * The service reference for the plugin scoped {@link PermissionsService}.
@@ -104,9 +92,7 @@ export namespace coreServices {
    */
   export const permissions = createServiceRef<
     import('./PermissionsService').PermissionsService
-  >({
-    id: 'core.permissions',
-  });
+  >({ id: 'core.permissions' });
 
   /**
    * The service reference for the plugin scoped {@link PluginMetadataService}.
@@ -115,9 +101,7 @@ export namespace coreServices {
    */
   export const pluginMetadata = createServiceRef<
     import('./PluginMetadataService').PluginMetadataService
-  >({
-    id: 'core.plugin-metadata',
-  });
+  >({ id: 'core.pluginMetadata' });
 
   /**
    * The service reference for the root scoped {@link RootLifecycleService}.
@@ -126,10 +110,7 @@ export namespace coreServices {
    */
   export const rootLifecycle = createServiceRef<
     import('./RootLifecycleService').RootLifecycleService
-  >({
-    id: 'core.rootLifecycle',
-    scope: 'root',
-  });
+  >({ id: 'core.rootLifecycle', scope: 'root' });
 
   /**
    * The service reference for the root scoped {@link RootLoggerService}.
@@ -138,10 +119,7 @@ export namespace coreServices {
    */
   export const rootLogger = createServiceRef<
     import('./RootLoggerService').RootLoggerService
-  >({
-    id: 'core.root.logger',
-    scope: 'root',
-  });
+  >({ id: 'core.rootLogger', scope: 'root' });
 
   /**
    * The service reference for the plugin scoped {@link SchedulerService}.
@@ -150,9 +128,7 @@ export namespace coreServices {
    */
   export const scheduler = createServiceRef<
     import('./SchedulerService').SchedulerService
-  >({
-    id: 'core.scheduler',
-  });
+  >({ id: 'core.scheduler' });
 
   /**
    * The service reference for the plugin scoped {@link TokenManagerService}.
@@ -161,9 +137,7 @@ export namespace coreServices {
    */
   export const tokenManager = createServiceRef<
     import('./TokenManagerService').TokenManagerService
-  >({
-    id: 'core.tokenManager',
-  });
+  >({ id: 'core.tokenManager' });
 
   /**
    * The service reference for the plugin scoped {@link UrlReaderService}.
@@ -172,7 +146,5 @@ export namespace coreServices {
    */
   export const urlReader = createServiceRef<
     import('./UrlReaderService').UrlReaderService
-  >({
-    id: 'core.urlReader',
-  });
+  >({ id: 'core.urlReader' });
 }
