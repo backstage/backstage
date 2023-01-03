@@ -1,0 +1,110 @@
+scalar JSON
+scalar JSONObject
+
+enum Lifecycle {
+  EXPERIMENTAL
+  PRODUCTION
+  DEPRECATED
+}
+
+union Ownable = IAPI | IComponent | IDomain | IResource | ISystem | ITemplate
+union Dependency = IComponent | IResource
+union Owner = IUser | IGroup
+
+interface IEntity @extend(interface: "Node") {
+  name: String! @field(at: "metadata.name")
+  kind: String! @field(at: "kind")
+  namespace: String! @field(at: "metadata.namespace", default: "default")
+  title: String! @field(at: "metadata.title", default: "")
+  description: String! @field(at: "metadata.description", default: "")
+  tags: [String] @field(at: "metadata.tags")
+  links: [EntityLink] @field(at: "metadata.links")
+}
+
+type EntityLink {
+  url: String!
+  title: String
+  icon: String
+}
+
+interface ILocation @extend(interface: "IEntity", when: "kind", is: "Location") {
+  type: String @field(at: "spec.type")
+  target: String @field(at: "spec.target")
+  targets: [String] @field(at: "spec.targets")
+}
+
+interface IAPI @extend(interface: "IEntity", when: "kind", is: "API") {
+  lifecycle: Lifecycle! @field(at: "spec.lifecycle")
+  owner: Owner! @relation(name: "ownedBy")
+  definition: String! @field(at: "spec.definition")
+  system: ISystem @relation(name: "partOf")
+  consumers: Connection @relation(name: "apiConsumedBy", nodeType: "IComponent")
+  providers: Connection @relation(name: "apiProvidedBy", nodeType: "IComponent")
+}
+
+interface IComponent @extend(interface: "IEntity", when: "kind", is: "Component") {
+  lifecycle: Lifecycle! @field(at: "spec.lifecycle")
+  owner: Owner! @relation(name: "ownedBy")
+  system: ISystem @relation(name: "partOf", kind: "system")
+  component: IComponent @relation(name: "partOf", kind: "component")
+  subComponents: Connection @relation(name: "hasPart", nodeType: "IComponent")
+  providesApi: Connection @relation(name: "providesApi", nodeType: "IAPI")
+  consumesApi: Connection @relation(name: "consumesApi", nodeType: "IAPI")
+  dependencies: Connection @relation(name: "dependsOn", nodeType: "Dependency")
+}
+
+interface IDomain @extend(interface: "IEntity", when: "kind", is: "Domain") {
+  owner: Owner! @relation(name: "ownedBy")
+  systems: Connection @relation(name: "hasPart", nodeType: "ISystem")
+}
+
+interface IResource @extend(interface: "IEntity", when: "kind", is: "Resource") {
+  owner: Owner! @relation(name: "ownedBy")
+  dependencies: Connection @relation(name: "dependsOn", nodeType: "Dependency")
+  dependents: Connection @relation(name: "dependencyOf", nodeType: "Dependency")
+  system: ISystem @relation(name: "partOf")
+}
+
+interface ISystem @extend(interface: "IEntity", when: "kind", is: "System") {
+  owner: Owner! @relation(name: "ownedBy")
+  domain: IDomain @relation(name: "partOf")
+  components: Connection @relation(name: "hasPart", nodeType: "IComponent", kind: "component")
+  resources: Connection @relation(name: "hasPart", nodeType: "IResource", kind: "resource")
+}
+
+type Step {
+  id: String
+  name: String
+  action: String!
+  input: JSONObject
+  if: JSON
+}
+
+interface ITemplate @extend(interface: "IEntity", when: "kind", is: "Template") {
+  parameters: JSONObject @field(at: "spec.parameters")
+  steps: [Step]! @field(at: "spec.steps")
+  output: JSONObject @field(at: "spec.output")
+  owner: Owner @relation(name: "ownedBy")
+}
+
+interface IGroup @extend(interface: "IEntity", when: "kind", is: "Group") {
+  displayName: String @field(at: "spec.profile.displayName")
+  email: String @field(at: "spec.profile.email")
+  picture: String @field(at: "spec.profile.picture")
+  parent: IGroup @relation(name: "childOf")
+  children: Connection @relation(name: "parentOf", nodeType: "IGroup")
+  members: Connection @relation(name: "hasMember", nodeType: "IUser")
+  ownerOf: Connection @relation(name: "ownerOf", nodeType: "Ownable")
+}
+
+interface IUser @extend(interface: "IEntity", when: "kind", is: "User") {
+  displayName: String @field(at: "spec.profile.displayName")
+  email: String @field(at: "spec.profile.email")
+  picture: String @field(at: "spec.profile.picture")
+  memberOf: Connection @relation(name: "memberOf", nodeType: "IGroup")
+  ownerOf: Connection @relation(name: "ownerOf", nodeType: "Ownable")
+}
+
+extend type Query {
+  entity(kind: String!, name: String!, namespace: String): IEntity
+}
