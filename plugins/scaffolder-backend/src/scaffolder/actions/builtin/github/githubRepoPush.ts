@@ -49,8 +49,17 @@ export function createGithubRepoPushAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     requireCodeOwnerReviews?: boolean;
+    dismissStaleReviews?: boolean;
+    bypassPullRequestAllowances?:
+      | {
+          users?: string[];
+          teams?: string[];
+          apps?: string[];
+        }
+      | undefined;
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
+    requiredConversationResolution?: boolean;
     sourcePath?: string;
     token?: string;
   }>({
@@ -64,8 +73,12 @@ export function createGithubRepoPushAction(options: {
         properties: {
           repoUrl: inputProps.repoUrl,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          dismissStaleReviews: inputProps.dismissStaleReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+          requiredConversationResolution:
+            inputProps.requiredConversationResolution,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
           protectEnforceAdmins: inputProps.protectEnforceAdmins,
@@ -94,8 +107,11 @@ export function createGithubRepoPushAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         requireCodeOwnerReviews = false,
+        dismissStaleReviews = false,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
+        requiredConversationResolution = false,
         token: providedToken,
       } = ctx.input;
 
@@ -131,13 +147,16 @@ export function createGithubRepoPushAction(options: {
         client,
         repo,
         requireCodeOwnerReviews,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
+        requiredConversationResolution,
         config,
         ctx.logger,
         gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
+        dismissStaleReviews,
       );
 
       ctx.output('remoteUrl', remoteUrl);

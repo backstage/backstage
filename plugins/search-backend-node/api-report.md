@@ -173,7 +173,14 @@ export type ScheduleTaskParameters = {
 // @public
 export class TestPipeline {
   execute(): Promise<TestPipelineResult>;
+  static fromCollator(collator: Readable): TestPipeline;
+  static fromDecorator(decorator: Transform): TestPipeline;
+  static fromIndexer(indexer: Writable): TestPipeline;
+  withCollator(collator: Readable): this;
+  withDecorator(decorator: Transform): this;
   withDocuments(documents: IndexableDocument[]): TestPipeline;
+  withIndexer(indexer: Writable): this;
+  // @deprecated
   static withSubject(subject: Readable | Transform | Writable): TestPipeline;
 }
 

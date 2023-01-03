@@ -5,23 +5,20 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { CoreV1Api } from '@kubernetes/client-node';
 import { Credentials } from 'aws-sdk';
-import { CustomObjectsApi } from '@kubernetes/client-node';
 import type { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
-import { KubeConfig } from '@kubernetes/client-node';
 import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger } from 'winston';
-import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
@@ -77,6 +74,8 @@ export interface ClusterDetails {
   authProvider: string;
   // (undocumented)
   caData?: string | undefined;
+  // (undocumented)
+  caFile?: string | undefined;
   customResources?: CustomResourceMatcher[];
   dashboardApp?: string;
   dashboardParameters?: JsonObject;
@@ -142,6 +141,9 @@ export class GoogleServiceAccountAuthTranslator
   ): Promise<GKEClusterDetails>;
 }
 
+// @alpha
+export const HEADER_KUBERNETES_CLUSTER: string;
+
 // @alpha (undocumented)
 export interface KubernetesAuthTranslator {
   // (undocumented)
@@ -188,10 +190,16 @@ export class KubernetesBuilder {
     options: KubernetesObjectsProviderOptions,
   ): KubernetesObjectsProvider;
   // (undocumented)
+  protected buildProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesProxy;
+  // (undocumented)
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
+    proxy: KubernetesProxy,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
@@ -207,7 +215,22 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ): Promise<ClusterDetails[]>;
   // (undocumented)
+  protected getClusterSupplier(): KubernetesClustersSupplier;
+  // (undocumented)
+  protected getFetcher(): KubernetesFetcher;
+  // (undocumented)
+  protected getObjectsProvider(
+    options: KubernetesObjectsProviderOptions,
+  ): KubernetesObjectsProvider;
+  // (undocumented)
   protected getObjectTypesToFetch(): ObjectToFetch[] | undefined;
+  // (undocumented)
+  protected getProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesProxy;
+  // (undocumented)
+  protected getServiceLocator(): KubernetesServiceLocator;
   // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
   // (undocumented)
@@ -219,6 +242,8 @@ export class KubernetesBuilder {
   // (undocumented)
   setObjectsProvider(objectsProvider?: KubernetesObjectsProvider): this;
   // (undocumented)
+  setProxy(proxy?: KubernetesProxy): this;
+  // (undocumented)
   setServiceLocator(serviceLocator?: KubernetesServiceLocator): this;
 }
 
@@ -228,21 +253,10 @@ export type KubernetesBuilderReturn = Promise<{
   clusterSupplier: KubernetesClustersSupplier;
   customResources: CustomResource[];
   fetcher: KubernetesFetcher;
+  proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
 }>;
-
-// @alpha (undocumented)
-export class KubernetesClientProvider {
-  // (undocumented)
-  getCoreClientByClusterDetails(clusterDetails: ClusterDetails): CoreV1Api;
-  // (undocumented)
-  getCustomObjectsClient(clusterDetails: ClusterDetails): CustomObjectsApi;
-  // (undocumented)
-  getKubeConfig(clusterDetails: ClusterDetails): KubeConfig;
-  // (undocumented)
-  getMetricsClient(clusterDetails: ClusterDetails): Metrics;
-}
 
 // @alpha
 export interface KubernetesClustersSupplier {
@@ -321,6 +335,13 @@ export type KubernetesObjectTypes =
   | 'customresources'
   | 'statefulsets'
   | 'daemonsets';
+
+// @alpha
+export class KubernetesProxy {
+  constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
+  // (undocumented)
+  createRequestHandler(): RequestHandler;
+}
 
 // @alpha
 export interface KubernetesServiceLocator {

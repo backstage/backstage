@@ -28,24 +28,26 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
+import { z } from 'zod';
 import { EntitiesCatalog } from '../catalog/types';
 import { LocationAnalyzer } from '../ingestion/types';
+import { CatalogProcessingOrchestrator } from '../processing/types';
+import { validateEntityEnvelope } from '../processing/util';
 import {
   basicEntityFilter,
+  entitiesBatchRequest,
   parseEntityFilterParams,
   parseEntityPaginationParams,
   parseEntityTransformParams,
 } from './request';
+import { parseEntityFacetParams } from './request/parseEntityFacetParams';
+import { parseEntityOrderParams } from './request/parseEntityOrderParams';
+import { LocationService, RefreshOptions, RefreshService } from './types';
 import {
   disallowReadonlyMode,
   locationInput,
   validateRequestBody,
 } from './util';
-import { z } from 'zod';
-import { parseEntityFacetParams } from './request/parseEntityFacetParams';
-import { RefreshOptions, LocationService, RefreshService } from './types';
-import { CatalogProcessingOrchestrator } from '../processing/types';
-import { validateEntityEnvelope } from '../processing/util';
 
 /**
  * Options used by {@link createRouter}.
@@ -112,6 +114,7 @@ export async function createRouter(
         const { entities, pageInfo } = await entitiesCatalog.entities({
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query),
+          order: parseEntityOrderParams(req.query),
           pagination: parseEntityPaginationParams(req.query),
           authorizationToken: getBearerToken(req.header('authorization')),
         });
@@ -173,6 +176,16 @@ export async function createRouter(
           res.status(200).json(response);
         },
       )
+      .post('/entities/by-refs', async (req, res) => {
+        const request = entitiesBatchRequest(req);
+        const token = getBearerToken(req.header('authorization'));
+        const response = await entitiesCatalog.entitiesBatch({
+          entityRefs: request.entityRefs,
+          fields: parseEntityTransformParams(req.query),
+          authorizationToken: token,
+        });
+        res.status(200).json(response);
+      })
       .get('/entity-facets', async (req, res) => {
         const response = await entitiesCatalog.facets({
           filter: parseEntityFilterParams(req.query),

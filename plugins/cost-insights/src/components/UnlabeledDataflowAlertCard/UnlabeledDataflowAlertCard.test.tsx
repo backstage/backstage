@@ -19,6 +19,7 @@ import { UnlabeledDataflowAlertCard } from './UnlabeledDataflowAlertCard';
 import {
   createMockUnlabeledDataflowData,
   createMockUnlabeledDataflowAlertProject,
+  MockConfigProvider,
 } from '../../testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 
@@ -61,9 +62,11 @@ describe('<UnlabeledDataflowAlertCard />', () => {
         'projects with unlabeled Dataflow jobs in the last 30 days.',
     );
     const rendered = await renderInTestApp(
-      <UnlabeledDataflowAlertCard
-        alert={MockUnlabeledDataflowAlertMultipleProjects}
-      />,
+      <MockConfigProvider>
+        <UnlabeledDataflowAlertCard
+          alert={MockUnlabeledDataflowAlertMultipleProjects}
+        />
+      </MockConfigProvider>,
     );
     expect(rendered.getByText(subheader)).toBeInTheDocument();
   });
@@ -71,9 +74,11 @@ describe('<UnlabeledDataflowAlertCard />', () => {
   it('renders the correct subheader for a single project', async () => {
     const subheader = new RegExp('1 project');
     const rendered = await renderInTestApp(
-      <UnlabeledDataflowAlertCard
-        alert={MockUnlabeledDataflowAlertSingleProject}
-      />,
+      <MockConfigProvider>
+        <UnlabeledDataflowAlertCard
+          alert={MockUnlabeledDataflowAlertSingleProject}
+        />
+      </MockConfigProvider>,
     );
     expect(rendered.getByText(subheader)).toBeInTheDocument();
   });

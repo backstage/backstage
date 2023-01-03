@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
       '&:hover': {
         boxShadow: theme.shadows[4],
       },
+      height: '100%',
     },
     bold: {
       fontWeight: theme.typography.fontWeightBold,
@@ -56,15 +57,17 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
 const EntityCountTile = ({
   counter,
   type,
-  name,
+  kind,
   url,
 }: {
   counter: number;
-  type: string;
-  name: string;
+  type?: string;
+  kind: string;
   url: string;
 }) => {
-  const classes = useStyles({ type });
+  const classes = useStyles({ type: type ?? kind });
+
+  const rawTitle = type ?? kind;
 
   return (
     <Link to={url} variant="body2">
@@ -78,8 +81,9 @@ const EntityCountTile = ({
           {counter}
         </Typography>
         <Typography className={classes.bold} variant="h6">
-          {pluralize(name, counter)}
+          {pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
         </Typography>
+        {type && <Typography variant="subtitle1">{kind}</Typography>}
       </Box>
     </Link>
   );
@@ -113,11 +117,11 @@ export const ComponentsGrid = ({
   return (
     <Grid container>
       {componentsWithCounters?.map(c => (
-        <Grid item xs={6} md={6} lg={4} key={c.name}>
+        <Grid item xs={6} md={6} lg={4} key={c.type ?? c.kind}>
           <EntityCountTile
             counter={c.counter}
+            kind={c.kind}
             type={c.type}
-            name={c.name}
             url={`${catalogLink()}/?${c.queryParams}`}
           />
         </Grid>

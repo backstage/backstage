@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { type EntityFilterQuery } from '@backstage/catalog-client';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -23,20 +24,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { FieldExtensionComponentProps } from '../../../extensions';
+import { EntityPickerProps } from './schema';
 
-/**
- * The input props that can be specified under `ui:options` for the
- * `EntityPicker` field extension.
- *
- * @public
- */
-export interface EntityPickerUiOptions {
-  allowedKinds?: string[];
-  defaultKind?: string;
-  allowArbitraryValues?: boolean;
-  defaultNamespace?: string | false;
-}
+export { EntityPickerSchema } from './schema';
 
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
@@ -44,9 +34,7 @@ export interface EntityPickerUiOptions {
  *
  * @public
  */
-export const EntityPicker = (
-  props: FieldExtensionComponentProps<string, EntityPickerUiOptions>,
-) => {
+export const EntityPicker = (props: EntityPickerProps) => {
   const {
     onChange,
     schema: { title = 'Entity', description = 'An entity from the catalog' },
@@ -57,6 +45,11 @@ export const EntityPicker = (
     idSchema,
   } = props;
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+
+  const catalogFilter: EntityFilterQuery | undefined =
+    uiSchema['ui:options']?.catalogFilter ||
+    (allowedKinds && { kind: allowedKinds });
+
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
 
@@ -64,7 +57,7 @@ export const EntityPicker = (
 
   const { value: entities, loading } = useAsync(() =>
     catalogApi.getEntities(
-      allowedKinds ? { filter: { kind: allowedKinds } } : undefined,
+      catalogFilter ? { filter: catalogFilter } : undefined,
     ),
   );
 

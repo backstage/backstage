@@ -1,5 +1,52 @@
 # @backstage/catalog-model
 
+## 1.1.5-next.0
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- Updated dependencies
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 1.1.3
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- Updated dependencies
+  - @backstage/types@1.0.1
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
 ## 1.1.3-next.0
 
 ### Patch Changes

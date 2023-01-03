@@ -26,6 +26,7 @@ auth:
   providers:
     gcp-iap:
       audience: '/projects/<project number>/global/backendServices/<backend service id>'
+      jwtHeader: x-custom-header # Optional: Only if you are using a custom header for the IAP JWT
 ```
 
 You can find the project number and service ID in the Google Cloud Console.
@@ -69,7 +70,7 @@ export default async function createPlugin(
           // and the IAP token and produces the Backstage token with the
           // relevant user info.
           async resolver({ profile, result: { iapToken } }, ctx) {
-            // Somehow compute the Backstage token claims. Just some dummy code
+            // Somehow compute the Backstage token claims. Just some sample code
             // shown here, but you may want to query your LDAP server, or
             // GSuite or similar, based on the IAP token sub/email claims
             const id = iapToken.email.split('@')[0];

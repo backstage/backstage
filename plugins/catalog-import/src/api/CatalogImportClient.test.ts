@@ -49,7 +49,7 @@ jest.mock('@octokit/rest', () => {
 import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
@@ -89,7 +89,7 @@ describe('CatalogImportClient', () => {
     }),
   );
 
-  const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
+  const catalogApi = {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
@@ -111,7 +111,7 @@ describe('CatalogImportClient', () => {
       scmAuthApi,
       scmIntegrationsApi,
       identityApi,
-      catalogApi,
+      catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
       configApi: new ConfigReader({
         app: {
           baseUrl: 'https://demo.backstage.io/',
@@ -458,7 +458,7 @@ describe('CatalogImportClient', () => {
         scmAuthApi,
         scmIntegrationsApi,
         identityApi,
-        catalogApi,
+        catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
         configApi: new ConfigReader({
           catalog: {
             import: {
@@ -610,7 +610,7 @@ describe('CatalogImportClient', () => {
         scmAuthApi,
         scmIntegrationsApi,
         identityApi,
-        catalogApi,
+        catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
         configApi: new ConfigReader({
           catalog: {
             import: {
@@ -680,7 +680,7 @@ describe('CatalogImportClient', () => {
         scmAuthApi,
         scmIntegrationsApi,
         identityApi,
-        catalogApi,
+        catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
         configApi: new ConfigReader({
           catalog: {
             import: {

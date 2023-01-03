@@ -42,6 +42,7 @@ export default async (opts: OptionValues): Promise<void> => {
     {
       type: 'input',
       name: 'name',
+      default: 'backstage',
       message: chalk.blue('Enter a name for the app [required]'),
       validate: (value: any) => {
         if (!value) {

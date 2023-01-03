@@ -1,5 +1,95 @@
 # @techdocs/cli
 
+## 1.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.5
+  - @backstage/plugin-techdocs-node@1.4.4-next.0
+
+## 1.2.4
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-techdocs-node@1.4.3
+  - @backstage/cli-common@0.1.11
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
+## 1.2.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/plugin-techdocs-node@1.4.3-next.3
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+
+## 1.2.4-next.2
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/plugin-techdocs-node@1.4.3-next.2
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+
+## 1.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-techdocs-node@1.4.3-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/cli-common@0.1.10
+
+## 1.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.5-next.0
+  - @backstage/plugin-techdocs-node@1.4.3-next.0
+
+## 1.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-techdocs-node@1.4.2
+  - @backstage/catalog-model@1.1.3
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4
+
+## 1.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/plugin-techdocs-node@1.4.2-next.1
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+
 ## 1.2.3-next.0
 
 ### Patch Changes

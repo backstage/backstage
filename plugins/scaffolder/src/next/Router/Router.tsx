@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren } from 'react';
-import { Routes, Route, useOutlet } from 'react-router';
+import { Routes, Route, useOutlet } from 'react-router-dom';
 import { TemplateListPage } from '../TemplateListPage';
 import { TemplateWizardPage } from '../TemplateWizardPage';
 import {
@@ -30,6 +30,7 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { nextSelectedTemplateRouteRef } from '../../routes';
 import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
+import type { FormProps } from '../types';
 
 /**
  * The Props for the Scaffolder Router
@@ -44,6 +45,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
+  FormProps?: FormProps;
 };
 
 /**
@@ -91,7 +93,10 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         path={nextSelectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateWizardPage customFieldExtensions={fieldExtensions} />
+            <TemplateWizardPage
+              customFieldExtensions={fieldExtensions}
+              FormProps={props.FormProps}
+            />
           </SecretsContextProvider>
         }
       />

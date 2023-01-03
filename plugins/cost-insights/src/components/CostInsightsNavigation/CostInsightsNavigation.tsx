@@ -32,7 +32,7 @@ import {
   NavigationItem,
   getDefaultNavigationItems,
 } from '../../utils/navigation';
-import { Maybe, Product } from '../../types';
+import { Maybe, Product } from '@backstage/plugin-cost-insights-common';
 
 type CostInsightsNavigationProps = {
   alerts: number;

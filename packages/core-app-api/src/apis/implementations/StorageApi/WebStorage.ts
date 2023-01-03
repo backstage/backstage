@@ -22,7 +22,7 @@ import {
 import { JsonValue, Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
-const buckets = new Map<string, WebStorage>();
+export const buckets = new Map<string, WebStorage>();
 
 /**
  * An implementation of the storage API, that uses the browser's local storage.
@@ -35,11 +35,23 @@ export class WebStorage implements StorageApi {
     private readonly errorApi: ErrorApi,
   ) {}
 
+  private static hasSubscribed = false;
+
   static create(options: {
     errorApi: ErrorApi;
     namespace?: string;
   }): WebStorage {
     return new WebStorage(options.namespace ?? '', options.errorApi);
+  }
+
+  private static addStorageEventListener() {
+    window.addEventListener('storage', event => {
+      for (const [bucketPath, webStorage] of buckets.entries()) {
+        if (event.key?.startsWith(bucketPath)) {
+          webStorage.handleStorageChange(event.key);
+        }
+      }
+    });
   }
 
   get<T>(key: string): T | undefined {
@@ -89,7 +101,24 @@ export class WebStorage implements StorageApi {
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>> {
+    if (!WebStorage.hasSubscribed) {
+      WebStorage.addStorageEventListener();
+      WebStorage.hasSubscribed = true;
+    }
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
+  }
+
+  private handleStorageChange(eventKey: StorageEvent['key']) {
+    if (!eventKey?.startsWith(this.namespace)) {
+      return;
+    }
+    // Grab the part of this key that is local to this bucket
+    const trimmedKey = eventKey?.slice(`${this.namespace}/`.length);
+
+    // If the key still contains a slash, it means it's a sub-bucket
+    if (!trimmedKey.includes('/')) {
+      this.notifyChanges(decodeURIComponent(trimmedKey));
+    }
   }
 
   private getKeyName(key: string) {

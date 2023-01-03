@@ -195,21 +195,35 @@ export function createGithubRepoCreateAction(options: {
   gitAuthorEmail?: string | undefined;
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
+  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+  squashMergeCommitMessage?:
+    | 'PR_BODY'
+    | 'COMMIT_MESSAGES'
+    | 'BLANK'
+    | undefined;
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  bypassPullRequestAllowances?:
+    | {
+        users?: string[] | undefined;
+        teams?: string[] | undefined;
+        apps?: string[] | undefined;
+      }
+    | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
+  requiredConversationResolution?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
         | {
             user: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             team: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             username: string;
@@ -217,6 +231,9 @@ export function createGithubRepoCreateAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;
@@ -236,8 +253,17 @@ export function createGithubRepoPushAction(options: {
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  dismissStaleReviews?: boolean | undefined;
+  bypassPullRequestAllowances?:
+    | {
+        users?: string[];
+        teams?: string[];
+        apps?: string[];
+      }
+    | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
+  requiredConversationResolution?: boolean | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
 }>;
@@ -363,22 +389,37 @@ export function createPublishGithubAction(options: {
   gitAuthorEmail?: string | undefined;
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
+  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+  squashMergeCommitMessage?:
+    | 'PR_BODY'
+    | 'COMMIT_MESSAGES'
+    | 'BLANK'
+    | undefined;
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   sourcePath?: string | undefined;
+  bypassPullRequestAllowances?:
+    | {
+        users?: string[];
+        teams?: string[];
+        apps?: string[];
+      }
+    | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  dismissStaleReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
+  requiredConversationResolution?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
         | {
             user: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             team: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             username: string;
@@ -386,6 +427,9 @@ export function createPublishGithubAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;
@@ -422,6 +466,7 @@ export function createPublishGitlabAction(options: {
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
   setUserAsOwner?: boolean | undefined;
+  topics?: string[] | undefined;
 }>;
 
 // @public
@@ -435,7 +480,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   sourcePath?: string | undefined;
   targetPath?: string | undefined;
   token?: string | undefined;
-  commitAction?: 'update' | 'create' | 'delete' | undefined;
+  commitAction?: 'update' | 'delete' | 'create' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
   assignee?: string | undefined;
@@ -457,6 +502,7 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
@@ -551,6 +597,7 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   // (undocumented)
   catalogClient: CatalogApi;
+  concurrentTasksLimit?: number;
   // (undocumented)
   config: Config;
   // (undocumented)
@@ -565,7 +612,7 @@ export interface RouterOptions {
   scheduler?: PluginTaskScheduler;
   // (undocumented)
   taskBroker?: TaskBroker;
-  // (undocumented)
+  // @deprecated (undocumented)
   taskWorkers?: number;
 }
 
@@ -796,6 +843,8 @@ export type TaskStoreShutDownTaskOptions = {
 export class TaskWorker {
   // (undocumented)
   static create(options: CreateWorkerOptions): Promise<TaskWorker>;
+  // (undocumented)
+  protected onReadyToClaimTask(): Promise<void>;
   // (undocumented)
   runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)

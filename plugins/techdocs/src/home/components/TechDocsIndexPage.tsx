@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useOutlet } from 'react-router';
+import { useOutlet } from 'react-router-dom';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 import { DefaultTechDocsHome } from './DefaultTechDocsHome';

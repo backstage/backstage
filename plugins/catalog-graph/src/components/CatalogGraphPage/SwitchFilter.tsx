@@ -22,12 +22,15 @@ export type Props = {
   onChange: (value: boolean) => void;
 };
 
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-    maxWidth: 300,
+const useStyles = makeStyles(
+  {
+    root: {
+      width: '100%',
+      maxWidth: 300,
+    },
   },
-});
+  { name: 'PluginCatalogGraphSwitchFilter' },
+);
 
 export const SwitchFilter = ({ label, value, onChange }: Props) => {
   const classes = useStyles();

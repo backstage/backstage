@@ -31,15 +31,6 @@ class Index extends React.Component {
                 !
               </div>
             </Banner.Dismissable>
-            <Banner.Dismissable storageKey="2022-09-01-backstagecon-cta">
-              <div>
-                🤩 Join us for the first{' '}
-                <a href="https://events.linuxfoundation.org/backstagecon-north-america/">
-                  BackstageCon
-                </a>{' '}
-                on October 24, 2022!
-              </div>
-            </Banner.Dismissable>
           </Banner.Container>
 
           <Block small className="bg-black-grey stripe-bottom">
@@ -54,13 +45,21 @@ class Index extends React.Component {
                   ship high-quality code quickly — without compromising
                   autonomy.
                 </Block.Paragraph>
-                <Block.LinkButton
-                  href={
-                    'https://github.com/backstage/backstage#getting-started'
-                  }
-                >
-                  GitHub
-                </Block.LinkButton>
+                <Block.Container wrapped>
+                  <Block.LinkButton
+                    style={{ marginRight: '2rem' }}
+                    href={
+                      'https://github.com/backstage/backstage#getting-started'
+                    }
+                  >
+                    GitHub
+                  </Block.LinkButton>
+                  <Block.LinkButton
+                    href={'https://info.backstage.spotify.com/office-hours'}
+                  >
+                    Office Hours
+                  </Block.LinkButton>
+                </Block.Container>
               </Block.TextBox>
               <Block.Graphics>
                 <Block.Graphic

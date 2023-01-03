@@ -19,10 +19,10 @@ import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
 
@@ -107,7 +107,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
         return [data, false];
       }
 
-      const resolverKey = keys[0].substr(1);
+      const resolverKey = keys[0].substring(1);
       const resolverValue = data[keys[0]];
 
       const resolver = this.options.resolvers[resolverKey];

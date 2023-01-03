@@ -23,8 +23,10 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { MatcherFunction } from '@testing-library/react';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
+import { PropsWithChildren } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RenderOptions } from '@testing-library/react';
@@ -165,6 +167,11 @@ export class MockPermissionApi implements PermissionApi {
   ): Promise<EvaluatePermissionResponse>;
 }
 
+// @alpha
+export const MockPluginProvider: ({
+  children,
+}: PropsWithChildren<{}>) => JSX.Element;
+
 // @public
 export class MockStorageApi implements StorageApi {
   // (undocumented)
@@ -234,6 +241,9 @@ export type TestAppOptions = {
     [path: string]: RouteRef | ExternalRouteRef;
   };
 };
+
+// @public
+export const textContentMatcher: (text: string) => MatcherFunction;
 
 // @public
 export function withLogCollector(

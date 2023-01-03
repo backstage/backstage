@@ -185,9 +185,16 @@ type BranchProtectionOptions = {
   logger: Logger;
   requireCodeOwnerReviews: boolean;
   requiredStatusCheckContexts?: string[];
+  bypassPullRequestAllowances?: {
+    users?: string[];
+    teams?: string[];
+    apps?: string[];
+  };
   requireBranchesToBeUpToDate?: boolean;
+  requiredConversationResolution?: boolean;
   defaultBranch?: string;
   enforceAdmins?: boolean;
+  dismissStaleReviews?: boolean;
 };
 
 export const enableBranchProtectionOnDefaultRepoBranch = async ({
@@ -196,10 +203,13 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   owner,
   logger,
   requireCodeOwnerReviews,
+  bypassPullRequestAllowances,
   requiredStatusCheckContexts = [],
   requireBranchesToBeUpToDate = true,
+  requiredConversationResolution = false,
   defaultBranch = 'master',
   enforceAdmins = true,
+  dismissStaleReviews = false,
 }: BranchProtectionOptions): Promise<void> => {
   const tryOnce = async () => {
     try {
@@ -226,7 +236,10 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
         required_pull_request_reviews: {
           required_approving_review_count: 1,
           require_code_owner_reviews: requireCodeOwnerReviews,
+          bypass_pull_request_allowances: bypassPullRequestAllowances,
+          dismiss_stale_reviews: dismissStaleReviews,
         },
+        required_conversation_resolution: requiredConversationResolution,
       });
     } catch (e) {
       assertError(e);

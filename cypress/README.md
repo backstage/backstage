@@ -2,10 +2,6 @@
 
 Hey 👋 Welcome to the Cypress tests for Backstage. They're designed to be run against the `packages/app` folder in the main repo, and be some form of smoke tests to make sure that we don't break any core functionality.
 
-They run part of the PR build, and are triggered from the `.github/workflows/tugboat.yml` file.
-
-The main app gets built up part of a [Tugboat Build](https://tugboat.qa), which when complete, sends a `deployment event` to the PR triggering the aforementioned workflow.
-
 ### Running Locally
 
 In order to make typescript happy, this `cypress` package is separate from all the Jest dependencies in the monorepo workspaces setup.
@@ -24,7 +20,7 @@ necessary environment variables:
 
 ```sh
 yarn tsc
-yarn build
+yarn build:backend
 yarn workspace example-backend build-image
 docker run -p 7007:7007 example-backend
 ```

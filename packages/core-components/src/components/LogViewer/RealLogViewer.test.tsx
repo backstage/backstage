@@ -60,11 +60,11 @@ describe('RealLogViewer', () => {
     await userEvent.keyboard('{shift>}{enter}{/shift}');
     expect(rendered.getByText('3/3')).toBeInTheDocument();
 
-    expect(rendered.queryByText('Some Log Line')).toBeInTheDocument();
+    expect(rendered.getByText('Some Log Line')).toBeInTheDocument();
     await userEvent.keyboard('{meta>}{enter}{/meta}');
     expect(rendered.queryByText('Some Log Line')).not.toBeInTheDocument();
     await userEvent.keyboard('{meta>}{enter}{/meta}');
-    expect(rendered.queryByText('Some Log Line')).toBeInTheDocument();
+    expect(rendered.getByText('Some Log Line')).toBeInTheDocument();
 
     // Tab down to line #2 and click
     await userEvent.tab();

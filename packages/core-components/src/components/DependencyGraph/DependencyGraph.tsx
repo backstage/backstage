@@ -170,6 +170,14 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    * Default: 'curveMonotoneX'
    */
   curve?: 'curveStepBefore' | 'curveMonotoneX';
+  /**
+   * Controls if the graph should be contained or grow
+   *
+   * @remarks
+   *
+   * Default: 'grow'
+   */
+  fit?: 'grow' | 'contain';
 }
 
 const WORKSPACE_ID = 'workspace';
@@ -203,6 +211,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     defs,
     zoom = 'enabled',
     curve = 'curveMonotoneX',
+    fit = 'grow',
     ...svgProps
   } = props;
   const theme: BackstageTheme = useTheme();
@@ -223,6 +232,9 @@ export function DependencyGraph<NodeData, EdgeData>(
 
   const maxWidth = Math.max(graphWidth, containerWidth);
   const maxHeight = Math.max(graphHeight, containerHeight);
+  const minHeight = Math.min(graphHeight, containerHeight);
+
+  const scalableHeight = fit === 'grow' ? maxHeight : minHeight;
 
   const containerRef = React.useMemo(
     () =>
@@ -394,7 +406,7 @@ export function DependencyGraph<NodeData, EdgeData>(
       ref={containerRef}
       {...svgProps}
       width="100%"
-      height={maxHeight}
+      height={scalableHeight}
       viewBox={`0 0 ${maxWidth} ${maxHeight}`}
     >
       <defs>

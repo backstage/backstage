@@ -20,6 +20,7 @@ import { assertError } from '@backstage/errors';
 import parseGitUrl from 'git-url-parse';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorCache,
@@ -27,7 +28,6 @@ import {
   CatalogProcessorEntityResult,
   CatalogProcessorParser,
   CatalogProcessorResult,
-  LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
 

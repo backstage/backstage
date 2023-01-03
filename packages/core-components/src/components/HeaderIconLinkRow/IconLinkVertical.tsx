@@ -18,6 +18,8 @@ import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import LinkIcon from '@material-ui/icons/Link';
 import { Link } from '../Link';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 
 export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';
@@ -56,9 +58,8 @@ const useIconStyles = makeStyles(
       color: theme.palette.secondary.main,
     },
     label: {
-      fontSize: '0.7rem',
       textTransform: 'uppercase',
-      fontWeight: 600,
+      fontWeight: theme.typography.fontWeightBold,
       letterSpacing: 1.2,
     },
   }),
@@ -79,10 +80,16 @@ export function IconLinkVertical({
 
   if (disabled) {
     return (
-      <div title={title} className={classnames(classes.link, classes.disabled)}>
+      <Box title={title} className={classnames(classes.link, classes.disabled)}>
         {icon}
-        <span className={classes.label}>{label}</span>
-      </div>
+        <Typography
+          variant="caption"
+          component="span"
+          className={classes.label}
+        >
+          {label}
+        </Typography>
+      </Box>
     );
   }
 
@@ -94,7 +101,9 @@ export function IconLinkVertical({
       onClick={onClick}
     >
       {icon}
-      <span className={classes.label}>{label}</span>
+      <Typography variant="caption" component="span" className={classes.label}>
+        {label}
+      </Typography>
     </Link>
   );
 }

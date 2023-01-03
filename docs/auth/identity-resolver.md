@@ -49,7 +49,7 @@ A user identity within Backstage is built up from two pieces of information, a
 user [entity reference](../features/software-catalog/references.md), and a
 set of ownership entity references.
 When a user signs in, a Backstage token is generated with these two pieces of information,
-which is then used to identity the user within the Backstage ecosystem.
+which is then used to identify the user within the Backstage ecosystem.
 
 The user entity reference should uniquely identify the logged in user in Backstage.
 It is encouraged that a matching user entity also exists within the Software Catalog,

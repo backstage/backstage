@@ -19,7 +19,8 @@ import { Box, Typography } from '@material-ui/core';
 import { default as Alert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
 import { ProductInsightsCardList } from '../ProductInsightsCard/ProductInsightsCardList';
-import { Duration, Entity, Maybe, Product } from '../../types';
+import { Duration } from '../../types';
+import { Entity, Maybe, Product } from '@backstage/plugin-cost-insights-common';
 import { intervalsOf, DEFAULT_DURATION } from '../../utils/duration';
 import {
   DefaultLoadingAction,

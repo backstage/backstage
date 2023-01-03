@@ -60,6 +60,7 @@ export function CatalogSearchResultListItem(
   props: CatalogSearchResultListItemProps,
 ) {
   const result = props.result as any;
+  const highlight = props.highlight as ResultHighlight;
 
   const classes = useStyles();
   const analytics = useAnalytics();
@@ -71,7 +72,7 @@ export function CatalogSearchResultListItem(
   };
 
   return (
-    <Link noTrack to={result.location} onClick={handleClick}>
+    <>
       <ListItem alignItems="flex-start">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <div className={classes.flexContainer}>
@@ -79,22 +80,24 @@ export function CatalogSearchResultListItem(
             className={classes.itemText}
             primaryTypographyProps={{ variant: 'h6' }}
             primary={
-              props.highlight?.fields.title ? (
-                <HighlightedSearchResultText
-                  text={props.highlight.fields.title}
-                  preTag={props.highlight.preTag}
-                  postTag={props.highlight.postTag}
-                />
-              ) : (
-                result.title
-              )
+              <Link noTrack to={result.location} onClick={handleClick}>
+                {highlight?.fields.title ? (
+                  <HighlightedSearchResultText
+                    text={highlight.fields.title}
+                    preTag={highlight.preTag}
+                    postTag={highlight.postTag}
+                  />
+                ) : (
+                  result.title
+                )}
+              </Link>
             }
             secondary={
-              props.highlight?.fields.text ? (
+              highlight?.fields.text ? (
                 <HighlightedSearchResultText
-                  text={props.highlight.fields.text}
-                  preTag={props.highlight.preTag}
-                  postTag={props.highlight.postTag}
+                  text={highlight.fields.text}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
                 />
               ) : (
                 result.text
@@ -112,6 +115,6 @@ export function CatalogSearchResultListItem(
         </div>
       </ListItem>
       <Divider component="li" />
-    </Link>
+    </>
   );
 }

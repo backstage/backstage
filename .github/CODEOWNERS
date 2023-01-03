@@ -26,16 +26,27 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/azure-devops-common                        @backstage/reviewers @marleypowell @awanlin
 /plugins/bitbucket-cloud-common                     @backstage/reviewers @pjungermann
 /plugins/bitrise                                    @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/catalog-backend-module-aws                 @backstage/reviewers @pjungermann
-/plugins/catalog-backend-module-bitbucket-cloud     @backstage/reviewers @pjungermann
-/plugins/catalog-backend-module-msgraph             @backstage/reviewers @pjungermann
-/plugins/catalog-graph                              @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/catalog                                    @backstage/reviewers @backstage/catalog-core
+/plugins/catalog-*                                  @backstage/reviewers @backstage/catalog-core
+/plugins/catalog-backend-module-aws                 @backstage/reviewers @backstage/catalog-core @pjungermann
+/plugins/catalog-backend-module-bitbucket-cloud     @backstage/reviewers @backstage/catalog-core @pjungermann
+/plugins/catalog-backend-module-msgraph             @backstage/reviewers @backstage/catalog-core @pjungermann
+/plugins/catalog-graph                              @backstage/reviewers @backstage/catalog-core @backstage/sda-se-reviewers
 /plugins/circleci                                   @backstage/reviewers @adamdmharvey
 /plugins/cloudbuild                                 @backstage/reviewers @trivago/ebarrios
 /plugins/code-coverage                              @backstage/reviewers @alde @nissayeva
 /plugins/code-coverage-backend                      @backstage/reviewers @alde @nissayeva
 /plugins/cost-insights                              @backstage/reviewers @backstage/silver-lining
 /plugins/cost-insights-*                            @backstage/reviewers @backstage/silver-lining
+/plugins/events-backend                             @backstage/reviewers @pjungermann
+/plugins/events-backend-module-aws-sqs              @backstage/reviewers @pjungermann
+/plugins/events-backend-module-azure                @backstage/reviewers @pjungermann
+/plugins/events-backend-module-bitbucket-cloud      @backstage/reviewers @pjungermann
+/plugins/events-backend-module-gerrit               @backstage/reviewers @pjungermann
+/plugins/events-backend-module-github               @backstage/reviewers @pjungermann
+/plugins/events-backend-module-gitlab               @backstage/reviewers @pjungermann
+/plugins/events-backend-test-utils                  @backstage/reviewers @pjungermann
+/plugins/events-node                                @backstage/reviewers @pjungermann
 /plugins/explore                                    @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/explore-react                              @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/fossa                                      @backstage/reviewers @backstage/sda-se-reviewers

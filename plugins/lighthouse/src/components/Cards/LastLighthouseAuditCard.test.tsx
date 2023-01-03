@@ -151,10 +151,10 @@ describe('<LastLighthouseAuditCard />', () => {
 
     it('renders nothing', async () => {
       const { queryByTestId } = subject();
-      expect(await queryByTestId('AuditListTable')).toBeNull();
+      expect(queryByTestId('AuditListTable')).toBeNull();
     });
   });
-  //
+
   describe('where there is no data', () => {
     beforeEach(() => {
       (useWebsiteForEntity as jest.Mock).mockReturnValue({
@@ -166,7 +166,7 @@ describe('<LastLighthouseAuditCard />', () => {
 
     it('renders nothing', async () => {
       const { queryByTestId } = subject();
-      expect(await queryByTestId('AuditListTable')).toBeNull();
+      expect(queryByTestId('AuditListTable')).toBeNull();
     });
   });
 });

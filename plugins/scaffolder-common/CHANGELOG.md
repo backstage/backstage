@@ -1,5 +1,46 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.2.4-next.0
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/types@1.0.2
+
+## 1.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+
+## 1.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+
+## 1.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.3
+  - @backstage/types@1.0.1
+
 ## 1.2.2-next.0
 
 ### Patch Changes

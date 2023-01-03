@@ -15,21 +15,18 @@
  */
 
 import {
-  configServiceRef,
+  coreServices,
   createServiceFactory,
-  discoveryServiceRef,
-  permissionsServiceRef,
-  tokenManagerServiceRef,
 } from '@backstage/backend-plugin-api';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 /** @public */
 export const permissionsFactory = createServiceFactory({
-  service: permissionsServiceRef,
+  service: coreServices.permissions,
   deps: {
-    config: configServiceRef,
-    discovery: discoveryServiceRef,
-    tokenManager: tokenManagerServiceRef,
+    config: coreServices.config,
+    discovery: coreServices.discovery,
+    tokenManager: coreServices.tokenManager,
   },
   async factory({ config }) {
     return async ({ discovery, tokenManager }) => {

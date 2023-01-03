@@ -16,8 +16,6 @@ To run the example backend, first go to the project root and run
 
 ```bash
 yarn install
-yarn tsc
-yarn build
 ```
 
 You should only need to do this once.
@@ -25,16 +23,11 @@ You should only need to do this once.
 After that, go to the `packages/backend` directory and run
 
 ```bash
-AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x \
-AUTH_GITHUB_CLIENT_ID=x AUTH_GITHUB_CLIENT_SECRET=x \
-AUTH_OAUTH2_CLIENT_ID=x AUTH_OAUTH2_CLIENT_SECRET=x \
-AUTH_OAUTH2_AUTH_URL=x AUTH_OAUTH2_TOKEN_URL=x \
-LOG_LEVEL=debug \
 yarn start
 ```
 
-Substitute `x` for actual values, or leave them as dummy values just to try out
-the backend without using the auth or sentry features.
+If you want to override any configuration locally, for example adding any secrets,
+you can do so in `app-config.local.yaml`.
 
 The backend starts up on port 7007 per default.
 

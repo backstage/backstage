@@ -40,20 +40,24 @@ import { notEmpty } from '../../utils/assert';
 import { useBarChartStyles } from '../../utils/styles';
 import { resourceSort } from '../../utils/sort';
 import { isInvalid, titleOf, tooltipItemOf } from '../../utils/graphs';
-import { TooltipRenderer } from '../../types/Tooltip';
+import { TooltipRenderer } from '../../types';
+import { useConfig } from '../../hooks';
 
-export const defaultTooltip: TooltipRenderer = ({ label, payload = [] }) => {
-  if (isInvalid({ label, payload })) return null;
+const defaultTooltip = (baseCurrency: Intl.NumberFormat) => {
+  const tooltip: TooltipRenderer = ({ label, payload = [] }) => {
+    if (isInvalid({ label, payload })) return null;
 
-  const title = titleOf(label);
-  const items = payload.map(tooltipItemOf).filter(notEmpty);
-  return (
-    <BarChartTooltip title={title}>
-      {items.map((item, index) => (
-        <BarChartTooltipItem key={`${item.label}-${index}`} item={item} />
-      ))}
-    </BarChartTooltip>
-  );
+    const title = titleOf(label);
+    const items = payload.map(tooltipItemOf(baseCurrency)).filter(notEmpty);
+    return (
+      <BarChartTooltip title={title}>
+        {items.map((item, index) => (
+          <BarChartTooltipItem key={`${item.label}-${index}`} item={item} />
+        ))}
+      </BarChartTooltip>
+    );
+  };
+  return tooltip;
 };
 
 /** @public */
@@ -69,12 +73,14 @@ export type BarChartProps = {
 
 /** @public */
 export const BarChart = (props: BarChartProps) => {
+  const { baseCurrency } = useConfig();
+
   const {
     resources,
     responsive = true,
     displayAmount = 6,
     options = {},
-    tooltip = defaultTooltip,
+    tooltip = defaultTooltip(baseCurrency),
     onClick,
     onMouseMove,
   } = props;
@@ -164,7 +170,7 @@ export const BarChart = (props: BarChartProps) => {
             tick={BarChartTick}
           />
           <YAxis
-            tickFormatter={currencyFormatter.format}
+            tickFormatter={currencyFormatter(baseCurrency).format}
             domain={[() => 0, globalResourcesMax]}
             tick={styles.axis}
           />

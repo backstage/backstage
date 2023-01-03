@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   RELATION_CHILD_OF,
   RELATION_HAS_MEMBER,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { ALL_RELATION_PAIRS } from '../EntityRelationsGraph';
@@ -26,7 +27,7 @@ import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 
 describe('<SelectedRelationsFilter/>', () => {
   test('should render current value', () => {
-    const { getByText } = render(
+    render(
       <SelectedRelationsFilter
         relationPairs={ALL_RELATION_PAIRS}
         value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
@@ -34,13 +35,13 @@ describe('<SelectedRelationsFilter/>', () => {
       />,
     );
 
-    expect(getByText(RELATION_OWNED_BY)).toBeInTheDocument();
-    expect(getByText(RELATION_CHILD_OF)).toBeInTheDocument();
+    expect(screen.getByText(RELATION_OWNED_BY)).toBeInTheDocument();
+    expect(screen.getByText(RELATION_CHILD_OF)).toBeInTheDocument();
   });
 
   test('should select value', async () => {
     const onChange = jest.fn();
-    const { getByText, getByLabelText } = render(
+    render(
       <SelectedRelationsFilter
         relationPairs={ALL_RELATION_PAIRS}
         value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
@@ -48,13 +49,13 @@ describe('<SelectedRelationsFilter/>', () => {
       />,
     );
 
-    await userEvent.click(getByLabelText('Open'));
+    await userEvent.click(screen.getByLabelText('Open'));
 
     await waitFor(() =>
-      expect(getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
+      expect(screen.getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
     );
 
-    await userEvent.click(getByText(RELATION_HAS_MEMBER));
+    await userEvent.click(screen.getByText(RELATION_HAS_MEMBER));
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith([
@@ -67,7 +68,7 @@ describe('<SelectedRelationsFilter/>', () => {
 
   test('should return undefined if all values are selected', async () => {
     const onChange = jest.fn();
-    const { getByText, getByLabelText } = render(
+    render(
       <SelectedRelationsFilter
         relationPairs={ALL_RELATION_PAIRS}
         value={ALL_RELATION_PAIRS.flatMap(p => p).filter(
@@ -77,13 +78,13 @@ describe('<SelectedRelationsFilter/>', () => {
       />,
     );
 
-    await userEvent.click(getByLabelText('Open'));
+    await userEvent.click(screen.getByLabelText('Open'));
 
     await waitFor(() =>
-      expect(getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
+      expect(screen.getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
     );
 
-    await userEvent.click(getByText(RELATION_HAS_MEMBER));
+    await userEvent.click(screen.getByText(RELATION_HAS_MEMBER));
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith(undefined);
@@ -92,7 +93,7 @@ describe('<SelectedRelationsFilter/>', () => {
 
   test('should return all values when cleared', async () => {
     const onChange = jest.fn();
-    const { getByRole } = render(
+    render(
       <SelectedRelationsFilter
         relationPairs={ALL_RELATION_PAIRS}
         value={[]}
@@ -100,7 +101,7 @@ describe('<SelectedRelationsFilter/>', () => {
       />,
     );
 
-    await userEvent.click(getByRole('combobox'));
+    await userEvent.click(screen.getByRole('combobox'));
     await userEvent.tab();
 
     await waitFor(() => {

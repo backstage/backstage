@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { act, fireEvent, render, waitFor } from '@testing-library/react';
+
 import { Entity } from '@backstage/catalog-model';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import {
+  alertApiRef,
+  ConfigApi,
+  configApiRef,
+} from '@backstage/core-plugin-api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import React from 'react';
 import {
   splunkOnCallApiRef,
   SplunkOnCallClient,
@@ -33,13 +40,7 @@ import {
   MOCK_TEAM_NO_INCIDENTS,
 } from '../api/mocks';
 import { EntitySplunkOnCallCard } from './EntitySplunkOnCallCard';
-
-import {
-  alertApiRef,
-  ConfigApi,
-  configApiRef,
-} from '@backstage/core-plugin-api';
-import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { expectTriggeredIncident } from './TriggerDialog/testUtils';
 
 const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
   getUsers: async () => [],
@@ -167,8 +168,10 @@ describe('SplunkOnCallCard', () => {
     mockSplunkOnCallApi.getTeams = jest
       .fn()
       .mockImplementation(async () => [MOCK_TEAM]);
+    const mockTriggerAlarmFn = jest.fn();
+    mockSplunkOnCallApi.incidentAction = mockTriggerAlarmFn;
 
-    const { getByText, queryByTestId } = render(
+    const { getByRole, getByTestId, getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <EntityProvider entity={mockEntityWithRoutingKeyAnnotation}>
@@ -179,9 +182,22 @@ describe('SplunkOnCallCard', () => {
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText(`Team: ${MOCK_TEAM.name}`)).toBeInTheDocument();
+    expect(getByText('Create Incident')).toBeInTheDocument();
     await waitFor(
       () => expect(getByText('test-incident')).toBeInTheDocument(),
       { timeout: 2000 },
+    );
+
+    const createIncidentButton = getByText('Create Incident');
+    await act(async () => {
+      fireEvent.click(createIncidentButton);
+    });
+    expect(getByRole('dialog')).toBeInTheDocument();
+
+    await expectTriggeredIncident(
+      'test-routing-key',
+      getByTestId,
+      mockTriggerAlarmFn,
     );
   });
 

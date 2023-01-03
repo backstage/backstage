@@ -44,24 +44,7 @@
     />
     <title><%= config.getString('app.title') %></title>
 
-    <% if (config.has('app.googleAnalyticsTrackingId')) { %>
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=<%= config.getString('app.googleAnalyticsTrackingId') %>"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-
-      gtag(
-        'config',
-        '<%= config.getString("app.googleAnalyticsTrackingId") %>',
-      );
-    </script>
-    <% } %> <% if (config.has('app.datadogRum')) { %>
+    <% if (config.has('app.datadogRum')) { %>
     <script>
       (function (h, o, u, n, d) {
         h = h[d] = h[d] || {
@@ -108,8 +91,8 @@
       You can add webfonts, meta tags, or analytics to this file.
       The build step will place the bundled scripts into the <body> tag.
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
+      To begin the development, run `yarn start`.
+      To create a production bundle, use `yarn build`.
     -->
   </body>
 </html>

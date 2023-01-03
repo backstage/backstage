@@ -20,14 +20,17 @@ import React from 'react';
 import { EntityEdgeData } from './types';
 import classNames from 'classnames';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
-  text: {
-    fill: theme.palette.textContrast,
-  },
-  secondary: {
-    fill: theme.palette.textSubtle,
-  },
-}));
+const useStyles = makeStyles(
+  (theme: BackstageTheme) => ({
+    text: {
+      fill: theme.palette.textContrast,
+    },
+    secondary: {
+      fill: theme.palette.textSubtle,
+    },
+  }),
+  { name: 'PluginCatalogGraphCustomLabel' },
+);
 
 export function CustomLabel({
   edge: { relations },

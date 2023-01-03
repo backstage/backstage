@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { FeatureFlagged } from './FeatureFlagged';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { LocalStorageFeatureFlags } from '../apis';
 import { TestApiProvider } from '@backstage/test-utils';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
@@ -34,7 +35,7 @@ describe('FeatureFlagged', () => {
         .spyOn(mockFeatureFlagsApi, 'isActive')
         .mockImplementation(() => true);
 
-      const { queryByText } = render(
+      render(
         <Wrapper>
           <div>
             <FeatureFlagged with="hello-flag">
@@ -44,14 +45,14 @@ describe('FeatureFlagged', () => {
         </Wrapper>,
       );
 
-      expect(await queryByText('BACKSTAGE!')).toBeInTheDocument();
+      expect(screen.getByText('BACKSTAGE!')).toBeInTheDocument();
     });
     it('should not render contents when the feature flag is disabled', async () => {
       jest
         .spyOn(mockFeatureFlagsApi, 'isActive')
         .mockImplementation(() => false);
 
-      const { queryByText } = render(
+      render(
         <Wrapper>
           <div>
             <FeatureFlagged with="hello-flag">
@@ -61,7 +62,7 @@ describe('FeatureFlagged', () => {
         </Wrapper>,
       );
 
-      expect(await queryByText('BACKSTAGE!')).not.toBeInTheDocument();
+      expect(screen.queryByText('BACKSTAGE!')).not.toBeInTheDocument();
     });
   });
   describe('without', () => {
@@ -70,7 +71,7 @@ describe('FeatureFlagged', () => {
         .spyOn(mockFeatureFlagsApi, 'isActive')
         .mockImplementation(() => true);
 
-      const { queryByText } = render(
+      render(
         <Wrapper>
           <div>
             <FeatureFlagged without="hello-flag">
@@ -80,14 +81,14 @@ describe('FeatureFlagged', () => {
         </Wrapper>,
       );
 
-      expect(await queryByText('BACKSTAGE!')).not.toBeInTheDocument();
+      expect(screen.queryByText('BACKSTAGE!')).not.toBeInTheDocument();
     });
     it('should render contents when the feature flag is disabled', async () => {
       jest
         .spyOn(mockFeatureFlagsApi, 'isActive')
         .mockImplementation(() => false);
 
-      const { queryByText } = render(
+      render(
         <Wrapper>
           <div>
             <FeatureFlagged without="hello-flag">
@@ -97,7 +98,7 @@ describe('FeatureFlagged', () => {
         </Wrapper>,
       );
 
-      expect(await queryByText('BACKSTAGE!')).toBeInTheDocument();
+      expect(screen.getByText('BACKSTAGE!')).toBeInTheDocument();
     });
   });
 });

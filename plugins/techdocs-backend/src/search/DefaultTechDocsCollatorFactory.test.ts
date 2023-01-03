@@ -145,7 +145,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     });
 
     it('fetches from the configured catalog and tech docs services', async () => {
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
       expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('catalog');
       expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('techdocs');
@@ -153,7 +153,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     });
 
     it('should create documents for each tech docs search index', async () => {
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
@@ -182,7 +182,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       });
       collator = await factory.getCollator();
 
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
       expect(documents[0]).toMatchObject({
@@ -200,7 +200,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       });
       collator = await factory.getCollator();
 
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
       // Only 1 entity with TechDocs configured multiplied by 3 pages.
@@ -222,7 +222,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       });
 
       it('should create documents for each tech docs search index', async () => {
-        const pipeline = TestPipeline.withSubject(collator);
+        const pipeline = TestPipeline.fromCollator(collator);
         const { documents } = await pipeline.execute();
         const entity = expectedEntities[0];
         documents.forEach((document, idx) => {

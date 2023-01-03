@@ -11,8 +11,12 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EventParams } from '@backstage/plugin-events-node';
+import { EventSubscriber } from '@backstage/plugin-events-node';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegrationConfig } from '@backstage/integration';
+import { graphql } from '@octokit/graphql';
+import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -21,6 +25,13 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-backend';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
+import { UserEntity } from '@backstage/catalog-model';
+
+// @public
+export const defaultOrganizationTeamTransformer: TeamTransformer;
+
+// @public
+export const defaultUserTransformer: UserTransformer;
 
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
@@ -67,7 +78,7 @@ export class GitHubEntityProvider implements EntityProvider {
 }
 
 // @public
-export class GithubEntityProvider implements EntityProvider {
+export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -82,7 +93,11 @@ export class GithubEntityProvider implements EntityProvider {
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
+  onEvent(params: EventParams): Promise<void>;
+  // (undocumented)
   refresh(logger: Logger): Promise<void>;
+  // (undocumented)
+  supportsEventTopics(): string[];
 }
 
 // @alpha
@@ -113,6 +128,7 @@ export type GithubLocationAnalyzerOptions = {
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 };
 
 // @public
@@ -129,6 +145,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     logger: Logger;
     orgs: GithubMultiOrgConfig;
     githubCredentialsProvider?: GithubCredentialsProvider;
+    userTransformer?: UserTransformer;
+    teamTransformer?: TeamTransformer;
   });
   // (undocumented)
   static fromConfig(
@@ -136,6 +154,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     options: {
       logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
+      userTransformer?: UserTransformer;
+      teamTransformer?: TeamTransformer;
     },
   ): GithubMultiOrgReaderProcessor;
   // (undocumented)
@@ -165,6 +185,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
     gitHubConfig: GithubIntegrationConfig;
     logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
+    userTransformer?: UserTransformer;
+    teamTransformer?: TeamTransformer;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -188,6 +210,8 @@ export interface GithubOrgEntityProviderOptions {
   logger: Logger;
   orgUrl: string;
   schedule?: 'manual' | TaskRunner;
+  teamTransformer?: TeamTransformer;
+  userTransformer?: UserTransformer;
 }
 
 // @public
@@ -214,4 +238,48 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 }
+
+// @public
+export type GithubTeam = {
+  slug: string;
+  combinedSlug: string;
+  name?: string;
+  description?: string;
+  avatarUrl?: string;
+  editTeamUrl?: string;
+  parentTeam?: GithubTeam;
+  members: GithubUser[];
+};
+
+// @public
+export type GithubUser = {
+  login: string;
+  bio?: string;
+  avatarUrl?: string;
+  email?: string;
+  name?: string;
+  organizationVerifiedDomainEmails?: string[];
+};
+
+// @public
+export type TeamTransformer = (
+  item: GithubTeam,
+  ctx: TransformerContext,
+) => Promise<GroupEntity | undefined>;
+
+// @public
+export interface TransformerContext {
+  // (undocumented)
+  client: typeof graphql;
+  // (undocumented)
+  org: string;
+  // (undocumented)
+  query: string;
+}
+
+// @public
+export type UserTransformer = (
+  item: GithubUser,
+  ctx: TransformerContext,
+) => Promise<UserEntity | undefined>;
 ```

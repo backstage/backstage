@@ -106,10 +106,22 @@ techdocs:
       # If not set, the default location will be the root of the storage bucket
       bucketRootPath: '/'
 
-      # (Optional) An API key is required to write to a storage bucket.
-      # If not set, environment variables or aws config file will be used to authenticate.
-      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
-      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+      # (Optional) The AWS account ID where the storage bucket is located.
+      # Credentials for the account ID must be configured in the 'aws' app config section.
+      # See the integration-aws-node package for details on how to configure credentials in
+      # the 'aws' app config section.
+      # https://www.npmjs.com/package/@backstage/integration-aws-node
+      # If account ID is not set and no credentials are set, environment variables or aws config file will be used to authenticate.
+      # https://www.npmjs.com/package/@aws-sdk/credential-provider-node
+      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html
+      accountId: ${TECHDOCS_AWSS3_ACCOUNT_ID}
+
+      # (Optional) AWS credentials to use to write to the storage bucket.
+      # This configuration section is now deprecated.
+      # Configuring the account ID is now preferred, with credentials in the 'aws' app config section.
+      # If credentials are not set and no account ID is set, environment variables or aws config file will be used to authenticate.
+      # https://www.npmjs.com/package/@aws-sdk/credential-provider-node
+      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html
       credentials:
         accessKeyId: ${TECHDOCS_AWSS3_ACCESS_KEY_ID_CREDENTIAL}
         secretAccessKey: ${TECHDOCS_AWSS3_SECRET_ACCESS_KEY_CREDENTIAL}
@@ -121,7 +133,7 @@ techdocs:
 
       # (Optional) Endpoint URI to send requests to.
       # If not set, the default endpoint is built from the configured region.
-      # https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
+      # https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/s3clientconfig.html#endpoint
       endpoint: ${AWS_ENDPOINT}
 
       # (Optional) Whether to use path style URLs when communicating with S3.

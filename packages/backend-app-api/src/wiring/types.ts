@@ -28,6 +28,7 @@ import { BackstageBackend } from './BackstageBackend';
 export interface Backend {
   add(feature: BackendFeature): void;
   start(): Promise<void>;
+  stop(): Promise<void>;
 }
 
 export interface BackendRegisterInit {
@@ -45,9 +46,16 @@ export interface CreateSpecializedBackendOptions {
   services: (ServiceFactory | (() => ServiceFactory))[];
 }
 
-export type ServiceHolder = {
+export interface ServiceHolder {
   get<T>(api: ServiceRef<T>, pluginId: string): Promise<T> | undefined;
-};
+}
+
+/**
+ * @internal
+ */
+export interface EnumerableServiceHolder extends ServiceHolder {
+  getServiceRefs(): ServiceRef<unknown>[];
+}
 
 /**
  * @public

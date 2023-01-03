@@ -89,7 +89,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const alertApi = useApi(alertApiRef);
 
   const copyToClipboard = useCallback(() => {
-    navigator.clipboard
+    window.navigator.clipboard
       .writeText(window.location.toString())
       .then(() => alertApi.post({ message: 'Copied!', severity: 'info' }));
   }, [alertApi]);

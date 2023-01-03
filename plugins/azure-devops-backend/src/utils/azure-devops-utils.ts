@@ -223,8 +223,9 @@ export async function replaceReadme(
         const { label, path, ext } = extractPartsFromAsset(filePath);
         const data = mime.lookup(ext);
         const url = buildEncodedUrl(host, org, project, repo, path + ext);
-        const buffer = await urlReader.read(url);
-        const file = await buffer.toString('base64');
+        const response = await urlReader.readUrl(url);
+        const buffer = await response.buffer();
+        const file = buffer.toString('base64');
         return content.replace(
           filePath,
           `[${label}](data:${data};base64,${file})`,
@@ -320,7 +321,7 @@ export function extractPartsFromAsset(content: string): {
   ext: string;
 } {
   const regExp =
-    /\[(.*?)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/;
+    /\[(.*?)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/i;
   const [_, label, path, ext] = regExp.exec(content) || [];
   return {
     ext,

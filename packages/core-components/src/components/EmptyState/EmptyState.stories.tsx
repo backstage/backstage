@@ -28,7 +28,9 @@ const containerStyle = { width: '100%', height: '100vh' };
 
 export const MissingAnnotation = () => (
   <div style={containerStyle}>
-    <MissingAnnotationEmptyState annotation="backstage.io/example" />
+    <MissingAnnotationEmptyState
+      annotation={['backstage.io/foo', 'backstage.io/bar']}
+    />
   </div>
 );
 

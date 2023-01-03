@@ -248,11 +248,9 @@ export async function moveAppTask(
  * @throws if `exec` fails
  */
 export async function readGitConfig(): Promise<GitConfig | undefined> {
-  const tempDir = resolvePath(os.tmpdir(), 'git-temp-dir');
+  const tempDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'git-temp-dir-'));
 
   try {
-    await fs.mkdir(tempDir);
-
     await exec('git init', { cwd: tempDir });
     await exec('git commit --allow-empty -m "Initial commit"', {
       cwd: tempDir,

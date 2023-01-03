@@ -18,10 +18,12 @@ import { Observable } from '@backstage/types';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { TabProps } from '@material-ui/core';
 
 // @public (undocumented)
 export const DefaultProviderSettings: (props: {
@@ -43,7 +45,33 @@ export const Router: (props: { providerSettings?: JSX.Element }) => JSX.Element;
 export const Settings: (props: { icon?: IconComponent }) => JSX.Element;
 
 // @public (undocumented)
-export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';
+export const SettingsLayout: {
+  (props: SettingsLayoutProps): JSX.Element;
+  Route: (props: SettingsLayoutRouteProps) => null;
+};
+
+// @public (undocumented)
+export type SettingsLayoutProps = {
+  title?: string;
+  subtitle?: string;
+  children?: React_2.ReactNode;
+};
+
+// @public (undocumented)
+export type SettingsLayoutRouteProps = {
+  path: string;
+  title: string;
+  children: JSX.Element;
+  tabProps?: TabProps<
+    React_2.ElementType,
+    {
+      component?: React_2.ElementType;
+    }
+  >;
+};
+
+// @public @deprecated (undocumented)
+export const USER_SETTINGS_TAB_KEY = 'plugin.user-settings.settingsLayoutRoute';
 
 // @public (undocumented)
 export const UserSettingsAppearanceCard: () => JSX.Element;
@@ -116,10 +144,10 @@ export class UserSettingsStorage implements StorageApi {
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
-// @public
+// @public @deprecated
 export const UserSettingsTab: (props: UserSettingsTabProps) => JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type UserSettingsTabProps = PropsWithChildren<{
   path: string;
   title: string;

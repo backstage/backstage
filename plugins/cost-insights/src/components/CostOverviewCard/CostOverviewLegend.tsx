@@ -17,13 +17,13 @@
 import React, { PropsWithChildren } from 'react';
 import { Box, useTheme } from '@material-ui/core';
 import { LegendItem } from '../LegendItem';
+import { CostInsightsTheme } from '../../types';
 import {
-  CostInsightsTheme,
   MetricData,
   Maybe,
   Cost,
   Metric,
-} from '../../types';
+} from '@backstage/plugin-cost-insights-common';
 import { useLastCompleteBillingDate, useFilters } from '../../hooks';
 import { getComparedChange, choose } from '../../utils/change';
 import { mapFiltersToProps } from './selector';

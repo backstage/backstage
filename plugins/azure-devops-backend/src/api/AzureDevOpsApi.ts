@@ -408,14 +408,15 @@ export class AzureDevOpsApi {
     content: string;
   }> {
     const url = buildEncodedUrl(host, org, project, repo, 'README.md');
-    const response = await this.urlReader.read(url);
+    const response = await this.urlReader.readUrl(url);
+    const buffer = await response.buffer();
     const content = await replaceReadme(
       this.urlReader,
       host,
       org,
       project,
       repo,
-      response.toString(),
+      buffer.toString(),
     );
     return { url, content };
   }

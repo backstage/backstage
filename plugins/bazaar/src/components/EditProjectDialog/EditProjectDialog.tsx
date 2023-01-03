@@ -106,8 +106,8 @@ export const EditProjectDialog = ({
         handleClose={handleDeleteClose}
         message={[
           'Are you sure you want to delete ',
-          <b key={bazaarProject.name} className={classes.wordBreak}>
-            {bazaarProject.name}
+          <b key={bazaarProject.id} className={classes.wordBreak}>
+            {bazaarProject.title}
           </b>,
           ' from the Bazaar?',
         ]}

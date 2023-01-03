@@ -2,21 +2,20 @@
 
 Welcome to the playlist backend plugin!
 
-# Installation
+## Installation
 
-## Install the package
+### Install the package
 
 ```bash
 # From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-playlist-backend
 ```
 
-## Adding the plugin to your `packages/backend`
+### Adding the plugin to your `packages/backend`
 
 You'll need to add the plugin to the router in your `backend` package. You can do this by creating a file called `packages/backend/src/plugins/playlist.ts`
 
 ```tsx
-import { IdentityClient } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-playlist-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';

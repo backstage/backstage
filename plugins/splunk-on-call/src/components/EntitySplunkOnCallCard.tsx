@@ -29,11 +29,11 @@ import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import WebIcon from '@material-ui/icons/Web';
 import { Alert } from '@material-ui/lab';
 import { splunkOnCallApiRef, UnauthorizedError } from '../api';
-import { MissingApiKeyOrApiIdError } from './Errors/MissingApiKeyOrApiIdError';
+import { MissingApiKeyOrApiIdError } from './Errors';
 import { EscalationPolicy } from './Escalation';
 import { Incidents } from './Incident';
 import { TriggerDialog } from './TriggerDialog';
-import { Team, User } from './types';
+import { RoutingKey, Team, User } from './types';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import {
@@ -143,7 +143,7 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
   }, []);
 
   const {
-    value: usersAndTeams,
+    value: entityData,
     loading,
     error,
   } = useAsync(async () => {
@@ -162,11 +162,15 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
       teams.find(teamValue => teamValue.name === teamAnnotation),
     ].filter(team => team !== undefined);
 
-    if (!foundTeams.length && routingKeyAnnotation) {
+    let foundRoutingKey: RoutingKey | undefined;
+    if (routingKeyAnnotation) {
       const routingKeys = await api.getRoutingKeys();
-      const foundRoutingKey = routingKeys.find(
+      foundRoutingKey = routingKeys.find(
         key => key.routingKey === routingKeyAnnotation,
       );
+    }
+
+    if (!foundTeams.length) {
       foundTeams = foundRoutingKey
         ? foundRoutingKey.targets
             .map(target => {
@@ -179,7 +183,7 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
         : [];
     }
 
-    return { usersHashMap, foundTeams };
+    return { usersHashMap, foundTeams, foundRoutingKey };
   });
 
   if (!teamAnnotation && !routingKeyAnnotation) {
@@ -206,7 +210,7 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
     return <Progress />;
   }
 
-  if (!usersAndTeams?.foundTeams || !usersAndTeams?.foundTeams.length) {
+  if (!entityData?.foundTeams || !entityData?.foundTeams.length) {
     return (
       <InvalidAnnotation
         teamName={teamAnnotation}
@@ -217,9 +221,11 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
 
   const Content = ({
     team,
+    routingKey,
     usersHashMap,
   }: {
     team: Team | undefined;
+    routingKey: RoutingKey | undefined;
     usersHashMap: any;
   }) => {
     const teamName = team?.name ?? '';
@@ -235,7 +241,7 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
           <EscalationPolicy team={teamName} users={usersHashMap} />
         )}
         <TriggerDialog
-          team={teamName}
+          routingKey={routingKey?.routingKey ?? teamName}
           showDialog={showDialog}
           handleDialog={handleDialog}
           onIncidentCreated={handleRefresh}
@@ -257,7 +263,7 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
     icon: <WebIcon />,
   };
 
-  const teams = usersAndTeams?.foundTeams || [];
+  const teams = entityData?.foundTeams || [];
 
   return (
     <>
@@ -277,7 +283,11 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
           />
           <Divider />
           <CardContent>
-            <Content team={team} usersHashMap={usersAndTeams?.usersHashMap} />
+            <Content
+              team={team}
+              routingKey={entityData?.foundRoutingKey}
+              usersHashMap={entityData?.usersHashMap}
+            />
           </CardContent>
         </Card>
       ))}

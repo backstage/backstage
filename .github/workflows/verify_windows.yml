@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     env:
       CI: true
@@ -48,7 +48,6 @@ jobs:
       - name: test
         run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M
         env:
-          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
 
       # credit: https://github.com/appleboy/discord-action/issues/3#issuecomment-731426861

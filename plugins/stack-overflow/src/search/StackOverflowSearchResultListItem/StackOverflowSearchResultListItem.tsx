@@ -25,26 +25,65 @@ import {
   Box,
   Chip,
 } from '@material-ui/core';
+import { useAnalytics } from '@backstage/core-plugin-api';
+import { ResultHighlight } from '@backstage/plugin-search-common';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
 type StackOverflowSearchResultListItemProps = {
   result: any; // TODO(emmaindal): type to StackOverflowDocument.
   icon?: React.ReactNode;
+  rank?: number;
+  highlight?: ResultHighlight;
 };
 
 export const StackOverflowSearchResultListItem = (
   props: StackOverflowSearchResultListItemProps,
 ) => {
   const { location, title, text, answers, tags } = props.result;
+  const { highlight } = props;
+  const analytics = useAnalytics();
+
+  const handleClick = () => {
+    analytics.captureEvent('discover', title, {
+      attributes: { to: location },
+      value: props.rank,
+    });
+  };
 
   return (
-    <Link to={location}>
+    <>
       <ListItem alignItems="center">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <Box flexWrap="wrap">
           <ListItemText
             primaryTypographyProps={{ variant: 'h6' }}
-            primary={_unescape(title)}
-            secondary={`Author: ${text}`}
+            primary={
+              <Link to={location} noTrack onClick={handleClick}>
+                {highlight?.fields?.title ? (
+                  <HighlightedSearchResultText
+                    text={highlight.fields.title}
+                    preTag={highlight.preTag}
+                    postTag={highlight.postTag}
+                  />
+                ) : (
+                  _unescape(title)
+                )}
+              </Link>
+            }
+            secondary={
+              highlight?.fields?.text ? (
+                <>
+                  Author:{' '}
+                  <HighlightedSearchResultText
+                    text={highlight.fields.text}
+                    preTag={highlight.preTag}
+                    postTag={highlight.postTag}
+                  />
+                </>
+              ) : (
+                `Author: ${text}`
+              )
+            }
           />
           <Chip label={`Answer(s): ${answers}`} size="small" />
           {tags &&
@@ -54,6 +93,6 @@ export const StackOverflowSearchResultListItem = (
         </Box>
       </ListItem>
       <Divider />
-    </Link>
+    </>
   );
 };

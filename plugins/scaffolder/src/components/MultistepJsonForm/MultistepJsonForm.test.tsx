@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getReviewData } from './MultistepJsonForm';
+import { getReviewData, getUiSchemasFromSteps } from './ReviewStep';
 
 describe('MultistepJsonForm', () => {
   const formDataMock = {
@@ -76,7 +76,8 @@ describe('MultistepJsonForm', () => {
   ];
 
   test('Fields are defined to be hidden or masked', () => {
-    const reviewData = getReviewData(formDataMock, stepsMock);
+    const schemas = getUiSchemasFromSteps(stepsMock);
+    const reviewData = getReviewData(formDataMock, schemas);
 
     expect(reviewData.password).toBe('******');
     expect(reviewData.masked).toBe('******');

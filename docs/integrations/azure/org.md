@@ -101,7 +101,7 @@ To grant the managed identity the same permissions as mentioned in _App Registra
 ## Filtering imported Users and Groups
 
 By default, the plugin will import all users and groups from your directory.
-This can be customized through filters and search queries.
+This can be customized through [filters](https://learn.microsoft.com/en-us/graph/filter-query-parameter) and [search](https://learn.microsoft.com/en-us/graph/search-query-parameter) queries.
 
 ### Groups
 
@@ -227,6 +227,17 @@ export async function myOrganizationTransformer(
 ```
 
 ## Troubleshooting
+
+### No data
+
+First check your logs for the message `Reading msgraph users and groups`.
+If you don't see this, check you've registered the provider, and that the schedule is valid
+
+If you see a log entry `Read 0 msgraph users and 0 msgraph groups`, check your search and filter arguments.
+
+If you see the start message (`Reading msgraph users and groups`) but no end message (`Read X msgraph users and Y msgraph groups`), then it is likely the job is taking a long time due to a large volume of data.
+The default behavior is to import all users and groups, which is often more data than needed.
+Try importing a smaller set of data (e.g. `filter: displayName eq 'John Smith'`).
 
 ### Authentication / Token Errors
 

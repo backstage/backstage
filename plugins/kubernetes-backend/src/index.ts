@@ -20,19 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './kubernetes-auth-translator/AwsIamKubernetesAuthTranslator';
-export * from './kubernetes-auth-translator/AzureIdentityKubernetesAuthTranslator';
-export * from './kubernetes-auth-translator/GoogleKubernetesAuthTranslator';
-export * from './kubernetes-auth-translator/GoogleServiceAccountAuthProvider';
-export * from './kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
-export * from './kubernetes-auth-translator/NoopKubernetesAuthTranslator';
-export * from './kubernetes-auth-translator/OidcKubernetesAuthTranslator';
-export * from './kubernetes-auth-translator/types';
-
-export * from './service/router';
-export * from './service/KubernetesBuilder';
-export * from './service/KubernetesClientProvider';
-
-export * from './types/types';
-
-export { DEFAULT_OBJECTS } from './service/KubernetesFanOutHandler';
+export * from './kubernetes-auth-translator';
+export * from './service';
+export * from './types';

@@ -49,6 +49,7 @@ Here's how to get the backend up and running:
      return createRouter({
        logger: env.logger,
        config: env.config,
+       reader: env.reader,
      });
    }
    ```

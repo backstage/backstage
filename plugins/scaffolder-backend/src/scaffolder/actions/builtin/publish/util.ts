@@ -71,32 +71,30 @@ export const parseRepoUrl = (
     );
   }
 
-  if (type === 'bitbucket') {
-    if (host === 'bitbucket.org') {
-      if (!workspace) {
-        throw new InputError(
-          `Invalid repo URL passed to publisher: ${repoUrl}, missing workspace`,
-        );
+  const repo: string = parsed.searchParams.get('repo')!;
+  switch (type) {
+    case 'bitbucket': {
+      if (host === 'www.bitbucket.org') {
+        checkRequiredParams(parsed, 'workspace');
       }
+      checkRequiredParams(parsed, 'project', 'repo');
+      break;
     }
-    if (!project) {
-      throw new InputError(
-        `Invalid repo URL passed to publisher: ${repoUrl}, missing project`,
-      );
+    case 'gitlab': {
+      // project is the projectID, and if defined, owner and repo won't be needed.
+      if (!project) {
+        checkRequiredParams(parsed, 'owner', 'repo');
+      }
+      break;
     }
-  } else {
-    if (!owner && type !== 'gerrit') {
-      throw new InputError(
-        `Invalid repo URL passed to publisher: ${repoUrl}, missing owner`,
-      );
+    case 'gerrit': {
+      checkRequiredParams(parsed, 'repo');
+      break;
     }
-  }
-
-  const repo = parsed.searchParams.get('repo');
-  if (!repo) {
-    throw new InputError(
-      `Invalid repo URL passed to publisher: ${repoUrl}, missing repo`,
-    );
+    default: {
+      checkRequiredParams(parsed, 'repo', 'owner');
+      break;
+    }
   }
 
   return { host, owner, repo, organization, workspace, project };
@@ -106,3 +104,26 @@ export const isExecutable = (fileMode: number) => {
   const res = fileMode & executeBitMask;
   return res > 0;
 };
+
+/**
+ * This function checks if the required parameters (given as the `params` argument) are present in the URL
+ *
+ * @param repoUrl - the URL for the repository
+ * @param params - a variadic list of URL query parameter names
+ *
+ * @throws
+ * An InputError exception is thrown if any of the required parameters is not in the URL.
+ *
+ * @public
+ */
+function checkRequiredParams(repoUrl: URL, ...params: string[]) {
+  for (let i = 0; i < params.length; i++) {
+    if (!repoUrl.searchParams.get(params[i])) {
+      throw new InputError(
+        `Invalid repo URL passed to publisher: ${repoUrl.toString()}, missing ${
+          params[i]
+        }`,
+      );
+    }
+  }
+}

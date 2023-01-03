@@ -14,5 +14,26 @@
  * limitations under the License.
  */
 
-export * from './SonarQubeCard';
-export { isSonarQubeAvailable } from './useProjectKey';
+import {
+  isSonarQubeAvailable as NonDeprecatedIsSonarQubeAvailable,
+  SONARQUBE_PROJECT_KEY_ANNOTATION as NON_DEPRECATED_SONARQUBE_PROJECT_KEY_ANNOTATION,
+} from '@backstage/plugin-sonarqube-react';
+
+export { SonarQubeCard } from './SonarQubeCard';
+export type { DuplicationRating } from './SonarQubeCard';
+export type { SonarQubeContentPageProps } from './SonarQubeContentPage';
+
+/**
+ * @public
+ *
+ * @deprecated use the same type from `@backstage/plugin-sonarqube-react` instead
+ */
+export const isSonarQubeAvailable = NonDeprecatedIsSonarQubeAvailable;
+
+/**
+ * @public
+ *
+ * @deprecated use the same type from `@backstage/plugin-sonarqube-react` instead
+ */
+export const SONARQUBE_PROJECT_KEY_ANNOTATION =
+  NON_DEPRECATED_SONARQUBE_PROJECT_KEY_ANNOTATION;

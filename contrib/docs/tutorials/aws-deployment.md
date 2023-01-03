@@ -1,7 +1,7 @@
 # Deploying Backstage on AWS using ECR and EKS
 
 Backstage documentation shows how to build a [Docker
-image](https://backstage.io/docs/getting-started/deployment-docker); this
+image](https://backstage.io/docs/deployment/docker); this
 tutorial shows how to deploy that Docker image to AWS using Elastic Container
 Registry (ECR) and Elastic Kubernetes Service (EKS). Amazon also supports
 deployments with Helm, covered in the [Helm
@@ -36,11 +36,11 @@ Go to [AWS IAM console](https://console.aws.amazon.com/iam/home) and select
 ## Publish a Backstage build
 
 Follow the [Docker
-image](https://backstage.io/docs/getting-started/deployment-docker)
+image](https://backstage.io/docs/deployment/docker)
 documentation to build a new Backstage Docker image:
 
 ```shell
-$ yarn build
+$ yarn build:backend
 $ yarn build-image --tag backstage
 ```
 

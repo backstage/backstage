@@ -26,15 +26,13 @@ import {
   Line,
   ResponsiveContainer,
 } from 'recharts';
+import { ChartData, DEFAULT_DATE_FORMAT, CostInsightsTheme } from '../../types';
 import {
-  ChartData,
   Cost,
-  DEFAULT_DATE_FORMAT,
   Maybe,
   Metric,
   MetricData,
-  CostInsightsTheme,
-} from '../../types';
+} from '@backstage/plugin-cost-insights-common';
 import {
   BarChartTooltip as Tooltip,
   BarChartTooltipItem as TooltipItem,
@@ -45,10 +43,12 @@ import {
   isInvalid,
 } from '../../utils/graphs';
 import { useCostOverviewStyles as useStyles } from '../../utils/styles';
-import { groupByDate, toDataMax, trendFrom } from '../../utils/charts';
+import { groupByDate, trendFrom } from '../../utils/charts';
 import { aggregationSort } from '../../utils/sort';
 import { CostOverviewLegend } from './CostOverviewLegend';
-import { TooltipRenderer } from '../../types/Tooltip';
+import { TooltipRenderer } from '../../types';
+import { useCostInsightsOptions } from '../../options';
+import { useConfig } from '../../hooks';
 
 type CostOverviewChartProps = {
   metric: Maybe<Metric>;
@@ -65,6 +65,7 @@ export const CostOverviewChart = ({
 }: CostOverviewChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const styles = useStyles(theme);
+  const { baseCurrency } = useConfig();
 
   const data = {
     dailyCost: {
@@ -106,6 +107,7 @@ export const CostOverviewChart = ({
         ? DateTime.fromMillis(label)
         : DateTime.fromISO(label!);
     const title = date.toUTC().toFormat(DEFAULT_DATE_FORMAT);
+    const formatGraphValueWith = formatGraphValue(baseCurrency);
     const items = payload
       .filter(p => dataKeys.includes(p.dataKey as string))
       .map((p, i) => ({
@@ -115,8 +117,8 @@ export const CostOverviewChart = ({
             : data.metric.name,
         value:
           p.dataKey === data.dailyCost.dataKey
-            ? formatGraphValue(Number(p.value), i, data.dailyCost.format)
-            : formatGraphValue(Number(p.value), i, data.metric.format),
+            ? formatGraphValueWith(Number(p.value), i, data.dailyCost.format)
+            : formatGraphValueWith(Number(p.value), i, data.metric.format),
         fill:
           p.dataKey === data.dailyCost.dataKey
             ? theme.palette.blue
@@ -131,6 +133,9 @@ export const CostOverviewChart = ({
       </Tooltip>
     );
   };
+
+  const { hideTrendLine } = useCostInsightsOptions();
+  const localizedTickFormatter = formatGraphValue(baseCurrency);
 
   return (
     <Box display="flex" flexDirection="column">
@@ -157,16 +162,19 @@ export const CostOverviewChart = ({
           <YAxis
             domain={[() => 0, 'dataMax']}
             tick={{ fill: styles.axis.fill }}
-            tickFormatter={formatGraphValue}
+            tickFormatter={localizedTickFormatter}
             width={styles.yAxis.width}
             yAxisId={data.dailyCost.dataKey}
           />
           {metric && (
             <YAxis
-              hide
-              domain={[() => 0, toDataMax(data.metric.dataKey, chartData)]}
+              domain={['auto', 'auto']}
               width={styles.yAxis.width}
               yAxisId={data.metric.dataKey}
+              tickFormatter={(value: any, index: number) =>
+                localizedTickFormatter(value, index, data.metric.format)
+              }
+              orientation="right"
             />
           )}
           <Area
@@ -177,15 +185,17 @@ export const CostOverviewChart = ({
             stroke="none"
             yAxisId={data.dailyCost.dataKey}
           />
-          <Line
-            activeDot={false}
-            dataKey="trend"
-            dot={false}
-            isAnimationActive={false}
-            strokeWidth={2}
-            stroke={theme.palette.blue}
-            yAxisId={data.dailyCost.dataKey}
-          />
+          {!hideTrendLine && (
+            <Line
+              activeDot={false}
+              dataKey="trend"
+              dot={false}
+              isAnimationActive={false}
+              strokeWidth={2}
+              stroke={theme.palette.blue}
+              yAxisId={data.dailyCost.dataKey}
+            />
+          )}
           {metric && (
             <Line
               dataKey={data.metric.dataKey}

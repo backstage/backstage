@@ -17,9 +17,12 @@
 import { createServiceRef } from '../system/types';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
+/** @public */
+export type SchedulerService = PluginTaskScheduler;
+
 /**
  * @public
  */
-export const schedulerServiceRef = createServiceRef<PluginTaskScheduler>({
+export const schedulerServiceRef = createServiceRef<SchedulerService>({
   id: 'core.scheduler',
 });

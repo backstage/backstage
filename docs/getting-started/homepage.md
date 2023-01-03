@@ -78,14 +78,14 @@ const routes = (
 )
 ```
 
-### 4. Update sidebar items
+#### 4. Update sidebar items
 
 Let's update the route for "Home" in the Backstage sidebar to point to the new homepage. We'll also add a Sidebar item to quickly open Catalog.
 
 <table>
   <tr>
-    <th><img data-zoomable src="../assets/getting-started/sidebar-without-catalog.png" alt="Sidebar without Catalog" /></td>
-    <th><img data-zoomable src="../assets/getting-started/sidebar-with-catalog.png" alt="Sidebar with Catalog" /></td>
+    <th><img data-zoomable src="../assets/getting-started/sidebar-without-catalog.png" alt="Sidebar without Catalog" /></th>
+    <th><img data-zoomable src="../assets/getting-started/sidebar-with-catalog.png" alt="Sidebar with Catalog" /></th>
   </tr>
   <tr align="center">
     <td>Before</td>

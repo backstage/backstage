@@ -29,6 +29,7 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import {
+  ErrorPanel,
   InfoCard,
   InfoCardVariants,
   Link,
@@ -76,6 +77,11 @@ export const RecentWorkflowRunsCard = (props: {
 
   const githubHost = hostname || 'github.com';
   const routeLink = useRouteRef(buildRouteRef);
+
+  if (error) {
+    return <ErrorPanel title={error.message} error={error} />;
+  }
+
   return (
     <InfoCard
       title="Recent Workflow Runs"

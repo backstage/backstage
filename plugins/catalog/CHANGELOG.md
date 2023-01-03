@@ -1,5 +1,202 @@
 # @backstage/plugin-catalog
 
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/plugin-catalog-react@1.2.4-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration-react@1.1.9-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10-next.0
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/plugin-search-react@1.3.2-next.0
+
+## 1.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/integration-react@1.1.8
+  - @backstage/plugin-catalog-react@1.2.3
+  - @backstage/plugin-search-react@1.3.1
+
+## 1.7.0
+
+### Minor Changes
+
+- 6ffa47bb0a: Fixes in kind selectors (now `OwnershipCard` works again). `EntityKindPicker` now accepts an optional `allowedKinds` prop, just like `CatalogKindHeader`.
+- 462c1d012e: Removed `CatalogKindHeader` from `DefaultCatalogPage`. Deprecated `CatalogKindHeader` in favour of `EntityKindPicker`.
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- ca04d97b09: Handle refresh entity error in `AboutCard`.
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- a19cffbeed: Update search links to only have header as linkable text
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- 387d1d5218: Fixed Entity kind pluralisation in the `CatalogKindHeader` component.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/plugin-search-react@1.3.0
+  - @backstage/core-components@0.12.1
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/integration-react@1.1.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/catalog-model@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.9
+
+## 1.7.0-next.4
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/plugin-search-react@1.3.0-next.4
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration-react@1.1.7-next.4
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.3
+  - @backstage/plugin-search-common@1.2.0-next.3
+
+## 1.7.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration-react@1.1.7-next.3
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.2
+  - @backstage/plugin-catalog-react@1.2.2-next.3
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/plugin-search-react@1.3.0-next.3
+
+## 1.7.0-next.2
+
+### Minor Changes
+
+- 6ffa47bb0a: Fixes in kind selectors (now `OwnershipCard` works again). `EntityKindPicker` now accepts an optional `allowedKinds` prop, just like `CatalogKindHeader`.
+- 462c1d012e: Removed `CatalogKindHeader` from `DefaultCatalogPage`. Deprecated `CatalogKindHeader` in favour of `EntityKindPicker`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/plugin-search-react@1.3.0-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/plugin-catalog-react@1.2.2-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/integration-react@1.1.7-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.2
+
+## 1.6.2-next.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- ca04d97b09: Handle refresh entity error in `AboutCard`.
+- a19cffbeed: Update search links to only have header as linkable text
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/plugin-search-react@1.2.2-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-react@1.2.2-next.1
+  - @backstage/integration-react@1.1.7-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.9-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
+## 1.6.2-next.0
+
+### Patch Changes
+
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- 387d1d5218: Fixed Entity kind pluralisation in the `CatalogKindHeader` component.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/integration-react@1.1.7-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.9-next.0
+  - @backstage/plugin-search-common@1.1.2-next.0
+  - @backstage/plugin-search-react@1.2.2-next.0
+
+## 1.6.1
+
+### Patch Changes
+
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/types@1.0.1
+  - @backstage/integration-react@1.1.6
+  - @backstage/plugin-search-react@1.2.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/errors@1.1.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.8
+  - @backstage/plugin-search-common@1.1.1
+
+## 1.6.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration-react@1.1.6-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-catalog-common@1.0.8-next.0
+  - @backstage/plugin-catalog-react@1.2.1-next.1
+  - @backstage/plugin-search-common@1.1.1-next.0
+  - @backstage/plugin-search-react@1.2.1-next.1
+
 ## 1.6.1-next.0
 
 ### Patch Changes

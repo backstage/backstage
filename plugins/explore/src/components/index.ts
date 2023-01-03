@@ -16,3 +16,4 @@
 
 export * from './DomainCard';
 export * from './ExploreLayout';
+export * from './ToolSearchResultListItem';

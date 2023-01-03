@@ -1,5 +1,142 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.2.15-next.0
+
+### Patch Changes
+
+- e4c0240445: Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+
+  The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
+
+  - Get all entities of kind `Group`
+
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+    ```
+
+  - Get entities of kind `Group` and spec.type `team`
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+            spec.type: team
+    ```
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.9.1-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+
+## 0.2.14
+
+### Patch Changes
+
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.9.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
+## 0.2.14-next.3
+
+### Patch Changes
+
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.9.0-next.3
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+
+## 0.2.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.9.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+
+## 0.2.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-scaffolder-backend@1.8.1-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 0.2.14-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.8.1-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-scaffolder-backend@1.8.0
+  - @backstage/integration@1.4.0
+  - @backstage/types@1.0.1
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 0.2.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/plugin-scaffolder-backend@1.8.0-next.2
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+
+## 0.2.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.8.0-next.1
+
 ## 0.2.13-next.0
 
 ### Patch Changes

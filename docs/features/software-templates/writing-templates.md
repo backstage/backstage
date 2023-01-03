@@ -44,8 +44,8 @@ spec:
           description: Owner of the component
           ui:field: OwnerPicker
           ui:options:
-            allowedKinds:
-              - Group
+            catalogFilter:
+              kind: Group
     - title: Choose a location
       required:
         - repoUrl
@@ -88,17 +88,17 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
   # some outputs which are saved along with the job for use in the frontend
   output:
     links:
       - title: Repository
-        url: ${{ steps.publish.output.remoteUrl }}
+        url: ${{ steps['publish'].output.remoteUrl }}
       - title: Open in catalog
         icon: catalog
-        entityRef: ${{ steps.register.output.entityRef }}
+        entityRef: ${{ steps['register'].output.entityRef }}
 ```
 
 Let's dive in and pick apart what each of these sections do and what they are.
@@ -165,11 +165,11 @@ this:
   "firstName": {
     "ui:autofocus": true,
     "ui:emptyValue": "",
-    "ui:autocomplete": "family-name"
+    "ui:autocomplete": "given-name"
   },
   "lastName": {
     "ui:emptyValue": "",
-    "ui:autocomplete": "given-name"
+    "ui:autocomplete": "family-name"
   },
   "nicknames": {
     "ui:options":{
@@ -211,12 +211,12 @@ spec:
           default: Chuck
           ui:autofocus: true
           ui:emptyValue: ''
-          ui:autocomplete: family-name
+          ui:autocomplete: given-name
         lastName:
           type: string
           title: Last name
           ui:emptyValue: ''
-          ui:autocomplete: given-name
+          ui:autocomplete: family-name
         nicknames:
           type: array
           items:
@@ -459,7 +459,7 @@ an owner for them. Ideally, users should be able to select an owner when they go
 through the scaffolder form from the users and groups already known to
 Backstage. The `OwnerPicker` is a custom field that generates a searchable list
 of groups and/or users already in the catalog to pick an owner from. You can
-specify which of the two kinds are listed in the `allowedKinds` option:
+specify which of the two kinds (or both) are listed in the `catalogFilter.kind` option:
 
 ```yaml
 owner:
@@ -468,8 +468,8 @@ owner:
   description: Owner of the component
   ui:field: OwnerPicker
   ui:options:
-    allowedKinds:
-      - Group
+    catalogFilter:
+      kind: [Group, User]
 ```
 
 ## `spec.steps` - `Action[]`
@@ -505,10 +505,10 @@ The main two that are used are the following:
 output:
   links:
     - title: Repository
-      url: ${{ steps.publish.output.remoteUrl }} # link to the remote repository
+      url: ${{ steps['publish'].output.remoteUrl }} # link to the remote repository
     - title: Open in catalog
       icon: catalog
-      entityRef: ${{ steps.register.output.entityRef }} # link to the entity that has been ingested to the catalog
+      entityRef: ${{ steps['register'].output.entityRef }} # link to the entity that has been ingested to the catalog
 ```
 
 ## The templating syntax

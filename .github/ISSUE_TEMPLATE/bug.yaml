@@ -1,0 +1,84 @@
+name: '🐛 Bug Report'
+description: 'Submit a bug report to help us improve'
+title: '🐛 Bug Report: '
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: We value your time and effort to submit this bug report. 🙏
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: '📜 Description'
+      description: 'A clear and concise description of what the bug is.'
+      placeholder: 'It bugs out when ...'
+  - type: textarea
+    id: expected-behavior
+    validations:
+      required: true
+    attributes:
+      label: '👍 Expected behavior'
+      description: 'What did you think should happen?'
+      placeholder: 'It should ...'
+  - type: textarea
+    id: actual-behavior
+    validations:
+      required: true
+    attributes:
+      label: '👎 Actual Behavior with Screenshots'
+      description: 'What did actually happen? Add screenshots, if applicable.'
+      placeholder: 'It actually ...'
+  - type: textarea
+    id: steps-to-reproduce
+    validations:
+      required: true
+    attributes:
+      label: '👟 Reproduction steps'
+      description: 'How do you trigger this bug? Please walk us through it step by step.'
+      placeholder:
+        "Provide a link to a live example, or an unambiguous set of steps to reproduce this bug. Include code or configuration to reproduce, if relevant.\n
+        1. Go to '...'\n
+        2. Click on '....'\n
+        3. Scroll down to '....'"
+  - type: textarea
+    id: context
+    validations:
+      required: false
+    attributes:
+      label: '📃 Provide the context for the Bug.'
+      description: 'How has this issue affected you? What are you trying to accomplish?'
+      placeholder: 'Providing context (e.g. links to configuration settings, stack trace or log data) helps us come up with a solution that is most useful in the real world.'
+  - type: textarea
+    id: environment
+    validations:
+      required: false
+    attributes:
+      label: '🖥️ Your Environment'
+      description: 'Provide Browser Information
+        Provide Output of `yarn backstage-cli info`'
+      placeholder: 'Include as many relevant details about the environment you experienced the bug in.'
+  - type: checkboxes
+    id: no-duplicate-issues
+    attributes:
+      label: '👀 Have you spent some time to check if this bug has been raised before?'
+      options:
+        - label: "I checked and didn't find similar issue"
+          required: true
+  - type: checkboxes
+    id: read-code-of-conduct
+    attributes:
+      label: '🏢 Have you read the Code of Conduct?'
+      options:
+        - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
+          required: true
+  - type: dropdown
+    attributes:
+      label: Are you willing to submit PR?
+      description: This is absolutely not required, but we are happy to guide you in the contribution process.
+      options:
+        - Yes I am willing to submit a PR!
+        - No, but I'm happy to collaborate on a PR with someone else
+        - No, I don't have time to work on this right now

@@ -4,23 +4,17 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
+import * as common from '@backstage/plugin-explore-common';
 
-// @public (undocumented)
-export type ExploreTool = {
-  title: string;
-  description?: string;
-  url: string;
-  image: string;
-  tags?: string[];
-  lifecycle?: string;
-};
+// @public @deprecated (undocumented)
+export type ExploreTool = common.ExploreTool;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface ExploreToolsConfig {
   // (undocumented)
   getTools: () => Promise<ExploreTool[]>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const exploreToolsConfigRef: ApiRef<ExploreToolsConfig>;
 ```

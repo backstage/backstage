@@ -22,7 +22,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { HasSystemsCard } from './HasSystemsCard';
 
@@ -51,7 +51,7 @@ describe('<HasSystemsCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasSystemsCard />
@@ -64,8 +64,10 @@ describe('<HasSystemsCard />', () => {
       },
     );
 
-    expect(getByText('Has systems')).toBeInTheDocument();
-    expect(getByText(/No system is part of this domain/i)).toBeInTheDocument();
+    expect(screen.getByText('Has systems')).toBeInTheDocument();
+    expect(
+      screen.getByText(/No system is part of this domain/i),
+    ).toBeInTheDocument();
   });
 
   it('shows related systems', async () => {
@@ -97,7 +99,7 @@ describe('<HasSystemsCard />', () => {
       ],
     });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasSystemsCard />
@@ -111,8 +113,8 @@ describe('<HasSystemsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Has systems')).toBeInTheDocument();
-      expect(getByText(/target-name/i)).toBeInTheDocument();
+      expect(screen.getByText('Has systems')).toBeInTheDocument();
+      expect(screen.getByText(/target-name/i)).toBeInTheDocument();
     });
   });
 });

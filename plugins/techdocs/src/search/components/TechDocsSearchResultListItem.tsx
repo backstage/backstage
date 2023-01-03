@@ -81,6 +81,15 @@ export const TechDocsSearchResultListItem = (
     });
   };
 
+  const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
+    asLink ? (
+      <Link noTrack to={result.location} onClick={handleClick}>
+        {children}
+      </Link>
+    ) : (
+      <>{children}</>
+    );
+
   const TextItem = () => {
     const resultTitle = highlight?.fields.title ? (
       <HighlightedSearchResultText
@@ -117,13 +126,15 @@ export const TechDocsSearchResultListItem = (
         className={classes.itemText}
         primaryTypographyProps={{ variant: 'h6' }}
         primary={
-          title ? (
-            title
-          ) : (
-            <>
-              {resultTitle} | {entityTitle ?? resultName} docs
-            </>
-          )
+          <LinkWrapper>
+            {title ? (
+              title
+            ) : (
+              <>
+                {resultTitle} | {entityTitle ?? resultName} docs
+              </>
+            )}
+          </LinkWrapper>
         }
         secondary={
           <span
@@ -149,15 +160,6 @@ export const TechDocsSearchResultListItem = (
     );
   };
 
-  const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
-    asLink ? (
-      <Link noTrack to={result.location} onClick={handleClick}>
-        {children}
-      </Link>
-    ) : (
-      <>{children}</>
-    );
-
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (
       <>
@@ -172,10 +174,8 @@ export const TechDocsSearchResultListItem = (
     );
 
   return (
-    <LinkWrapper>
-      <ListItemWrapper>
-        <TextItem />
-      </ListItemWrapper>
-    </LinkWrapper>
+    <ListItemWrapper>
+      <TextItem />
+    </ListItemWrapper>
   );
 };

@@ -25,8 +25,19 @@ export interface ClusterDetails {
 
 export type SslConfig = ConnectionOptions | boolean;
 
-export type SaslConfig = {
-  mechanism: 'plain' | 'scram-sha-256' | 'scram-sha-512';
-  username: string;
-  password: string;
-};
+export type SaslConfig =
+  | {
+      mechanism: 'plain';
+      username: string;
+      password: string;
+    }
+  | {
+      mechanism: 'scram-sha-256';
+      username: string;
+      password: string;
+    }
+  | {
+      mechanism: 'scram-sha-512';
+      username: string;
+      password: string;
+    };

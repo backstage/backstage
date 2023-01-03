@@ -213,6 +213,8 @@ and modify the `techInsights.ts` file to contain a reference to the FactChecker 
  });
 ```
 
+NOTE: You need a Fact Checker Factory to get access to the backend routes that will allow the facts to be checked. If you don't have a Fact Checker Factory you will see 404s and potentially other errors.
+
 To be able to run checks, you need to additionally add individual checks into your FactChecker implementation. For examples how to add these, you can check the documentation of the individual implementation of the FactChecker
 
 #### Modifying check persistence

@@ -1,5 +1,95 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.8
+
+## 0.1.3
+
+### Patch Changes
+
+- c507aee8a2: Ensured typescript type checks in migration files.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+
+## 0.1.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.3
+
+## 0.1.3-next.2
+
+### Patch Changes
+
+- c507aee8a2: Ensured typescript type checks in migration files.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/plugin-auth-node@0.2.8-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-auth-node@0.2.7
+  - @backstage/types@1.0.1
+  - @backstage/errors@1.1.3
+
+## 0.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/plugin-auth-node@0.2.7-next.1
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
 ## 0.1.2-next.0
 
 ### Patch Changes

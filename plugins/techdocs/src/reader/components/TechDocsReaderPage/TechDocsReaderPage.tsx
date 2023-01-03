@@ -21,6 +21,7 @@ import { Page } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   TECHDOCS_ADDONS_WRAPPER_KEY,
+  TECHDOCS_ADDONS_KEY,
   TechDocsReaderPageProvider,
 } from '@backstage/plugin-techdocs-react';
 
@@ -165,11 +166,14 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   if (!children) {
     const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
 
-    const grandChildren = childrenList.flatMap(
+    const grandChildren = childrenList.flatMap<ReactElement>(
       child => (child as ReactElement)?.props?.children ?? [],
     );
+
     const page: React.ReactNode = grandChildren.find(
-      grandChild => !getComponentData(grandChild, TECHDOCS_ADDONS_WRAPPER_KEY),
+      grandChild =>
+        !getComponentData(grandChild, TECHDOCS_ADDONS_WRAPPER_KEY) &&
+        !getComponentData(grandChild, TECHDOCS_ADDONS_KEY),
     );
 
     // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1

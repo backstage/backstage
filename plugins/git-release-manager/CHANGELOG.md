@@ -1,5 +1,108 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/integration@1.4.1
+  - @backstage/theme@0.2.16
+
+## 0.3.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+
+## 0.3.25
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/integration@1.4.1
+  - @backstage/theme@0.2.16
+
+## 0.3.25-next.4
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+
+## 0.3.25-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.3
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+
+## 0.3.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+
+## 0.3.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+
+## 0.3.25-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/theme@0.2.16
+
+## 0.3.24
+
+### Patch Changes
+
+- 43afded227: Updated recharts to v2.0.0 and fixed typing issues
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/integration@1.4.0
+  - @backstage/theme@0.2.16
+
+## 0.3.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.3.24-next.0
 
 ### Patch Changes

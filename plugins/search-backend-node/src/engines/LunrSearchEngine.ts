@@ -153,12 +153,37 @@ export class LunrSearchEngine implements SearchEngine {
 
   async getIndexer(type: string) {
     const indexer = new LunrSearchEngineIndexer();
+    const indexerLogger = this.logger.child({ documentType: type });
+    let errorThrown: Error | undefined;
+
+    indexer.on('error', err => {
+      errorThrown = err;
+    });
 
     indexer.on('close', () => {
       // Once the stream is closed, build the index and store the documents in
       // memory for later retrieval.
-      this.lunrIndices[type] = indexer.buildIndex();
-      this.docStore = { ...this.docStore, ...indexer.getDocumentStore() };
+      const newDocuments = indexer.getDocumentStore();
+      const docStoreExists = this.lunrIndices[type] !== undefined;
+      const documentsIndexed = Object.keys(newDocuments).length;
+
+      // Do not set the index if there was an error or if no documents were
+      // indexed. This ensures search continues to work for an index, even in
+      // case of transient issues in underlying collators.
+      if (!errorThrown && documentsIndexed > 0) {
+        this.lunrIndices[type] = indexer.buildIndex();
+        this.docStore = { ...this.docStore, ...newDocuments };
+      } else {
+        indexerLogger.warn(
+          `Index for ${type} was not ${
+            docStoreExists ? 'replaced' : 'created'
+          }: ${
+            errorThrown
+              ? 'an error was encountered'
+              : 'indexer received 0 documents'
+          }`,
+        );
+      }
     });
 
     return indexer;
@@ -238,6 +263,7 @@ export class LunrSearchEngine implements SearchEngine {
           }),
         },
       })),
+      numberOfResults: results.length,
       nextPageCursor,
       previousPageCursor,
     };

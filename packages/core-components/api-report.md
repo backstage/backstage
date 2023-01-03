@@ -52,7 +52,7 @@ import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
 
-// @public (undocumented)
+// @public
 export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
 
 // @public
@@ -61,6 +61,7 @@ export type AlertDisplayProps = {
     vertical: 'top' | 'bottom';
     horizontal: 'left' | 'center' | 'right';
   };
+  transientTimeoutMs?: number;
 };
 
 // @public
@@ -250,6 +251,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   edgeRanks?: number;
   edges: DependencyEdge<EdgeData>[];
   edgeWeight?: number;
+  fit?: 'grow' | 'contain';
   labelOffset?: number;
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   labelPosition?: LabelPosition;
@@ -805,6 +807,7 @@ export const ProxiedSignInPage: (
 // @public
 export type ProxiedSignInPageProps = SignInPageProps & {
   provider: string;
+  headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
 };
 
 // Warning: (ae-missing-release-tag) "Ranker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

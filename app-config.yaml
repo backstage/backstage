@@ -1,7 +1,6 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
-  googleAnalyticsTrackingId: # UA-000000-0
   #datadogRum:
   #  clientToken: '123456789'
   #  applicationId: qwerty
@@ -374,6 +373,7 @@ auth:
       development: {}
 costInsights:
   engineerCost: 200000
+  engineerThreshold: 0.5
   products:
     computeEngine:
       name: Compute Engine

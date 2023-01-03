@@ -24,13 +24,17 @@ import type { BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { fetchCatalogItems } from '../../util/fetchMethods';
 import { parseBazaarProject } from '../../util/parseMethods';
-import { ErrorPanel, InfoCard } from '@backstage/core-components';
+import { ErrorPanel, InfoCard, Link } from '@backstage/core-components';
 import { bazaarPlugin } from '../../plugin';
+import { IconButton } from '@material-ui/core';
+import StorefrontIcon from '@material-ui/icons/Storefront';
 
 /** @public */
 export type BazaarOverviewCardProps = {
+  title?: string;
   order: 'latest' | 'random';
   fullWidth?: boolean;
+  fullHeight?: boolean;
 };
 
 const getUnlinkedCatalogEntities = (
@@ -48,10 +52,13 @@ const getUnlinkedCatalogEntities = (
 
 /** @public */
 export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
-  const { order, fullWidth = false } = props;
+  const { title, order, fullWidth = false, fullHeight = false } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const root = useRouteRef(bazaarPlugin.routes.root);
+
+  const defaultTitle =
+    order === 'latest' ? 'Bazaar Latest Projects' : 'Bazaar Random Projects';
 
   const bazaarLink = {
     title: 'Go to Bazaar',
@@ -124,10 +131,14 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
 
   return (
     <InfoCard
-      title={
-        order === 'latest' ? 'Bazaar Latest Projects' : 'Bazaar Random Projects'
+      title={title ?? defaultTitle}
+      action={
+        <IconButton>
+          <Link to={bazaarLink.link} title={bazaarLink.title}>
+            <StorefrontIcon />
+          </Link>
+        </IconButton>
       }
-      deepLink={bazaarLink}
     >
       <ProjectPreview
         bazaarProjects={bazaarProjects.value || []}
@@ -135,6 +146,7 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
         catalogEntities={unlinkedCatalogEntities || []}
         useTablePagination={false}
         gridSize={fullWidth ? 2 : 4}
+        height={fullHeight ? 'large' : 'small'}
       />
     </InfoCard>
   );

@@ -36,7 +36,7 @@ const limiter = limiterFactory(10);
 
 type EntityTypeProps = {
   kind: string;
-  type: string;
+  type?: string;
   count: number;
 };
 
@@ -49,7 +49,7 @@ const getQueryParams = (
     humanizeEntityRef(parseEntityRef(owner), { defaultKind: 'group' }),
   );
   const filters = {
-    kind,
+    kind: kind.toLocaleLowerCase('en-US'),
     type,
     owners,
     user: 'all',
@@ -135,7 +135,7 @@ export function useGetEntities(
     | {
         counter: number;
         type: string;
-        name: string;
+        kind: string;
         queryParams: string;
       }[]
     | undefined;
@@ -173,16 +173,14 @@ export function useGetEntities(
     const counts = ownedEntitiesList.items.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
         const match = acc.find(
-          x =>
-            x.kind === ownedEntity.kind &&
-            x.type === (ownedEntity.spec?.type ?? ownedEntity.kind),
+          x => x.kind === ownedEntity.kind && x.type === ownedEntity.spec?.type,
         );
         if (match) {
           match.count += 1;
         } else {
           acc.push({
             kind: ownedEntity.kind,
-            type: ownedEntity.spec?.type?.toString() ?? ownedEntity.kind,
+            type: ownedEntity.spec?.type?.toString(),
             count: 1,
           });
         }
@@ -197,12 +195,12 @@ export function useGetEntities(
     return topN.map(topOwnedEntity => ({
       counter: topOwnedEntity.count,
       type: topOwnedEntity.type,
-      name: topOwnedEntity.type.toLocaleUpperCase('en-US'),
+      kind: topOwnedEntity.kind,
       queryParams: getQueryParams(owners, topOwnedEntity),
     })) as Array<{
       counter: number;
       type: string;
-      name: string;
+      kind: string;
       queryParams: string;
     }>;
   }, [catalogApi, entity, relationsType]);
