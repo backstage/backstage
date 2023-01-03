@@ -17,7 +17,6 @@
 /**
  * Base type for options objects that aren't required.
  *
- * @internal
  * @ignore
  */
 export type MaybeOptions = object | undefined;
@@ -25,7 +24,6 @@ export type MaybeOptions = object | undefined;
 /**
  * Helper type that makes the options argument optional if options are not required.
  *
- * @internal
  * @ignore
  */
 export type FactoryFunctionWithOptions<TResult, TOptions> =
