@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { findConflictingPath } from './rootHttpRouterService';
+import { findConflictingPath } from './rootHttpRouterFactory';
 
 describe('findConflictingPath', () => {
   it('finds conflicts when present', () => {

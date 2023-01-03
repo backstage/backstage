@@ -15,6 +15,7 @@
  */
 
 export * from './httpRouter';
+export * from './rootHttpRouter';
 
 export { cacheFactory } from './cacheService';
 export { configFactory } from './configService';
@@ -26,7 +27,5 @@ export { permissionsFactory } from './permissionsService';
 export { schedulerFactory } from './schedulerService';
 export { tokenManagerFactory } from './tokenManagerService';
 export { urlReaderFactory } from './urlReaderService';
-export { rootHttpRouterFactory } from './rootHttpRouterService';
 export { lifecycleFactory } from './lifecycleService';
 export { rootLifecycleFactory } from './rootLifecycleService';
-export type { RootHttpRouterFactoryOptions } from './rootHttpRouterService';
