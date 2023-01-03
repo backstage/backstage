@@ -25,9 +25,9 @@ import { Handler } from 'express';
  */
 export type HttpRouterFactoryOptions = {
   /**
-   * The path prefix used for each plugin, defaults to `/api/`.
+   * A callback used to generate the path for each plugin, defaults to `/api/{pluginId}`.
    */
-  pathPrefix?: string;
+  getPath(pluginId: string): string;
 };
 
 /** @public */
@@ -38,10 +38,10 @@ export const httpRouterFactory = createServiceFactory({
     rootHttpRouter: coreServices.rootHttpRouter,
   },
   async factory({ rootHttpRouter }, options?: HttpRouterFactoryOptions) {
-    const pathPrefix = options?.pathPrefix ?? '/api/';
+    const getPath = options?.getPath ?? (id => `/api/${id}`);
 
     return async ({ plugin }) => {
-      const path = pathPrefix + plugin.getId();
+      const path = getPath(plugin.getId());
       return {
         use(handler: Handler) {
           rootHttpRouter.use(path, handler);

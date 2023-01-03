@@ -71,7 +71,7 @@ export const httpRouterFactory: (
 
 // @public (undocumented)
 export type HttpRouterFactoryOptions = {
-  pathPrefix?: string;
+  getPath(pluginId: string): string;
 };
 
 // @public
