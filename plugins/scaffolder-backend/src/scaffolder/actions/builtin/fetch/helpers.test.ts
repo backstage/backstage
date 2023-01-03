@@ -39,7 +39,6 @@ describe('fetchContent helper', () => {
 
   const readTree = jest.fn();
   const reader: UrlReader = {
-    read: jest.fn(),
     readUrl: jest.fn(),
     readTree,
     search: jest.fn(),
