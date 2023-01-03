@@ -18,7 +18,7 @@ import {
   HttpRouterService,
   ServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { httpRouterFactory } from './httpRouterService';
+import { httpRouterFactory } from './httpRouterFactory';
 
 describe('httpRouterFactory', () => {
   it('should register plugin paths', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export * from './httpRouter';
+
 export { cacheFactory } from './cacheService';
 export { configFactory } from './configService';
 export { databaseFactory } from './databaseService';
@@ -24,9 +26,7 @@ export { permissionsFactory } from './permissionsService';
 export { schedulerFactory } from './schedulerService';
 export { tokenManagerFactory } from './tokenManagerService';
 export { urlReaderFactory } from './urlReaderService';
-export { httpRouterFactory } from './httpRouterService';
 export { rootHttpRouterFactory } from './rootHttpRouterService';
 export { lifecycleFactory } from './lifecycleService';
 export { rootLifecycleFactory } from './rootLifecycleService';
-export type { HttpRouterFactoryOptions } from './httpRouterService';
 export type { RootHttpRouterFactoryOptions } from './rootHttpRouterService';
