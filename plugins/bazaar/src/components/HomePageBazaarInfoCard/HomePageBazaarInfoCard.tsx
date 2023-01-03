@@ -257,7 +257,7 @@ export const HomePageBazaarInfoCard = ({
 
         <CardHeader
           title={
-            <Typography className={classes.wordBreak}>
+            <Typography paragraph className={classes.wordBreak}>
               {bazaarProject.value?.title || initProject.title}
             </Typography>
           }

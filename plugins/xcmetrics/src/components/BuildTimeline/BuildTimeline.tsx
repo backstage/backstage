@@ -92,7 +92,7 @@ export const BuildTimeline = ({
   width,
 }: BuildTimelineProps) => {
   const theme = useTheme();
-  if (!targets.length) return <Typography>No Targets</Typography>;
+  if (!targets.length) return <Typography paragraph>No Targets</Typography>;
 
   const data = getTimelineData(targets);
 

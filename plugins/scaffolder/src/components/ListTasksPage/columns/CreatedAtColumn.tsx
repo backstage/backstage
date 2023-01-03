@@ -25,6 +25,8 @@ export const CreatedAtColumn = ({ createdAt }: { createdAt: string }) => {
     .valueOf();
 
   return (
-    <Typography>{humanizeDuration(formatted, { round: true })} ago</Typography>
+    <Typography paragraph>
+      {humanizeDuration(formatted, { round: true })} ago
+    </Typography>
   );
 };

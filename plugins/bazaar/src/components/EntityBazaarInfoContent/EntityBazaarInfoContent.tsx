@@ -184,7 +184,7 @@ export const EntityBazaarInfoContent = ({
 
         <CardHeader
           title={
-            <Typography className={classes.wordBreak}>
+            <Typography paragraph className={classes.wordBreak}>
               {bazaarProject?.title!}
             </Typography>
           }

@@ -50,9 +50,9 @@ const createLabelForStep = (step: ArgoRolloutCanaryStep): React.ReactNode => {
   } else if (isAnalysisStep(step)) {
     return (
       <div>
-        <Typography>analysis templates:</Typography>
+        <Typography paragraph>analysis templates:</Typography>
         {step.analysis.templates.map((t, i) => (
-          <Typography key={i}>{`${t.templateName}${
+          <Typography paragraph key={i}>{`${t.templateName}${
             t.clusterScope ? ' (cluster scoped)' : ''
           }`}</Typography>
         ))}

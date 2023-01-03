@@ -167,6 +167,7 @@ export const FossaCard = (props: { variant?: InfoCardVariants }) => {
       >
         <Grid item>
           <Typography
+            paragraph
             className={
               value.issueCount > 0 || value.dependencyCount === 0
                 ? classes.numberError
@@ -176,12 +177,12 @@ export const FossaCard = (props: { variant?: InfoCardVariants }) => {
             {value.issueCount}
           </Typography>
           {value.dependencyCount > 0 && (
-            <Typography className={classes.description}>
+            <Typography paragraph className={classes.description}>
               Number of issues
             </Typography>
           )}
           {value.dependencyCount === 0 && (
-            <Typography className={classes.description}>
+            <Typography paragraph className={classes.description}>
               No Dependencies.
               <br />
               Please check your FOSSA project settings.

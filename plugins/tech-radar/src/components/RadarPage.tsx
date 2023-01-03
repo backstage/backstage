@@ -80,7 +80,7 @@ export function RadarPage(props: TechRadarPageProps) {
             onChange={e => setSearchText(e.target.value)}
           />
           <SupportButton>
-            <Typography>
+            <Typography paragraph>
               This is used for visualizing the official guidelines of different
               areas of software development such as languages, frameworks,
               infrastructure and processes. You can find an explanation for the

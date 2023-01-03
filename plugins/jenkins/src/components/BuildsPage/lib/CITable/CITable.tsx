@@ -126,12 +126,12 @@ const generatedColumns: TableColumn[] = [
     field: 'lastBuild.source.branchName',
     render: (row: Partial<Project>) => (
       <>
-        <Typography>
+        <Typography paragraph>
           <Link to={row.lastBuild?.source?.url ?? ''}>
             {row.lastBuild?.source?.branchName}
           </Link>
         </Typography>
-        <Typography>{row.lastBuild?.source?.commit?.hash}</Typography>
+        <Typography paragraph>{row.lastBuild?.source?.commit?.hash}</Typography>
       </>
     ),
   },
@@ -152,7 +152,7 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<Project>) => {
       return (
         <>
-          <Typography>
+          <Typography paragraph>
             {row.lastBuild?.tests && (
               <Link to={row.lastBuild?.tests.testUrl ?? ''}>
                 {row.lastBuild?.tests.passed} / {row.lastBuild?.tests.total}{' '}

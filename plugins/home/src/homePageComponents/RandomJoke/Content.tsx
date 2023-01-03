@@ -21,12 +21,12 @@ import { useRandomJoke } from './Context';
 export const Content = () => {
   const { joke, loading } = useRandomJoke();
 
-  if (loading) return <Typography>Loading...</Typography>;
+  if (loading) return <Typography paragraph>Loading...</Typography>;
 
   return (
     <div>
-      <Typography>{joke.setup}</Typography>
-      <Typography>{joke.punchline}</Typography>
+      <Typography paragraph>{joke.setup}</Typography>
+      <Typography paragraph>{joke.punchline}</Typography>
     </div>
   );
 };

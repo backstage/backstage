@@ -52,11 +52,11 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
   }, []);
 
   if (loading) {
-    return <Typography>loading...</Typography>;
+    return <Typography paragraph>loading...</Typography>;
   }
 
   if (error || !value || !value.length) {
-    return <Typography>could not load questions</Typography>;
+    return <Typography paragraph>could not load questions</Typography>;
   }
 
   const getSecondaryText = (answer_count: Number) =>
