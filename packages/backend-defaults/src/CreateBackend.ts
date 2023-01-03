@@ -32,7 +32,7 @@ import {
   tokenManagerFactory,
   urlReaderFactory,
 } from '@backstage/backend-app-api';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 
 export const defaultServiceFactories = [
   cacheFactory(),
@@ -55,7 +55,7 @@ export const defaultServiceFactories = [
  * @public
  */
 export interface CreateBackendOptions {
-  services?: (ServiceFactory | (() => ServiceFactory))[];
+  services?: ServiceFactoryOrFunction[];
 }
 
 /**

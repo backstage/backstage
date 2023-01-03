@@ -17,8 +17,8 @@
 import {
   BackendFeature,
   ExtensionPoint,
-  ServiceFactory,
   ServiceRef,
+  ServiceFactoryOrFunction,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -42,7 +42,7 @@ export interface BackendRegisterInit {
  * @public
  */
 export interface CreateSpecializedBackendOptions {
-  services: (ServiceFactory | (() => ServiceFactory))[];
+  services: ServiceFactoryOrFunction[];
 }
 
 export interface ServiceHolder {

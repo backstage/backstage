@@ -20,5 +20,6 @@ export type {
   TypesToServiceRef,
   ServiceFactory,
   ServiceFactoryConfig,
+  ServiceFactoryOrFunction,
 } from './types';
 export { createServiceRef, createServiceFactory } from './types';
