@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { LoggerService } from './loggerServiceRef';
+import { PluginCacheManager } from '@backstage/backend-common';
 
 /** @public */
-export type RootLoggerService = LoggerService;
-
-/**
- * @public
- */
-export const rootLoggerServiceRef = createServiceRef<RootLoggerService>({
-  id: 'core.root.logger',
-  scope: 'root',
-});
+export interface CacheService extends PluginCacheManager {}

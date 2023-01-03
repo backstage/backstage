@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import {
-  PermissionAuthorizer,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { LoggerService } from './LoggerService';
 
 /** @public */
-export type PermissionsService = PermissionEvaluator | PermissionAuthorizer;
-
-/**
- * @public
- */
-export const permissionsServiceRef = createServiceRef<PermissionsService>({
-  id: 'core.permissions',
-});
+export interface RootLoggerService extends LoggerService {}

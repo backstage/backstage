@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { Handler } from 'express';
+import { LifecycleService } from './LifecycleService';
 
-/**
- * @public
- */
-export interface HttpRouterService {
-  use(handler: Handler): void;
-}
-
-/**
- * @public
- */
-export const httpRouterServiceRef = createServiceRef<HttpRouterService>({
-  id: 'core.httpRouter',
-});
+/** @public */
+export interface RootLifecycleService extends LifecycleService {}

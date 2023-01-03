@@ -14,32 +14,9 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-
-/**
- * @public
- **/
-export type LifecycleServiceShutdownHook = {
-  fn: () => void | Promise<void>;
-
-  /** Labels to help identify the shutdown hook */
-  labels?: Record<string, string>;
-};
-
-/**
- * @public
- **/
-export interface LifecycleService {
-  /**
-   * Register a function to be called when the backend is shutting down.
-   */
-  addShutdownHook(options: LifecycleServiceShutdownHook): void;
-}
+import { Config } from '@backstage/config';
 
 /**
  * @public
  */
-export const lifecycleServiceRef = createServiceRef<LifecycleService>({
-  id: 'core.lifecycle',
-  scope: 'plugin',
-});
+export interface ConfigService extends Config {}
