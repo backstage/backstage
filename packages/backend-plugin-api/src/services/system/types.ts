@@ -72,48 +72,50 @@ export type ServiceFactory<TService = unknown> =
     };
 
 /** @public */
-export function createServiceRef<T>(options: {
+export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   id: string;
-  scope?: 'plugin';
+  scope?: TScope;
   defaultFactory?: (
-    service: ServiceRef<T, 'plugin'>,
-  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T, 'plugin'>;
-/** @public */
-export function createServiceRef<T>(options: {
-  id: string;
-  scope: 'root';
-  defaultFactory?: (
-    service: ServiceRef<T, 'root'>,
-  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T, 'root'>;
-export function createServiceRef<T>(options: {
-  id: string;
-  scope?: 'plugin' | 'root';
-  defaultFactory?:
-    | ((
-        service: ServiceRef<T, 'plugin'>,
-      ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>)
-    | ((
-        service: ServiceRef<T, 'root'>,
-      ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>);
-}): ServiceRef<T> {
-  const { id, scope = 'plugin', defaultFactory } = options;
+    service: ServiceRef<TService, TScope>,
+  ) => Promise<ServiceFactory<TService> | (() => ServiceFactory<TService>)>;
+}
+
+/**
+ * Creates a new service definition. This overload is used to create plugin scoped services.
+ *
+ * @public
+ */
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, 'plugin'>,
+): ServiceRef<TService, 'plugin'>;
+
+/**
+ * Creates a new service definition. This overload is used to create root scoped services.
+ *
+ * @public
+ */
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, 'root'>,
+): ServiceRef<TService, 'root'>;
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, any>,
+): ServiceRef<TService, any> {
+  const { id, scope = 'plugin', defaultFactory } = config;
   return {
     id,
     scope,
-    get T(): T {
+    get T(): TService {
       throw new Error(`tried to read ServiceRef.T of ${this}`);
     },
     toString() {
-      return `serviceRef{${options.id}}`;
+      return `serviceRef{${config.id}}`;
     },
     $$ref: 'service', // TODO: declare
     __defaultFactory: defaultFactory,
-  } as ServiceRef<T, typeof scope> & {
+  } as ServiceRef<TService, typeof scope> & {
     __defaultFactory?: (
-      service: ServiceRef<T>,
-    ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
+      service: ServiceRef<TService>,
+    ) => Promise<ServiceFactory<TService> | (() => ServiceFactory<TService>)>;
   };
 }
 
