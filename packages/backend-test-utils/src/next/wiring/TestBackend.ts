@@ -21,7 +21,15 @@ import {
   rootLifecycleFactory,
   loggerFactory,
   rootLoggerFactory,
+  configFactory,
+  discoveryFactory,
+  cacheFactory,
+  databaseFactory,
+  permissionsFactory,
+  schedulerFactory,
+  urlReaderFactory,
 } from '@backstage/backend-app-api';
+
 import {
   ServiceFactory,
   ServiceRef,
@@ -29,6 +37,8 @@ import {
   BackendFeature,
   ExtensionPoint,
 } from '@backstage/backend-plugin-api';
+
+import { mockTokenManagerFactory } from '../implementations';
 
 /** @alpha */
 export interface TestBackendOptions<
@@ -55,10 +65,18 @@ export interface TestBackendOptions<
 }
 
 const defaultServiceFactories = [
-  rootLoggerFactory(),
-  loggerFactory(),
+  cacheFactory(),
+  configFactory(),
+  databaseFactory(),
+  discoveryFactory(),
   lifecycleFactory(),
+  loggerFactory(),
+  permissionsFactory(),
   rootLifecycleFactory(),
+  rootLoggerFactory(),
+  schedulerFactory(),
+  mockTokenManagerFactory(),
+  urlReaderFactory(),
 ];
 
 const backendInstancesToCleanUp = new Array<Backend>();

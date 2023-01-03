@@ -20,7 +20,9 @@ import {
   createServiceFactory,
   createServiceRef,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+
 import { startTestBackend } from './TestBackend';
 
 // This bit makes sure that test backends are cleaned up properly
@@ -155,5 +157,40 @@ describe('TestBackend', () => {
     expect(shutdownSpy).not.toHaveBeenCalled();
     await backend.stop();
     expect(shutdownSpy).toHaveBeenCalled();
+  });
+
+  it('should provide a set of default services', async () => {
+    expect.assertions(2);
+
+    const testPlugin = createBackendPlugin({
+      id: 'test',
+      register(env) {
+        env.registerInit({
+          deps: {
+            cache: coreServices.cache,
+            config: coreServices.config,
+            database: coreServices.database,
+            discovery: coreServices.discovery,
+            lifecycle: coreServices.lifecycle,
+            logger: coreServices.logger,
+            permissions: coreServices.permissions,
+            rootLifecycle: coreServices.rootLifecycle,
+            rootLogger: coreServices.rootLogger,
+            scheduler: coreServices.scheduler,
+            tokenManager: coreServices.tokenManager,
+            urlReader: coreServices.urlReader,
+          },
+          async init(deps) {
+            expect(Object.keys(deps)).toHaveLength(12);
+            expect(Object.values(deps)).not.toContain(undefined);
+          },
+        });
+      },
+    });
+
+    await startTestBackend({
+      services: [],
+      features: [testPlugin()],
+    }).then(backend => backend.stop());
   });
 });
