@@ -16,9 +16,9 @@
 import {
   createBackendPlugin,
   coreServices,
-  loggerToWinstonLogger,
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { TemplateFilter, TemplateGlobal } from './lib';

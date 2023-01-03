@@ -16,7 +16,6 @@
 import {
   createBackendPlugin,
   coreServices,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
@@ -25,6 +24,7 @@ import {
   catalogProcessingExtensionPoint,
   EntityProvider,
 } from '@backstage/plugin-catalog-node';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   #processors = new Array<CatalogProcessor>();

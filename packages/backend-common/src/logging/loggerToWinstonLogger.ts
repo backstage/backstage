@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '../definitions';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Logger as WinstonLogger, createLogger } from 'winston';
 import Transport, { TransportStreamOptions } from 'winston-transport';
 

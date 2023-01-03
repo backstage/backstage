@@ -17,9 +17,11 @@
 import {
   coreServices,
   createServiceFactory,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
-import { ServerTokenManager } from '@backstage/backend-common';
+import {
+  loggerToWinstonLogger,
+  ServerTokenManager,
+} from '@backstage/backend-common';
 
 /** @public */
 export const tokenManagerFactory = createServiceFactory({

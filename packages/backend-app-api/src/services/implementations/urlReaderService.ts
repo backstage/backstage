@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
+import { loggerToWinstonLogger, UrlReaders } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
