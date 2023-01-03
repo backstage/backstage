@@ -40,12 +40,12 @@ describe('BackendInitializer', () => {
         service: rootRef,
         deps: {},
         factory: rootFactory,
-      }),
+      })(),
       createServiceFactory({
         service: pluginRef,
         deps: {},
         factory: pluginFactory,
-      }),
+      })(),
     ]);
 
     const init = new BackendInitializer(registry);

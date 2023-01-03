@@ -33,7 +33,7 @@ const sf1 = createServiceFactory({
       return { x: 1 };
     };
   },
-});
+})();
 
 const ref2 = createServiceRef<{ x: number }>({
   scope: 'root',
@@ -45,7 +45,7 @@ const sf2 = createServiceFactory({
   async factory() {
     return { x: 2 };
   },
-});
+})();
 const sf2b = createServiceFactory({
   service: ref2,
   deps: {},
@@ -133,7 +133,7 @@ describe('ServiceRegistry', () => {
         return { x: 2 };
       },
     });
-    const registry = new ServiceRegistry([factory, sf1]);
+    const registry = new ServiceRegistry([factory(), sf1]);
     await expect(registry.get(ref2, 'catalog')).rejects.toThrow(
       "Failed to instantiate 'root' scoped service '2' because it depends on 'plugin' scoped service '1'.",
     );
@@ -147,7 +147,7 @@ describe('ServiceRegistry', () => {
         return async () => ({ x: rootDep.x });
       },
     });
-    const registry = new ServiceRegistry([factory, sf2]);
+    const registry = new ServiceRegistry([factory(), sf2]);
     await expect(registry.get(ref1, 'catalog')).resolves.toEqual({
       x: 2,
     });
@@ -162,7 +162,7 @@ describe('ServiceRegistry', () => {
         return { x: rootDep.x };
       },
     });
-    const registry = new ServiceRegistry([factory, sf2]);
+    const registry = new ServiceRegistry([factory(), sf2]);
     await expect(registry.get(ref, 'catalog')).resolves.toEqual({
       x: 2,
     });
@@ -177,7 +177,7 @@ describe('ServiceRegistry', () => {
         return async ({ meta }) => ({ pluginId: meta.getId() });
       },
     });
-    const registry = new ServiceRegistry([factory]);
+    const registry = new ServiceRegistry([factory()]);
     await expect(registry.get(ref, 'catalog')).resolves.toEqual({
       pluginId: 'catalog',
     });
@@ -257,7 +257,7 @@ describe('ServiceRegistry', () => {
       factory,
     });
 
-    const registry = new ServiceRegistry([myFactory]);
+    const registry = new ServiceRegistry([myFactory()]);
 
     await Promise.all([
       registry.get(ref1, 'catalog')!,
@@ -280,7 +280,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([myFactory]);
+    const registry = new ServiceRegistry([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' for 'catalog' because the following dependent services are missing: '2'",
@@ -309,7 +309,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([factoryA, factoryB]);
+    const registry = new ServiceRegistry([factoryA(), factoryB()]);
 
     await expect(registry.get(refA, 'catalog')).rejects.toThrow(
       "Failed to instantiate service 'a' for 'catalog' because the factory function threw an error, Error: Failed to instantiate service 'b' for 'catalog' because the following dependent services are missing: 'c', 'd'",
@@ -325,7 +325,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([myFactory]);
+    const registry = new ServiceRegistry([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' because the top-level factory function threw an error, Error: top-level error",
@@ -343,7 +343,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([myFactory]);
+    const registry = new ServiceRegistry([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' for 'catalog' because the factory function threw an error, Error: error in plugin",
