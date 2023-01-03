@@ -15,13 +15,11 @@
  */
 
 import {
-  ServiceFactory,
   BackendFeature,
   ExtensionPoint,
+  ServiceFactory,
   ServiceRef,
-  coreServices,
 } from '@backstage/backend-plugin-api';
-import { BackstageBackend } from './BackstageBackend';
 
 /**
  * @public
@@ -56,38 +54,6 @@ export interface ServiceHolder {
  */
 export interface EnumerableServiceHolder extends ServiceHolder {
   getServiceRefs(): ServiceRef<unknown>[];
-}
-
-/**
- * @public
- */
-export function createSpecializedBackend(
-  options: CreateSpecializedBackendOptions,
-): Backend {
-  const services = options.services.map(sf =>
-    typeof sf === 'function' ? sf() : sf,
-  );
-
-  const exists = new Set<string>();
-  const duplicates = new Set<string>();
-  for (const { service } of services) {
-    if (exists.has(service.id)) {
-      duplicates.add(service.id);
-    } else {
-      exists.add(service.id);
-    }
-  }
-  if (duplicates.size > 0) {
-    const ids = Array.from(duplicates).join(', ');
-    throw new Error(`Duplicate service implementations provided for ${ids}`);
-  }
-  if (exists.has(coreServices.pluginMetadata.id)) {
-    throw new Error(
-      `The ${coreServices.pluginMetadata.id} service cannot be overridden`,
-    );
-  }
-
-  return new BackstageBackend(services);
 }
 
 /**
