@@ -18,6 +18,7 @@ import {
   Backend,
   createSpecializedBackend,
   lifecycleFactory,
+  rootLifecycleFactory,
   loggerFactory,
   rootLoggerFactory,
 } from '@backstage/backend-app-api';
@@ -57,6 +58,7 @@ const defaultServiceFactories = [
   rootLoggerFactory(),
   loggerFactory(),
   lifecycleFactory(),
+  rootLifecycleFactory(),
 ];
 
 const backendInstancesToCleanUp = new Array<Backend>();

@@ -1,5 +1,36 @@
 # @backstage/plugin-dynatrace
 
+## 1.0.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/plugin-catalog-react@1.2.4-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/theme@0.2.16
+
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/plugin-catalog-react@1.2.3
+
+## 1.0.2
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/theme@0.2.16
+
 ## 1.0.2-next.4
 
 ### Patch Changes

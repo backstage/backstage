@@ -14,65 +14,10 @@
  * limitations under the License.
  */
 import {
-  LifecycleService,
   createServiceFactory,
   coreServices,
-  loggerToWinstonLogger,
   LifecycleServiceShutdownHook,
 } from '@backstage/backend-plugin-api';
-import { Logger } from 'winston';
-
-const CALLBACKS = ['SIGTERM', 'SIGINT', 'beforeExit'];
-export class BackendLifecycleImpl {
-  constructor(private readonly logger: Logger) {
-    CALLBACKS.map(signal => process.on(signal, () => this.shutdown()));
-  }
-
-  #isCalled = false;
-  #shutdownTasks: Array<LifecycleServiceShutdownHook & { pluginId: string }> =
-    [];
-
-  addShutdownHook(
-    options: LifecycleServiceShutdownHook & { pluginId: string },
-  ): void {
-    this.#shutdownTasks.push(options);
-  }
-
-  async shutdown(): Promise<void> {
-    if (this.#isCalled) {
-      return;
-    }
-    this.#isCalled = true;
-
-    this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
-    await Promise.all(
-      this.#shutdownTasks.map(hook =>
-        Promise.resolve()
-          .then(() => hook.fn())
-          .catch(e => {
-            this.logger.error(
-              `Shutdown hook registered by plugin '${hook.pluginId}' failed with: ${e}`,
-            );
-          })
-          .then(() =>
-            this.logger.info(
-              `Successfully ran shutdown hook registered by plugin ${hook.pluginId}`,
-            ),
-          ),
-      ),
-    );
-  }
-}
-
-class PluginScopedLifecycleImpl implements LifecycleService {
-  constructor(
-    private readonly lifecycle: BackendLifecycleImpl,
-    private readonly pluginId: string,
-  ) {}
-  addShutdownHook(options: LifecycleServiceShutdownHook): void {
-    this.lifecycle.addShutdownHook({ ...options, pluginId: this.pluginId });
-  }
-}
 
 /**
  * Allows plugins to register shutdown hooks that are run when the process is about to exit.
@@ -80,15 +25,20 @@ class PluginScopedLifecycleImpl implements LifecycleService {
 export const lifecycleFactory = createServiceFactory({
   service: coreServices.lifecycle,
   deps: {
-    logger: coreServices.rootLogger,
-    plugin: coreServices.pluginMetadata,
+    rootLifecycle: coreServices.rootLifecycle,
+    pluginMetadata: coreServices.pluginMetadata,
   },
-  async factory({ logger }) {
-    const rootLifecycle = new BackendLifecycleImpl(
-      loggerToWinstonLogger(logger),
-    );
-    return async ({ plugin }) => {
-      return new PluginScopedLifecycleImpl(rootLifecycle, plugin.getId());
+  async factory({ rootLifecycle }) {
+    return async ({ pluginMetadata }) => {
+      const plugin = pluginMetadata.getId();
+      return {
+        addShutdownHook(options: LifecycleServiceShutdownHook): void {
+          rootLifecycle.addShutdownHook({
+            ...options,
+            labels: { ...options?.labels, plugin },
+          });
+        },
+      };
     };
   },
 });

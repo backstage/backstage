@@ -29,7 +29,19 @@ export type {
 export type { LoggerService, LogMeta } from './loggerServiceRef';
 export type { PermissionsService } from './permissionsServiceRef';
 export type { PluginMetadataService } from './pluginMetadataServiceRef';
+export type { RootLifecycleService } from './rootLifecycleServiceRef';
 export type { RootLoggerService } from './rootLoggerServiceRef';
 export type { SchedulerService } from './schedulerServiceRef';
 export type { TokenManagerService } from './tokenManagerServiceRef';
-export type { UrlReaderService } from './urlReaderServiceRef';
+export type {
+  ReadTreeOptions,
+  ReadTreeResponse,
+  ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
+  ReadUrlResponse,
+  ReadUrlOptions,
+  SearchOptions,
+  SearchResponse,
+  SearchResponseFile,
+  UrlReaderService,
+} from './urlReaderServiceRef';

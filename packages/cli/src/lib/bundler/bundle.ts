@@ -42,7 +42,6 @@ export async function buildBundle(options: BuildOptions) {
     isDev: false,
     baseUrl: resolveBaseUrl(options.frontendConfig),
   });
-  const compiler = webpack(config);
 
   const isCi = yn(process.env.CI, { default: false });
 
@@ -64,7 +63,7 @@ export async function buildBundle(options: BuildOptions) {
     );
   }
 
-  const { stats } = await build(compiler, isCi).catch(error => {
+  const { stats } = await build(config, isCi).catch(error => {
     console.log(chalk.red('Failed to compile.\n'));
     throw new Error(`Failed to compile.\n${error.message || error}`);
   });
@@ -90,10 +89,10 @@ export async function buildBundle(options: BuildOptions) {
   );
 }
 
-async function build(compiler: webpack.Compiler, isCi: boolean) {
+async function build(config: webpack.Configuration, isCi: boolean) {
   const stats = await new Promise<webpack.Stats | undefined>(
     (resolve, reject) => {
-      compiler.run((err, buildStats) => {
+      webpack(config, (err, buildStats) => {
         if (err) {
           if (err.message) {
             const { errors } = formatWebpackMessages({

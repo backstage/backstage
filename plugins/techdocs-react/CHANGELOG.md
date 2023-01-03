@@ -1,5 +1,40 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.2-next.0
+
+### Patch Changes
+
+- 7115c7389b: Updated dependency `jss` to `~10.9.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/config@1.0.5
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/version-bridge@1.0.3
+
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+
+## 1.1.0
+
+### Minor Changes
+
+- 786f1b1419: Support older versions of react-router
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/version-bridge@1.0.3
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
 ## 1.0.7-next.4
 
 ### Patch Changes

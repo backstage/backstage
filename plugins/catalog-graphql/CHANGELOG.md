@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-graphql
 
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/config@1.0.5
+  - @backstage/types@1.0.2
+
+## 0.3.16
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
 ## 0.3.16-next.1
 
 ### Patch Changes

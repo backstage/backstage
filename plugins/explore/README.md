@@ -68,6 +68,7 @@ ready to make modifications, add the following code snippet to add the
 
 ```diff
 +import { ToolSearchResultListItem } from '@backstage/plugin-explore';
++import BuildIcon from '@material-ui/icons/Build';
 
 const SearchPage = () => {
  ...

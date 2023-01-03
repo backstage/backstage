@@ -32,7 +32,7 @@ import { AwsS3UrlReader } from './AwsS3UrlReader';
 import { GiteaUrlReader } from './GiteaUrlReader';
 
 /**
- * Creation options for {@link UrlReaders}.
+ * Creation options for {@link @backstage/backend-plugin-api#UrlReaderService}.
  *
  * @public
  */
@@ -46,13 +46,13 @@ export type UrlReadersOptions = {
 };
 
 /**
- * Helps construct {@link UrlReader}s.
+ * Helps construct {@link @backstage/backend-plugin-api#UrlReaderService}s.
  *
  * @public
  */
 export class UrlReaders {
   /**
-   * Creates a custom {@link UrlReader} wrapper for your own set of factories.
+   * Creates a custom {@link @backstage/backend-plugin-api#UrlReaderService} wrapper for your own set of factories.
    */
   static create(options: UrlReadersOptions): UrlReader {
     const { logger, config, factories } = options;
@@ -73,7 +73,7 @@ export class UrlReaders {
   }
 
   /**
-   * Creates a {@link UrlReader} wrapper that includes all the default factories
+   * Creates a {@link @backstage/backend-plugin-api#UrlReaderService} wrapper that includes all the default factories
    * from this package.
    *
    * Any additional factories passed will be loaded before the default ones.

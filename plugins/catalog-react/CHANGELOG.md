@@ -1,5 +1,54 @@
 # @backstage/plugin-catalog-react
 
+## 1.2.4-next.0
+
+### Patch Changes
+
+- 37426f6f5e: Fixed bug in `EntityTagPicker` that filtered on unavailable tags for the selected kind.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.10-next.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-react@0.4.8
+
+## 1.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+
+## 1.2.2
+
+### Patch Changes
+
+- 2cb9998: Fixed bug in `EntityOwnerPicker` and `EntityLifecyclePicker` that filtered on unavailable tags for the selected kind.
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- 6ffa47bb0a: Cleanup and small fixes for the kind selector
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-permission-react@0.4.8
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.9
+
 ## 1.2.2-next.4
 
 ### Patch Changes

@@ -314,7 +314,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Keeps track of the entities that we end up inserting to update refresh_state_references afterwards
     const stateReferences = new Array<string>();
-    const conflictingStateReferences = new Array<string>();
 
     // Upsert all of the unprocessed entities into the refresh_state table, by
     // their entity ref.
@@ -357,13 +356,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         this.options.logger.warn(
           `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
-        conflictingStateReferences.push(entityRef);
       }
     }
 
     // Replace all references for the originating entity or source and then create new ones
     await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-      .whereNotIn('target_entity_ref', conflictingStateReferences)
       .andWhere({ source_entity_ref: options.sourceEntityRef })
       .delete();
     await tx.batchInsert(

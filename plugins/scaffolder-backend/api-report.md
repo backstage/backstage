@@ -195,6 +195,12 @@ export function createGithubRepoCreateAction(options: {
   gitAuthorEmail?: string | undefined;
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
+  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+  squashMergeCommitMessage?:
+    | 'PR_BODY'
+    | 'COMMIT_MESSAGES'
+    | 'BLANK'
+    | undefined;
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
@@ -213,11 +219,11 @@ export function createGithubRepoCreateAction(options: {
     | (
         | {
             user: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             team: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             username: string;
@@ -225,6 +231,9 @@ export function createGithubRepoCreateAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;
@@ -380,6 +389,12 @@ export function createPublishGithubAction(options: {
   gitAuthorEmail?: string | undefined;
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
+  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+  squashMergeCommitMessage?:
+    | 'PR_BODY'
+    | 'COMMIT_MESSAGES'
+    | 'BLANK'
+    | undefined;
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   sourcePath?: string | undefined;
@@ -400,11 +415,11 @@ export function createPublishGithubAction(options: {
     | (
         | {
             user: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             team: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             username: string;
@@ -412,6 +427,9 @@ export function createPublishGithubAction(options: {
           }
       )[]
     | undefined;
+  hasProjects?: boolean | undefined;
+  hasWiki?: boolean | undefined;
+  hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
 }>;
