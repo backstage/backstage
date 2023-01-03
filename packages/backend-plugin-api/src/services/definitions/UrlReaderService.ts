@@ -21,7 +21,7 @@ import { Readable } from 'stream';
  *
  * @public
  */
-export type UrlReaderService = {
+export interface UrlReaderService {
   /**
    * Reads a single file and return its content.
    */
@@ -36,7 +36,7 @@ export type UrlReaderService = {
    * Searches for a file in a tree using a glob pattern.
    */
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-};
+}
 
 /**
  * An options object for readUrl operations.

@@ -28,7 +28,7 @@
  *
  * @public
  */
-export type DiscoveryService = {
+export interface DiscoveryService {
   /**
    * Returns the internal HTTP base URL for a given plugin, without a trailing slash.
    *
@@ -60,4 +60,4 @@ export type DiscoveryService = {
    * like `https://backstage.example.com/api/catalog`
    */
   getExternalBaseUrl(pluginId: string): Promise<string>;
-};
+}

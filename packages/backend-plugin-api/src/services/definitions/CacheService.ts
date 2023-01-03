@@ -17,4 +17,4 @@
 import { PluginCacheManager } from '@backstage/backend-common';
 
 /** @public */
-export type CacheService = PluginCacheManager;
+export interface CacheService extends PluginCacheManager {}

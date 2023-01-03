@@ -4,19 +4,21 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import { CacheService } from '@backstage/backend-plugin-api';
+import { ConfigService } from '@backstage/backend-plugin-api';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginCacheManager } from '@backstage/backend-common';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { RootLifecycleService } from '@backstage/backend-plugin-api';
+import { RootLoggerService } from '@backstage/backend-plugin-api';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TokenManager } from '@backstage/backend-common';
+import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
@@ -32,10 +34,12 @@ export interface Backend {
 // @public (undocumented)
 export const cacheFactory: (
   options?: undefined,
-) => ServiceFactory<PluginCacheManager>;
+) => ServiceFactory<CacheService>;
 
 // @public (undocumented)
-export const configFactory: (options?: undefined) => ServiceFactory<Config>;
+export const configFactory: (
+  options?: undefined,
+) => ServiceFactory<ConfigService>;
 
 // @public (undocumented)
 export function createSpecializedBackend(
@@ -51,7 +55,7 @@ export interface CreateSpecializedBackendOptions {
 // @public (undocumented)
 export const databaseFactory: (
   options?: undefined,
-) => ServiceFactory<PluginDatabaseManager>;
+) => ServiceFactory<DatabaseService>;
 
 // @public (undocumented)
 export const discoveryFactory: (
@@ -86,17 +90,17 @@ export const permissionsFactory: (
 // @public
 export const rootLifecycleFactory: (
   options?: undefined,
-) => ServiceFactory<LifecycleService>;
+) => ServiceFactory<RootLifecycleService>;
 
 // @public (undocumented)
 export const rootLoggerFactory: (
   options?: undefined,
-) => ServiceFactory<LoggerService>;
+) => ServiceFactory<RootLoggerService>;
 
 // @public (undocumented)
 export const schedulerFactory: (
   options?: undefined,
-) => ServiceFactory<PluginTaskScheduler>;
+) => ServiceFactory<SchedulerService>;
 
 // @public (undocumented)
 export type ServiceOrExtensionPoint<T = unknown> =
@@ -106,7 +110,7 @@ export type ServiceOrExtensionPoint<T = unknown> =
 // @public (undocumented)
 export const tokenManagerFactory: (
   options?: undefined,
-) => ServiceFactory<TokenManager>;
+) => ServiceFactory<TokenManagerService>;
 
 // @public (undocumented)
 export const urlReaderFactory: (

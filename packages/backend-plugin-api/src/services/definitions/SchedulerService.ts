@@ -17,4 +17,4 @@
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
 /** @public */
-export type SchedulerService = PluginTaskScheduler;
+export interface SchedulerService extends PluginTaskScheduler {}

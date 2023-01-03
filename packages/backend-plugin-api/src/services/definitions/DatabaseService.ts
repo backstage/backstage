@@ -17,4 +17,4 @@
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
 /** @public */
-export type DatabaseService = PluginDatabaseManager;
+export interface DatabaseService extends PluginDatabaseManager {}

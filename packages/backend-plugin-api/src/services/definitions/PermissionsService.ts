@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PermissionAuthorizer,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 /** @public */
-export type PermissionsService = PermissionEvaluator | PermissionAuthorizer;
+export interface PermissionsService extends PermissionEvaluator {}

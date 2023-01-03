@@ -19,4 +19,4 @@ import { Config } from '@backstage/config';
 /**
  * @public
  */
-export type ConfigService = Config;
+export interface ConfigService extends Config {}

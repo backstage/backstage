@@ -8,7 +8,6 @@
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
 import { Logger } from 'winston';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
@@ -67,26 +66,26 @@ export interface BackendRegistrationPoints {
 }
 
 // @public (undocumented)
-export type CacheService = PluginCacheManager;
+export interface CacheService extends PluginCacheManager {}
 
 // @public (undocumented)
-export type ConfigService = Config;
+export interface ConfigService extends Config {}
 
 // @public
 export namespace coreServices {
-  const cache: ServiceRef<PluginCacheManager, 'plugin'>;
-  const config: ServiceRef<Config, 'root'>;
-  const database: ServiceRef<PluginDatabaseManager, 'plugin'>;
+  const cache: ServiceRef<CacheService, 'plugin'>;
+  const config: ServiceRef<ConfigService, 'root'>;
+  const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
   const logger: ServiceRef<LoggerService, 'plugin'>;
   const permissions: ServiceRef<PermissionsService, 'plugin'>;
   const pluginMetadata: ServiceRef<PluginMetadataService, 'plugin'>;
-  const rootLifecycle: ServiceRef<LifecycleService, 'root'>;
-  const rootLogger: ServiceRef<LoggerService, 'root'>;
-  const scheduler: ServiceRef<PluginTaskScheduler, 'plugin'>;
-  const tokenManager: ServiceRef<TokenManager, 'plugin'>;
+  const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
+  const rootLogger: ServiceRef<RootLoggerService, 'root'>;
+  const scheduler: ServiceRef<SchedulerService, 'plugin'>;
+  const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
 }
 
@@ -155,13 +154,13 @@ export function createServiceRef<T>(options: {
 }): ServiceRef<T, 'root'>;
 
 // @public (undocumented)
-export type DatabaseService = PluginDatabaseManager;
+export interface DatabaseService extends PluginDatabaseManager {}
 
 // @public
-export type DiscoveryService = {
+export interface DiscoveryService {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
-};
+}
 
 // @public
 export type ExtensionPoint<T> = {
@@ -214,7 +213,7 @@ export type LogMeta = {
 };
 
 // @public (undocumented)
-export type PermissionsService = PermissionEvaluator | PermissionAuthorizer;
+export interface PermissionsService extends PermissionEvaluator {}
 
 // @public (undocumented)
 export interface PluginMetadataService {
@@ -267,13 +266,13 @@ export type ReadUrlResponse = {
 };
 
 // @public (undocumented)
-export type RootLifecycleService = LifecycleService;
+export interface RootLifecycleService extends LifecycleService {}
 
 // @public (undocumented)
-export type RootLoggerService = LoggerService;
+export interface RootLoggerService extends LoggerService {}
 
 // @public (undocumented)
-export type SchedulerService = PluginTaskScheduler;
+export interface SchedulerService extends PluginTaskScheduler {}
 
 // @public
 export type SearchOptions = {
@@ -333,7 +332,7 @@ export type ServiceRef<
 };
 
 // @public (undocumented)
-export type TokenManagerService = TokenManager;
+export interface TokenManagerService extends TokenManager {}
 
 // @public (undocumented)
 export type TypesToServiceRef<T> = {
@@ -341,9 +340,9 @@ export type TypesToServiceRef<T> = {
 };
 
 // @public
-export type UrlReaderService = {
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+export interface UrlReaderService {
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-};
+}
 ```

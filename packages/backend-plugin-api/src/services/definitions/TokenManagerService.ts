@@ -17,4 +17,4 @@
 import { TokenManager } from '@backstage/backend-common';
 
 /** @public */
-export type TokenManagerService = TokenManager;
+export interface TokenManagerService extends TokenManager {}

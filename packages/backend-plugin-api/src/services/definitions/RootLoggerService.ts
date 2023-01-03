@@ -17,4 +17,4 @@
 import { LoggerService } from './LoggerService';
 
 /** @public */
-export type RootLoggerService = LoggerService;
+export interface RootLoggerService extends LoggerService {}

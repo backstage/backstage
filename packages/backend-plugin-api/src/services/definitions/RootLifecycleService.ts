@@ -17,4 +17,4 @@
 import { LifecycleService } from './LifecycleService';
 
 /** @public */
-export type RootLifecycleService = LifecycleService;
+export interface RootLifecycleService extends LifecycleService {}
