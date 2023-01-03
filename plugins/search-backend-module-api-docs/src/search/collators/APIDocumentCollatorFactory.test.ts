@@ -28,6 +28,13 @@ import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { APIDocumentCollatorFactory } from './APIDocumentCollatorFactory';
 import { SpecHandler, SpecParser } from '../spec-parsers';
+import { createLogger, format } from 'winston';
+
+const logger = createLogger({
+  level: 'info',
+  format: format.json(),
+  defaultMeta: { service: 'user-service' },
+});
 
 const server = setupServer();
 
@@ -313,6 +320,7 @@ describe('APIDocumentCollatorFactory', () => {
     discovery: mockDiscoveryApi,
     tokenManager: mockTokenManager,
     specHandler: mockSpecHander,
+    logger: logger,
   };
 
   setupRequestMockHandlers(server);
