@@ -147,11 +147,9 @@ all the methods of the `UrlReader` interface should be implemented. However it
 is okay to start by implementing just one of them and create issues for the
 remaining.
 
-#### read
+#### `readUrl`
 
-NOTE: Use `readUrl` instead of `read`.
-
-`read` method expects a user-friendly URL, something which can be copied from
+`readUrl` method expects a user-friendly URL, something which can be copied from
 the browser naturally when a person is browsing the provider in their browser.
 
 - ✅ Valid URL :
@@ -160,18 +158,10 @@ the browser naturally when a person is browsing the provider in their browser.
   `https://raw.githubusercontent.com/backstage/backstage/master/ADOPTERS.md`
 - ❌ Not a valid URL : `https://github.com/backstage/backstage/ADOPTERS.md`
 
-Upon receiving the URL, `read` converts the user-friendly URL into an API URL
+Upon receiving the URL, `readUrl` converts the user-friendly URL into an API URL
 which can be used to request the provider's API.
 
-`read` then makes an authenticated request to the provider API and returns the
-file's content.
-
-#### `readUrl`
-
-`readUrl` is a new interface that allows complex response objects and is
-intended to replace the `read` method. This new method is currently optional to
-implement which allows for a soft migration to `readUrl` instead of `read` in
-the future.
+`readUrl` then makes an authenticated request to the provider API and returns the response containing the file's contents and ETag(if the provider supports it).
 
 #### `readTree`
 
