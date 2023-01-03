@@ -15,14 +15,14 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { BackendLifecycleImpl } from './lifecycleService';
+import { BackendLifecycleImpl } from './rootLifecycleService';
 
 describe('lifecycleService', () => {
   it('should execute registered shutdown hook', async () => {
     const service = new BackendLifecycleImpl(getVoidLogger());
     const hook = jest.fn();
     service.addShutdownHook({
-      pluginId: 'test',
+      labels: { plugin: 'test' },
       fn: async () => {
         hook();
       },
@@ -37,7 +37,7 @@ describe('lifecycleService', () => {
   it('should not throw errors', async () => {
     const service = new BackendLifecycleImpl(getVoidLogger());
     service.addShutdownHook({
-      pluginId: 'test',
+      labels: { plugin: 'test' },
       fn: async () => {
         throw new Error('oh no');
       },

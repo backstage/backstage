@@ -43,7 +43,7 @@ import {
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
- * Implements a {@link UrlReader} for files from Bitbucket v1 and v2 APIs, such
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket v1 and v2 APIs, such
  * as the one exposed by Bitbucket Cloud itself.
  *
  * @public

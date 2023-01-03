@@ -15,9 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { renderInTestApp } from '@backstage/test-utils';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
 import Radar, { Props } from './Radar';
@@ -48,12 +46,8 @@ describe('Radar', () => {
     GetBBoxPolyfill.remove();
   });
 
-  it('should render', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <Radar {...minProps} />
-      </ThemeProvider>,
-    );
+  it('should render', async () => {
+    const rendered = await renderInTestApp(<Radar {...minProps} />);
 
     const svg = rendered.container.querySelector('svg');
     expect(svg).not.toBeNull();

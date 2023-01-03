@@ -21,6 +21,9 @@ import { createServiceRef } from '../system/types';
  **/
 export type LifecycleServiceShutdownHook = {
   fn: () => void | Promise<void>;
+
+  /** Labels to help identify the shutdown hook */
+  labels?: Record<string, string>;
 };
 
 /**

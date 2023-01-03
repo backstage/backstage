@@ -15,9 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { renderInTestApp } from '@backstage/test-utils';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
 import RadarBubble, { Props } from './RadarBubble';
@@ -38,13 +36,11 @@ describe('RadarBubble', () => {
     GetBBoxPolyfill.remove();
   });
 
-  it('should render', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <svg>
-          <RadarBubble {...minProps} />
-        </svg>
-      </ThemeProvider>,
+  it('should render', async () => {
+    const rendered = await renderInTestApp(
+      <svg>
+        <RadarBubble {...minProps} />
+      </svg>,
     );
 
     expect(rendered.getByText(minProps.text)).toBeInTheDocument();

@@ -16,13 +16,9 @@
 
 import React from 'react';
 import { GraphiQLPage } from './GraphiQLPage';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 import { act } from '@testing-library/react';
-import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { GraphQLBrowseApi, graphQlBrowseApiRef } from '../../lib/api';
-import { configApiRef } from '@backstage/core-plugin-api';
-import { ConfigReader } from '@backstage/core-app-api';
 
 jest.mock('../GraphiQLBrowser', () => ({
   GraphiQLBrowser: () => '<GraphiQLBrowser />',
@@ -38,17 +34,9 @@ describe('GraphiQLPage', () => {
       },
     };
 
-    const rendered = await renderWithEffects(
-      <TestApiProvider
-        apis={[
-          [graphQlBrowseApiRef, loadingApi],
-          [configApiRef, new ConfigReader({})],
-        ]}
-      >
-        <ThemeProvider theme={lightTheme}>
-          <GraphiQLPage />
-        </ThemeProvider>
-        ,
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[graphQlBrowseApiRef, loadingApi]]}>
+        <GraphiQLPage />,
       </TestApiProvider>,
     );
     act(() => {
@@ -66,16 +54,9 @@ describe('GraphiQLPage', () => {
       },
     };
 
-    const rendered = await renderWithEffects(
-      <TestApiProvider
-        apis={[
-          [graphQlBrowseApiRef, loadingApi],
-          [configApiRef, new ConfigReader({})],
-        ]}
-      >
-        <ThemeProvider theme={lightTheme}>
-          <GraphiQLPage />
-        </ThemeProvider>
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[graphQlBrowseApiRef, loadingApi]]}>
+        <GraphiQLPage />
       </TestApiProvider>,
     );
 
@@ -90,16 +71,9 @@ describe('GraphiQLPage', () => {
       },
     };
 
-    const rendered = await renderWithEffects(
-      <TestApiProvider
-        apis={[
-          [graphQlBrowseApiRef, loadingApi],
-          [configApiRef, new ConfigReader({})],
-        ]}
-      >
-        <ThemeProvider theme={lightTheme}>
-          <GraphiQLPage />
-        </ThemeProvider>
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[graphQlBrowseApiRef, loadingApi]]}>
+        <GraphiQLPage />
       </TestApiProvider>,
     );
 

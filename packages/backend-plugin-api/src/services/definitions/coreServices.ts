@@ -24,6 +24,7 @@ export { discoveryServiceRef as discovery } from './discoveryServiceRef';
 export { tokenManagerServiceRef as tokenManager } from './tokenManagerServiceRef';
 export { permissionsServiceRef as permissions } from './permissionsServiceRef';
 export { schedulerServiceRef as scheduler } from './schedulerServiceRef';
+export { rootLifecycleServiceRef as rootLifecycle } from './rootLifecycleServiceRef';
 export { rootLoggerServiceRef as rootLogger } from './rootLoggerServiceRef';
 export { pluginMetadataServiceRef as pluginMetadata } from './pluginMetadataServiceRef';
 export { lifecycleServiceRef as lifecycle } from './lifecycleServiceRef';
