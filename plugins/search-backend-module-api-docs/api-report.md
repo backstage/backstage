@@ -9,6 +9,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { Logger } from 'winston';
 import { OpenAPI } from 'openapi-types';
 import { OpenAPIV2 } from 'openapi-types';
 import { OpenAPIV3 } from 'openapi-types';
@@ -44,6 +45,7 @@ export type APIDocumentCollatorFactoryOptions = {
   batchSize?: number;
   tokenManager: TokenManager;
   specHandler?: SpecHandler;
+  logger: Logger;
 };
 
 // @public (undocumented)
