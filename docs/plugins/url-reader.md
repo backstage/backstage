@@ -60,15 +60,7 @@ The generic interface of a URL Reader instance looks like this.
 ```ts
 export type UrlReader = {
   /* Used to read a single file and return its content. */
-  read(url: string): Promise<Buffer>;
-  /**
-   * A replacement for the read method that supports options and complex responses.
-   *
-   * Use this whenever it is available, as the read method will be deprecated and
-   * eventually removed in the future.
-   */
-  readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   /* Used to read a file tree and download as a directory. */
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   /* Used to search a file in a tree. */
@@ -102,8 +94,8 @@ backend plugins.
 Once the reader instance is available inside the plugin, one of its methods can
 directly be used with a URL. Some example usages -
 
-- [`read`](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/plugins/catalog-backend/src/ingestion/processors/codeowners/read.ts#L24-L33) -
-  Catalog using the `read` method to read the CODEOWNERS file in a repository.
+- [`readUrl`](https://github.com/backstage/backstage/blob/a7607b5/plugins/catalog-backend/src/modules/codeowners/lib/read.ts#L24-L33) -
+  Catalog using the `readUrl` method to read the CODEOWNERS file in a repository.
 - [`readTree`](https://github.com/backstage/backstage/blob/84a8788/plugins/techdocs-node/src/helpers.ts#L146-L167) -
   TechDocs using the `readTree` method to download markdown files in order to
   generate the documentation site.
