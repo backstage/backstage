@@ -89,6 +89,7 @@ declare namespace coreServices {
     tokenManagerServiceRef as tokenManager,
     permissionsServiceRef as permissions,
     schedulerServiceRef as scheduler,
+    rootLifecycleServiceRef as rootLifecycle,
     rootLoggerServiceRef as rootLogger,
     pluginMetadataServiceRef as pluginMetadata,
     lifecycleServiceRef as lifecycle,
@@ -200,6 +201,7 @@ const lifecycleServiceRef: ServiceRef<LifecycleService, 'plugin'>;
 // @public (undocumented)
 export type LifecycleServiceShutdownHook = {
   fn: () => void | Promise<void>;
+  labels?: Record<string, string>;
 };
 
 // @public (undocumented)
@@ -244,6 +246,12 @@ export interface PluginMetadataService {
 
 // @public (undocumented)
 const pluginMetadataServiceRef: ServiceRef<PluginMetadataService, 'plugin'>;
+
+// @public (undocumented)
+export type RootLifecycleService = LifecycleService;
+
+// @public (undocumented)
+const rootLifecycleServiceRef: ServiceRef<LifecycleService, 'root'>;
 
 // @public (undocumented)
 export type RootLoggerService = LoggerService;

@@ -15,31 +15,15 @@
  */
 
 import { createServiceRef } from '../system/types';
+import { LifecycleService } from './lifecycleServiceRef';
 
-/**
- * @public
- **/
-export type LifecycleServiceShutdownHook = {
-  fn: () => void | Promise<void>;
-
-  /** Labels to help identify the shutdown hook */
-  labels?: Record<string, string>;
-};
-
-/**
- * @public
- **/
-export interface LifecycleService {
-  /**
-   * Register a function to be called when the backend is shutting down.
-   */
-  addShutdownHook(options: LifecycleServiceShutdownHook): void;
-}
+/** @public */
+export type RootLifecycleService = LifecycleService;
 
 /**
  * @public
  */
-export const lifecycleServiceRef = createServiceRef<LifecycleService>({
-  id: 'core.lifecycle',
-  scope: 'plugin',
+export const rootLifecycleServiceRef = createServiceRef<RootLifecycleService>({
+  id: 'core.rootLifecycle',
+  scope: 'root',
 });

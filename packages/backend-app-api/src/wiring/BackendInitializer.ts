@@ -20,7 +20,7 @@ import {
   coreServices,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
-import { BackendLifecycleImpl } from '../services/implementations/lifecycleService';
+import { BackendLifecycleImpl } from '../services/implementations/rootLifecycleService';
 import {
   BackendRegisterInit,
   EnumerableServiceHolder,
@@ -182,14 +182,13 @@ export class BackendInitializer {
     }
 
     const lifecycleService = await this.#serviceHolder.get(
-      coreServices.lifecycle,
+      coreServices.rootLifecycle,
       'root',
     );
 
     // TODO(Rugvip): Find a better way to do this
-    const lifecycle = (lifecycleService as any)?.lifecycle;
-    if (lifecycle instanceof BackendLifecycleImpl) {
-      await lifecycle.shutdown();
+    if (lifecycleService instanceof BackendLifecycleImpl) {
+      await lifecycleService.shutdown();
     } else {
       throw new Error('Unexpected lifecycle service implementation');
     }
