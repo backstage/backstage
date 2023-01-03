@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.1.1-next.1
+
+### Patch Changes
+
+- d48cf39f2a: fix glob on windows os
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/errors@1.1.4
+
 ## 0.1.1-next.0
 
 ### Patch Changes
