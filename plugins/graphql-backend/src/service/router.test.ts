@@ -18,13 +18,21 @@ import supertest from 'supertest';
 import { ConfigReader } from '@backstage/config';
 import { createLogger } from 'winston';
 import express from 'express';
+import { CatalogClient } from '@backstage/catalog-client';
 
 describe('Router', () => {
   describe('/health', () => {
     it('should return ok', async () => {
       const config = new ConfigReader({ backend: { baseUrl: 'lol' } });
+      const catalog = new CatalogClient({
+        discoveryApi: { getBaseUrl: async () => 'lol' },
+      });
 
-      const router = await createRouter({ config, logger: createLogger() });
+      const router = await createRouter({
+        config,
+        logger: createLogger(),
+        catalog,
+      });
       const app = express().use(router);
 
       const { body } = await supertest(app).get('/health');
