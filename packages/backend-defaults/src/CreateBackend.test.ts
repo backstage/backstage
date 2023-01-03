@@ -55,4 +55,18 @@ describe('createBackend', () => {
       'Duplicate service implementations provided for core.rootLifecycle',
     );
   });
+
+  it('should throw when providing a plugin metadata service implementation', () => {
+    expect(() =>
+      createBackend({
+        services: [
+          createServiceFactory({
+            service: coreServices.pluginMetadata,
+            deps: {},
+            factory: async () => async () => ({ getId: () => 'test' }),
+          }),
+        ],
+      }),
+    ).toThrow('The core.plugin-metadata service cannot be overridden');
+  });
 });

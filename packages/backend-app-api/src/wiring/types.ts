@@ -19,6 +19,7 @@ import {
   BackendFeature,
   ExtensionPoint,
   ServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { BackstageBackend } from './BackstageBackend';
 
@@ -79,6 +80,11 @@ export function createSpecializedBackend(
   if (duplicates.size > 0) {
     const ids = Array.from(duplicates).join(', ');
     throw new Error(`Duplicate service implementations provided for ${ids}`);
+  }
+  if (exists.has(coreServices.pluginMetadata.id)) {
+    throw new Error(
+      `The ${coreServices.pluginMetadata.id} service cannot be overridden`,
+    );
   }
 
   return new BackstageBackend(services);
