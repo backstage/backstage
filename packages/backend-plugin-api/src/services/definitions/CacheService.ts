@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
+import { PluginCacheManager } from '@backstage/backend-common';
 
-/**
- * @public
- */
-export interface PluginMetadataService {
-  getId(): string;
-}
-
-/**
- * @public
- */
-export const pluginMetadataServiceRef = createServiceRef<PluginMetadataService>(
-  {
-    id: 'core.plugin-metadata',
-  },
-);
+/** @public */
+export interface CacheService extends PluginCacheManager {}

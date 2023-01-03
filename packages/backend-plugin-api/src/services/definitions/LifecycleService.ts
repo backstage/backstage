@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { LoggerService } from './loggerServiceRef';
+/**
+ * @public
+ **/
+export type LifecycleServiceShutdownHook = {
+  fn: () => void | Promise<void>;
 
-/** @public */
-export type RootLoggerService = LoggerService;
+  /** Labels to help identify the shutdown hook */
+  labels?: Record<string, string>;
+};
 
 /**
  * @public
- */
-export const rootLoggerServiceRef = createServiceRef<RootLoggerService>({
-  id: 'core.root.logger',
-  scope: 'root',
-});
+ **/
+export interface LifecycleService {
+  /**
+   * Register a function to be called when the backend is shutting down.
+   */
+  addShutdownHook(options: LifecycleServiceShutdownHook): void;
+}

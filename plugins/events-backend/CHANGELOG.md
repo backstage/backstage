@@ -1,5 +1,16 @@
 # @backstage/plugin-events-backend
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 217149ae98: The default event broker will now catch and log errors thrown by the `onEvent` method of subscribers. The returned promise from `publish` method will also not resolve until all subscribers have handled the event.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-events-node@0.2.1-next.0
+
 ## 0.2.0
 
 ### Minor Changes

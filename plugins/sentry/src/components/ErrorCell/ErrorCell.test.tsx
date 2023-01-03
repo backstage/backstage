@@ -16,10 +16,8 @@
 
 import { ErrorCell } from './ErrorCell';
 import React from 'react';
-import { render } from '@testing-library/react';
 import mockIssue from '../../api/mock/sentry-issue-mock.json';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('Sentry error cell component', () => {
   it('should render a link that lead to Sentry', async () => {
@@ -33,11 +31,7 @@ describe('Sentry error cell component', () => {
       userCount: 2,
       permalink: 'http://example.com',
     };
-    const cell = render(
-      <ThemeProvider theme={lightTheme}>
-        <ErrorCell sentryIssue={testIssue} />
-      </ThemeProvider>,
-    );
+    const cell = await renderInTestApp(<ErrorCell sentryIssue={testIssue} />);
     const errorType = await cell.findByText('Exception');
     expect(errorType.closest('a')).toHaveAttribute(
       'href',
@@ -53,11 +47,7 @@ describe('Sentry error cell component', () => {
       userCount: 2,
       permalink: 'http://example.com',
     };
-    const cell = render(
-      <ThemeProvider theme={lightTheme}>
-        <ErrorCell sentryIssue={testIssue} />
-      </ThemeProvider>,
-    );
+    const cell = await renderInTestApp(<ErrorCell sentryIssue={testIssue} />);
     const errorType = await cell.findByText('Exception: Could not load cr...');
     expect(errorType.closest('a')).toHaveAttribute(
       'href',

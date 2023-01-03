@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { PluginCacheManager } from '@backstage/backend-common';
-
-/** @public */
-export type CacheService = PluginCacheManager;
+import { Config } from '@backstage/config';
 
 /**
  * @public
  */
-export const cacheServiceRef = createServiceRef<CacheService>({
-  id: 'core.cache',
-});
+export interface ConfigService extends Config {}

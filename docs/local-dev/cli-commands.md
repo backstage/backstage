@@ -201,15 +201,15 @@ Usage: backstage-cli package postpack [options]
 Restores the changes made by the prepack command
 ```
 
-## create
+## new
 
-The `create` command opens up an interactive guide for you to create new things
+The `new` command opens up an interactive guide for you to create new things
 in your app. If you do not pass in any options it is completely interactive, but
 it is possible to pre-select what you want to create using the `--select` flag,
-and provide options using `--options`, for example:
+and provide options using `--option`, for example:
 
 ```bash
-backstage-cli create --select plugin --option id=foo
+backstage-cli new --select plugin --option id=foo
 ```
 
 This command is typically added as script in the root `package.json` to be

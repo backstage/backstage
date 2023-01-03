@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { TokenManager } from '@backstage/backend-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 /** @public */
-export type TokenManagerService = TokenManager;
-
-/**
- * @public
- */
-export const tokenManagerServiceRef = createServiceRef<TokenManagerService>({
-  id: 'core.tokenManager',
-});
+export interface PermissionsService extends PermissionEvaluator {}

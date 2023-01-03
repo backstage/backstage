@@ -62,7 +62,7 @@ export type RouterOptions = {
   logger: Logger;
 };
 
-const maxPageLimit = 100;
+const defaultMaxPageLimit = 100;
 const allowedLocationProtocols = ['http:', 'https:'];
 
 /**
@@ -72,6 +72,9 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { engine: inputEngine, types, permissions, config, logger } = options;
+
+  const maxPageLimit =
+    config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;
 
   const requestSchema = z.object({
     term: z.string().default(''),

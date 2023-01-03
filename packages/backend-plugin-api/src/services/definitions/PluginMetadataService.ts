@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-
-/** @public */
-export type DiscoveryService = PluginEndpointDiscovery;
-
 /**
  * @public
  */
-export const discoveryServiceRef = createServiceRef<DiscoveryService>({
-  id: 'core.discovery',
-});
+export interface PluginMetadataService {
+  getId(): string;
+}

@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import { createServiceRef } from '../system/types';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
-/**
- * @public
- */
-export type ConfigService = Config;
-
-/**
- * @public
- */
-export const configServiceRef = createServiceRef<ConfigService>({
-  id: 'core.root.config',
-  scope: 'root',
-});
+/** @public */
+export interface SchedulerService extends PluginTaskScheduler {}

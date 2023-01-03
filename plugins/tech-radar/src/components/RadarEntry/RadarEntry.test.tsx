@@ -15,10 +15,9 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
 import RadarEntry, { Props } from './RadarEntry';
@@ -45,13 +44,11 @@ describe('RadarEntry', () => {
     GetBBoxPolyfill.remove();
   });
 
-  it('should render link only', () => {
-    render(
-      <ThemeProvider theme={lightTheme}>
-        <svg>
-          <RadarEntry {...minProps} />
-        </svg>
-      </ThemeProvider>,
+  it('should render link only', async () => {
+    await renderInTestApp(
+      <svg>
+        <RadarEntry {...minProps} />
+      </svg>,
     );
 
     const radarEntry = screen.getByTestId('radar-entry');
@@ -62,12 +59,10 @@ describe('RadarEntry', () => {
   });
 
   it('should render with description', async () => {
-    render(
-      <ThemeProvider theme={lightTheme}>
-        <svg>
-          <RadarEntry {...optionalProps} />
-        </svg>
-      </ThemeProvider>,
+    await renderInTestApp(
+      <svg>
+        <RadarEntry {...optionalProps} />
+      </svg>,
     );
 
     await userEvent.click(screen.getByRole('button'));
@@ -80,17 +75,15 @@ describe('RadarEntry', () => {
     expect(screen.getByText(String(minProps.value))).toBeInTheDocument();
   });
 
-  it('should render blip with url equal to # if description present', () => {
+  it('should render blip with url equal to # if description present', async () => {
     const withUrl = {
       ...optionalProps,
       url: 'http://backstage.io',
     };
-    render(
-      <ThemeProvider theme={lightTheme}>
-        <svg>
-          <RadarEntry {...withUrl} />
-        </svg>
-      </ThemeProvider>,
+    await renderInTestApp(
+      <svg>
+        <RadarEntry {...withUrl} />
+      </svg>,
     );
 
     expect(screen.getByRole('button')).toHaveAttribute('href', '#');

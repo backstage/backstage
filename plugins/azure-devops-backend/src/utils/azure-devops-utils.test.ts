@@ -255,7 +255,6 @@ describe('replaceReadme', () => {
         }),
       readTree: jest.fn(),
       search: jest.fn(),
-      read: jest.fn(),
     };
 
     const result = await replaceReadme(

@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { UrlReader } from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 
 /** @public */
-export type UrlReaderService = UrlReader;
-
-/**
- * @public
- */
-export const urlReaderServiceRef = createServiceRef<UrlReaderService>({
-  id: 'core.urlReader',
-});
+export interface TokenManagerService extends TokenManager {}

@@ -15,6 +15,7 @@
  */
 
 export { bazaarPlugin, BazaarPage } from './plugin';
+export { isBazaarAvailable } from './api';
 export { BazaarOverviewCard } from './components/BazaarOverviewCard';
 export type { BazaarOverviewCardProps } from './components/BazaarOverviewCard';
 export { EntityBazaarInfoCard } from './components/EntityBazaarInfoCard';

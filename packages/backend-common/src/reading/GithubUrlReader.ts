@@ -51,7 +51,7 @@ export type GhBlobResponse =
   RestEndpointMethodTypes['git']['getBlob']['response']['data'];
 
 /**
- * Implements a {@link UrlReader} for files through the GitHub v3 APIs, such as
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files through the GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
  *
  * @public
