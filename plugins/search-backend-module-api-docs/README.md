@@ -20,13 +20,13 @@ Other formats can be contributed to this plugin by implementing a `SpecParser` f
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-api-docs-backend
+yarn add --cwd packages/app @backstage/plugin-search-backend-module-api-docs
 ```
 
 3. Add a `APIDocumentCollatorFactory` to the IndexBuilder
 
 ```typescript
-import { APIDocumentCollatorFactory } from '@backstage/plugin-api-docs-backend';
+import { APIDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-api-docs';
 ```
 
 ```typescript

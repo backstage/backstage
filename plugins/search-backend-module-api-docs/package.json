@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-api-docs-module-search",
+  "name": "@backstage/plugin-search-backend-module-api-docs",
   "version": "0.1.0",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
@@ -34,6 +34,7 @@
     "openapi-types": "^12.0.2",
     "semver": "^7.3.8",
     "typescript": "^4.8.4",
+    "winston": "^3.8.2",
     "yaml": "^2.1.3",
     "yn": "^4.0.0"
   },

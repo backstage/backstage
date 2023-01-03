@@ -18,7 +18,7 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-
+import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
@@ -36,6 +36,7 @@ export type APIDocumentCollatorFactoryOptions = {
   batchSize?: number;
   tokenManager: TokenManager;
   specHandler?: SpecHandler;
+  logger: Logger;
 };
 
 /**
@@ -49,11 +50,19 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
   private batchSize: number;
   private tokenManager: TokenManager;
   private specHandler: SpecHandler;
+  private logger: Logger;
 
   private constructor(options: APIDocumentCollatorFactoryOptions) {
-    const { discovery, catalogClient, batchSize, tokenManager, specHandler } =
-      options;
+    const {
+      discovery,
+      catalogClient,
+      batchSize,
+      tokenManager,
+      specHandler,
+      logger,
+    } = options;
 
+    this.logger = logger;
     this.tokenManager = tokenManager;
     this.batchSize = batchSize || 500;
     this.catalogClient =
@@ -105,13 +114,20 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
           continue;
         }
 
-        yield {
-          title: entity.metadata.name,
-          location: `/catalog/default/api/${entity.metadata.name}/definition/`,
-          text: specParser.getSpecText(entity.spec?.definition),
-          kind: entity.kind,
-          lifecycle: (entity.spec?.lifecycle as string) || '',
-        };
+        try {
+          yield {
+            title: entity.metadata.name,
+            location: `/catalog/default/api/${entity.metadata.name}/definition/`,
+            text: specParser.getSpecText(entity.spec?.definition),
+            kind: entity.kind,
+            lifecycle: (entity.spec?.lifecycle as string) || '',
+          };
+        } catch (e: any) {
+          this.logger.warn(
+            `Error Parsing Spec Text For ${entity.metadata.name}: ${e}`,
+          );
+          continue;
+        }
       }
     }
   }
