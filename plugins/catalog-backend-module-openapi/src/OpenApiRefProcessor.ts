@@ -84,10 +84,14 @@ export class OpenApiRefProcessor implements CatalogProcessor {
 
     this.logger.debug(`Bundling OpenAPI specification from ${location.target}`);
     try {
+      const read = async (url: string) => {
+        const { buffer } = await this.reader.readUrl(url);
+        return await buffer();
+      };
       const bundledSpec = await bundleFileWithRefs(
         definition.toString(),
         location.target,
-        this.reader.read,
+        read,
         resolveUrl,
       );
 

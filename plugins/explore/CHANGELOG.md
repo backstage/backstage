@@ -1,5 +1,22 @@
 # @backstage/plugin-explore
 
+## 0.3.45-next.1
+
+### Patch Changes
+
+- 9f9d279bd1: Updated `README.md` examples
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.2.4-next.1
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.25-next.0
+  - @backstage/plugin-search-common@1.2.1-next.0
+  - @backstage/plugin-search-react@1.3.2-next.1
+
 ## 0.3.45-next.0
 
 ### Patch Changes

@@ -1,7 +1,5 @@
 import React from 'react';
 import { ExampleComponent } from './ExampleComponent';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen } from '@testing-library/react';
@@ -23,11 +21,7 @@ describe('ExampleComponent', () => {
   });
 
   it('should render', async () => {
-    await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <ExampleComponent />
-      </ThemeProvider>,
-    );
+    await renderInTestApp(<ExampleComponent />);
     expect(screen.getByText('Welcome to {{ id }}!')).toBeInTheDocument();
   });
 });

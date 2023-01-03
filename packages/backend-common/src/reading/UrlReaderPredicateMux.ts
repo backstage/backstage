@@ -45,18 +45,6 @@ export class UrlReaderPredicateMux implements UrlReader {
     this.readers.push(tuple);
   }
 
-  async read(url: string): Promise<Buffer> {
-    const parsed = new URL(url);
-
-    for (const { predicate, reader } of this.readers) {
-      if (predicate(parsed)) {
-        return reader.read(url);
-      }
-    }
-
-    throw new NotAllowedError(notAllowedMessage(url));
-  }
-
   async readUrl(
     url: string,
     options?: ReadUrlOptions,

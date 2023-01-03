@@ -14,29 +14,11 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-
-/**
- * @public
- **/
-export type LifecycleServiceShutdownHook = {
-  fn: () => void | Promise<void>;
-};
-
-/**
- * @public
- **/
-export interface LifecycleService {
-  /**
-   * Register a function to be called when the backend is shutting down.
-   */
-  addShutdownHook(options: LifecycleServiceShutdownHook): void;
-}
+import { Handler } from 'express';
 
 /**
  * @public
  */
-export const lifecycleServiceRef = createServiceRef<LifecycleService>({
-  id: 'core.lifecycle',
-  scope: 'plugin',
-});
+export interface HttpRouterService {
+  use(handler: Handler): void;
+}

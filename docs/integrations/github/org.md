@@ -17,7 +17,7 @@ entities that mirror your org setup.
 > provide authentication. See the
 > [GitHub auth provider](../../auth/github/provider.md) for that.
 
-## Installation
+## Installation without Events Support
 
 This guide will use the Entity Provider method. If you for some reason prefer
 the Processor method (not recommended), it is described separately below.
@@ -59,6 +59,52 @@ schedule it:
 +    }),
 +  );
 ```
+
+## Installation with Events Support
+
+Please follow the installation instructions at
+
+- https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md
+- https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md
+
+Additionally, you need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Set up your provider
+
+```diff
+// packages/backend/src/plugins/catalogEventBasedProviders.ts
++import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+ import { EntityProvider } from '@backstage/plugin-catalog-node';
+ import { EventSubscriber } from '@backstage/plugin-events-node';
+ import { PluginEnvironment } from '../types';
+ export default async function createCatalogEventBasedProviders(
+-  _: PluginEnvironment,
++  env: PluginEnvironment,
+ ): Promise<Array<EntityProvider & EventSubscriber>> {
+   const providers: Array<
+     (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
+   > = [];
+-  // add your event-based entity providers here
++  providers.push(
++    GithubOrgEntityProvider.fromConfig(env.config, {
++      id: 'production',
++      orgUrl: 'https://github.com/backstage',
++      logger: env.logger,
++      schedule: env.scheduler.createScheduledTaskRunner({
++        frequency: { minutes: 60 },
++        timeout: { minutes: 15 },
++      }),
++    }),
++  );
+   return providers.flat();
+ }
+```
+
+You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
+The webhook will need to be configured to forward `organization`,`team` and `membership` events.
 
 ## Configuration
 

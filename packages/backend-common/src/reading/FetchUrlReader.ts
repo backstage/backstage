@@ -63,7 +63,7 @@ const parsePortPredicate = (port: string | undefined) => {
 };
 
 /**
- * A {@link UrlReader} that does a plain fetch of the URL.
+ * A {@link @backstage/backend-plugin-api#UrlReaderService} that does a plain fetch of the URL.
  *
  * @public
  */

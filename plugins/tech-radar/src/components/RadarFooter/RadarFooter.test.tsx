@@ -15,9 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { renderInTestApp } from '@backstage/test-utils';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
 import RadarFooter, { Props } from './RadarFooter';
@@ -36,13 +34,11 @@ describe('RadarFooter', () => {
     GetBBoxPolyfill.remove();
   });
 
-  it('should render', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <svg>
-          <RadarFooter {...minProps} />
-        </svg>
-      </ThemeProvider>,
+  it('should render', async () => {
+    const rendered = await renderInTestApp(
+      <svg>
+        <RadarFooter {...minProps} />
+      </svg>,
     );
     const radarFooter = rendered.getByTestId('radar-footer');
     const { x, y } = minProps;
