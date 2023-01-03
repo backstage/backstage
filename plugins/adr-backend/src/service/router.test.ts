@@ -59,9 +59,6 @@ const testFileTwoContent = 'testFileTwo content';
 const genericFileContent = 'file content';
 
 const mockUrlReader: UrlReader = {
-  read() {
-    throw new Error('read not implemented.');
-  },
   readUrl(url: string) {
     switch (url) {
       case 'testFileOne':
