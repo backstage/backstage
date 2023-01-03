@@ -18,9 +18,9 @@ import {
   createServiceFactory,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import Router from 'express-promise-router';
 import { Handler } from 'express';
 import { createServiceBuilder } from '@backstage/backend-common';
+import { RestrictedIndexedRouter } from './RestrictedIndexedRouter';
 
 /**
  * @public
@@ -45,10 +45,9 @@ export const rootHttpRouterFactory = createServiceFactory({
     lifecycle: coreServices.rootLifecycle,
   },
   async factory({ config, lifecycle }, options?: RootHttpRouterFactoryOptions) {
-    const indexPath = options?.indexPath ?? '/api/app';
-
-    const namedRouter = Router();
-    const indexRouter = Router();
+    const router = new RestrictedIndexedRouter(
+      options?.indexPath ?? '/api/app',
+    );
 
     const service = createServiceBuilder(module).loadConfig(config);
 
@@ -56,7 +55,7 @@ export const rootHttpRouterFactory = createServiceFactory({
       service.addRouter('', middleware);
     }
 
-    service.addRouter('', namedRouter).addRouter('', indexRouter);
+    service.addRouter('', router.handler());
 
     const server = await service.start();
     // Stop method isn't part of the public API, let's fix that once we move the implementation here.
@@ -79,47 +78,6 @@ export const rootHttpRouterFactory = createServiceFactory({
       labels: { service: 'rootHttpRouter' },
     });
 
-    const existingPaths = new Array<string>();
-
-    return {
-      use: (path: string, handler: Handler) => {
-        if (path.match(/^[/\s]*$/)) {
-          throw new Error(`Root router path may not be empty`);
-        }
-        const conflictingPath = findConflictingPath(existingPaths, path);
-        if (conflictingPath) {
-          throw new Error(
-            `Path ${path} conflicts with the existing path ${conflictingPath}`,
-          );
-        }
-        existingPaths.push(path);
-        namedRouter.use(path, handler);
-
-        if (indexPath === path) {
-          indexRouter.use(handler);
-        }
-      },
-    };
+    return router;
   },
 });
-
-function normalizePath(path: string): string {
-  return path.replace(/\/*$/, '/');
-}
-
-export function findConflictingPath(
-  paths: string[],
-  newPath: string,
-): string | undefined {
-  const normalizedNewPath = normalizePath(newPath);
-  for (const path of paths) {
-    const normalizedPath = normalizePath(path);
-    if (normalizedPath.startsWith(normalizedNewPath)) {
-      return path;
-    }
-    if (normalizedNewPath.startsWith(normalizedPath)) {
-      return path;
-    }
-  }
-  return undefined;
-}
