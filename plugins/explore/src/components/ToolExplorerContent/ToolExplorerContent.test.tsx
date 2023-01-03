@@ -16,8 +16,6 @@
 
 import { ExploreTool } from '@backstage/plugin-explore-common';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { exploreApiRef } from '../../api';
@@ -29,11 +27,9 @@ describe('<ToolExplorerContent />', () => {
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ThemeProvider theme={lightTheme}>
-      <TestApiProvider apis={[[exploreApiRef, exploreApi]]}>
-        {children}
-      </TestApiProvider>
-    </ThemeProvider>
+    <TestApiProvider apis={[[exploreApiRef, exploreApi]]}>
+      {children}
+    </TestApiProvider>
   );
 
   beforeEach(() => {

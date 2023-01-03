@@ -26,4 +26,5 @@ export { tokenManagerFactory } from './tokenManagerService';
 export { urlReaderFactory } from './urlReaderService';
 export { httpRouterFactory } from './httpRouterService';
 export { lifecycleFactory } from './lifecycleService';
+export { rootLifecycleFactory } from './rootLifecycleService';
 export type { HttpRouterFactoryOptions } from './httpRouterService';

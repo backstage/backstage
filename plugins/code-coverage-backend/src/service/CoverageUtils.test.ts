@@ -209,7 +209,7 @@ describe('CodeCoverageUtils', () => {
       } catch (error: any) {
         err = error;
       }
-      expect(err?.message).toEqual('Content-Type missing');
+      expect(err?.message).toEqual('Content-Type header missing');
     });
 
     it('rejects unsupported content type', () => {
@@ -223,7 +223,9 @@ describe('CodeCoverageUtils', () => {
       } catch (error: any) {
         err = error;
       }
-      expect(err?.message).toEqual('Illegal Content-Type');
+      expect(err?.message).toEqual(
+        'Content-Type header "application/json" not supported, expected "text/xml" possibly followed by a charset',
+      );
     });
 
     it('parses the body', () => {

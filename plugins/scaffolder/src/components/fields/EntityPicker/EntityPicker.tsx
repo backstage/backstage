@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { type EntityFilterQuery } from '@backstage/catalog-client';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -44,6 +45,11 @@ export const EntityPicker = (props: EntityPickerProps) => {
     idSchema,
   } = props;
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+
+  const catalogFilter: EntityFilterQuery | undefined =
+    uiSchema['ui:options']?.catalogFilter ||
+    (allowedKinds && { kind: allowedKinds });
+
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
 
@@ -51,7 +57,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const { value: entities, loading } = useAsync(() =>
     catalogApi.getEntities(
-      allowedKinds ? { filter: { kind: allowedKinds } } : undefined,
+      catalogFilter ? { filter: catalogFilter } : undefined,
     ),
   );
 

@@ -33,14 +33,16 @@ export const OwnerPicker = (props: OwnerPickerProps) => {
   } = props;
 
   const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+
+  const catalogFilter = uiSchema['ui:options']?.catalogFilter || {
+    kind: allowedKinds || ['Group', 'User'],
+  };
 
   const ownerUiSchema = {
     ...uiSchema,
     'ui:options': {
-      allowedKinds: (uiSchema['ui:options']?.allowedKinds || [
-        'Group',
-        'User',
-      ]) as string[],
+      catalogFilter,
       defaultKind: 'Group',
       allowArbitraryValues:
         uiSchema['ui:options']?.allowArbitraryValues ?? true,

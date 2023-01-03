@@ -1,5 +1,27 @@
 # @techdocs/cli
 
+## 1.2.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/cli-common@0.1.11
+  - @backstage/plugin-techdocs-node@1.4.4-next.1
+
+## 1.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.5
+  - @backstage/plugin-techdocs-node@1.4.4-next.0
+
 ## 1.2.4
 
 ### Patch Changes
