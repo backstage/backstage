@@ -233,42 +233,4 @@ describe('useTemplateSchema', () => {
       });
     });
   });
-
-  it('should replace ui:ObjectFieldTemplate with actual component', () => {
-    const layouts = [{ name: 'TwoColumn', component: jest.fn() }];
-
-    const manifest: TemplateParameterSchema = {
-      title: 'Test Template',
-      description: 'Test Template Description',
-      steps: [
-        {
-          title: 'Step 1',
-          description: 'Step 1 Description',
-          schema: {
-            type: 'object',
-            'ui:ObjectFieldTemplate': 'TwoColumn',
-            properties: {
-              field1: {
-                type: 'string',
-              },
-            },
-          },
-        },
-      ],
-    };
-
-    const { result } = renderHook(() => useTemplateSchema(manifest, layouts), {
-      wrapper: ({ children }) => (
-        <TestApiProvider
-          apis={[[featureFlagsApiRef, { isActive: () => true }]]}
-        >
-          {children}
-        </TestApiProvider>
-      ),
-    });
-
-    const [{ uiSchema }] = result.current.steps;
-
-    expect(uiSchema['ui:ObjectFieldTemplate']).toEqual(layouts[0].component);
-  });
 });

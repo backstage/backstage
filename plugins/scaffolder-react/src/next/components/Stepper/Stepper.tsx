@@ -33,6 +33,8 @@ import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv6';
 import { useFormDataFromQuery } from '../../hooks';
+import type { FormProps, NextLayoutOptions } from '../../types';
+import { useTransformSchemaToProps } from './useTransformSchemaToProps';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -85,7 +87,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     reviewButtonText = 'Review',
   } = components;
   const analytics = useAnalytics();
-  const { steps } = useTemplateSchema(props.manifest, layouts);
+  const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useFormDataFromQuery(props.initialState);
@@ -151,6 +153,8 @@ export const Stepper = (stepperProps: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
+  const currentStep = useTransformSchemaToProps(steps[activeStep], layouts);
+
   return (
     <>
       <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">
@@ -170,8 +174,8 @@ export const Stepper = (stepperProps: StepperProps) => {
             extraErrors={errors as unknown as ErrorSchema}
             formData={formState}
             formContext={{ formData: formState }}
-            schema={steps[activeStep].schema}
-            uiSchema={steps[activeStep].uiSchema}
+            schema={currentStep.schema}
+            uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
             fields={extensions}
             showErrorList={false}

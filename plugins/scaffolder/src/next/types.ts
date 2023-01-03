@@ -23,7 +23,7 @@
 import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
 
 /**
- * The field template from \@rjsf/core which is a react component that gets passed \@rjsf/core field related props.
+ * The field template from `@rjsf/core` which is a react component that gets passed `@rjsf/core` field related props.
  *
  * @alpha
  */

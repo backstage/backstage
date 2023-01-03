@@ -16,7 +16,7 @@
 import type { FormProps } from '@rjsf/core';
 
 /**
- * The field template from \@rjsf/core which is a react component that gets passed \@rjsf/core field related props.
+ * The field template from `@rjsf/core` which is a react component that gets passed `@rjsf/core` field related props.
  *
  * @public
  */
