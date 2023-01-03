@@ -29,8 +29,8 @@ export class RollbarApi {
     },
   ): Promise<
     {
-      timestamp: number;
       count: number;
+      timestamp: number;
     }[]
   >;
   // (undocumented)
@@ -51,8 +51,8 @@ export class RollbarApi {
     },
   ): Promise<
     {
-      timestamp: number;
       count: number;
+      timestamp: number;
     }[]
   >;
   // (undocumented)
@@ -64,8 +64,8 @@ export class RollbarApi {
   }>;
   // (undocumented)
   getProjectItems(projectName: string): Promise<{
-    items: RollbarItem[];
     page: number;
+    items: RollbarItem[];
     totalCount: number;
   }>;
   // (undocumented)

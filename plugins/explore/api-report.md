@@ -9,7 +9,6 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default as default_2 } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { DomainEntity } from '@backstage/catalog-model';
 import { ExploreToolsConfig } from '@backstage/plugin-explore-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
@@ -30,9 +29,6 @@ export const catalogEntityRouteRef: ExternalRouteRef<
   },
   true
 >;
-
-// @public (undocumented)
-export const DomainCard: (props: { entity: DomainEntity }) => JSX.Element;
 
 // @public (undocumented)
 export const DomainExplorerContent: (props: {
