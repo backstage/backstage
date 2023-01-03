@@ -25,13 +25,6 @@ import { Readable } from 'stream';
 export type UrlReaderService = {
   /**
    * Reads a single file and return its content.
-   *
-   * @remarks
-   *
-   * This is a replacement for the read method that supports options and
-   * complex responses.
-   *
-   * Use this as the read method will be removed in a future release.
    */
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
 
