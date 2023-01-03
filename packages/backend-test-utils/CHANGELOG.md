@@ -1,5 +1,17 @@
 # @backstage/backend-test-utils
 
+## 0.1.32-next.1
+
+### Patch Changes
+
+- 6cfd4d7073: Include implementations for the new `rootLifecycleServiceRef`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/cli@0.22.1-next.1
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/backend-app-api@0.2.5-next.0
+
 ## 0.1.32-next.0
 
 ### Patch Changes

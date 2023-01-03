@@ -1,5 +1,52 @@
 # example-backend
 
+## 0.2.79-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.10.0-next.1
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/plugin-explore-backend@0.0.2-next.1
+  - @backstage/plugin-events-backend@0.2.1-next.0
+  - @backstage/plugin-app-backend@0.3.40-next.0
+  - @backstage/plugin-tech-insights-backend@0.5.6-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-catalog-backend@1.7.0-next.1
+  - @backstage/plugin-catalog-node@1.3.1-next.1
+  - @backstage/plugin-events-node@0.2.1-next.0
+  - example-app@0.2.79-next.1
+  - @backstage/backend-tasks@0.4.1-next.0
+  - @backstage/catalog-client@1.3.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/plugin-auth-backend@0.17.3-next.1
+  - @backstage/plugin-auth-node@0.2.9-next.0
+  - @backstage/plugin-azure-devops-backend@0.3.19-next.0
+  - @backstage/plugin-azure-sites-backend@0.1.2-next.0
+  - @backstage/plugin-badges-backend@0.1.34-next.1
+  - @backstage/plugin-code-coverage-backend@0.2.6-next.1
+  - @backstage/plugin-graphql-backend@0.1.30-next.1
+  - @backstage/plugin-jenkins-backend@0.1.30-next.1
+  - @backstage/plugin-kafka-backend@0.2.33-next.1
+  - @backstage/plugin-kubernetes-backend@0.9.1-next.1
+  - @backstage/plugin-permission-backend@0.5.15-next.0
+  - @backstage/plugin-permission-common@0.7.3-next.0
+  - @backstage/plugin-permission-node@0.7.3-next.0
+  - @backstage/plugin-playlist-backend@0.2.3-next.1
+  - @backstage/plugin-proxy-backend@0.2.34-next.0
+  - @backstage/plugin-rollbar-backend@0.1.37-next.0
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.8-next.1
+  - @backstage/plugin-search-backend@1.2.1-next.1
+  - @backstage/plugin-search-backend-module-elasticsearch@1.1.1-next.1
+  - @backstage/plugin-search-backend-module-pg@0.5.1-next.1
+  - @backstage/plugin-search-backend-node@1.1.1-next.1
+  - @backstage/plugin-search-common@1.2.1-next.0
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.24-next.0
+  - @backstage/plugin-tech-insights-node@0.3.8-next.0
+  - @backstage/plugin-techdocs-backend@1.5.1-next.1
+  - @backstage/plugin-todo-backend@0.1.37-next.1
+
 ## 0.2.79-next.0
 
 ### Patch Changes

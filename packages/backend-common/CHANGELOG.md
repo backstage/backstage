@@ -1,5 +1,25 @@
 # @backstage/backend-common
 
+## 0.18.0-next.0
+
+### Minor Changes
+
+- 5e2cebe9a3: **BREAKING**: Removed deprecated `read` method from the `UrlReader` interface. All implementations should use the `readUrl` method instead.
+
+  Migrated `UrlReader` and related types to `backend/backend-plugin-api`, types remain re-exported from `backend-common` for now.
+
+### Patch Changes
+
+- 6f02d23b01: Moved `PluginEndpointDiscovery` type from backend-common to backend-plugin-api.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+
 ## 0.17.0
 
 ### Minor Changes
