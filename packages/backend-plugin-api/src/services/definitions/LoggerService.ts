@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
-
-/** @public */
-export type SchedulerService = PluginTaskScheduler;
-
 /**
  * @public
  */
-export const schedulerServiceRef = createServiceRef<SchedulerService>({
-  id: 'core.scheduler',
-});
+export type LogMeta = { [name: string]: unknown };
+
+/**
+ * A service that provides a logging facility.
+ *
+ * @public
+ */
+export interface LoggerService {
+  error(message: string, meta?: Error | LogMeta): void;
+  warn(message: string, meta?: Error | LogMeta): void;
+  info(message: string, meta?: Error | LogMeta): void;
+  debug(message: string, meta?: Error | LogMeta): void;
+
+  child(meta: LogMeta): LoggerService;
+}

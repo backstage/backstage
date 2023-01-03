@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-
 /**
  * @public
  */
 export interface PluginMetadataService {
   getId(): string;
 }
-
-/**
- * @public
- */
-export const pluginMetadataServiceRef = createServiceRef<PluginMetadataService>(
-  {
-    id: 'core.plugin-metadata',
-  },
-);

@@ -14,28 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
+import { PluginDatabaseManager } from '@backstage/backend-common';
 
-/**
- * @public
- */
-export type LogMeta = { [name: string]: unknown };
-
-/**
- * @public
- */
-export interface LoggerService {
-  error(message: string, meta?: Error | LogMeta): void;
-  warn(message: string, meta?: Error | LogMeta): void;
-  info(message: string, meta?: Error | LogMeta): void;
-  debug(message: string, meta?: Error | LogMeta): void;
-
-  child(meta: LogMeta): LoggerService;
-}
-
-/**
- * @public
- */
-export const loggerServiceRef = createServiceRef<LoggerService>({
-  id: 'core.logger',
-});
+/** @public */
+export interface DatabaseService extends PluginDatabaseManager {}

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-
 /**
  * The DiscoveryService is used to provide a mechanism for backend
  * plugins to discover the endpoints for itself or other backend plugins.
@@ -30,7 +28,7 @@ import { createServiceRef } from '../system/types';
  *
  * @public
  */
-export type DiscoveryService = {
+export interface DiscoveryService {
   /**
    * Returns the internal HTTP base URL for a given plugin, without a trailing slash.
    *
@@ -62,11 +60,4 @@ export type DiscoveryService = {
    * like `https://backstage.example.com/api/catalog`
    */
   getExternalBaseUrl(pluginId: string): Promise<string>;
-};
-
-/**
- * @public
- */
-export const discoveryServiceRef = createServiceRef<DiscoveryService>({
-  id: 'core.discovery',
-});
+}

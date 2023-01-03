@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
-import { TokenManager } from '@backstage/backend-common';
-
-/** @public */
-export type TokenManagerService = TokenManager;
+import { Handler } from 'express';
 
 /**
  * @public
  */
-export const tokenManagerServiceRef = createServiceRef<TokenManagerService>({
-  id: 'core.tokenManager',
-});
+export interface HttpRouterService {
+  use(handler: Handler): void;
+}

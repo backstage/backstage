@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-import * as coreServices from './coreServices';
-
-export { coreServices };
-export type { CacheService } from './cacheServiceRef';
-export type { ConfigService } from './configServiceRef';
-export type { DatabaseService } from './databaseServiceRef';
-export type { DiscoveryService } from './discoveryServiceRef';
-export type { HttpRouterService } from './httpRouterServiceRef';
+export { coreServices } from './coreServices';
+export type { CacheService } from './CacheService';
+export type { ConfigService } from './ConfigService';
+export type { DatabaseService } from './DatabaseService';
+export type { DiscoveryService } from './DiscoveryService';
+export type { HttpRouterService } from './HttpRouterService';
 export type {
   LifecycleService,
   LifecycleServiceShutdownHook,
-} from './lifecycleServiceRef';
-export type { LoggerService, LogMeta } from './loggerServiceRef';
-export type { PermissionsService } from './permissionsServiceRef';
-export type { PluginMetadataService } from './pluginMetadataServiceRef';
-export type { RootLifecycleService } from './rootLifecycleServiceRef';
-export type { RootLoggerService } from './rootLoggerServiceRef';
-export type { SchedulerService } from './schedulerServiceRef';
-export type { TokenManagerService } from './tokenManagerServiceRef';
+} from './LifecycleService';
+export type { LoggerService, LogMeta } from './LoggerService';
+export type { PermissionsService } from './PermissionsService';
+export type { PluginMetadataService } from './PluginMetadataService';
+export type { RootLifecycleService } from './RootLifecycleService';
+export type { RootLoggerService } from './RootLoggerService';
+export type { SchedulerService } from './SchedulerService';
+export type { TokenManagerService } from './TokenManagerService';
 export type {
   ReadTreeOptions,
   ReadTreeResponse,
@@ -44,4 +42,4 @@ export type {
   SearchResponse,
   SearchResponseFile,
   UrlReaderService,
-} from './urlReaderServiceRef';
+} from './UrlReaderService';
