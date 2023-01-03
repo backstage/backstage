@@ -29,7 +29,7 @@ const examples = [
         {
           action: id,
           id: 'write-debug-line',
-          name: 'Write log line',
+          name: 'Write "Hello Backstage!" log line',
           input: {
             message: 'Hello Backstage!',
           },
@@ -43,8 +43,8 @@ const examples = [
       steps: [
         {
           action: id,
-          id: 'write-debug-line',
-          name: 'Write log line',
+          id: 'write-workspace-directory',
+          name: 'List the workspace directory',
           input: {
             listWorkspace: true,
           },

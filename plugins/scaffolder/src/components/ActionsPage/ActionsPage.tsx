@@ -44,7 +44,6 @@ import {
   Header,
   Page,
   ErrorPage,
-  Table as BackstageTable,
   TableColumn,
   CodeSnippet,
 } from '@backstage/core-components';
@@ -76,28 +75,33 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const examplesColumns: TableColumn<ActionExample>[] = [
-  {
-    title: 'Description',
-    field: 'description',
-    width: '20%',
-  },
-  {
-    title: 'Example',
-    render: ({ example }) => {
-      return (
-        <Grid>
-          <CodeSnippet
-            text={example}
-            showLineNumbers
-            showCopyCodeButton
-            language="JavaScript"
-          />
-        </Grid>
-      );
-    },
-  },
-];
+const ExamplesTable = (props: { examples: ActionExample[] }) => {
+  return (
+    <Grid container>
+      {props.examples.map(example => {
+        return (
+          <Grid container>
+            <Grid lg={3}>
+              <Box padding={4}>
+                <Typography>{example.description}</Typography>
+              </Box>
+            </Grid>
+            <Grid lg={9}>
+              <Box padding={1}>
+                <CodeSnippet
+                  text={example.example}
+                  showLineNumbers
+                  showCopyCodeButton
+                  language="JavaScript"
+                />
+              </Box>
+            </Grid>
+          </Grid>
+        );
+      })}
+    </Grid>
+  );
+};
 
 export const ActionsPage = () => {
   const api = useApi(scaffolderApiRef);
@@ -219,19 +223,7 @@ export const ActionsPage = () => {
             </AccordionSummary>
             <AccordionDetails>
               <Box pb={2}>
-                <BackstageTable
-                  data={action.examples}
-                  columns={examplesColumns}
-                  options={{
-                    search: false,
-                    showTitle: false,
-                    toolbar: false,
-                    loadingType: 'linear',
-                    header: true,
-                    padding: 'dense',
-                    paging: false,
-                  }}
-                />
+                <ExamplesTable examples={action.examples} />
               </Box>
             </AccordionDetails>
           </Accordion>
