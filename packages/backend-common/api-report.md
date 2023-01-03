@@ -30,6 +30,7 @@ import { KubeConfig } from '@kubernetes/client-node';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
 import { MergeResult } from 'isomorphic-git';
+import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
@@ -530,11 +531,7 @@ export interface PluginDatabaseManager {
   };
 }
 
-// @public
-export type PluginEndpointDiscovery = {
-  getBaseUrl(pluginId: string): Promise<string>;
-  getExternalBaseUrl(pluginId: string): Promise<string>;
-};
+export { PluginEndpointDiscovery };
 
 // @public
 export type ReaderFactory = (options: {
