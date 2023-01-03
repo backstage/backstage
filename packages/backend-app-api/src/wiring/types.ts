@@ -63,9 +63,25 @@ export interface EnumerableServiceHolder extends ServiceHolder {
 export function createSpecializedBackend(
   options: CreateSpecializedBackendOptions,
 ): Backend {
-  return new BackstageBackend(
-    options.services.map(s => (typeof s === 'function' ? s() : s)),
+  const services = options.services.map(sf =>
+    typeof sf === 'function' ? sf() : sf,
   );
+
+  const exists = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const { service } of services) {
+    if (exists.has(service.id)) {
+      duplicates.add(service.id);
+    } else {
+      exists.add(service.id);
+    }
+  }
+  if (duplicates.size > 0) {
+    const ids = Array.from(duplicates).join(', ');
+    throw new Error(`Duplicate service implementations provided for ${ids}`);
+  }
+
+  return new BackstageBackend(services);
 }
 
 /**

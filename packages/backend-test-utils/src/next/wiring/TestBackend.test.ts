@@ -64,33 +64,34 @@ describe('TestBackend', () => {
     const extensionPoint3 = createExtensionPoint<Obj>({ id: 'b3' });
     const extensionPoint4 = createExtensionPoint<Obj>({ id: 'b4' });
     const extensionPoint5 = createExtensionPoint<Obj>({ id: 'b5' });
-    await startTestBackend({
-      services: [
-        // @ts-expect-error
-        [extensionPoint1, { a: 'a' }],
-        [serviceRef, { a: 'a' }],
-        [serviceRef, { a: 'a', b: 'b' }],
-        // @ts-expect-error
-        [serviceRef, { c: 'c' }],
-        // @ts-expect-error
-        [serviceRef, { a: 'a', c: 'c' }],
-        // @ts-expect-error
-        [serviceRef, { a: 'a', b: 'b', c: 'c' }],
-      ],
-      extensionPoints: [
-        // @ts-expect-error
-        [serviceRef, { a: 'a' }],
-        [extensionPoint1, { a: 'a' }],
-        [extensionPoint2, { a: 'a', b: 'b' }],
-        // @ts-expect-error
-        [extensionPoint3, { c: 'c' }],
-        // @ts-expect-error
-        [extensionPoint4, { a: 'a', c: 'c' }],
-        // @ts-expect-error
-        [extensionPoint5, { a: 'a', b: 'b', c: 'c' }],
-      ],
-    });
-    expect(1).toBe(1);
+    await expect(
+      startTestBackend({
+        services: [
+          // @ts-expect-error
+          [extensionPoint1, { a: 'a' }],
+          [serviceRef, { a: 'a' }],
+          [serviceRef, { a: 'a', b: 'b' }],
+          // @ts-expect-error
+          [serviceRef, { c: 'c' }],
+          // @ts-expect-error
+          [serviceRef, { a: 'a', c: 'c' }],
+          // @ts-expect-error
+          [serviceRef, { a: 'a', b: 'b', c: 'c' }],
+        ],
+        extensionPoints: [
+          // @ts-expect-error
+          [serviceRef, { a: 'a' }],
+          [extensionPoint1, { a: 'a' }],
+          [extensionPoint2, { a: 'a', b: 'b' }],
+          // @ts-expect-error
+          [extensionPoint3, { c: 'c' }],
+          // @ts-expect-error
+          [extensionPoint4, { a: 'a', c: 'c' }],
+          // @ts-expect-error
+          [extensionPoint5, { a: 'a', b: 'b', c: 'c' }],
+        ],
+      }),
+    ).rejects.toThrow();
   });
 
   it('should start the test backend', async () => {
