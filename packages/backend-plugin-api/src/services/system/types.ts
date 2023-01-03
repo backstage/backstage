@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { FactoryFunctionWithOptions, MaybeOptions } from '../../types';
+
 /**
  * TODO
  *
@@ -125,16 +127,14 @@ type ServiceRefsToInstances<
   }[keyof T]]: T[name] extends ServiceRef<infer TImpl> ? TImpl : never;
 };
 
-/**
- * @public
- */
-export function createServiceFactory<
+/** @public */
+export interface ServiceFactoryConfig<
   TService,
   TScope extends 'root' | 'plugin',
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
-  TOpts extends object | undefined = undefined,
->(config: {
+  TOpts extends MaybeOptions = undefined,
+> {
   service: ServiceRef<TService, TScope>;
   deps: TDeps;
   factory(
@@ -143,9 +143,20 @@ export function createServiceFactory<
   ): TScope extends 'root'
     ? Promise<TImpl>
     : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
-}): undefined extends TOpts
-  ? (options?: TOpts) => ServiceFactory<TService>
-  : (options: TOpts) => ServiceFactory<TService> {
+}
+
+/**
+ * @public
+ */
+export function createServiceFactory<
+  TService,
+  TScope extends 'root' | 'plugin',
+  TImpl extends TService,
+  TDeps extends { [name in string]: ServiceRef<unknown> },
+  TOpts extends MaybeOptions = undefined,
+>(
+  config: ServiceFactoryConfig<TService, TScope, TImpl, TDeps, TOpts>,
+): FactoryFunctionWithOptions<ServiceFactory<TService>, TOpts> {
   return (options?: TOpts) =>
     ({
       scope: config.service.scope,
