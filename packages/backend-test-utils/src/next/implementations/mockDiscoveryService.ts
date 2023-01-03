@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { SingleHostDiscovery } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduler } from '@backstage/backend-tasks';
+import { ConfigReader } from '@backstage/config';
 
 /** @public */
-export const schedulerFactory = createServiceFactory({
-  service: coreServices.scheduler,
-  deps: {
-    config: coreServices.config,
-    plugin: coreServices.pluginMetadata,
-    databaseManager: coreServices.database,
-    logger: coreServices.logger,
-  },
-  async factory({ config }) {
-    const taskScheduler = TaskScheduler.fromConfig(config);
-    return async ({ plugin, databaseManager, logger }) => {
-      return taskScheduler.forPlugin(plugin.getId(), {
-        databaseManager,
-        logger: loggerToWinstonLogger(logger),
-      });
+export const mockDiscoveryFactory = createServiceFactory({
+  service: coreServices.discovery,
+  deps: {},
+  async factory() {
+    // todo(blam): we want to grab the port from the httpRouter when that's available here
+    // to provide a better way to create our mockDiscoveryService.
+    const discovery = SingleHostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: { baseUrl: 'http://localhost:7000', listen: '0.0.0.0:7000' },
+      }),
+    );
+
+    return async () => {
+      return discovery;
     };
   },
 });

@@ -21,10 +21,7 @@ import {
   rootLifecycleFactory,
   loggerFactory,
   rootLoggerFactory,
-  configFactory,
-  discoveryFactory,
   cacheFactory,
-  databaseFactory,
   permissionsFactory,
   schedulerFactory,
   urlReaderFactory,
@@ -38,7 +35,12 @@ import {
   ExtensionPoint,
 } from '@backstage/backend-plugin-api';
 
-import { mockTokenManagerFactory } from '../implementations';
+import {
+  mockConfigFactory,
+  mockDatabaseFactory,
+  mockTokenManagerFactory,
+  mockDiscoveryFactory,
+} from '../implementations';
 
 /** @alpha */
 export interface TestBackendOptions<
@@ -66,9 +68,9 @@ export interface TestBackendOptions<
 
 const defaultServiceFactories = [
   cacheFactory(),
-  configFactory(),
-  databaseFactory(),
-  discoveryFactory(),
+  mockConfigFactory(),
+  mockDatabaseFactory(),
+  mockDiscoveryFactory(),
   lifecycleFactory(),
   loggerFactory(),
   permissionsFactory(),

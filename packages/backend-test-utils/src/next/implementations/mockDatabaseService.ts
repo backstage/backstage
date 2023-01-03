@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
+import { DatabaseManager } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduler } from '@backstage/backend-tasks';
+import { ConfigReader } from '@backstage/config';
 
 /** @public */
-export const schedulerFactory = createServiceFactory({
-  service: coreServices.scheduler,
+export const mockDatabaseFactory = createServiceFactory({
+  service: coreServices.database,
   deps: {
     config: coreServices.config,
     plugin: coreServices.pluginMetadata,
-    databaseManager: coreServices.database,
-    logger: coreServices.logger,
   },
   async factory({ config }) {
-    const taskScheduler = TaskScheduler.fromConfig(config);
-    return async ({ plugin, databaseManager, logger }) => {
-      return taskScheduler.forPlugin(plugin.getId(), {
-        databaseManager,
-        logger: loggerToWinstonLogger(logger),
-      });
+    const databaseManager = config.getOptional('backend.database')
+      ? DatabaseManager.fromConfig(config)
+      : DatabaseManager.fromConfig(
+          new ConfigReader({
+            backend: {
+              database: { client: 'better-sqlite', connection: ':memory:' },
+            },
+          }),
+        );
+
+    return async ({ plugin }) => {
+      return databaseManager.forPlugin(plugin.getId());
     };
   },
 });

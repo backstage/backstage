@@ -14,3 +14,6 @@
  * limitations under the License.
  */
 export { mockTokenManagerFactory } from './mockTokenManagerService';
+export { mockConfigFactory } from './mockConfigService';
+export { mockDatabaseFactory } from './mockDatabaseService';
+export { mockDiscoveryFactory } from './mockDiscoveryService';

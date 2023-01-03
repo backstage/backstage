@@ -17,26 +17,14 @@
 import {
   coreServices,
   createServiceFactory,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduler } from '@backstage/backend-tasks';
+import { AppConfig, ConfigReader } from '@backstage/config';
 
 /** @public */
-export const schedulerFactory = createServiceFactory({
-  service: coreServices.scheduler,
-  deps: {
-    config: coreServices.config,
-    plugin: coreServices.pluginMetadata,
-    databaseManager: coreServices.database,
-    logger: coreServices.logger,
-  },
-  async factory({ config }) {
-    const taskScheduler = TaskScheduler.fromConfig(config);
-    return async ({ plugin, databaseManager, logger }) => {
-      return taskScheduler.forPlugin(plugin.getId(), {
-        databaseManager,
-        logger: loggerToWinstonLogger(logger),
-      });
-    };
+export const mockConfigFactory = createServiceFactory({
+  service: coreServices.config,
+  deps: {},
+  async factory(_, options?: { config?: AppConfig }) {
+    return new ConfigReader(options?.config);
   },
 });
