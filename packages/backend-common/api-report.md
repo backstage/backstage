@@ -30,23 +30,12 @@ import { KubeConfig } from '@kubernetes/client-node';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
 import { MergeResult } from 'isomorphic-git';
-import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
-import { ReadTreeOptions } from '@backstage/backend-plugin-api';
-import { ReadTreeResponse } from '@backstage/backend-plugin-api';
-import { ReadTreeResponseDirOptions } from '@backstage/backend-plugin-api';
-import { ReadTreeResponseFile } from '@backstage/backend-plugin-api';
-import { ReadUrlOptions } from '@backstage/backend-plugin-api';
-import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
-import { SearchOptions } from '@backstage/backend-plugin-api';
-import { SearchResponse } from '@backstage/backend-plugin-api';
-import { SearchResponseFile } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
-import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
@@ -531,7 +520,11 @@ export interface PluginDatabaseManager {
   };
 }
 
-export { PluginEndpointDiscovery };
+// @public
+export type PluginEndpointDiscovery = {
+  getBaseUrl(pluginId: string): Promise<string>;
+  getExternalBaseUrl(pluginId: string): Promise<string>;
+};
 
 // @public
 export type ReaderFactory = (options: {
@@ -540,11 +533,30 @@ export type ReaderFactory = (options: {
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
-export { ReadTreeOptions };
+// @public
+export type ReadTreeOptions = {
+  filter?(
+    path: string,
+    info?: {
+      size: number;
+    },
+  ): boolean;
+  etag?: string;
+  signal?: AbortSignal;
+};
 
-export { ReadTreeResponse };
+// @public
+export type ReadTreeResponse = {
+  files(): Promise<ReadTreeResponseFile[]>;
+  archive(): Promise<NodeJS.ReadableStream>;
+  dir(options?: ReadTreeResponseDirOptions): Promise<string>;
+  etag: string;
+};
 
-export { ReadTreeResponseDirOptions };
+// @public
+export type ReadTreeResponseDirOptions = {
+  targetDir?: string;
+};
 
 // @public
 export interface ReadTreeResponseFactory {
@@ -575,11 +587,24 @@ export type ReadTreeResponseFactoryOptions = {
   ) => boolean;
 };
 
-export { ReadTreeResponseFile };
+// @public
+export type ReadTreeResponseFile = {
+  path: string;
+  content(): Promise<Buffer>;
+};
 
-export { ReadUrlOptions };
+// @public
+export type ReadUrlOptions = {
+  etag?: string;
+  signal?: AbortSignal;
+};
 
-export { ReadUrlResponse };
+// @public
+export type ReadUrlResponse = {
+  buffer(): Promise<Buffer>;
+  stream?(): Readable;
+  etag?: string;
+};
 
 // @public
 export class ReadUrlResponseFactory {
@@ -627,11 +652,23 @@ export type RunContainerOptions = {
   pullImage?: boolean;
 };
 
-export { SearchOptions };
+// @public
+export type SearchOptions = {
+  etag?: string;
+  signal?: AbortSignal;
+};
 
-export { SearchResponse };
+// @public
+export type SearchResponse = {
+  files: SearchResponseFile[];
+  etag: string;
+};
 
-export { SearchResponseFile };
+// @public
+export type SearchResponseFile = {
+  url: string;
+  content(): Promise<Buffer>;
+};
 
 // @public
 export class ServerTokenManager implements TokenManager {
@@ -718,7 +755,13 @@ export interface TokenManager {
   }>;
 }
 
-export { UrlReader };
+// @public
+export type UrlReader = {
+  read(url: string): Promise<Buffer>;
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+};
 
 // @public
 export type UrlReaderPredicateTuple = {

@@ -178,9 +178,7 @@ export class GitHubOrgEntityProvider extends GithubOrgEntityProvider {
 }
 
 // @public
-export class GithubOrgEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+export class GithubOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
     orgUrl: string;
@@ -199,11 +197,7 @@ export class GithubOrgEntityProvider
   ): GithubOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
-  // (undocumented)
-  onEvent(params: EventParams): Promise<void>;
   read(options?: { logger?: Logger }): Promise<void>;
-  // (undocumented)
-  supportsEventTopics(): string[];
 }
 
 // @public @deprecated (undocumented)

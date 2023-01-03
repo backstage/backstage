@@ -25,7 +25,7 @@ export const ApolloExplorerPage: (props: {
           displayOptions: {
             docsPanelState?: 'closed' | 'open' | undefined;
             showHeadersAndEnvVars?: boolean | undefined;
-            theme?: 'dark' | 'light' | undefined;
+            theme?: 'light' | 'dark' | undefined;
           };
         }
       | undefined;

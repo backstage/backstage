@@ -162,17 +162,6 @@ export type EntityFilterQuery =
   | Record<string, string | symbol | (string | symbol)[]>;
 
 // @public
-export type EntityOrderQuery =
-  | {
-      field: string;
-      order: 'asc' | 'desc';
-    }
-  | Array<{
-      field: string;
-      order: 'asc' | 'desc';
-    }>;
-
-// @public
 export interface GetEntitiesByRefsRequest {
   entityRefs: string[];
   fields?: EntityFieldsQuery | undefined;
@@ -190,7 +179,6 @@ export interface GetEntitiesRequest {
   filter?: EntityFilterQuery;
   limit?: number;
   offset?: number;
-  order?: EntityOrderQuery;
 }
 
 // @public
