@@ -1,5 +1,17 @@
 # @backstage/plugin-app-backend
 
+## 0.3.40-next.0
+
+### Patch Changes
+
+- b4ffa3bd91: The warning for missing app contents is now logged as an error instead, but only in production.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/types@1.0.2
+
 ## 0.3.39
 
 ### Patch Changes

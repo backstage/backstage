@@ -12,7 +12,6 @@ import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Readable } from 'stream';
 import { TokenManager } from '@backstage/backend-common';
@@ -169,11 +168,14 @@ export type DatabaseService = PluginDatabaseManager;
 // @public (undocumented)
 const databaseServiceRef: ServiceRef<PluginDatabaseManager, 'plugin'>;
 
-// @public (undocumented)
-export type DiscoveryService = PluginEndpointDiscovery;
+// @public
+export type DiscoveryService = {
+  getBaseUrl(pluginId: string): Promise<string>;
+  getExternalBaseUrl(pluginId: string): Promise<string>;
+};
 
 // @public (undocumented)
-const discoveryServiceRef: ServiceRef<PluginEndpointDiscovery, 'plugin'>;
+const discoveryServiceRef: ServiceRef<DiscoveryService, 'plugin'>;
 
 // @public
 export type ExtensionPoint<T> = {

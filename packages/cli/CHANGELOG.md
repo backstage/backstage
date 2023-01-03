@@ -1,5 +1,19 @@
 # @backstage/cli
 
+## 0.22.1-next.1
+
+### Patch Changes
+
+- db2e137744: Removed unnecessary usage of `ThemeProvider` from the `ExampleComponent` test in the plugin template.
+- 4b572126f1: Add experimental environment variable to enable caching for production builds.
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
 ## 0.22.1-next.0
 
 ### Patch Changes

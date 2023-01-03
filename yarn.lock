@@ -3795,7 +3795,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/config@^1.0.3, @backstage/config@^1.0.5, @backstage/config@workspace:^, @backstage/config@workspace:packages/config":
+"@backstage/config@npm:^1.0.3, @backstage/config@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@backstage/config@npm:1.0.5"
+  dependencies:
+    "@backstage/types": ^1.0.2
+    lodash: ^4.17.21
+  checksum: 87cef5d3de2c211d57b12d575c6fc81af98e64d3763be0b6d954e979ee9ec19a2f6fd963578b2152154b799622d3e7f45a132c928451008576d75aaaa63eb69c
+  languageName: node
+  linkType: hard
+
+"@backstage/config@workspace:^, @backstage/config@workspace:packages/config":
   version: 0.0.0-use.local
   resolution: "@backstage/config@workspace:packages/config"
   dependencies:
@@ -4013,7 +4023,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@^1.0.7, @backstage/core-plugin-api@^1.1.0, @backstage/core-plugin-api@^1.2.0, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
+"@backstage/core-plugin-api@npm:^1.0.7, @backstage/core-plugin-api@npm:^1.1.0, @backstage/core-plugin-api@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@backstage/core-plugin-api@npm:1.2.0"
+  dependencies:
+    "@backstage/config": ^1.0.5
+    "@backstage/types": ^1.0.2
+    "@backstage/version-bridge": ^1.0.3
+    history: ^5.0.0
+    prop-types: ^15.7.2
+    zen-observable: ^0.10.0
+  peerDependencies:
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 6d768e4e7df34a3e993a504207c2b5ffd5d1edd0f4243d66b267e1d2a66d86e2640d93b5efed3571e0430e0d6c01d14d7e055521193a9d190df320cd9b731047
+  languageName: node
+  linkType: hard
+
+"@backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-plugin-api@workspace:packages/core-plugin-api"
   dependencies:
@@ -4174,7 +4202,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration@^1.4.1, @backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
+"@backstage/integration@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@backstage/integration@npm:1.4.1"
+  dependencies:
+    "@backstage/config": ^1.0.5
+    "@backstage/errors": ^1.1.4
+    "@octokit/auth-app": ^4.0.0
+    "@octokit/rest": ^19.0.3
+    cross-fetch: ^3.1.5
+    git-url-parse: ^13.0.0
+    lodash: ^4.17.21
+    luxon: ^3.0.0
+  checksum: 2ff495e4b933e33be40c147b3279d868a7a45f0000c8a608f38261f683a7d0c45a54528f1f84ce0d8f2a28bb79d176e88aba71f4335f274e4d5faf36d93b71b4
+  languageName: node
+  linkType: hard
+
+"@backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
   version: 0.0.0-use.local
   resolution: "@backstage/integration@workspace:packages/integration"
   dependencies:
@@ -7013,7 +7057,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-common@^0.7.2, @backstage/plugin-permission-common@workspace:^, @backstage/plugin-permission-common@workspace:plugins/permission-common":
+"@backstage/plugin-permission-common@npm:^0.7.2":
+  version: 0.7.2
+  resolution: "@backstage/plugin-permission-common@npm:0.7.2"
+  dependencies:
+    "@backstage/config": ^1.0.5
+    "@backstage/errors": ^1.1.4
+    "@backstage/types": ^1.0.2
+    cross-fetch: ^3.1.5
+    uuid: ^8.0.0
+    zod: ~3.18.0
+  checksum: a9247d57004fe5f811c60446a1db366cd7c7b7776bd8b9ee2e7da819e09fd1e24dd0c12f141cc2db2069c127096b2b85e8f406f6300354beca123a5816fa36e7
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-permission-common@workspace:^, @backstage/plugin-permission-common@workspace:plugins/permission-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-common@workspace:plugins/permission-common"
   dependencies:
@@ -7050,7 +7108,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-react@^0.4.8, @backstage/plugin-permission-react@workspace:^, @backstage/plugin-permission-react@workspace:plugins/permission-react":
+"@backstage/plugin-permission-react@npm:^0.4.8":
+  version: 0.4.8
+  resolution: "@backstage/plugin-permission-react@npm:0.4.8"
+  dependencies:
+    "@backstage/config": ^1.0.5
+    "@backstage/core-plugin-api": ^1.2.0
+    "@backstage/plugin-permission-common": ^0.7.2
+    cross-fetch: ^3.1.5
+    react-use: ^17.2.4
+    swr: ^1.1.2
+  peerDependencies:
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: f1ce98174e309327ff4e9de8f9a6f9aada3ab50edcb1774cfe03332f245f6fff4fc1c685fb0c0bb86baa38964e92a6332f705a6650c767a6f3951a034f036dfe
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-permission-react@workspace:^, @backstage/plugin-permission-react@workspace:plugins/permission-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-react@workspace:plugins/permission-react"
   dependencies:
@@ -7528,7 +7604,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-common@^1.2.0, @backstage/plugin-search-common@workspace:^, @backstage/plugin-search-common@workspace:plugins/search-common":
+"@backstage/plugin-search-common@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@backstage/plugin-search-common@npm:1.2.0"
+  dependencies:
+    "@backstage/plugin-permission-common": ^0.7.2
+    "@backstage/types": ^1.0.2
+  checksum: 8b8a4ecc3aad703049c1acf15ed132e609e9d09752eec42353568c446905db48ff18c885d8b2aaa5a505d41e070222d475239451b3b7c07c5146c567a57fe198
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-search-common@workspace:^, @backstage/plugin-search-common@workspace:plugins/search-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-common@workspace:plugins/search-common"
   dependencies:
