@@ -1,5 +1,38 @@
 # @backstage/catalog-client
 
+## 1.3.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- f75bf76330: Implemented support for the `order` directive on `getEntities`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/errors@1.1.4
+
+## 1.2.0
+
+### Minor Changes
+
+- 00d90b520a: **BREAKING PRODUCERS**: Added a new `getEntitiesByRefs` endpoint to `CatalogApi`, for efficient batch fetching of entities by ref.
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/catalog-model@1.1.4
+
 ## 1.2.0-next.1
 
 ### Patch Changes

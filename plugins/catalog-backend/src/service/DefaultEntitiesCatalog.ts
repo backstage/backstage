@@ -97,7 +97,7 @@ function addCondition(
   // make a lot of sense. However, it had abysmal performance on sqlite
   // when datasets grew large, so we're using IN instead.
   const matchQuery = db<DbSearchRow>('search')
-    .select(entityIdField)
+    .select('search.entity_id')
     .where({ key: filter.key.toLowerCase() })
     .andWhere(function keyFilter() {
       if (filter.values) {
@@ -178,14 +178,48 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     let entitiesQuery =
       db<DbFinalEntitiesRow>('final_entities').select('final_entities.*');
+
+    request?.order?.forEach(({ field }, index) => {
+      const alias = `order_${index}`;
+      entitiesQuery = entitiesQuery.leftOuterJoin(
+        { [alias]: 'search' },
+        function search(inner) {
+          inner
+            .on(`${alias}.entity_id`, 'final_entities.entity_id')
+            .andOn(`${alias}.key`, db.raw('?', [field]));
+        },
+      );
+    });
+
+    entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
+
     if (request?.filter) {
-      entitiesQuery = parseFilter(request.filter, entitiesQuery, db);
+      entitiesQuery = parseFilter(
+        request.filter,
+        entitiesQuery,
+        db,
+        false,
+        'final_entities.entity_id',
+      );
     }
 
-    // TODO: move final_entities to use entity_ref
-    entitiesQuery = entitiesQuery
-      .whereNotNull('final_entities.final_entity')
-      .orderBy('entity_id', 'asc');
+    request?.order?.forEach(({ order }, index) => {
+      if (db.client.config.client === 'pg') {
+        // pg correctly orders by the column value and handling nulls in one go
+        entitiesQuery = entitiesQuery.orderBy([
+          { column: `order_${index}.value`, order, nulls: 'last' },
+        ]);
+      } else {
+        // sqlite and mysql translate the above statement ONLY into "order by (value is null) asc"
+        // no matter what the order is, for some reason, so we have to manually add back the statement
+        // that translates to "order by value <order>" while avoiding to give an order
+        entitiesQuery = entitiesQuery.orderBy([
+          { column: `order_${index}.value`, order: undefined, nulls: 'last' },
+          { column: `order_${index}.value`, order },
+        ]);
+      }
+    });
+    entitiesQuery = entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
 
     const { limit, offset } = parsePagination(request?.pagination);
     if (limit !== undefined) {

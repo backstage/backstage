@@ -86,7 +86,9 @@ export const TechDocsBuildLogsDrawerContent = ({
           <Close />
         </IconButton>
       </Grid>
-      <LogViewer text={logText} classes={{ root: classes.logs }} />
+      <Grid item xs>
+        <LogViewer text={logText} classes={{ root: classes.logs }} />
+      </Grid>
     </Grid>
   );
 };

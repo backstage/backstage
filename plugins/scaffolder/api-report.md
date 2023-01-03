@@ -11,7 +11,6 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import type { ErrorTransformer } from '@rjsf/utils';
 import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
@@ -19,7 +18,8 @@ import { FieldProps } from '@rjsf/core';
 import { FieldProps as FieldProps_2 } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/core';
 import { FieldValidation as FieldValidation_2 } from '@rjsf/utils';
-import type { FormProps } from '@rjsf/core';
+import type { FormProps as FormProps_2 } from '@rjsf/core';
+import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
@@ -88,6 +88,10 @@ export const EntityPickerFieldExtension: FieldExtensionComponent<
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    catalogFilter?:
+      | Record<string, string | string[]>
+      | Record<string, string | string[]>[]
+      | undefined;
   }
 >;
 
@@ -99,6 +103,10 @@ export const EntityPickerFieldSchema: FieldSchema<
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    catalogFilter?:
+      | Record<string, string | string[]>
+      | Record<string, string | string[]>[]
+      | undefined;
   }
 >;
 
@@ -167,6 +175,12 @@ export interface FieldSchema<TReturn, TUiOptions> {
   readonly uiOptionsType: TUiOptions;
 }
 
+// @alpha
+export type FormProps = Pick<
+  FormProps_3,
+  'transformErrors' | 'noHtml5Validate'
+>;
+
 // @public
 export type LayoutComponent<_TInputProps> = () => null;
 
@@ -179,7 +193,7 @@ export interface LayoutOptions<P = any> {
 }
 
 // @public
-export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
+export type LayoutTemplate<T = any> = FormProps_2<T>['ObjectFieldTemplate'];
 
 // @public
 export type ListActionsResponse = Array<{
@@ -264,7 +278,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React_2.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
-  transformErrors?: ErrorTransformer;
+  FormProps?: FormProps;
 };
 
 // @alpha
@@ -310,6 +324,10 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent<
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    catalogFilter?:
+      | Record<string, string | string[]>
+      | Record<string, string | string[]>[]
+      | undefined;
   }
 >;
 
@@ -320,6 +338,10 @@ export const OwnerPickerFieldSchema: FieldSchema<
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    catalogFilter?:
+      | Record<string, string | string[]>
+      | Record<string, string | string[]>[]
+      | undefined;
   }
 >;
 

@@ -1,5 +1,25 @@
 # @backstage/plugin-sonarqube-backend
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+
+## 0.1.4
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 3dee2f5ad0: Added links to the frontend and backend plugins in the readme.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/config@1.0.5
+
 ## 0.1.4-next.3
 
 ### Patch Changes

@@ -199,7 +199,7 @@ export const SortView = () => {
         bazaarProjects={getSearchResults() || []}
         fetchBazaarProjects={fetchBazaarProjects}
         catalogEntities={unlinkedCatalogEntities || []}
-        height="13rem"
+        height="large"
       />
       <Content noPadding className={classes.container} />
     </Content>

@@ -26,18 +26,18 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { withTheme } from '@rjsf/core-v5';
+import { type IChangeEvent, withTheme } from '@rjsf/core-v5';
 import { ErrorSchema, FieldValidation } from '@rjsf/utils';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { NextFieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
-import validator from '@rjsf/validator-ajv8';
+import validator from '@rjsf/validator-ajv6';
 import { selectedTemplateRouteRef } from '../../../routes';
-import type { ErrorTransformer } from '@rjsf/utils';
-import { getDefaultFormState } from '@rjsf/utils';
+import { useFormData } from './useFormData';
+import { FormProps } from '../../types';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -54,12 +54,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export interface StepperProps {
+export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-  transformErrors?: ErrorTransformer;
-}
+  FormProps?: FormProps;
+};
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
 // which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
@@ -72,7 +72,8 @@ export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
-  const [formState, setFormState] = useState<Record<string, JsonValue>>({});
+  const [formState, setFormState] = useFormData();
+
   const [errors, setErrors] = useState<
     undefined | Record<string, FieldValidation>
   >();
@@ -100,6 +101,12 @@ export const Stepper = (props: StepperProps) => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
+  const handleChange = useCallback(
+    (e: IChangeEvent) =>
+      setFormState(current => ({ ...current, ...e.formData })),
+    [setFormState],
+  );
+
   const handleNext = async ({
     formData,
   }: {
@@ -109,18 +116,7 @@ export const Stepper = (props: StepperProps) => {
     // to display it's own loading? Or should we grey out the entire form.
     setErrors(undefined);
 
-    const schema = steps[activeStep]?.schema;
-    const rootSchema = steps[activeStep]?.mergedSchema;
-
-    const newFormData = getDefaultFormState(
-      validator,
-      schema,
-      formData,
-      rootSchema,
-      true,
-    );
-
-    const returnedValidation = await validation(newFormData);
+    const returnedValidation = await validation(formData);
 
     const hasErrors = Object.values(returnedValidation).some(
       i => i.__errors?.length,
@@ -136,7 +132,7 @@ export const Stepper = (props: StepperProps) => {
         return stepNum;
       });
     }
-    setFormState(current => ({ ...current, ...newFormData }));
+    setFormState(current => ({ ...current, ...formData }));
   };
 
   return (
@@ -163,7 +159,8 @@ export const Stepper = (props: StepperProps) => {
             onSubmit={handleNext}
             fields={extensions}
             showErrorList={false}
-            transformErrors={props.transformErrors}
+            onChange={handleChange}
+            {...(props.FormProps ?? {})}
           >
             <div className={styles.footer}>
               <Button

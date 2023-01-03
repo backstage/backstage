@@ -1,5 +1,23 @@
 # @backstage/backend-defaults
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 6cfd4d7073: Include implementations for the new `rootLifecycleServiceRef`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/backend-app-api@0.2.5-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- d6dbf1792b: Added `lifecycleFactory` to default service factories.
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.4
+  - @backstage/backend-plugin-api@0.2.0
+
 ## 0.1.4-next.3
 
 ### Patch Changes

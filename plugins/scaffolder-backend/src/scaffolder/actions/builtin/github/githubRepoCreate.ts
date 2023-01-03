@@ -49,6 +49,8 @@ export function createGithubRepoCreateAction(options: {
     gitAuthorEmail?: string;
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
+    squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
     requireCodeOwnerReviews?: boolean;
@@ -64,11 +66,11 @@ export function createGithubRepoCreateAction(options: {
     collaborators?: Array<
       | {
           user: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          access: string;
         }
       | {
           team: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          access: string;
         }
       | {
           /** @deprecated This field is deprecated in favor of team */
@@ -76,6 +78,9 @@ export function createGithubRepoCreateAction(options: {
           access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
         }
     >;
+    hasProjects?: boolean;
+    hasWiki?: boolean;
+    hasIssues?: boolean;
     token?: string;
     topics?: string[];
   }>({
@@ -100,9 +105,14 @@ export function createGithubRepoCreateAction(options: {
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           allowMergeCommit: inputProps.allowMergeCommit,
           allowSquashMerge: inputProps.allowSquashMerge,
+          squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
+          squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
           allowRebaseMerge: inputProps.allowRebaseMerge,
           allowAutoMerge: inputProps.allowAutoMerge,
           collaborators: inputProps.collaborators,
+          hasProjects: inputProps.hasProjects,
+          hasWiki: inputProps.hasWiki,
+          hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
         },
@@ -125,9 +135,14 @@ export function createGithubRepoCreateAction(options: {
         deleteBranchOnMerge = false,
         allowMergeCommit = true,
         allowSquashMerge = true,
+        squashMergeCommitTitle = 'COMMIT_OR_PR_TITLE',
+        squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,
         collaborators,
+        hasProjects = undefined,
+        hasWiki = undefined,
+        hasIssues = undefined,
         topics,
         token: providedToken,
       } = ctx.input;
@@ -156,10 +171,15 @@ export function createGithubRepoCreateAction(options: {
         deleteBranchOnMerge,
         allowMergeCommit,
         allowSquashMerge,
+        squashMergeCommitTitle,
+        squashMergeCommitMessage,
         allowRebaseMerge,
         allowAutoMerge,
         access,
         collaborators,
+        hasProjects,
+        hasWiki,
+        hasIssues,
         topics,
         ctx.logger,
       );

@@ -64,3 +64,23 @@ export async function listChangedFiles(ref: string) {
 
   return Array.from(new Set([...tracked, ...untracked]));
 }
+
+/**
+ * Returns the contents of a file at a specific ref.
+ */
+export async function readFileAtRef(path: string, ref: string) {
+  let showRef = ref;
+  try {
+    const [base] = await runGit('merge-base', 'HEAD', ref);
+    showRef = base;
+  } catch {
+    // silently fall back to using the ref directly if merge base is not available
+  }
+
+  const { stdout } = await execFile('git', ['show', `${showRef}:${path}`], {
+    shell: true,
+    cwd: paths.targetRoot,
+    maxBuffer: 1024 * 1024 * 50,
+  });
+  return stdout;
+}

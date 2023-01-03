@@ -32,7 +32,6 @@ const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
 
 describe('PlaceholderProcessor', () => {
   const reader: jest.Mocked<UrlReader> = {
-    read: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),
     readUrl: jest.fn(),
