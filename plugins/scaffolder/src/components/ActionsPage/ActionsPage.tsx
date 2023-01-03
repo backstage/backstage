@@ -44,7 +44,6 @@ import {
   Header,
   Page,
   ErrorPage,
-  TableColumn,
   CodeSnippet,
 } from '@backstage/core-components';
 import { ActionExample } from '../../types';
