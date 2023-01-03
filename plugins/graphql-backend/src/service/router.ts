@@ -18,37 +18,40 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { createApplication } from 'graphql-modules';
+import { Module } from 'graphql-modules';
 import { ApolloServer } from 'apollo-server-express';
-import { createModule as createCatalogModule } from '@backstage/plugin-catalog-graphql';
+import {
+  createGraphQLApp,
+  createLoader,
+  EnvelopPlugins,
+} from '@backstage/plugin-catalog-graphql';
 import { Config } from '@backstage/config';
 import helmet from 'helmet';
-import { makeExecutableSchema } from '@graphql-tools/schema';
+import { CatalogClient } from '@backstage/catalog-client';
 
 /** @public */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
+  catalog: CatalogClient;
+  modules?: Module[];
+  plugins?: EnvelopPlugins;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const catalogModule = await createCatalogModule(options);
-
-  const { createSchemaForApollo } = createApplication({
-    modules: [catalogModule],
-    schemaBuilder(input) {
-      return makeExecutableSchema({
-        ...input,
-        inheritResolversFromInterfaces: true,
-      });
-    },
+  const { application } = createGraphQLApp({
+    modules: options.modules,
+    loader: () => createLoader(options.catalog),
+    plugins: options.plugins,
   });
+  const { createApolloExecutor, schema } = application;
 
   const server = new ApolloServer({
-    schema: createSchemaForApollo(),
+    schema,
+    executor: createApolloExecutor(),
     logger: options.logger,
     introspection: true,
   });

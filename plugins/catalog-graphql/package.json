@@ -33,29 +33,43 @@
     "generate:types": "graphql-codegen",
     "clean": "backstage-cli package clean"
   },
+  "peerDependencies": {
+    "graphql": ">15.0.0"
+  },
   "dependencies": {
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/config": "workspace:^",
-    "@backstage/types": "workspace:^",
-    "apollo-server": "^3.0.0",
+    "@envelop/core": "^2.3.0",
+    "@envelop/dataloader": "^3.3.2",
+    "@envelop/graphql-modules": "^3.3.0",
+    "@graphql-tools/load-files": "^6.5.3",
+    "@graphql-tools/merge": "^8.3.6",
+    "@graphql-tools/schema": "^8.3.6",
+    "@graphql-tools/utils": "^8.6.5",
+    "cross-fetch": "^3.1.5",
+    "dataloader": "^2.0.0",
     "graphql": "^16.0.0",
     "graphql-modules": "^2.0.0",
-    "graphql-tag": "^2.11.0",
+    "graphql-relay": "^0.10.0",
     "graphql-type-json": "^0.3.2",
-    "node-fetch": "^2.6.7",
-    "winston": "^3.2.1"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@effection/jest": "^2.0.4",
+    "@graphql-codegen/add": "^4.0.1",
     "@graphql-codegen/cli": "^3.0.0",
     "@graphql-codegen/graphql-modules-preset": "^3.0.0",
+    "@graphql-codegen/schema-ast": "^3.0.0",
     "@graphql-codegen/typescript": "^3.0.0",
     "@graphql-codegen/typescript-resolvers": "^3.0.0",
-    "@graphql-tools/schema": "^9.0.0",
-    "msw": "^1.0.0"
+    "effection": "^2.0.6"
   },
   "files": [
-    "dist"
+    "dist",
+    "src/app/modules/**/*.graphql",
+    "README.md"
   ]
 }

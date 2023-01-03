@@ -1,14 +1,16 @@
 overwrite: true
+schema: "src/schema.ts"
 generates:
-  ./src/graphql/types.ts:
-    schema: ./src/schema.js
+  ./src/modules/:
+    preset: graphql-modules
+    presetConfig:
+      baseTypesPath: ../__generated__/graphql.ts
+      filename: __generated__/types.ts
     plugins:
+      - add:
+          content: '/* eslint-disable */'
       - typescript
       - typescript-resolvers
-    hooks:
-      afterOneFileWrite:
-        - eslint --fix
-    config:
-      allowParentTypeOverride: true
-      useIndexSignature: true
-      defaultMapper: Partial<{T}>
+  ./__generated__/schema.graphql:
+    plugins:
+      - schema-ast

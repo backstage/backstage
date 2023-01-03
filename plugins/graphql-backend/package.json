@@ -34,9 +34,9 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-catalog-graphql": "workspace:^",
-    "@graphql-tools/schema": "^9.0.0",
     "@types/express": "^4.17.6",
     "apollo-server": "^3.0.0",
     "apollo-server-express": "^3.0.0",

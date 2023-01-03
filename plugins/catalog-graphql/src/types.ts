@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,5 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { Entity } from '@backstage/catalog-model';
+import { envelop } from '@envelop/core';
+import DataLoader from 'dataloader';
 
-export * from './app';
+export type EntityRef =
+  | string
+  | { kind: string; namespace?: string; name: string };
+
+export type Loader = DataLoader<EntityRef, Entity>;
+
+export interface ResolverContext<
+  TLoader extends DataLoader<any, any> = Loader,
+> {
+  loader: TLoader;
+  refToId: (ref: EntityRef) => string;
+}
+
+export type EnvelopPlugins = Parameters<typeof envelop>[0]['plugins'];
