@@ -74,16 +74,16 @@ spec:
           description: Owner of the component
           ui:field: OwnerPicker
           ui:options:
-            allowedKinds:
-              - Group
+            catalogFilter:
+              kind: Group
         system:
           title: System
           type: string
           description: System of the component
           ui:field: EntityPicker
           ui:options:
-            allowedKinds:
-              - System
+            catalogFilter:
+              kind: System
             defaultKind: System
 
     - title: Choose a location

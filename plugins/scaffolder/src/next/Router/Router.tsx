@@ -30,7 +30,7 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { nextSelectedTemplateRouteRef } from '../../routes';
 import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
-import type { ErrorTransformer } from '@rjsf/utils';
+import type { FormProps } from '../types';
 
 /**
  * The Props for the Scaffolder Router
@@ -45,7 +45,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
-  transformErrors?: ErrorTransformer;
+  FormProps?: FormProps;
 };
 
 /**
@@ -93,7 +93,10 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         path={nextSelectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateWizardPage customFieldExtensions={fieldExtensions} />
+            <TemplateWizardPage
+              customFieldExtensions={fieldExtensions}
+              FormProps={props.FormProps}
+            />
           </SecretsContextProvider>
         }
       />

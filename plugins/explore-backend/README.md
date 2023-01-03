@@ -11,32 +11,32 @@ for these tools.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-explore-backend
+yarn add --cwd packages/backend @backstage/plugin-explore-backend @backstage/plugin-explore-common
 ```
 
 ### Adding the plugin to your `packages/backend`
 
 You'll need to add the plugin to the router in your `backend` package. You can
-do this by creating a file called `packages/backend/src/plugins/explore.ts`
+do this by creating a file called `packages/backend/src/plugins/explore.ts` with the following content:
 
 ```ts
 import {
   createRouter,
   StaticExploreToolProvider,
 } from '@backstage/plugin-explore-backend';
+import { ExploreTool } from '@backstage/plugin-explore-common';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
 // List of tools you want to surface in the Explore plugin "Tools" page.
-const tools: ExploreTool[] = [
+const exploreTools: ExploreTool[] = [
   {
     title: 'New Relic',
-    description:'new relic plugin',
+    description: 'new relic plugin',
     url: '/newrelic',
     image: 'https://i.imgur.com/L37ikrX.jpg',
     tags: ['newrelic', 'proxy', 'nerdGraph'],
   },
-  ...
 ];
 
 export default async function createPlugin(

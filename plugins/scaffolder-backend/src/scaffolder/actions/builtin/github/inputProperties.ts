@@ -94,6 +94,17 @@ const allowSquashMerge = {
   type: 'boolean',
   description: `Allow squash merges. The default value is 'true'`,
 };
+const squashMergeCommitTitle = {
+  title: 'Default squash merge commit title',
+  enum: ['PR_TITLE', 'COMMIT_OR_PR_TITLE'],
+  description: `Sets the default value for a squash merge commit title. The default value is 'COMMIT_OR_PR_TITLE'`,
+};
+const squashMergeCommitMessage = {
+  title: 'Default squash merge commit message',
+  enum: ['PR_BODY', 'COMMIT_MESSAGES', 'BLANK'],
+  description: `Sets the default value for a squash merge commit message. The default value is 'COMMIT_MESSAGES'`,
+};
+
 const allowRebaseMerge = {
   title: 'Allow Rebase Merges',
   type: 'boolean',
@@ -116,7 +127,6 @@ const collaborators = {
       access: {
         type: 'string',
         description: 'The type of access for the user',
-        enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
       },
       user: {
         type: 'string',
@@ -131,6 +141,21 @@ const collaborators = {
     },
     oneOf: [{ required: ['user'] }, { required: ['team'] }],
   },
+};
+const hasProjects = {
+  title: 'Enable projects',
+  type: 'boolean',
+  description: `Enable projects for the repository. The default value is 'true' unless the organization has disabled repository projects`,
+};
+const hasWiki = {
+  title: 'Enable the wiki',
+  type: 'boolean',
+  description: `Enable the wiki for the repository. The default value is 'true'`,
+};
+const hasIssues = {
+  title: 'Enable issues',
+  type: 'boolean',
+  description: `Enable issues for the repository. The default value is 'true'`,
 };
 const token = {
   title: 'Authentication Token',
@@ -204,6 +229,8 @@ export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
 export { allowSquashMerge };
+export { squashMergeCommitTitle };
+export { squashMergeCommitMessage };
 export { allowAutoMerge };
 export { collaborators };
 export { defaultBranch };
@@ -223,6 +250,9 @@ export { dismissStaleReviews };
 export { requiredStatusCheckContexts };
 export { requireBranchesToBeUpToDate };
 export { requiredConversationResolution };
+export { hasProjects };
+export { hasIssues };
+export { hasWiki };
 export { sourcePath };
 export { token };
 export { topics };

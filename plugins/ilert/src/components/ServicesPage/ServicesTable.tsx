@@ -86,7 +86,7 @@ export const ServicesTable = ({
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
     render: rowData => (
-      <Typography>{rowData.uptime.uptimePercentage.p90}</Typography>
+      <Typography>{rowData.uptime?.uptimePercentage?.p90 || ''}</Typography>
     ),
   };
   const actionsColumn: TableColumn<Service> = {

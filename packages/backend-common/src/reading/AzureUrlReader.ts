@@ -40,7 +40,7 @@ import {
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
- * Implements a {@link UrlReader} for Azure repos.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for Azure repos.
  *
  * @public
  */

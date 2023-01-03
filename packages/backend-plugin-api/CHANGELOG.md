@@ -1,5 +1,35 @@
 # @backstage/backend-plugin-api
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 6cfd4d7073: Added `RootLifecycleService` and `rootLifecycleServiceRef`, as well as added a `labels` option to the existing `LifecycleServiceShutdownHook`.
+- 5e2cebe9a3: Migrate `UrlReader` into this package to gradually remove the dependency on backend-common.
+- 6f02d23b01: Moved `PluginEndpointDiscovery` type from backend-common to backend-plugin-api.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/backend-tasks@0.4.1-next.0
+  - @backstage/plugin-permission-common@0.7.3-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 884d749b14: **BREAKING**: All core service references are now exported via a single `coreServices` object. For example, the `loggerServiceRef` is now accessed via `coreServices.logger` instead.
+- a025190552: **BREAKING**: All service interfaces are now suffixed with `*Service`.
+
+### Patch Changes
+
+- cb1c2781c0: Updated `LoggerService` interface with more log methods and meta.
+- d6dbf1792b: Added initial support for registering shutdown hooks via `lifecycleServiceRef`.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/config@1.0.5
+
 ## 0.2.0-next.3
 
 ### Patch Changes

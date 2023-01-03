@@ -52,7 +52,7 @@ const createTemporaryDirectory = async (workDir: string): Promise<string> =>
   await fs.mkdtemp(joinPath(workDir, '/gerrit-clone-'));
 
 /**
- * Implements a {@link UrlReader} for files in Gerrit.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files in Gerrit.
  *
  * @remarks
  * To be able to link to Git contents for Gerrit providers in a user friendly

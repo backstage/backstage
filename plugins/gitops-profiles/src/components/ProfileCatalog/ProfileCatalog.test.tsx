@@ -15,8 +15,6 @@
  */
 
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { gitOpsApiRef, GitOpsRestApi } from '../../api';
 import ProfileCatalog from './ProfileCatalog';
@@ -47,11 +45,9 @@ describe('ProfileCatalog', () => {
     );
 
     const { getByText } = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <ApiProvider apis={apis}>
-          <ProfileCatalog />
-        </ApiProvider>
-      </ThemeProvider>,
+      <ApiProvider apis={apis}>
+        <ProfileCatalog />
+      </ApiProvider>,
     );
 
     expect(getByText('Create GitOps-managed Cluster')).toBeInTheDocument();

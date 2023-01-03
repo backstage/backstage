@@ -21,6 +21,8 @@ import {
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
+import { CatalogApi } from '@backstage/catalog-client';
+import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { Server } from 'http';
 import knexFactory from 'knex';
 import { Logger } from 'winston';
@@ -52,13 +54,27 @@ export async function startStandaloneServer(
     return knex;
   });
 
+  const catalogApi = {
+    async getEntityByRef(entityRef: string | CompoundEntityRef) {
+      const { kind, namespace, name } = parseEntityRef(entityRef);
+      return {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind,
+        metadata: { name, namespace },
+        spec: {},
+      };
+    },
+  } as Partial<CatalogApi> as CatalogApi;
+
   logger.debug('Starting application server...');
+
   const router = await createRouter({
     database: { getClient: async () => db },
     config,
     discovery: SingleHostDiscovery.fromConfig(config),
     urlReader: UrlReaders.default({ logger, config }),
     logger,
+    catalogApi,
   });
 
   let service = createServiceBuilder(module)

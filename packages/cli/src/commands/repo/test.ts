@@ -93,6 +93,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     const graph = PackageGraph.fromPackages(packages);
     const changedPackages = await graph.listChangedPackages({
       ref: opts.since,
+      analyzeLockfile: true,
     });
 
     const packageNames = Array.from(

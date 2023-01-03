@@ -16,6 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestEventSubscriber } from '@backstage/plugin-events-backend-test-utils';
+import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { InMemoryEventBroker } from './InMemoryEventBroker';
 
 const logger = getVoidLogger();
@@ -62,5 +63,52 @@ describe('InMemoryEventBroker', () => {
       topic: 'topicC',
       eventPayload: { test: 'topicC' },
     });
+  });
+
+  it('logs errors from subscribers', async () => {
+    const topic = 'testTopic';
+
+    const subscriber1 = new (class Subscriber1 implements EventSubscriber {
+      supportsEventTopics() {
+        return [topic];
+      }
+      async onEvent(event: EventParams) {
+        throw new Error(`NOPE ${event.eventPayload}`);
+      }
+    })();
+    const subscriber2 = new (class Subscriber2 implements EventSubscriber {
+      supportsEventTopics() {
+        return [topic];
+      }
+      async onEvent(event: EventParams) {
+        throw new Error(`NOPE ${event.eventPayload}`);
+      }
+    })();
+
+    const errorSpy = jest.spyOn(logger, 'error');
+    const eventBroker = new InMemoryEventBroker(logger);
+
+    eventBroker.subscribe(subscriber1);
+    await eventBroker.publish({ topic, eventPayload: '1' });
+
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledWith(
+      'Subscriber "Subscriber1" failed to process event',
+      new Error('NOPE 1'),
+    );
+
+    eventBroker.subscribe(subscriber2);
+    await eventBroker.publish({ topic, eventPayload: '2' });
+
+    // With two subscribers we should not halt on the first error but call all subscribers
+    expect(errorSpy).toHaveBeenCalledTimes(3);
+    expect(errorSpy).toHaveBeenCalledWith(
+      'Subscriber "Subscriber1" failed to process event',
+      new Error('NOPE 2'),
+    );
+    expect(errorSpy).toHaveBeenCalledWith(
+      'Subscriber "Subscriber2" failed to process event',
+      new Error('NOPE 2'),
+    );
   });
 });

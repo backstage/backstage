@@ -42,7 +42,7 @@ import {
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
- * Implements a {@link UrlReader} for files from Bitbucket Cloud.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Cloud.
  *
  * @public
  */
