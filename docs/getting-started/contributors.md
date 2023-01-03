@@ -35,12 +35,9 @@ $ yarn install  # fetch dependency packages - may take a while
 $ yarn tsc      # does a first run of type generation and checks
 ```
 
-If yarn install does not complete, you might need to download the following dependencies
-(list is of common missing dependencies, it is not exhaustive)
-pixman
-cairo
-pango
-canvas (npm dependency)
+If yarn install does not complete, you might need to download some of the dependencies.
+The best way to find out which depenencies are missing is by looking through the logs
+of the yarn install, and finding which dependency is missing.
 
 ## Serving the Example App
 
