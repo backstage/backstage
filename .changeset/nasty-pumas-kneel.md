@@ -3,4 +3,4 @@
 '@backstage/backend-common': patch
 ---
 
-Migrated types related to `CacheService` and `DatabaseService` into backend-plugin-api.
+Migrated types related to `TokenManagerService`, `CacheService` and `DatabaseService` into backend-plugin-api.

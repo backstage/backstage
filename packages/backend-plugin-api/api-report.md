@@ -12,7 +12,11 @@ import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Readable } from 'stream';
+<<<<<<< HEAD
 import { TokenManager } from '@backstage/backend-common';
+=======
+import { TransportStreamOptions } from 'winston-transport';
+>>>>>>> 24636656b5 (Migrate TokenManager types)
 
 // @public (undocumented)
 export interface BackendFeature {
@@ -323,8 +327,13 @@ export type ServiceRef<
   $$ref: 'service';
 };
 
-// @public (undocumented)
-export interface TokenManagerService extends TokenManager {}
+// @public
+export interface TokenManagerService {
+  authenticate(token: string): Promise<void>;
+  getToken(): Promise<{
+    token: string;
+  }>;
+}
 
 // @public (undocumented)
 export type TypesToServiceRef<T> = {

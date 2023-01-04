@@ -51,7 +51,11 @@ import { SearchOptions } from '@backstage/backend-plugin-api';
 import { SearchResponse } from '@backstage/backend-plugin-api';
 import { SearchResponseFile } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
+<<<<<<< HEAD
 import { TransportStreamOptions } from 'winston-transport';
+=======
+import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
+>>>>>>> 24636656b5 (Migrate TokenManager types)
 import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
@@ -698,13 +702,7 @@ export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }
 
-// @public
-export interface TokenManager {
-  authenticate(token: string): Promise<void>;
-  getToken(): Promise<{
-    token: string;
-  }>;
-}
+export { TokenManager };
 
 export { UrlReader };
 
