@@ -22,6 +22,8 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { Router } from 'express';
+import request from 'supertest';
 
 import { startTestBackend } from './TestBackend';
 
@@ -184,7 +186,7 @@ describe('TestBackend', () => {
             urlReader: coreServices.urlReader,
           },
           async init(deps) {
-            expect(Object.keys(deps)).toHaveLength(14);
+            expect(Object.keys(deps)).toHaveLength(15);
             expect(Object.values(deps)).not.toContain(undefined);
           },
         });
@@ -194,6 +196,30 @@ describe('TestBackend', () => {
     await startTestBackend({
       services: [],
       features: [testPlugin()],
-    }).then(backend => backend.stop());
+    });
+  });
+
+  it('should allow making requests via supertest', async () => {
+    const testPlugin = createBackendPlugin({
+      id: 'test',
+      register(env) {
+        env.registerInit({
+          deps: {
+            httpRouter: coreServices.httpRouter,
+          },
+          async init({ httpRouter }) {
+            const router = Router();
+            router.use('/ping-me', (_, res) => res.json({ message: 'pong' }));
+            httpRouter.use(router);
+          },
+        });
+      },
+    });
+
+    const { server } = await startTestBackend({ features: [testPlugin()] });
+
+    const res = await request(server).get('/api/test/ping-me');
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual({ message: 'pong' });
   });
 });

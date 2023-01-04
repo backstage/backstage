@@ -26,23 +26,27 @@ import {
   schedulerFactory,
   urlReaderFactory,
   databaseFactory,
-  rootHttpRouterFactory,
   httpRouterFactory,
 } from '@backstage/backend-app-api';
-
+import {
+  createServiceBuilder,
+  SingleHostDiscovery,
+} from '@backstage/backend-common';
+import { Handler } from 'express';
+import * as http from 'http';
+import Router from 'express-promise-router';
 import {
   ServiceFactory,
   ServiceRef,
   createServiceFactory,
   BackendFeature,
   ExtensionPoint,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 
-import {
-  mockConfigFactory,
-  mockTokenManagerFactory,
-  mockDiscoveryFactory,
-} from '../implementations';
+import { mockConfigFactory, mockTokenManagerFactory } from '../implementations';
+import { AddressInfo } from 'net';
+import { ConfigReader } from '@backstage/config';
 
 /** @alpha */
 export interface TestBackendOptions<
@@ -75,10 +79,8 @@ const defaultServiceFactories = [
   lifecycleFactory(),
   loggerFactory(),
   mockConfigFactory(),
-  mockDiscoveryFactory(),
   mockTokenManagerFactory(),
   permissionsFactory(),
-  rootHttpRouterFactory(),
   rootLifecycleFactory(),
   rootLoggerFactory(),
   schedulerFactory(),
@@ -98,6 +100,71 @@ export async function startTestBackend<
     features = [],
     ...otherOptions
   } = options;
+
+  let server: http.Server;
+
+  const rootHttpRouterFactory = createServiceFactory({
+    service: coreServices.rootHttpRouter,
+    deps: {
+      config: coreServices.config,
+      lifecycle: coreServices.rootLifecycle,
+    },
+    async factory({ config, lifecycle }) {
+      const router = Router();
+
+      const service = createServiceBuilder(module)
+        .loadConfig(config)
+        .setPort(0);
+
+      service.addRouter('', router);
+
+      server = await service.start();
+      // Stop method isn't part of the public API, let's fix that once we move the implementation here.
+      const stoppableServer = server as typeof server & {
+        stop: (cb: (error?: Error) => void) => void;
+      };
+
+      lifecycle.addShutdownHook({
+        async fn() {
+          await new Promise<void>((resolve, reject) => {
+            stoppableServer.stop((error?: Error) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve();
+              }
+            });
+          });
+        },
+        labels: { service: 'rootHttpRouter' },
+      });
+
+      return {
+        use: (path: string, handler: Handler) => {
+          router.use(path, handler);
+        },
+      };
+    },
+  });
+
+  const discoveryFactory = createServiceFactory({
+    service: coreServices.discovery,
+    deps: {
+      rootHttpRouter: coreServices.rootHttpRouter,
+    },
+    async factory() {
+      if (!server) {
+        throw new Error('Test server not started yet');
+      }
+      const { port } = server.address() as AddressInfo;
+      const discovery = SingleHostDiscovery.fromConfig(
+        new ConfigReader({
+          backend: { baseUrl: `http://localhost:${port}`, listen: { port } },
+        }),
+      );
+      return async () => discovery;
+    },
+  });
 
   const factories = services.map(serviceDef => {
     if (Array.isArray(serviceDef)) {
@@ -131,7 +198,7 @@ export async function startTestBackend<
 
   const backend = createSpecializedBackend({
     ...otherOptions,
-    services: factories,
+    services: [...factories, rootHttpRouterFactory, discoveryFactory],
   });
 
   backendInstancesToCleanUp.push(backend);
@@ -153,7 +220,7 @@ export async function startTestBackend<
 
   await backend.start();
 
-  return backend;
+  return Object.assign(backend, { server: server! }) as Backend;
 }
 
 let registered = false;

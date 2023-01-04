@@ -15,4 +15,3 @@
  */
 export { mockTokenManagerFactory } from './mockTokenManagerService';
 export { mockConfigFactory } from './mockConfigService';
-export { mockDiscoveryFactory } from './mockDiscoveryService';
