@@ -19,6 +19,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { ConfigReader } from '@backstage/config';
 
 /** @public */
 export const databaseFactory = createServiceFactory({
@@ -28,7 +29,16 @@ export const databaseFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
   },
   async factory({ config }) {
-    const databaseManager = DatabaseManager.fromConfig(config);
+    const databaseManager = config.getOptional('backend.database')
+      ? DatabaseManager.fromConfig(config)
+      : DatabaseManager.fromConfig(
+          new ConfigReader({
+            backend: {
+              database: { client: 'better-sqlite3', connection: ':memory:' },
+            },
+          }),
+        );
+
     return async ({ plugin }) => {
       return databaseManager.forPlugin(plugin.getId());
     };

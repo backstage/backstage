@@ -29,7 +29,7 @@ export const mockDiscoveryFactory = createServiceFactory({
     // to provide a better way to create our mockDiscoveryService.
     const discovery = SingleHostDiscovery.fromConfig(
       new ConfigReader({
-        backend: { baseUrl: 'http://localhost:7000', listen: '0.0.0.0:7000' },
+        backend: { baseUrl: 'http://localhost:7007', listen: '0.0.0.0' },
       }),
     );
 

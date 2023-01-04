@@ -25,6 +25,9 @@ import {
   permissionsFactory,
   schedulerFactory,
   urlReaderFactory,
+  databaseFactory,
+  rootHttpRouterFactory,
+  httpRouterFactory,
 } from '@backstage/backend-app-api';
 
 import {
@@ -37,7 +40,6 @@ import {
 
 import {
   mockConfigFactory,
-  mockDatabaseFactory,
   mockTokenManagerFactory,
   mockDiscoveryFactory,
 } from '../implementations';
@@ -68,16 +70,18 @@ export interface TestBackendOptions<
 
 const defaultServiceFactories = [
   cacheFactory(),
-  mockConfigFactory(),
-  mockDatabaseFactory(),
-  mockDiscoveryFactory(),
+  databaseFactory(),
+  httpRouterFactory(),
   lifecycleFactory(),
   loggerFactory(),
+  mockConfigFactory(),
+  mockDiscoveryFactory(),
+  mockTokenManagerFactory(),
   permissionsFactory(),
+  rootHttpRouterFactory(),
   rootLifecycleFactory(),
   rootLoggerFactory(),
   schedulerFactory(),
-  mockTokenManagerFactory(),
   urlReaderFactory(),
 ];
 

@@ -171,9 +171,12 @@ describe('TestBackend', () => {
             config: coreServices.config,
             database: coreServices.database,
             discovery: coreServices.discovery,
+            httpRouter: coreServices.httpRouter,
             lifecycle: coreServices.lifecycle,
             logger: coreServices.logger,
             permissions: coreServices.permissions,
+            pluginMetadata: coreServices.pluginMetadata,
+            rootHttpRouter: coreServices.rootHttpRouter,
             rootLifecycle: coreServices.rootLifecycle,
             rootLogger: coreServices.rootLogger,
             scheduler: coreServices.scheduler,
@@ -181,7 +184,7 @@ describe('TestBackend', () => {
             urlReader: coreServices.urlReader,
           },
           async init(deps) {
-            expect(Object.keys(deps)).toHaveLength(12);
+            expect(Object.keys(deps)).toHaveLength(14);
             expect(Object.values(deps)).not.toContain(undefined);
           },
         });
