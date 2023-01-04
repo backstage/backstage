@@ -3566,7 +3566,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@npm:^1.1.2, @backstage/catalog-model@npm:^1.1.3, @backstage/catalog-model@npm:^1.1.4":
+"@backstage/catalog-model@npm:^1.1.2, @backstage/catalog-model@npm:^1.1.4":
   version: 1.1.4
   resolution: "@backstage/catalog-model@npm:1.1.4"
   dependencies:
@@ -3901,7 +3901,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-components@npm:^0.12.0, @backstage/core-components@npm:^0.12.2":
+"@backstage/core-components@npm:^0.12.2":
   version: 0.12.2
   resolution: "@backstage/core-components@npm:0.12.2"
   dependencies:
@@ -4022,7 +4022,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@npm:^1.0.7, @backstage/core-plugin-api@npm:^1.1.0, @backstage/core-plugin-api@npm:^1.2.0":
+"@backstage/core-plugin-api@npm:^1.0.7, @backstage/core-plugin-api@npm:^1.2.0":
   version: 1.2.0
   resolution: "@backstage/core-plugin-api@npm:1.2.0"
   dependencies:
@@ -5409,7 +5409,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.2.0, @backstage/plugin-catalog-react@npm:^1.2.1, @backstage/plugin-catalog-react@npm:^1.2.3":
+"@backstage/plugin-catalog-react@npm:^1.2.0, @backstage/plugin-catalog-react@npm:^1.2.3":
   version: 1.2.3
   resolution: "@backstage/plugin-catalog-react@npm:1.2.3"
   dependencies:
@@ -13641,18 +13641,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:4.20.4":
-  version: 4.20.4
-  resolution: "@tanstack/query-core@npm:4.20.4"
-  checksum: bdb652296e4093d8cb042a67b9c035bc0a756e09a3b12aeb070068b07adc1c71174c2e6108f2a8c3322a26cb73ba57f431326aa0b813c81621674b9cc208cd93
+"@tanstack/query-core@npm:4.20.9":
+  version: 4.20.9
+  resolution: "@tanstack/query-core@npm:4.20.9"
+  checksum: 679551353e6d5adcae771bc78b64959a6ecf4f85c1f74952b38b18a7425374cf84dc2e461cf6048be206d8bbac265468d36231f7f9d0b6689504a0e069dd5ac6
   languageName: node
   linkType: hard
 
 "@tanstack/react-query@npm:^4.1.3":
-  version: 4.20.4
-  resolution: "@tanstack/react-query@npm:4.20.4"
+  version: 4.20.9
+  resolution: "@tanstack/react-query@npm:4.20.9"
   dependencies:
-    "@tanstack/query-core": 4.20.4
+    "@tanstack/query-core": 4.20.9
     use-sync-external-store: ^1.2.0
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -13663,7 +13663,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: ba9e2f175c58bde592c0ad14285f289585474763f8d68072d651fa75263a3a7f75eead5b62aa3140db133b95468498bc58817d07513f6f857be2bd8031b491da
+  checksum: 4fc953d774c5c0f7f332f014dfb2fb9865387ae6e849fdf551e2ad70f07d55fbdbc4c6afb27a1f90bce3a2348bd1adf67ab78a4bc2cdf8d3e5ff90128730b467
   languageName: node
   linkType: hard
 
