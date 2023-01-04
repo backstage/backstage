@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+import * as http from 'http';
+
+/**
+ * An HTTP server extended with utility methods.
+ *
+ * @public
+ */
+export interface ExtendedHttpServer extends http.Server {
+  start(): Promise<void>;
+
+  stop(): Promise<void>;
+
+  port(): number;
+}
+
 /**
  * Options for starting up an HTTP server.
  *

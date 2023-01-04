@@ -16,86 +16,16 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, dirname } from 'path';
-import express from 'express';
-import * as http from 'http';
-import * as https from 'https';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { HttpsSettings } from './config';
 import forge from 'node-forge';
 
 const FIVE_DAYS_IN_MS = 5 * 24 * 60 * 60 * 1000;
 
 const IP_HOSTNAME_REGEX = /:|^\d+\.\d+\.\d+\.\d+$/;
 
-/**
- * Creates a Http server instance based on an Express application.
- *
- * @param app - The Express application object
- * @param logger - Optional Winston logger object
- * @returns A Http server instance
- *
- */
-export function createHttpServer(
-  app: express.Express,
-  logger?: LoggerService,
-): http.Server {
-  logger?.info('Initializing http server');
-
-  return http.createServer(app);
-}
-
-/**
- * Creates a Https server instance based on an Express application.
- *
- * @param app - The Express application object
- * @param httpsSettings - HttpsSettings for self-signed certificate generation
- * @param logger - Optional Winston logger object
- * @returns A Https server instance
- *
- */
-export async function createHttpsServer(
-  app: express.Express,
-  httpsSettings: HttpsSettings,
-  logger?: LoggerService,
-): Promise<http.Server> {
-  logger?.info('Initializing https server');
-
-  let credentials: { key: string | Buffer; cert: string | Buffer };
-
-  if ('hostname' in httpsSettings?.certificate) {
-    credentials = await getGeneratedCertificate(
-      httpsSettings.certificate.hostname,
-      logger,
-    );
-  } else {
-    logger?.info('Loading certificate from config');
-
-    credentials = {
-      key: httpsSettings?.certificate?.key,
-      cert: httpsSettings?.certificate?.cert,
-    };
-  }
-
-  if (!credentials.key || !credentials.cert) {
-    throw new Error('Invalid HTTPS credentials');
-  }
-
-  return https.createServer(credentials, app) as http.Server;
-}
-
-function getCertificateExpiration(cert: string, logger?: LoggerService) {
-  try {
-    const crt = forge.pki.certificateFromPem(cert);
-    return crt.validity.notAfter.getTime() - Date.now();
-  } catch (error) {
-    logger?.warn(`Unable to parse self-signed certificate. ${error}`);
-    return 0;
-  }
-}
-
-async function getGeneratedCertificate(
+export async function getGeneratedCertificate(
   hostname: string,
-  logger?: LoggerService,
+  logger: LoggerService,
 ) {
   const hasModules = await fs.pathExists('node_modules');
   let certPath;
@@ -109,24 +39,30 @@ async function getGeneratedCertificate(
   }
 
   if (await fs.pathExists(certPath)) {
-    const cert = await fs.readFile(certPath);
-    const remainingMs = getCertificateExpiration(cert.toString(), logger);
-    if (remainingMs > FIVE_DAYS_IN_MS) {
-      logger?.info('Using existing self-signed certificate');
-      return {
-        key: cert,
-        cert,
-      };
+    try {
+      const cert = await fs.readFile(certPath);
+
+      const crt = forge.pki.certificateFromPem(cert.toString());
+      const remainingMs = crt.validity.notAfter.getTime() - Date.now();
+      if (remainingMs > FIVE_DAYS_IN_MS) {
+        logger.info('Using existing self-signed certificate');
+        return {
+          key: cert,
+          cert,
+        };
+      }
+    } catch (error) {
+      logger.warn(`Unable to use existing self-signed certificate, ${error}`);
     }
   }
 
-  logger?.info('Generating new self-signed certificate');
-  const newCert = await createCertificate(hostname);
+  logger.info('Generating new self-signed certificate');
+  const newCert = await generateCertificate(hostname);
   await fs.writeFile(certPath, newCert.cert + newCert.key, 'utf8');
   return newCert;
 }
 
-async function createCertificate(hostname: string) {
+async function generateCertificate(hostname: string) {
   const attributes = [
     {
       name: 'commonName',
