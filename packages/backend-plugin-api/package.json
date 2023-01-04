@@ -33,7 +33,6 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
