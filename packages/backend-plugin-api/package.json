@@ -36,9 +36,11 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@types/express": "^4.17.6",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "knex": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

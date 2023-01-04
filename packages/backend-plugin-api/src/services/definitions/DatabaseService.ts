@@ -14,7 +14,31 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager } from '@backstage/backend-common';
+import { Knex } from 'knex';
 
-/** @public */
-export interface DatabaseService extends PluginDatabaseManager {}
+/**
+ * The DatabaseService manages access to databases that Plugins get.
+ *gs
+ * @public
+ */
+export interface DatabaseService {
+  /**
+   * getClient provides backend plugins database connections for itself.
+   *
+   * The purpose of this method is to allow plugins to get isolated data
+   * stores so that plugins are discouraged from database integration.
+   */
+  getClient(): Promise<Knex>;
+
+  /**
+   * This property is used to control the behavior of database migrations.
+   */
+  migrations?: {
+    /**
+     * skip database migrations. Useful if connecting to a read-only database.
+     *
+     * @defaultValue false
+     */
+    skip?: boolean;
+  };
+}

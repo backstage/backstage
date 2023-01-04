@@ -12,6 +12,9 @@ import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
+import { CacheClient } from '@backstage/backend-plugin-api';
+import { CacheClientOptions } from '@backstage/backend-plugin-api';
+import { CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import cors from 'cors';
 import Docker from 'dockerode';
@@ -24,13 +27,14 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
-import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
+import { CacheService as PluginCacheManager } from '@backstage/backend-plugin-api';
+import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
@@ -165,26 +169,11 @@ export class BitbucketUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
-export interface CacheClient {
-  delete(key: string): Promise<void>;
-  get(key: string): Promise<JsonValue | undefined>;
-  set(
-    key: string,
-    value: JsonValue,
-    options?: CacheClientSetOptions,
-  ): Promise<void>;
-}
+export { CacheClient };
 
-// @public
-export type CacheClientOptions = {
-  defaultTtl?: number;
-};
+export { CacheClientOptions };
 
-// @public
-export type CacheClientSetOptions = {
-  ttl?: number;
-};
+export { CacheClientSetOptions };
 
 // @public
 export class CacheManager {
@@ -526,18 +515,9 @@ export function loggerToWinstonLogger(
 // @public
 export function notFoundHandler(): RequestHandler;
 
-// @public
-export type PluginCacheManager = {
-  getClient: (options?: CacheClientOptions) => CacheClient;
-};
+export { PluginCacheManager };
 
-// @public
-export interface PluginDatabaseManager {
-  getClient(): Promise<Knex>;
-  migrations?: {
-    skip?: boolean;
-  };
-}
+export { PluginDatabaseManager };
 
 export { PluginEndpointDiscovery };
 
