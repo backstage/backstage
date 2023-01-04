@@ -81,7 +81,7 @@ case 'adr':
 
 ## Custom ADR formats
 
-By default, this plugin will parse ADRs according to the format specified by the [Markdown Architecture Decision Record (MADR)](https://adr.github.io/madr/) template. If your ADRs are written using a different format, you can apply the following customizations to correctly identify and parse your documents:
+By default, this plugin will parse ADRs according to the format specified by the [Markdown Architecture Decision Record (MADR) v2.x template](https://github.com/adr/madr/tree/2.1.2). If your ADRs are written using a different format, you can apply the following customizations to correctly identify and parse your documents:
 
 ### Custom Filename/Path Format
 
