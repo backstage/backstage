@@ -27,7 +27,6 @@ import { TemplateCard } from './TemplateCard';
 import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { nextRouteRef } from '../../routes';
 
 describe('TemplateCard', () => {
   it('should render the card title', async () => {
@@ -54,7 +53,6 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
     );
 
     expect(getByText('bob')).toBeInTheDocument();
@@ -84,7 +82,6 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
     );
 
     const description = getByText('hello');
@@ -115,7 +112,6 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
     );
 
     expect(getByText('No description')).toBeInTheDocument();
@@ -145,7 +141,6 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
     );
 
     for (const tag of mockTemplate.metadata.tags!) {
@@ -185,7 +180,6 @@ describe('TemplateCard', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/': nextRouteRef,
           '/catalog/:kind/:namespace/:name': entityRouteRef,
         },
       },
@@ -224,7 +218,6 @@ describe('TemplateCard', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/': nextRouteRef,
           '/catalog/:kind/:namespace/:name': entityRouteRef,
         },
       },

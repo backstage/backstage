@@ -24,13 +24,22 @@ import {
 import { Typography } from '@material-ui/core';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateCardProps, TemplateCard } from '../TemplateCard';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 /**
  * The props for the {@link TemplateGroup} component.
  * @alpha
  */
 export interface TemplateGroupProps {
-  templates: TemplateEntityV1beta3[];
+  templates: {
+    template: TemplateEntityV1beta3;
+    additionalLinks?: {
+      icon: IconComponent;
+      text: string;
+      url: string;
+    }[];
+  }[];
+  onSelected: (template: TemplateEntityV1beta3) => void;
   title: React.ReactNode;
   components?: {
     CardComponent?: React.ComponentType<TemplateCardProps>;
@@ -42,7 +51,12 @@ export interface TemplateGroupProps {
  * @alpha
  */
 export const TemplateGroup = (props: TemplateGroupProps) => {
-  const { templates, title, components: { CardComponent } = {} } = props;
+  const {
+    templates,
+    title,
+    components: { CardComponent } = {},
+    onSelected,
+  } = props;
   const titleComponent =
     typeof title === 'string' ? <ContentHeader title={title} /> : title;
 
@@ -67,8 +81,13 @@ export const TemplateGroup = (props: TemplateGroupProps) => {
     <Content>
       {titleComponent}
       <ItemCardGrid>
-        {templates.map(template => (
-          <Card key={stringifyEntityRef(template)} template={template} />
+        {templates.map(({ template, additionalLinks }) => (
+          <Card
+            key={stringifyEntityRef(template)}
+            additionalLinks={additionalLinks}
+            template={template}
+            onSelected={onSelected}
+          />
         ))}
       </ItemCardGrid>
     </Content>

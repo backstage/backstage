@@ -20,9 +20,6 @@ import React, { ComponentType, useCallback, useContext, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import {
-  rootRouteRef,
-  scaffolderTaskRouteRef,
-  selectedTemplateRouteRef,
   FieldExtensionOptions,
   SecretsContext,
   scaffolderApiRef,
@@ -42,6 +39,11 @@ import {
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LayoutOptions } from '../../layouts';
 import { ReviewStepProps } from '../types';
+import {
+  rootRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);

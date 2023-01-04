@@ -23,8 +23,6 @@
 import {
   createScaffolderFieldExtension as createScaffolderFieldExtensionTemp,
   ScaffolderFieldExtensions as ScaffolderFieldExtensionsTemp,
-  rootRouteRef as rootRouteRefTemp,
-  selectedTemplateRouteRef as selectedTemplateRouteRefTemp,
   useTemplateSecrets as useTemplateSecretsTemp,
   scaffolderApiRef as scaffolderApiRefTemp,
   type ScaffolderApi as ScaffolderApiTemp,
@@ -61,16 +59,6 @@ export const createScaffolderFieldExtension =
  * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderFieldExtensions} instead as this has now been moved.
  */
 export const ScaffolderFieldExtensions = ScaffolderFieldExtensionsTemp;
-/**
- * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#rootRouteRef} instead as this has now been moved.
- */
-export const rootRouteRef = rootRouteRefTemp;
-/**
- * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#selectedTemplateRouteRef} instead as this has now been moved.
- */
-export const selectedTemplateRouteRef = selectedTemplateRouteRefTemp;
 /**
  * @public
  * @deprecated use import from {@link @backstage/plugin-scaffolder-react#useTemplateSecrets} instead as this has now been moved.

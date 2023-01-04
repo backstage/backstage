@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export * from './routes';
 export * from './extensions';
 export * from './types';
 export * from './secrets';

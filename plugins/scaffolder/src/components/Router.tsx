@@ -30,12 +30,6 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import {
-  actionsRouteRef,
-  editRouteRef,
-  legacySelectedTemplateRouteRef,
-  scaffolderListTaskRouteRef,
-  scaffolderTaskRouteRef,
-  selectedTemplateRouteRef,
   FIELD_EXTENSION_KEY,
   FIELD_EXTENSION_WRAPPER_KEY,
   FieldExtensionOptions,
@@ -44,6 +38,14 @@ import {
 import { ListTasksPage } from './ListTasksPage';
 import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
 import { ReviewStepProps } from './types';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  legacySelectedTemplateRouteRef,
+  scaffolderListTaskRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../routes';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.

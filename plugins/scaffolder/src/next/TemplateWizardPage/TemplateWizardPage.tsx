@@ -36,15 +36,14 @@ import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import {
-  nextRouteRef,
-  scaffolderTaskRouteRef,
-  selectedTemplateRouteRef,
   Stepper,
   NextFieldExtensionOptions,
   SecretsContext,
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
 import { FormProps } from '../types';
+import { nextRouteRef } from '../routes';
+import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 
 type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];

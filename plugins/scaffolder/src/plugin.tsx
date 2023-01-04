@@ -16,10 +16,6 @@
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
-  nextRouteRef,
-  registerComponentRouteRef,
-  rootRouteRef,
-  viewTechDocRouteRef,
   createScaffolderFieldExtension,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
@@ -58,6 +54,12 @@ import {
   EntityTagsPicker,
   EntityTagsPickerSchema,
 } from './components/fields/EntityTagsPicker/EntityTagsPicker';
+import {
+  registerComponentRouteRef,
+  rootRouteRef,
+  viewTechDocRouteRef,
+} from './routes';
+import { nextRouteRef } from './next';
 
 /**
  * The main plugin export for the scaffolder.

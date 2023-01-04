@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  useAnalytics,
-  useApiHolder,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
+import { useAnalytics, useApiHolder } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import {
   Stepper as MuiStepper,
@@ -35,7 +31,7 @@ import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import { ReviewState } from '../ReviewState';
 import validator from '@rjsf/validator-ajv6';
-import { selectedTemplateRouteRef } from '../../../routes';
+
 import { useFormData } from '../../hooks/useFormData';
 import { FormProps } from '../../types';
 
@@ -61,8 +57,10 @@ const useStyles = makeStyles(theme => ({
 export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  templateName?: string;
   FormProps?: FormProps;
+
+  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
 };
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -75,7 +73,6 @@ const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
  * @alpha
  */
 export const Stepper = (props: StepperProps) => {
-  const { templateName } = useRouteRefParams(selectedTemplateRouteRef);
   const analytics = useAnalytics();
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
@@ -204,7 +201,7 @@ export const Stepper = (props: StepperProps) => {
                       : undefined;
                   analytics.captureEvent(
                     'create',
-                    name || `new ${templateName}`,
+                    name ?? props.templateName ?? 'unknown',
                   );
                 }}
               >

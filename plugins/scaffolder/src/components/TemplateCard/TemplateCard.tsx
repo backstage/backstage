@@ -61,10 +61,7 @@ import {
 import LanguageIcon from '@material-ui/icons/Language';
 import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
-import {
-  selectedTemplateRouteRef,
-  viewTechDocRouteRef,
-} from '@backstage/plugin-scaffolder-react';
+import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   cardHeader: {

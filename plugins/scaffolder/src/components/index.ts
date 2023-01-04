@@ -16,6 +16,6 @@
 export * from './fields';
 export type { RepoUrlPickerUiOptions } from './fields';
 export { TemplateTypePicker } from './TemplateTypePicker';
-export { TaskPage } from './TaskPage';
+export { TaskPage, type TaskPageProps } from './TaskPage';
 export type { RouterProps } from './Router';
 export type { ReviewStepProps } from './types';

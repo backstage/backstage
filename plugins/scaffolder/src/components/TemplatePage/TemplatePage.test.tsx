@@ -23,7 +23,6 @@ import { act, fireEvent, screen, within } from '@testing-library/react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {
-  rootRouteRef,
   scaffolderApiRef,
   ScaffolderApi,
 } from '@backstage/plugin-scaffolder-react';
@@ -35,6 +34,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { rootRouteRef } from '../../routes';
 
 jest.mock('react-router-dom', () => {
   return {

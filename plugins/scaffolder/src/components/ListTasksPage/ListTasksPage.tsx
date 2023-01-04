@@ -29,7 +29,6 @@ import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
 import React, { useState } from 'react';
 import {
-  rootRouteRef,
   ScaffolderTask,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
@@ -40,6 +39,7 @@ import {
   TaskStatusColumn,
   TemplateTitleColumn,
 } from './columns';
+import { rootRouteRef } from '../../routes';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';

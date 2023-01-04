@@ -22,8 +22,14 @@
 
 export { ScaffolderClient } from './api';
 
-export { createScaffolderLayout, ScaffolderLayouts } from './layouts';
-export type { LayoutOptions, LayoutTemplate, LayoutComponent } from './layouts';
+export {
+  createScaffolderLayout,
+  ScaffolderLayouts,
+  type LayoutOptions,
+  type LayoutTemplate,
+  type LayoutComponent,
+} from './layouts';
+
 export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,
@@ -34,15 +40,17 @@ export {
   ScaffolderPage,
   scaffolderPlugin,
 } from './plugin';
+
 export * from './components';
-
+export * from './routes';
 export * from './deprecated';
-
-export type { TaskPageProps } from './components/TaskPage';
 
 /** next exports */
 export { NextScaffolderPage } from './plugin';
 export {
+  nextRouteRef,
+  nextSelectedTemplateRouteRef,
+  nextScaffolderTaskRouteRef,
   type TemplateGroupFilter,
   type NextRouterProps,
   type FormProps,

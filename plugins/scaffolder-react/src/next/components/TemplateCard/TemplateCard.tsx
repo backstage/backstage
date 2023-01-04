@@ -13,14 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  DEFAULT_NAMESPACE,
-  parseEntityRef,
-  RELATION_OWNED_BY,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-import { Button, MarkdownContent, UserIcon } from '@backstage/core-components';
-import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { MarkdownContent, UserIcon } from '@backstage/core-components';
+import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import {
   EntityRefLinks,
   getEntityRelations,
@@ -34,13 +29,12 @@ import {
   CardContent,
   Chip,
   Divider,
+  Button,
   Grid,
   makeStyles,
 } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
-import { nextSelectedTemplateRouteRef } from '../../routes';
-import { viewTechDocRouteRef } from '../../../routes';
 import { CardHeader } from './CardHeader';
 import { CardLink } from './CardLink';
 
@@ -86,7 +80,13 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
  */
 export interface TemplateCardProps {
   template: TemplateEntityV1beta3;
-  deprecated?: boolean;
+  additionalLinks?: {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
+
+  onSelected?: (template: TemplateEntityV1beta3) => void;
 }
 
 /**
@@ -97,31 +97,9 @@ export const TemplateCard = (props: TemplateCardProps) => {
   const { template } = props;
   const styles = useStyles();
   const ownedByRelations = getEntityRelations(template, RELATION_OWNED_BY);
-  const templateRoute = useRouteRef(nextSelectedTemplateRouteRef);
-  const { name, namespace } = parseEntityRef(
-    stringifyEntityRef(props.template),
-  );
-  const href = templateRoute({
-    templateName: name,
-    namespace: namespace,
-  });
-
   const app = useApp();
   const iconResolver = (key?: string): IconComponent =>
     key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
-
-  // TechDocs Link
-  const viewTechDoc = useRouteRef(viewTechDocRouteRef);
-  const viewTechDocsAnnotation =
-    template.metadata.annotations?.['backstage.io/techdocs-ref'];
-  const viewTechDocsLink =
-    !!viewTechDocsAnnotation &&
-    !!viewTechDoc &&
-    viewTechDoc({
-      namespace: template.metadata.namespace || DEFAULT_NAMESPACE,
-      kind: template.kind,
-      name: template.metadata.name,
-    });
 
   return (
     <Card>
@@ -157,22 +135,18 @@ export const TemplateCard = (props: TemplateCardProps) => {
               </Grid>
             </>
           )}
-          {(!!viewTechDocsLink || template.metadata.links?.length) && (
+          {(props.additionalLinks || template.metadata.links?.length) && (
             <>
               <Grid item xs={12}>
                 <Divider />
               </Grid>
               <Grid item xs={12}>
                 <Grid container spacing={2}>
-                  {viewTechDocsLink && (
+                  {props.additionalLinks?.map(({ icon, text, url }) => (
                     <Grid className={styles.linkText} item xs={6}>
-                      <CardLink
-                        icon={iconResolver('docs')}
-                        text="View TechDocs"
-                        url={viewTechDocsLink}
-                      />
+                      <CardLink icon={icon} text={text} url={url} />
                     </Grid>
-                  )}
+                  ))}
                   {template.metadata.links?.map(({ url, icon, title }) => (
                     <Grid className={styles.linkText} item xs={6}>
                       <CardLink
@@ -202,7 +176,12 @@ export const TemplateCard = (props: TemplateCardProps) => {
               </>
             )}
           </div>
-          <Button size="small" variant="outlined" color="primary" to={href}>
+          <Button
+            size="small"
+            variant="outlined"
+            color="primary"
+            onClick={() => props.onSelected?.(template)}
+          >
             Choose
           </Button>
         </div>

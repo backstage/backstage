@@ -22,7 +22,6 @@ import {
   FIELD_EXTENSION_KEY,
   NextFieldExtensionOptions,
   FieldExtensionOptions,
-  nextSelectedTemplateRouteRef,
   SecretsContextProvider,
 } from '@backstage/plugin-scaffolder-react';
 
@@ -31,6 +30,7 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import { FormProps } from '../types';
+import { nextSelectedTemplateRouteRef } from '../routes';
 
 /**
  * The Props for the Scaffolder Router
@@ -58,6 +58,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
 
   const outlet = useOutlet() || props.children;
 
+  // todo(blam): move this out into a `useFieldExtensions` hook exported by -react
   const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({

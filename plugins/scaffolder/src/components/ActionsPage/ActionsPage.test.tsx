@@ -16,12 +16,12 @@
 import React from 'react';
 import { ActionsPage } from './ActionsPage';
 import {
-  rootRouteRef,
   scaffolderApiRef,
   ScaffolderApi,
 } from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
+import { rootRouteRef } from '../../routes';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   scaffold: jest.fn(),
