@@ -718,6 +718,97 @@ describe('GithubEntityProvider', () => {
     expect(providers[0].getProviderName()).toEqual('github-provider:default');
   });
 
+  it('apply delta update on added files from push event with glob catalog path', async () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            catalogPath: '**/catalog-info.yaml',
+          },
+        },
+      },
+    });
+
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    await provider.connect(entityProviderConnection);
+
+    const event: EventParams = {
+      topic: 'github.push',
+      metadata: {
+        'x-github-event': 'push',
+      },
+      eventPayload: {
+        ref: 'refs/heads/main',
+        repository: {
+          name: 'teste-1',
+          url: 'https://github.com/test-org/test-repo',
+          default_branch: 'main',
+          stargazers: 0,
+          master_branch: 'main',
+          organization: 'test-org',
+          topics: [],
+        },
+        created: true,
+        deleted: false,
+        forced: false,
+        commits: [
+          {
+            added: ['new-file.yaml'],
+            removed: [],
+            modified: [],
+          },
+          {
+            added: ['folder1/folder2/folder3/catalog-info.yaml'],
+            removed: [],
+            modified: [],
+          },
+        ],
+      },
+    };
+    const url =
+      'https://github.com/test-org/test-repo/blob/main/folder1/folder2/folder3/catalog-info.yaml';
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+            },
+            name: 'generated-c499bfb5e3f159d2bfefe26cac86a8a0b95b47f0',
+          },
+          spec: {
+            presence: 'optional',
+            target: `${url}`,
+            type: 'url',
+          },
+        },
+        locationKey: 'github-provider:default',
+      },
+    ];
+
+    await provider.onEvent(event);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'delta',
+      added: expectedEntities,
+      removed: [],
+    });
+  });
+
   it('apply delta update on added files from push event', async () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader({
