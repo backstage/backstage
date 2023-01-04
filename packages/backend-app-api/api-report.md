@@ -8,11 +8,13 @@ import { CacheService } from '@backstage/backend-plugin-api';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { Handler } from 'express';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -69,7 +71,7 @@ export const httpRouterFactory: (
 
 // @public (undocumented)
 export type HttpRouterFactoryOptions = {
-  indexPlugin?: string;
+  getPath(pluginId: string): string;
 };
 
 // @public
@@ -86,6 +88,17 @@ export const loggerFactory: (
 export const permissionsFactory: (
   options?: undefined,
 ) => ServiceFactory<PermissionsService>;
+
+// @public (undocumented)
+export const rootHttpRouterFactory: (
+  options?: RootHttpRouterFactoryOptions | undefined,
+) => ServiceFactory<RootHttpRouterService>;
+
+// @public (undocumented)
+export type RootHttpRouterFactoryOptions = {
+  indexPath?: string | false;
+  middleware?: Handler[];
+};
 
 // @public
 export const rootLifecycleFactory: (

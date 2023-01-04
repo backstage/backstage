@@ -23,6 +23,7 @@ import { appPlugin } from './appPlugin';
 import {
   databaseFactory,
   httpRouterFactory,
+  rootHttpRouterFactory,
   loggerFactory,
   rootLoggerFactory,
 } from '@backstage/backend-app-api';
@@ -63,6 +64,7 @@ describe('appPlugin', () => {
         rootLoggerFactory(),
         databaseFactory(),
         httpRouterFactory(),
+        rootHttpRouterFactory(),
       ],
       features: [
         appPlugin({
