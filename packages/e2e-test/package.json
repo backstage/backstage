@@ -31,7 +31,7 @@
     "@backstage/cli-common": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@types/fs-extra": "^9.0.1",
-    "@types/node": "^16.11.26",
+    "@types/node": "^18.0.0",
     "@types/puppeteer": "^5.4.4",
     "chalk": "^4.0.0",
     "commander": "^9.1.0",
