@@ -64,6 +64,10 @@ export class JenkinsApiImpl {
                    ${JenkinsApiImpl.jobTreeSpec}
                  ]{0,50}`;
 
+  private static readonly completeJobsTreeSpec = `jobs[
+                  ${JenkinsApiImpl.jobTreeSpec}
+                ]`;
+
   constructor(private readonly permissionApi?: PermissionEvaluator) {}
 
   /**
@@ -87,6 +91,9 @@ export class JenkinsApiImpl {
       );
       projects.push(this.augmentProject(job));
     } else {
+      const treeSpec = jenkinsInfo.isLatestCICDBuildsEnabled
+        ? JenkinsApiImpl.completeJobsTreeSpec.replace(/\s/g, '')
+        : JenkinsApiImpl.jobsTreeSpec.replace(/\s/g, '');
       // We aren't filtering
       // Assume jenkinsInfo.jobFullName is either
       // a MultiBranch Pipeline (folder with one job per branch) project
@@ -98,8 +105,24 @@ export class JenkinsApiImpl {
         // at all.
         // Whitespaces are only included for readability here and stripped out
         // before sending to Jenkins
-        tree: JenkinsApiImpl.jobsTreeSpec.replace(/\s/g, ''),
+        tree: treeSpec,
       });
+
+      if (jenkinsInfo.isLatestCICDBuildsEnabled && project.jobs) {
+        project.jobs = project.jobs
+          .sort((jobA: any, jobB: any) => {
+            // sort builds with no last build to the end
+            if (jobA?.lastBuild === null) {
+              return 1;
+            }
+            if (jobB?.lastBuild === null) {
+              return -1;
+            }
+
+            return jobB.lastBuild.timestamp - jobA.lastBuild.timestamp;
+          })
+          .slice(0, 50);
+      }
 
       const isStandaloneProject = !project.jobs;
       if (isStandaloneProject) {

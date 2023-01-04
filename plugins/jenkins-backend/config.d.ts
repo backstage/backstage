@@ -44,5 +44,11 @@ export interface Config {
       /** @visibility secret */
       apiKey: string;
     }[];
+
+    /**
+     * Enabling this functionality, will force the backed to retrieve all builds, sort them by build time and
+     * whether the latest builds exist. Latest builds are returned first.
+     */
+    isLatestCICDBuildsEnabled?: boolean;
   };
 }

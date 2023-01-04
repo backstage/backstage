@@ -42,6 +42,7 @@ export interface JenkinsInfoProvider {
 export interface JenkinsInfo {
   baseUrl: string;
   headers?: Record<string, string | string[]>;
+  isLatestCICDBuildsEnabled?: boolean;
   jobFullName: string; // TODO: make this an array
   crumbIssuer?: boolean;
 }
@@ -53,6 +54,7 @@ export interface JenkinsInstanceConfig {
   username: string;
   apiKey: string;
   crumbIssuer?: boolean;
+  isLatestCICDBuildsEnabled?: boolean;
   /**
    * Extra headers to send to Jenkins instance
    */
@@ -98,6 +100,9 @@ export class JenkinsConfig {
     const username = jenkinsConfig.getOptionalString('username');
     const apiKey = jenkinsConfig.getOptionalString('apiKey');
     const crumbIssuer = jenkinsConfig.getOptionalBoolean('crumbIssuer');
+    const isLatestCICDBuildsEnabled = jenkinsConfig.getOptionalBoolean(
+      'isLatestCICDBuildsEnabled',
+    );
     const extraRequestHeaders = jenkinsConfig.getOptional<
       JenkinsInstanceConfig['extraRequestHeaders']
     >('extraRequestHeaders');
@@ -126,6 +131,7 @@ export class JenkinsConfig {
           apiKey,
           extraRequestHeaders,
           crumbIssuer,
+          isLatestCICDBuildsEnabled,
         },
       ]);
     }
@@ -252,6 +258,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
       },
       jobFullName,
       crumbIssuer: instanceConfig.crumbIssuer,
+      isLatestCICDBuildsEnabled: instanceConfig.isLatestCICDBuildsEnabled,
     };
   }
 

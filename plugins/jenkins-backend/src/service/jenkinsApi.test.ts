@@ -75,6 +75,34 @@ describe('JenkinsApi', () => {
       },
     };
 
+    const secondProject: JenkinsProject = {
+      actions: [],
+      displayName: 'Example Second Build',
+      fullDisplayName: 'Example jobName » Example Second Build',
+      fullName: 'example-jobName/secondExampleBuild',
+      inQueue: false,
+      lastBuild: {
+        actions: [],
+        timestamp: 3,
+        building: false,
+        duration: 10,
+        result: 'success',
+        displayName: '#8',
+        fullDisplayName: 'Example jobName » Example Build #8',
+        url: 'https://jenkins.example.com/job/example-jobName/job/secondExampleBuild',
+        number: 7,
+      },
+    };
+
+    const thirdProject: JenkinsProject = {
+      actions: [],
+      displayName: 'Example Third Build',
+      fullDisplayName: 'Example jobName » Example Third Build',
+      fullName: 'example-jobName/thirdExampleBuild',
+      inQueue: false,
+      lastBuild: null,
+    };
+
     describe('standalone project', () => {
       it('should return the only build', async () => {
         mockedJenkinsClient.job.get
@@ -145,7 +173,82 @@ describe('JenkinsApi', () => {
           status: 'success',
         });
       });
+      it('standard github layout and enabled sorting', async () => {
+        mockedJenkinsClient.job.get.mockResolvedValueOnce({
+          jobs: [thirdProject, project, secondProject],
+        });
+
+        jenkinsInfo.isLatestCICDBuildsEnabled = true;
+
+        const result = await jenkinsApi.getProjects(jenkinsInfo);
+
+        expect(mockedJenkins).toHaveBeenCalledWith({
+          baseUrl: jenkinsInfo.baseUrl,
+          headers: jenkinsInfo.headers,
+          promisify: true,
+        });
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
+          name: jenkinsInfo.jobFullName,
+          tree: expect.anything(),
+        });
+        expect(result).toHaveLength(3);
+        expect(result).toEqual([
+          {
+            actions: [],
+            displayName: 'Example Second Build',
+            fullDisplayName: 'Example jobName » Example Second Build',
+            fullName: 'example-jobName/secondExampleBuild',
+            inQueue: false,
+            lastBuild: {
+              actions: [],
+              timestamp: 3,
+              building: false,
+              duration: 10,
+              result: 'success',
+              displayName: '#8',
+              fullDisplayName: 'Example jobName » Example Build #8',
+              url: 'https://jenkins.example.com/job/example-jobName/job/secondExampleBuild',
+              number: 7,
+              status: 'success',
+              source: {},
+            },
+            status: 'success',
+          },
+          {
+            actions: [],
+            displayName: 'Example Build',
+            fullDisplayName: 'Example jobName » Example Build',
+            fullName: 'example-jobName/exampleBuild',
+            inQueue: false,
+            lastBuild: {
+              actions: [],
+              timestamp: 1,
+              building: false,
+              duration: 10,
+              result: 'success',
+              displayName: '#7',
+              fullDisplayName: 'Example jobName » Example Build #7',
+              url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild',
+              number: 7,
+              status: 'success',
+              source: {},
+            },
+            status: 'success',
+          },
+          {
+            actions: [],
+            displayName: 'Example Third Build',
+            fullDisplayName: 'Example jobName » Example Third Build',
+            fullName: 'example-jobName/thirdExampleBuild',
+            inQueue: false,
+            lastBuild: null,
+            status: 'build not found',
+          },
+        ]);
+        jenkinsInfo.isLatestCICDBuildsEnabled = false;
+      });
     });
+
     describe('filtered by branch', () => {
       it('standard github layout', async () => {
         mockedJenkinsClient.job.get.mockResolvedValueOnce(project);
@@ -195,6 +298,7 @@ describe('JenkinsApi', () => {
         expect(result).toHaveLength(1);
       });
     });
+
     describe('augmented', () => {
       const projectWithScmActions: JenkinsProject = {
         actions: [

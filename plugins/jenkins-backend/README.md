@@ -93,6 +93,8 @@ jenkins:
   # optionally add extra headers
   # extraRequestHeaders:
   #   extra-header: my-value
+  # optinally specify backed to fetch all jobs and sort them by latest build according to timestamp
+  # isLatestCICDBuildsEnabled: true
 ```
 
 Catalog

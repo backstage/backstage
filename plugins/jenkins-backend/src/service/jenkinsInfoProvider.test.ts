@@ -230,6 +230,7 @@ describe('DefaultJenkinsInfoProvider', () => {
         'extra-header': 'extra-value',
       },
       jobFullName: 'teamA/artistLookup-build',
+      isLatestCICDBuildsEnabled: undefined,
     });
   });
 
