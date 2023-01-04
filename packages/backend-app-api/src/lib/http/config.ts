@@ -42,9 +42,9 @@ export function readHttpServerOptions(config: Config): HttpServerOptions {
 }
 
 function readHttpListenOptions(config: Config): HttpServerOptions['listen'] {
-  const listen = config.get('listen');
+  const listen = config.getOptional('listen');
   if (typeof listen === 'string') {
-    const parts = listen.split(':');
+    const parts = String(listen).split(':');
     const port = parseInt(parts[parts.length - 1], 10);
     if (!isNaN(port)) {
       if (parts.length === 1) {
@@ -59,9 +59,16 @@ function readHttpListenOptions(config: Config): HttpServerOptions['listen'] {
     );
   }
 
+  // Workaround to allow empty string
+  const host = config.getOptional('listen.host') ?? DEFAULT_HOST;
+  if (typeof host !== 'string') {
+    config.getOptionalString('listen.host'); // will throw
+    throw new Error('unreachable');
+  }
+
   return {
     port: config.getOptionalNumber('listen.port') ?? DEFAULT_PORT,
-    host: config.getOptionalString('listen.host') ?? DEFAULT_HOST,
+    host,
   };
 }
 
