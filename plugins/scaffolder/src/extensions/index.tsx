@@ -94,8 +94,9 @@ export function createNextScaffolderFieldExtension<
  *
  * @public
  */
-export const ScaffolderFieldExtensions: React.ComponentType =
-  (): JSX.Element | null => null;
+export const ScaffolderFieldExtensions: React.ComponentType<
+  React.PropsWithChildren<{}>
+> = (): JSX.Element | null => null;
 
 attachComponentData(
   ScaffolderFieldExtensions,
