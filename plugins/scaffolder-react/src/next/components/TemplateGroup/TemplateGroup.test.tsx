@@ -23,7 +23,9 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 describe('TemplateGroup', () => {
   it('should return a message when no templates are passed in', async () => {
-    const { getByText } = render(<TemplateGroup title="Test" templates={[]} />);
+    const { getByText } = render(
+      <TemplateGroup onSelected={jest.fn()} title="Test" templates={[]} />,
+    );
 
     expect(
       getByText(/No templates found that match your filter/),
@@ -31,36 +33,47 @@ describe('TemplateGroup', () => {
   });
 
   it('should render a card for each template with the template being passed as a prop', () => {
-    const mockTemplates: TemplateEntityV1beta3[] = [
+    const mockOnSelected = jest.fn();
+    const mockTemplates: { template: TemplateEntityV1beta3 }[] = [
       {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        kind: 'Template',
-        metadata: { name: 'test' },
-        spec: {
-          parameters: [],
-          steps: [],
-          type: 'website',
+        template: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: { name: 'test' },
+          spec: {
+            parameters: [],
+            steps: [],
+            type: 'website',
+          },
         },
       },
       {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        kind: 'Template',
-        metadata: { name: 'test2' },
-        spec: {
-          parameters: [],
-          steps: [],
-          type: 'service',
+        template: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: { name: 'test2' },
+          spec: {
+            parameters: [],
+            steps: [],
+            type: 'service',
+          },
         },
       },
     ];
 
-    render(<TemplateGroup title="Test" templates={mockTemplates} />);
+    render(
+      <TemplateGroup
+        onSelected={mockOnSelected}
+        title="Test"
+        templates={mockTemplates}
+      />,
+    );
 
     expect(TemplateCard).toHaveBeenCalledTimes(2);
 
-    for (const template of mockTemplates) {
+    for (const { template } of mockTemplates) {
       expect(TemplateCard).toHaveBeenCalledWith(
-        expect.objectContaining({ template }),
+        expect.objectContaining({ template, onSelected: mockOnSelected }),
         {},
       );
     }
@@ -68,32 +81,37 @@ describe('TemplateGroup', () => {
 
   it('should use the passed in TemplateCard prop to render the template card', () => {
     const mockTemplateCardComponent = jest.fn(() => null);
-
-    const mockTemplates: TemplateEntityV1beta3[] = [
+    const mockOnSelected = jest.fn();
+    const mockTemplates: { template: TemplateEntityV1beta3 }[] = [
       {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        kind: 'Template',
-        metadata: { name: 'test' },
-        spec: {
-          parameters: [],
-          steps: [],
-          type: 'website',
+        template: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: { name: 'test' },
+          spec: {
+            parameters: [],
+            steps: [],
+            type: 'website',
+          },
         },
       },
       {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        kind: 'Template',
-        metadata: { name: 'test2' },
-        spec: {
-          parameters: [],
-          steps: [],
-          type: 'service',
+        template: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: { name: 'test2' },
+          spec: {
+            parameters: [],
+            steps: [],
+            type: 'service',
+          },
         },
       },
     ];
 
     render(
       <TemplateGroup
+        onSelected={mockOnSelected}
         title="Test"
         templates={mockTemplates}
         components={{ CardComponent: mockTemplateCardComponent }}
@@ -102,31 +120,42 @@ describe('TemplateGroup', () => {
 
     expect(mockTemplateCardComponent).toHaveBeenCalledTimes(2);
 
-    for (const template of mockTemplates) {
+    for (const { template } of mockTemplates) {
       expect(mockTemplateCardComponent).toHaveBeenCalledWith(
-        expect.objectContaining({ template }),
+        expect.objectContaining({
+          onSelected: mockOnSelected,
+          template,
+        }),
         {},
       );
     }
   });
 
   it('should render the title when no templates passed', () => {
-    const { getByText } = render(<TemplateGroup title="Test" templates={[]} />);
+    const { getByText } = render(
+      <TemplateGroup onSelected={jest.fn()} title="Test" templates={[]} />,
+    );
     expect(getByText('Test')).toBeInTheDocument();
   });
 
   it('should render the title when there are templates in the list', () => {
-    const mockTemplates: TemplateEntityV1beta3[] = [
+    const mockTemplates: { template: TemplateEntityV1beta3 }[] = [
       {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        kind: 'Template',
-        metadata: { name: 'test' },
-        spec: { parameters: [], steps: [], type: 'website' },
+        template: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: { name: 'test' },
+          spec: { parameters: [], steps: [], type: 'website' },
+        },
       },
     ];
 
     const { getByText } = render(
-      <TemplateGroup title="Test" templates={mockTemplates} />,
+      <TemplateGroup
+        onSelected={jest.fn()}
+        title="Test"
+        templates={mockTemplates}
+      />,
     );
 
     expect(getByText('Test')).toBeInTheDocument();
@@ -135,7 +164,11 @@ describe('TemplateGroup', () => {
   it('should allow for passing through a user given title component', () => {
     const TitleComponent = <p>Im a custom header</p>;
     const { getByText } = render(
-      <TemplateGroup templates={[]} title={TitleComponent} />,
+      <TemplateGroup
+        onSelected={jest.fn()}
+        templates={[]}
+        title={TitleComponent}
+      />,
     );
 
     expect(getByText('Im a custom header')).toBeInTheDocument();
