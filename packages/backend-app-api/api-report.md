@@ -4,15 +4,15 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CacheService } from '@backstage/backend-plugin-api';
 import { ConfigService } from '@backstage/backend-plugin-api';
-import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { Handler } from 'express';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
+import { PluginCacheManager } from '@backstage/backend-common';
+import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
@@ -36,7 +36,7 @@ export interface Backend {
 // @public (undocumented)
 export const cacheFactory: (
   options?: undefined,
-) => ServiceFactory<CacheService>;
+) => ServiceFactory<PluginCacheManager>;
 
 // @public (undocumented)
 export const configFactory: (
@@ -57,7 +57,7 @@ export interface CreateSpecializedBackendOptions {
 // @public (undocumented)
 export const databaseFactory: (
   options?: undefined,
-) => ServiceFactory<DatabaseService>;
+) => ServiceFactory<PluginDatabaseManager>;
 
 // @public (undocumented)
 export const discoveryFactory: (
