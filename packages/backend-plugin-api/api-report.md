@@ -7,14 +7,12 @@
 
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
-import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Readable } from 'stream';
 import { TokenManager } from '@backstage/backend-common';
-import { TransportStreamOptions } from 'winston-transport';
 
 // @public (undocumented)
 export interface BackendFeature {
@@ -200,12 +198,6 @@ export interface LoggerService {
   // (undocumented)
   warn(message: string, meta?: Error | LogMeta): void;
 }
-
-// @public (undocumented)
-export function loggerToWinstonLogger(
-  logger: LoggerService,
-  opts?: TransportStreamOptions,
-): Logger;
 
 // @public (undocumented)
 export type LogMeta = {

@@ -3466,6 +3466,7 @@ __metadata:
     tar: ^6.1.12
     uuid: ^8.3.2
     winston: ^3.2.1
+    winston-transport: ^4.5.0
     yauzl: ^2.10.0
     yn: ^4.0.0
   peerDependencies:
@@ -3497,8 +3498,6 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@types/express": ^4.17.6
     express: ^4.17.1
-    winston: ^3.2.1
-    winston-transport: ^4.5.0
   languageName: unknown
   linkType: soft
 

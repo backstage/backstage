@@ -38,9 +38,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@types/express": "^4.17.6",
-    "express": "^4.17.1",
-    "winston": "^3.2.1",
-    "winston-transport": "^4.5.0"
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

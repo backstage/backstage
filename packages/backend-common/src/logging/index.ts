@@ -22,3 +22,4 @@ export {
   redactWinstonLogLine,
 } from './rootLogger';
 export * from './voidLogger';
+export { loggerToWinstonLogger } from './loggerToWinstonLogger';

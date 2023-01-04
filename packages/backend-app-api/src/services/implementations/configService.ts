@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { loadBackendConfig } from '@backstage/backend-common';
+import {
+  loadBackendConfig,
+  loggerToWinstonLogger,
+} from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
 
 /** @public */

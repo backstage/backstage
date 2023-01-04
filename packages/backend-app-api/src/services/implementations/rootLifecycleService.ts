@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   createServiceFactory,
   coreServices,
-  loggerToWinstonLogger,
   LifecycleServiceShutdownHook,
   RootLifecycleService,
 } from '@backstage/backend-plugin-api';

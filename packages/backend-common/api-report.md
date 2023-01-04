@@ -29,6 +29,7 @@ import { Knex } from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
@@ -46,6 +47,7 @@ import { SearchOptions } from '@backstage/backend-plugin-api';
 import { SearchResponse } from '@backstage/backend-plugin-api';
 import { SearchResponseFile } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
+import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
@@ -514,6 +516,12 @@ export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config>;
+
+// @public (undocumented)
+export function loggerToWinstonLogger(
+  logger: LoggerService,
+  opts?: TransportStreamOptions,
+): Logger;
 
 // @public
 export function notFoundHandler(): RequestHandler;
