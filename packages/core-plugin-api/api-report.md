@@ -425,6 +425,7 @@ export type ExternalRouteRef<
 export type FeatureFlag = {
   name: string;
   pluginId: string;
+  description?: string;
 };
 
 // @public
