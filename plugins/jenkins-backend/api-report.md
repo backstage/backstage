@@ -51,6 +51,8 @@ export interface JenkinsInfo {
   // (undocumented)
   headers?: Record<string, string | string[]>;
   // (undocumented)
+  isLatestCICDBuildsEnabled?: boolean;
+  // (undocumented)
   jobFullName: string;
 }
 
@@ -73,6 +75,8 @@ export interface JenkinsInstanceConfig {
   // (undocumented)
   crumbIssuer?: boolean;
   extraRequestHeaders?: Record<string, string>;
+  // (undocumented)
+  isLatestCICDBuildsEnabled?: boolean;
   // (undocumented)
   name: string;
   // (undocumented)
