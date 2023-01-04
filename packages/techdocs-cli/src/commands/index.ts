@@ -251,6 +251,10 @@ export function registerCommands(program: Command) {
     )
     .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)
+    .option(
+      '--preview-app-bundle-path <PATH>',
+      'Preview documentation using another web app',
+    )
     .action(lazy(() => import('./serve/serve').then(m => m.default)));
 }
 

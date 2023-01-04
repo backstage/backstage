@@ -42,8 +42,14 @@ function findPreviewBundlePath(): string {
   }
 }
 
+function getPreviewAppPath(opts: OptionValues): string {
+  return opts.previewAppBundlePath ?? findPreviewBundlePath();
+}
+
 export default async function serve(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
+
+  console.log(opts.previewAppBundlePath);
 
   // Determine if we want to run in local dev mode or not
   // This will run the backstage http server on a different port and only used
@@ -117,7 +123,7 @@ export default async function serve(opts: OptionValues) {
 
   const port = isDevMode ? backstageBackendPort : backstagePort;
   const httpServer = new HTTPServer(
-    findPreviewBundlePath(),
+    getPreviewAppPath(opts),
     port,
     opts.mkdocsPort,
     opts.verbose,
