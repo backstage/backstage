@@ -99,6 +99,7 @@ Options:
   --docker-option <DOCKER_OPTION...>
   --no-docker
   --mkdocs-port <PORT>
+  --preview-app-bundle-path <PATH_TO_BUNDLE>
   -v --verbose
   -h, --help
 ```

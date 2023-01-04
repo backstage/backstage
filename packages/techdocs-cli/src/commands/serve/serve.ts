@@ -49,8 +49,6 @@ function getPreviewAppPath(opts: OptionValues): string {
 export default async function serve(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
 
-  console.log(opts.previewAppBundlePath);
-
   // Determine if we want to run in local dev mode or not
   // This will run the backstage http server on a different port and only used
   // for proxying mkdocs to the backstage app running locally (e.g. with webpack-dev-server)
