@@ -18,6 +18,12 @@ import { ConfigReader } from '@backstage/config';
 import { readCorsOptions } from './readCorsOptions';
 
 describe('readCorsOptions', () => {
+  it('should be disabled by default', () => {
+    expect(readCorsOptions(new ConfigReader({}))).toEqual({
+      origin: false,
+    });
+  });
+
   it('reads single string', () => {
     const mockCallback = jest.fn();
     const config = new ConfigReader({ cors: { origin: 'https://*.value*' } });
