@@ -29,8 +29,8 @@ import { Minimatch } from 'minimatch';
  * const corsOptions = readCorsOptions(config.getConfig('backend'));
  * ```
  */
-export function readCorsOptions(config: Config): CorsOptions {
-  const cc = config.getOptionalConfig('cors');
+export function readCorsOptions(config?: Config): CorsOptions {
+  const cc = config?.getOptionalConfig('cors');
   if (!cc) {
     return { origin: false }; // Disable CORS
   }

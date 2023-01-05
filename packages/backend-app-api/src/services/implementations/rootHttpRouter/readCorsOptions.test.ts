@@ -19,7 +19,7 @@ import { readCorsOptions } from './readCorsOptions';
 
 describe('readCorsOptions', () => {
   it('should be disabled by default', () => {
-    expect(readCorsOptions(new ConfigReader({}))).toEqual({
+    expect(readCorsOptions()).toEqual({
       origin: false,
     });
   });

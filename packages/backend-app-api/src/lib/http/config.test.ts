@@ -18,6 +18,12 @@ import { ConfigReader } from '@backstage/config';
 import { readHttpServerOptions } from './config';
 
 describe('readHttpServerOptions', () => {
+  it('should return defaults', () => {
+    expect(readHttpServerOptions()).toEqual({
+      listen: { host: '', port: 7007 },
+    });
+  });
+
   it.each([
     [{}, { listen: { host: '', port: 7007 } }],
     [{ listen: ':80' }, { listen: { host: '', port: 80 } }],

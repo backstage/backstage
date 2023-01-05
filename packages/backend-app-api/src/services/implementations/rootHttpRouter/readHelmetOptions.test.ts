@@ -18,6 +18,30 @@ import { ConfigReader } from '@backstage/config';
 import { readHelmetOptions } from './readHelmetOptions';
 
 describe('readHelmetOptions', () => {
+  it('should return defaults', () => {
+    expect(readHelmetOptions()).toEqual({
+      contentSecurityPolicy: {
+        useDefaults: false,
+        directives: {
+          'default-src': ["'self'"],
+          'base-uri': ["'self'"],
+          'font-src': ["'self'", 'https:', 'data:'],
+          'frame-ancestors': ["'self'"],
+          'img-src': ["'self'", 'data:'],
+          'object-src': ["'none'"],
+          'script-src': ["'self'", "'unsafe-eval'"],
+          'style-src': ["'self'", 'https:', "'unsafe-inline'"],
+          'script-src-attr': ["'none'"],
+          'upgrade-insecure-requests': [],
+        },
+      },
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: false,
+      originAgentCluster: false,
+    });
+  });
+
   it('should add additional directives', () => {
     const config = new ConfigReader({
       csp: {
@@ -34,7 +58,6 @@ describe('readHelmetOptions', () => {
           'base-uri': ["'self'"],
           'font-src': ["'self'", 'https:', 'data:'],
           'frame-ancestors': ["'self'"],
-          // 'img-src': ["'self'", 'data:'],
           'object-src': ["'none'"],
           'script-src': ["'self'", "'unsafe-eval'"],
           'style-src': ["'self'", 'https:', "'unsafe-inline'"],

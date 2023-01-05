@@ -34,15 +34,15 @@ const DEFAULT_HOST = '';
  * const opts = readHttpServerOptions(config.getConfig('backend'));
  * ```
  */
-export function readHttpServerOptions(config: Config): HttpServerOptions {
+export function readHttpServerOptions(config?: Config): HttpServerOptions {
   return {
     listen: readHttpListenOptions(config),
     https: readHttpsOptions(config),
   };
 }
 
-function readHttpListenOptions(config: Config): HttpServerOptions['listen'] {
-  const listen = config.getOptional('listen');
+function readHttpListenOptions(config?: Config): HttpServerOptions['listen'] {
+  const listen = config?.getOptional('listen');
   if (typeof listen === 'string') {
     const parts = String(listen).split(':');
     const port = parseInt(parts[parts.length - 1], 10);
@@ -60,22 +60,22 @@ function readHttpListenOptions(config: Config): HttpServerOptions['listen'] {
   }
 
   // Workaround to allow empty string
-  const host = config.getOptional('listen.host') ?? DEFAULT_HOST;
+  const host = config?.getOptional('listen.host') ?? DEFAULT_HOST;
   if (typeof host !== 'string') {
-    config.getOptionalString('listen.host'); // will throw
+    config?.getOptionalString('listen.host'); // will throw
     throw new Error('unreachable');
   }
 
   return {
-    port: config.getOptionalNumber('listen.port') ?? DEFAULT_PORT,
+    port: config?.getOptionalNumber('listen.port') ?? DEFAULT_PORT,
     host,
   };
 }
 
-function readHttpsOptions(config: Config): HttpServerOptions['https'] {
-  const https = config.getOptional('https');
+function readHttpsOptions(config?: Config): HttpServerOptions['https'] {
+  const https = config?.getOptional('https');
   if (https === true) {
-    const baseUrl = config.getString('baseUrl');
+    const baseUrl = config!.getString('baseUrl');
     let hostname;
     try {
       hostname = new URL(baseUrl).hostname;
@@ -86,7 +86,7 @@ function readHttpsOptions(config: Config): HttpServerOptions['https'] {
     return { certificate: { type: 'generated', hostname } };
   }
 
-  const cc = config.getOptionalConfig('https');
+  const cc = config?.getOptionalConfig('https');
   if (!cc) {
     return undefined;
   }

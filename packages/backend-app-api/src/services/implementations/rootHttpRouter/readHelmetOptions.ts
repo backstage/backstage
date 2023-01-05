@@ -30,7 +30,7 @@ import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/cont
  * const helmetOptions = readHelmetOptions(config.getConfig('backend'));
  * ```
  */
-export function readHelmetOptions(config: Config): HelmetOptions {
+export function readHelmetOptions(config?: Config): HelmetOptions {
   const cspOptions = readCspDirectives(config);
   return {
     contentSecurityPolicy: {
@@ -61,8 +61,8 @@ type CspDirectives = Record<string, string[] | false> | undefined;
  *     upgrade-insecure-requests: false
  * ```
  */
-function readCspDirectives(config: Config): CspDirectives {
-  const cc = config.getOptionalConfig('csp');
+function readCspDirectives(config?: Config): CspDirectives {
+  const cc = config?.getOptionalConfig('csp');
   if (!cc) {
     return undefined;
   }
