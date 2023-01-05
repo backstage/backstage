@@ -49,3 +49,4 @@ export type {
   SearchResponseFile,
   UrlReaderService,
 } from './UrlReaderService';
+export type { PrometheusExporterService } from './PrometheusExporterService';
