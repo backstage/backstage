@@ -23,7 +23,7 @@ To get started, you should get familiar with these core concepts:
 Backstage Search isn't a search engine itself, rather, it provides an interface
 between your Backstage instance and a Search Engine of your choice. More
 concretely, a `SearchEngine` is an interface whose concrete implementations
-facilitate communication with different search engines (like ElasticSearch,
+facilitate communication with different search engines (like Elasticsearch,
 Lunr, Solr, etc). This abstraction exists in order to support your
 organization's needs.
 
