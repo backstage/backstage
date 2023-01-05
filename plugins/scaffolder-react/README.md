@@ -1,7 +1,5 @@
 # Scaffolder React
 
-WORK IN PROGRESS
-
 This is shared code of the frontend part of the default Scaffolder plugin.
 
 It will implement the core API for working with the Scaffolder, and
