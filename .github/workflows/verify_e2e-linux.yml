@@ -51,6 +51,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
+      - name: setup chrome
+        uses: browser-actions/setup-chrome@latest
       - name: yarn install
         uses: backstage/actions/yarn-install@v0.5.12
         with:
