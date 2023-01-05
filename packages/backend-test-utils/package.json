@@ -39,7 +39,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
-    "better-sqlite3": "^7.5.0",
+    "better-sqlite3": "^8.0.0",
     "knex": "^2.0.0",
     "msw": "^0.49.0",
     "mysql2": "^2.2.5",
