@@ -33,7 +33,12 @@ import {
   NotAllowedError,
 } from '@backstage/errors';
 import { defaultCookieConfigurer, readState, verifyNonce } from './helpers';
-import { postMessageResponse, ensuresXRequestedWith } from '../flow';
+import {
+  postMessageResponse,
+  redirectMessageResponse,
+  ensuresXRequestedWith,
+  WebMessageResponse,
+} from '../flow';
 import {
   OAuthHandlers,
   OAuthStartRequest,
@@ -56,6 +61,7 @@ export type OAuthAdapterOptions = {
   cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
+  isPopupAuthenticationRequest: boolean;
 };
 
 /** @public */
@@ -68,7 +74,8 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       'providerId' | 'persistScopes' | 'callbackUrl' | 'redirectUrl'
     >,
   ): OAuthAdapter {
-    const { appUrl, baseUrl, isOriginAllowed } = config;
+    const { appUrl, baseUrl, isOriginAllowed, isPopupAuthenticationRequest } =
+      config;
     const { origin: appOrigin } = new URL(appUrl);
 
     const cookieConfigurer = config.cookieConfigurer ?? defaultCookieConfigurer;
@@ -79,6 +86,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       baseUrl,
       cookieConfigurer,
       isOriginAllowed,
+      isPopupAuthenticationRequest: isPopupAuthenticationRequest,
     });
   }
 
@@ -171,17 +179,22 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
       const identity = await this.populateIdentity(response.backstageIdentity);
 
-      // post message back to popup if successful
-      return postMessageResponse(res, appOrigin, redirectUrl, {
+      const responseObj: WebMessageResponse = {
         type: 'authorization_response',
         response: { ...response, backstageIdentity: identity },
-      });
+      };
+
+      if (!this.options.isPopupAuthenticationRequest) {
+        return redirectMessageResponse(res, redirectUrl);
+      }
+      // post message back to popup if successful
+      return postMessageResponse(res, appOrigin, responseObj);
     } catch (error) {
       const { name, message } = isError(error)
         ? error
         : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
       // post error message back to popup if failure
-      return postMessageResponse(res, appOrigin, 'redirectUrl', {
+      return postMessageResponse(res, appOrigin, {
         type: 'authorization_response',
         error: { name, message },
       });

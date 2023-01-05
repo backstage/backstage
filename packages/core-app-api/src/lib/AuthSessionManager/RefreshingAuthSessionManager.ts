@@ -63,15 +63,6 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     this.helper = new SessionScopeHelper({ sessionScopes, defaultScopes });
   }
 
-  async createSession(oAuth2Response: T): Promise<void> {
-    this.currentSession = oAuth2Response;
-    // this will initialize the session
-    const sessionData = await this.getSession({
-      instantPopup: false,
-    });
-    this.stateTracker.setIsSignedIn(true);
-  }
-
   async getSession(options: GetSessionOptions): Promise<T | undefined> {
     if (
       this.helper.sessionExistsAndHasScope(this.currentSession, options.scopes)

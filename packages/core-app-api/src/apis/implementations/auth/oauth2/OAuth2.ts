@@ -77,6 +77,7 @@ export default class OAuth2
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = [],
+      usePopup,
       scopeTransform = x => x,
     } = options;
 
@@ -85,6 +86,7 @@ export default class OAuth2
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,
+      usePopup,
       sessionTransform(res: OAuth2Response): OAuth2Session {
         return {
           ...res,
@@ -126,28 +128,6 @@ export default class OAuth2
   }) {
     this.sessionManager = options.sessionManager;
     this.scopeTransform = options.scopeTransform;
-  }
-
-  // jk
-  async create(data: any) {
-    // transform data
-    const transform = res => {
-      return {
-        ...res,
-        providerInfo: {
-          idToken: res.providerInfo.idToken,
-          accessToken: res.providerInfo.accessToken,
-          scopes: OAuth2.normalizeScopes(
-            this.scopeTransform,
-            res.providerInfo.scope,
-          ),
-          expiresAt: new Date(
-            Date.now() + res.providerInfo.expiresInSeconds * 1000,
-          ),
-        },
-      };
-    };
-    await this.sessionManager.createSession(transform(data));
   }
 
   async signIn() {

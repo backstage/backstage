@@ -28,7 +28,6 @@ export const safelyEncodeURIComponent = (value: string) => {
 export const postMessageResponse = (
   res: express.Response,
   appOrigin: string,
-  redirectUrl: string,
   response: WebMessageResponse,
 ) => {
   const jsonData = JSON.stringify(response);
@@ -67,16 +66,15 @@ export const postMessageResponse = (
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Frame-Options', 'sameorigin');
   res.setHeader('Content-Security-Policy', `script-src 'sha256-${hash}'`);
+  res.end(`<html><body><script>${script}</script></body></html>`);
+};
 
-  // TODO: Create separate handler and helper for redirect auth flow
-  const isRedirect = true;
-  if (isRedirect) {
-    res.cookie('authSecData', jsonData);
-    // TODO: add provider data
-    res.redirect(redirectUrl);
-  } else {
-    res.end(`<html><body><script>${script}</script></body></html>`);
-  }
+/** @public */
+export const redirectMessageResponse = (
+  res: express.Response,
+  redirectUrl: string,
+) => {
+  res.redirect(redirectUrl);
 };
 
 /** @public */

@@ -107,6 +107,8 @@ export async function createRouter(
     ...providerFactories,
   };
   const providersConfig = config.getConfig('auth.providers');
+  const isPopupAuthenticationRequest = config.getBoolean('auth.usePopup');
+
   const configuredProviders = providersConfig.keys();
 
   const isOriginAllowed = createOriginFilter(config);
@@ -123,6 +125,7 @@ export async function createRouter(
             baseUrl: authUrl,
             appUrl,
             isOriginAllowed,
+            isPopupAuthenticationRequest: isPopupAuthenticationRequest,
           },
           config: providersConfig.getConfig(providerId),
           logger,

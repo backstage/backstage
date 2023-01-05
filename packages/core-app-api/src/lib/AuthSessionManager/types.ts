@@ -31,8 +31,6 @@ export type GetSessionOptions = {
 export type SessionManager<T> = {
   getSession(options: GetSessionOptions): Promise<T | undefined>;
 
-  createSession(oAuth2Response: T): Promise<void>;
-
   removeSession(): Promise<void>;
 
   sessionState$(): Observable<SessionState>;

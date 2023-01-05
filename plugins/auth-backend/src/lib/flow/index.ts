@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-export { ensuresXRequestedWith, postMessageResponse } from './authFlowHelpers';
+export {
+  ensuresXRequestedWith,
+  postMessageResponse,
+  redirectMessageResponse,
+} from './authFlowHelpers';
 
 export type { WebMessageResponse } from './types';

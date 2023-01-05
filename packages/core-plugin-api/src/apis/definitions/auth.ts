@@ -54,6 +54,11 @@ export type AuthProviderInfo = {
    * Icon for the auth provider.
    */
   icon: IconComponent;
+
+  /**
+   * The provider id from the list of provider configured in the login page
+   */
+  provider_id: string;
 };
 
 /**
@@ -285,12 +290,6 @@ export type SessionApi = {
    * Sign out from the current session. This will reload the page.
    */
   signOut(): Promise<void>;
-
-  /**
-   * Create a session obj using passed in Data. This method is only used during redirect auth flow.
-   * @param data
-   */
-  create(data: any): void;
   /**
    * Observe the current state of the auth session. Emits the current state on subscription.
    */

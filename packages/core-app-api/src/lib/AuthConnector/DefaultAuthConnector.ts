@@ -33,6 +33,10 @@ type Options<AuthSession> = {
    */
   environment: string;
   /**
+   * use a popup or a redirect for authentication with backend authentication api
+   */
+  usePopup: boolean;
+  /**
    * Information about the auth provider to be shown to the user.
    * The ID Must match the backend auth plugin configuration, for example 'google'.
    */
@@ -45,10 +49,6 @@ type Options<AuthSession> = {
    * Function used to join together a set of scopes, defaults to joining with a space character.
    */
   joinScopes?: (scopes: Set<string>) => string;
-  /**
-   * Authentication flow
-   */
-  authFlow: string;
   /**
    * Function used to transform an auth response into the session type.
    */
@@ -81,16 +81,14 @@ export class DefaultAuthConnector<AuthSession>
       provider,
       joinScopes = defaultJoinScopes,
       oauthRequestApi,
+      usePopup,
       sessionTransform = id => id,
     } = options;
-
-    // TODO integrate with configAPI, pass down as option
-    const isRedirect = true;
 
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
       onAuthRequest: async scopes => {
-        if (isRedirect) {
+        if (!usePopup) {
           // modal before redirect
           const scope = this.joinScopesFunc(scopes);
           const redirectUrl = await this.buildUrl('/start', {
@@ -99,10 +97,18 @@ export class DefaultAuthConnector<AuthSession>
             redirectUrl: window.location.href,
             authType: 'redirect',
           });
+
+          if (provider.hasOwnProperty('provider_id')) {
+            // set the sign in provider here
+            localStorage.setItem(
+              '@backstage/core:SignInPage:provider',
+              provider.provider_id,
+            );
+          }
+
           window.location.href = redirectUrl;
-          // do we need to return?
+          // we need to return to exit function or else popup occurs
           return 0;
-          // return this.showPopup(scopes);
         }
         return this.showPopup(scopes);
       },
