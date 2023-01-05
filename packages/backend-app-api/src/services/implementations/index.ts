@@ -28,5 +28,6 @@ export { httpRouterFactory } from './httpRouterService';
 export { rootHttpRouterFactory } from './rootHttpRouterService';
 export { lifecycleFactory } from './lifecycleService';
 export { rootLifecycleFactory } from './rootLifecycleService';
+export { prometheusExporterFactory } from './prometheusExporterService';
 export type { HttpRouterFactoryOptions } from './httpRouterService';
 export type { RootHttpRouterFactoryOptions } from './rootHttpRouterService';

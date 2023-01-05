@@ -3383,6 +3383,9 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
+    "@opentelemetry/api": ^1.3.0
+    "@opentelemetry/exporter-prometheus": ^0.34.0
+    "@opentelemetry/sdk-metrics": ^1.8.0
     "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -12590,6 +12593,62 @@ __metadata:
   version: 1.3.0
   resolution: "@opentelemetry/api@npm:1.3.0"
   checksum: 33d284b67b6fab20ff72961d289c6487d3cb27caf7489f0231d7030551f82871e081e744b0390751d8aef3bf1614bd79f854788901a354e15274f552581fb374
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/core@npm:1.8.0":
+  version: 1.8.0
+  resolution: "@opentelemetry/core@npm:1.8.0"
+  dependencies:
+    "@opentelemetry/semantic-conventions": 1.8.0
+  peerDependencies:
+    "@opentelemetry/api": ">=1.0.0 <1.4.0"
+  checksum: 09cd58ec764f97b175af47fbaff335f06a31914fcb59b30c4f96f6ba69391ce4e59e3da46a95fd15a7d0e8fc5c638195aba95ca1a916127207481f1283991c97
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/exporter-prometheus@npm:^0.34.0":
+  version: 0.34.0
+  resolution: "@opentelemetry/exporter-prometheus@npm:0.34.0"
+  dependencies:
+    "@opentelemetry/core": 1.8.0
+    "@opentelemetry/resources": 1.8.0
+    "@opentelemetry/sdk-metrics": 1.8.0
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 6c17d5ec1c638fb5f561230f706d84866d504aa2805ed74ab2174dae9a1c9d39ce909b61ba9796d38fbcdef85f76805e23d5c80d762231e08384e032beb38b65
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/resources@npm:1.8.0":
+  version: 1.8.0
+  resolution: "@opentelemetry/resources@npm:1.8.0"
+  dependencies:
+    "@opentelemetry/core": 1.8.0
+    "@opentelemetry/semantic-conventions": 1.8.0
+  peerDependencies:
+    "@opentelemetry/api": ">=1.0.0 <1.4.0"
+  checksum: eeea7864c486d31679dbae3c31e9badf277ece24ba8bd063e2bcc34b2d7240f543678b8106743aff30c6b0f028f2bed286d64cfd7b5cde6f9a0f6a9271a3fce1
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/sdk-metrics@npm:1.8.0, @opentelemetry/sdk-metrics@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "@opentelemetry/sdk-metrics@npm:1.8.0"
+  dependencies:
+    "@opentelemetry/core": 1.8.0
+    "@opentelemetry/resources": 1.8.0
+    lodash.merge: 4.6.2
+  peerDependencies:
+    "@opentelemetry/api": ">=1.3.0 <1.4.0"
+  checksum: 8dfb82e70b14fe2e95ce3f3d0b18e42981bfabe64c63b7f8c429aed197815356836a0350ad5cf38696f561c616ff5572f2ca63f4f968ae1367ed7180f730cad7
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/semantic-conventions@npm:1.8.0":
+  version: 1.8.0
+  resolution: "@opentelemetry/semantic-conventions@npm:1.8.0"
+  checksum: df30ad9486b6c611c4110fab80815301a7cc9cb320983d6c5792a1b411dc4e4f04c489b2abfdea0da7f7bbb27b9f3c456764ba07f23432900a9bbcbc5f98ff58
   languageName: node
   linkType: hard
 
@@ -28209,7 +28268,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.merge@npm:^4.6.2":
+"lodash.merge@npm:4.6.2, lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005

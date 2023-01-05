@@ -31,6 +31,7 @@ import {
   schedulerFactory,
   tokenManagerFactory,
   urlReaderFactory,
+  prometheusExporterFactory,
 } from '@backstage/backend-app-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
@@ -49,6 +50,7 @@ export const defaultServiceFactories = [
   rootHttpRouterFactory(),
   lifecycleFactory(),
   rootLifecycleFactory(),
+  prometheusExporterFactory(),
 ];
 
 /**

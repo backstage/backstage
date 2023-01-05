@@ -156,4 +156,13 @@ export namespace coreServices {
   export const urlReader = createServiceRef<
     import('./UrlReaderService').UrlReaderService
   >({ id: 'core.urlReader' });
+
+  /**
+   * The service reference for the plugin scoped {@link PrometheusExporterService}.
+   *
+   * @public
+   */
+  export const prometheusExporter = createServiceRef<
+    import('./PrometheusExporterService').PrometheusExporterService
+  >({ id: 'core.prometheus.exporter', scope: 'root' });
 }
