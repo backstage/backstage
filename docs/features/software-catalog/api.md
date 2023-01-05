@@ -246,6 +246,37 @@ value. These are special in that they form the entity's unique
 The return type is JSON, as a single [`Entity`](descriptor-format.md), or a 404
 error if there was no entity with that reference triplet.
 
+### `POST /entities/by-refs`
+
+Gets a batch of entities by their entity refs. This is useful in contexts where
+you want to fetch a large number of specific entities efficiently, for example
+in GraphQL resolvers.
+
+The request body is JSON, on the form
+
+```json
+{
+  "entityRefs": ["component:default/foo", "api:default/bar"],
+  "fields": ["kind", "metadata.name"]
+}
+```
+
+where each `entityRefs` entry is an entity ref that you want to fetch. The
+`fields` array is optional and works the same way as the `GET /entities` fields
+above, e.g. it's used to fetch only certain slices of each entity.
+
+The return type is JSON, on the form
+
+```json
+{
+  "items": [{ "kind": "Component", "metadata": { "name": "foo" } }, null]
+}
+```
+
+where the `items` array has _the same length_ and _the same order_ as the input
+`entityRefs` array. Each element contains the corresponding entity data, or
+`null` if no entity existed in the catalog with that ref.
+
 ## Locations
 
 TODO

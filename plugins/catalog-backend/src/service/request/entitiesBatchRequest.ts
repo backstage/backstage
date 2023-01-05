@@ -20,9 +20,10 @@ import { z } from 'zod';
 
 const schema = z.object({
   entityRefs: z.array(z.string()),
+  fields: z.array(z.string()).optional(),
 });
 
-export function entitiesBatchRequest(req: Request) {
+export function entitiesBatchRequest(req: Request): z.infer<typeof schema> {
   try {
     return schema.parse(req.body);
   } catch (error) {
