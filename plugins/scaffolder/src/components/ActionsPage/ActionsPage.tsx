@@ -80,7 +80,7 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
     <Grid container>
       {props.examples.map(example => {
         return (
-          <Grid container>
+          <>
             <Grid lg={3}>
               <Box padding={4}>
                 <Typography>{example.description}</Typography>
@@ -96,7 +96,7 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
                 />
               </Box>
             </Grid>
-          </Grid>
+          </>
         );
       })}
     </Grid>
