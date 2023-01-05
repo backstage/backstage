@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export type {
   CacheService as PluginCacheManager,
@@ -30,7 +30,7 @@ export type CacheManagerOptions = {
   /**
    * An optional logger for use by the PluginCacheManager.
    */
-  logger?: Logger;
+  logger?: LoggerService;
 
   /**
    * An optional handler for connection errors emitted from the underlying data

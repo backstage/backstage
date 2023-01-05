@@ -151,7 +151,7 @@ export class BitbucketServerUrlReader implements UrlReader {
 export class BitbucketUrlReader implements UrlReader {
   constructor(
     integration: BitbucketIntegration,
-    logger: Logger,
+    logger: LoggerService,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
@@ -187,7 +187,7 @@ export class CacheManager {
 
 // @public
 export type CacheManagerOptions = {
-  logger?: Logger;
+  logger?: LoggerService;
   onError?: (err: Error) => void;
 };
 
@@ -239,7 +239,7 @@ export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
 // @public
 export function createStatusCheckRouter(options: {
-  logger: Logger;
+  logger: LoggerService;
   path?: string;
   statusCheck?: StatusCheck;
 }): Promise<express.Router>;
@@ -256,7 +256,7 @@ export class DatabaseManager {
 // @public
 export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
-  logger?: Logger;
+  logger?: LoggerService;
 };
 
 // @public
@@ -280,7 +280,7 @@ export function errorHandler(
 // @public
 export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
-  logger?: Logger;
+  logger?: LoggerService;
   logClientErrors?: boolean;
 };
 
@@ -381,7 +381,7 @@ export class Git {
     username?: string;
     password?: string;
     token?: string;
-    logger?: Logger;
+    logger?: LoggerService;
   }) => Git;
   // (undocumented)
   init(options: { dir: string; defaultBranch?: string }): Promise<void>;
@@ -502,7 +502,7 @@ export type KubernetesContainerRunnerOptions = {
 
 // @public
 export function loadBackendConfig(options: {
-  logger: Logger;
+  logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config>;
@@ -525,7 +525,7 @@ export { PluginEndpointDiscovery };
 // @public
 export type ReaderFactory = (options: {
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
@@ -593,10 +593,12 @@ export function redactWinstonLogLine(
 ): winston.Logform.TransformableInfo;
 
 // @public
-export function requestLoggingHandler(logger?: Logger): RequestHandler;
+export function requestLoggingHandler(logger?: LoggerService): RequestHandler;
 
 // @public
-export type RequestLoggingHandlerFactory = (logger?: Logger) => RequestHandler;
+export type RequestLoggingHandlerFactory = (
+  logger?: LoggerService,
+) => RequestHandler;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
@@ -640,7 +642,7 @@ export class ServerTokenManager implements TokenManager {
 
 // @public
 export interface ServerTokenManagerOptions {
-  logger: Logger;
+  logger: LoggerService;
 }
 
 // @public
@@ -648,7 +650,7 @@ export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
   setPort(port: number): ServiceBuilder;
   setHost(host: string): ServiceBuilder;
-  setLogger(logger: Logger): ServiceBuilder;
+  setLogger(logger: LoggerService): ServiceBuilder;
   enableCors(options: cors.CorsOptions): ServiceBuilder;
   setHttpsSettings(settings: {
     certificate:
@@ -718,7 +720,7 @@ export class UrlReaders {
 // @public
 export type UrlReadersOptions = {
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   factories?: ReaderFactory[];
 };
 

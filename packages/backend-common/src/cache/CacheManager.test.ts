@@ -240,7 +240,10 @@ describe('CacheManager', () => {
       // Invoke the actual error handler.
       const expectedError = new Error('some error');
       realHandler(expectedError);
-      expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to create cache client',
+        expectedError,
+      );
     });
 
     it('calls provided handler', () => {

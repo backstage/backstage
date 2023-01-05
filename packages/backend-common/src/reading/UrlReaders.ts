@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ReaderFactory, UrlReader } from './types';
 import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
@@ -40,7 +40,7 @@ export type UrlReadersOptions = {
   /** Root config object */
   config: Config;
   /** Logger used by all the readers */
-  logger: Logger;
+  logger: LoggerService;
   /** A list of factories used to construct individual readers that match on URLs */
   factories?: ReaderFactory[];
 };

@@ -19,7 +19,7 @@ import { resolve as resolvePath, dirname } from 'path';
 import express from 'express';
 import * as http from 'http';
 import * as https from 'https';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { HttpsSettings } from './config';
 import forge from 'node-forge';
 
@@ -37,7 +37,7 @@ const IP_HOSTNAME_REGEX = /:|^\d+\.\d+\.\d+\.\d+$/;
  */
 export function createHttpServer(
   app: express.Express,
-  logger?: Logger,
+  logger?: LoggerService,
 ): http.Server {
   logger?.info('Initializing http server');
 
@@ -56,7 +56,7 @@ export function createHttpServer(
 export async function createHttpsServer(
   app: express.Express,
   httpsSettings: HttpsSettings,
-  logger?: Logger,
+  logger?: LoggerService,
 ): Promise<http.Server> {
   logger?.info('Initializing https server');
 
@@ -83,7 +83,7 @@ export async function createHttpsServer(
   return https.createServer(credentials, app) as http.Server;
 }
 
-function getCertificateExpiration(cert: string, logger?: Logger) {
+function getCertificateExpiration(cert: string, logger?: LoggerService) {
   try {
     const crt = forge.pki.certificateFromPem(cert);
     return crt.validity.notAfter.getTime() - Date.now();
@@ -93,7 +93,10 @@ function getCertificateExpiration(cert: string, logger?: Logger) {
   }
 }
 
-async function getGeneratedCertificate(hostname: string, logger?: Logger) {
+async function getGeneratedCertificate(
+  hostname: string,
+  logger?: LoggerService,
+) {
   const hasModules = await fs.pathExists('node_modules');
   let certPath;
   if (hasModules) {
