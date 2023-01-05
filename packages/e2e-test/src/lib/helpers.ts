@@ -22,7 +22,7 @@ import {
   ChildProcess,
 } from 'child_process';
 import { promisify } from 'util';
-import puppeteer from 'puppeteer';
+import * as puppeteer from 'puppeteer';
 
 const execFile = promisify(execFileCb);
 
