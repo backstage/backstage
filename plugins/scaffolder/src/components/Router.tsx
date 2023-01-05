@@ -30,6 +30,7 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import {
+  FieldExtensionOptions,
   SecretsContextProvider,
   useCustomFieldExtensions,
 } from '@backstage/plugin-scaffolder-react';
@@ -101,7 +102,7 @@ export const Router = (props: RouterProps) => {
           customFieldExtension => customFieldExtension.name === name,
         ),
     ),
-  ];
+  ] as FieldExtensionOptions[];
 
   // todo(blam): this should also be moved to a hook in -react
   const customLayouts = useElementFilter(outlet, elements =>

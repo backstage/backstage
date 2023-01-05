@@ -53,7 +53,8 @@ export type NextRouterProps = {
 export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   const { components: { TemplateCardComponent } = {} } = props;
   const outlet = useOutlet() || props.children;
-  const customFieldExtensions = useCustomFieldExtensions(outlet);
+  const customFieldExtensions =
+    useCustomFieldExtensions<NextFieldExtensionOptions>(outlet);
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(

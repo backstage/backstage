@@ -19,19 +19,22 @@ import {
   FIELD_EXTENSION_KEY,
   FIELD_EXTENSION_WRAPPER_KEY,
 } from '../extensions/keys';
-import { NextFieldExtensionOptions } from '../next';
 
 /**
  * Hook that returns all custom field extensions from the current outlet.
  * @public
  */
-export const useCustomFieldExtensions = (outlet: React.ReactNode) => {
+export const useCustomFieldExtensions = <
+  TComponentDataType = FieldExtensionOptions,
+>(
+  outlet: React.ReactNode,
+) => {
   return useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
       })
-      .findComponentData<FieldExtensionOptions | NextFieldExtensionOptions>({
+      .findComponentData<TComponentDataType>({
         key: FIELD_EXTENSION_KEY,
       }),
   );

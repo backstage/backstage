@@ -9,30 +9,24 @@ import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { Dispatch } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
-import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldProps as FieldProps_2 } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/core';
 import { FieldValidation as FieldValidation_2 } from '@rjsf/utils';
 import type { FormProps as FormProps_2 } from '@rjsf/core-v5';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
-import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
-import { RouteRef } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
-import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
-
-// @public (undocumented)
-export const actionsRouteRef: SubRouteRef<undefined>;
 
 // @alpha
 export const createFieldValidation: () => FieldValidation_2;
@@ -68,20 +62,11 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   },
 ) => void | Promise<void>;
 
-// @public (undocumented)
-export const editRouteRef: SubRouteRef<undefined>;
-
 // @alpha
 export const extractSchemaFromStep: (inputStep: JsonObject) => {
   uiSchema: UiSchema;
   schema: JsonObject;
 };
-
-// @public
-export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
-
-// @public
-export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 
 // @public
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
@@ -114,11 +99,6 @@ export type FieldExtensionOptions<
 export type FormProps = Pick<
   FormProps_2,
   'transformErrors' | 'noHtml5Validate'
->;
-
-// @public @deprecated (undocumented)
-export const legacySelectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:templateName'>
 >;
 
 // @public
@@ -178,19 +158,6 @@ export type NextFieldExtensionOptions<
   schema?: CustomFieldExtensionSchema;
 };
 
-// @alpha (undocumented)
-export const nextRouteRef: RouteRef<undefined>;
-
-// @alpha (undocumented)
-export const nextScaffolderTaskRouteRef: SubRouteRef<
-  PathParams<'/tasks/:taskId'>
->;
-
-// @alpha (undocumented)
-export const nextSelectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:namespace/:templateName'>
->;
-
 // @alpha
 export interface ParsedTemplateSchema {
   // (undocumented)
@@ -205,9 +172,6 @@ export interface ParsedTemplateSchema {
   uiSchema: UiSchema;
 }
 
-// @public (undocumented)
-export const registerComponentRouteRef: ExternalRouteRef<undefined, true>;
-
 // @alpha
 export const ReviewState: (props: ReviewStateProps) => JSX.Element;
 
@@ -216,9 +180,6 @@ export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
 };
-
-// @public (undocumented)
-export const rootRouteRef: RouteRef<undefined>;
 
 // @public
 export interface ScaffolderApi {
@@ -300,9 +261,6 @@ export interface ScaffolderGetIntegrationsListResponse {
 }
 
 // @public (undocumented)
-export const scaffolderListTaskRouteRef: SubRouteRef<undefined>;
-
-// @public (undocumented)
 export type ScaffolderOutputLink = {
   title?: string;
   icon?: string;
@@ -350,9 +308,6 @@ export type ScaffolderTaskOutput = {
   [key: string]: unknown;
 };
 
-// @public (undocumented)
-export const scaffolderTaskRouteRef: SubRouteRef<PathParams<'/tasks/:taskId'>>;
-
 // @public
 export type ScaffolderTaskStatus =
   | 'open'
@@ -383,11 +338,6 @@ export const SecretsContextProvider: ({
   children,
 }: PropsWithChildren<{}>) => JSX.Element;
 
-// @public (undocumented)
-export const selectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:namespace/:templateName'>
->;
-
 // @alpha
 export const Stepper: (props: StepperProps) => JSX.Element;
 
@@ -395,8 +345,9 @@ export const Stepper: (props: StepperProps) => JSX.Element;
 export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  templateName?: string;
   FormProps?: FormProps;
+  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
 };
 
 // @alpha
@@ -405,7 +356,13 @@ export const TemplateCard: (props: TemplateCardProps) => JSX.Element;
 // @alpha
 export interface TemplateCardProps {
   // (undocumented)
-  deprecated?: boolean;
+  additionalLinks?: {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
+  // (undocumented)
+  onSelected?: (template: TemplateEntityV1beta3) => void;
   // (undocumented)
   template: TemplateEntityV1beta3;
 }
@@ -420,7 +377,16 @@ export interface TemplateGroupProps {
     CardComponent?: React_2.ComponentType<TemplateCardProps>;
   };
   // (undocumented)
-  templates: TemplateEntityV1beta3[];
+  onSelected: (template: TemplateEntityV1beta3) => void;
+  // (undocumented)
+  templates: {
+    template: TemplateEntityV1beta3;
+    additionalLinks?: {
+      icon: IconComponent;
+      text: string;
+      url: string;
+    }[];
+  }[];
   // (undocumented)
   title: React_2.ReactNode;
 }
@@ -436,6 +402,13 @@ export type TemplateParameterSchema = {
   }>;
 };
 
+// @public
+export const useCustomFieldExtensions: <
+  TComponentDataType = FieldExtensionOptions<unknown, unknown>,
+>(
+  outlet: React.ReactNode,
+) => TComponentDataType[];
+
 // @alpha
 export const useFormData: () => [
   Record<string, any>,
@@ -449,16 +422,6 @@ export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
-
-// @public (undocumented)
-export const viewTechDocRouteRef: ExternalRouteRef<
-  {
-    name: string;
-    kind: string;
-    namespace: string;
-  },
-  true
->;
 
 // (No @packageDocumentation comment for this package)
 ```
