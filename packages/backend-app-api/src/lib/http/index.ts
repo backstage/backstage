@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
+export { createHttpServer } from './createHttpServer';
+export { startHttpServer } from './startHttpServer';
+export type { StartHttpServerOptions } from './startHttpServer';
 export { readHttpServerOptions } from './config';
-export type { HttpServerOptions, HttpServerCertificateOptions } from './types';
+export type {
+  HttpServerOptions,
+  HttpServerCertificateOptions,
+  ExtendedHttpServer,
+} from './types';
