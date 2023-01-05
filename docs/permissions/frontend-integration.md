@@ -23,14 +23,14 @@ If your Backstage permission policy may return a `DENY` for users requesting the
 ...
 
 -     <Route path="/catalog-import" element={<CatalogImportPage />} />
-+     <Route
-+       path="/catalog-import"
-+       element={
-+         <RequirePermission permission={catalogEntityCreatePermission}>
-+           <CatalogImportPage />
-+         </RequirePermission>
-+       }
-+     />
++     <RequirePermission permission={catalogEntityCreatePermission}>
++       <Route
++           path="/catalog-import"
++           element={
++               <CatalogImportPage />
++           }
++       />
++     </RequirePermission>
 ...
 
 ```
