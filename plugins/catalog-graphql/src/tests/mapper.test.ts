@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable func-names */
 /* eslint-disable jest/no-standalone-expect */
 
 import { describe, it } from '@effection/jest';
@@ -33,7 +34,7 @@ import { createGraphQLTestApp } from './setupTests';
 
 describe('Transformer', () => {
   const graphqlHeader = loadFilesSync(
-    require.resolve('../app/modules/core/core.graphql'),
+    require.resolve('../modules/core/core.graphql'),
   );
   const transformSchema = (source: DocumentNode) => {
     const schema = transformDirectives(

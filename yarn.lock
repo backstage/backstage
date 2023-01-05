@@ -5368,7 +5368,10 @@ __metadata:
     "@envelop/core": ^2.3.0
     "@envelop/dataloader": ^3.3.2
     "@envelop/graphql-modules": ^3.3.0
-    "@graphql-codegen/add": ^4.0.1
+    "@faker-js/faker": ^7.2.0
+    "@frontside/graphgen": ^1.8.1
+    "@frontside/graphgen-backstage": 0.3.0
+    "@graphql-codegen/add": ^4.0.0
     "@graphql-codegen/cli": ^3.0.0
     "@graphql-codegen/graphql-modules-preset": ^3.0.0
     "@graphql-codegen/schema-ast": ^3.0.0
@@ -10101,12 +10104,44 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@faker-js/faker@npm:^7.2.0":
+  version: 7.6.0
+  resolution: "@faker-js/faker@npm:7.6.0"
+  checksum: 942af6221774e8c98a0eb6bc75265e05fb81a941170377666c3439aab9495dd321d6beedc5406f07e6ad44262b3e43c20961f666d116ad150b78e7437dd1bb2b
+  languageName: node
+  linkType: hard
+
 "@fmvilas/pseudo-yaml-ast@npm:^0.3.1":
   version: 0.3.1
   resolution: "@fmvilas/pseudo-yaml-ast@npm:0.3.1"
   dependencies:
     yaml-ast-parser: 0.0.43
   checksum: 94b825dcfe4295d3b3b275cccf756f4012f4c5260d2f8469f9004073635f9aefec204bb0c0dfa9f066a5f6998d32226cace293a6a4e78c2b3a1ba05457608647
+  languageName: node
+  linkType: hard
+
+"@frontside/graphgen-backstage@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@frontside/graphgen-backstage@npm:0.3.0"
+  dependencies:
+    "@frontside/graphgen": ^1.6.0
+    flat-cache: ^3.0.4
+  peerDependencies:
+    "@faker-js/faker": 7.x.x
+    "@graphql-codegen/cli": 2.x.x
+  checksum: 4c6dbc3cf10fa336a9ddbafb4dd25c32e51cd26fbffec3027c14a4d9f7d0166ba4efef05252f9738a32858fdc15f2311037f0b59017da3dabcd24795a25d1927
+  languageName: node
+  linkType: hard
+
+"@frontside/graphgen@npm:^1.6.0, @frontside/graphgen@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "@frontside/graphgen@npm:1.8.1"
+  dependencies:
+    alea: 1.0.1
+    glob-to-regexp: 0.4.1
+    graphql: 16.5.0
+    hash.js: 1.1.7
+  checksum: baedee2ddcba39e7c1710615d7bf4286d3a3770018995e4508dedcf0dcf96ba14f86f2e038c891de21bbd0ce5420f43a3b01eb81c46919f8a347f3d7d1224711
   languageName: node
   linkType: hard
 
@@ -10294,7 +10329,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/add@npm:^4.0.1":
+"@graphql-codegen/add@npm:^4.0.0":
   version: 4.0.1
   resolution: "@graphql-codegen/add@npm:4.0.1"
   dependencies:
@@ -17023,6 +17058,13 @@ __metadata:
     require-from-string: ^2.0.2
     uri-js: ^4.2.2
   checksum: 4dc13714e316e67537c8b31bc063f99a1d9d9a497eb4bbd55191ac0dcd5e4985bbb71570352ad6f1e76684fb6d790928f96ba3b2d4fd6e10024be9612fe3f001
+  languageName: node
+  linkType: hard
+
+"alea@npm:1.0.1":
+  version: 1.0.1
+  resolution: "alea@npm:1.0.1"
+  checksum: b699177496913b3ea0c1e329e13cb164befb5e5a906b46299e375465a697613e6294e1d617008438d0a714c397ad17ce292ef10126fa76c1ca913e90ef28e81d
   languageName: node
   linkType: hard
 
@@ -24432,7 +24474,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob-to-regexp@npm:^0.4.1":
+"glob-to-regexp@npm:0.4.1, glob-to-regexp@npm:^0.4.1":
   version: 0.4.1
   resolution: "glob-to-regexp@npm:0.4.1"
   checksum: e795f4e8f06d2a15e86f76e4d92751cf8bbfcf0157cea5c2f0f35678a8195a750b34096b1256e436f0cebc1883b5ff0888c47348443e69546a5a87f9e1eb1167
@@ -24850,6 +24892,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql@npm:16.5.0":
+  version: 16.5.0
+  resolution: "graphql@npm:16.5.0"
+  checksum: a82a926d085818934d04fdf303a269af170e79de943678bd2726370a96194f9454ade9d6d76c2de69afbd7b9f0b4f8061619baecbbddbe82125860e675ac219e
+  languageName: node
+  linkType: hard
+
 "graphql@npm:^15.0.0 || ^16.0.0, graphql@npm:^16.0.0":
   version: 16.6.0
   resolution: "graphql@npm:16.6.0"
@@ -25043,7 +25092,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hash.js@npm:^1.0.0, hash.js@npm:^1.0.3":
+"hash.js@npm:1.1.7, hash.js@npm:^1.0.0, hash.js@npm:^1.0.3":
   version: 1.1.7
   resolution: "hash.js@npm:1.1.7"
   dependencies:
