@@ -40,7 +40,7 @@
     "handlebars": "^4.7.3",
     "nodemon": "^2.0.2",
     "pgtools": "^0.3.0",
-    "puppeteer": "^19.0.0",
+    "puppeteer": "^17.0.0",
     "tree-kill": "^1.2.2",
     "ts-node": "^10.0.0"
   },
