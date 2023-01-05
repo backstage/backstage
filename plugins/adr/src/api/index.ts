@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { loggerToWinstonLogger } from './loggerToWinstonLogger';
+export { AdrClient } from './AdrClient';
+export type { AdrClientOptions } from './AdrClient';
+export { adrApiRef } from './types';
+export type {
+  AdrApi,
+  AdrFileInfo,
+  AdrListResult,
+  AdrReadResult,
+} from './types';

@@ -7,14 +7,11 @@
 
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
-import { Logger } from 'winston';
+import { JsonValue } from '@backstage/types';
+import { Knex } from 'knex';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { PluginCacheManager } from '@backstage/backend-common';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Readable } from 'stream';
-import { TokenManager } from '@backstage/backend-common';
-import { TransportStreamOptions } from 'winston-transport';
 
 // @public (undocumented)
 export interface BackendFeature {
@@ -65,8 +62,31 @@ export interface BackendRegistrationPoints {
   }): void;
 }
 
-// @public (undocumented)
-export interface CacheService extends PluginCacheManager {}
+// @public
+export interface CacheClient {
+  delete(key: string): Promise<void>;
+  get(key: string): Promise<JsonValue | undefined>;
+  set(
+    key: string,
+    value: JsonValue,
+    options?: CacheClientSetOptions,
+  ): Promise<void>;
+}
+
+// @public
+export type CacheClientOptions = {
+  defaultTtl?: number;
+};
+
+// @public
+export type CacheClientSetOptions = {
+  ttl?: number;
+};
+
+// @public
+export interface CacheService {
+  getClient: (options?: CacheClientOptions) => CacheClient;
+}
 
 // @public (undocumented)
 export interface ConfigService extends Config {}
@@ -82,6 +102,7 @@ export namespace coreServices {
   const logger: ServiceRef<LoggerService, 'plugin'>;
   const permissions: ServiceRef<PermissionsService, 'plugin'>;
   const pluginMetadata: ServiceRef<PluginMetadataService, 'plugin'>;
+  const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root'>;
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin'>;
@@ -153,8 +174,13 @@ export function createServiceRef<T>(options: {
   ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 }): ServiceRef<T, 'root'>;
 
-// @public (undocumented)
-export interface DatabaseService extends PluginDatabaseManager {}
+// @public
+export interface DatabaseService {
+  getClient(): Promise<Knex>;
+  migrations?: {
+    skip?: boolean;
+  };
+}
 
 // @public
 export interface DiscoveryService {
@@ -200,12 +226,6 @@ export interface LoggerService {
   // (undocumented)
   warn(message: string, meta?: Error | LogMeta): void;
 }
-
-// @public (undocumented)
-export function loggerToWinstonLogger(
-  logger: LoggerService,
-  opts?: TransportStreamOptions,
-): Logger;
 
 // @public (undocumented)
 export type LogMeta = {
@@ -264,6 +284,11 @@ export type ReadUrlResponse = {
   stream?(): Readable;
   etag?: string;
 };
+
+// @public (undocumented)
+export interface RootHttpRouterService {
+  use(path: string, handler: Handler): void;
+}
 
 // @public (undocumented)
 export interface RootLifecycleService extends LifecycleService {}
@@ -331,8 +356,13 @@ export type ServiceRef<
   $$ref: 'service';
 };
 
-// @public (undocumented)
-export interface TokenManagerService extends TokenManager {}
+// @public
+export interface TokenManagerService {
+  authenticate(token: string): Promise<void>;
+  getToken(): Promise<{
+    token: string;
+  }>;
+}
 
 // @public (undocumented)
 export type TypesToServiceRef<T> = {

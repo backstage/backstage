@@ -45,6 +45,7 @@ import {
   Page,
   ErrorPage,
   CodeSnippet,
+  MarkdownContent,
 } from '@backstage/core-components';
 import { ActionExample } from '../../types';
 
@@ -201,7 +202,7 @@ export const ActionsPage = () => {
         <Typography variant="h4" className={classes.code}>
           {action.id}
         </Typography>
-        <Typography>{action.description}</Typography>
+        {action.description && <MarkdownContent content={action.description} />}
         {action.schema?.input && (
           <Box pb={2}>
             <Typography variant="h5">Input</Typography>

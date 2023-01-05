@@ -18,9 +18,9 @@ import express from 'express';
 import {
   coreServices,
   createBackendPlugin,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 /** @alpha */
 export type AppPluginOptions = {

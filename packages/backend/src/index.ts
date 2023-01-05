@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
 import playlist from './plugins/playlist';
+import adr from './plugins/adr';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -139,6 +140,7 @@ async function main() {
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
   const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
+  const adrEnv = useHotMemoize(module, () => createEnv('adr'));
   const techInsightsEnv = useHotMemoize(module, () =>
     createEnv('tech-insights'),
   );
@@ -175,6 +177,7 @@ async function main() {
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use('/playlist', await playlist(playlistEnv));
   apiRouter.use('/explore', await explore(exploreEnv));
+  apiRouter.use('/adr', await adr(adrEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)

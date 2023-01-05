@@ -104,6 +104,15 @@ export namespace coreServices {
   >({ id: 'core.pluginMetadata' });
 
   /**
+   * The service reference for the root scoped {@link RootHttpRouterService}.
+   *
+   * @public
+   */
+  export const rootHttpRouter = createServiceRef<
+    import('./RootHttpRouterService').RootHttpRouterService
+  >({ id: 'core.rootHttpRouter', scope: 'root' });
+
+  /**
    * The service reference for the root scoped {@link RootLifecycleService}.
    *
    * @public

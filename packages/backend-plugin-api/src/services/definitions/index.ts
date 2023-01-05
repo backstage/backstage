@@ -15,7 +15,12 @@
  */
 
 export { coreServices } from './coreServices';
-export type { CacheService } from './CacheService';
+export type {
+  CacheService,
+  CacheClient,
+  CacheClientOptions,
+  CacheClientSetOptions,
+} from './CacheService';
 export type { ConfigService } from './ConfigService';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
@@ -27,6 +32,7 @@ export type {
 export type { LoggerService, LogMeta } from './LoggerService';
 export type { PermissionsService } from './PermissionsService';
 export type { PluginMetadataService } from './PluginMetadataService';
+export type { RootHttpRouterService } from './RootHttpRouterService';
 export type { RootLifecycleService } from './RootLifecycleService';
 export type { RootLoggerService } from './RootLoggerService';
 export type { SchedulerService } from './SchedulerService';
