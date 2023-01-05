@@ -56,10 +56,6 @@ export default async function serve(opts: OptionValues) {
     ? true
     : false;
 
-  // TODO: Backstage app port should also be configurable as a CLI option. However, since we bundle
-  // a backstage app, we define app.baseUrl in the app-config.yaml.
-  // Hence, it is complicated to make this configurable.
-  const backstagePort = 3000;
   const backstageBackendPort = 7007;
 
   const mkdocsDockerAddr = `http://0.0.0.0:${opts.mkdocsPort}`;
@@ -119,9 +115,11 @@ export default async function serve(opts: OptionValues) {
     );
   }
 
-  const port = isDevMode ? backstageBackendPort : backstagePort;
+  const port = isDevMode ? backstageBackendPort : opts.previewAppPort;
+  const previewAppPath = getPreviewAppPath(opts);
+  console.log({ previewAppPath });
   const httpServer = new HTTPServer(
-    getPreviewAppPath(opts),
+    previewAppPath,
     port,
     opts.mkdocsPort,
     opts.verbose,

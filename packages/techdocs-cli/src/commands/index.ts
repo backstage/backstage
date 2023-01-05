@@ -255,6 +255,21 @@ export function registerCommands(program: Command) {
       '--preview-app-bundle-path <PATH_TO_BUNDLE>',
       'Preview documentation using another web app',
     )
+    .option(
+      '--preview-app-port <PORT>',
+      'Port for the preview app to be served on',
+      '3000',
+    )
+    .hook('preAction', command => {
+      if (
+        command.opts().previewAppPort &&
+        !command.opts().previewAppBundlePath
+      ) {
+        command.error(
+          '--preview-app-port can only be used together with --preview-app-bundle-path',
+        );
+      }
+    })
     .action(lazy(() => import('./serve/serve').then(m => m.default)));
 }
 
