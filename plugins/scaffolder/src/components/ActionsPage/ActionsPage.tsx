@@ -92,7 +92,7 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
                   text={example.example}
                   showLineNumbers
                   showCopyCodeButton
-                  language="JavaScript"
+                  language="yaml"
                 />
               </Box>
             </Grid>
