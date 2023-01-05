@@ -16,8 +16,13 @@
 
 import { createApiRef } from '@backstage/core-plugin-api';
 import { ScaffolderApi } from './types';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 /** @public */
-export const scaffolderApiRef = createApiRef<ScaffolderApi>({
-  id: 'plugin.scaffolder.service',
-});
+export const scaffolderApiRef = getOrCreateGlobalSingleton(
+  'scaffolder:scaffolder-api-ref',
+  () =>
+    createApiRef<ScaffolderApi>({
+      id: 'plugin.scaffolder.service',
+    }),
+);

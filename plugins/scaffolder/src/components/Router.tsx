@@ -30,10 +30,8 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import {
-  FIELD_EXTENSION_KEY,
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FieldExtensionOptions,
   SecretsContextProvider,
+  useCustomFieldExtensions,
 } from '@backstage/plugin-scaffolder-react';
 import { ListTasksPage } from './ListTasksPage';
 import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
@@ -94,16 +92,7 @@ export const Router = (props: RouterProps) => {
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
 
-  const customFieldExtensions = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: FIELD_EXTENSION_WRAPPER_KEY,
-      })
-      .findComponentData<FieldExtensionOptions>({
-        key: FIELD_EXTENSION_KEY,
-      }),
-  );
-
+  const customFieldExtensions = useCustomFieldExtensions(outlet);
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
@@ -114,6 +103,7 @@ export const Router = (props: RouterProps) => {
     ),
   ];
 
+  // todo(blam): this should also be moved to a hook in -react
   const customLayouts = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({

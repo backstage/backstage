@@ -22,17 +22,7 @@ import {
   FieldExtensionComponentProps,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
-
-/**
- * The key used to store the field extension data for the `<ScaffolderFieldExtensions />` component
- * @public
- */
-export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
-/**
- * The key used to store the field extension data for any `<FieldExtension />` component
- * @public
- */
-export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
+import { FIELD_EXTENSION_KEY, FIELD_EXTENSION_WRAPPER_KEY } from './keys';
 
 /**
  * A type used to wrap up the FieldExtension to embed the ReturnValue and the InputProps

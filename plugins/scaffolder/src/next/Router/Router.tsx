@@ -18,14 +18,11 @@ import { Routes, Route, useOutlet } from 'react-router-dom';
 import { TemplateListPage } from '../TemplateListPage';
 import { TemplateWizardPage } from '../TemplateWizardPage';
 import {
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FIELD_EXTENSION_KEY,
   NextFieldExtensionOptions,
-  FieldExtensionOptions,
   SecretsContextProvider,
+  useCustomFieldExtensions,
 } from '@backstage/plugin-scaffolder-react';
 
-import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
@@ -55,20 +52,8 @@ export type NextRouterProps = {
  */
 export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   const { components: { TemplateCardComponent } = {} } = props;
-
   const outlet = useOutlet() || props.children;
-
-  // todo(blam): move this out into a `useFieldExtensions` hook exported by -react
-  const customFieldExtensions = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: FIELD_EXTENSION_WRAPPER_KEY,
-      })
-      .findComponentData<FieldExtensionOptions | NextFieldExtensionOptions>({
-        key: FIELD_EXTENSION_KEY,
-      }),
-  );
-
+  const customFieldExtensions = useCustomFieldExtensions(outlet);
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
