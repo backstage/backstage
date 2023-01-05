@@ -18,9 +18,19 @@ import {
   createServiceFactory,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { Handler } from 'express';
-import { createServiceBuilder } from '@backstage/backend-common';
+import express from 'express';
+import compression from 'compression';
+import cors from 'cors';
+import helmet from 'helmet';
 import { RestrictedIndexedRouter } from './RestrictedIndexedRouter';
+import { readCorsOptions } from './readCorsOptions';
+import { startHttpServer } from '../../../lib/http';
+import { readHelmetOptions } from './readHelmetOptions';
+import {
+  errorHandler,
+  notFoundHandler,
+  requestLoggingHandler,
+} from '@backstage/backend-common';
 
 /**
  * @public
@@ -30,11 +40,6 @@ export type RootHttpRouterFactoryOptions = {
    * The path to forward all unmatched requests to. Defaults to '/api/app'
    */
   indexPath?: string | false;
-
-  /**
-   * Middlewares that are added before all other routes.
-   */
-  middleware?: Handler[];
 };
 
 /** @public */
@@ -42,41 +47,26 @@ export const rootHttpRouterFactory = createServiceFactory({
   service: coreServices.rootHttpRouter,
   deps: {
     config: coreServices.config,
+    logger: coreServices.rootLogger,
     lifecycle: coreServices.rootLifecycle,
   },
-  async factory({ config, lifecycle }, options?: RootHttpRouterFactoryOptions) {
-    const router = new RestrictedIndexedRouter(
-      options?.indexPath ?? '/api/app',
-    );
+  async factory(
+    { config, logger, lifecycle },
+    { indexPath }: RootHttpRouterFactoryOptions = {},
+  ) {
+    const router = new RestrictedIndexedRouter(indexPath ?? '/api/app');
 
-    const service = createServiceBuilder(module).loadConfig(config);
+    const app = express();
 
-    for (const middleware of options?.middleware ?? []) {
-      service.addRouter('', middleware);
-    }
+    app.use(helmet(readHelmetOptions(config.getOptionalConfig('backend'))));
+    app.use(cors(readCorsOptions(config.getOptionalConfig('backend'))));
+    app.use(compression());
+    app.use(requestLoggingHandler(logger));
+    app.use(router.handler());
+    app.use(notFoundHandler());
+    app.use(errorHandler({ logger }));
 
-    service.addRouter('', router.handler());
-
-    const server = await service.start();
-    // Stop method isn't part of the public API, let's fix that once we move the implementation here.
-    const stoppableServer = server as typeof server & {
-      stop: (cb: (error?: Error) => void) => void;
-    };
-
-    lifecycle.addShutdownHook({
-      async fn() {
-        await new Promise<void>((resolve, reject) => {
-          stoppableServer.stop((error?: Error) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve();
-            }
-          });
-        });
-      },
-      labels: { service: 'rootHttpRouter' },
-    });
+    await startHttpServer(app, { config, logger, lifecycle });
 
     return router;
   },
