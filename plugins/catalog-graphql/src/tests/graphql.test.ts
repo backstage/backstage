@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable func-names */
 /* eslint-disable jest/no-standalone-expect */
 
 import { describe, beforeAll, it } from '@effection/jest';
