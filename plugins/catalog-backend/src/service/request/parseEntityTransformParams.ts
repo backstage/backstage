@@ -44,8 +44,7 @@ export function parseEntityTransformParams(
 
   const fields = Array.from(
     new Set(
-      [...(extra ?? []), ...(queryFields ?? [])]
-        .map(s => s.split(','))
+      [...(extra ?? []), ...(queryFields?.map(s => s.split(',')) ?? [])]
         .flat()
         .map(s => s.trim())
         .filter(Boolean),
