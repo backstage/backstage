@@ -33,6 +33,7 @@ describe('railsArgumentResolver', () => {
       [{ skipActionMailbox: true }, ['--skip-action-mailbox']],
       [{ skipActiveStorage: true }, ['--skip-active-storage']],
       [{ skipActionText: true }, ['--skip-action-text']],
+      [{ skipActiveRecord: true }, ['--skip-active-record']],
       [{ force: true }, ['--force']],
       [{ webpacker: 'vue' }, ['--webpack', 'vue']],
       [{ database: 'postgresql' }, ['--database', 'postgresql']],
