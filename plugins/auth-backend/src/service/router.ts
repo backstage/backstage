@@ -143,8 +143,6 @@ export async function createRouter(
         r.get('/start', provider.start.bind(provider));
         r.get('/handler/frame', provider.frameHandler.bind(provider));
         r.post('/handler/frame', provider.frameHandler.bind(provider));
-        // TODO create handler for redirect
-        // r.get('/handler/redirect', provider.redirectHandler.bind(provider));
         if (provider.logout) {
           r.post('/logout', provider.logout.bind(provider));
         }

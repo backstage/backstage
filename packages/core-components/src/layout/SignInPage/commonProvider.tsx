@@ -24,7 +24,7 @@ import {
   SignInProvider,
   SignInProviderConfig,
 } from './types';
-import { useApi, errorApiRef } from '@backstage/core-plugin-api';
+import { useApi, errorApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { GridItem } from './styles';
 import { ForwardedError } from '@backstage/errors';
 import { UserIdentity } from './UserIdentity';
@@ -33,14 +33,18 @@ const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
   const { apiRef, title, message } = config as SignInProviderConfig;
   const authApi = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
+  const configApi = useApi(configApiRef);
+  const usePopup = configApi.getOptionalBoolean('auth.usePopup');
 
   const handleLogin = async () => {
     try {
       const identityResponse = await authApi.getBackstageIdentity({
-        // instantPopup: true,
-        instantPopup: false,
+        instantPopup: usePopup,
       });
       if (!identityResponse) {
+        if (!usePopup) {
+          return;
+        }
         throw new Error(
           `The ${title} provider is not configured to support sign-in`,
         );

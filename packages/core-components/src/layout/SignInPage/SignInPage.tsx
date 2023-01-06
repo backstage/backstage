@@ -57,6 +57,7 @@ export const MultiSignInPage = ({
 }: MultiSignInPageProps) => {
   const configApi = useApi(configApiRef);
   const classes = useStyles();
+
   const signInProviders = getSignInProviders(providers);
   const [loading, providerElements] = useSignInProviders(
     signInProviders,
