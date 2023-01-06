@@ -147,6 +147,8 @@ the
 [contrib](https://github.com/backstage/backstage/tree/master/contrib/kubernetes)
 folder.
 
+Furthermore, there is a separate community project [backstage/charts](https://github.com/backstage/charts) dedicated to developing Helm Charts for Backstage. It provides a helpfull guide to set up & deploy your first instance using a Helm Chart.
+
 It is possible that example images will be provided in the future, which can be
 used to quickly try out a small subset of the functionality of Backstage, but
 these would not be able to provide much more functionality on top of what you

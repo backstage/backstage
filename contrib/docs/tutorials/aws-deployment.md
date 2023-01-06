@@ -4,8 +4,7 @@ Backstage documentation shows how to build a [Docker
 image](https://backstage.io/docs/deployment/docker); this
 tutorial shows how to deploy that Docker image to AWS using Elastic Container
 Registry (ECR) and Elastic Kubernetes Service (EKS). Amazon also supports
-deployments with Helm, covered in the [Helm
-Kubernetes](../../kubernetes/basic_kubernetes_example_with_helm) example.
+deployments with Helm. You can find Backstage Helm charts in our community project [backstage/charts](https://github.com/backstage/charts).
 
 The basic workflow for this method is to build a Backstage Docker image, upload
 the new version to a container registry, and update a Kubernetes deployment with
