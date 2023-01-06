@@ -18,49 +18,33 @@ import {
   createServiceFactory,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import Router from 'express-promise-router';
 import { Handler } from 'express';
-import { createServiceBuilder } from '@backstage/backend-common';
 
 /**
  * @public
  */
 export type HttpRouterFactoryOptions = {
   /**
-   * The plugin ID used for the index route. Defaults to 'app'
+   * A callback used to generate the path for each plugin, defaults to `/api/{pluginId}`.
    */
-  indexPlugin?: string;
+  getPath(pluginId: string): string;
 };
 
 /** @public */
 export const httpRouterFactory = createServiceFactory({
   service: coreServices.httpRouter,
   deps: {
-    config: coreServices.config,
     plugin: coreServices.pluginMetadata,
+    rootHttpRouter: coreServices.rootHttpRouter,
   },
-  async factory({ config }, options?: HttpRouterFactoryOptions) {
-    const defaultPluginId = options?.indexPlugin ?? 'app';
-
-    const apiRouter = Router();
-    const rootRouter = Router();
-
-    const service = createServiceBuilder(module)
-      .loadConfig(config)
-      .addRouter('/api', apiRouter)
-      .addRouter('', rootRouter);
-
-    await service.start();
+  async factory({ rootHttpRouter }, options?: HttpRouterFactoryOptions) {
+    const getPath = options?.getPath ?? (id => `/api/${id}`);
 
     return async ({ plugin }) => {
-      const pluginId = plugin.getId();
+      const path = getPath(plugin.getId());
       return {
         use(handler: Handler) {
-          if (pluginId === defaultPluginId) {
-            rootRouter.use(handler);
-          } else {
-            apiRouter.use(`/${pluginId}`, handler);
-          }
+          rootHttpRouter.use(path, handler);
         },
       };
     };

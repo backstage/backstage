@@ -17,32 +17,7 @@
 import { Config } from '@backstage/config';
 import { Knex } from 'knex';
 
-/**
- * The PluginDatabaseManager manages access to databases that Plugins get.
- *
- * @public
- */
-export interface PluginDatabaseManager {
-  /**
-   * getClient provides backend plugins database connections for itself.
-   *
-   * The purpose of this method is to allow plugins to get isolated data
-   * stores so that plugins are discouraged from database integration.
-   */
-  getClient(): Promise<Knex>;
-
-  /**
-   * This property is used to control the behavior of database migrations.
-   */
-  migrations?: {
-    /**
-     * skip database migrations. Useful if connecting to a read-only database.
-     *
-     * @defaultValue false
-     */
-    skip?: boolean;
-  };
-}
+export type { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 
 /**
  * DatabaseConnector manages an underlying Knex database driver.

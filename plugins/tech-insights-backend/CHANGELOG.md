@@ -1,5 +1,21 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.6-next.1
+
+### Patch Changes
+
+- 7a38a31699: Complete check results run when a single check errors so that we don't block other checks from working due to an error in a single check
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/backend-tasks@0.4.1-next.0
+  - @backstage/catalog-client@1.3.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-tech-insights-common@0.2.9
+  - @backstage/plugin-tech-insights-node@0.3.8-next.0
+
 ## 0.5.6-next.0
 
 ### Patch Changes

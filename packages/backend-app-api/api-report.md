@@ -4,8 +4,9 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import { ConfigService } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { Handler } from 'express';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -13,10 +14,13 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { RootHttpRouterService } from '@backstage/backend-plugin-api';
+import { RootLifecycleService } from '@backstage/backend-plugin-api';
+import { RootLoggerService } from '@backstage/backend-plugin-api';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TokenManager } from '@backstage/backend-common';
+import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
@@ -35,7 +39,9 @@ export const cacheFactory: (
 ) => ServiceFactory<PluginCacheManager>;
 
 // @public (undocumented)
-export const configFactory: (options?: undefined) => ServiceFactory<Config>;
+export const configFactory: (
+  options?: undefined,
+) => ServiceFactory<ConfigService>;
 
 // @public (undocumented)
 export function createSpecializedBackend(
@@ -65,7 +71,7 @@ export const httpRouterFactory: (
 
 // @public (undocumented)
 export type HttpRouterFactoryOptions = {
-  indexPlugin?: string;
+  getPath(pluginId: string): string;
 };
 
 // @public
@@ -84,14 +90,30 @@ export const permissionsFactory: (
 ) => ServiceFactory<PermissionsService>;
 
 // @public (undocumented)
+export const rootHttpRouterFactory: (
+  options?: RootHttpRouterFactoryOptions | undefined,
+) => ServiceFactory<RootHttpRouterService>;
+
+// @public (undocumented)
+export type RootHttpRouterFactoryOptions = {
+  indexPath?: string | false;
+  middleware?: Handler[];
+};
+
+// @public
+export const rootLifecycleFactory: (
+  options?: undefined,
+) => ServiceFactory<RootLifecycleService>;
+
+// @public (undocumented)
 export const rootLoggerFactory: (
   options?: undefined,
-) => ServiceFactory<LoggerService>;
+) => ServiceFactory<RootLoggerService>;
 
 // @public (undocumented)
 export const schedulerFactory: (
   options?: undefined,
-) => ServiceFactory<PluginTaskScheduler>;
+) => ServiceFactory<SchedulerService>;
 
 // @public (undocumented)
 export type ServiceOrExtensionPoint<T = unknown> =
@@ -101,7 +123,7 @@ export type ServiceOrExtensionPoint<T = unknown> =
 // @public (undocumented)
 export const tokenManagerFactory: (
   options?: undefined,
-) => ServiceFactory<TokenManager>;
+) => ServiceFactory<TokenManagerService>;
 
 // @public (undocumented)
 export const urlReaderFactory: (

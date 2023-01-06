@@ -117,7 +117,7 @@ export function parseUrl(
 }
 
 /**
- * Implements a {@link UrlReader} for AWS S3 buckets.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for AWS S3 buckets.
  *
  * @public
  */

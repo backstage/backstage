@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { GithubCredentialType } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import {
@@ -24,6 +24,9 @@ import {
   TransformerContext,
   UserTransformer,
 } from './defaultTransformers';
+import { withLocations } from '../providers/GithubOrgEntityProvider';
+
+import { DeferredEntity } from '@backstage/plugin-catalog-backend';
 
 // Graphql types
 
@@ -191,7 +194,14 @@ export async function getOrganizationTeams(
             parentTeam { slug }
             members(first: 100, membership: IMMEDIATE) {
               pageInfo { hasNextPage }
-              nodes { login }
+              nodes { 
+                avatarUrl,
+                bio,
+                email,
+                login,
+                name,
+                organizationVerifiedDomainEmails(login: $org)
+               }
             }
           }
         }
@@ -236,6 +246,164 @@ export async function getOrganizationTeams(
   );
 
   return { groups };
+}
+
+export async function getOrganizationTeamsFromUsers(
+  client: typeof graphql,
+  org: string,
+  userLogins: string[],
+  teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
+): Promise<{
+  groups: GroupEntity[];
+}> {
+  const query = `
+   query teams($org: String!, $cursor: String, $userLogins: [String!] = "") {
+  organization(login: $org) {
+    teams(first: 100, after: $cursor, userLogins: $userLogins) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        slug
+        combinedSlug
+        name
+        description
+        avatarUrl
+        editTeamUrl
+        parentTeam {
+          slug
+        }
+        members(first: 100, membership: IMMEDIATE) {
+          pageInfo {
+            hasNextPage
+          }
+          nodes {
+            avatarUrl,
+            bio,
+            email,
+            login,
+            name,
+            organizationVerifiedDomainEmails(login: $org)
+          }
+        }
+      }
+    }
+  }
+}`;
+
+  const materialisedTeams = async (
+    item: GithubTeamResponse,
+    ctx: TransformerContext,
+  ): Promise<GroupEntity | undefined> => {
+    const memberNames: GithubUser[] = [];
+
+    if (!item.members.pageInfo.hasNextPage) {
+      // We got all the members in one go, run the fast path
+      for (const user of item.members.nodes) {
+        memberNames.push(user);
+      }
+    } else {
+      // There were more than a hundred immediate members - run the slow
+      // path of fetching them explicitly
+      const { members } = await getTeamMembers(ctx.client, ctx.org, item.slug);
+      for (const userLogin of members) {
+        memberNames.push(userLogin);
+      }
+    }
+
+    const team: GithubTeam = {
+      ...item,
+      members: memberNames,
+    };
+
+    return await teamTransformer(team, ctx);
+  };
+
+  const groups = await queryWithPaging(
+    client,
+    query,
+    org,
+    r => r.organization?.teams,
+    materialisedTeams,
+    { org, userLogins },
+  );
+
+  return { groups };
+}
+
+export async function getOrganizationTeam(
+  client: typeof graphql,
+  org: string,
+  teamSlug: string,
+  teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
+): Promise<{
+  group: GroupEntity;
+}> {
+  const query = `
+  query teams($org: String!, $teamSlug: String!) {
+      organization(login: $org) {
+        team(slug:$teamSlug) {
+            slug
+            combinedSlug
+            name
+            description
+            avatarUrl
+            editTeamUrl
+            parentTeam { slug }
+            members(first: 100, membership: IMMEDIATE) {
+              pageInfo { hasNextPage }
+              nodes { login }
+            }
+        }
+      }
+    }`;
+
+  const materialisedTeam = async (
+    item: GithubTeamResponse,
+    ctx: TransformerContext,
+  ): Promise<GroupEntity | undefined> => {
+    const memberNames: GithubUser[] = [];
+
+    if (!item.members.pageInfo.hasNextPage) {
+      // We got all the members in one go, run the fast path
+      for (const user of item.members.nodes) {
+        memberNames.push(user);
+      }
+    } else {
+      // There were more than a hundred immediate members - run the slow
+      // path of fetching them explicitly
+      const { members } = await getTeamMembers(ctx.client, ctx.org, item.slug);
+      for (const userLogin of members) {
+        memberNames.push(userLogin);
+      }
+    }
+
+    const team: GithubTeam = {
+      ...item,
+      members: memberNames,
+    };
+
+    return await teamTransformer(team, ctx);
+  };
+
+  const response: QueryResponse = await client(query, {
+    org,
+    teamSlug,
+  });
+
+  if (!response.organization?.team)
+    throw new Error(`Found no match for group ${teamSlug}`);
+
+  const group = await materialisedTeam(response.organization?.team, {
+    query,
+    client,
+    org,
+  });
+
+  if (!group) throw new Error(`Can't transform for group ${teamSlug}`);
+
+  return { group };
 }
 
 export async function getOrganizationRepositories(
@@ -349,6 +517,7 @@ export async function getTeamMembers(
  *
  * @param client - The octokit client
  * @param query - The query to execute
+ * @param org - The slug of the org to read
  * @param connection - A function that, given the response, picks out the actual
  *                   Connection object that's being iterated
  * @param transformer - A function that, given one of the nodes in the Connection,
@@ -406,3 +575,39 @@ export async function queryWithPaging<
 
   return result;
 }
+
+export type DeferredEntitiesBuilder = (
+  org: string,
+  entities: Entity[],
+) => { added: DeferredEntity[]; removed: DeferredEntity[] };
+
+export const createAddEntitiesOperation =
+  (id: string, host: string) => (org: string, entities: Entity[]) => ({
+    removed: [],
+    added: entities.map(entity => ({
+      locationKey: `github-org-provider:${id}`,
+      entity: withLocations(`https://${host}`, org, entity),
+    })),
+  });
+
+export const createRemoveEntitiesOperation =
+  (id: string, host: string) => (org: string, entities: Entity[]) => ({
+    added: [],
+    removed: entities.map(entity => ({
+      locationKey: `github-org-provider:${id}`,
+      entity: withLocations(`https://${host}`, org, entity),
+    })),
+  });
+
+export const createReplaceEntitiesOperation =
+  (id: string, host: string) => (org: string, entities: Entity[]) => {
+    const entitiesToReplace = entities.map(entity => ({
+      locationKey: `github-org-provider:${id}`,
+      entity: withLocations(`https://${host}`, org, entity),
+    }));
+
+    return {
+      removed: entitiesToReplace,
+      added: entitiesToReplace,
+    };
+  };

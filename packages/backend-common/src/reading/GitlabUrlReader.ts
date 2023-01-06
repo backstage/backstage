@@ -42,7 +42,7 @@ import { trimEnd, trimStart } from 'lodash';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
- * Implements a {@link UrlReader} for files on GitLab.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files on GitLab.
  *
  * @public
  */

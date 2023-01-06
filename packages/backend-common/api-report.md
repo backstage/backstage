@@ -12,6 +12,9 @@ import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
+import { CacheClient } from '@backstage/backend-plugin-api';
+import { CacheClientOptions } from '@backstage/backend-plugin-api';
+import { CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import cors from 'cors';
 import Docker from 'dockerode';
@@ -24,18 +27,33 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
-import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
+import { CacheService as PluginCacheManager } from '@backstage/backend-plugin-api';
+import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
+import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
+import { ReadTreeOptions } from '@backstage/backend-plugin-api';
+import { ReadTreeResponse } from '@backstage/backend-plugin-api';
+import { ReadTreeResponseDirOptions } from '@backstage/backend-plugin-api';
+import { ReadTreeResponseFile } from '@backstage/backend-plugin-api';
+import { ReadUrlOptions } from '@backstage/backend-plugin-api';
+import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
+import { SearchOptions } from '@backstage/backend-plugin-api';
+import { SearchResponse } from '@backstage/backend-plugin-api';
+import { SearchResponseFile } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
+import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
+import { TransportStreamOptions } from 'winston-transport';
+import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
@@ -152,26 +170,11 @@ export class BitbucketUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
-export interface CacheClient {
-  delete(key: string): Promise<void>;
-  get(key: string): Promise<JsonValue | undefined>;
-  set(
-    key: string,
-    value: JsonValue,
-    options?: CacheClientSetOptions,
-  ): Promise<void>;
-}
+export { CacheClient };
 
-// @public
-export type CacheClientOptions = {
-  defaultTtl?: number;
-};
+export { CacheClientOptions };
 
-// @public
-export type CacheClientSetOptions = {
-  ttl?: number;
-};
+export { CacheClientSetOptions };
 
 // @public
 export class CacheManager {
@@ -504,27 +507,20 @@ export function loadBackendConfig(options: {
   argv: string[];
 }): Promise<Config>;
 
+// @public (undocumented)
+export function loggerToWinstonLogger(
+  logger: LoggerService,
+  opts?: TransportStreamOptions,
+): Logger;
+
 // @public
 export function notFoundHandler(): RequestHandler;
 
-// @public
-export type PluginCacheManager = {
-  getClient: (options?: CacheClientOptions) => CacheClient;
-};
+export { PluginCacheManager };
 
-// @public
-export interface PluginDatabaseManager {
-  getClient(): Promise<Knex>;
-  migrations?: {
-    skip?: boolean;
-  };
-}
+export { PluginDatabaseManager };
 
-// @public
-export type PluginEndpointDiscovery = {
-  getBaseUrl(pluginId: string): Promise<string>;
-  getExternalBaseUrl(pluginId: string): Promise<string>;
-};
+export { PluginEndpointDiscovery };
 
 // @public
 export type ReaderFactory = (options: {
@@ -533,30 +529,11 @@ export type ReaderFactory = (options: {
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
-// @public
-export type ReadTreeOptions = {
-  filter?(
-    path: string,
-    info?: {
-      size: number;
-    },
-  ): boolean;
-  etag?: string;
-  signal?: AbortSignal;
-};
+export { ReadTreeOptions };
 
-// @public
-export type ReadTreeResponse = {
-  files(): Promise<ReadTreeResponseFile[]>;
-  archive(): Promise<NodeJS.ReadableStream>;
-  dir(options?: ReadTreeResponseDirOptions): Promise<string>;
-  etag: string;
-};
+export { ReadTreeResponse };
 
-// @public
-export type ReadTreeResponseDirOptions = {
-  targetDir?: string;
-};
+export { ReadTreeResponseDirOptions };
 
 // @public
 export interface ReadTreeResponseFactory {
@@ -587,24 +564,11 @@ export type ReadTreeResponseFactoryOptions = {
   ) => boolean;
 };
 
-// @public
-export type ReadTreeResponseFile = {
-  path: string;
-  content(): Promise<Buffer>;
-};
+export { ReadTreeResponseFile };
 
-// @public
-export type ReadUrlOptions = {
-  etag?: string;
-  signal?: AbortSignal;
-};
+export { ReadUrlOptions };
 
-// @public
-export type ReadUrlResponse = {
-  buffer(): Promise<Buffer>;
-  stream?(): Readable;
-  etag?: string;
-};
+export { ReadUrlResponse };
 
 // @public
 export class ReadUrlResponseFactory {
@@ -652,23 +616,11 @@ export type RunContainerOptions = {
   pullImage?: boolean;
 };
 
-// @public
-export type SearchOptions = {
-  etag?: string;
-  signal?: AbortSignal;
-};
+export { SearchOptions };
 
-// @public
-export type SearchResponse = {
-  files: SearchResponseFile[];
-  etag: string;
-};
+export { SearchResponse };
 
-// @public
-export type SearchResponseFile = {
-  url: string;
-  content(): Promise<Buffer>;
-};
+export { SearchResponseFile };
 
 // @public
 export class ServerTokenManager implements TokenManager {
@@ -747,21 +699,9 @@ export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }
 
-// @public
-export interface TokenManager {
-  authenticate(token: string): Promise<void>;
-  getToken(): Promise<{
-    token: string;
-  }>;
-}
+export { TokenManager };
 
-// @public
-export type UrlReader = {
-  read(url: string): Promise<Buffer>;
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-};
+export { UrlReader };
 
 // @public
 export type UrlReaderPredicateTuple = {

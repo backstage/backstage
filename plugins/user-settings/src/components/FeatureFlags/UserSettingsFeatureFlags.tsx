@@ -73,18 +73,10 @@ export const UserSettingsFeatureFlags = () => {
     inputRef?.current?.focus();
   };
 
-  let filteredFeatureFlags = Array.from(featureFlags);
-
-  const filterInputParts = filterInput
-    .split(/\s/)
-    .map(part => part.trim().toLocaleLowerCase('en-US'));
-
-  filterInputParts.forEach(
-    part =>
-      (filteredFeatureFlags = filteredFeatureFlags.filter(featureFlag =>
-        featureFlag.name.toLocaleLowerCase('en-US').includes(part),
-      )),
-  );
+  const filteredFeatureFlags = featureFlags.filter(featureFlag => {
+    const featureFlagName = featureFlag.name.toLocaleLowerCase('en-US');
+    return featureFlagName.includes(filterInput.toLocaleLowerCase('en-US'));
+  });
 
   const Header = () => (
     <Grid container style={{ justifyContent: 'space-between' }}>

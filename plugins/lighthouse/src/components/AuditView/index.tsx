@@ -47,7 +47,8 @@ import {
   Page,
   Progress,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { rootRouteRef } from '../../plugin';
 
 // TODO(freben): move all of this out of index
 
@@ -67,29 +68,35 @@ interface AuditLinkListProps {
   audits?: Audit[];
   selectedId: string;
 }
-const AuditLinkList = ({ audits = [], selectedId }: AuditLinkListProps) => (
-  <List
-    data-testid="audit-sidebar"
-    component="nav"
-    aria-label="lighthouse audit history"
-  >
-    {audits.map(audit => (
-      <ListItem
-        key={audit.id}
-        selected={audit.id === selectedId}
-        button
-        component={Link}
-        replace
-        to={resolvePath(generatePath('audit/:id', { id: audit.id }), '../../')}
-      >
-        <ListItemIcon>
-          <AuditStatusIcon audit={audit} />
-        </ListItemIcon>
-        <ListItemText primary={formatTime(audit.timeCreated)} />
-      </ListItem>
-    ))}
-  </List>
-);
+const AuditLinkList = ({ audits = [], selectedId }: AuditLinkListProps) => {
+  const fromPath = useRouteRef(rootRouteRef)?.() ?? '../';
+  return (
+    <List
+      data-testid="audit-sidebar"
+      component="nav"
+      aria-label="lighthouse audit history"
+    >
+      {audits.map(audit => (
+        <ListItem
+          key={audit.id}
+          selected={audit.id === selectedId}
+          button
+          component={Link}
+          replace
+          to={resolvePath(
+            generatePath('audit/:id', { id: audit.id }),
+            fromPath,
+          )}
+        >
+          <ListItemIcon>
+            <AuditStatusIcon audit={audit} />
+          </ListItemIcon>
+          <ListItemText primary={formatTime(audit.timeCreated)} />
+        </ListItem>
+      ))}
+    </List>
+  );
+};
 
 const AuditView = ({ audit }: { audit?: Audit }) => {
   const classes = useStyles();
@@ -119,6 +126,7 @@ const AuditView = ({ audit }: { audit?: Audit }) => {
 
 export const AuditViewContent = () => {
   const lighthouseApi = useApi(lighthouseApiRef);
+  const fromPath = useRouteRef(rootRouteRef)?.() ?? '../';
   const params = useParams() as { id: string };
   const classes = useStyles();
   const navigate = useNavigate();
@@ -178,7 +186,7 @@ export const AuditViewContent = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate(`../../${createAuditButtonUrl}`)}
+          onClick={() => navigate(resolvePath(createAuditButtonUrl, fromPath))}
         >
           Create New Audit
         </Button>

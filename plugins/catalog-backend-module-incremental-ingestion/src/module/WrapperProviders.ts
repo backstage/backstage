@@ -18,8 +18,8 @@ import {
   ConfigService,
   LoggerService,
   SchedulerService,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { stringifyError } from '@backstage/errors';
 import {
   EntityProvider,

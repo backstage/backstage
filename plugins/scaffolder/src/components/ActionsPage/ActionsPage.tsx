@@ -39,6 +39,7 @@ import {
   Header,
   Page,
   ErrorPage,
+  MarkdownContent,
 } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
@@ -166,7 +167,7 @@ export const ActionsPage = () => {
         <Typography variant="h4" className={classes.code}>
           {action.id}
         </Typography>
-        <Typography>{action.description}</Typography>
+        {action.description && <MarkdownContent content={action.description} />}
         {action.schema?.input && (
           <Box pb={2}>
             <Typography variant="h5">Input</Typography>

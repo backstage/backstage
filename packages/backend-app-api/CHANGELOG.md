@@ -1,5 +1,17 @@
 # @backstage/backend-app-api
 
+## 0.2.5-next.0
+
+### Patch Changes
+
+- 6cfd4d7073: Updated implementations for the new `RootLifecycleService`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/backend-tasks@0.4.1-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-permission-node@0.7.3-next.0
+
 ## 0.2.4
 
 ### Patch Changes
