@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Overrides } from '@material-ui/core/styles/overrides';
-import { ComponentsProps } from '@material-ui/core/styles/props';
+import type { Overrides } from '@material-ui/core/styles/overrides';
+import type { ComponentsProps } from '@material-ui/core/styles/props';
 import { ComponentsOverrides, Theme, ThemeOptions } from '@mui/material/styles';
 import { CSSProperties } from 'react';
 
