@@ -126,7 +126,7 @@ export default async function serve(opts: OptionValues) {
   httpServer
     .serve()
     .catch(err => {
-      logger.error(err);
+      logger.error('Failed to start HTTP server', err);
       mkdocsChildProcess.kill();
       process.exit(1);
     })
