@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Theme, ThemeOptions } from '@material-ui/core';
-import {
-  PaletteOptions,
-  Palette,
+import type {
+  Theme as MuiTheme,
+  ThemeOptions as MuiThemeOptions,
+} from '@material-ui/core';
+import type {
+  PaletteOptions as MuiPaletteOptions,
+  Palette as MuiPalette,
 } from '@material-ui/core/styles/createPalette';
 import {
   BackstagePaletteAdditions,
@@ -32,7 +35,7 @@ import {
  * @public
  * @deprecated This type is deprecated, the MUI Palette type is now always extended instead.
  */
-export type BackstagePalette = Palette & BackstagePaletteAdditions;
+export type BackstagePalette = MuiPalette & BackstagePaletteAdditions;
 
 /**
  * The full Backstage palette options.
@@ -40,7 +43,7 @@ export type BackstagePalette = Palette & BackstagePaletteAdditions;
  * @public
  * @deprecated This type is deprecated, the MUI PaletteOptions type is now always extended instead.
  */
-export type BackstagePaletteOptions = PaletteOptions &
+export type BackstagePaletteOptions = MuiPaletteOptions &
   BackstagePaletteAdditions;
 
 /**
@@ -55,7 +58,7 @@ export type BackstagePaletteOptions = PaletteOptions &
  * {@link BackstageTheme}.
  *
  */
-export interface BackstageThemeOptions extends ThemeOptions {
+export interface BackstageThemeOptions extends MuiThemeOptions {
   palette: BackstagePaletteOptions;
   page: PageTheme;
   getPageTheme: (selector: PageThemeSelector) => PageTheme;
@@ -67,7 +70,7 @@ export interface BackstageThemeOptions extends ThemeOptions {
  * @public
  * @deprecated This type is deprecated, the MUI Theme type is now always extended instead.
  */
-export interface BackstageTheme extends Theme {
+export interface BackstageTheme extends MuiTheme {
   palette: BackstagePalette;
   page: PageTheme;
   getPageTheme: (selector: PageThemeSelector) => PageTheme;
@@ -81,7 +84,7 @@ export interface BackstageTheme extends Theme {
  * @deprecated Use {@link BaseThemeOptionsInput} instead.
  */
 export type SimpleThemeOptions = {
-  palette: PaletteOptions;
+  palette: MuiPaletteOptions;
   defaultPageTheme?: string;
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;

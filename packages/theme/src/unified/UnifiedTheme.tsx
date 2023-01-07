@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {
+import { createTheme as createV4Theme } from '@material-ui/core/styles';
+import type {
   Theme as Mui4Theme,
-  createTheme as createV4Theme,
   ThemeOptions as ThemeOptionsV4,
 } from '@material-ui/core/styles';
-import { PaletteOptions as PaletteOptionsV4 } from '@material-ui/core/styles/createPalette';
+import type { PaletteOptions as PaletteOptionsV4 } from '@material-ui/core/styles/createPalette';
 import { PaletteOptions as PaletteOptionsV5 } from '@mui/material/styles/createPalette';
 import {
   adaptV4Theme,

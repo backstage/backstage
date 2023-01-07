@@ -17,9 +17,9 @@
 import React, { ReactNode } from 'react';
 import {
   StylesProvider as Mui4StylesProvider,
-  Theme as Mui4Theme,
   ThemeProvider as Mui4Provider,
 } from '@material-ui/core/styles';
+import type { Theme as Mui4Theme } from '@material-ui/core/styles';
 import {
   StyledEngineProvider,
   Theme as Mui5Theme,
