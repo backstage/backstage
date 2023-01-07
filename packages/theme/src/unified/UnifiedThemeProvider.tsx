@@ -15,10 +15,6 @@
  */
 
 import React, { ReactNode } from 'react';
-import {
-  StylesProvider as Mui4StylesProvider,
-  ThemeProvider as Mui4Provider,
-} from '@material-ui/core/styles';
 import type { Theme as Mui4Theme } from '@material-ui/core/styles';
 import {
   StyledEngineProvider,
@@ -29,9 +25,9 @@ import {
   StylesProvider as Mui5StylesProvider,
   createGenerateClassName,
 } from '@mui/styles';
-import Mui4CssBaseline from '@material-ui/core/CssBaseline';
 import Mui5CssBaseline from '@mui/material/CssBaseline';
 import { UnifiedTheme } from './types';
+import { maybeLoadMui4CssBaseline, maybeLoadMui4Styles } from '../v4/load';
 
 const generateV4ClassName = createGenerateClassName({
   seed: 'm4',
@@ -69,7 +65,11 @@ export function UnifiedThemeProvider(
     if (v5Theme) {
       cssBaseline = <Mui5CssBaseline enableColorScheme />;
     } else if (v4Theme) {
-      cssBaseline = <Mui4CssBaseline />;
+      const CssBaseline = maybeLoadMui4CssBaseline();
+      if (!CssBaseline) {
+        throw new Error('Failed to load MUI 4 CssBaseline component');
+      }
+      cssBaseline = <CssBaseline />;
     }
   }
 
@@ -81,10 +81,15 @@ export function UnifiedThemeProvider(
   );
 
   if (v4Theme) {
+    const styles = maybeLoadMui4Styles();
+    if (!styles) {
+      throw new Error('Failed to load MUI 4 styles package');
+    }
+    const { StylesProvider, ThemeProvider } = styles;
     result = (
-      <Mui4StylesProvider generateClassName={generateV4ClassName} injectFirst>
-        <Mui4Provider theme={v4Theme as Mui4Theme}>{result}</Mui4Provider>
-      </Mui4StylesProvider>
+      <StylesProvider generateClassName={generateV4ClassName} injectFirst>
+        <ThemeProvider theme={v4Theme as Mui4Theme}>{result}</ThemeProvider>
+      </StylesProvider>
     );
   }
 
