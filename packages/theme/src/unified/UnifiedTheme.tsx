@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createTheme as createV4Theme } from '@material-ui/core/styles';
 import type {
   Theme as Mui4Theme,
   ThemeOptions as ThemeOptionsV4,
@@ -32,6 +31,7 @@ import { PageTheme } from '../base/types';
 import { defaultComponentThemes } from '../v5';
 import { createBaseThemeOptions } from '../base/createBaseThemeOptions';
 import { UnifiedTheme } from './types';
+import { maybeLoadMui4Styles } from '../v4/load';
 
 export class UnifiedThemeHolder implements UnifiedTheme {
   #themes = new Map<string, unknown>();
@@ -74,9 +74,14 @@ export function createUnifiedTheme(options: UnifiedThemeOptions): UnifiedTheme {
   const themeOptions = createBaseThemeOptions(options);
   const components = { ...defaultComponentThemes, ...options.components };
   const v5Theme = createV5Theme({ ...themeOptions, components });
-  const v4Overrides = transformV5ComponentThemesToV4(v5Theme, components);
-  const v4Theme = { ...createV4Theme(themeOptions), ...v4Overrides };
 
+  const mui4Styles = maybeLoadMui4Styles();
+  if (!mui4Styles) {
+    return new UnifiedThemeHolder(undefined, v5Theme);
+  }
+
+  const v4Overrides = transformV5ComponentThemesToV4(v5Theme, components);
+  const v4Theme = { ...mui4Styles.createTheme(themeOptions), ...v4Overrides };
   return new UnifiedThemeHolder(v4Theme, v5Theme);
 }
 
@@ -89,8 +94,13 @@ export function createUnifiedTheme(options: UnifiedThemeOptions): UnifiedTheme {
 export function createUnifiedThemeFromV4(
   options: ThemeOptionsV4,
 ): UnifiedTheme {
-  const v4Theme = createV4Theme(options);
   const v5Theme = adaptV4Theme(options as any);
 
+  const mui4Styles = maybeLoadMui4Styles();
+  if (!mui4Styles) {
+    return new UnifiedThemeHolder(undefined, v5Theme);
+  }
+
+  const v4Theme = mui4Styles.createTheme(options);
   return new UnifiedThemeHolder(v4Theme, v5Theme);
 }
