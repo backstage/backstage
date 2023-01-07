@@ -12041,8 +12041,8 @@ __metadata:
   linkType: hard
 
 "@octokit/auth-app@npm:^4.0.0":
-  version: 4.0.7
-  resolution: "@octokit/auth-app@npm:4.0.7"
+  version: 4.0.8
+  resolution: "@octokit/auth-app@npm:4.0.8"
   dependencies:
     "@octokit/auth-oauth-app": ^5.0.0
     "@octokit/auth-oauth-user": ^2.0.0
@@ -12052,9 +12052,9 @@ __metadata:
     "@types/lru-cache": ^5.1.0
     deprecation: ^2.3.1
     lru-cache: ^6.0.0
-    universal-github-app-jwt: ^1.0.1
+    universal-github-app-jwt: ^1.1.1
     universal-user-agent: ^6.0.0
-  checksum: 880de7341f47c5a48822612f50ae453fb0990a188b29afdb2f80a1f7e703c88e068d05a4edc1aa9a8204c730b6f70cf2772fbd5da032fee4986a5266ebdda4c7
+  checksum: 819c048db51ee041697bb4cbba5fc39fbc0849e76cda63dd34ff9e77d60be62c5f93c478a9c1edf6643a88afaefc7aefe562e86b73f6ef6874df1bc797b9b617
   languageName: node
   linkType: hard
 
@@ -14765,12 +14765,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^8.3.3, @types/jsonwebtoken@npm:^8.5.0":
+"@types/jsonwebtoken@npm:^8.5.0":
   version: 8.5.0
   resolution: "@types/jsonwebtoken@npm:8.5.0"
   dependencies:
     "@types/node": "*"
   checksum: e8f9ab96ec5cf76195c0d31cf555371824b673939064efec698ca99525ce46476af54debd1f66bd732e6079e134848b97163797009c4b47a767448a0c6ddaeda
+  languageName: node
+  linkType: hard
+
+"@types/jsonwebtoken@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@types/jsonwebtoken@npm:9.0.0"
+  dependencies:
+    "@types/node": "*"
+  checksum: c7791354ba895759524c18ba609ea04efdc576e2b660bd6f80d5b917db8dc4b01acd4d1bc115a62d35406a82e627067973d475c4b36035dabaa27862b141ae49
   languageName: node
   linkType: hard
 
@@ -37703,13 +37712,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"universal-github-app-jwt@npm:^1.0.1":
-  version: 1.1.0
-  resolution: "universal-github-app-jwt@npm:1.1.0"
+"universal-github-app-jwt@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "universal-github-app-jwt@npm:1.1.1"
   dependencies:
-    "@types/jsonwebtoken": ^8.3.3
-    jsonwebtoken: ^8.5.1
-  checksum: b6ebbe2533881639701e936ca54c9ec02aae1e9b36bf2495ed66632d5057e06a7d4a118ac38a3d96f63993e19a47ee6e282858e1f4a9c2ceede19a856ca08fcc
+    "@types/jsonwebtoken": ^9.0.0
+    jsonwebtoken: ^9.0.0
+  checksum: 31d30150b9eafa9fa8bf57bd6f97d7d91d4509ad24fa673a6e29ac2295b8f1fc293a70cb44fa807af7cfd787db1cf6edd3876fc0cae31230c5292b76677159fc
   languageName: node
   linkType: hard
 
