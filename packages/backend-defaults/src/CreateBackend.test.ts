@@ -67,6 +67,6 @@ describe('createBackend', () => {
           }),
         ],
       }),
-    ).toThrow('The core.plugin-metadata service cannot be overridden');
+    ).toThrow('The core.pluginMetadata service cannot be overridden');
   });
 });
