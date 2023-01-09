@@ -1,12 +1,12 @@
 # scaffolder-backend-module-sentry
 
-Welcome to the Setnry Module for Scaffolder.
+Welcome to the Sentry Module for Scaffolder.
 
-Here you can find all Sentry related features to imrpove your scaffolder:
+Here you can find all Sentry related features to improve your scaffolder:
 
 ## Getting started
 
-You need to configure the action in your ackend:
+You need to configure the action in your backend:
 
 ## From your Backstage root directory
 
