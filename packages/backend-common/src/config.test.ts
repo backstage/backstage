@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { ObservableConfigProxy } from './config';
 
@@ -23,7 +23,7 @@ describe('ObservableConfigProxy', () => {
     error: (message: string) => {
       throw new Error(message);
     },
-  } as unknown as Logger;
+  } as unknown as LoggerService;
 
   it('should notify subscribers', () => {
     const config = new ObservableConfigProxy(errLogger);

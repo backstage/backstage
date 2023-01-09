@@ -29,7 +29,7 @@ import {
 } from './connection';
 import { PluginDatabaseManager } from './types';
 import path from 'path';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 
 /**
@@ -46,7 +46,7 @@ function pluginPath(pluginId: string): string {
  */
 export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
-  logger?: Logger;
+  logger?: LoggerService;
 };
 
 /**

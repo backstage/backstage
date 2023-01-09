@@ -25,7 +25,7 @@ import {
   serializeError,
 } from '@backstage/errors';
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';
 
 /**
@@ -46,7 +46,7 @@ export type ErrorHandlerOptions = {
    *
    * If not specified, the root logger will be used.
    */
-  logger?: Logger;
+  logger?: LoggerService;
 
   /**
    * Whether any 4xx errors should be logged or not.
@@ -83,7 +83,7 @@ export function errorHandler(
   return (error: Error, req: Request, res: Response, next: NextFunction) => {
     const statusCode = getStatusCode(error);
     if (options.logClientErrors || statusCode >= 500) {
-      logger.error(error);
+      logger.error(`Request failed with status ${statusCode}`, error);
     }
 
     if (res.headersSent) {

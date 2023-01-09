@@ -22,7 +22,7 @@ import helmet from 'helmet';
 import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/content-security-policy';
 import * as http from 'http';
 import stoppable from 'stoppable';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { useHotCleanup } from '../../hot';
 import { getRootLogger } from '../../logging';
 import {
@@ -48,7 +48,7 @@ const DEFAULT_HOST = '';
 export class ServiceBuilderImpl implements ServiceBuilder {
   private port: number | undefined;
   private host: string | undefined;
-  private logger: Logger | undefined;
+  private logger: LoggerService | undefined;
   private corsOptions: cors.CorsOptions | undefined;
   private cspOptions: Record<string, string[] | false> | undefined;
   private httpsSettings: HttpsSettings | undefined;
@@ -111,7 +111,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  setLogger(logger: Logger): ServiceBuilder {
+  setLogger(logger: LoggerService): ServiceBuilder {
     this.logger = logger;
     return this;
   }

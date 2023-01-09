@@ -15,7 +15,7 @@
  */
 
 import { RequestHandler } from 'express';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import morgan from 'morgan';
 import { getRootLogger } from '../logging';
 
@@ -26,7 +26,7 @@ import { getRootLogger } from '../logging';
  * @param logger - An optional logger to use. If not specified, the root logger will be used.
  * @returns An Express request handler
  */
-export function requestLoggingHandler(logger?: Logger): RequestHandler {
+export function requestLoggingHandler(logger?: LoggerService): RequestHandler {
   const actualLogger = (logger || getRootLogger()).child({
     type: 'incomingRequest',
   });

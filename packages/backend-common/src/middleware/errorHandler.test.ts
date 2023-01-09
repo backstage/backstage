@@ -155,7 +155,10 @@ describe('errorHandler', () => {
 
     await request(app).get('/breaks');
 
-    expect(mockLogger.error).toHaveBeenCalledWith(thrownError);
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Request failed with status 500',
+      thrownError,
+    );
   });
 
   it('does not log 400 errors', async () => {
