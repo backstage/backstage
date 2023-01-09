@@ -1,6 +1,7 @@
 ---
-'@backstage/plugin-catalog-graphql': minor
 '@backstage/plugin-graphql-backend': minor
+'@backstage/plugin-graphql-catalog': minor
+'@backstage/plugin-graphql-common': minor
 ---
 
 Rethink GraphQL-Plugin
