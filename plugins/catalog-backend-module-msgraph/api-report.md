@@ -70,7 +70,11 @@ export const MICROSOFT_GRAPH_USER_ID_ANNOTATION = 'graph.microsoft.com/user-id';
 export class MicrosoftGraphClient {
   constructor(baseUrl: string, tokenCredential: TokenCredential);
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient;
-  getGroupMembers(groupId: string): AsyncIterable<GroupMember>;
+  getGroupMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: QueryMode,
+  ): AsyncIterable<GroupMember>;
   // (undocumented)
   getGroupPhoto(groupId: string, sizeId?: string): Promise<string | undefined>;
   getGroupPhotoWithSizeLimit(
@@ -79,8 +83,13 @@ export class MicrosoftGraphClient {
   ): Promise<string | undefined>;
   getGroups(
     query?: ODataQuery,
-    queryMode?: 'basic' | 'advanced',
+    queryMode?: QueryMode,
   ): AsyncIterable<MicrosoftGraph.Group>;
+  getGroupUserMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: QueryMode,
+  ): AsyncIterable<MicrosoftGraph.User>;
   getOrganization(tenantId: string): Promise<MicrosoftGraph.Organization>;
   // (undocumented)
   getUserPhoto(userId: string, sizeId?: string): Promise<string | undefined>;
@@ -88,13 +97,9 @@ export class MicrosoftGraphClient {
     userId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  getUserProfile(
-    userId: string,
-    query?: ODataQuery,
-  ): Promise<MicrosoftGraph.User>;
   getUsers(
     query?: ODataQuery,
-    queryMode?: 'basic' | 'advanced',
+    queryMode?: QueryMode,
   ): AsyncIterable<MicrosoftGraph.User>;
   requestApi(
     path: string,
@@ -104,7 +109,7 @@ export class MicrosoftGraphClient {
   requestCollection<T>(
     path: string,
     query?: ODataQuery,
-    queryMode?: 'basic' | 'advanced',
+    queryMode?: QueryMode,
   ): AsyncIterable<T>;
   requestRaw(
     url: string,
@@ -233,12 +238,16 @@ export type ODataQuery = {
   expand?: string;
   select?: string[];
   count?: boolean;
+  top?: number;
 };
 
 // @public
 export type OrganizationTransformer = (
   organization: MicrosoftGraph.Organization,
 ) => Promise<GroupEntity | undefined>;
+
+// @public
+export type QueryMode = 'basic' | 'advanced';
 
 // @public @deprecated
 export function readMicrosoftGraphConfig(
@@ -259,11 +268,11 @@ export function readMicrosoftGraphOrg(
     groupSearch?: string;
     groupFilter?: string;
     groupSelect?: string[];
-    queryMode?: 'basic' | 'advanced';
+    queryMode?: QueryMode;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
-    logger: Logger;
+    logger?: Logger;
   },
 ): Promise<{
   users: UserEntity[];

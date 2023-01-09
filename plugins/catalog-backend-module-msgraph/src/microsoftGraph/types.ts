@@ -18,6 +18,13 @@ import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
 /**
+ * Type of query to execute
+ *
+ * @public
+ */
+export type QueryMode = 'basic' | 'advanced';
+
+/**
  * Customize the ingested User entity
  *
  * @public

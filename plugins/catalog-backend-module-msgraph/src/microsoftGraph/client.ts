@@ -23,6 +23,7 @@ import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import fetch, { Response } from 'node-fetch';
 import qs from 'qs';
 import { MicrosoftGraphProviderConfig } from './config';
+import { QueryMode } from './types';
 
 /**
  * OData (Open Data Protocol) Query
@@ -52,6 +53,10 @@ export type ODataQuery = {
    * Retrieves the total count of matching resources.
    */
   count?: boolean;
+  /**
+   * Maximum number of records to receive in one batch.
+   */
+  top?: number;
 };
 
 /**
@@ -121,7 +126,7 @@ export class MicrosoftGraphClient {
   async *requestCollection<T>(
     path: string,
     query?: ODataQuery,
-    queryMode?: 'basic' | 'advanced',
+    queryMode?: QueryMode,
   ): AsyncIterable<T> {
     // upgrade to advanced query mode transparently when "search" is used
     // to stay backwards compatible.
@@ -188,6 +193,7 @@ export class MicrosoftGraphClient {
         $select: query?.select?.join(','),
         $expand: query?.expand,
         $count: query?.count,
+        $top: query?.top,
       },
       {
         addQueryPrefix: true,
@@ -230,28 +236,6 @@ export class MicrosoftGraphClient {
   }
 
   /**
-   * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/user | User}
-   * from Graph API
-   *
-   * @public
-   * @param userId - The unique identifier for the `User` resource
-   * @param query - OData Query {@link ODataQuery}
-   *
-   */
-  async getUserProfile(
-    userId: string,
-    query?: ODataQuery,
-  ): Promise<MicrosoftGraph.User> {
-    const response = await this.requestApi(`users/${userId}`, query);
-
-    if (response.status !== 200) {
-      await this.handleError('user profile', response);
-    }
-
-    return await response.json();
-  }
-
-  /**
    * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/profilephoto | profilePhoto}
    * of `User` from Graph API with size limit
    *
@@ -284,7 +268,7 @@ export class MicrosoftGraphClient {
    */
   async *getUsers(
     query?: ODataQuery,
-    queryMode?: 'basic' | 'advanced',
+    queryMode?: QueryMode,
   ): AsyncIterable<MicrosoftGraph.User> {
     yield* this.requestCollection<MicrosoftGraph.User>(
       `users`,
@@ -326,10 +310,31 @@ export class MicrosoftGraphClient {
    */
   async *getGroups(
     query?: ODataQuery,
-    queryMode?: 'basic' | 'advanced',
+    queryMode?: QueryMode,
   ): AsyncIterable<MicrosoftGraph.Group> {
     yield* this.requestCollection<MicrosoftGraph.Group>(
       `groups`,
+      query,
+      queryMode,
+    );
+  }
+
+  /**
+   * Get a collection of
+   * {@link https://learn.microsoft.com/en-us/graph/api/resources/directoryobject | GroupMember}
+   * belonging to a `Group` from Graph API and return as `AsyncIterable`
+   * @public
+   * @param groupId - The unique identifier for the `Group` resource
+   * @param query - OData Query {@link ODataQuery}
+   * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
+   */
+  async *getGroupMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: QueryMode,
+  ): AsyncIterable<GroupMember> {
+    yield* this.requestCollection<GroupMember>(
+      `groups/${groupId}/members`,
       query,
       queryMode,
     );
@@ -341,10 +346,19 @@ export class MicrosoftGraphClient {
    * belonging to a `Group` from Graph API and return as `AsyncIterable`
    * @public
    * @param groupId - The unique identifier for the `Group` resource
-   *
+   * @param query - OData Query {@link ODataQuery}
+   * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
    */
-  async *getGroupMembers(groupId: string): AsyncIterable<GroupMember> {
-    yield* this.requestCollection<GroupMember>(`groups/${groupId}/members`);
+  async *getGroupUserMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: QueryMode,
+  ): AsyncIterable<MicrosoftGraph.User> {
+    yield* this.requestCollection<MicrosoftGraph.User>(
+      `groups/${groupId}/members/microsoft.graph.user/`,
+      query,
+      queryMode,
+    );
   }
 
   /**

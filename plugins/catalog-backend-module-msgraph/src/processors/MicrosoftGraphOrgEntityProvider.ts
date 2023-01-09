@@ -364,10 +364,10 @@ function trackProgress(logger: Logger) {
   let timestamp = Date.now();
   let summary: string;
 
-  logger.info('Reading msgraph users and groups');
+  logger.info('Reading Microsoft Graph users and groups');
 
   function markReadComplete(read: { users: unknown[]; groups: unknown[] }) {
-    summary = `${read.users.length} msgraph users and ${read.groups.length} msgraph groups`;
+    summary = `${read.users.length} users and ${read.groups.length} groups from Microsoft graph`;
     const readDuration = ((Date.now() - timestamp) / 1000).toFixed(1);
     timestamp = Date.now();
     logger.info(`Read ${summary} in ${readDuration} seconds. Committing...`);

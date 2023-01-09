@@ -25,14 +25,15 @@ export {
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,
 } from './constants';
 export { normalizeEntityName } from './helper';
+export { readMicrosoftGraphOrg } from './read';
 export {
   defaultGroupTransformer,
   defaultOrganizationTransformer,
   defaultUserTransformer,
-  readMicrosoftGraphOrg,
-} from './read';
+} from './defaultTransformers';
 export type {
   GroupTransformer,
   OrganizationTransformer,
   UserTransformer,
+  QueryMode,
 } from './types';
