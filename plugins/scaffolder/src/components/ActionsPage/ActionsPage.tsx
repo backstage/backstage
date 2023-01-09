@@ -111,7 +111,7 @@ export const ActionsPage = () => {
           <TableCell>
             <>
               {[props.type].flat().map(type => (
-                <Chip label={type} />
+                <Chip label={type} key={type} />
               ))}
             </>
           </TableCell>
