@@ -20,8 +20,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
-import { readHelmetOptions } from '../../services/implementations/rootHttpRouter/readHelmetOptions';
-import { readCorsOptions } from '../../services/implementations/rootHttpRouter/readCorsOptions';
+import { readHelmetOptions } from './readHelmetOptions';
+import { readCorsOptions } from './readCorsOptions';
 import {
   AuthenticationError,
   ConflictError,

@@ -24,4 +24,6 @@ export type {
   ExtendedHttpServer,
 } from './types';
 export { MiddlewareFactory } from './MiddlewareFactory';
+export { readHelmetOptions } from './readHelmetOptions';
+export { readCorsOptions } from './readCorsOptions';
 export type { MiddlewareFactoryOptions } from './MiddlewareFactory';
