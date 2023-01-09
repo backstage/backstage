@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { useFormData } from './useFormData';
+export { useFormDataFromQuery } from './useFormDataFromQuery';
 export {
   useTemplateSchema,
   type ParsedTemplateSchema,

@@ -32,7 +32,7 @@ import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import { ReviewState } from '../ReviewState';
 import validator from '@rjsf/validator-ajv6';
 
-import { useFormData } from '../../hooks/useFormData';
+import { useFormDataFromQuery } from '../../hooks';
 import { FormProps } from '../../types';
 
 const useStyles = makeStyles(theme => ({
@@ -77,7 +77,7 @@ export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
-  const [formState, setFormState] = useFormData();
+  const [formState, setFormState] = useFormDataFromQuery();
 
   const [errors, setErrors] = useState<
     undefined | Record<string, FieldValidation>

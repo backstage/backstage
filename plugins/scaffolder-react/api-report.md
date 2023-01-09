@@ -409,7 +409,7 @@ export const useCustomFieldExtensions: <
 ) => TComponentDataType[];
 
 // @alpha
-export const useFormData: () => [
+export const useFormDataFromQuery: () => [
   Record<string, any>,
   Dispatch<SetStateAction<Record<string, any>>>,
 ];

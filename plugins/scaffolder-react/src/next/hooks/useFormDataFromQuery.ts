@@ -21,7 +21,7 @@ import { useState } from 'react';
  * This hook is used to get the formData from the query string.
  * @alpha
  */
-export const useFormData = () => {
+export const useFormDataFromQuery = () => {
   return useState<Record<string, any>>(() => {
     const query = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
