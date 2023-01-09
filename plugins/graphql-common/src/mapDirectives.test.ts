@@ -29,15 +29,13 @@ import {
   validateSchema,
 } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
-import { transformDirectives } from '../service/mappers';
-import { createGraphQLTestApp } from './setupTests';
+import { mapDirectives } from './mapDirectives';
+import { createGraphQLAPI } from './setupTests';
 
-describe('Transformer', () => {
-  const graphqlHeader = loadFilesSync(
-    require.resolve('../modules/core/core.graphql'),
-  );
+describe('mapDirectives', () => {
+  const graphqlHeader = loadFilesSync(require.resolve('./core/core.graphql'));
   const transformSchema = (source: DocumentNode) => {
-    const schema = transformDirectives(
+    const schema = mapDirectives(
       buildASTSchema(mergeTypeDefs([source, graphqlHeader])),
     );
     const errors = validateSchema(schema);
@@ -498,7 +496,7 @@ describe('Transformer', () => {
       spec: { 'path.to.name': 'world' },
     };
     const loader = () => new DataLoader(async () => [entity]);
-    const query = createGraphQLTestApp(TestModule, loader);
+    const query = createGraphQLAPI(TestModule, loader);
     const result = yield query(/* GraphQL */ `
       node(id: "test") { ...on Entity { first, second, third } }
     `);
@@ -552,7 +550,7 @@ describe('Transformer', () => {
           return entity;
         }),
       );
-    const query = createGraphQLTestApp(TestModule, loader);
+    const query = createGraphQLAPI(TestModule, loader);
     const result = yield query(/* GraphQL */ `
       node(id: "entity") {
         ...on Entity {
@@ -615,7 +613,7 @@ describe('Transformer', () => {
           return entity;
         }),
       );
-    const query = createGraphQLTestApp(TestModule, loader);
+    const query = createGraphQLAPI(TestModule, loader);
     const result = yield query(/* GraphQL */ `
       node(id: "entity") {
         ...on Entity {
@@ -697,7 +695,7 @@ describe('Transformer', () => {
           return entity;
         }),
       );
-    const query = createGraphQLTestApp(TestModule, loader);
+    const query = createGraphQLAPI(TestModule, loader);
     const result = yield query(/* GraphQL */ `
       node(id: "entity") {
         ...on Entity {
@@ -795,7 +793,7 @@ describe('Transformer', () => {
           return entity;
         }),
       );
-    const query = createGraphQLTestApp(TestModule, loader);
+    const query = createGraphQLAPI(TestModule, loader);
     const result = yield query(/* GraphQL */ `
       node(id: "entity") {
         ...on Entity {

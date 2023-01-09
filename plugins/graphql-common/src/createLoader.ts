@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { EntityRef, Loader } from '../types';
+import type { CatalogClient } from '@backstage/catalog-client';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import DataLoader from 'dataloader';
 import { EnvelopError } from '@envelop/core';
-import type { CatalogClient } from '@backstage/catalog-client';
+import type { EntityRef, Loader } from './types';
 
 export function createLoader(
   catalog: Pick<CatalogClient, 'getEntitiesByRefs'>,

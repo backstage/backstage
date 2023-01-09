@@ -48,7 +48,7 @@ import {
   isNonNullType,
   isUnionType,
 } from 'graphql';
-import type { ResolverContext } from '../types';
+import type { ResolverContext } from './types';
 
 function getObjectTypeName(
   iface: GraphQLInterfaceType,
@@ -122,7 +122,7 @@ function createConnectionType(
   });
 }
 
-export function transformDirectives(sourceSchema: GraphQLSchema) {
+export function mapDirectives(sourceSchema: GraphQLSchema) {
   const extendsWithoutArgs = new Set<string>();
   const resolversMap: Record<string, GraphQLTypeResolver<any, any>> = {};
   const typesToAdd = new Map<string, GraphQLNamedType>();
@@ -360,131 +360,129 @@ export function transformDirectives(sourceSchema: GraphQLSchema) {
     };
   }
 
+  function mapCompositeField(
+    fieldConfig: GraphQLFieldConfig<any, any>,
+    fieldName: string,
+    typeName: string,
+    schema: GraphQLSchema,
+  ) {
+    const [fieldDirective] = getDirective(schema, fieldConfig, 'field') ?? [];
+    const [relationDirective] =
+      getDirective(schema, fieldConfig, 'relation') ?? [];
+
+    if (fieldDirective && relationDirective) {
+      throw new Error(
+        `The field "${fieldName}" of "${typeName}" type has both @field and @relation directives at the same time`,
+      );
+    }
+
+    try {
+      if (fieldDirective) {
+        handleFieldDirective(fieldConfig, fieldDirective);
+      } else if (relationDirective) {
+        handleRelationDirective(fieldConfig, relationDirective, schema);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : error;
+      throw new Error(
+        `Error while processing directives on field "${fieldName}" of "${typeName}":\n${errorMessage}`,
+      );
+    }
+    return fieldConfig;
+  }
+
+  function mapInterfaceType(
+    interfaceType: GraphQLInterfaceType,
+    schema: GraphQLSchema,
+  ) {
+    if (interfaceType.name === 'Node') {
+      interfaceType.resolveType = (...args) =>
+        resolversMap[interfaceType.name](...args);
+    }
+    const [extendDirective] =
+      getDirective(schema, interfaceType, 'extend') ?? [];
+    if (!extendDirective) return interfaceType;
+    validateExtendDirective(interfaceType, extendDirective, schema);
+    defineResolver(interfaceType, extendDirective, schema);
+
+    const objectType = getObjectTypeName(interfaceType, extendDirective);
+    const extendInterfaces = traverseExtends(interfaceType, schema);
+    const interfaces = [
+      ...new Map(
+        [
+          ...(additionalInterfaces[interfaceType.name]?.values() ?? []),
+          ...extendInterfaces.flatMap(iface => [
+            ...(additionalInterfaces[iface.name]?.values() ?? []),
+          ]),
+          ...extendInterfaces,
+        ].map(iface => [iface.name, iface]),
+      ).values(),
+    ];
+    const fields = [...interfaces]
+      .reverse()
+      .reduce(
+        (acc, type) => ({ ...acc, ...type.toConfig().fields }),
+        {} as GraphQLFieldConfigMap<any, any>,
+      );
+
+    const { astNode, extensionASTNodes, ...typeConfig } =
+      interfaceType.toConfig();
+
+    typesToAdd.set(
+      objectType,
+      new GraphQLObjectType({
+        ...typeConfig,
+        name: objectType,
+        fields,
+        interfaces,
+      }),
+    );
+
+    return new GraphQLInterfaceType({
+      ...typeConfig,
+      fields,
+      resolveType: (...args) => resolversMap[interfaceType.name](...args),
+      interfaces: interfaces.filter(iface => iface.name !== interfaceType.name),
+    });
+  }
+
+  function mapUnionType(unionType: GraphQLUnionType, schema: GraphQLSchema) {
+    const typeConfig = unionType.toConfig();
+    if (
+      !typeConfig.types.some(
+        type =>
+          isInterfaceType(type) &&
+          (type as GraphQLInterfaceType).name in resolversMap,
+      )
+    )
+      return unionType;
+
+    typeConfig.types = typeConfig.types.flatMap(type => {
+      if (isInterfaceType(type)) {
+        return getImplementingTypes(
+          (type as GraphQLInterfaceType).name,
+          schema,
+        ).map(name => schema.getType(name) as GraphQLObjectType);
+      }
+      return [type];
+    });
+    typeConfig.resolveType = (...args) => resolversMap.Node(...args);
+    return new GraphQLUnionType(typeConfig);
+  }
+
   const finalSchema = mapSchema(
     addTypes(
       mapSchema(
         mapSchema(sourceSchema, {
-          [MapperKind.COMPOSITE_FIELD]: (
-            fieldConfig,
-            fieldName,
-            typeName,
-            schema,
-          ) => {
-            const [fieldDirective] =
-              getDirective(schema, fieldConfig, 'field') ?? [];
-            const [relationDirective] =
-              getDirective(schema, fieldConfig, 'relation') ?? [];
-
-            if (fieldDirective && relationDirective) {
-              throw new Error(
-                `The field "${fieldName}" of "${typeName}" type has both @field and @relation directives at the same time`,
-              );
-            }
-
-            try {
-              if (fieldDirective) {
-                handleFieldDirective(fieldConfig, fieldDirective);
-              } else if (relationDirective) {
-                handleRelationDirective(fieldConfig, relationDirective, schema);
-              }
-            } catch (error) {
-              const errorMessage =
-                error instanceof Error ? error.message : error;
-              throw new Error(
-                `Error while processing directives on field "${fieldName}" of "${typeName}":\n${errorMessage}`,
-              );
-            }
-            return fieldConfig;
-          },
+          [MapperKind.COMPOSITE_FIELD]: mapCompositeField,
         }),
-        {
-          [MapperKind.INTERFACE_TYPE]: (interfaceType, schema) => {
-            if (interfaceType.name === 'Node') {
-              interfaceType.resolveType = (...args) =>
-                resolversMap[interfaceType.name](...args);
-            }
-            const [extendDirective] =
-              getDirective(schema, interfaceType, 'extend') ?? [];
-            if (!extendDirective) return interfaceType;
-            validateExtendDirective(interfaceType, extendDirective, schema);
-            defineResolver(interfaceType, extendDirective, schema);
-
-            const objectType = getObjectTypeName(
-              interfaceType,
-              extendDirective,
-            );
-            const extendInterfaces = traverseExtends(interfaceType, schema);
-            const interfaces = [
-              ...new Map(
-                [
-                  ...(additionalInterfaces[interfaceType.name]?.values() ?? []),
-                  ...extendInterfaces.flatMap(iface => [
-                    ...(additionalInterfaces[iface.name]?.values() ?? []),
-                  ]),
-                  ...extendInterfaces,
-                ].map(iface => [iface.name, iface]),
-              ).values(),
-            ];
-            const fields = [...interfaces]
-              .reverse()
-              .reduce(
-                (acc, type) => ({ ...acc, ...type.toConfig().fields }),
-                {} as GraphQLFieldConfigMap<any, any>,
-              );
-
-            const { astNode, extensionASTNodes, ...typeConfig } =
-              interfaceType.toConfig();
-
-            typesToAdd.set(
-              objectType,
-              new GraphQLObjectType({
-                ...typeConfig,
-                name: objectType,
-                fields,
-                interfaces,
-              }),
-            );
-
-            return new GraphQLInterfaceType({
-              ...typeConfig,
-              fields,
-              resolveType: (...args) =>
-                resolversMap[interfaceType.name](...args),
-              interfaces: interfaces.filter(
-                iface => iface.name !== interfaceType.name,
-              ),
-            });
-          },
-        },
+        { [MapperKind.INTERFACE_TYPE]: mapInterfaceType },
       ),
       [...typesToAdd.values()],
     ),
-    {
-      [MapperKind.UNION_TYPE]: (unionType, schema) => {
-        const typeConfig = unionType.toConfig();
-        if (
-          !typeConfig.types.some(
-            type =>
-              isInterfaceType(type) &&
-              (type as GraphQLInterfaceType).name in resolversMap,
-          )
-        )
-          return unionType;
-
-        typeConfig.types = typeConfig.types.flatMap(type => {
-          if (isInterfaceType(type)) {
-            return getImplementingTypes(
-              (type as GraphQLInterfaceType).name,
-              schema,
-            ).map(name => schema.getType(name) as GraphQLObjectType);
-          }
-          return [type];
-        });
-        typeConfig.resolveType = (...args) => resolversMap.Node(...args);
-        return new GraphQLUnionType(typeConfig);
-      },
-    },
+    { [MapperKind.UNION_TYPE]: mapUnionType },
   );
+
   return finalSchema;
 }
 
