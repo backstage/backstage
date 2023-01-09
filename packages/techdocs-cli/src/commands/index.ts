@@ -18,6 +18,7 @@ import { Command } from 'commander';
 import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
+const defaultPreviewAppPort = '3000';
 
 export function registerCommands(program: Command) {
   program
@@ -258,11 +259,11 @@ export function registerCommands(program: Command) {
     .option(
       '--preview-app-port <PORT>',
       'Port for the preview app to be served on',
-      '3000',
+      defaultPreviewAppPort,
     )
     .hook('preAction', command => {
       if (
-        command.opts().previewAppPort &&
+        command.opts().previewAppPort !== defaultPreviewAppPort &&
         !command.opts().previewAppBundlePath
       ) {
         command.error(
