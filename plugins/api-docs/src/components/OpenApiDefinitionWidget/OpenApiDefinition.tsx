@@ -183,7 +183,7 @@ export const OpenApiDefinition = ({
   // isolate the entity annotations that are supportedSwaggerPlugins AND are set to true
   // then setup the values needed by the SwaggerUI
   const appliedSwaggerPlugins = Object.keys(supportedSwaggerPlugins)
-    ?.filter(key => entity?.metadata?.annotations?.[key] === 'true')
+    ?.filter(plugin => entity?.metadata?.annotations?.[plugin] === 'true')
     ?.map(plugin => supportedSwaggerPlugins[plugin]);
 
   return (
