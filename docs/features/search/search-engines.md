@@ -133,7 +133,7 @@ used internally by the Elasticsearch engine plugin. For example:
 
 ```typescript
 import { isOpenSearchCompatible } from '@backstage/plugin-search-backend-module-elasticsearch';
-import { Client as ElasticClient } from '@elastic/elastic-search';
+import { Client as ElasticClient } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 
 const client = searchEngine.newClient(options => {
