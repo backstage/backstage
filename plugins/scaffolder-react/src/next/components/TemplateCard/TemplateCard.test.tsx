@@ -27,6 +27,7 @@ import { TemplateCard } from './TemplateCard';
 import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { fireEvent } from '@testing-library/react';
 
 describe('TemplateCard', () => {
   it('should render the card title', async () => {
@@ -192,7 +193,7 @@ describe('TemplateCard', () => {
     );
   });
 
-  it('should render the choose button to navigate to the selected template', async () => {
+  it('should call the onSelected handler when clicking the choose button', async () => {
     const mockTemplate: TemplateEntityV1beta3 = {
       apiVersion: 'scaffolder.backstage.io/v1beta3',
       kind: 'Template',
@@ -202,6 +203,7 @@ describe('TemplateCard', () => {
         type: 'service',
       },
     };
+    const mockOnSelected = jest.fn();
 
     const { getByRole } = await renderInTestApp(
       <TestApiProvider
@@ -214,7 +216,7 @@ describe('TemplateCard', () => {
           ],
         ]}
       >
-        <TemplateCard template={mockTemplate} />
+        <TemplateCard template={mockTemplate} onSelected={mockOnSelected} />
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -224,9 +226,9 @@ describe('TemplateCard', () => {
     );
 
     expect(getByRole('button', { name: 'Choose' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Choose' })).toHaveAttribute(
-      'href',
-      '/templates/default/bob',
-    );
+
+    fireEvent.click(getByRole('button', { name: 'Choose' }));
+
+    expect(mockOnSelected).toHaveBeenCalledWith(mockTemplate);
   });
 });
