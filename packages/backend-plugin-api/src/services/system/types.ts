@@ -71,13 +71,22 @@ export type ServiceFactory<TService = unknown> =
       >;
     };
 
+/**
+ * Represents either a {@link ServiceFactory} or a function that returns one.
+ *
+ * @public
+ */
+export type ServiceFactoryOrFunction<TService = unknown> =
+  | ServiceFactory<TService>
+  | (() => ServiceFactory<TService>);
+
 /** @public */
 export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   id: string;
   scope?: TScope;
   defaultFactory?: (
     service: ServiceRef<TService, TScope>,
-  ) => Promise<ServiceFactory<TService> | (() => ServiceFactory<TService>)>;
+  ) => Promise<ServiceFactoryOrFunction<TService>>;
 }
 
 /**

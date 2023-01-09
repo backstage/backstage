@@ -19,6 +19,7 @@ import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReader } from '@backstage/backend-common';
@@ -51,7 +52,7 @@ export function createSpecializedBackend(
 // @public (undocumented)
 export interface CreateSpecializedBackendOptions {
   // (undocumented)
-  services: (ServiceFactory | (() => ServiceFactory))[];
+  services: ServiceFactoryOrFunction[];
 }
 
 // @public (undocumented)
