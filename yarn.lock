@@ -3413,6 +3413,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/backend-common@workspace:packages/backend-common"
   dependencies:
+    "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
