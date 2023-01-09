@@ -18,6 +18,7 @@ import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
 import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 import { GrpcApiDefinitionWidget } from '../GrpcApiDefinitionWidget';
+import { Entity } from '@backstage/catalog-model';
 
 /** @public */
 export type ApiDefinitionWidget = {
@@ -25,7 +26,7 @@ export type ApiDefinitionWidget = {
   title: string;
   component: (
     definition: string,
-    swaggerPlugins?: string[] | undefined,
+    entity?: Entity | undefined,
   ) => React.ReactElement;
   rawLanguage?: string;
 };
@@ -37,11 +38,8 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       type: 'openapi',
       title: 'OpenAPI',
       rawLanguage: 'yaml',
-      component: (definition, swaggerPlugins) => (
-        <OpenApiDefinitionWidget
-          definition={definition}
-          plugins={swaggerPlugins}
-        />
+      component: (definition, entity) => (
+        <OpenApiDefinitionWidget definition={definition} entity={entity} />
       ),
     },
     {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { Progress } from '@backstage/core-components';
 import React, { Suspense } from 'react';
 
@@ -28,7 +29,7 @@ const LazyOpenApiDefinition = React.lazy(() =>
 /** @public */
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
-  plugins?: string[];
+  entity?: Entity;
 };
 
 /** @public */

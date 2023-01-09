@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import SwaggerUI from 'swagger-ui-react';
@@ -133,7 +134,7 @@ const useStyles = makeStyles(theme => ({
 
 export type OpenApiDefinitionProps = {
   definition: string;
-  plugins?: string[] | undefined; // list of customizable plugin names for the swagger page
+  entity?: Entity | undefined; // list of customizable plugin names for the swagger page
 };
 
 // short of writing a parser for a custom swagger plugins string
@@ -160,13 +161,13 @@ function DisableAuthorizePlugin() {
 
 // names of plugins should match the keys of the following object
 const supportedSwaggerPlugins: { [key in string]?: any } = {
-  disableTryItOut: DisableTryItOutPlugin,
-  disableAuthorizeButton: DisableAuthorizePlugin,
+  'backstage.io/disableTryItOut': DisableTryItOutPlugin,
+  'backstage.io/disableAuthorizeButton': DisableAuthorizePlugin,
 };
 
 export const OpenApiDefinition = ({
   definition,
-  plugins,
+  entity,
 }: OpenApiDefinitionProps) => {
   const classes = useStyles();
 
@@ -179,27 +180,20 @@ export const OpenApiDefinition = ({
     return () => clearTimeout(timer);
   }, [definition, setDef]);
 
-  // Due to a bug in the swagger-ui-react component, the component needs
-  // to be created without content first.
-  const [plgins, setPlugins] = useState<any[] | undefined>([{}]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!!plugins)
-        setPlugins(
-          plugins
-            ?.filter(plugin =>
-              Object.keys(supportedSwaggerPlugins).includes(plugin),
-            )
-            ?.map(plugin => supportedSwaggerPlugins[plugin]),
-        );
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [plugins, setPlugins]);
+  // isolate the entity annotations that are supportedSwaggerPlugins AND are set to true
+  // then setup the values needed by the SwaggerUI
+  const appliedSwaggerPlugins = Object.keys(supportedSwaggerPlugins)
+    ?.filter(key => entity?.metadata?.annotations?.[key] === 'true')
+    ?.map(plugin => supportedSwaggerPlugins[plugin]);
 
   return (
     <div className={classes.root}>
-      <SwaggerUI spec={def} plugins={plgins} url="" deepLinking />
+      <SwaggerUI
+        spec={def}
+        plugins={appliedSwaggerPlugins}
+        url=""
+        deepLinking
+      />
     </div>
   );
 };
