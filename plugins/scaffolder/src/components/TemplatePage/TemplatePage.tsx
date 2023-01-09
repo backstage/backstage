@@ -16,13 +16,13 @@
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import React, { ComponentType, useCallback, useContext, useState } from 'react';
+import React, { ComponentType, useCallback, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import {
   FieldExtensionOptions,
-  SecretsContext,
   scaffolderApiRef,
+  useTemplateSecrets,
 } from '@backstage/plugin-scaffolder-react';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from './createValidator';
@@ -72,7 +72,7 @@ export const TemplatePage = ({
   headerOptions,
 }: Props) => {
   const apiHolder = useApiHolder();
-  const secretsContext = useContext(SecretsContext);
+  const secretsContext = useTemplateSecrets();
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName, namespace } = useRouteRefParams(

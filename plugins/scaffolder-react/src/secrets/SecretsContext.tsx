@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
 import React, {
   useState,
   useCallback,
   useContext,
-  createContext,
   PropsWithChildren,
 } from 'react';
 
 /**
- * The contents of the {@link SecretsContext}.
+ * The contents of the `SecretsContext`
  * @public
  */
 export type SecretsContextContents = {
@@ -32,11 +35,10 @@ export type SecretsContextContents = {
 
 /**
  * The context to hold the Secrets.
- * @public
  */
-export const SecretsContext = createContext<SecretsContextContents | undefined>(
-  undefined,
-);
+const SecretsContext = createVersionedContext<{
+  1: SecretsContextContents;
+}>('secrets-context');
 
 /**
  * The Context Provider that holds the state for the secrets.
@@ -46,7 +48,9 @@ export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
   const [secrets, setSecrets] = useState<Record<string, string>>({});
 
   return (
-    <SecretsContext.Provider value={{ secrets, setSecrets }}>
+    <SecretsContext.Provider
+      value={createVersionedValueMap({ 1: { secrets, setSecrets } })}
+    >
       {children}
     </SecretsContext.Provider>
   );
@@ -58,6 +62,7 @@ export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
  */
 export interface ScaffolderUseTemplateSecrets {
   setSecrets: (input: Record<string, string>) => void;
+  secrets: Record<string, string>;
 }
 
 /**
@@ -66,14 +71,15 @@ export interface ScaffolderUseTemplateSecrets {
  * @public
  */
 export const useTemplateSecrets = (): ScaffolderUseTemplateSecrets => {
-  const value = useContext(SecretsContext);
+  const value = useContext(SecretsContext)?.atVersion(1);
+
   if (!value) {
     throw new Error(
       'useTemplateSecrets must be used within a SecretsContextProvider',
     );
   }
 
-  const { setSecrets: updateSecrets } = value;
+  const { setSecrets: updateSecrets, secrets = {} } = value;
 
   const setSecrets = useCallback(
     (input: Record<string, string>) => {
@@ -82,5 +88,5 @@ export const useTemplateSecrets = (): ScaffolderUseTemplateSecrets => {
     [updateSecrets],
   );
 
-  return { setSecrets };
+  return { setSecrets, secrets };
 };

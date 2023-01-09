@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Page,
   Header,
@@ -31,14 +31,16 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import {
+  scaffolderApiRef,
+  useTemplateSecrets,
+} from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Stepper,
   NextFieldExtensionOptions,
-  SecretsContext,
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
 import { FormProps } from '../types';
@@ -76,7 +78,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const styles = useStyles();
   const rootRef = useRouteRef(nextRouteRef);
   const taskRoute = useRouteRef(scaffolderTaskRouteRef);
-  const { secrets } = useContext(SecretsContext) ?? {};
+  const { secrets } = useTemplateSecrets();
   const scaffolderApi = useApi(scaffolderApiRef);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(

@@ -242,7 +242,9 @@ export interface ScaffolderDryRunResponse {
 }
 
 // @public
-export const ScaffolderFieldExtensions: React_2.ComponentType;
+export const ScaffolderFieldExtensions: React_2.ComponentType<
+  React_2.PropsWithChildren<{}>
+>;
 
 // @public
 export interface ScaffolderGetIntegrationsListOptions {
@@ -319,13 +321,10 @@ export type ScaffolderTaskStatus =
 // @public
 export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
+  secrets: Record<string, string>;
+  // (undocumented)
   setSecrets: (input: Record<string, string>) => void;
 }
-
-// @public
-export const SecretsContext: React_2.Context<
-  SecretsContextContents | undefined
->;
 
 // @public
 export type SecretsContextContents = {

@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
-import {
-  useTemplateSecrets,
-  SecretsContextProvider,
-  SecretsContext,
-} from './SecretsContext';
+import React from 'react';
+import { useTemplateSecrets, SecretsContextProvider } from './SecretsContext';
 import { renderHook, act } from '@testing-library/react-hooks';
 
 describe('SecretsContext', () => {
@@ -26,7 +22,6 @@ describe('SecretsContext', () => {
     const { result } = renderHook(
       () => ({
         hook: useTemplateSecrets(),
-        context: useContext(SecretsContext),
       }),
       {
         wrapper: ({ children }) => (
@@ -34,10 +29,10 @@ describe('SecretsContext', () => {
         ),
       },
     );
-    expect(result.current.context?.secrets.foo).toEqual(undefined);
+    expect(result.current.hook?.secrets.foo).toEqual(undefined);
 
     act(() => result.current.hook.setSecrets({ foo: 'bar' }));
 
-    expect(result.current.context?.secrets.foo).toEqual('bar');
+    expect(result.current.hook?.secrets.foo).toEqual('bar');
   });
 });
