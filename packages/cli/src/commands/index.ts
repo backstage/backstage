@@ -192,6 +192,13 @@ export function registerMigrateCommand(program: Command) {
     );
 
   command
+    .command('package-exports')
+    .description('Synchronize package sub-path export definitions')
+    .action(
+      lazy(() => import('./migrate/packageExports').then(m => m.command)),
+    );
+
+  command
     .command('package-lint-configs')
     .description(
       'Migrates all packages to use @backstage/cli/config/eslint-factory',
