@@ -108,7 +108,7 @@ export namespace coreServices {
   const scheduler: ServiceRef<SchedulerService, 'plugin'>;
   const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
-  const prometheusExporter: ServiceRef<PrometheusExporterService, 'root'>;
+  const metricsExporter: ServiceRef<MetricsExporterService, 'root'>;
 }
 
 // @public
@@ -214,6 +214,9 @@ export type LogMeta = {
 };
 
 // @public (undocumented)
+export interface MetricsExporterService {}
+
+// @public (undocumented)
 export interface PermissionsService extends PermissionEvaluator {}
 
 // @public (undocumented)
@@ -221,9 +224,6 @@ export interface PluginMetadataService {
   // (undocumented)
   getId(): string;
 }
-
-// @public (undocumented)
-export interface PrometheusExporterService {}
 
 // @public
 export type ReadTreeOptions = {

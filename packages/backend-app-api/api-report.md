@@ -10,11 +10,11 @@ import { Handler } from 'express';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricsExporterService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PrometheusExporterService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
@@ -93,7 +93,7 @@ export const permissionsFactory: (
 // @public (undocumented)
 export const prometheusExporterFactory: (
   options?: undefined,
-) => ServiceFactory<PrometheusExporterService>;
+) => ServiceFactory<MetricsExporterService>;
 
 // @public (undocumented)
 export const rootHttpRouterFactory: (

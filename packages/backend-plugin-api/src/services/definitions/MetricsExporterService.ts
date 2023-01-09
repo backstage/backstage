@@ -15,4 +15,4 @@
  */
 
 /** @public */
-export interface PrometheusExporterService {}
+export interface MetricsExporterService {}

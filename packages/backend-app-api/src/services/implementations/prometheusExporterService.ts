@@ -24,7 +24,7 @@ import { metrics } from '@opentelemetry/api';
 
 /** @public */
 export const prometheusExporterFactory = createServiceFactory({
-  service: coreServices.prometheusExporter,
+  service: coreServices.metricsExporter,
   deps: {
     config: coreServices.config,
     logger: coreServices.rootLogger,

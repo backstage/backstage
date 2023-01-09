@@ -158,11 +158,11 @@ export namespace coreServices {
   >({ id: 'core.urlReader' });
 
   /**
-   * The service reference for the plugin scoped {@link PrometheusExporterService}.
+   * The service reference for the plugin scoped {@link MetricsExporterService}.
    *
    * @public
    */
-  export const prometheusExporter = createServiceRef<
-    import('./PrometheusExporterService').PrometheusExporterService
-  >({ id: 'core.prometheus.exporter', scope: 'root' });
+  export const metricsExporter = createServiceRef<
+    import('./MetricsExporterService').MetricsExporterService
+  >({ id: 'core.metrics.exporter', scope: 'root' });
 }
