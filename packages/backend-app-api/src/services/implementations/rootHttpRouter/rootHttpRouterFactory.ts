@@ -25,7 +25,10 @@ import express, { RequestHandler, Express } from 'express';
 import { MiddlewareFactory, startHttpServer } from '../../../http';
 import { RestrictedIndexedRouter } from './RestrictedIndexedRouter';
 
-interface RootHttpRouterConfigureOptions {
+/**
+ * @public
+ */
+export interface RootHttpRouterConfigureOptions {
   app: Express;
   middleware: MiddlewareFactory;
   routes: RequestHandler;

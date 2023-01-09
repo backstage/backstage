@@ -15,4 +15,7 @@
  */
 
 export { rootHttpRouterFactory } from './rootHttpRouterFactory';
-export type { RootHttpRouterFactoryOptions } from './rootHttpRouterFactory';
+export type {
+  RootHttpRouterFactoryOptions,
+  RootHttpRouterConfigureOptions,
+} from './rootHttpRouterFactory';

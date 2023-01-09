@@ -22,6 +22,7 @@ import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/cont
 /**
  * Attempts to read Helmet options from the backend configuration object.
  *
+ * @public
  * @param config - The backend configuration object.
  * @returns A Helmet options object, or undefined if no Helmet configuration is present.
  *

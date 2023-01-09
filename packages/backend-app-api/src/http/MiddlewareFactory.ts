@@ -44,7 +44,7 @@ export interface MiddlewareFactoryOptions {
 }
 
 /**
- * Options passed to the {@link errorHandler} middleware.
+ * Options passed to the {@link MiddlewareFactory.error} middleware.
  *
  * @public
  */

@@ -21,6 +21,7 @@ import { Minimatch } from 'minimatch';
 /**
  * Attempts to read a CORS options object from the backend configuration object.
  *
+ * @public
  * @param config - The backend configuration object.
  * @returns A CORS options object, or undefined if no cors configuration is present.
  *
