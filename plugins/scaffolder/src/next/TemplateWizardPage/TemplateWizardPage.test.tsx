@@ -25,6 +25,7 @@ import React from 'react';
 import {
   ScaffolderApi,
   scaffolderApiRef,
+  SecretsContextProvider,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateWizardPage } from './TemplateWizardPage';
 import { rootRouteRef } from '../../routes';
@@ -76,7 +77,9 @@ describe('TemplateWizardPage', () => {
 
     const { findByRole, getByRole } = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplateWizardPage customFieldExtensions={[]} />,
+        <SecretsContextProvider>
+          <TemplateWizardPage customFieldExtensions={[]} />,
+        </SecretsContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {

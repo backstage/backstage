@@ -25,6 +25,7 @@ import { Route, Routes } from 'react-router-dom';
 import {
   scaffolderApiRef,
   ScaffolderApi,
+  SecretsContextProvider,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplatePage } from './TemplatePage';
 import {
@@ -127,7 +128,9 @@ describe('TemplatePage', () => {
     });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplatePage />
+        <SecretsContextProvider>
+          <TemplatePage />
+        </SecretsContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -148,7 +151,9 @@ describe('TemplatePage', () => {
     scaffolderApiMock.getTemplateParameterSchema.mockReturnValueOnce(promise);
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplatePage />
+        <SecretsContextProvider>
+          <TemplatePage />
+        </SecretsContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -189,7 +194,9 @@ describe('TemplatePage', () => {
     });
     const { findByLabelText, findByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplatePage />
+        <SecretsContextProvider>
+          <TemplatePage />
+        </SecretsContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -236,7 +243,14 @@ describe('TemplatePage', () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <Routes>
-          <Route path="/create/test" element={<TemplatePage />} />
+          <Route
+            path="/create/test"
+            element={
+              <SecretsContextProvider>
+                <TemplatePage />
+              </SecretsContextProvider>
+            }
+          />
           <Route path="/create" element={<>This is root</>} />
         </Routes>
       </ApiProvider>,
@@ -289,7 +303,9 @@ describe('TemplatePage', () => {
     const { findByText, findByLabelText, findAllByRole, findByRole } =
       await renderInTestApp(
         <ApiProvider apis={apis}>
-          <TemplatePage />
+          <SecretsContextProvider>
+            <TemplatePage />
+          </SecretsContextProvider>
         </ApiProvider>,
         {
           mountedRoutes: {
@@ -333,7 +349,9 @@ describe('TemplatePage', () => {
 
     await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplatePage />
+        <SecretsContextProvider>
+          <TemplatePage />
+        </SecretsContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
