@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { Fragment } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
 import {
@@ -80,13 +80,13 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
     <Grid container>
       {props.examples.map(example => {
         return (
-          <>
-            <Grid lg={3}>
+          <Fragment key={example.description}>
+            <Grid item lg={3}>
               <Box padding={4}>
                 <Typography>{example.description}</Typography>
               </Box>
             </Grid>
-            <Grid lg={9}>
+            <Grid item lg={9}>
               <Box padding={1}>
                 <CodeSnippet
                   text={example.example}
@@ -96,7 +96,7 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
                 />
               </Box>
             </Grid>
-          </>
+          </Fragment>
         );
       })}
     </Grid>
