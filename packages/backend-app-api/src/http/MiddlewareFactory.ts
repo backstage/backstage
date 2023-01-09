@@ -15,7 +15,13 @@
  */
 
 import { ConfigService, LoggerService } from '@backstage/backend-plugin-api';
-import { Request, Response, ErrorRequestHandler, NextFunction } from 'express';
+import {
+  Request,
+  Response,
+  ErrorRequestHandler,
+  NextFunction,
+  RequestHandler,
+} from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -95,7 +101,7 @@ export class MiddlewareFactory {
    *
    * @returns An Express request handler
    */
-  notFound() {
+  notFound(): RequestHandler {
     return (_req: Request, res: Response) => {
       res.status(404).end();
     };
@@ -109,7 +115,7 @@ export class MiddlewareFactory {
    * The middleware will attempt to compress response bodies for all requests
    * that traverse through the middleware.
    */
-  compression() {
+  compression(): RequestHandler {
     return compression();
   }
 
@@ -124,7 +130,7 @@ export class MiddlewareFactory {
    *
    * @returns An Express request handler
    */
-  logging() {
+  logging(): RequestHandler {
     const logger = this.#logger.child({
       type: 'incomingRequest',
     });
@@ -150,7 +156,7 @@ export class MiddlewareFactory {
    *
    * @returns An Express request handler
    */
-  helmet() {
+  helmet(): RequestHandler {
     return helmet(readHelmetOptions(this.#config.getOptionalConfig('backend')));
   }
 
@@ -166,7 +172,7 @@ export class MiddlewareFactory {
    *
    * @returns An Express request handler
    */
-  cors() {
+  cors(): RequestHandler {
     return cors(readCorsOptions(this.#config.getOptionalConfig('backend')));
   }
 

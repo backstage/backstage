@@ -4,12 +4,10 @@
 
 ```ts
 /// <reference types="node" />
-/// <reference types="qs" />
 
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
-import cors from 'cors';
 import { CorsOptions } from 'cors';
 import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
@@ -17,24 +15,18 @@ import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
-import { IncomingMessage } from 'http';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Request as Request_2 } from 'express';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
-import { Response as Response_2 } from 'express';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import { ServerResponse } from 'http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
@@ -146,35 +138,13 @@ export const loggerFactory: (
 
 // @public
 export class MiddlewareFactory {
-  compression(): RequestHandler<
-    ParamsDictionary,
-    any,
-    any,
-    ParsedQs,
-    Record<string, any>
-  >;
-  cors(): (
-    req: cors.CorsRequest,
-    res: {
-      statusCode?: number | undefined;
-      setHeader(key: string, value: string): any;
-      end(): any;
-    },
-    next: (err?: any) => any,
-  ) => void;
+  compression(): RequestHandler;
+  cors(): RequestHandler;
   static create(options: MiddlewareFactoryOptions): MiddlewareFactory;
   error(options?: MiddlewareFactoryErrorOptions): ErrorRequestHandler;
-  helmet(): (
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage>,
-    next: (err?: unknown) => void,
-  ) => void;
-  logging(): (
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage>,
-    callback: (err?: Error | undefined) => void,
-  ) => void;
-  notFound(): (_req: Request_2, res: Response_2) => void;
+  helmet(): RequestHandler;
+  logging(): RequestHandler;
+  notFound(): RequestHandler;
 }
 
 // @public
