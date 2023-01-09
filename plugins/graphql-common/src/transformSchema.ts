@@ -15,31 +15,29 @@
  */
 import { resolvePackagePath } from '@backstage/backend-common';
 import { loadFilesSync } from '@graphql-tools/load-files';
-import { createModule } from 'graphql-modules';
-import type { ResolverContext } from '../../types';
+import { mergeTypeDefs } from '@graphql-tools/merge';
+import { TypeSource } from '@graphql-tools/utils';
+import { buildASTSchema, validateSchema } from 'graphql';
+import { mapDirectives } from './mapDirectives';
 
-export const Core = createModule({
-  id: 'core',
-  typeDefs: loadFilesSync(
-    resolvePackagePath(
-      '@backstage/plugin-catalog-graphql',
-      'src/modules/core/core.graphql',
+export function transformSchema(source: TypeSource) {
+  const schema = mapDirectives(
+    buildASTSchema(
+      mergeTypeDefs([
+        loadFilesSync(
+          resolvePackagePath(
+            '@backstage/plugin-graphql-common',
+            'src/**/*.graphql',
+          ),
+        ),
+        source,
+      ]),
     ),
-  ),
-  resolvers: {
-    Node: {
-      id: async (
-        { id }: { id: string },
-        _: never,
-        { loader }: ResolverContext,
-      ): Promise<string | null> => {
-        const entity = await loader.load(id);
-        if (!entity) return null;
-        return id;
-      },
-    },
-    Query: {
-      node: (_: any, { id }: { id: string }): { id: string } => ({ id }),
-    },
-  },
-});
+  );
+  const errors = validateSchema(schema);
+
+  if (errors.length > 0) {
+    throw new Error(errors.map(e => e.message).join('\n'));
+  }
+  return schema;
+}

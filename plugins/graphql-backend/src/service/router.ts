@@ -24,7 +24,7 @@ import {
   createGraphQLApp,
   createLoader,
   EnvelopPlugins,
-} from '@backstage/plugin-catalog-graphql';
+} from '@backstage/plugin-graphql-common';
 import { Config } from '@backstage/config';
 import helmet from 'helmet';
 import { CatalogClient } from '@backstage/catalog-client';

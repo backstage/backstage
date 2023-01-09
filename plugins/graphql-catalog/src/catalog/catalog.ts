@@ -17,14 +17,14 @@ import { resolvePackagePath } from '@backstage/backend-common';
 import { createModule } from 'graphql-modules';
 import { loadFilesSync } from '@graphql-tools/load-files';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
-import { ResolverContext } from '../../types';
+import type { ResolverContext } from '@backstage/plugin-graphql-common';
 
 export const Catalog = createModule({
   id: 'catalog',
   typeDefs: loadFilesSync(
     resolvePackagePath(
-      '@backstage/plugin-catalog-graphql',
-      'src/modules/catalog/catalog.graphql',
+      '@backstage/plugin-graphql-catalog',
+      'src/catalog/catalog.graphql',
     ),
   ),
   resolvers: {

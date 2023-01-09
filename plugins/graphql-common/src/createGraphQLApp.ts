@@ -17,17 +17,12 @@ import { envelop, useExtendContext } from '@envelop/core';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 import { createApplication, Module } from 'graphql-modules';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { Catalog } from '../modules/catalog/catalog';
-import { Core } from '../modules/core/core';
-import { transformDirectives } from './mappers';
-import { EntityRef, EnvelopPlugins } from '../types';
+import { Core } from './core/core';
+import { mapDirectives } from './mapDirectives';
+import { EntityRef, EnvelopPlugins } from './types';
 import { useDataLoader } from '@envelop/dataloader';
 import DataLoader from 'dataloader';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-
-export * from './loaders';
-export type { EnvelopPlugins, Loader as EntityLoader } from '../types';
-export { transformSchema } from './transform';
 
 export type createGraphQLAppOptions<
   Plugins extends EnvelopPlugins,
@@ -50,8 +45,8 @@ export function createGraphQLApp<
   const { modules, plugins, loader, refToId = defaultRefToId } = options;
   const application = createApplication({
     schemaBuilder: ({ typeDefs, resolvers }) =>
-      transformDirectives(makeExecutableSchema({ typeDefs, resolvers })),
-    modules: [Core, Catalog, ...(modules ?? [])],
+      mapDirectives(makeExecutableSchema({ typeDefs, resolvers })),
+    modules: [Core, ...(modules ?? [])],
   });
 
   const run = envelop({
