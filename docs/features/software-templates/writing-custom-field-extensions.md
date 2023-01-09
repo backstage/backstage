@@ -25,17 +25,17 @@ You can create your own Field Extension by using the
 [`createScaffolderFieldExtension`](https://backstage.io/docs/reference/plugin-scaffolder.createscaffolderfieldextension)
 `API` like below.
 
-As an example, we will create a component that validates whether a string is in the `Kehab-case` pattern:
+As an example, we will create a component that validates whether a string is in the `Kebab-case` pattern:
 
 ```tsx
-//packages/app/src/scaffolder/ValidateKehabCase/ValidateKehabCaseExtension.tsx
+//packages/app/src/scaffolder/ValidateKebabCase/ValidateKebabCaseExtension.tsx
 import React from 'react';
 import { FieldProps, FieldValidation } from '@rjsf/core';
 import FormControl from '@material-ui/core/FormControl';
 /*
  This is the actual component that will get rendered in the form
 */
-export const ValidateKehabCaseExtension = ({
+export const ValidateKebabCaseExtension = ({
   onChange,
   rawErrors,
   required,
@@ -65,13 +65,13 @@ export const ValidateKehabCaseExtension = ({
   You will get the value from the `onChange` handler before as the value here to make sure that the types are aligned\
 */
 
-export const validateKehabCaseValidation = (
+export const validateKebabCaseValidation = (
   value: string,
   validation: FieldValidation,
 ) => {
-  const kehabCase = /^[a-z0-9-_]+$/g.test(value);
+  const kebabCase = /^[a-z0-9-_]+$/g.test(value);
 
-  if (kehabCase === false) {
+  if (kebabCase === false) {
     validation.addError(
       `Only use letters, numbers, hyphen ("-") and underscore ("_").`,
     );
@@ -80,7 +80,7 @@ export const validateKehabCaseValidation = (
 ```
 
 ```tsx
-// packages/app/src/scaffolder/ValidateKehabCase/extensions.ts
+// packages/app/src/scaffolder/ValidateKebabCase/extensions.ts
 
 /*
   This is where the magic happens and creates the custom field extension.
@@ -94,23 +94,23 @@ import {
   createScaffolderFieldExtension,
 } from '@backstage/plugin-scaffolder';
 import {
-  ValidateKehabCase,
-  validateKehabCaseValidation,
-} from './ValidateKehabCase';
+  ValidateKebabCase,
+  validateKebabCaseValidation,
+} from './ValidateKebabCase';
 
-export const ValidateKehabCaseFieldExtension = scaffolderPlugin.provide(
+export const ValidateKebabCaseFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
-    name: 'ValidateKehabCase',
-    component: ValidateKehabCase,
-    validation: validateKehabCaseValidation,
+    name: 'ValidateKebabCase',
+    component: ValidateKebabCase,
+    validation: validateKebabCaseValidation,
   }),
 );
 ```
 
 ```tsx
-// packages/app/src/scaffolder/ValidateKehabCase/index.ts
+// packages/app/src/scaffolder/ValidateKebabCase/index.ts
 
-export { ValidateKehabCaseFieldExtension } from './extensions';
+export { ValidateKebabCaseFieldExtension } from './extensions';
 ```
 
 Once all these files are in place, you then need to provide your custom
@@ -132,7 +132,7 @@ const routes = (
 Should look something like this instead:
 
 ```tsx
-import { ValidateKehabCaseFieldExtension } from './scaffolder/ValidateKehabCase';
+import { ValidateKebabCaseFieldExtension } from './scaffolder/ValidateKebabCase';
 import { ScaffolderFieldExtensions } from '@backstage/plugin-scaffolder';
 
 const routes = (
@@ -140,7 +140,7 @@ const routes = (
     ...
     <Route path="/create" element={<ScaffolderPage />}>
       <ScaffolderFieldExtensions>
-        <ValidateKehabCaseFieldExtension />
+        <ValidateKebabCaseFieldExtension />
       </ScaffolderFieldExtensions>
     </Route>
     ...
@@ -173,7 +173,7 @@ spec:
           title: Name
           type: string
           description: My custom name for the component
-          ui:field: ValidateKehabCaseExtension
+          ui:field: ValidateKebabCaseExtension
   steps:
   [...]
 ```
