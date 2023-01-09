@@ -20,6 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './lib/http';
+export * from './http';
 export * from './wiring';
 export * from './services/implementations';

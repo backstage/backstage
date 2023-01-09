@@ -22,7 +22,7 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import express, { RequestHandler, Express } from 'express';
-import { MiddlewareFactory, startHttpServer } from '../../../lib/http';
+import { MiddlewareFactory, startHttpServer } from '../../../http';
 import { RestrictedIndexedRouter } from './RestrictedIndexedRouter';
 
 interface RootHttpRouterConfigureOptions {
