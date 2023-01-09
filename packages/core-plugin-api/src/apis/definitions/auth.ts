@@ -58,7 +58,7 @@ export type AuthProviderInfo = {
   /**
    * The provider id from the list of provider configured in the login page
    */
-  provider_id: string;
+  provider_id?: string;
 };
 
 /**

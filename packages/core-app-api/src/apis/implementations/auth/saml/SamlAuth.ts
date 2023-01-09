@@ -93,10 +93,6 @@ export default class SamlAuth
     await this.sessionManager.removeSession();
   }
 
-  create(data: any): void {
-    // TODO
-  }
-
   async getBackstageIdentity(
     options: AuthRequestOptions = {},
   ): Promise<BackstageIdentityResponse | undefined> {

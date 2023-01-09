@@ -77,7 +77,7 @@ export default class OAuth2
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = [],
-      usePopup,
+      usePopup = true,
       scopeTransform = x => x,
     } = options;
 

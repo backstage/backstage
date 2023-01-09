@@ -102,13 +102,13 @@ export class DefaultAuthConnector<AuthSession>
             // set the sign in provider here
             localStorage.setItem(
               '@backstage/core:SignInPage:provider',
-              provider.provider_id,
+              provider.provider_id!,
             );
           }
 
           window.location.href = redirectUrl;
           // we need to return to exit function or else popup occurs
-          return 0;
+          return Promise.resolve({} as AuthSession);
         }
         return this.showPopup(scopes);
       },

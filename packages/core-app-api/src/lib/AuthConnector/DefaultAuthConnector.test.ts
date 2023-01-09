@@ -34,8 +34,10 @@ const defaultOptions = {
   provider: {
     id: 'my-provider',
     title: 'My Provider',
+    provider_id: 'myprovider-auth-provider',
     icon: () => null,
   },
+  usePopup: true,
   oauthRequestApi: new MockOAuthApi(),
   sessionTransform: ({ expiresInSeconds, ...res }: any) => ({
     ...res,

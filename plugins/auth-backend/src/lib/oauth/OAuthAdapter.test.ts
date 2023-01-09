@@ -74,6 +74,7 @@ describe('OAuthAdapter', () => {
     providerId: 'test-provider',
     appOrigin: 'http://localhost:3000',
     baseUrl: 'http://domain.org/auth',
+    isPopupAuthenticationRequest: true,
     cookieConfigurer: mockCookieConfigurer,
     tokenIssuer: {
       issueToken: async () => 'my-id-token',
@@ -374,6 +375,7 @@ describe('OAuthAdapter', () => {
       baseUrl: 'http://domain.org/auth',
       appUrl: 'http://domain.org',
       isOriginAllowed: () => false,
+      isPopupAuthenticationRequest: true,
     };
 
     const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
@@ -417,6 +419,7 @@ describe('OAuthAdapter', () => {
       baseUrl: 'http://domain.org/auth',
       appUrl: 'http://domain.org',
       isOriginAllowed: () => false,
+      isPopupAuthenticationRequest: true,
     };
 
     const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
@@ -461,6 +464,7 @@ describe('OAuthAdapter', () => {
       baseUrl: 'https://domain.org/auth',
       appUrl: 'http://domain.org',
       isOriginAllowed: () => false,
+      isPopupAuthenticationRequest: true,
     };
 
     const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
@@ -509,6 +513,7 @@ describe('OAuthAdapter', () => {
       baseUrl: 'https://domain.org/auth',
       appUrl: 'http://domain.org',
       isOriginAllowed: () => false,
+      isPopupAuthenticationRequest: true,
     };
 
     const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
@@ -557,6 +562,7 @@ describe('OAuthAdapter', () => {
       baseUrl: 'https://domain.org/auth',
       appUrl: 'http://domain.org',
       isOriginAllowed: () => true,
+      isPopupAuthenticationRequest: true,
     };
 
     const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
@@ -606,6 +612,7 @@ describe('OAuthAdapter', () => {
       baseUrl: 'https://domain.org/auth',
       appUrl: 'http://domain.org',
       isOriginAllowed: () => false,
+      isPopupAuthenticationRequest: true,
     };
 
     const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {

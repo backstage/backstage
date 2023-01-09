@@ -24,7 +24,11 @@ import Button from '@material-ui/core/Button';
 import React, { useMemo, useState } from 'react';
 import useObservable from 'react-use/lib/useObservable';
 import LoginRequestListItem from './LoginRequestListItem';
-import { useApi, oauthRequestApiRef } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  oauthRequestApiRef,
+  configApiRef,
+} from '@backstage/core-plugin-api';
 import Typography from '@material-ui/core/Typography';
 
 export type OAuthRequestDialogClassKey =
@@ -58,6 +62,12 @@ export function OAuthRequestDialog(_props: {}) {
   const classes = useStyles();
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
+  const configApi = useApi(configApiRef);
+  const usePopup = configApi.getOptionalBoolean('auth.usePopup');
+  const redirectMessage = usePopup
+    ? ''
+    : 'This will trigger a http redirect to OAuth Login.';
+
   const requests = useObservable(
     useMemo(() => oauthRequestApi.authRequest$(), [oauthRequestApi]),
     [],
@@ -83,6 +93,7 @@ export function OAuthRequestDialog(_props: {}) {
           <Typography className={classes.titleHeading} variant="h1">
             Login Required
           </Typography>
+          <Typography>{redirectMessage}</Typography>
         </DialogTitle>
 
         <DialogContent dividers classes={{ root: classes.contentList }}>
