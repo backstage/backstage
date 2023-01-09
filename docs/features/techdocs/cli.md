@@ -95,6 +95,8 @@ Options:
   --no-docker                                 Do not use Docker, use MkDocs executable in current user environment.
   --mkdocs-port <PORT>                        Port for MkDocs server to use (default: "8000")
   --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using a web app other than the included one.
+  --preview-app-port <PORT>                   Port where the preview will be served.
+                                              Can only be used with "--preview-app-bundle-path". (default: "3000")
   -v --verbose                                Enable verbose output. (default: false)
   -h, --help                                  display help for command
 ```

@@ -117,7 +117,6 @@ export default async function serve(opts: OptionValues) {
 
   const port = isDevMode ? backstageBackendPort : opts.previewAppPort;
   const previewAppPath = getPreviewAppPath(opts);
-  console.log({ previewAppPath });
   const httpServer = new HTTPServer(
     previewAppPath,
     port,
