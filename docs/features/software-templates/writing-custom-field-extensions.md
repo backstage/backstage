@@ -25,7 +25,7 @@ You can create your own Field Extension by using the
 [`createScaffolderFieldExtension`](https://backstage.io/docs/reference/plugin-scaffolder.createscaffolderfieldextension)
 `API` like below.
 
-As an example, we will create a component that validates whether a string is in the "Kehab case" pattern:
+As an example, we will create a component that validates whether a string is in the `Kehab-case` pattern:
 
 ```tsx
 //packages/app/src/scaffolder/ValidateKehabCase/ValidateKehabCaseExtension.tsx
