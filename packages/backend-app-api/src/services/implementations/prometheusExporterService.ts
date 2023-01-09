@@ -37,7 +37,7 @@ export const prometheusExporterFactory = createServiceFactory({
       return {};
     }
 
-    const host = config.getOptionalString('backend.metrics.endpoint');
+    const host = config.getOptionalString('backend.metrics.host');
     const port = config.getOptionalNumber('backend.metrics.port') || 9464;
     const endpoint =
       config.getOptionalString('backend.metrics.endpoint') || '/metrics';
