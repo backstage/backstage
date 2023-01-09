@@ -15,22 +15,24 @@
  */
 
 import {
-  createServiceFactory,
+  ConfigService,
   coreServices,
+  createServiceFactory,
+  LifecycleService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
-import express from 'express';
-import compression from 'compression';
-import cors from 'cors';
-import helmet from 'helmet';
+import express, { RequestHandler, Express } from 'express';
+import { MiddlewareFactory, startHttpServer } from '../../../lib/http';
 import { RestrictedIndexedRouter } from './RestrictedIndexedRouter';
-import { readCorsOptions } from './readCorsOptions';
-import { startHttpServer } from '../../../lib/http';
-import { readHelmetOptions } from './readHelmetOptions';
-import {
-  errorHandler,
-  notFoundHandler,
-  requestLoggingHandler,
-} from '@backstage/backend-common';
+
+interface RootHttpRouterConfigureOptions {
+  app: Express;
+  middleware: MiddlewareFactory;
+  routes: RequestHandler;
+  config: ConfigService;
+  logger: LoggerService;
+  lifecycle: LifecycleService;
+}
 
 /**
  * @public
@@ -40,7 +42,23 @@ export type RootHttpRouterFactoryOptions = {
    * The path to forward all unmatched requests to. Defaults to '/api/app'
    */
   indexPath?: string | false;
+
+  configure?(options: RootHttpRouterConfigureOptions): void;
 };
+
+function defaultConfigure({
+  app,
+  routes,
+  middleware,
+}: RootHttpRouterConfigureOptions) {
+  app.use(middleware.helmet());
+  app.use(middleware.cors());
+  app.use(middleware.compression());
+  app.use(middleware.logging());
+  app.use(routes);
+  app.use(middleware.notFound());
+  app.use(middleware.error());
+}
 
 /** @public */
 export const rootHttpRouterFactory = createServiceFactory({
@@ -52,19 +70,25 @@ export const rootHttpRouterFactory = createServiceFactory({
   },
   async factory(
     { config, logger, lifecycle },
-    { indexPath }: RootHttpRouterFactoryOptions = {},
+    {
+      indexPath,
+      configure = defaultConfigure,
+    }: RootHttpRouterFactoryOptions = {},
   ) {
     const router = new RestrictedIndexedRouter(indexPath ?? '/api/app');
 
     const app = express();
 
-    app.use(helmet(readHelmetOptions(config.getOptionalConfig('backend'))));
-    app.use(cors(readCorsOptions(config.getOptionalConfig('backend'))));
-    app.use(compression());
-    app.use(requestLoggingHandler(logger));
-    app.use(router.handler());
-    app.use(notFoundHandler());
-    app.use(errorHandler({ logger }));
+    const middleware = MiddlewareFactory.create({ config, logger });
+
+    configure({
+      app,
+      routes: router.handler(),
+      middleware,
+      config,
+      logger,
+      lifecycle,
+    });
 
     await startHttpServer(app, { config, logger, lifecycle });
 

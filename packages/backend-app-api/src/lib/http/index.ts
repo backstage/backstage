@@ -23,3 +23,5 @@ export type {
   HttpServerCertificateOptions,
   ExtendedHttpServer,
 } from './types';
+export { MiddlewareFactory } from './MiddlewareFactory';
+export type { MiddlewareFactoryOptions } from './MiddlewareFactory';
