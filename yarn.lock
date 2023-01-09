@@ -12504,9 +12504,9 @@ __metadata:
   linkType: hard
 
 "@octokit/webhooks-methods@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "@octokit/webhooks-methods@npm:3.0.1"
-  checksum: a65344315175459fcc43d1e8ea20f73aa73f0c47a692e0b02d45dfb8fda7075cf5503ff33654a9b6683d32d7e5737965f1ff40618d21a7c637180ae73bf888a4
+  version: 3.0.2
+  resolution: "@octokit/webhooks-methods@npm:3.0.2"
+  checksum: 4608d6a394bd94846301b709f44adc2bde0f43517840c49d235e3cb355986e2e9736d60b4a39c3492b31c06d10401f32cab878ec83e83b890606f58619cad5ef
   languageName: node
   linkType: hard
 
