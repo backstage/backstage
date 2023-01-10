@@ -15,4 +15,5 @@
  */
 
 export { getRootLogger, getVoidLogger, setRootLogger } from './globalLoggers';
+export { createRootLogger } from './createRootLogger';
 export { loggerToWinstonLogger } from './loggerToWinstonLogger';

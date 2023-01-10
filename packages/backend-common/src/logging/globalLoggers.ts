@@ -27,7 +27,7 @@ export function getVoidLogger(): winston.Logger {
   });
 }
 
-let rootLogger: winston.Logger = createRootLogger();
+let rootLogger: winston.Logger;
 
 /**
  * Gets the current root logger.
