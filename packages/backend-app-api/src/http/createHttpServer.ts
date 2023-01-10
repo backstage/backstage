@@ -35,6 +35,10 @@ export async function createHttpServer(
   const server = await createServer(listener, options, deps);
 
   const stopper = stoppableServer(server, 0);
+  // The stopper here is actually the server itself, so if we try
+  // to call stopper.stop() down in the stop implementation, we'll
+  // be calling ourselves.
+  const stopServer = stopper.stop.bind(stopper);
 
   return Object.assign(server, {
     start() {
@@ -57,7 +61,7 @@ export async function createHttpServer(
 
     stop() {
       return new Promise<void>((resolve, reject) => {
-        stopper.stop((error?: Error) => {
+        stopServer((error?: Error) => {
           if (error) {
             reject(error);
           } else {
