@@ -23,7 +23,11 @@ class TokenManagerMock implements TokenManager {
   async getToken(): Promise<{ token: string }> {
     return { token: 'mock-token' };
   }
-  async authenticate(): Promise<void> {}
+  async authenticate(token: string): Promise<void> {
+    if (token !== 'mock-token') {
+      throw new Error('Invalid token');
+    }
+  }
 }
 
 export const mockTokenManagerFactory = createServiceFactory({
