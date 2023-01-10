@@ -27,7 +27,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { APIDocumentCollatorFactory } from './APIDocumentCollatorFactory';
-import { SpecHandler, SpecParser } from '../spec-parsers';
 import { createLogger, format } from 'winston';
 
 const logger = createLogger({
@@ -305,21 +304,9 @@ describe('APIDocumentCollatorFactory', () => {
     authenticate: jest.fn(),
   };
 
-  const mockSpecParser: jest.Mocked<SpecParser> = {
-    specType: 'openapi',
-    getSpecText: jest.fn().mockReturnValue('indexable definition text'),
-  };
-
-  const mockSpecHander: jest.Mocked<SpecHandler> = {
-    specParsers: { mockSpecParser },
-    addSpecParser: jest.fn(),
-    getSpecParser: jest.fn().mockReturnValue(mockSpecParser),
-  };
-
   const options = {
     discovery: mockDiscoveryApi,
     tokenManager: mockTokenManager,
-    specHandler: mockSpecHander,
     logger: logger,
   };
 

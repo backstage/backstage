@@ -27,7 +27,7 @@ import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
 import { APIDocument } from './APIDocument';
 
-import { OpenAPISpecParser, SpecHandler } from '../spec-parsers';
+import { OpenAPISpecParser, SpecHandler, SpecParser } from '../spec-parsers';
 
 /** @public */
 export type APIDocumentCollatorFactoryOptions = {
@@ -35,7 +35,7 @@ export type APIDocumentCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
   batchSize?: number;
   tokenManager: TokenManager;
-  specHandler?: SpecHandler;
+  specParsers?: SpecParser[];
   logger: Logger;
 };
 
@@ -58,7 +58,7 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
       catalogClient,
       batchSize,
       tokenManager,
-      specHandler,
+      specParsers,
       logger,
     } = options;
 
@@ -67,8 +67,15 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
     this.batchSize = batchSize || 500;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
-    this.specHandler =
-      specHandler || new SpecHandler().addSpecParser(new OpenAPISpecParser());
+    this.specHandler = new SpecHandler();
+
+    if (specParsers) {
+      specParsers.forEach(parser => this.specHandler.addSpecParser(parser));
+    } else {
+      this.specHandler = new SpecHandler().addSpecParser(
+        new OpenAPISpecParser(),
+      );
+    }
   }
 
   static fromConfig(
