@@ -58,8 +58,14 @@ import {
   registerComponentRouteRef,
   rootRouteRef,
   viewTechDocRouteRef,
+  selectedTemplateRouteRef,
+  scaffolderTaskRouteRef,
 } from './routes';
-import { nextRouteRef } from './next';
+import {
+  nextRouteRef,
+  nextSelectedTemplateRouteRef,
+  nextScaffolderTaskRouteRef,
+} from './next';
 
 /**
  * The main plugin export for the scaffolder.
@@ -87,6 +93,12 @@ export const scaffolderPlugin = createPlugin({
   ],
   routes: {
     root: rootRouteRef,
+    selectedTemplate: selectedTemplateRouteRef,
+    ongoingTask: scaffolderTaskRouteRef,
+    /** next routes */
+    next: nextRouteRef,
+    nextSelectedTemplate: nextSelectedTemplateRouteRef,
+    nextOngoingTask: nextScaffolderTaskRouteRef,
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,

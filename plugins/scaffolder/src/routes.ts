@@ -19,20 +19,20 @@ import {
   createSubRouteRef,
 } from '@backstage/core-plugin-api';
 
-/** @public */
 export const registerComponentRouteRef = createExternalRouteRef({
   id: 'register-component',
   optional: true,
 });
 
-/** @public */
 export const viewTechDocRouteRef = createExternalRouteRef({
   id: 'view-techdoc',
   optional: true,
   params: ['namespace', 'kind', 'name'],
 });
 
-/** @public */
+/**
+ * @public
+ */
 export const rootRouteRef = createRouteRef({
   id: 'scaffolder',
 });
@@ -47,35 +47,30 @@ export const legacySelectedTemplateRouteRef = createSubRouteRef({
   path: '/templates/:templateName',
 });
 
-/** @public */
 export const selectedTemplateRouteRef = createSubRouteRef({
   id: 'scaffolder/selected-template',
   parent: rootRouteRef,
   path: '/templates/:namespace/:templateName',
 });
 
-/** @public */
 export const scaffolderTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/task',
   parent: rootRouteRef,
   path: '/tasks/:taskId',
 });
 
-/** @public */
 export const scaffolderListTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/list-tasks',
   parent: rootRouteRef,
   path: '/tasks',
 });
 
-/** @public */
 export const actionsRouteRef = createSubRouteRef({
   id: 'scaffolder/actions',
   parent: rootRouteRef,
   path: '/actions',
 });
 
-/** @public */
 export const editRouteRef = createSubRouteRef({
   id: 'scaffolder/edit',
   parent: rootRouteRef,

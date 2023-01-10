@@ -53,9 +53,6 @@ import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage
 import { UiSchema } from '@rjsf/utils';
 import { z } from 'zod';
 
-// @public (undocumented)
-export const actionsRouteRef: SubRouteRef<undefined>;
-
 // @public @deprecated (undocumented)
 export const createScaffolderFieldExtension: typeof createScaffolderFieldExtension_2;
 
@@ -70,9 +67,6 @@ export type CustomFieldExtensionSchema = CustomFieldExtensionSchema_2;
 // @public @deprecated (undocumented)
 export type CustomFieldValidator<TReturnFieldData> =
   CustomFieldValidator_2<TReturnFieldData>;
-
-// @public (undocumented)
-export const editRouteRef: SubRouteRef<undefined>;
 
 // @public
 export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
@@ -182,11 +176,6 @@ export interface LayoutOptions<P = any> {
 export type LayoutTemplate<T = any> = FormProps_2<T>['ObjectFieldTemplate'];
 
 // @public @deprecated (undocumented)
-export const legacySelectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:templateName'>
->;
-
-// @public @deprecated (undocumented)
 export type ListActionsResponse = ListActionsResponse_2;
 
 // @public @deprecated (undocumented)
@@ -206,9 +195,6 @@ export function makeFieldSchemaFromZod<
     : never
 >;
 
-// @alpha (undocumented)
-export const nextRouteRef: RouteRef<undefined>;
-
 // @alpha
 export type NextRouterProps = {
   components?: {
@@ -225,16 +211,6 @@ export type NextRouterProps = {
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
-
-// @alpha (undocumented)
-export const nextScaffolderTaskRouteRef: SubRouteRef<
-  PathParams<'/tasks/:taskId'>
->;
-
-// @alpha (undocumented)
-export const nextSelectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:namespace/:templateName'>
->;
 
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
@@ -292,9 +268,6 @@ export const OwnerPickerFieldSchema: FieldSchema<
 
 // @public
 export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
-
-// @public (undocumented)
-export const registerComponentRouteRef: ExternalRouteRef<undefined, true>;
 
 // @public
 export const repoPickerValidation: (
@@ -470,9 +443,6 @@ export type ScaffolderGetIntegrationsListResponse =
 // @public
 export const ScaffolderLayouts: React.ComponentType;
 
-// @public (undocumented)
-export const scaffolderListTaskRouteRef: SubRouteRef<undefined>;
-
 // @public @deprecated (undocumented)
 export type ScaffolderOutputlink = ScaffolderOutputLink;
 
@@ -483,6 +453,15 @@ export const ScaffolderPage: (props: RouterProps) => JSX.Element;
 export const scaffolderPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
+    selectedTemplate: SubRouteRef<
+      PathParams<'/templates/:namespace/:templateName'>
+    >;
+    ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+    next: RouteRef<undefined>;
+    nextSelectedTemplate: SubRouteRef<
+      PathParams<'/templates/:namespace/:templateName'>
+    >;
+    nextOngoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
@@ -513,19 +492,11 @@ export type ScaffolderTask = ScaffolderTask_2;
 // @public @deprecated (undocumented)
 export type ScaffolderTaskOutput = ScaffolderTaskOutput_2;
 
-// @public (undocumented)
-export const scaffolderTaskRouteRef: SubRouteRef<PathParams<'/tasks/:taskId'>>;
-
 // @public @deprecated (undocumented)
 export type ScaffolderTaskStatus = ScaffolderTaskStatus_2;
 
 // @public @deprecated (undocumented)
 export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecrets_2;
-
-// @public (undocumented)
-export const selectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:namespace/:templateName'>
->;
 
 // @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
@@ -549,14 +520,4 @@ export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
-
-// @public (undocumented)
-export const viewTechDocRouteRef: ExternalRouteRef<
-  {
-    name: string;
-    kind: string;
-    namespace: string;
-  },
-  true
->;
 ```

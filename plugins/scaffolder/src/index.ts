@@ -42,15 +42,12 @@ export {
 } from './plugin';
 
 export * from './components';
-export * from './routes';
+export { rootRouteRef } from './routes';
 export * from './deprecated';
 
 /** next exports */
 export { NextScaffolderPage } from './plugin';
 export {
-  nextRouteRef,
-  nextSelectedTemplateRouteRef,
-  nextScaffolderTaskRouteRef,
   type TemplateGroupFilter,
   type NextRouterProps,
   type FormProps,

@@ -48,6 +48,13 @@ import {
   type ScaffolderTaskStatus as ScaffolderTaskStatusTemp,
 } from '@backstage/plugin-scaffolder-react';
 
+import { rootRouteRef as rootRouteRefTemp } from './routes';
+
+/**
+ * @public
+ * @deprecated use import from {@link @backstage/plugin-scaffolder#plugin.routes.root} instead.
+ */
+export const rootRouteRef = rootRouteRefTemp;
 /**
  * @public
  * @deprecated use import from {@link @backstage/plugin-scaffolder-react#createScaffolderFieldExtension} instead as this has now been moved.
