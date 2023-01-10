@@ -8300,12 +8300,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/dompurify": ^2.3.3
+    "@types/dompurify": ^2.2.2
     "@types/event-source-polyfill": ^1.0.0
     "@types/node": ^16.11.26
     canvas: ^2.10.2
     cross-fetch: ^3.1.5
-    dompurify: ^2.3.6
+    dompurify: ^2.2.9
     event-source-polyfill: 1.0.25
     git-url-parse: ^13.0.0
     jss: ~10.9.0
@@ -14342,12 +14342,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dompurify@npm:^2.1.0, @types/dompurify@npm:^2.3.3":
-  version: 2.3.4
-  resolution: "@types/dompurify@npm:2.3.4"
+"@types/dompurify@npm:^2.1.0, @types/dompurify@npm:^2.2.2, @types/dompurify@npm:^2.3.3":
+  version: 2.4.0
+  resolution: "@types/dompurify@npm:2.4.0"
   dependencies:
     "@types/trusted-types": "*"
-  checksum: ea55678bc9fd32fcdae904ca191f2b8cc5b475277937e5e4c024690b0c3b9c73accfb7391f56d26d0f53fcff496a013773293e189a07a79afdd2b2ed4efacd5f
+  checksum: b48cd81e997794ebc390c7c5bef1a67ec14a6f2f0521973e07e06af186c7583abe114d94d24868c0632b9573f5bd77131a4b76f3fffdf089ba99a4e53dd46c39
   languageName: node
   linkType: hard
 
@@ -20973,10 +20973,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:^2.2.7, dompurify@npm:^2.3.6":
-  version: 2.4.0
-  resolution: "dompurify@npm:2.4.0"
-  checksum: c93ea73cf8e3ba044588450198563e56ce6902e36d0e16e3699df2fa59e82c4fdd11d4ad04ef5024569ce96a35b46f29d0bbea522516add33cd39a7f56a8a675
+"dompurify@npm:^2.2.7, dompurify@npm:^2.2.9, dompurify@npm:^2.3.6":
+  version: 2.4.3
+  resolution: "dompurify@npm:2.4.3"
+  checksum: b440981f2a38cada2085759cc3d1e2f94571afc34343d011a8a6aa1ad91ae6abf651adbfa4994b0e2283f0ce81f7891cdb04b67d0b234c8d190cb70e9691f026
   languageName: node
   linkType: hard
 
