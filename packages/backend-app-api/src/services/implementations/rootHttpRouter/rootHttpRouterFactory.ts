@@ -108,7 +108,7 @@ export const rootHttpRouterFactory = createServiceFactory({
       async fn() {
         await server.stop();
       },
-      labels: { service: 'rootHttpRouter' },
+      logger,
     });
 
     await server.start();

@@ -190,7 +190,7 @@ export interface LifecycleService {
 // @public (undocumented)
 export type LifecycleServiceShutdownHook = {
   fn: () => void | Promise<void>;
-  labels?: Record<string, string>;
+  logger?: LoggerService;
 };
 
 // @public
