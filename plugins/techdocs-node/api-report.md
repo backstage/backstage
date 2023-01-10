@@ -54,7 +54,9 @@ export type GeneratorRunOptions = {
   etag?: string;
   logger: Logger;
   logStream?: Writable;
-  siteName?: string;
+  siteOptions?: {
+    name?: string;
+  };
 };
 
 // @public
@@ -89,7 +91,9 @@ export const getLocationForEntity: (
 // @public
 export const getMkdocsYml: (
   inputDir: string,
-  siteName?: string,
+  siteOptions?: {
+    name?: string;
+  },
 ) => Promise<{
   path: string;
   content: string;
