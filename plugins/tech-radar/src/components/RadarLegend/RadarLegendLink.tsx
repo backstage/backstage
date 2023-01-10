@@ -23,6 +23,7 @@ type RadarLegendLinkProps = {
   description?: string;
   title?: string;
   classes: ClassNameMap<string>;
+  active?: boolean;
 };
 
 export const RadarLegendLink = ({
@@ -30,6 +31,7 @@ export const RadarLegendLink = ({
   description,
   title,
   classes,
+  active,
 }: RadarLegendLinkProps) => {
   const [open, setOpen] = React.useState(false);
 
@@ -55,7 +57,9 @@ export const RadarLegendLink = ({
           tabIndex={0}
           onKeyPress={toggle}
         >
-          <span className={classes.entry}>{title}</span>
+          <span className={active ? classes.activeEntry : classes.entry}>
+            {title}
+          </span>
         </span>
         {open && (
           <RadarDescription
@@ -71,7 +75,9 @@ export const RadarLegendLink = ({
   }
   return (
     <WithLink url={url} className={classes.entryLink}>
-      <span className={classes.entry}>{title}</span>
+      <span className={active ? classes.activeEntry : classes.entry}>
+        {title}
+      </span>
     </WithLink>
   );
 };

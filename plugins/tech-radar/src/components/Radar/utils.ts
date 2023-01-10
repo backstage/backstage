@@ -141,6 +141,7 @@ export const adjustEntries = (
         activeEntry && entry.id === activeEntry?.id
           ? entry.ring.color
           : color(entry.ring.color).desaturate(0.5).lighten(0.1).string(),
+      active: activeEntry && entry.id === activeEntry?.id ? true : false,
     };
   });
 
