@@ -61,11 +61,7 @@ import {
   selectedTemplateRouteRef,
   scaffolderTaskRouteRef,
 } from './routes';
-import {
-  nextRouteRef,
-  nextSelectedTemplateRouteRef,
-  nextScaffolderTaskRouteRef,
-} from './next';
+import { nextRouteRef } from './next';
 
 /**
  * The main plugin export for the scaffolder.
@@ -95,11 +91,6 @@ export const scaffolderPlugin = createPlugin({
     root: rootRouteRef,
     selectedTemplate: selectedTemplateRouteRef,
     ongoingTask: scaffolderTaskRouteRef,
-
-    /** next routes */
-    next: nextRouteRef,
-    nextSelectedTemplate: nextSelectedTemplateRouteRef,
-    nextOngoingTask: nextScaffolderTaskRouteRef,
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,

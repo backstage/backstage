@@ -43,5 +43,3 @@
   NextFieldExtensionComponentProps
   NextFieldExtensionOptions
   ```
-
-- The `/alpha` import for `nextSelectedTemplateRouteRef` has been moved to `scaffolderPlugin.routes.nextSelectedTemplate`

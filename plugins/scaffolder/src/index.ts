@@ -47,6 +47,9 @@ export * from './deprecated';
 /** next exports */
 export { NextScaffolderPage } from './plugin';
 export {
+  nextRouteRef,
+  nextScaffolderTaskRouteRef,
+  nextSelectedTemplateRouteRef,
   type TemplateGroupFilter,
   type NextRouterProps,
   type FormProps,

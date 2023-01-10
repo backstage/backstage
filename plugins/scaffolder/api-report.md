@@ -195,6 +195,9 @@ export function makeFieldSchemaFromZod<
     : never
 >;
 
+// @alpha (undocumented)
+export const nextRouteRef: RouteRef<undefined>;
+
 // @alpha
 export type NextRouterProps = {
   components?: {
@@ -211,6 +214,16 @@ export type NextRouterProps = {
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
+
+// @alpha (undocumented)
+export const nextScaffolderTaskRouteRef: SubRouteRef<
+  PathParams<'/tasks/:taskId'>
+>;
+
+// @alpha (undocumented)
+export const nextSelectedTemplateRouteRef: SubRouteRef<
+  PathParams<'/templates/:namespace/:templateName'>
+>;
 
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
@@ -457,11 +470,6 @@ export const scaffolderPlugin: BackstagePlugin<
       PathParams<'/templates/:namespace/:templateName'>
     >;
     ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
-    next: RouteRef<undefined>;
-    nextSelectedTemplate: SubRouteRef<
-      PathParams<'/templates/:namespace/:templateName'>
-    >;
-    nextOngoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
