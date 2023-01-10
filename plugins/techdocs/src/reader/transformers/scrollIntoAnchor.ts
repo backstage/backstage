@@ -24,7 +24,6 @@ export const scrollIntoAnchor = (): Transformer => {
       function handleShadowDomStyleLoad() {
         if (window.location.hash) {
           const hash = window.location.hash.slice(1);
-          // fix invalid selector error for anchor starting with number
           dom?.querySelector(`[id="${hash}"]`)?.scrollIntoView();
         }
         dom.removeEventListener(
