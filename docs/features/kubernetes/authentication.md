@@ -68,6 +68,29 @@ The providers available as client side are:
 
 - `google`
 - `oidc`
+- `microsoftaks`
+
+### Microsoft AKS
+
+The Microsoft AKS client side authentication provider allows you to surface the status of deployed services in Backstage without granting high powered privileges to a service account. Please note that [Azure AD Authentication][1] is a requirement and has to be enabled in your AKS cluster, then follow these steps:
+
+- Go to your AKS cluster's resource page in the Azure Active Directory console and follow the steps in the
+  `Connect` tab to set the subscription and get your credentials for your providers auth definition.
+- Configure your cluster to use the `microsoftaks` auth provider like this:
+
+```yaml
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: config
+      clusters:
+        - name: My AKS cluster
+          url: ${AZURE_CLUSTER_API_SERVER_ADDRESS}
+          authProvider: microsoftaks
+          skipTLSVerify: true
+          skipMetricsLookup: true
+```
 
 [1]: https://docs.microsoft.com/en-us/azure/aks/managed-aad
 [2]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
