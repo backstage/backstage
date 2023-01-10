@@ -27,7 +27,8 @@ type EntityLink {
   icon: String
 }
 
-interface ILocation @extend(interface: "IEntity", when: "kind", is: "Location") {
+interface ILocation
+  @extend(interface: "IEntity", when: "kind", is: "Location") {
   type: String @field(at: "spec.type")
   target: String @field(at: "spec.target")
   targets: [String] @field(at: "spec.targets")
@@ -42,7 +43,8 @@ interface IAPI @extend(interface: "IEntity", when: "kind", is: "API") {
   providers: Connection @relation(name: "apiProvidedBy", nodeType: "IComponent")
 }
 
-interface IComponent @extend(interface: "IEntity", when: "kind", is: "Component") {
+interface IComponent
+  @extend(interface: "IEntity", when: "kind", is: "Component") {
   lifecycle: Lifecycle! @field(at: "spec.lifecycle")
   owner: Owner! @relation(name: "ownedBy")
   system: ISystem @relation(name: "partOf", kind: "system")
@@ -58,7 +60,8 @@ interface IDomain @extend(interface: "IEntity", when: "kind", is: "Domain") {
   systems: Connection @relation(name: "hasPart", nodeType: "ISystem")
 }
 
-interface IResource @extend(interface: "IEntity", when: "kind", is: "Resource") {
+interface IResource
+  @extend(interface: "IEntity", when: "kind", is: "Resource") {
   owner: Owner! @relation(name: "ownedBy")
   dependencies: Connection @relation(name: "dependsOn", nodeType: "Dependency")
   dependents: Connection @relation(name: "dependencyOf", nodeType: "Dependency")
@@ -68,8 +71,10 @@ interface IResource @extend(interface: "IEntity", when: "kind", is: "Resource") 
 interface ISystem @extend(interface: "IEntity", when: "kind", is: "System") {
   owner: Owner! @relation(name: "ownedBy")
   domain: IDomain @relation(name: "partOf")
-  components: Connection @relation(name: "hasPart", nodeType: "IComponent", kind: "component")
-  resources: Connection @relation(name: "hasPart", nodeType: "IResource", kind: "resource")
+  components: Connection
+    @relation(name: "hasPart", nodeType: "IComponent", kind: "component")
+  resources: Connection
+    @relation(name: "hasPart", nodeType: "IResource", kind: "resource")
 }
 
 type Step {
@@ -80,7 +85,8 @@ type Step {
   if: JSON
 }
 
-interface ITemplate @extend(interface: "IEntity", when: "kind", is: "Template") {
+interface ITemplate
+  @extend(interface: "IEntity", when: "kind", is: "Template") {
   parameters: JSONObject @field(at: "spec.parameters")
   steps: [Step]! @field(at: "spec.steps")
   output: JSONObject @field(at: "spec.output")
