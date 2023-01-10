@@ -59,7 +59,10 @@ export const RadarLegendLink = ({
           tabIndex={0}
           onKeyPress={toggle}
         >
-          <Typography component="span" className={active ? classes.activeEntry : classes.entry}>
+          <Typography
+            component="span"
+            className={active ? classes.activeEntry : classes.entry}
+          >
             {title}
           </Typography>
         </Typography>
@@ -77,7 +80,10 @@ export const RadarLegendLink = ({
   }
   return (
     <WithLink url={url} className={classes.entryLink}>
-      <Typography component="span" className={active ? classes.activeEntry : classes.entry}>
+      <Typography
+        component="span"
+        className={active ? classes.activeEntry : classes.entry}
+      >
         {title}
       </Typography>
     </WithLink>

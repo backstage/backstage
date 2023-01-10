@@ -21,4 +21,4 @@
 '@backstage/plugin-user-settings': patch
 ---
 
-Enable the eslint-plugin-react for non-test files and forbid `<span>` tag in favor of `<Typography component='span'>`.
+Small updates to some components to ensure theme typography properties are inherited correctly.
