@@ -21,7 +21,7 @@ import { parse } from 'yaml';
 
 /** @public */
 export class OpenAPISpecParser implements SpecParser {
-  specType: string = 'openapi';
+  readonly specType: string = 'openapi';
 
   getV3SpecText(spec: OpenAPIV3.Document): (string | undefined)[] {
     const pathTexts: (string | undefined)[] = [];
