@@ -12,6 +12,7 @@ import { CorsOptions } from 'cors';
 import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { Handler } from 'express';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
@@ -78,6 +79,21 @@ export interface CreateSpecializedBackendOptions {
 export const databaseFactory: (
   options?: undefined,
 ) => ServiceFactory<PluginDatabaseManager>;
+
+// @public
+export class DefaultRootHttpRouter implements RootHttpRouterService {
+  // (undocumented)
+  static create(options?: DefaultRootHttpRouterOptions): DefaultRootHttpRouter;
+  // (undocumented)
+  handler(): Handler;
+  // (undocumented)
+  use(path: string, handler: Handler): void;
+}
+
+// @public
+export interface DefaultRootHttpRouterOptions {
+  indexPath?: string | false;
+}
 
 // @public (undocumented)
 export const discoveryFactory: (
