@@ -44,18 +44,36 @@ export type ScaffolderTask = {
 };
 
 /**
- * The response shape for the `listActions` call to the `scaffolder-backend`
+ * A single action example
  *
  * @public
  */
-export type ListActionsResponse = Array<{
+export type ActionExample = {
+  description: string;
+  example: string;
+};
+
+/**
+ * The response shape for a single action in the `listActions` call to the `scaffolder-backend`
+ *
+ * @public
+ */
+export type Action = {
   id: string;
   description?: string;
   schema?: {
     input?: JSONSchema7;
     output?: JSONSchema7;
   };
-}>;
+  examples?: ActionExample[];
+};
+
+/**
+ * The response shape for the `listActions` call to the `scaffolder-backend`
+ *
+ * @public
+ */
+export type ListActionsResponse = Array<Action>;
 
 /** @public */
 export type ScaffolderOutputLink = {

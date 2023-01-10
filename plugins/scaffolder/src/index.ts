@@ -19,7 +19,6 @@
  *
  * @packageDocumentation
  */
-
 export { ScaffolderClient } from './api';
 
 export {

@@ -28,6 +28,23 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
 
+// @public
+export type Action = {
+  id: string;
+  description?: string;
+  schema?: {
+    input?: JSONSchema7;
+    output?: JSONSchema7;
+  };
+  examples?: ActionExample[];
+};
+
+// @public
+export type ActionExample = {
+  description: string;
+  example: string;
+};
+
 // @alpha
 export const createFieldValidation: () => FieldValidation_2;
 
@@ -102,14 +119,7 @@ export type FormProps = Pick<
 >;
 
 // @public
-export type ListActionsResponse = Array<{
-  id: string;
-  description?: string;
-  schema?: {
-    input?: JSONSchema7;
-    output?: JSONSchema7;
-  };
-}>;
+export type ListActionsResponse = Array<Action>;
 
 // @public
 export type LogEvent = {

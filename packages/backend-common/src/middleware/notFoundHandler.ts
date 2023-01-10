@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { MiddlewareFactory } from '@backstage/backend-app-api';
+import { ConfigReader } from '@backstage/config';
+import { RequestHandler } from 'express';
+import { getRootLogger } from '../logging';
 
 /**
  * Express middleware to handle requests for missing routes.
@@ -26,8 +29,8 @@ import { NextFunction, Request, RequestHandler, Response } from 'express';
  * @returns An Express request handler
  */
 export function notFoundHandler(): RequestHandler {
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  return (_request: Request, response: Response, _next: NextFunction) => {
-    response.status(404).end();
-  };
+  return MiddlewareFactory.create({
+    config: new ConfigReader({}),
+    logger: getRootLogger(),
+  }).notFound();
 }

@@ -20,5 +20,6 @@
  * @packageDocumentation
  */
 
+export * from './http';
 export * from './wiring';
 export * from './services/implementations';

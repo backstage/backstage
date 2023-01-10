@@ -28,7 +28,7 @@ export const loggerFactory = createServiceFactory({
   },
   async factory({ rootLogger }) {
     return async ({ plugin }) => {
-      return rootLogger.child({ pluginId: plugin.getId() });
+      return rootLogger.child({ plugin: plugin.getId() });
     };
   },
 });

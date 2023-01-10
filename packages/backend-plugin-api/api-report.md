@@ -348,6 +348,11 @@ export interface ServiceFactoryConfig<
 }
 
 // @public
+export type ServiceFactoryOrFunction<TService = unknown> =
+  | ServiceFactory<TService>
+  | (() => ServiceFactory<TService>);
+
+// @public
 export type ServiceRef<
   TService,
   TScope extends 'root' | 'plugin' = 'root' | 'plugin',
@@ -364,7 +369,7 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   // (undocumented)
   defaultFactory?: (
     service: ServiceRef<TService, TScope>,
-  ) => Promise<ServiceFactory<TService> | (() => ServiceFactory<TService>)>;
+  ) => Promise<ServiceFactoryOrFunction<TService>>;
   // (undocumented)
   id: string;
   // (undocumented)

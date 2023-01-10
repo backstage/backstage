@@ -18,6 +18,7 @@ import { Command } from 'commander';
 import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
+const defaultPreviewAppPort = '3000';
 
 export function registerCommands(program: Command) {
   program
@@ -251,6 +252,25 @@ export function registerCommands(program: Command) {
     )
     .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)
+    .option(
+      '--preview-app-bundle-path <PATH_TO_BUNDLE>',
+      'Preview documentation using another web app',
+    )
+    .option(
+      '--preview-app-port <PORT>',
+      'Port for the preview app to be served on',
+      defaultPreviewAppPort,
+    )
+    .hook('preAction', command => {
+      if (
+        command.opts().previewAppPort !== defaultPreviewAppPort &&
+        !command.opts().previewAppBundlePath
+      ) {
+        command.error(
+          '--preview-app-port can only be used together with --preview-app-bundle-path',
+        );
+      }
+    })
     .action(lazy(() => import('./serve/serve').then(m => m.default)));
 }
 
