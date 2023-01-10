@@ -27,14 +27,12 @@ import {
   urlReaderFactory,
   databaseFactory,
   httpRouterFactory,
+  MiddlewareFactory,
+  createHttpServer,
+  ExtendedHttpServer,
+  DefaultRootHttpRouter,
 } from '@backstage/backend-app-api';
-import {
-  createServiceBuilder,
-  SingleHostDiscovery,
-} from '@backstage/backend-common';
-import { Handler } from 'express';
-import * as http from 'http';
-import Router from 'express-promise-router';
+import { SingleHostDiscovery } from '@backstage/backend-common';
 import {
   ServiceFactory,
   ServiceRef,
@@ -45,8 +43,8 @@ import {
 } from '@backstage/backend-plugin-api';
 
 import { mockConfigFactory, mockTokenManagerFactory } from '../implementations';
-import { AddressInfo } from 'net';
 import { ConfigReader } from '@backstage/config';
+import express from 'express';
 
 /** @alpha */
 export interface TestBackendOptions<
@@ -72,6 +70,17 @@ export interface TestBackendOptions<
   features?: BackendFeature[];
 }
 
+/** @alpha */
+export interface TestBackend extends Backend {
+  /**
+   * Provides access to the underling HTTP server for use with utilities
+   * such as `supertest`.
+   *
+   * If the root http router service has been replaced, this will throw an error.
+   */
+  readonly server: ExtendedHttpServer;
+}
+
 const defaultServiceFactories = [
   cacheFactory(),
   databaseFactory(),
@@ -93,7 +102,9 @@ const backendInstancesToCleanUp = new Array<Backend>();
 export async function startTestBackend<
   TServices extends any[],
   TExtensionPoints extends any[],
->(options: TestBackendOptions<TServices, TExtensionPoints>): Promise<Backend> {
+>(
+  options: TestBackendOptions<TServices, TExtensionPoints>,
+): Promise<TestBackend> {
   const {
     services = [],
     extensionPoints = [],
@@ -101,49 +112,43 @@ export async function startTestBackend<
     ...otherOptions
   } = options;
 
-  let server: http.Server;
+  let server: ExtendedHttpServer;
 
   const rootHttpRouterFactory = createServiceFactory({
     service: coreServices.rootHttpRouter,
     deps: {
       config: coreServices.config,
       lifecycle: coreServices.rootLifecycle,
+      rootLogger: coreServices.rootLogger,
     },
-    async factory({ config, lifecycle }) {
-      const router = Router();
+    async factory({ config, lifecycle, rootLogger }) {
+      const router = DefaultRootHttpRouter.create();
+      const logger = rootLogger.child({ service: 'rootHttpRouter' });
 
-      const service = createServiceBuilder(module)
-        .loadConfig(config)
-        .setPort(0);
+      const app = express();
 
-      service.addRouter('', router);
+      const middleware = MiddlewareFactory.create({ config, logger });
 
-      server = await service.start();
-      // Stop method isn't part of the public API, let's fix that once we move the implementation here.
-      const stoppableServer = server as typeof server & {
-        stop: (cb: (error?: Error) => void) => void;
-      };
+      app.use(router.handler());
+      app.use(middleware.notFound());
+      app.use(middleware.error());
+
+      server = await createHttpServer(
+        app,
+        { listen: { host: '', port: 0 } },
+        { logger },
+      );
 
       lifecycle.addShutdownHook({
         async fn() {
-          await new Promise<void>((resolve, reject) => {
-            stoppableServer.stop((error?: Error) => {
-              if (error) {
-                reject(error);
-              } else {
-                resolve();
-              }
-            });
-          });
+          await server.stop();
         },
-        labels: { service: 'rootHttpRouter' },
+        logger,
       });
 
-      return {
-        use: (path: string, handler: Handler) => {
-          router.use(path, handler);
-        },
-      };
+      await server.start();
+
+      return router;
     },
   });
 
@@ -156,7 +161,7 @@ export async function startTestBackend<
       if (!server) {
         throw new Error('Test server not started yet');
       }
-      const { port } = server.address() as AddressInfo;
+      const port = server.port();
       const discovery = SingleHostDiscovery.fromConfig(
         new ConfigReader({
           backend: { baseUrl: `http://localhost:${port}`, listen: { port } },
@@ -220,7 +225,14 @@ export async function startTestBackend<
 
   await backend.start();
 
-  return Object.assign(backend, { server: server! }) as Backend;
+  return Object.assign(backend, {
+    get server() {
+      if (!server) {
+        throw new Error('TestBackend server is not available');
+      }
+      return server;
+    },
+  });
 }
 
 let registered = false;

@@ -5,6 +5,7 @@
 ```ts
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
@@ -24,7 +25,14 @@ export function setupRequestMockHandlers(worker: {
 export function startTestBackend<
   TServices extends any[],
   TExtensionPoints extends any[],
->(options: TestBackendOptions<TServices, TExtensionPoints>): Promise<Backend>;
+>(
+  options: TestBackendOptions<TServices, TExtensionPoints>,
+): Promise<TestBackend>;
+
+// @alpha (undocumented)
+export interface TestBackend extends Backend {
+  readonly server: ExtendedHttpServer;
+}
 
 // @alpha (undocumented)
 export interface TestBackendOptions<
