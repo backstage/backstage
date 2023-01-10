@@ -25,11 +25,16 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useEntityList } from '../../hooks/useEntityListProvider';
-import { get } from 'lodash';
-import { Entity } from '@backstage/catalog-model';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  DefaultEntityFilters,
+  useEntityList,
+} from '../../hooks/useEntityListProvider';
+import sortBy from 'lodash/sortBy';
+import useAsync from 'react-use/lib/useAsync';
 import { EntityFieldFilter } from '../../filters';
+import { catalogApiRef } from '../../api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 /** @public */
 export type CatalogReactEntityGenericPickerClassKey = 'input';
@@ -47,14 +52,67 @@ export interface EntityGenericPickerProps {
   filterValue: string;
 }
 
-/** @public */
-export const EntityGenericPicker = (props: EntityGenericPickerProps) => {
-  const { name, filterValue } = props;
+function useAvailableOptions(
+  filterValue: string,
+  filters: DefaultEntityFilters,
+) {
+  const catalogApi = useApi(catalogApiRef);
+
+  const [availableOptions, setAvailableOptions] = useState<string[]>([]);
+
   const {
-    updateFilters,
-    backendEntities,
+    error,
+    loading,
+    value: facets,
+  } = useAsync(async () => {
+    const facet = filterValue;
+    const items = await catalogApi
+      .getEntityFacets({
+        facets: [facet],
+        filter: filters.kind?.getCatalogFilters(),
+      })
+      .then(response => response.facets[facet] || []);
+
+    return items;
+  }, [catalogApi]);
+
+  const facetsRef = useRef(facets);
+  useEffect(() => {
+    const oldFacets = facetsRef.current;
+    facetsRef.current = facets;
+    // Delay processing hook until facets load updates have settled to generate list of kinds;
+    // This prevents resetting the kind filter due to saved kind value from query params not matching the
+    // empty set of kind values while values are still being loaded; also only run this hook on changes
+    // to facets
+    if (loading || oldFacets === facets || !facets) {
+      return;
+    }
+
+    const newOptions = [
+      ...new Set(
+        sortBy(facets, f => f.value).map(f =>
+          f.value.toLocaleLowerCase('en-US'),
+        ),
+      ),
+    ];
+
+    setAvailableOptions(newOptions);
+  }, [loading, facets, setAvailableOptions]);
+
+  return { loading, error, availableOptions };
+}
+
+function useEntityFieldFilter(opts: { filterValue: string }): {
+  loading: boolean;
+  error?: Error;
+  availableOptions: string[];
+  selectedOptions: string[];
+  setSelectedOptions: (option: string[]) => void;
+} {
+  const {
     filters,
     queryParameters: { option: optionParameter },
+    updateFilters,
   } = useEntityList();
 
   const queryParamGenres = useMemo(() => {
@@ -73,26 +131,57 @@ export const EntityGenericPicker = (props: EntityGenericPickerProps) => {
     }
   }, [queryParamGenres]);
 
+  // Set selected kind from filters; this happens when the kind filter is
+  // updated from another component
+  // useEffect(() => {
+  //   if (filters.kind?.value) {
+  //     setSelectedOption(filters.kind?.value);
+  //   }
+  // }, [filters.kind]);
+
   useEffect(() => {
     updateFilters({
       option: selectedOptions.length
-        ? new EntityFieldFilter(selectedOptions, filterValue)
+        ? new EntityFieldFilter(selectedOptions, opts.filterValue)
         : undefined,
     });
   }, [selectedOptions, updateFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const availableOptions = useMemo(
-    () =>
-      [
-        ...new Set(
-          backendEntities
-            .flatMap((e: Entity) => get(e, filterValue))
-            .filter(Boolean) as string[],
-        ),
-      ].sort(),
-    [backendEntities, filterValue],
+  const { availableOptions, loading, error } = useAvailableOptions(
+    opts.filterValue,
+    filters,
   );
-  if (!availableOptions.length) return null;
+
+  return {
+    loading,
+    error,
+    availableOptions,
+    selectedOptions,
+    setSelectedOptions,
+  };
+}
+
+/** @public */
+export const EntityGenericPicker = (props: EntityGenericPickerProps) => {
+  const { name, filterValue } = props;
+
+  const alertApi = useApi(alertApiRef);
+
+  const { error, availableOptions, selectedOptions, setSelectedOptions } =
+    useEntityFieldFilter({
+      filterValue: filterValue,
+    });
+
+  useEffect(() => {
+    if (error) {
+      alertApi.post({
+        message: `Failed to load entity kinds`,
+        severity: 'error',
+      });
+    }
+  }, [error, alertApi]);
+
+  if (availableOptions?.length === 0 || error) return null;
 
   return (
     <Box pb={1} pt={1}>
