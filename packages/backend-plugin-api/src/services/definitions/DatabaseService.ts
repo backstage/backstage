@@ -18,7 +18,7 @@ import { Knex } from 'knex';
 
 /**
  * The DatabaseService manages access to databases that Plugins get.
- *gs
+ *
  * @public
  */
 export interface DatabaseService {
