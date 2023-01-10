@@ -122,13 +122,15 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
         }
 
         try {
-          yield {
-            title: entity.metadata.name,
-            location: `/catalog/default/api/${entity.metadata.name}/definition/`,
-            text: specParser.getSpecText(entity.spec?.definition),
-            kind: entity.kind,
-            lifecycle: (entity.spec?.lifecycle as string) || '',
-          };
+          if (entity.spec?.definition) {
+            yield {
+              title: entity.metadata.name,
+              location: `/catalog/default/api/${entity.metadata.name}/definition/`,
+              text: specParser.getSpecText(entity.spec?.definition as string),
+              kind: entity.kind,
+              lifecycle: (entity.spec?.lifecycle as string) || '',
+            };
+          }
         } catch (e: any) {
           this.logger.warn(
             `Error Parsing Spec Text For ${entity.metadata.name}: ${e}`,
