@@ -42,7 +42,6 @@ export {
 } from './plugin';
 
 export * from './components';
-export { rootRouteRef } from './routes';
 export * from './deprecated';
 
 /** next exports */

@@ -52,7 +52,7 @@ import { rootRouteRef as rootRouteRefTemp } from './routes';
 
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder#plugin.routes.root} instead.
+ * @deprecated use import from `{@link @backstage/plugin-scaffolder#scaffolderPlugin}.routes.root` instead.
  */
 export const rootRouteRef = rootRouteRefTemp;
 /**

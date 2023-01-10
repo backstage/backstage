@@ -95,6 +95,7 @@ export const scaffolderPlugin = createPlugin({
     root: rootRouteRef,
     selectedTemplate: selectedTemplateRouteRef,
     ongoingTask: scaffolderTaskRouteRef,
+
     /** next routes */
     next: nextRouteRef,
     nextSelectedTemplate: nextSelectedTemplateRouteRef,

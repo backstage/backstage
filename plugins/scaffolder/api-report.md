@@ -348,7 +348,7 @@ export type ReviewStepProps = {
   }[];
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const rootRouteRef: RouteRef<undefined>;
 
 // @public
