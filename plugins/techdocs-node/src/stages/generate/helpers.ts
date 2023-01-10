@@ -159,7 +159,7 @@ export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
  */
 export const generateMkdocsYml = async (
   inputDir: string,
-  siteName?: string,
+  siteOptions?: { name?: string },
 ) => {
   try {
     // TODO(awanlin): Use a provided default mkdocs.yml
@@ -168,7 +168,7 @@ export const generateMkdocsYml = async (
     // minimum mkdocs.yml file
 
     const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
-    const defaultSiteName = siteName ?? 'Table of Contents';
+    const defaultSiteName = siteOptions?.name ?? 'Table of Contents';
     const defaultMkdocsContent =
       `site_name: ${defaultSiteName}\n` +
       'docs_dir: docs\n' +
@@ -193,7 +193,7 @@ export const generateMkdocsYml = async (
  */
 export const getMkdocsYml = async (
   inputDir: string,
-  siteName?: string,
+  siteOptions?: { name?: string },
 ): Promise<{ path: string; content: string }> => {
   let mkdocsYmlPath: string;
   let mkdocsYmlFileString: string;
@@ -217,7 +217,7 @@ export const getMkdocsYml = async (
     }
 
     // No mkdocs file, generate it
-    await generateMkdocsYml(inputDir, siteName);
+    await generateMkdocsYml(inputDir, siteOptions);
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
   } catch (error) {
     throw new ForwardedError(
