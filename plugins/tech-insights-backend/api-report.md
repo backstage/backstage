@@ -5,6 +5,7 @@
 ```ts
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Config } from '@backstage/config';
+import { DateTime } from 'luxon';
 import { Duration } from 'luxon';
 import express from 'express';
 import { FactChecker } from '@backstage/plugin-tech-insights-node';
@@ -13,12 +14,16 @@ import { FactLifecycle } from '@backstage/plugin-tech-insights-node';
 import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
 import { FactSchema } from '@backstage/plugin-tech-insights-node';
+import { FactSchemaDefinition } from '@backstage/plugin-tech-insights-node';
+import { FlatTechInsightFact } from '@backstage/plugin-tech-insights-node';
 import { HumanDuration } from '@backstage/types';
+import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TechInsightCheck } from '@backstage/plugin-tech-insights-node';
+import { TechInsightFact } from '@backstage/plugin-tech-insights-node';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { TokenManager } from '@backstage/backend-common';
 
@@ -106,6 +111,41 @@ export type TechInsightsContext<
   factRetrieverEngine: FactRetrieverEngine;
 };
 
+// @public
+export class TechInsightsDatabase implements TechInsightsStore {
+  constructor(db: Knex, logger: Logger);
+  // (undocumented)
+  getFactsBetweenTimestampsByIds(
+    ids: string[],
+    entityTriplet: string,
+    startDateTime: DateTime,
+    endDateTime: DateTime,
+  ): Promise<{
+    [factId: string]: FlatTechInsightFact[];
+  }>;
+  // (undocumented)
+  getLatestFactsByIds(
+    ids: string[],
+    entityTriplet: string,
+  ): Promise<{
+    [factId: string]: FlatTechInsightFact;
+  }>;
+  // (undocumented)
+  getLatestSchemas(ids?: string[]): Promise<FactSchema[]>;
+  // (undocumented)
+  insertFacts({
+    id,
+    facts,
+    lifecycle,
+  }: {
+    id: string;
+    facts: TechInsightFact[];
+    lifecycle?: FactLifecycle;
+  }): Promise<void>;
+  // (undocumented)
+  insertFactSchema(schemaDefinition: FactSchemaDefinition): Promise<void>;
+}
+
 // @public (undocumented)
 export interface TechInsightsOptions<
   CheckType extends TechInsightCheck,
@@ -122,6 +162,7 @@ export interface TechInsightsOptions<
   factRetrievers?: FactRetrieverRegistration[];
   // (undocumented)
   logger: Logger;
+  persistenceContext?: PersistenceContext;
   // (undocumented)
   scheduler: PluginTaskScheduler;
   // (undocumented)

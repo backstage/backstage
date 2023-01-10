@@ -46,6 +46,11 @@ type RawDbFactSchemaRow = {
   entityFilter?: string;
 };
 
+/**
+ * Default TechInsightsDatabase implementation.
+ *
+ * @public
+ */
 export class TechInsightsDatabase implements TechInsightsStore {
   private readonly CHUNK_SIZE = 50;
 
