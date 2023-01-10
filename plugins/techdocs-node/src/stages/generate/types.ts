@@ -53,7 +53,7 @@ export type GeneratorConfig = {
  * @param etag - A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.
  * @param logger - A logger that forwards the messages to the caller to be displayed outside of the backend.
  * @param logStream - A log stream that can send raw log messages to the caller to be displayed outside of the backend.
- * @param siteName - Name of the site to be used in mkdocs.yml for the required `site_name` property, default value is "Table of Contents"
+ * @param siteOptions - Options for the site: The `name` property will be used in mkdocs.yml config for the required `site_name` property, default value is "Documentation Site"
  */
 export type GeneratorRunOptions = {
   inputDir: string;
