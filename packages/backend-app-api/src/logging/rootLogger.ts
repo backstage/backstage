@@ -18,7 +18,7 @@ import { merge } from 'lodash';
 import * as winston from 'winston';
 import { LoggerOptions } from 'winston';
 import { coloredFormat } from './formats';
-import { escapeRegExp } from '../util/escapeRegExp';
+import { escapeRegExp } from '../lib/escapeRegExp';
 
 let rootLogger: winston.Logger;
 let redactionRegExp: RegExp | undefined;
