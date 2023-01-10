@@ -32,6 +32,8 @@
   ScaffolderTaskStatus
   ```
 
+- **Deprecation** - Deprecated the `rootRouteRef` export, this should now be used from `scaffolderPlugin.routes.root`
+
 - The following `/alpha` types have removed from this package and moved to the `@backstage/plugin-scaffolder-react/alpha` package
 
   ```
@@ -41,3 +43,5 @@
   NextFieldExtensionComponentProps
   NextFieldExtensionOptions
   ```
+
+- The `/alpha` import for `nextSelectedTemplateRouteRef` has been moved to `scaffolderPlugin.routes.nextSelectedTemplate`
