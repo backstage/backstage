@@ -78,9 +78,9 @@ const useStyles = makeStyles(theme => ({
 const ExamplesTable = (props: { examples: ActionExample[] }) => {
   return (
     <Grid container>
-      {props.examples.map(example => {
+      {props.examples.map((example, index) => {
         return (
-          <Fragment key={example.description}>
+          <Fragment key={`example-${index}`}>
             <Grid item lg={3}>
               <Box padding={4}>
                 <Typography>{example.description}</Typography>
