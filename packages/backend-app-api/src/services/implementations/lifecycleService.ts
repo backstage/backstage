@@ -25,17 +25,19 @@ import {
 export const lifecycleFactory = createServiceFactory({
   service: coreServices.lifecycle,
   deps: {
+    logger: coreServices.logger,
     rootLifecycle: coreServices.rootLifecycle,
     pluginMetadata: coreServices.pluginMetadata,
   },
   async factory({ rootLifecycle }) {
-    return async ({ pluginMetadata }) => {
+    return async ({ logger, pluginMetadata }) => {
       const plugin = pluginMetadata.getId();
       return {
         addShutdownHook(options: LifecycleServiceShutdownHook): void {
           rootLifecycle.addShutdownHook({
             ...options,
-            labels: { ...options?.labels, plugin },
+
+            logger: options.logger?.child({ plugin }) ?? logger,
           });
         },
       };

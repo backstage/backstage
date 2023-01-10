@@ -22,7 +22,6 @@ describe('lifecycleService', () => {
     const service = new BackendLifecycleImpl(getVoidLogger());
     const hook = jest.fn();
     service.addShutdownHook({
-      labels: { plugin: 'test' },
       fn: async () => {
         hook();
       },
@@ -37,7 +36,6 @@ describe('lifecycleService', () => {
   it('should not throw errors', async () => {
     const service = new BackendLifecycleImpl(getVoidLogger());
     service.addShutdownHook({
-      labels: { plugin: 'test' },
       fn: async () => {
         throw new Error('oh no');
       },

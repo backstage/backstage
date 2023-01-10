@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+
 import {
   createServiceFactory,
   coreServices,
   LifecycleServiceShutdownHook,
   RootLifecycleService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
-import { Logger } from 'winston';
 
 const CALLBACKS = ['SIGTERM', 'SIGINT', 'beforeExit'];
 export class BackendLifecycleImpl implements RootLifecycleService {
-  constructor(private readonly logger: Logger) {
+  constructor(private readonly logger: LoggerService) {
     CALLBACKS.map(signal => process.on(signal, () => this.shutdown()));
   }
 
@@ -44,11 +44,12 @@ export class BackendLifecycleImpl implements RootLifecycleService {
     this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
     await Promise.all(
       this.#shutdownTasks.map(async hook => {
+        const { logger = this.logger } = hook;
         try {
           await hook.fn();
-          this.logger.info(`Shutdown hook succeeded`, hook.labels);
+          logger.info(`Shutdown hook succeeded`);
         } catch (error) {
-          this.logger.error(`Shutdown hook failed, ${error}`, hook.labels);
+          logger.error(`Shutdown hook failed, ${error}`);
         }
       }),
     );
@@ -64,6 +65,6 @@ export const rootLifecycleFactory = createServiceFactory({
     logger: coreServices.rootLogger,
   },
   async factory({ logger }) {
-    return new BackendLifecycleImpl(loggerToWinstonLogger(logger));
+    return new BackendLifecycleImpl(logger);
   },
 });
