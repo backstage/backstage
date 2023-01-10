@@ -26,8 +26,6 @@ export interface APIDocument extends IndexableDocument {
 // @public
 export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
-  execute(): AsyncGenerator<APIDocument>;
-  // (undocumented)
   static fromConfig(
     _config: Config,
     options: APIDocumentCollatorFactoryOptions,

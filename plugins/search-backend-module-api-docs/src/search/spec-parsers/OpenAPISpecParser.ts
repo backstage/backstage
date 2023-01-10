@@ -23,7 +23,7 @@ import { parse } from 'yaml';
 export class OpenAPISpecParser implements SpecParser {
   readonly specType: string = 'openapi';
 
-  getV3SpecText(spec: OpenAPIV3.Document): (string | undefined)[] {
+  private getV3SpecText(spec: OpenAPIV3.Document): (string | undefined)[] {
     const pathTexts: (string | undefined)[] = [];
     for (const path in spec.paths) {
       if (!Object.prototype.hasOwnProperty.call(spec.paths, path)) {
@@ -60,7 +60,7 @@ export class OpenAPISpecParser implements SpecParser {
     return pathTexts;
   }
 
-  getV2SpecText(spec: OpenAPIV2.Document): (string | undefined)[] {
+  private getV2SpecText(spec: OpenAPIV2.Document): (string | undefined)[] {
     const pathTexts: (string | undefined)[] = [];
     for (const path in spec.paths) {
       if (!Object.prototype.hasOwnProperty.call(spec.paths, path)) {
@@ -94,7 +94,7 @@ export class OpenAPISpecParser implements SpecParser {
     return pathTexts;
   }
 
-  getSpecVersionText(
+  private getSpecVersionText(
     spec: OpenAPI.Document,
     specVersion: string,
   ): (string | undefined)[] {
@@ -109,7 +109,7 @@ export class OpenAPISpecParser implements SpecParser {
     return [];
   }
 
-  parseSpec(spec: OpenAPI.Document, specVersion: string): string {
+  private parseSpec(spec: OpenAPI.Document, specVersion: string): string {
     const { description, title } = spec.info;
     const baseDocumentText: (string | undefined)[] = [];
     baseDocumentText.push(title);
