@@ -23,7 +23,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError, serializeError } from '@backstage/errors';
+import { InputError, NotFoundError, serializeError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -50,6 +50,16 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
+import { initialize } from 'express-openapi';
+import yaml from 'js-yaml';
+import fs from 'fs';
+import path from 'path';
+
+class ParsingError extends Error {
+  toString() {
+    return `ParsingError: ${this.message}`;
+  }
+}
 
 /**
  * Options used by {@link createRouter}.
@@ -94,26 +104,41 @@ export async function createRouter(
     logger.info('Catalog is running in readonly mode');
   }
 
-  if (refreshService) {
-    router.post('/refresh', async (req, res) => {
-      const refreshOptions: RefreshOptions = req.body;
-      refreshOptions.authorizationToken = getBearerToken(
-        req.header('authorization'),
-      );
+  const validateDependency = (
+    dependency: any,
+    next: (req: express.Request, res: express.Response) => any,
+  ) => {
+    return (req: express.Request, res: express.Response) => {
+      if (!dependency) {
+        console.log('no dependency');
+        throw new NotFoundError(
+          'Dependency Error',
+          'Dependency not set up for this endpoint.',
+        );
+      }
+      return next(req, res);
+    };
+  };
 
-      await refreshService.refresh(refreshOptions);
-      res.status(200).end();
-    });
-  }
+  initialize({
+    app: router as any,
+    // NOTE: If using yaml you can provide a path relative to process.cwd() e.g.
+    // apiDoc: './api-v1/api-doc.yml',
+    apiDoc: yaml.load(
+      fs.readFileSync(path.resolve(__dirname, '../../openapi.yaml'), 'utf-8'),
+    ) as any,
+    operations: {
+      RefreshEntity: validateDependency(refreshService, async (req, res) => {
+        const refreshOptions: RefreshOptions = req.body;
+        refreshOptions.authorizationToken = getBearerToken(
+          req.header('authorization'),
+        );
 
-  if (permissionIntegrationRouter) {
-    router.use(permissionIntegrationRouter);
-  }
-
-  if (entitiesCatalog) {
-    router
-      .get('/entities', async (req, res) => {
-        const { entities, pageInfo } = await entitiesCatalog.entities({
+        await refreshService!.refresh(refreshOptions);
+        res.status(200).end();
+      }),
+      GetEntities: validateDependency(entitiesCatalog, async (req, res) => {
+        const { entities, pageInfo } = await entitiesCatalog!.entities({
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query),
           order: parseEntityOrderParams(req.query),
@@ -131,30 +156,10 @@ export async function createRouter(
 
         // TODO(freben): encode the pageInfo in the response
         res.json(entities);
-      })
-      .get('/entities/by-query', async (req, res) => {
-        const { items, pageInfo, totalItems } =
-          await entitiesCatalog.queryEntities({
-            ...parseQueryEntitiesParams(req.query),
-            authorizationToken: getBearerToken(req.header('authorization')),
-          });
-
-        res.json({
-          items,
-          totalItems,
-          pageInfo: {
-            ...(pageInfo.nextCursor && {
-              nextCursor: encodeCursor(pageInfo.nextCursor),
-            }),
-            ...(pageInfo.prevCursor && {
-              prevCursor: encodeCursor(pageInfo.prevCursor),
-            }),
-          },
-        });
-      })
-      .get('/entities/by-uid/:uid', async (req, res) => {
+      }),
+      GetEntityByUid: validateDependency(entitiesCatalog, async (req, res) => {
         const { uid } = req.params;
-        const { entities } = await entitiesCatalog.entities({
+        const { entities } = await entitiesCatalog!.entities({
           filter: basicEntityFilter({ 'metadata.uid': uid }),
           authorizationToken: getBearerToken(req.header('authorization')),
         });
@@ -162,17 +167,10 @@ export async function createRouter(
           throw new NotFoundError(`No entity with uid ${uid}`);
         }
         res.status(200).json(entities[0]);
-      })
-      .delete('/entities/by-uid/:uid', async (req, res) => {
-        const { uid } = req.params;
-        await entitiesCatalog.removeEntityByUid(uid, {
-          authorizationToken: getBearerToken(req.header('authorization')),
-        });
-        res.status(204).end();
-      })
-      .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
+      }),
+      GetEntityByName: validateDependency(entitiesCatalog, async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const { entities } = await entitiesCatalog.entities({
+        const { entities } = await entitiesCatalog!.entities({
           filter: basicEntityFilter({
             kind: kind,
             'metadata.namespace': namespace,
@@ -186,41 +184,27 @@ export async function createRouter(
           );
         }
         res.status(200).json(entities[0]);
-      })
-      .get(
-        '/entities/by-name/:kind/:namespace/:name/ancestry',
+      }),
+      GetEntityAncestryByName: validateDependency(
+        entitiesCatalog,
         async (req, res) => {
           const { kind, namespace, name } = req.params;
           const entityRef = stringifyEntityRef({ kind, namespace, name });
-          const response = await entitiesCatalog.entityAncestry(entityRef, {
+          const response = await entitiesCatalog!.entityAncestry(entityRef, {
             authorizationToken: getBearerToken(req.header('authorization')),
           });
           res.status(200).json(response);
         },
-      )
-      .post('/entities/by-refs', async (req, res) => {
-        const request = entitiesBatchRequest(req);
-        const token = getBearerToken(req.header('authorization'));
-        const response = await entitiesCatalog.entitiesBatch({
-          entityRefs: request.entityRefs,
-          fields: parseEntityTransformParams(req.query, request.fields),
-          authorizationToken: token,
-        });
-        res.status(200).json(response);
-      })
-      .get('/entity-facets', async (req, res) => {
-        const response = await entitiesCatalog.facets({
+      ),
+      GetEntityFacets: validateDependency(entitiesCatalog, async (req, res) => {
+        const response = await entitiesCatalog!.facets({
           filter: parseEntityFilterParams(req.query),
           facets: parseEntityFacetParams(req.query),
           authorizationToken: getBearerToken(req.header('authorization')),
         });
         res.status(200).json(response);
-      });
-  }
-
-  if (locationService) {
-    router
-      .post('/locations', async (req, res) => {
+      }),
+      CreateLocation: validateDependency(locationService, async (req, res) => {
         const location = await validateRequestBody(req, locationInput);
         const dryRun = yn(req.query.dryRun, { default: false });
 
@@ -234,22 +218,21 @@ export async function createRouter(
           authorizationToken: getBearerToken(req.header('authorization')),
         });
         res.status(201).json(output);
-      })
-      .get('/locations', async (req, res) => {
+      }),
+      GetLocations: validateDependency(locationService, async (req, res) => {
         const locations = await locationService.listLocations({
           authorizationToken: getBearerToken(req.header('authorization')),
         });
         res.status(200).json(locations.map(l => ({ data: l })));
-      })
-
-      .get('/locations/:id', async (req, res) => {
+      }),
+      GetLocation: validateDependency(locationService, async (req, res) => {
         const { id } = req.params;
         const output = await locationService.getLocation(id, {
           authorizationToken: getBearerToken(req.header('authorization')),
         });
         res.status(200).json(output);
-      })
-      .delete('/locations/:id', async (req, res) => {
+      }),
+      DeleteLocation: validateDependency(locationService, async (req, res) => {
         disallowReadonlyMode(readonlyEnabled);
 
         const { id } = req.params;
@@ -257,74 +240,108 @@ export async function createRouter(
           authorizationToken: getBearerToken(req.header('authorization')),
         });
         res.status(204).end();
-      });
-  }
-
-  if (locationAnalyzer) {
-    router.post('/analyze-location', async (req, res) => {
-      const body = await validateRequestBody(
-        req,
-        z.object({
+      }),
+      AnalyzeLocation: validateDependency(locationService, async (req, res) => {
+        const body = await validateRequestBody(
+          req,
+          z.object({
+            location: locationInput,
+            catalogFilename: z.string().optional(),
+          }),
+        );
+        const schema = z.object({
           location: locationInput,
           catalogFilename: z.string().optional(),
-        }),
-      );
-      const schema = z.object({
-        location: locationInput,
-        catalogFilename: z.string().optional(),
-      });
-      const output = await locationAnalyzer.analyzeLocation(schema.parse(body));
-      res.status(200).json(output);
-    });
-  }
-
-  if (orchestrator) {
-    router.post('/validate-entity', async (req, res) => {
-      const bodySchema = z.object({
-        entity: z.unknown(),
-        location: z.string(),
-      });
-
-      let body: z.infer<typeof bodySchema>;
-      let entity: Entity;
-      let location: { type: string; target: string };
-      try {
-        body = await validateRequestBody(req, bodySchema);
-        entity = validateEntityEnvelope(body.entity);
-        location = parseLocationRef(body.location);
-        if (location.type !== 'url')
-          throw new TypeError(
-            `Invalid location ref ${body.location}, only 'url:<target>' is supported, e.g. url:https://host/path`,
-          );
-      } catch (err) {
-        return res.status(400).json({
-          errors: [serializeError(err)],
         });
-      }
+        const output = await locationAnalyzer!.analyzeLocation(
+          schema.parse(body),
+        );
+        res.status(200).json(output);
+      }),
+      ValidateEntity: validateDependency(orchestrator, async (req, res) => {
+        const bodySchema = z.object({
+          entity: z.unknown(),
+          location: z.string(),
+        });
 
-      const processingResult = await orchestrator.process({
-        entity: {
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            annotations: {
-              [ANNOTATION_LOCATION]: body.location,
-              [ANNOTATION_ORIGIN_LOCATION]: body.location,
-              ...entity.metadata.annotations,
+        let body: z.infer<typeof bodySchema>;
+        let entity: Entity;
+        let location: { type: string; target: string };
+        try {
+          body = await validateRequestBody(req, bodySchema);
+          entity = validateEntityEnvelope(body.entity);
+          location = parseLocationRef(body.location);
+          if (location.type !== 'url')
+            throw new TypeError(
+              `Invalid location ref ${body.location}, only 'url:<target>' is supported, e.g. url:https://host/path`,
+            );
+        } catch (err) {
+          return res.status(400).json({
+            errors: [serializeError(err)],
+          });
+        }
+
+        const processingResult = await orchestrator!.process({
+          entity: {
+            ...entity,
+            metadata: {
+              ...entity.metadata,
+              annotations: {
+                [ANNOTATION_LOCATION]: body.location,
+                [ANNOTATION_ORIGIN_LOCATION]: body.location,
+                ...entity.metadata.annotations,
+              },
             },
           },
-        },
-      });
-
-      if (!processingResult.ok)
-        res.status(400).json({
-          errors: processingResult.errors.map(e => serializeError(e)),
         });
-      return res.status(200).end();
-    });
-  }
 
-  router.use(errorHandler());
+        if (!processingResult.ok)
+          res.status(400).json({
+            errors: processingResult.errors.map(e => serializeError(e)),
+          });
+        return res.status(200).end();
+      }),
+      DeleteEntityByUid: validateDependency(
+        entitiesCatalog,
+        async (req, res) => {
+          const { uid } = req.params;
+          await entitiesCatalog!.removeEntityByUid(uid, {
+            authorizationToken: getBearerToken(req.header('authorization')),
+          });
+          res.status(204).end();
+        },
+      ),
+      GetEntitiesByRefs: validateDependency(
+        entitiesCatalog,
+        async (req, res) => {
+          const request = entitiesBatchRequest(req);
+          const token = getBearerToken(req.header('authorization'));
+          const response = await entitiesCatalog!.entitiesBatch({
+            entityRefs: request.entityRefs,
+            fields: parseEntityTransformParams(req.query, request.fields),
+            authorizationToken: token,
+          });
+          res.status(200).json(response);
+        },
+      ),
+    },
+    enableObjectCoercion: true,
+    errorMiddleware: errorHandler(),
+    errorTransformer: (openapiError, ajvError) => {
+      switch (openapiError.errorCode) {
+        case 'type.openapi.requestValidation':
+          throw new InputError(
+            `Invalid field ${openapiError.path}`,
+            new ParsingError(openapiError.message),
+          );
+      }
+      return {};
+    },
+  });
+
+  if (permissionIntegrationRouter) {
+    router.use(permissionIntegrationRouter);
+  }
   return router;
 }
 
