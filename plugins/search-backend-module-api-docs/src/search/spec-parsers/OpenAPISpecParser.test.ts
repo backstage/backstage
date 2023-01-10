@@ -47,59 +47,33 @@ describe('OpenAPISpecParser', () => {
 
   describe('getSpecText', () => {
     it('detects 2.0 spec version', () => {
-      jest.spyOn(parser, 'parseSpec');
-      parser.getSpecText(v2Spec);
-      expect(parser.parseSpec).toHaveBeenCalledWith(expect.anything(), '2.0');
+      const parseSpecSpy = jest.spyOn(
+        OpenAPISpecParser.prototype as any,
+        'parseSpec',
+      );
+      const indexableContent = parser.getSpecText(v2Spec);
+      expect(parseSpecSpy).toHaveBeenCalledWith(expect.anything(), '2.0');
+      expect(indexableContent.length).toBe(511);
     });
 
     it('detects 3.0 spec version', () => {
-      jest.spyOn(parser, 'parseSpec');
-      parser.getSpecText(v3Spec);
-      expect(parser.parseSpec).toHaveBeenCalledWith(expect.anything(), '3.0.0');
+      const parseSpecSpy = jest.spyOn(
+        OpenAPISpecParser.prototype as any,
+        'parseSpec',
+      );
+      const indexableContent = parser.getSpecText(v3Spec);
+      expect(parseSpecSpy).toHaveBeenCalledWith(expect.anything(), '3.0.0');
+      expect(indexableContent.length).toBe(1989);
     });
 
     it('detects 3.1 spec version', () => {
-      jest.spyOn(parser, 'parseSpec');
-      parser.getSpecText(v31Spec);
-      expect(parser.parseSpec).toHaveBeenCalledWith(expect.anything(), '3.1.0');
-    });
-  });
-
-  describe('getSpecVersionText', () => {
-    it('3.0.0 routes to version 3.0.0 Handler', () => {
-      jest.spyOn(parser, 'getV3SpecText');
-      parser.getSpecVersionText(v3Document, '3.0.0');
-      expect(parser.getV3SpecText).toHaveBeenCalledWith(v3Document);
-    });
-
-    it('3.1.0 routes to version 3.0.0 Handler', () => {
-      jest.spyOn(parser, 'getV3SpecText');
-      parser.getSpecVersionText(v31Document, '3.1.0');
-      expect(parser.getV3SpecText).toHaveBeenCalledWith(v31Document);
-    });
-
-    it('routes to version 2.0.0', () => {
-      jest.spyOn(parser, 'getV2SpecText');
-      parser.parseSpec(v2Document, '2.0');
-      expect(parser.getV2SpecText).toHaveBeenCalledWith(v2Document);
-    });
-  });
-
-  describe('getV2SpecText', () => {
-    it('returns expected Parser Text', () => {
-      const indexableStringArray = parser
-        .getV2SpecText(v2Document as OpenAPIV2.Document)
-        .filter(x => x);
-      expect(indexableStringArray.length).toEqual(12);
-    });
-  });
-
-  describe('getV3SpecText', () => {
-    it('returns expected Parser Text', () => {
-      const indexableStringArray = parser
-        .getV3SpecText(v3Document as OpenAPIV3.Document)
-        .filter(x => x);
-      expect(indexableStringArray.length).toEqual(14);
+      const parseSpecSpy = jest.spyOn(
+        OpenAPISpecParser.prototype as any,
+        'parseSpec',
+      );
+      const indexableContent = parser.getSpecText(v31Spec);
+      expect(parseSpecSpy).toHaveBeenCalledWith(expect.anything(), '3.1.0');
+      expect(indexableContent.length).toBe(1989);
     });
   });
 });
