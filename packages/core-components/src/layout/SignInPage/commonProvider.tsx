@@ -34,7 +34,7 @@ const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
   const authApi = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
   const configApi = useApi(configApiRef);
-  const usePopup = configApi.getOptionalBoolean('auth.usePopup');
+  const usePopup = configApi.getOptionalBoolean('auth.usePopup') ?? true;
 
   const handleLogin = async () => {
     try {

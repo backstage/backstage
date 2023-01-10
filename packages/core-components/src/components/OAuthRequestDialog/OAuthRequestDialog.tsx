@@ -63,7 +63,7 @@ export function OAuthRequestDialog(_props: {}) {
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
   const configApi = useApi(configApiRef);
-  const usePopup = configApi.getOptionalBoolean('auth.usePopup');
+  const usePopup = configApi.getOptionalBoolean('auth.usePopup') ?? true;
   const redirectMessage = usePopup
     ? ''
     : 'This will trigger a http redirect to OAuth Login.';

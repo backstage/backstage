@@ -193,6 +193,7 @@ export type AuthProviderInfo = {
   id: string;
   title: string;
   icon: IconComponent;
+  provider_id?: string;
 };
 
 // @public
