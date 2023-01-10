@@ -27,8 +27,8 @@ import {
 } from '@backstage/config-loader';
 import { AppConfig, Config, ConfigReader } from '@backstage/config';
 import { getPackages } from '@manypkg/get-packages';
-
-import { isValidUrl } from './urls';
+import { ObservableConfigProxy } from './ObservableConfigProxy';
+import { isValidUrl } from '../lib/urls';
 
 import { setRootLoggerRedactionList } from './logging/rootLogger';
 
