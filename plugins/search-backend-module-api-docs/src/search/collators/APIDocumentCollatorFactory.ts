@@ -89,7 +89,7 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
     return Readable.from(this.execute());
   }
 
-  async *execute(): AsyncGenerator<APIDocument> {
+  private async *execute(): AsyncGenerator<APIDocument> {
     const { token } = await this.tokenManager.getToken();
 
     let entitiesRetrieved = 0;

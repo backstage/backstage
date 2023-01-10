@@ -44,7 +44,7 @@ export type APIDocumentCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
   batchSize?: number;
   tokenManager: TokenManager;
-  specHandler?: SpecHandler;
+  specParsers?: SpecParser[];
   logger: Logger;
 };
 
@@ -64,7 +64,7 @@ export class OpenAPISpecParser implements SpecParser {
   // (undocumented)
   parseSpec(spec: OpenAPI.Document, specVersion: string): string;
   // (undocumented)
-  specType: string;
+  readonly specType: string;
 }
 
 // @public (undocumented)
@@ -80,9 +80,9 @@ export class SpecHandler {
 // @public (undocumented)
 export interface SpecParser {
   // (undocumented)
-  getSpecText(specDefinition: any): string;
+  getSpecText(specDefinition: string): string;
   // (undocumented)
-  specType: string;
+  readonly specType: string;
 }
 
 // (No @packageDocumentation comment for this package)
