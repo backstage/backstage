@@ -14,48 +14,28 @@
  * limitations under the License.
  */
 
-import { createRootLogger } from '@backstage/backend-common';
 import {
   createServiceFactory,
-  LoggerService,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { LogMeta } from '@backstage/backend-plugin-api';
-import { Logger as WinstonLogger } from 'winston';
-
-class BackstageLogger implements LoggerService {
-  static fromWinston(logger: WinstonLogger): BackstageLogger {
-    return new BackstageLogger(logger);
-  }
-
-  private constructor(private readonly winston: WinstonLogger) {}
-
-  error(message: string, meta?: LogMeta): void {
-    this.winston.error(message, meta);
-  }
-
-  warn(message: string, meta?: LogMeta): void {
-    this.winston.warn(message, meta);
-  }
-
-  info(message: string, meta?: LogMeta): void {
-    this.winston.info(message, meta);
-  }
-
-  debug(message: string, meta?: LogMeta): void {
-    this.winston.debug(message, meta);
-  }
-
-  child(meta: LogMeta): LoggerService {
-    return new BackstageLogger(this.winston.child(meta));
-  }
-}
+import { WinstonLogger } from '../../../logging';
+import { transports, format } from 'winston';
 
 /** @public */
 export const rootLoggerFactory = createServiceFactory({
   service: coreServices.rootLogger,
   deps: {},
   async factory() {
-    return BackstageLogger.fromWinston(createRootLogger());
+    return WinstonLogger.create({
+      meta: {
+        service: 'backstage',
+      },
+      level: process.env.LOG_LEVEL || 'info',
+      format:
+        process.env.NODE_ENV === 'production'
+          ? format.json()
+          : WinstonLogger.colorFormat(),
+      transports: [new transports.Console()],
+    });
   },
 });

@@ -20,18 +20,97 @@ import {
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { Format, TransformableInfo } from 'logform';
-import { Logger, format } from 'winston';
+import {
+  Logger,
+  format,
+  createLogger,
+  transports,
+  transport as Transport,
+} from 'winston';
 
 /**
  * @public
  */
+export interface WinstonLoggerOptions {
+  meta?: LogMeta;
+  level: string;
+  format: Format;
+  transports: Transport[];
+}
+
+/**
+ * A {@link @backstage/backend-plugin-api#LoggerService} implementation based on winston.
+ *
+ * @public
+ */
 export class WinstonLogger implements RootLoggerService {
   #winston: Logger;
+  #addRedactions?: RootLoggerService['addRedactions'];
 
-  static fromWinston(logger: Logger): WinstonLogger {
-    return new WinstonLogger(logger);
+  /**
+   * Creates a {@link WinstonLogger} instance.
+   */
+  static create(options: WinstonLoggerOptions): WinstonLogger {
+    const redacter = WinstonLogger.redacter();
+
+    let logger = createLogger({
+      level: options.level,
+      format: format.combine(redacter.format, options.format),
+      transports: options.transports ?? new transports.Console(),
+    });
+    if (options.meta) {
+      logger = logger.child(options.meta);
+    }
+
+    return new WinstonLogger(logger, redacter.add);
   }
 
+  /**
+   * Creates a winston log formatter for redacting secrets.
+   */
+  static redacter(): { format: Format; add: (redactions: string[]) => void } {
+    const redactionSet = new Set<string>();
+
+    let redactionPattern: RegExp | undefined = undefined;
+
+    return {
+      format: format((info: TransformableInfo) => {
+        if (redactionPattern && typeof info.message === 'string') {
+          info.message = info.message.replace(redactionPattern, '[REDACTED]');
+        }
+        return info;
+      })(),
+      add(newRedactions: string[]) {
+        let changed = false;
+        for (const redaction of newRedactions) {
+          // Exclude secrets that are empty or just one character in length. These
+          // typically mean that you are running local dev or tests, or using the
+          // --lax flag which sets things to just 'x'.
+          if (redaction.length <= 1) {
+            continue;
+          }
+          if (!redactionSet.has(redaction)) {
+            redactionSet.add(redaction);
+            changed = true;
+          }
+        }
+        if (changed) {
+          if (redactionSet.size > 0) {
+            redactionPattern = new RegExp(
+              `(${Array.from(redactionSet).join('|')})`,
+              'g',
+            );
+          } else {
+            redactionPattern = undefined;
+          }
+        }
+      },
+    };
+  }
+
+  /**
+   * Creates a pretty printed winston log formatter.
+   */
   static colorFormat(): Format {
     const colorizer = format.colorize();
 
@@ -63,8 +142,12 @@ export class WinstonLogger implements RootLoggerService {
     );
   }
 
-  constructor(winston: Logger) {
+  private constructor(
+    winston: Logger,
+    addRedactions?: RootLoggerService['addRedactions'],
+  ) {
     this.#winston = winston;
+    this.#addRedactions = addRedactions;
   }
 
   error(message: string, meta?: LogMeta): void {
@@ -85,5 +168,9 @@ export class WinstonLogger implements RootLoggerService {
 
   child(meta: LogMeta): LoggerService {
     return new WinstonLogger(this.#winston.child(meta));
+  }
+
+  addRedactions(redactions: string[]): void {
+    this.#addRedactions?.(redactions);
   }
 }

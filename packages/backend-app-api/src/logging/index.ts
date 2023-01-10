@@ -15,3 +15,4 @@
  */
 
 export { WinstonLogger } from './WinstonLogger';
+export type { WinstonLoggerOptions } from './WinstonLogger';
