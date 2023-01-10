@@ -26,14 +26,12 @@ import {
   createLoader,
   EnvelopPlugins,
 } from '@backstage/plugin-graphql-common';
-import { Config } from '@backstage/config';
 import helmet from 'helmet';
 import { CatalogClient } from '@backstage/catalog-client';
 
 /** @public */
 export interface RouterOptions {
   logger: Logger;
-  config: Config;
   catalog: CatalogClient;
   modules?: Module[];
   plugins?: EnvelopPlugins;
@@ -50,6 +48,7 @@ export async function createRouter(
   });
   const { createApolloExecutor, schema } = application;
 
+  // TODO Update Apollo
   const server = new ApolloServer({
     schema,
     executor: createApolloExecutor(),
