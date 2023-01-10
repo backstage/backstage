@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { BackendLifecycleImpl } from './rootLifecycleService';
+import { BackendLifecycleImpl } from './rootLifecycleFactory';
 
 describe('lifecycleService', () => {
   it('should execute registered shutdown hook', async () => {
