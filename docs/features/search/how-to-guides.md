@@ -114,6 +114,63 @@ of the `SearchType` component.
 
 > Check out the documentation around [integrating search into plugins](../../plugins/integrating-search-into-plugins.md#create-a-collator) for how to create your own collator.
 
+## Host to Index API Definition Documents
+
+If you are implementing the [API Docs Plugin](https://roadie.io/backstage/plugins/api-docs/) for rendering API definitions and would
+like the ability to search definition content via core search, you can do so by implementing `plugin-search-backend-module-api-docs`.
+
+1. Install the API docs backend plugin
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-search-backend-module-api-docs
+```
+
+2. Add a `APIDocumentCollatorFactory` to the IndexBuilder
+
+```typescript
+import { APIDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-api-docs';
+```
+
+```typescript
+indexBuilder.addCollator({
+  schedule,
+  factory: APIDocumentCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
+  }),
+});
+```
+
+Congrats! You can now search the API specs registered in Backstage with the core search plugin.
+
+If you would like to add a category to the main search page's (/search) Result Type Facet you may add a type with `value` set to `api-definition` to the
+`<SearchType.Accordion>` components `types` prop:
+
+```tsx
+<SearchType.Accordion
+  name="Result Type"
+  defaultValue="software-catalog"
+  types={[
+    {
+      value: 'software-catalog',
+      name: 'Software Catalog',
+      icon: <CatalogIcon />,
+    },
+    {
+      value: 'techdocs',
+      name: 'Documentation',
+      icon: <DocsIcon />,
+    },
+    {
+      value: 'api-definition',
+      name: 'APIs',
+      icon: <ExtensionIcon />,
+    },
+  ]}
+/>
+```
+
 ## How to limit what can be searched in the Software Catalog
 
 The Software Catalog includes a wealth of information about the components,
