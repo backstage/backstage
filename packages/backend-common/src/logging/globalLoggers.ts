@@ -26,3 +26,32 @@ export function getVoidLogger(): winston.Logger {
     transports: [new winston.transports.Console({ silent: true })],
   });
 }
+
+let rootLogger: winston.Logger = createRootLogger();
+
+/**
+ * Gets the current root logger.
+ *
+ * @public
+ */
+export function getRootLogger(): winston.Logger {
+  return rootLogger;
+}
+
+/**
+ * Sets a completely custom default "root" logger.
+ *
+ * @remarks
+ *
+ * This is the logger instance that will be the foundation for all other logger
+ * instances passed to plugins etc, in a given backend.
+ *
+ * Only use this if you absolutely need to make a completely custom logger.
+ * Normally if you want to make light adaptations to the default logger
+ * behavior, you would instead call {@link createRootLogger}.
+ *
+ * @public
+ */
+export function setRootLogger(newLogger: winston.Logger) {
+  rootLogger = newLogger;
+}

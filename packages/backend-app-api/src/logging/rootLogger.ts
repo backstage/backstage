@@ -20,35 +20,7 @@ import { LoggerOptions } from 'winston';
 import { coloredFormat } from './formats';
 import { escapeRegExp } from '../lib/escapeRegExp';
 
-let rootLogger: winston.Logger;
 let redactionRegExp: RegExp | undefined;
-
-/**
- * Gets the current root logger.
- *
- * @public
- */
-export function getRootLogger(): winston.Logger {
-  return rootLogger;
-}
-
-/**
- * Sets a completely custom default "root" logger.
- *
- * @remarks
- *
- * This is the logger instance that will be the foundation for all other logger
- * instances passed to plugins etc, in a given backend.
- *
- * Only use this if you absolutely need to make a completely custom logger.
- * Normally if you want to make light adaptations to the default logger
- * behavior, you would instead call {@link createRootLogger}.
- *
- * @public
- */
-export function setRootLogger(newLogger: winston.Logger) {
-  rootLogger = newLogger;
-}
 
 export function setRootLoggerRedactionList(redactionList: string[]) {
   // Exclude secrets that are empty or just one character in length. These
@@ -127,5 +99,3 @@ export function createRootLogger(
 
   return logger;
 }
-
-rootLogger = createRootLogger();
