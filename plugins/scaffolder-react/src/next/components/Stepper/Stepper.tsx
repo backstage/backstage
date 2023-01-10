@@ -59,6 +59,7 @@ export type StepperProps = {
   extensions: NextFieldExtensionOptions<any, any>[];
   templateName?: string;
   FormProps?: FormProps;
+  initialState?: Record<string, JsonValue>;
 
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
 };
@@ -77,7 +78,7 @@ export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
-  const [formState, setFormState] = useFormDataFromQuery();
+  const [formState, setFormState] = useFormDataFromQuery(props.initialState);
 
   const [errors, setErrors] = useState<
     undefined | Record<string, FieldValidation>

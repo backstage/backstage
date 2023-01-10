@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
 import qs from 'qs';
 import { useState } from 'react';
 
@@ -21,8 +22,14 @@ import { useState } from 'react';
  * This hook is used to get the formData from the query string.
  * @alpha
  */
-export const useFormDataFromQuery = () => {
+export const useFormDataFromQuery = (
+  initialState?: Record<string, JsonValue>,
+) => {
   return useState<Record<string, any>>(() => {
+    if (initialState) {
+      return initialState;
+    }
+
     const query = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
     });
