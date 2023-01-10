@@ -17,5 +17,4 @@ export {
   useTemplateSecrets,
   SecretsContextProvider,
   type ScaffolderUseTemplateSecrets,
-  type SecretsContextContents,
 } from './SecretsContext';

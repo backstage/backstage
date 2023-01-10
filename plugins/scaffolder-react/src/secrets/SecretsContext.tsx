@@ -26,9 +26,8 @@ import React, {
 
 /**
  * The contents of the `SecretsContext`
- * @public
  */
-export type SecretsContextContents = {
+type SecretsContextContents = {
   secrets: Record<string, string>;
   setSecrets: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 };
