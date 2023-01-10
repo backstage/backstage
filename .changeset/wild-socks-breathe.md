@@ -7,8 +7,6 @@
   ```
   createScaffolderFieldExtension
   ScaffolderFieldExtensions
-  rootRouteRef
-  selectedTemplateRouteRef
   useTemplateSecrets
   scaffolderApiRef
   ScaffolderApi
@@ -42,7 +40,4 @@
   NextCustomFieldValidator
   NextFieldExtensionComponentProps
   NextFieldExtensionOptions
-  nextRouteRef
-  nextScaffolderTaskRouteRef
-  nextSelectedTemplateRouteRef
   ```
