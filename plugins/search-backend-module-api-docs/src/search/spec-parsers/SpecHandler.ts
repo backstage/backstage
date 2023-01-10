@@ -17,7 +17,7 @@
 /** @public */
 export interface SpecParser {
   specType: string;
-  getSpecText(specDefinition: any): string;
+  getSpecText(specDefinition: string): string;
 }
 
 /** @public */
