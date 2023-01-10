@@ -32,7 +32,7 @@ We plan to add these over time. If you're interested in contributing to this plu
 
 ## Getting started
 
-You can install the GraphQL Plugin using the same process that you would use to install other backend Backtstage plugins.
+You can install the GraphQL Plugin using the same process that you would use to install other backend Backstage plugins.
 
 1. Run `yarn add @frontside/backstage-plugin-graphql` in `packages/backend`
 2. Create `packages/backend/src/plugins/graphql.ts` file with the following content
@@ -188,7 +188,7 @@ schema: 'src/schema.ts'
 
 ### Directives API
 
-Every GraphQL API consists of two things - a schema and resolvers. The schema describes relationships and fields that you can retrieve from the API. The resolvers describe how you retrieve the data described in the schema. The Backstage GraphQL Plugin provides several directives to help write a GraphQL schema and resolvers for Backstage. These directives take into account some specificities for Backstage APIs to make it easier to write schema and implement resolvers. This section will explain each directive and the assumptions they make about the developer's intention.
+Every GraphQL API consists of two things - a schema and resolvers. The schema describes relationships and fields that you can retrieve from the API. The resolvers describe how you retrieve the data described in the schema. The Backstage GraphQL Plugin provides several directives to help write a GraphQL schema and resolvers for Backstage. These directives take into account some specifics for Backstage APIs to make it easier to write schema and implement resolvers. This section will explain each directive and the assumptions they make about the developer's intention.
 
 #### `@field`
 
@@ -200,7 +200,7 @@ Every GraphQL API consists of two things - a schema and resolvers. The schema de
 
 #### `@extend`
 
-`@extend` directive allows you to inherit fields from another entity. We created this directive to make it easier to implement interfaces that extend from `Entity` and other interfaces. It makes GraphQL types similar to extending types in TypeScript. In TypeScript, when a class extends another class, the child class automatically inherits properties and methods of the parent class. This functionality doesn't have an equivalent in GraphQL. Without this directive, the `Component` interface in GraphQL would need to reimplement many fields that are defined on Entity which leads to lots of duplication. Using this directive, you can easily create a new interface that includes all of the properties of the parent. For example, if you wanted to create a `Repository` interface, you can do the following,
+`@extend` directive allows you to inherit fields from another entity. We created this directive to make it easier to implement interfaces that extend from `Entity` and other interfaces. It makes GraphQL types similar to extending types in TypeScript. In TypeScript, when a class extends another class, the child class automatically inherits properties and methods of the parent class. This functionality doesn't have an equivalent in GraphQL. Without this directive, the `Component` interface in GraphQL would need to re-implement many fields that are defined on Entity which leads to lots of duplication. Using this directive, you can easily create a new interface that includes all of the properties of the parent. For example, if you wanted to create a `Repository` interface, you can do the following,
 
 ```graphql
 interface Repository
