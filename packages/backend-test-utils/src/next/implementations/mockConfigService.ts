@@ -18,13 +18,14 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { AppConfig, ConfigReader } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 /** @public */
 export const mockConfigFactory = createServiceFactory({
   service: coreServices.config,
   deps: {},
-  async factory(_, options?: { config?: AppConfig }) {
-    return new ConfigReader(options?.config);
+  async factory(_, options?: { data?: JsonObject }) {
+    return new ConfigReader(options?.data, 'mock-config');
   },
 });

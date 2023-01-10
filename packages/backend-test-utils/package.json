@@ -39,6 +39,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/types": "workspace:^",
     "better-sqlite3": "^8.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
