@@ -62,7 +62,7 @@ export type GeneratorRunOptions = {
   etag?: string;
   logger: Logger;
   logStream?: Writable;
-  siteName?: string;
+  siteOptions?: { name?: string };
 };
 
 /**
