@@ -18,7 +18,6 @@ import { OpenAPIV3_1, OpenAPIV3, OpenAPIV2 } from 'openapi-types';
 import { OpenAPISpecParser } from './OpenAPISpecParser';
 import { readFileSync } from 'fs';
 import * as path from 'path';
-import { parse } from 'yaml';
 
 describe('OpenAPISpecParser', () => {
   const parser = new OpenAPISpecParser();
@@ -27,19 +26,16 @@ describe('OpenAPISpecParser', () => {
     path.resolve(__dirname, './test_specs/petstore_v3.yml'),
     'utf-8',
   );
-  const v3Document: OpenAPIV3.Document = parse(v3Spec);
 
   const v31Spec = readFileSync(
     path.resolve(__dirname, './test_specs/petstore_v31.yml'),
     'utf-8',
   );
-  const v31Document: OpenAPIV3_1.Document = parse(v31Spec);
 
   const v2Spec = readFileSync(
     path.resolve(__dirname, './test_specs/petstore_v2.yml'),
     'utf-8',
   );
-  const v2Document: OpenAPIV2.Document = parse(v2Spec);
 
   it('has expected type', () => {
     expect(parser.specType).toBe('openapi');
