@@ -57,7 +57,7 @@ export function registerCommands(program: Command) {
     .option(
       '--site-name',
       'Name for site when using default MkDocs config',
-      'Table of Contents',
+      'Documentation Site',
     )
     .option('-v --verbose', 'Enable verbose output.', false)
     .option(
@@ -232,7 +232,7 @@ export function registerCommands(program: Command) {
     .option(
       '--site-name',
       'Name for site when using default MkDocs config',
-      'Table of Contents',
+      'Documentation Site',
     )
     .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)
@@ -263,7 +263,7 @@ export function registerCommands(program: Command) {
     .option(
       '--site-name',
       'Name for site when using default MkDocs config',
-      'Table of Contents',
+      'Documentation Site',
     )
     .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)

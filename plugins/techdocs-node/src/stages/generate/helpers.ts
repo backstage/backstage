@@ -154,8 +154,8 @@ export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
  * Generates a mkdocs.yml configuration file
  *
  * @param inputDir - base dir to where the mkdocs.yml file will be created
- * @param siteName - name of site to be used in mkdocs.yml for the
- * required `site_name` property, default value is "Table of Contents"
+ * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
+ * required `site_name` property, default value is "Documentation Site"
  */
 export const generateMkdocsYml = async (
   inputDir: string,
@@ -168,7 +168,7 @@ export const generateMkdocsYml = async (
     // minimum mkdocs.yml file
 
     const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
-    const defaultSiteName = siteOptions?.name ?? 'Table of Contents';
+    const defaultSiteName = siteOptions?.name ?? 'Documentation Site';
     const defaultMkdocsContent =
       `site_name: ${defaultSiteName}\n` +
       'docs_dir: docs\n' +
@@ -186,10 +186,9 @@ export const generateMkdocsYml = async (
  * depending on which is present (MkDocs supports both as of v1.2.2).
  * @public
  *
- * @param inputDir - base dir to be searched for either an mkdocs.yml or
- *   mkdocs.yaml file.
- * @param siteName - name of site to be used in mkdocs.yml for the
- * required `site_name` property, default value is "Table of Contents"
+ * @param inputDir - base dir to be searched for either an mkdocs.yml or mkdocs.yaml file.
+ * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
+ * required `site_name` property, default value is "Documentation Site"
  */
 export const getMkdocsYml = async (
   inputDir: string,
