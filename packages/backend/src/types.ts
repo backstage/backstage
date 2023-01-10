@@ -27,11 +27,13 @@ import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { EventBroker } from '@backstage/plugin-events-node';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export type PluginEnvironment = {
   logger: Logger;
   cache: PluginCacheManager;
   database: PluginDatabaseManager;
+  client: CatalogClient;
   config: Config;
   reader: UrlReader;
   discovery: PluginEndpointDiscovery;
