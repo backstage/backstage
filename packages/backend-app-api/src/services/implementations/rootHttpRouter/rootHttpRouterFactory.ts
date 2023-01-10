@@ -72,17 +72,18 @@ export const rootHttpRouterFactory = createServiceFactory({
   service: coreServices.rootHttpRouter,
   deps: {
     config: coreServices.config,
-    logger: coreServices.rootLogger,
+    rootLogger: coreServices.rootLogger,
     lifecycle: coreServices.rootLifecycle,
   },
   async factory(
-    { config, logger, lifecycle },
+    { config, rootLogger, lifecycle },
     {
       indexPath,
       configure = defaultConfigure,
     }: RootHttpRouterFactoryOptions = {},
   ) {
     const router = new RestrictedIndexedRouter(indexPath ?? '/api/app');
+    const logger = rootLogger.child({ service: 'rootHttpRouter' });
 
     const app = express();
 
