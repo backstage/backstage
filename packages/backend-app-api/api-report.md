@@ -222,22 +222,6 @@ export type ServiceOrExtensionPoint<T = unknown> =
   | ExtensionPoint<T>
   | ServiceRef<T>;
 
-// @public
-export function startHttpServer(
-  listener: RequestListener,
-  options: StartHttpServerOptions,
-): Promise<void>;
-
-// @public
-export interface StartHttpServerOptions {
-  // (undocumented)
-  config: ConfigService;
-  // (undocumented)
-  lifecycle: RootLifecycleService;
-  // (undocumented)
-  logger: RootLoggerService;
-}
-
 // @public (undocumented)
 export const tokenManagerFactory: (
   options?: undefined,

@@ -23,8 +23,6 @@ export type {
 } from './MiddlewareFactory';
 export { readCorsOptions } from './readCorsOptions';
 export { readHelmetOptions } from './readHelmetOptions';
-export { startHttpServer } from './startHttpServer';
-export type { StartHttpServerOptions } from './startHttpServer';
 export type {
   ExtendedHttpServer,
   HttpServerCertificateOptions,

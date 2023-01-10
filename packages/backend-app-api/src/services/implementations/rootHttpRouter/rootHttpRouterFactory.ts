@@ -22,7 +22,11 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import express, { RequestHandler, Express } from 'express';
-import { MiddlewareFactory, startHttpServer } from '../../../http';
+import {
+  createHttpServer,
+  MiddlewareFactory,
+  readHttpServerOptions,
+} from '../../../http';
 import { RestrictedIndexedRouter } from './RestrictedIndexedRouter';
 
 /**
@@ -93,7 +97,20 @@ export const rootHttpRouterFactory = createServiceFactory({
       lifecycle,
     });
 
-    await startHttpServer(app, { config, logger, lifecycle });
+    const server = await createHttpServer(
+      app,
+      readHttpServerOptions(config.getOptionalConfig('backend')),
+      { logger },
+    );
+
+    lifecycle.addShutdownHook({
+      async fn() {
+        await server.stop();
+      },
+      labels: { service: 'rootHttpRouter' },
+    });
+
+    await server.start();
 
     return router;
   },
