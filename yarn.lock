@@ -9416,14 +9416,14 @@ __metadata:
   linkType: hard
 
 "@google-cloud/firestore@npm:^6.0.0":
-  version: 6.4.1
-  resolution: "@google-cloud/firestore@npm:6.4.1"
+  version: 6.4.2
+  resolution: "@google-cloud/firestore@npm:6.4.2"
   dependencies:
     fast-deep-equal: ^3.1.1
     functional-red-black-tree: ^1.0.1
-    google-gax: ^3.5.1
+    google-gax: ^3.5.2
     protobufjs: ^7.0.0
-  checksum: 7bd79d7444cefd8ffe8f768c28dbd1f0b32628ff5b611b4bdaa9b415428436f5368a8e258a002948d084381762b64501a574828c51c5cea7c054cc604f93b6d6
+  checksum: c259f59905d4939f0b1fff2fdfa3db38a0436454af9e4a8939ea951ee700d5f801375ed090e77f610fbf3f02db1aeba9d70437eb6a8ca6f0ba2088c8964c58d0
   languageName: node
   linkType: hard
 
@@ -24012,7 +24012,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-gax@npm:^3.5.1, google-gax@npm:^3.5.2":
+"google-gax@npm:^3.5.2":
   version: 3.5.2
   resolution: "google-gax@npm:3.5.2"
   dependencies:
