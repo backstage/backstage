@@ -16,6 +16,7 @@
 import { resolvePackagePath } from '@backstage/backend-common';
 import { loadFilesSync } from '@graphql-tools/load-files';
 
+/** @public */
 export const catalogSchema = loadFilesSync(
   resolvePackagePath('@backstage/plugin-graphql-catalog', 'src/**/*.graphql'),
 );
