@@ -346,6 +346,7 @@ export type StepperProps = {
   extensions: NextFieldExtensionOptions<any, any>[];
   templateName?: string;
   FormProps?: FormProps;
+  initialState?: Record<string, JsonValue>;
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
 };
 
@@ -409,10 +410,9 @@ export const useCustomFieldExtensions: <
 ) => TComponentDataType[];
 
 // @alpha
-export const useFormDataFromQuery: () => [
-  Record<string, any>,
-  Dispatch<SetStateAction<Record<string, any>>>,
-];
+export const useFormDataFromQuery: (
+  initialState?: Record<string, JsonValue>,
+) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
 
 // @alpha
 export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
