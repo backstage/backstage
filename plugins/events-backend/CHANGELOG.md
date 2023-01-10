@@ -1,5 +1,16 @@
 # @backstage/plugin-events-backend
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/plugin-events-node@0.2.1-next.1
+  - @backstage/config@1.0.6-next.0
+
 ## 0.2.1-next.0
 
 ### Patch Changes

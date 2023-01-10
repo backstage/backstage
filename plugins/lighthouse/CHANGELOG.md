@@ -1,5 +1,18 @@
 # @backstage/plugin-lighthouse
 
+## 0.3.14-next.2
+
+### Patch Changes
+
+- 2f1b283de2: Fixed bug in Lighthouse Plugin where audit list item and create audit button navigated to a wrong URL.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/plugin-catalog-react@1.2.4-next.2
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/theme@0.2.16
+
 ## 0.3.14-next.1
 
 ### Patch Changes
