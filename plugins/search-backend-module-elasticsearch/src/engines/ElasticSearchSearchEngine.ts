@@ -180,6 +180,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
    * import { Client } from '@elastic/elasticsearch';
    *
    * const client = searchEngine.newClient<Client>(options => {
+   *   // This typeguard ensures options are compatible with either OpenSearch
+   *   // or Elasticsearch client constructors.
    *   if (!isOpenSearchCompatible(options)) {
    *     return new Client(options);
    *   }
