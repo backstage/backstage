@@ -1,9 +1,0 @@
----
-title: Azure Resources
-author: Martin Ehrnst
-authorUrl: https://vipps.no
-category: Infrastructure
-description: A plugin showing Azure resource groups and security recommendations in relation to an entity in the catalog.
-documentation: https://github.com/vippsas/backstage-azure-resource-frontend
-npmPackageName: '@vippsno/plugin-azure-resources'
-addedDate: '2022-09-05'

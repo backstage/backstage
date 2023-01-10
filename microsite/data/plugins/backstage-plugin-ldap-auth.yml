@@ -1,9 +1,0 @@
----
-title: LDAP Auth
-author: ImmobiliareLabs
-authorUrl: https://github.com/immobiliare
-category: Authentication
-description: Authenticate users to an external LDAP server
-documentation: https://github.com/immobiliare/backstage-plugin-ldap-auth/blob/main/README.md
-iconUrl: https://avatars.githubusercontent.com/u/10090828
-npmPackageName: '@immobiliarelabs/backstage-plugin-ldap-auth'
