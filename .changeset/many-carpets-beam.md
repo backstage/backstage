@@ -11,4 +11,4 @@
 '@backstage/plugin-xcmetrics': patch
 ---
 
-ESLint rule to forbid <p> in favor of MUI <Typography>
+Small updates to some paragraph components to ensure theme typography properties are inherited correctly.
