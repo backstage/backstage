@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { MiddlewareFactory } from '@backstage/backend-app-api';
 import { RequestHandler } from 'express';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import morgan from 'morgan';
 import { getRootLogger } from '../logging';
+import { ConfigReader } from '@backstage/config';
 
 /**
  * Logs incoming requests.
@@ -27,15 +28,8 @@ import { getRootLogger } from '../logging';
  * @returns An Express request handler
  */
 export function requestLoggingHandler(logger?: LoggerService): RequestHandler {
-  const actualLogger = (logger || getRootLogger()).child({
-    type: 'incomingRequest',
-  });
-
-  return morgan('combined', {
-    stream: {
-      write(message: string) {
-        actualLogger.info(message.trimEnd());
-      },
-    },
-  });
+  return MiddlewareFactory.create({
+    config: new ConfigReader({}),
+    logger: logger ?? getRootLogger(),
+  }).logging();
 }

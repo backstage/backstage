@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage backend apps.
- *
- * @packageDocumentation
- */
-
-export * from './http';
-export * from './wiring';
-export * from './services/implementations';
+export { readHttpServerOptions } from './config';
+export { createHttpServer } from './createHttpServer';
+export { MiddlewareFactory } from './MiddlewareFactory';
+export type {
+  MiddlewareFactoryErrorOptions,
+  MiddlewareFactoryOptions,
+} from './MiddlewareFactory';
+export { readCorsOptions } from './readCorsOptions';
+export { readHelmetOptions } from './readHelmetOptions';
+export type {
+  ExtendedHttpServer,
+  HttpServerCertificateOptions,
+  HttpServerOptions,
+} from './types';
