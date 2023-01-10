@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { OpenAPIV3_1, OpenAPIV3, OpenAPIV2 } from 'openapi-types';
 import { OpenAPISpecParser } from './OpenAPISpecParser';
 import { readFileSync } from 'fs';
 import * as path from 'path';

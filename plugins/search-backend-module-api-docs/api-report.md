@@ -10,9 +10,6 @@ import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
-import { OpenAPI } from 'openapi-types';
-import { OpenAPIV2 } from 'openapi-types';
-import { OpenAPIV3 } from 'openapi-types';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
 import { TokenManager } from '@backstage/backend-common';
@@ -50,17 +47,6 @@ export type APIDocumentCollatorFactoryOptions = {
 export class OpenAPISpecParser implements SpecParser {
   // (undocumented)
   getSpecText(specDefinition: string): string;
-  // (undocumented)
-  getSpecVersionText(
-    spec: OpenAPI.Document,
-    specVersion: string,
-  ): (string | undefined)[];
-  // (undocumented)
-  getV2SpecText(spec: OpenAPIV2.Document): (string | undefined)[];
-  // (undocumented)
-  getV3SpecText(spec: OpenAPIV3.Document): (string | undefined)[];
-  // (undocumented)
-  parseSpec(spec: OpenAPI.Document, specVersion: string): string;
   // (undocumented)
   readonly specType: string;
 }
