@@ -1,5 +1,19 @@
 # @backstage/plugin-user-settings
 
+## 0.6.2-next.2
+
+### Patch Changes
+
+- d61f622db8: Refactor for the feature flag filter functionality
+- bca8e8b393: Feature flags now accept a description property.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/core-app-api@1.4.0-next.1
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+
 ## 0.6.2-next.1
 
 ### Patch Changes

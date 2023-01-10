@@ -1,5 +1,29 @@
 # @backstage/backend-app-api
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 02b119ff93: **BREAKING**: The `httpRouterFactory` now accepts a `getPath` option rather than `indexPlugin`. To set up custom index path, configure the new `rootHttpRouterFactory` with a custom `indexPath` instead.
+
+  Added an implementation for the new `rootHttpRouterServiceRef`.
+
+### Patch Changes
+
+- ecc6bfe4c9: Use new `ServiceFactoryOrFunction` type.
+- b99c030f1b: Moved over implementation of the root HTTP service from `@backstage/backend-common`, and replaced the `middleware` option with a `configure` callback option.
+- 150a7dd790: An error will now be thrown if attempting to override the plugin metadata service.
+- 015a6dced6: The `createSpecializedBackend` function will now throw an error if duplicate service implementations are provided.
+- e3fca10038: Tweaked the plugin logger to use `plugin` as the label for the plugin ID, rather than `pluginId`.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/backend-tasks@0.4.1-next.1
+  - @backstage/plugin-permission-node@0.7.3-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+
 ## 0.2.5-next.0
 
 ### Patch Changes

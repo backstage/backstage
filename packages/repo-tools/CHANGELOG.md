@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.1.1-next.2
+
+### Patch Changes
+
+- 76fc6f7ec8: Updates Api-extractor and api-documenter version
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/errors@1.1.4
+
 ## 0.1.1-next.1
 
 ### Patch Changes
