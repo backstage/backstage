@@ -19,11 +19,15 @@ import { createApplication, Module } from 'graphql-modules';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { Core } from './core/core';
 import { mapDirectives } from './mapDirectives';
-import { EntityRef, EnvelopPlugins } from './types';
+import { EnvelopPlugins } from './types';
 import { useDataLoader } from '@envelop/dataloader';
 import DataLoader from 'dataloader';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 
+/** @public */
 export type createGraphQLAppOptions<
   Plugins extends EnvelopPlugins,
   Loader extends DataLoader<any, any>,
@@ -31,13 +35,14 @@ export type createGraphQLAppOptions<
   loader: () => Loader;
   plugins?: Plugins;
   modules?: Module[];
-  refToId?: (ref: EntityRef) => string;
+  refToId?: (ref: CompoundEntityRef | string) => string;
 };
 
-const defaultRefToId = (ref: EntityRef) => {
+const defaultRefToId = (ref: CompoundEntityRef | string) => {
   return typeof ref === 'string' ? ref : stringifyEntityRef(ref);
 };
 
+/** @public */
 export function createGraphQLApp<
   Plugins extends EnvelopPlugins,
   Loader extends DataLoader<any, any>,
