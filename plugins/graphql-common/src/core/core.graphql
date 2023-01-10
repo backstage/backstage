@@ -1,13 +1,27 @@
-directive @field(at: FieldAtArgument!, default: FieldDefaultArgument) on FIELD_DEFINITION
-directive @relation(name: String, nodeType: String, kind: String) on FIELD_DEFINITION
-directive @extend(interface: String, generatedTypeName: String, when: ExtendWhenArgument, is: ExtendIsArgument) on INTERFACE
+directive @field(
+  at: FieldAtArgument!
+  default: FieldDefaultArgument
+) on FIELD_DEFINITION
+directive @relation(
+  name: String
+  nodeType: String
+  kind: String
+) on FIELD_DEFINITION
+directive @extend(
+  interface: String
+  generatedTypeName: String
+  when: ExtendWhenArgument
+  is: ExtendIsArgument
+) on INTERFACE
 
 scalar FieldAtArgument
 scalar FieldDefaultArgument
 scalar ExtendWhenArgument
 scalar ExtendIsArgument
 
-interface Node { id: ID! }
+interface Node {
+  id: ID!
+}
 
 interface Connection @extend(generatedTypeName: "NodeConnection") {
   pageInfo: PageInfo!
