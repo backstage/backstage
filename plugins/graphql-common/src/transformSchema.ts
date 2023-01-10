@@ -20,6 +20,7 @@ import { TypeSource } from '@graphql-tools/utils';
 import { buildASTSchema, validateSchema } from 'graphql';
 import { mapDirectives } from './mapDirectives';
 
+/** @public */
 export function transformSchema(source: TypeSource) {
   const schema = mapDirectives(
     buildASTSchema(

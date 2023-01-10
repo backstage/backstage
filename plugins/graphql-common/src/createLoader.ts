@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 import type { CatalogClient } from '@backstage/catalog-client';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import DataLoader from 'dataloader';
 import { EnvelopError } from '@envelop/core';
-import type { EntityRef, Loader } from './types';
+import type { Loader } from './types';
 
+/** @public */
 export function createLoader(
   catalog: Pick<CatalogClient, 'getEntitiesByRefs'>,
 ): Loader {
-  return new DataLoader<EntityRef, Entity>(
-    async (refs): Promise<Array<Entity | Error>> => {
-      const entityRefs: string[] = refs.map(ref =>
-        typeof ref === 'string' ? ref : stringifyEntityRef(ref),
-      );
-      const result = await catalog.getEntitiesByRefs({ entityRefs });
+  return new DataLoader<string, Entity>(
+    async (entityRefs): Promise<Array<Entity | Error>> => {
+      const result = await catalog.getEntitiesByRefs({
+        entityRefs: entityRefs as string[],
+      });
       return result.items.map(
         (entity, index) =>
-          entity ?? new EnvelopError(`no such node with ref: '${refs[index]}'`),
+          entity ??
+          new EnvelopError(`no such node with ref: '${entityRefs[index]}'`),
       );
     },
   );

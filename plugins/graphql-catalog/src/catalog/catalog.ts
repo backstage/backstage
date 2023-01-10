@@ -19,6 +19,7 @@ import { loadFilesSync } from '@graphql-tools/load-files';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 import type { ResolverContext } from '@backstage/plugin-graphql-common';
 
+/** @public */
 export const Catalog = createModule({
   id: 'catalog',
   typeDefs: loadFilesSync(
@@ -41,8 +42,8 @@ export const Catalog = createModule({
         {
           name,
           kind,
-          namespace,
-        }: { name: string; kind: string; namespace?: string },
+          namespace = 'default',
+        }: { name: string; kind: string; namespace: string },
         { refToId }: ResolverContext,
       ): { id: string } => ({ id: refToId({ name, kind, namespace }) }),
     },
