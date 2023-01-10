@@ -15,7 +15,10 @@
  */
 import React, { Fragment } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { scaffolderApiRef } from '../../api';
+import {
+  ActionExample,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
 import {
   Typography,
   Paper,
@@ -47,7 +50,6 @@ import {
   CodeSnippet,
   MarkdownContent,
 } from '@backstage/core-components';
-import { ActionExample } from '../../types';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -146,7 +148,7 @@ export const ActionsPage = () => {
           <TableCell>
             <>
               {[props.type].flat().map(type => (
-                <Chip label={type} />
+                <Chip label={type} key={type} />
               ))}
             </>
           </TableCell>

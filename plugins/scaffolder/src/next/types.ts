@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * These types will be replaced eventually by the one in the scaffolder-react plugin.
+ * It is a temporary solution to avoid the `/alpha` types being re-exported and that not being supported right now.
+ * It exists already in the `scaffolder-react` plugin, so you may have to update both files.
+ */
+
 import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
 
 /**
  * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderpage`
  *
  * @alpha
+ * @deprecated use the import from {@link @backstage/plugin-scaffolder-react/alpha#FormProps} instead
  */
 export type FormProps = Pick<
   SchemaFormProps,
