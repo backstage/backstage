@@ -4,4 +4,4 @@
 '@backstage/plugin-graphql-common': minor
 ---
 
-Rethink GraphQL-Plugin
+Rethink GraphQL plugin
