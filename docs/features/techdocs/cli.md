@@ -1,9 +1,7 @@
 ---
 id: cli
 title: TechDocs CLI
-
 # prettier-ignore
-
 description: TechDocs CLI - a utility command line interface for managing TechDocs sites in Backstage.
 ---
 
