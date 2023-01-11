@@ -52,6 +52,7 @@ import {
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
+  EntityLabelsCard,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
   EntitySwitch,
@@ -362,6 +363,10 @@ const overviewContent = (
 
     <Grid item md={4} xs={12}>
       <EntityLinksCard />
+    </Grid>
+
+    <Grid item md={4} xs={12}>
+      <EntityLabelsCard />
     </Grid>
 
     {cicdCard}
