@@ -1,5 +1,4 @@
 ---
-'techdocs-cli-embedded-app': patch
 '@backstage/plugin-git-release-manager': patch
 '@backstage/core-components': patch
 '@backstage/plugin-stack-overflow': patch
@@ -14,11 +13,9 @@
 '@backstage/plugin-tech-radar': patch
 '@backstage/plugin-codescene': patch
 '@backstage/plugin-gcalendar': patch
-'@backstage/plugin-airbrake': patch
 '@backstage/plugin-techdocs': patch
 '@backstage/plugin-catalog': patch
 '@backstage/plugin-ilert': patch
-'example-app': patch
 '@backstage/plugin-home': patch
 '@backstage/plugin-org': patch
 ---
