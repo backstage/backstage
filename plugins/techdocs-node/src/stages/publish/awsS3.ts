@@ -25,7 +25,6 @@ import {
   CopyObjectCommand,
   DeleteObjectCommand,
   HeadBucketCommand,
-  HeadObjectCommand,
   PutObjectCommandInput,
   ListObjectsV2CommandOutput,
   ListObjectsV2Command,
@@ -463,7 +462,7 @@ export class AwsS3Publish implements PublisherBase {
   }
 
   /**
-   * A helper function which checks if index.html of an Entity's docs site is available. This
+   * A helper function which checks if any html files of an Entity's docs site is available. This
    * can be used to verify if there are any pre-generated docs available to serve.
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
@@ -475,15 +474,19 @@ export class AwsS3Publish implements PublisherBase {
 
       const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
 
-      await this.storageClient.send(
-        new HeadObjectCommand({
+      const objectList = await this.storageClient.send(
+        new ListObjectsV2Command({
           Bucket: this.bucketName,
-          Key: `${entityRootDir}/index.html`,
+          Prefix: entityRootDir,
         }),
       );
-      return Promise.resolve(true);
+      return (
+        objectList.Contents?.some(item =>
+          item.Key?.match(/${entityRootDir}\/.*.html$/),
+        ) || false
+      );
     } catch (e) {
-      return Promise.resolve(false);
+      return false;
     }
   }
 
