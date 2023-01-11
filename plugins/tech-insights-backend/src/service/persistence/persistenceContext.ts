@@ -36,6 +36,11 @@ export type PersistenceContext = {
   techInsightsStore: TechInsightsStore;
 };
 
+/**
+ * A Container for persistence context initialization options
+ *
+ * @public
+ */
 export type CreateDatabaseOptions = {
   logger: Logger;
 };
@@ -45,7 +50,7 @@ const defaultOptions: CreateDatabaseOptions = {
 };
 
 /**
- * A factory method to construct persistence context for running implementation.
+ * A factory function to construct persistence context for running implementation.
  *
  * @public
  */

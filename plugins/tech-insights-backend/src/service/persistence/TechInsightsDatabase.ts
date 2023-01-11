@@ -49,7 +49,7 @@ type RawDbFactSchemaRow = {
 /**
  * Default TechInsightsDatabase implementation.
  *
- * @public
+ * @internal
  */
 export class TechInsightsDatabase implements TechInsightsStore {
   private readonly CHUNK_SIZE = 50;

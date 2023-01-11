@@ -18,13 +18,16 @@ export * from './service/router';
 export type { RouterOptions } from './service/router';
 
 export { buildTechInsightsContext } from './service/techInsightsContextBuilder';
+export { initializePersistenceContext } from './service/persistence/persistenceContext';
 export type {
   TechInsightsOptions,
   TechInsightsContext,
 } from './service/techInsightsContextBuilder';
 export type { FactRetrieverEngine } from './service/fact/FactRetrieverEngine';
-export type { TechInsightsDatabase } from './service/persistence/TechInsightsDatabase';
-export type { PersistenceContext } from './service/persistence/persistenceContext';
+export type {
+  PersistenceContext,
+  CreateDatabaseOptions,
+} from './service/persistence/persistenceContext';
 export { createFactRetrieverRegistration } from './service/fact/createFactRetriever';
 export type { FactRetrieverRegistry } from './service/fact/FactRetrieverRegistry';
 export type { FactRetrieverRegistrationOptions } from './service/fact/createFactRetriever';
