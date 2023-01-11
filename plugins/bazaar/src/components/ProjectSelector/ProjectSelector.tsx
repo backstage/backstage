@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
+import Typography from '@material-ui/core/Typography';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, makeStyles } from '@material-ui/core';
 
@@ -49,7 +50,9 @@ export const ProjectSelector = ({
         defaultValue={defaultValue}
         options={catalogEntities}
         getOptionLabel={option => option?.metadata?.name}
-        renderOption={option => <span>{option?.metadata?.name}</span>}
+        renderOption={option => (
+          <Typography component="span">{option?.metadata?.name}</Typography>
+        )}
         renderInput={params => <TextField {...params} label={label} />}
         onChange={(_, data) => {
           onChange(data!);

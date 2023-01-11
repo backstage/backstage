@@ -31,6 +31,7 @@ import {
   schedulerFactory,
   tokenManagerFactory,
   urlReaderFactory,
+  identityFactory,
 } from '@backstage/backend-app-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 
@@ -39,16 +40,17 @@ export const defaultServiceFactories = [
   configFactory(),
   databaseFactory(),
   discoveryFactory(),
+  httpRouterFactory(),
+  identityFactory(),
+  lifecycleFactory(),
   loggerFactory(),
-  rootLoggerFactory(),
   permissionsFactory(),
+  rootHttpRouterFactory(),
+  rootLifecycleFactory(),
+  rootLoggerFactory(),
   schedulerFactory(),
   tokenManagerFactory(),
   urlReaderFactory(),
-  httpRouterFactory(),
-  rootHttpRouterFactory(),
-  lifecycleFactory(),
-  rootLifecycleFactory(),
 ];
 
 /**

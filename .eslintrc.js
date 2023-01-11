@@ -248,6 +248,10 @@ module.exports = {
             forbid: [
               { element: 'button', message: 'use MUI <Button> instead' },
               { element: 'p', message: 'use MUI <Typography> instead' },
+              {
+                element: 'span',
+                message: 'use a MUI <Typography> variant instead',
+              },
             ],
           },
         ],

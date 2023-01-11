@@ -118,9 +118,9 @@ export function StatusChart(props: StatusChartProps) {
         : percentOrCount;
 
       return [
-        <span>
+        <Typography component="span">
           {label}: {valueText}
-        </span>,
+        </Typography>,
         null,
       ];
     };

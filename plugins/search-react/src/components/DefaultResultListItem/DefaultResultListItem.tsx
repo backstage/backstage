@@ -28,6 +28,7 @@ import {
   Box,
   Divider,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 
 /**
@@ -85,7 +86,8 @@ export const DefaultResultListItemComponent = ({
             </Link>
           }
           secondary={
-            <span
+            <Typography
+              component="span"
               style={{
                 display: '-webkit-box',
                 WebkitBoxOrient: 'vertical',
@@ -102,7 +104,7 @@ export const DefaultResultListItemComponent = ({
               ) : (
                 result.text
               )}
-            </span>
+            </Typography>
           }
         />
         {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}

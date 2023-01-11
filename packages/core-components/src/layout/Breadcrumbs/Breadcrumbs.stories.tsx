@@ -106,7 +106,7 @@ export const OutsideOfHeader = () => {
           <Link to="/">General Page</Link>
           <Link to="/" onClick={handleClick}>
             <Box display="flex" alignItems="center">
-              <span>Second Page</span>
+              <Typography component="span">Second Page</Typography>
               {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </Box>
           </Link>
