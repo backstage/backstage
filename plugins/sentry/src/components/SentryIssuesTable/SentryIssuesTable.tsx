@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { SentryIssue } from '../../api';
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { ErrorCell } from '../ErrorCell/ErrorCell';
 import { ErrorGraph } from '../ErrorGraph/ErrorGraph';
-import { Table, TableColumn } from '@backstage/core-components';
+import {
+  Table,
+  TableColumn,
+  Select,
+  SelectedItems,
+} from '@backstage/core-components';
 import { Options } from '@material-table/core';
 
 const columns: TableColumn[] = [
@@ -66,14 +71,43 @@ type SentryIssuesTableProps = {
 
 const SentryIssuesTable = (props: SentryIssuesTableProps) => {
   const { sentryIssues, statsFor, tableOptions } = props;
+  const [filteredIssues, setFilteredIssues] = useState(sentryIssues);
+
+  const handleFilterChange = (item: SelectedItems) => {
+    if (item === Number.NEGATIVE_INFINITY) {
+      setFilteredIssues(sentryIssues);
+      return;
+    }
+    if (typeof item === 'number') {
+      setFilteredIssues(
+        sentryIssues.filter(
+          i =>
+            DateTime.fromISO(i.lastSeen) >
+            DateTime.now().minus(Duration.fromMillis(item)),
+        ),
+      );
+    }
+  };
   return (
-    <Table
-      columns={columns}
-      options={tableOptions}
-      title="Sentry issues"
-      subtitle={statsFor ? `Last ${statsFor}` : undefined}
-      data={sentryIssues}
-    />
+    <>
+      <Select
+        selected={14 * 86400000}
+        onChange={handleFilterChange}
+        items={[
+          { label: '24H', value: 86400000 },
+          { label: '7D', value: 7 * 86400000 },
+          { label: '14D', value: 14 * 86400000 },
+          { label: 'All', value: Number.NEGATIVE_INFINITY },
+        ]}
+      />
+      <Table
+        columns={columns}
+        options={tableOptions}
+        title="Sentry issues"
+        subtitle={statsFor ? `Stat for ${statsFor}` : undefined}
+        data={filteredIssues}
+      />
+    </>
   );
 };
 

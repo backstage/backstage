@@ -128,7 +128,7 @@ export type SelectedItems = string | string[] | number | number[];
 export type SelectProps = {
   multiple?: boolean;
   items: SelectItem[];
-  label: string;
+  label?: string;
   placeholder?: string;
   selected?: SelectedItems;
   onChange: (arg: SelectedItems) => void;
@@ -200,7 +200,9 @@ export function SelectComponent(props: SelectProps) {
     <Box className={classes.root}>
       <ClickAwayListener onClickAway={handleClickAway}>
         <FormControl className={classes.formControl}>
-          <InputLabel className={classes.formLabel}>{label}</InputLabel>
+          {label && (
+            <InputLabel className={classes.formLabel}>{label}</InputLabel>
+          )}
           <Select
             aria-label={label}
             value={value}
