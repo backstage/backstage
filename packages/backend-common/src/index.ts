@@ -20,6 +20,8 @@
  * @packageDocumentation
  */
 
+export { makePluginCompat, createPluginCompat } from './compat';
+export type { LegacyCreateRouter } from './compat';
 export * from './cache';
 export { loadBackendConfig } from './config';
 export * from './context';
