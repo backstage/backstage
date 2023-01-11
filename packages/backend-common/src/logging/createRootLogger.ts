@@ -30,9 +30,18 @@ export const setRootLoggerRedactionList = redacter.add;
  *
  * @public
  */
-export const redactWinstonLogLine: (
+export function redactWinstonLogLine(
   info: winston.Logform.TransformableInfo,
-) => winston.Logform.TransformableInfo | boolean = redacter.format.transform;
+): winston.Logform.TransformableInfo {
+  return redacter.format.transform(info) as winston.Logform.TransformableInfo;
+}
+
+/**
+ * Creates a pretty printed winston log formatter.
+ *
+ * @public
+ */
+export const coloredFormat = WinstonLogger.colorFormat();
 
 /**
  * Creates a default "root" logger. This also calls {@link setRootLogger} under
