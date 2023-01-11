@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import {
-  createBackendModule,
-  coreServices,
-} from '@backstage/backend-plugin-api';
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { CatalogClient } from '@backstage/catalog-client';
 import { catalogServiceRef } from './catalogService';
@@ -42,9 +38,6 @@ describe('catalogServiceRef', () => {
     });
 
     await startTestBackend({
-      services: [
-        [coreServices.discovery, {} as unknown as PluginEndpointDiscovery],
-      ],
       features: [testModule()],
     });
   });

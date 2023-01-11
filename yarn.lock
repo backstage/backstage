@@ -4518,7 +4518,6 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: 10.1.0
-    get-port: ^6.1.2
     globby: ^11.0.0
     helmet: ^6.0.0
     knex: ^2.0.0
@@ -5117,7 +5116,6 @@ __metadata:
     "@types/luxon": ^3.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    get-port: ^6.1.2
     knex: ^2.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -23750,13 +23748,6 @@ __metadata:
   version: 5.1.1
   resolution: "get-port@npm:5.1.1"
   checksum: 0162663ffe5c09e748cd79d97b74cd70e5a5c84b760a475ce5767b357fb2a57cb821cee412d646aa8a156ed39b78aab88974eddaa9e5ee926173c036c0713787
-  languageName: node
-  linkType: hard
-
-"get-port@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "get-port@npm:6.1.2"
-  checksum: e3c3d591492a11393455ef220f24c812a28f7da56ec3e4a2512d931a1f196d42850b50ac6138349a44622eda6dc3c0ccd8495cd91376d968e2d9e6f6f849e0a9
   languageName: node
   linkType: hard
 
