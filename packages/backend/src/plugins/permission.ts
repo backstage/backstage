@@ -18,28 +18,33 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
+  isPermission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
+
 import {
-  DefaultPlaylistPermissionPolicy,
-  isPlaylistPermission,
-} from '@backstage/plugin-playlist-backend';
+  createScaffolderConditionalDecision,
+  scaffolderConditions,
+} from '@backstage/plugin-scaffolder-backend';
+import { templateSchemaExecutePermission } from '@backstage/plugin-scaffolder-common';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
-  private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
-
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    _user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
-    if (isPlaylistPermission(request.permission)) {
-      return this.playlistPermissionPolicy.handle(request, user);
+    if (isPermission(request.permission, templateSchemaExecutePermission)) {
+      return createScaffolderConditionalDecision(request.permission, [
+        scaffolderConditions.allowCapabilities({
+          capabilities: ['example'],
+        }),
+      ]);
     }
 
     return {
