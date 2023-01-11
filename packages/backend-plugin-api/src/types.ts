@@ -22,6 +22,14 @@
 export type MaybeOptions = object | undefined;
 
 /**
+ * @ignore
+ */
+export type FactoryFunctionConfig<TConfig, TOptions> =
+  | TConfig
+  | ((options: TOptions) => TConfig)
+  | (() => TConfig);
+
+/**
  * Helper type that makes the options argument optional if options are not required.
  *
  * @ignore
