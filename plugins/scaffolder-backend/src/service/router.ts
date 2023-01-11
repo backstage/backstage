@@ -18,19 +18,26 @@ import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
+  CompoundEntityRef,
   Entity,
   parseEntityRef,
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
+import {
+  InputError,
+  NotAllowedError,
+  NotFoundError,
+  stringifyError,
+} from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
+  templateSchemaExecutePermission,
 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -47,12 +54,27 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import {
+  findTemplate,
+  getEntityBaseUrl,
+  getWorkingDirectory,
+  TemplateTransform,
+} from './helpers';
 import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import {
+  ConditionTransformer,
+  createConditionTransformer,
+  isAndCriteria,
+} from '@backstage/plugin-permission-node';
+import { scaffolderRules } from './rules';
 
 /**
  * RouterOptions
@@ -81,6 +103,7 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissionApi: PermissionEvaluator;
   identity?: IdentityApi;
 }
 
@@ -174,6 +197,7 @@ export async function createRouter(
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
+    permissionApi,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -250,41 +274,31 @@ export async function createRouter(
     additionalTemplateGlobals,
   });
 
+  const transformConditions: ConditionTransformer<TemplateTransform> =
+    createConditionTransformer(Object.values(scaffolderRules));
+
   router
     .get(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
-        const { namespace, kind, name } = req.params;
-
         const userIdentity = await identity.getIdentity({
           request: req,
         });
         const token = userIdentity?.token;
 
-        const template = await findTemplate({
-          catalogApi: catalogClient,
-          entityRef: { kind, namespace, name },
-          token,
+        const template = await authorizeTemplate(req.params, token);
+
+        const parameters = [template.spec.parameters ?? []].flat();
+        res.json({
+          title: template.metadata.title ?? template.metadata.name,
+          description: template.metadata.description,
+          'ui:options': template.metadata['ui:options'],
+          steps: parameters.map(schema => ({
+            title: schema.title ?? 'Please enter the following information',
+            description: schema.description,
+            schema,
+          })),
         });
-        if (isSupportedTemplate(template)) {
-          const parameters = [template.spec.parameters ?? []].flat();
-          res.json({
-            title: template.metadata.title ?? template.metadata.name,
-            description: template.metadata.description,
-            'ui:options': template.metadata['ui:options'],
-            steps: parameters.map(schema => ({
-              title: schema.title ?? 'Please enter the following information',
-              description: schema.description,
-              schema,
-            })),
-          });
-        } else {
-          throw new InputError(
-            `Unsupported apiVersion field in schema entity, ${
-              (template as Entity).apiVersion
-            }`,
-          );
-        }
       },
     )
     .get('/v2/actions', async (_req, res) => {
@@ -322,19 +336,10 @@ export async function createRouter(
 
       const values = req.body.values;
 
-      const template = await findTemplate({
-        catalogApi: catalogClient,
-        entityRef: { kind, namespace, name },
+      const template = await authorizeTemplate(
+        { kind, namespace, name },
         token,
-      });
-
-      if (!isSupportedTemplate(template)) {
-        throw new InputError(
-          `Unsupported apiVersion field in schema entity, ${
-            (template as Entity).apiVersion
-          }`,
-        );
-      }
+      );
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(values, parameters);
@@ -563,5 +568,48 @@ export async function createRouter(
   app.set('logger', logger);
   app.use('/', router);
 
+  async function authorizeTemplate(
+    entityRef: CompoundEntityRef,
+    token: string | undefined,
+  ) {
+    let template = await findTemplate({
+      catalogApi: catalogClient,
+      entityRef,
+      token,
+    });
+    if (!isSupportedTemplate(template)) {
+      throw new InputError(
+        `Unsupported apiVersion field in schema entity, ${
+          (template as Entity).apiVersion
+        }`,
+      );
+    }
+    const authorizeDecision = (
+      await permissionApi.authorizeConditional(
+        [{ permission: templateSchemaExecutePermission }],
+        {
+          token,
+        },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError(
+        `Not allowed to execute template ${entityRef.kind}:${entityRef.namespace}/${entityRef.name}`,
+      );
+    }
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const scaffolderFilter = transformConditions(
+        authorizeDecision.conditions,
+      );
+      if (isAndCriteria(scaffolderFilter)) {
+        template = scaffolderFilter.allOf.reduce(
+          (acc, filter) => (filter as TemplateTransform)(acc),
+          template,
+        );
+      }
+    }
+    return template;
+  }
   return app;
 }

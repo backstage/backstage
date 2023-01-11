@@ -44,6 +44,7 @@ import {
   IdentityApiGetIdentityRequest,
   BackstageIdentityResponse,
 } from '@backstage/plugin-auth-node';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 const mockAccess = jest.fn();
 
@@ -139,6 +140,11 @@ describe('createRouter', () => {
       });
       taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
 
+      const permissionApi: PermissionEvaluator = {
+        authorize: jest.fn(),
+        authorizeConditional: jest.fn(),
+      };
+
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');
       jest.spyOn(taskBroker, 'list');
@@ -152,6 +158,7 @@ describe('createRouter', () => {
         catalogClient,
         reader: mockUrlReader,
         taskBroker,
+        permissionApi,
       });
       app = express().use(router);
 
@@ -744,6 +751,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         },
       );
 
+      const permissionApi: PermissionEvaluator = {
+        authorize: jest.fn(),
+        authorizeConditional: jest.fn(),
+      };
+
       const router = await createRouter({
         logger: logger,
         config: new ConfigReader({}),
@@ -752,6 +764,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         reader: mockUrlReader,
         taskBroker,
         identity: { getIdentity },
+        permissionApi,
       });
       app = express().use(router);
 
