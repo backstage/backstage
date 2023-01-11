@@ -15,6 +15,7 @@ import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
+import { IdentityService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
@@ -124,6 +125,17 @@ export type HttpServerOptions = {
   https?: {
     certificate: HttpServerCertificateOptions;
   };
+};
+
+// @public (undocumented)
+export const identityFactory: (
+  options?: IdentityFactoryOptions | undefined,
+) => ServiceFactory<IdentityService>;
+
+// @public
+export type IdentityFactoryOptions = {
+  issuer?: string;
+  algorithms?: string[];
 };
 
 // @public
