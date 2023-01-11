@@ -40,6 +40,15 @@ export const Core = createModule({
     },
     Query: {
       node: (_: any, { id }: { id: string }): { id: string } => ({ id }),
+      entity: (
+        _: any,
+        {
+          name,
+          kind,
+          namespace = 'default',
+        }: { name: string; kind: string; namespace: string },
+        { refToId }: ResolverContext,
+      ): { id: string } => ({ id: refToId({ name, kind, namespace }) }),
     },
   },
 });
