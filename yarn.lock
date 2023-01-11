@@ -7585,6 +7585,8 @@ __metadata:
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -7644,6 +7646,7 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/types": "workspace:^"
   languageName: unknown
   linkType: soft
@@ -22940,6 +22943,7 @@ __metadata:
     "@backstage/plugin-rollbar-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-rails": "workspace:^"
+    "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^"
     "@backstage/plugin-search-backend-module-pg": "workspace:^"
