@@ -22,7 +22,8 @@ import { FieldExtensionComponentProps as FieldExtensionComponentProps_2 } from '
 import { FieldExtensionOptions as FieldExtensionOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/core';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
-import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
+import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
+import type { FormProps as FormProps_4 } from '@rjsf/core-v5';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-scaffolder-react';
@@ -157,7 +158,7 @@ export interface FieldSchema<TReturn, TUiOptions> {
 
 // @alpha @deprecated
 export type FormProps = Pick<
-  FormProps_3,
+  FormProps_4,
   'transformErrors' | 'noHtml5Validate'
 >;
 
@@ -195,56 +196,6 @@ export function makeFieldSchemaFromZod<
     : never
 >;
 
-<<<<<<< HEAD
-=======
-// @alpha
-export type NextCustomFieldValidator<TFieldReturnValue> = (
-  data: TFieldReturnValue,
-  field: FieldValidation_2,
-  context: {
-    apiHolder: ApiHolder;
-    formData: JsonObject;
-  },
-) => void | Promise<void>;
-
-// @alpha
-export interface NextFieldExtensionComponentProps<
-  TFieldReturnValue,
-  TUiOptions = {},
-> extends PropsWithChildren<FieldProps_2<TFieldReturnValue>> {
-  // (undocumented)
-  uiSchema?: UiSchema<TFieldReturnValue> & {
-    'ui:options'?: TUiOptions & UIOptionsType;
-  };
-}
-
-// @alpha
-export type NextFieldExtensionOptions<
-  TFieldReturnValue = unknown,
-  TInputProps = unknown,
-> = {
-  name: string;
-  component: (
-    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
-  ) => JSX.Element | null;
-  validation?: NextCustomFieldValidator<TFieldReturnValue>;
-  schema?: CustomFieldExtensionSchema;
-};
-
-// @alpha
-export interface NextLayoutOptions<P = any> {
-  // (undocumented)
-  component: NextLayoutTemplate<P>;
-  // (undocumented)
-  name: string;
-}
-
-// @alpha
-export type NextLayoutTemplate<T = any> = NonNullable<
-  FormProps_3<T>['uiSchema']
->['ui:ObjectFieldTemplate'];
-
->>>>>>> a3e361fbb8 (run api-report)
 // @alpha (undocumented)
 export const nextRouteRef: RouteRef<undefined>;
 
@@ -257,7 +208,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React_2.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
-  FormProps?: FormProps;
+  FormProps?: FormProps_3;
 };
 
 // @alpha
@@ -576,18 +527,6 @@ export type TemplateParameterSchema = TemplateParameterSchema_2;
 // @public
 export const TemplateTypePicker: () => JSX.Element | null;
 
-<<<<<<< HEAD
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
-=======
-// @public
-export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
-<<<<<<< HEAD
-
-// Warnings were encountered during analysis:
-//
-// src/next/types.d.ts:23:5 - (ae-forgotten-export) The symbol "NextLayoutOptions" needs to be exported by the entry point index.d.ts
->>>>>>> 55041019c8 (export NextLayoutOptions)
-=======
->>>>>>> a3e361fbb8 (run api-report)
 ```

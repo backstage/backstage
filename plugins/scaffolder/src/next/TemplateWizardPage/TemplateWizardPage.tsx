@@ -25,15 +25,10 @@ import {
 import {
   scaffolderApiRef,
   useTemplateSecrets,
-  type NextFieldExtensionOptions,
-  Workflow
-  type NextLayoutOptions,
+  Workflow,
+  type LayoutOptions
 } from '@backstage/plugin-scaffolder-react';
-import useAsync from 'react-use/lib/useAsync';
-import { makeStyles } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
 import {
-  Stepper,
   NextFieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
@@ -41,7 +36,6 @@ import { type FormProps } from '../types';
 import { nextRouteRef } from '../routes';
 import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { Header, Page } from '@backstage/core-components';
-import type { LayoutOptions } from '../../layouts/types';
 
 export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
@@ -92,6 +86,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           onError={onError}
           extensions={props.customFieldExtensions}
           FormProps={props.FormProps}
+          layouts={props.layouts}
         />
       </Page>
     </AnalyticsContext>

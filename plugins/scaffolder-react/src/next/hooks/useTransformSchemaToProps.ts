@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { type ParsedTemplateSchema } from './useTemplateSchema';
-import { type NextLayoutOptions } from '../types';
+import { type LayoutOptions } from '../types';
 
 export const useTransformSchemaToProps = (
   step: ParsedTemplateSchema,
-  layouts: NextLayoutOptions[] = [],
+  layouts: LayoutOptions[] = [],
 ): ParsedTemplateSchema => {
   const objectFieldTemplate = step?.uiSchema['ui:ObjectFieldTemplate'] as
     | string

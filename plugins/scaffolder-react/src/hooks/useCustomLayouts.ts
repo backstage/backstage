@@ -15,13 +15,13 @@
  */
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../next/layouts/keys';
-import { type NextLayoutOptions } from '../next/types';
+import { type LayoutOptions } from '../next/types';
 
 /**
  * Hook that returns all custom field extensions from the current outlet.
  * @public
  */
-export const useCustomLayouts = <TComponentDataType = NextLayoutOptions>(
+export const useCustomLayouts = <TComponentDataType = LayoutOptions>(
   outlet: React.ReactNode,
 ) => {
   return useElementFilter(outlet, elements =>

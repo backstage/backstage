@@ -1,4 +1,4 @@
-import { NextLayoutOptions } from '../types';
+import { LayoutOptions } from '../types';
 import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from './keys';
 
 /*
@@ -26,7 +26,7 @@ export type LayoutComponent<_TInputProps> = () => null;
  * @public
  */
 export function createScaffolderLayout<TInputProps = unknown>(
-  options: NextLayoutOptions,
+  options: LayoutOptions,
 ): Extension<LayoutComponent<TInputProps>> {
   return {
     expose() {

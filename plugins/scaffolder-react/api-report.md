@@ -116,11 +116,24 @@ export type FieldExtensionOptions<
   schema?: CustomFieldExtensionSchema;
 };
 
-// @alpha
+// @public
 export type FormProps = Pick<
   FormProps_2,
   'transformErrors' | 'noHtml5Validate'
 >;
+
+// @public
+export interface LayoutOptions<P = any> {
+  // (undocumented)
+  component: LayoutTemplate<P>;
+  // (undocumented)
+  name: string;
+}
+
+// @public
+export type LayoutTemplate<T = any> = NonNullable<
+  FormProps_2<T>['uiSchema']
+>['ui:ObjectFieldTemplate'];
 
 // @public
 export type ListActionsResponse = Array<Action>;
@@ -346,21 +359,30 @@ export const SecretsContextProvider: ({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @alpha
+<<<<<<< HEAD
 export const Stepper: (stepperProps: StepperProps) => JSX.Element;
+=======
+export const Stepper: ({ layouts, ...props }: StepperProps) => JSX.Element;
+>>>>>>> be504a73cc (run api-report)
 
 // @alpha
 export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
   templateName?: string;
-  FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
+<<<<<<< HEAD
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
   components?: {
     ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
   };
+=======
+  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  FormProps?: FormProps;
+  layouts?: LayoutOptions[];
+>>>>>>> be504a73cc (run api-report)
 };
 
 // @alpha
@@ -419,6 +441,11 @@ export type TemplateParameterSchema = {
 export const useCustomFieldExtensions: <
   TComponentDataType = FieldExtensionOptions<unknown, unknown>,
 >(
+  outlet: React.ReactNode,
+) => TComponentDataType[];
+
+// @public
+export const useCustomLayouts: <TComponentDataType = LayoutOptions<any>>(
   outlet: React.ReactNode,
 ) => TComponentDataType[];
 
