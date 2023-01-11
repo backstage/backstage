@@ -232,6 +232,7 @@ export interface ServiceAccountClusterDetails extends ClusterDetails {}
 export interface AWSClusterDetails extends ClusterDetails {
   assumeRole?: string;
   externalId?: string;
+  clusterName?: string;
 }
 
 /**

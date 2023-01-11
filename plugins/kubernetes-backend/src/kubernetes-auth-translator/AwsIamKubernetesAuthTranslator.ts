@@ -132,7 +132,7 @@ export class AwsIamKubernetesAuthTranslator
     );
 
     clusterDetailsWithAuthToken.serviceAccountToken = await this.getBearerToken(
-      clusterDetails.name,
+      clusterDetails.clusterName || clusterDetails.name,
       clusterDetails.assumeRole,
       clusterDetails.externalId,
     );
