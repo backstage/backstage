@@ -788,11 +788,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -810,11 +814,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -832,11 +840,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
 
@@ -860,11 +872,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -882,11 +898,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: false,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -904,11 +924,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
 
@@ -932,11 +956,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -956,11 +984,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: ['statusCheck'],
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -979,11 +1011,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1001,11 +1037,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
 
@@ -1084,11 +1124,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1106,11 +1150,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: true,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1128,11 +1176,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
   it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredConversationResolution', async () => {
@@ -1155,11 +1207,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1177,11 +1233,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: true,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1199,11 +1259,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
 });
