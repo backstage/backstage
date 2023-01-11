@@ -35,10 +35,10 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
     organizationSlug: string;
     teamSlug: string;
     name: string;
-    slug: string;
+    slug?: string;
     authToken?: string;
   }>({
-    id: 'sentry:create-project',
+    id: 'sentry:project:create',
     schema: {
       input: {
         required: ['organizationSlug', 'teamSlug', 'name'],
