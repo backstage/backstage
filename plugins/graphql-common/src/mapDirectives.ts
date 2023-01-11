@@ -397,7 +397,7 @@ export function mapDirectives(sourceSchema: GraphQLSchema) {
   ) {
     if (interfaceType.name === 'Node') {
       interfaceType.resolveType = (...args) =>
-        resolversMap[interfaceType.name](...args);
+        resolversMap.Node?.(...args) ?? undefined;
     }
     const [extendDirective] =
       getDirective(schema, interfaceType, 'extend') ?? [];
