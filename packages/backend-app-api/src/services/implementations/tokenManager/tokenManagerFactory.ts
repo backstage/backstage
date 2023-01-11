@@ -18,23 +18,19 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import {
-  loggerToWinstonLogger,
-  ServerTokenManager,
-} from '@backstage/backend-common';
+import { ServerTokenManager } from '@backstage/backend-common';
 
 /** @public */
 export const tokenManagerFactory = createServiceFactory({
   service: coreServices.tokenManager,
   deps: {
     config: coreServices.config,
-    logger: coreServices.logger,
+    logger: coreServices.rootLogger,
   },
-  async factory() {
-    return async ({ config, logger }) => {
-      return ServerTokenManager.fromConfig(config, {
-        logger: loggerToWinstonLogger(logger),
-      });
-    };
+  async factory({ config, logger }) {
+    const tokenManager = ServerTokenManager.fromConfig(config, {
+      logger,
+    });
+    return async () => tokenManager;
   },
 });
