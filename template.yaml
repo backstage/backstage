@@ -1,0 +1,56 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: my_custom_template
+  title: My custom template
+  description: Just testing
+spec:
+  owner: web@example.com
+  type: website
+  parameters:
+    - title: Provide some simple information
+      required:
+        - component_id
+        - owner
+      properties:
+        component_id:
+          backstage:capabilities: ${{ capabilities.cap1 }}
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:field: EntityNamePicker
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this website is for.
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds:
+              - Group
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+  steps:
+    - id: one
+      backstage:capabilities: ${{ capabilities.cap1 }}
+      name: First log
+      action: debug:log
+      input:
+        message: hello
+    - id: two
+      name: Second log
+      action: debug:log
+      input:
+        message: world
