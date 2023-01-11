@@ -21,6 +21,7 @@
  */
 
 export * from './scaffolder';
+export * from './service/conditionExports';
 export * from './service/router';
 export * from './lib';
 export * from './processor';

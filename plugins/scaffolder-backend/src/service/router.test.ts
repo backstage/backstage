@@ -182,6 +182,11 @@ describe('createRouter', () => {
       });
       taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
 
+      const permissionApi: PermissionEvaluator = {
+        authorize: jest.fn(),
+        authorizeConditional: jest.fn(),
+      };
+
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');
       jest.spyOn(taskBroker, 'list');
@@ -810,6 +815,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           };
         },
       );
+
+      const permissionApi: PermissionEvaluator = {
+        authorize: jest.fn(),
+        authorizeConditional: jest.fn(),
+      };
 
       const router = await createRouter({
         logger: logger,
