@@ -125,11 +125,15 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
 
   return (
     <>
-      <span onMouseEnter={debouncedHandleMouseEnter}>
-        <span data-testid="trigger" {...bindHover(popupState)}>
+      <Typography component="span" onMouseEnter={debouncedHandleMouseEnter}>
+        <Typography
+          component="span"
+          data-testid="trigger"
+          {...bindHover(popupState)}
+        >
           {children}
-        </span>
-      </span>
+        </Typography>
+      </Typography>
       {isHovered && (
         <HoverPopover
           PaperProps={{
