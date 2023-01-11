@@ -149,6 +149,7 @@ describe('ConfigClusterLocator', () => {
         name: 'cluster1',
         serviceAccountToken: 'token',
         externalId: undefined,
+        clusterName: undefined,
         url: 'http://localhost:8080',
         authProvider: 'aws',
         skipTLSVerify: false,
@@ -160,6 +161,7 @@ describe('ConfigClusterLocator', () => {
         assumeRole: 'SomeRole',
         name: 'cluster2',
         externalId: undefined,
+        clusterName: undefined,
         serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'aws',
@@ -172,6 +174,7 @@ describe('ConfigClusterLocator', () => {
         assumeRole: 'SomeRole',
         name: 'cluster2',
         externalId: 'SomeExternalId',
+        clusterName: undefined,
         url: 'http://localhost:8081',
         serviceAccountToken: undefined,
         authProvider: 'aws',
@@ -253,6 +256,57 @@ describe('ConfigClusterLocator', () => {
         caFile: undefined,
         dashboardApp: 'standard',
         dashboardUrl: 'http://someurl',
+      },
+    ]);
+  });
+
+  it('one cluster with clusterName and one without', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'DisplayName',
+          clusterName: 'cluster1',
+          authProvider: 'aws',
+          url: 'http://localhost:8080',
+        },
+        {
+          name: 'cluster2',
+          authProvider: 'aws',
+          url: 'http://localhost:8080',
+        },
+      ],
+    });
+
+    const sut = ConfigClusterLocator.fromConfig(config);
+
+    const result = await sut.getClusters();
+
+    expect(result).toStrictEqual([
+      {
+        name: 'DisplayName',
+        clusterName: 'cluster1',
+        authProvider: 'aws',
+        assumeRole: undefined,
+        externalId: undefined,
+        url: 'http://localhost:8080',
+        caData: undefined,
+        caFile: undefined,
+        serviceAccountToken: undefined,
+        skipMetricsLookup: false,
+        skipTLSVerify: false,
+      },
+      {
+        name: 'cluster2',
+        clusterName: undefined,
+        authProvider: 'aws',
+        assumeRole: undefined,
+        externalId: undefined,
+        url: 'http://localhost:8080',
+        caData: undefined,
+        caFile: undefined,
+        serviceAccountToken: undefined,
+        skipMetricsLookup: false,
+        skipTLSVerify: false,
       },
     ]);
   });
