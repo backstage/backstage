@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
-import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
 import { coreServices } from '@backstage/backend-plugin-api';
 import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
-import { startTestBackend } from '@backstage/backend-test-utils';
+import {
+  startTestBackend,
+  mockConfigFactory,
+} from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node';
 import { Duration } from 'luxon';
@@ -55,22 +52,6 @@ describe('bitbucketCloudEntityProviderCatalogModule', () => {
         return runner;
       },
     } as unknown as PluginTaskScheduler;
-    const discovery = jest.fn() as any as PluginEndpointDiscovery;
-    const tokenManager = jest.fn() as any as TokenManager;
-
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          bitbucketCloud: {
-            schedule: {
-              frequency: 'P1M',
-              timeout: 'PT3M',
-            },
-            workspace: 'test-ws',
-          },
-        },
-      },
-    });
 
     await startTestBackend({
       extensionPoints: [
@@ -78,11 +59,22 @@ describe('bitbucketCloudEntityProviderCatalogModule', () => {
         [eventsExtensionPoint, eventsExtensionPointImpl],
       ],
       services: [
-        [coreServices.config, config],
-        [coreServices.discovery, discovery],
-        [coreServices.logger, getVoidLogger()],
+        mockConfigFactory({
+          data: {
+            catalog: {
+              providers: {
+                bitbucketCloud: {
+                  schedule: {
+                    frequency: 'P1M',
+                    timeout: 'PT3M',
+                  },
+                  workspace: 'test-ws',
+                },
+              },
+            },
+          },
+        }),
         [coreServices.scheduler, scheduler],
-        [coreServices.tokenManager, tokenManager],
       ],
       features: [bitbucketCloudEntityProviderCatalogModule()],
     });

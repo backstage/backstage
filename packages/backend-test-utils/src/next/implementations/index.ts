@@ -13,5 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { mockTokenManagerFactory } from './mockTokenManagerService';
 export { mockConfigFactory } from './mockConfigService';

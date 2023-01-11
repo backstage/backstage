@@ -42,7 +42,8 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 
-import { mockConfigFactory, mockTokenManagerFactory } from '../implementations';
+import { mockConfigFactory } from '../implementations/mockConfigService';
+import { mockTokenManagerFactory } from '../implementations/mockTokenManagerService';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 

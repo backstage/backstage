@@ -5,14 +5,25 @@
 ```ts
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ConfigService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
+
+// @public (undocumented)
+export const mockConfigFactory: (
+  options?:
+    | {
+        data?: JsonObject | undefined;
+      }
+    | undefined,
+) => ServiceFactory<ConfigService>;
 
 // @public
 export function setupRequestMockHandlers(worker: {
