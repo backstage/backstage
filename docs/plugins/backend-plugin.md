@@ -48,7 +48,7 @@ This will think for a bit, and then say `Listening on :7007`. In a different
 terminal window, now run
 
 ```sh
-curl localhost:7007/carmen/health
+curl localhost:7007/carmen-backend/health
 ```
 
 This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to stop it
