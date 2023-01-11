@@ -214,8 +214,8 @@ export function createGithubRepoCreateAction(options: {
   requiredApprovingReviewCount?: number | undefined;
   restrictions?:
     | {
-        users: string[] | undefined;
-        teams: string[] | undefined;
+        users: string[];
+        teams: string[];
         apps?: string[] | undefined;
       }
     | undefined;
@@ -273,9 +273,9 @@ export function createGithubRepoPushAction(options: {
   requiredApprovingReviewCount?: number | undefined;
   restrictions?:
     | {
-        users: string[] | undefined;
-        teams: string[] | undefined;
-        apps?: string[] | undefined;
+        users: string[];
+        teams: string[];
+        apps?: string[];
       }
     | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
@@ -283,7 +283,7 @@ export function createGithubRepoPushAction(options: {
   requiredConversationResolution?: boolean | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
-  requireCommitSigning?: boolean | undefined;
+  requiredCommitSigning?: boolean | undefined;
 }>;
 
 // @public
@@ -426,9 +426,9 @@ export function createPublishGithubAction(options: {
   requiredApprovingReviewCount?: number | undefined;
   restrictions?:
     | {
-        users: string[] | undefined;
-        teams: string[] | undefined;
-        apps?: string[] | undefined;
+        users: string[];
+        teams: string[];
+        apps?: string[];
       }
     | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
@@ -458,7 +458,7 @@ export function createPublishGithubAction(options: {
   hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
-  requireCommitSigning?: boolean | undefined;
+  requiredCommitSigning?: boolean | undefined;
 }>;
 
 // @public
