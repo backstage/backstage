@@ -235,32 +235,6 @@ export function createDatabaseClient(
 ): Knex<any, any[]>;
 
 // @public
-export const createPluginCompat: (
-  name: string,
-  createRouterImport: Promise<{
-    default: LegacyCreateRouter<
-      TransformedEnv<
-        {
-          cache: PluginCacheManager;
-          config: ConfigService;
-          database: PluginDatabaseManager;
-          discovery: PluginEndpointDiscovery;
-          logger: LoggerService;
-          permissions: PermissionsService;
-          scheduler: SchedulerService;
-          tokenManager: TokenManager;
-          reader: UrlReader;
-          identity: IdentityService;
-        },
-        {
-          logger: (log: LoggerService) => Logger;
-        }
-      >
-    >;
-  }>,
-) => BackendFeature;
-
-// @public
 export function createRootLogger(
   options?: winston.LoggerOptions,
   env?: NodeJS.ProcessEnv,
@@ -536,6 +510,32 @@ export type KubernetesContainerRunnerOptions = {
 export type LegacyCreateRouter<TEnv> = (deps: TEnv) => Promise<RequestHandler>;
 
 // @public
+export const legacyPlugin: (
+  name: string,
+  createRouterImport: Promise<{
+    default: LegacyCreateRouter<
+      TransformedEnv<
+        {
+          cache: PluginCacheManager;
+          config: ConfigService;
+          database: PluginDatabaseManager;
+          discovery: PluginEndpointDiscovery;
+          logger: LoggerService;
+          permissions: PermissionsService;
+          scheduler: SchedulerService;
+          tokenManager: TokenManager;
+          reader: UrlReader;
+          identity: IdentityService;
+        },
+        {
+          logger: (log: LoggerService) => Logger;
+        }
+      >
+    >;
+  }>,
+) => BackendFeature;
+
+// @public
 export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
@@ -549,7 +549,7 @@ export function loggerToWinstonLogger(
 ): Logger;
 
 // @public
-export function makePluginCompat<
+export function makeLegacyPlugin<
   TEnv extends Record<string, unknown>,
   TEnvTransforms extends {
     [key in keyof TEnv]?: (dep: TEnv[key]) => unknown;

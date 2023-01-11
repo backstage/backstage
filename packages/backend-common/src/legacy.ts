@@ -43,10 +43,10 @@ type TransformedEnv<
  * @public
  * @remarks
  *
- * Usually you can use {@link createPluginCompat} directly instead, but you might
+ * Usually you can use {@link legacyPlugin} directly instead, but you might
  * need to use this if you have customized the plugin environment in your backend.
  */
-export function makePluginCompat<
+export function makeLegacyPlugin<
   TEnv extends Record<string, unknown>,
   TEnvTransforms extends { [key in keyof TEnv]?: (dep: TEnv[key]) => unknown },
 >(
@@ -101,10 +101,10 @@ export function makePluginCompat<
  * @example
  *
  *```ts
- *backend.add(createPluginCompat('kafka', import('./plugins/kafka')));
+ *backend.add(legacyPlugin('kafka', import('./plugins/kafka')));
  *```
  */
-export const createPluginCompat = makePluginCompat(
+export const legacyPlugin = makeLegacyPlugin(
   {
     cache: coreServices.cache,
     config: coreServices.config,
