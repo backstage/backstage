@@ -31,11 +31,6 @@ export const buildTechInsightsContext: <
 ) => Promise<TechInsightsContext<CheckType, CheckResultType>>;
 
 // @public
-export type CreateDatabaseOptions = {
-  logger: Logger;
-};
-
-// @public
 export function createFactRetrieverRegistration(
   options: FactRetrieverRegistrationOptions,
 ): FactRetrieverRegistration;
@@ -85,12 +80,17 @@ export interface FactRetrieverRegistry {
 // @public
 export const initializePersistenceContext: (
   database: PluginDatabaseManager,
-  options?: CreateDatabaseOptions,
+  options?: PersistenceContextOptions,
 ) => Promise<PersistenceContext>;
 
 // @public
 export type PersistenceContext = {
   techInsightsStore: TechInsightsStore;
+};
+
+// @public
+export type PersistenceContextOptions = {
+  logger: Logger;
 };
 
 // @public

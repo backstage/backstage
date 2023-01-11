@@ -41,11 +41,11 @@ export type PersistenceContext = {
  *
  * @public
  */
-export type CreateDatabaseOptions = {
+export type PersistenceContextOptions = {
   logger: Logger;
 };
 
-const defaultOptions: CreateDatabaseOptions = {
+const defaultOptions: PersistenceContextOptions = {
   logger: getVoidLogger(),
 };
 
@@ -56,7 +56,7 @@ const defaultOptions: CreateDatabaseOptions = {
  */
 export const initializePersistenceContext = async (
   database: PluginDatabaseManager,
-  options: CreateDatabaseOptions = defaultOptions,
+  options: PersistenceContextOptions = defaultOptions,
 ): Promise<PersistenceContext> => {
   const client = await database.getClient();
 

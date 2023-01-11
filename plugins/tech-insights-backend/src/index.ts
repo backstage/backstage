@@ -26,7 +26,7 @@ export type {
 export type { FactRetrieverEngine } from './service/fact/FactRetrieverEngine';
 export type {
   PersistenceContext,
-  CreateDatabaseOptions,
+  PersistenceContextOptions,
 } from './service/persistence/persistenceContext';
 export { createFactRetrieverRegistration } from './service/fact/createFactRetriever';
 export type { FactRetrieverRegistry } from './service/fact/FactRetrieverRegistry';
