@@ -21,47 +21,44 @@ import { findPaths } from '@backstage/cli-common';
 import {
   loadConfigSchema,
   loadConfig,
-  ConfigSchema,
   ConfigTarget,
   LoadConfigOptionsRemote,
 } from '@backstage/config-loader';
-import { AppConfig, Config, ConfigReader } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { getPackages } from '@manypkg/get-packages';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { isValidUrl } from '../lib/urls';
 
-import { setRootLoggerRedactionList } from './logging/rootLogger';
-
-// Fetch the schema and get all the secrets to pass to the rootLogger for redaction
-const updateRedactionList = (
-  schema: ConfigSchema,
-  configs: AppConfig[],
-  logger: LoggerService,
-) => {
-  const secretAppConfigs = schema.process(configs, {
-    visibility: ['secret'],
-    ignoreSchemaErrors: true,
+/** @public */
+export async function createConfigSecretEnumerator(options: {
+  logger: LoggerService;
+  dir?: string;
+}): Promise<(config: Config) => Iterable<string>> {
+  const { logger, dir = process.cwd() } = options;
+  const { packages } = await getPackages(dir);
+  const schema = await loadConfigSchema({
+    dependencies: packages.map(p => p.packageJson.name),
   });
-  const secretConfig = ConfigReader.fromConfigs(secretAppConfigs);
-  const values = new Set<string>();
-  const data = secretConfig.get();
 
-  JSON.parse(
-    JSON.stringify(data),
-    (_, v) => typeof v === 'string' && values.add(v),
-  );
-
-  logger.info(
-    `${values.size} secret${
-      values.size > 1 ? 's' : ''
-    } found in the config which will be redacted`,
-  );
-
-  setRootLoggerRedactionList(Array.from(values));
-};
-
-// A global used to ensure that only a single file watcher is active at a time.
-let currentCancelFunc: () => void;
+  return (config: Config) => {
+    const [secretsData] = schema.process(
+      [{ data: config.get(), context: 'schema-enumerator' }],
+      {
+        visibility: ['secret'],
+        ignoreSchemaErrors: true,
+      },
+    );
+    const secrets = new Set<string>();
+    JSON.parse(
+      JSON.stringify(secretsData),
+      (_, v) => typeof v === 'string' && secrets.add(v),
+    );
+    logger.info(
+      `Found ${secrets.size} new secrets in config that will be redacted`,
+    );
+    return secrets;
+  };
+}
 
 /**
  * Load configuration for a Backend.
@@ -75,7 +72,7 @@ export async function loadBackendConfig(options: {
   // process.argv or any other overrides
   remote?: LoadConfigOptionsRemote;
   argv: string[];
-}): Promise<Config> {
+}): Promise<{ config: Config }> {
   const args = parseArgs(options.argv);
 
   const configTargets: ConfigTarget[] = [args.config ?? []]
@@ -85,13 +82,7 @@ export async function loadBackendConfig(options: {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
-  // TODO(hhogg): This is fetching _all_ of the packages of the monorepo
-  // in order to find the secrets for redactions, however we only care about
-  // the backend ones, we need to find a way to exclude the frontend packages.
-  const { packages } = await getPackages(paths.targetDir);
-  const schema = await loadConfigSchema({
-    dependencies: packages.map(p => p.packageJson.name),
-  });
+  let currentCancelFunc: (() => void) | undefined = undefined;
 
   const config = new ObservableConfigProxy(options.logger);
   const { appConfigs } = await loadConfig({
@@ -112,7 +103,8 @@ export async function loadBackendConfig(options: {
         }
         currentCancelFunc = resolve;
 
-        // For reloads of this module we need to use a dispose handler rather than the global.
+        // TODO(Rugvip): We keep this here for now to avoid breaking the old system
+        //               since this is re-used in backend-common
         if (module.hot) {
           module.hot.addDisposeHandler(resolve);
         }
@@ -126,11 +118,5 @@ export async function loadBackendConfig(options: {
 
   config.setConfig(ConfigReader.fromConfigs(appConfigs));
 
-  // Subscribe to config changes and update the redaction list for logging
-  updateRedactionList(schema, appConfigs, options.logger);
-  config.subscribe(() =>
-    updateRedactionList(schema, appConfigs, options.logger),
-  );
-
-  return config;
+  return { config };
 }

@@ -16,7 +16,7 @@
 
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { ObservableConfigProxy } from './config';
+import { ObservableConfigProxy } from './ObservableConfigProxy';
 
 describe('ObservableConfigProxy', () => {
   const errLogger = {

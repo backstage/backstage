@@ -68,20 +68,23 @@ export class WinstonLogger implements RootLoggerService {
   /**
    * Creates a winston log formatter for redacting secrets.
    */
-  static redacter(): { format: Format; add: (redactions: string[]) => void } {
+  static redacter(): {
+    format: Format;
+    add: (redactions: Iterable<string>) => void;
+  } {
     const redactionSet = new Set<string>();
 
     let redactionPattern: RegExp | undefined = undefined;
 
     return {
-      format: format((info: TransformableInfo) => {
+      format: format(info => {
         if (redactionPattern && typeof info.message === 'string') {
           info.message = info.message.replace(redactionPattern, '[REDACTED]');
         }
         return info;
       })(),
-      add(newRedactions: string[]) {
-        let changed = false;
+      add(newRedactions) {
+        let added = 0;
         for (const redaction of newRedactions) {
           // Exclude secrets that are empty or just one character in length. These
           // typically mean that you are running local dev or tests, or using the
@@ -91,18 +94,14 @@ export class WinstonLogger implements RootLoggerService {
           }
           if (!redactionSet.has(redaction)) {
             redactionSet.add(redaction);
-            changed = true;
+            added += 1;
           }
         }
-        if (changed) {
-          if (redactionSet.size > 0) {
-            redactionPattern = new RegExp(
-              `(${Array.from(redactionSet).join('|')})`,
-              'g',
-            );
-          } else {
-            redactionPattern = undefined;
-          }
+        if (added > 0) {
+          redactionPattern = new RegExp(
+            `(${Array.from(redactionSet).join('|')})`,
+            'g',
+          );
         }
       },
     };
@@ -170,7 +169,7 @@ export class WinstonLogger implements RootLoggerService {
     return new WinstonLogger(this.#winston.child(meta));
   }
 
-  addRedactions(redactions: string[]): void {
+  addRedactions(redactions: string[]) {
     this.#addRedactions?.(redactions);
   }
 }
