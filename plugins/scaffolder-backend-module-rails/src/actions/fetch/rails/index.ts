@@ -128,6 +128,12 @@ export function createFetchRailsAction(options: {
                     description: 'Skip Action Text gem',
                     type: 'boolean',
                   },
+                  skipActiveRecord: {
+                    title: 'skipActiveRecord',
+                    description: 'Skip Active Record files',
+                    type: 'boolean',
+                  },
+
                   force: {
                     title: 'force',
                     description: 'Overwrite files that already exist',
