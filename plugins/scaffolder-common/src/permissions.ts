@@ -16,54 +16,14 @@
 
 import { createPermission } from '@backstage/plugin-permission-common';
 
-/**
- * Permission resource type which corresponds to a scaffolder templates.
- *
- * @alpha
- */
-export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
+export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-field';
 
-/**
- * This permission is used to authorize actions that involve reading
- * one or more parameters from a template.
- *
- * If this permission is not authorized, it will appear that the
- * parameter does not exist in the template — both in the frontend
- * and in API responses.
- *
- * @alpha
- */
-export const templateParameterReadPermission = createPermission({
-  name: 'scaffolder.template.parameter.read',
+export const templateSchemaExecutePermission = createPermission({
+  name: 'scaffolder.template.schema.execute',
   attributes: {
-    action: 'read',
+    action: 'create',
   },
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
 });
 
-/**
- * This permission is used to authorize actions that involve reading
- * one or more steps from a template.
- *
- * If this permission is not authorized, it will appear that the
- * step does not exist in the template — both in the frontend
- * and in API responses. Steps will also not be executed.
- *
- * @alpha
- */
-export const templateStepReadPermission = createPermission({
-  name: 'scaffolder.template.step.read',
-  attributes: {
-    action: 'read',
-  },
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-});
-
-/**
- * List of all the scaffolder permissions
- * @alpha
- */
-export const scaffolderPermissions = [
-  templateParameterReadPermission,
-  templateStepReadPermission,
-];
+export const scaffolderPermissions = [templateSchemaExecutePermission];
