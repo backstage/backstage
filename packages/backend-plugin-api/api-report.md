@@ -282,7 +282,10 @@ export interface RootHttpRouterService {
 export interface RootLifecycleService extends LifecycleService {}
 
 // @public (undocumented)
-export interface RootLoggerService extends LoggerService {}
+export interface RootLoggerService extends LoggerService {
+  // (undocumented)
+  addRedactions(redactions: Iterable<string>): void;
+}
 
 // @public (undocumented)
 export interface SchedulerService extends PluginTaskScheduler {}
