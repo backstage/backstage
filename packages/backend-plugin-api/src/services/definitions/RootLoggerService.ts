@@ -17,6 +17,4 @@
 import { LoggerService } from './LoggerService';
 
 /** @public */
-export interface RootLoggerService extends LoggerService {
-  addRedactions(redactions: Iterable<string>): void;
-}
+export interface RootLoggerService extends LoggerService {}

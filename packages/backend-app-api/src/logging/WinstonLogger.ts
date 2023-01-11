@@ -45,7 +45,7 @@ export interface WinstonLoggerOptions {
  */
 export class WinstonLogger implements RootLoggerService {
   #winston: Logger;
-  #addRedactions?: RootLoggerService['addRedactions'];
+  #addRedactions?: (redactions: Iterable<string>) => void;
 
   /**
    * Creates a {@link WinstonLogger} instance.
@@ -143,7 +143,7 @@ export class WinstonLogger implements RootLoggerService {
 
   private constructor(
     winston: Logger,
-    addRedactions?: RootLoggerService['addRedactions'],
+    addRedactions?: (redactions: Iterable<string>) => void,
   ) {
     this.#winston = winston;
     this.#addRedactions = addRedactions;
@@ -169,7 +169,7 @@ export class WinstonLogger implements RootLoggerService {
     return new WinstonLogger(this.#winston.child(meta));
   }
 
-  addRedactions(redactions: string[]) {
+  addRedactions(redactions: Iterable<string>) {
     this.#addRedactions?.(redactions);
   }
 }

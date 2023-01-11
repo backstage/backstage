@@ -19,10 +19,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
-import {
-  createConfigSecretEnumerator,
-  loadBackendConfig,
-} from '../../../config';
+import { loadBackendConfig } from '../../../config';
 
 /** @public */
 export interface ConfigFactoryOptions {
@@ -40,22 +37,11 @@ export interface ConfigFactoryOptions {
 /** @public */
 export const configFactory = createServiceFactory({
   service: coreServices.config,
-  deps: {
-    logger: coreServices.rootLogger,
-  },
-  async factory({ logger }, options?: ConfigFactoryOptions) {
-    const argv = options?.argv ?? process.argv;
-    const secretEnumerator = await createConfigSecretEnumerator({ logger });
+  deps: {},
+  async factory({}, options?: ConfigFactoryOptions) {
+    const { argv = process.argv, remote } = options ?? {};
 
-    const { config } = await loadBackendConfig({
-      argv,
-      logger,
-      remote: options?.remote,
-    });
-
-    logger.addRedactions(secretEnumerator(config));
-    config.subscribe?.(() => logger.addRedactions(secretEnumerator(config)));
-
+    const { config } = await loadBackendConfig({ argv, remote });
     return config;
   },
 });

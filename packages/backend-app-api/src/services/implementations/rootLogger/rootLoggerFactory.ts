@@ -20,13 +20,16 @@ import {
 } from '@backstage/backend-plugin-api';
 import { WinstonLogger } from '../../../logging';
 import { transports, format } from 'winston';
+import { createConfigSecretEnumerator } from '../../../config';
 
 /** @public */
 export const rootLoggerFactory = createServiceFactory({
   service: coreServices.rootLogger,
-  deps: {},
-  async factory() {
-    return WinstonLogger.create({
+  deps: {
+    config: coreServices.config,
+  },
+  async factory({ config }) {
+    const logger = WinstonLogger.create({
       meta: {
         service: 'backstage',
       },
@@ -37,5 +40,11 @@ export const rootLoggerFactory = createServiceFactory({
           : WinstonLogger.colorFormat(),
       transports: [new transports.Console()],
     });
+
+    const secretEnumerator = await createConfigSecretEnumerator({ logger });
+    logger.addRedactions(secretEnumerator(config));
+    config.subscribe?.(() => logger.addRedactions(secretEnumerator(config)));
+
+    return logger;
   },
 });

@@ -68,8 +68,6 @@ export async function createConfigSecretEnumerator(options: {
  * @public
  */
 export async function loadBackendConfig(options: {
-  logger: LoggerService;
-  // process.argv or any other overrides
   remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<{ config: Config }> {
@@ -84,14 +82,14 @@ export async function loadBackendConfig(options: {
 
   let currentCancelFunc: (() => void) | undefined = undefined;
 
-  const config = new ObservableConfigProxy(options.logger);
+  const config = new ObservableConfigProxy();
   const { appConfigs } = await loadConfig({
     configRoot: paths.targetRoot,
     configTargets: configTargets,
     remote: options.remote,
     watch: {
       onChange(newConfigs) {
-        options.logger.info(
+        console.info(
           `Reloaded config from ${newConfigs.map(c => c.context).join(', ')}`,
         );
 
@@ -112,7 +110,7 @@ export async function loadBackendConfig(options: {
     },
   });
 
-  options.logger.info(
+  console.info(
     `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 

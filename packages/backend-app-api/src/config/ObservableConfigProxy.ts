@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigService, LoggerService } from '@backstage/backend-plugin-api';
+import { ConfigService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 
@@ -24,7 +24,6 @@ export class ObservableConfigProxy implements ConfigService {
   private readonly subscribers: (() => void)[] = [];
 
   constructor(
-    private readonly logger: LoggerService,
     private readonly parent?: ObservableConfigProxy,
     private parentKey?: string,
   ) {
@@ -42,7 +41,7 @@ export class ObservableConfigProxy implements ConfigService {
       try {
         subscriber();
       } catch (error) {
-        this.logger.error(`Config subscriber threw error, ${error}`);
+        console.error(`Config subscriber threw error, ${error}`);
       }
     }
   }
@@ -89,11 +88,11 @@ export class ObservableConfigProxy implements ConfigService {
     return this.select(false)?.getOptional(key);
   }
   getConfig(key: string): ConfigService {
-    return new ObservableConfigProxy(this.logger, this, key);
+    return new ObservableConfigProxy(this, key);
   }
   getOptionalConfig(key: string): ConfigService | undefined {
     if (this.select(false)?.has(key)) {
-      return new ObservableConfigProxy(this.logger, this, key);
+      return new ObservableConfigProxy(this, key);
     }
     return undefined;
   }
