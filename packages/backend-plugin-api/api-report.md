@@ -7,6 +7,7 @@
 
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -108,6 +109,7 @@ export namespace coreServices {
   const scheduler: ServiceRef<SchedulerService, 'plugin'>;
   const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
+  const identity: ServiceRef<IdentityService, 'plugin'>;
 }
 
 // @public
@@ -181,6 +183,9 @@ export interface HttpRouterService {
   // (undocumented)
   use(handler: Handler): void;
 }
+
+// @public (undocumented)
+export interface IdentityService extends IdentityApi {}
 
 // @public (undocumented)
 export interface LifecycleService {
