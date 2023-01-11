@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin
- *
- * @packageDocumentation
- */
+import { createPermission } from '@backstage/plugin-permission-common';
 
-export * from './TaskSpec';
-export * from './permissions';
-export { templateEntityV1beta3Validator } from './TemplateEntityV1beta3';
-export type { TemplateEntityV1beta3 } from './TemplateEntityV1beta3';
+export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-field';
+
+export const templateSchemaExecutePermission = createPermission({
+  name: 'scaffolder.template.schema.execute',
+  attributes: {
+    action: 'create',
+  },
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+});
+
+export const scaffolderPermissions = [templateSchemaExecutePermission];
