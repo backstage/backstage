@@ -21,14 +21,14 @@ import {
   NextFieldExtensionOptions,
   SecretsContextProvider,
   useCustomFieldExtensions,
+  useCustomLayouts,
+  type FormProps,
 } from '@backstage/plugin-scaffolder-react';
 
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import { nextSelectedTemplateRouteRef } from '../routes';
-import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../../layouts';
-import type { FormProps, NextLayoutOptions } from '../types';
 
 /**
  * The Props for the Scaffolder Router
@@ -66,15 +66,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
     ),
   ] as NextFieldExtensionOptions[];
 
-  const customLayouts = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: LAYOUTS_WRAPPER_KEY,
-      })
-      .findComponentData<NextLayoutOptions>({
-        key: LAYOUTS_KEY,
-      }),
-  );
+  const customLayouts = useCustomLayouts(outlet);
 
   return (
     <Routes>

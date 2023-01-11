@@ -13,6 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { useCustomFieldExtensions } from './useCustomFieldExtensions';
-export { useCustomLayouts } from './useCustomLayouts';
+export const LAYOUTS_KEY = 'scaffolder.layout.v1';
+export const LAYOUTS_WRAPPER_KEY = 'scaffolder.layouts.wrapper.v1';

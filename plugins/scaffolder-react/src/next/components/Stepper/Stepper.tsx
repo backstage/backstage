@@ -33,8 +33,7 @@ import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv6';
 import { useFormDataFromQuery } from '../../hooks';
-import type { FormProps, NextLayoutOptions } from '../../types';
-import { useTransformSchemaToProps } from './useTransformSchemaToProps';
+import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 
 const useStyles = makeStyles(theme => ({
   backButton: {

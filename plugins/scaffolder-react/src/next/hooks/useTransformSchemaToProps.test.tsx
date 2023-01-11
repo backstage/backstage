@@ -16,8 +16,8 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { TestApiProvider } from '@backstage/test-utils';
-import { type ParsedTemplateSchema } from './Stepper/useTemplateSchema';
-import { useTransformSchemaToProps } from './Stepper/useTransformSchemaToProps';
+import { type ParsedTemplateSchema } from './useTemplateSchema';
+import { useTransformSchemaToProps } from './useTransformSchemaToProps';
 
 describe('useTransformSchemaToProps', () => {
   it('should replace ui:ObjectFieldTemplate with actual component', () => {

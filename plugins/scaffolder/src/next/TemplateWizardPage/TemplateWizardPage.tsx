@@ -27,6 +27,14 @@ import {
   useTemplateSecrets,
   type NextFieldExtensionOptions,
   Workflow
+  type NextLayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
+import useAsync from 'react-use/lib/useAsync';
+import { makeStyles } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
+import {
+  Stepper,
+  NextFieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
 import { type FormProps } from '../types';

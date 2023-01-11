@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type NextLayoutOptions } from '../../types';
 import { type ParsedTemplateSchema } from './useTemplateSchema';
+import { type NextLayoutOptions } from '../types';
 
 export const useTransformSchemaToProps = (
   step: ParsedTemplateSchema,
