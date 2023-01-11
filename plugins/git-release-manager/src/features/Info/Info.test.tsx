@@ -42,6 +42,7 @@ describe('Info', () => {
 
     expect(await findByText(mockReleaseBranch.name)).toMatchInlineSnapshot(`
       <span
+        class="MuiTypography-root MuiTypography-body1"
         data-testid="grm--differ-next"
         style="font-weight: bold;"
       >
@@ -53,6 +54,7 @@ describe('Info', () => {
       await findByText(`${mockCalverProject.owner}/${mockCalverProject.repo}`),
     ).toMatchInlineSnapshot(`
       <span
+        class="MuiTypography-root MuiTypography-body1"
         data-testid="grm--differ-next"
         style="font-weight: bold;"
       >
@@ -63,6 +65,7 @@ describe('Info', () => {
     expect(await findByText(mockCalverProject.versioningStrategy))
       .toMatchInlineSnapshot(`
       <span
+        class="MuiTypography-root MuiTypography-body1"
         data-testid="grm--differ-next"
         style="font-weight: bold;"
       >
@@ -73,6 +76,7 @@ describe('Info', () => {
     expect(await findByText(mockReleaseCandidateCalver.tagName))
       .toMatchInlineSnapshot(`
       <span
+        class="MuiTypography-root MuiTypography-body1"
         data-testid="grm--differ-next"
         style="font-weight: bold;"
       >

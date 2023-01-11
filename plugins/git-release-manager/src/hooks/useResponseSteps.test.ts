@@ -75,12 +75,13 @@ describe('useResponseSteps', () => {
             "message": <b>
               Something went wrong
                
-              <span
+              <WithStyles(ForwardRef(Typography))
                 aria-label="fire"
+                component="span"
                 role="img"
               >
                 🔥
-              </span>
+              </WithStyles(ForwardRef(Typography))>
             </b>,
             "secondaryMessage": "Error message: :(",
           },
@@ -108,12 +109,13 @@ describe('useResponseSteps', () => {
             "message": <b>
               Something went wrong
                
-              <span
+              <WithStyles(ForwardRef(Typography))
                 aria-label="fire"
+                component="span"
                 role="img"
               >
                 🔥
-              </span>
+              </WithStyles(ForwardRef(Typography))>
             </b>,
             "secondaryMessage": "Error message: unknown",
           },

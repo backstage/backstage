@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { WithLink } from '../../utils/components';
 import { RadarDescription } from '../RadarDescription';
@@ -50,17 +51,21 @@ export const RadarLegendLink = ({
   if (description) {
     return (
       <>
-        <span
+        <Typography
+          component="span"
           className={classes.entryLink}
           onClick={handleClickOpen}
           role="button"
           tabIndex={0}
           onKeyPress={toggle}
         >
-          <span className={active ? classes.activeEntry : classes.entry}>
+          <Typography
+            component="span"
+            className={active ? classes.activeEntry : classes.entry}
+          >
             {title}
-          </span>
-        </span>
+          </Typography>
+        </Typography>
         {open && (
           <RadarDescription
             open={open}
@@ -75,9 +80,12 @@ export const RadarLegendLink = ({
   }
   return (
     <WithLink url={url} className={classes.entryLink}>
-      <span className={active ? classes.activeEntry : classes.entry}>
+      <Typography
+        component="span"
+        className={active ? classes.activeEntry : classes.entry}
+      >
         {title}
-      </span>
+      </Typography>
     </WithLink>
   );
 };

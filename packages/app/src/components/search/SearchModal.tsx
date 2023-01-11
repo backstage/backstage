@@ -25,6 +25,7 @@ import {
   Paper,
   useTheme,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import BuildIcon from '@material-ui/icons/Build';
 import LaunchIcon from '@material-ui/icons/Launch';
 import {
@@ -178,9 +179,12 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                   }}
                   to={`${getSearchLink()}?query=${term}`}
                 >
-                  <span className={classes.viewResultsLink}>
+                  <Typography
+                    component="span"
+                    className={classes.viewResultsLink}
+                  >
                     View Full Results
-                  </span>
+                  </Typography>
                   <LaunchIcon color="primary" />
                 </Link>
               </Grid>
