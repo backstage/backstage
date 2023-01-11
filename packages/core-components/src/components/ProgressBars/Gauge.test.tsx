@@ -16,8 +16,9 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { Gauge, getProgressColor } from './Gauge';
 import * as theme from '@backstage/theme';
+import grey from '@material-ui/core/colors/grey';
+import { Gauge, getProgressColor } from './Gauge';
 
 describe('<Gauge />', () => {
   it('renders without exploding', async () => {
@@ -57,7 +58,7 @@ describe('<Gauge />', () => {
 
   it('colors the progress correctly', () => {
     expect(getProgressColor({ palette, value: 'Not a Number' as any })).toBe(
-      '#ddd',
+      grey[300],
     );
     expect(getProgressColor({ palette, value: 10 })).toBe(error);
     expect(getProgressColor({ palette, value: 50 })).toBe(warning);
@@ -71,7 +72,7 @@ describe('<Gauge />', () => {
         value: 'Not a Number' as any,
         inverse: true,
       }),
-    ).toBe('#ddd');
+    ).toBe(grey[300]);
     expect(getProgressColor({ palette, value: 10, inverse: true })).toBe(ok);
     expect(getProgressColor({ palette, value: 50, inverse: true })).toBe(
       warning,
