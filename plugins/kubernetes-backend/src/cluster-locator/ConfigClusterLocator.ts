@@ -59,8 +59,9 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           case 'aws': {
             const assumeRole = c.getOptionalString('assumeRole');
             const externalId = c.getOptionalString('externalId');
+            const clusterName = c.getOptionalString('clusterName');
 
-            return { assumeRole, externalId, ...clusterDetails };
+            return { assumeRole, externalId, clusterName, ...clusterDetails };
           }
           case 'azure': {
             return clusterDetails;
