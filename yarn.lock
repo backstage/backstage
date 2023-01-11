@@ -16445,9 +16445,9 @@ __metadata:
   linkType: hard
 
 "already@npm:^3.2.0":
-  version: 3.4.0
-  resolution: "already@npm:3.4.0"
-  checksum: 622742936621eb744734bf30be9fcfcd847d499483629f27041fb31c069d61d993d9c6444fd22a5d1a57c36ee6086921d5a1ca6d50dc4fd72ebb0aba38f6c216
+  version: 3.4.1
+  resolution: "already@npm:3.4.1"
+  checksum: 4bc145ca4d3c0b92d8cdbd9c47590f5b1e52f7cb112d16961aeab35496cf4639b6f49c5c7bb9056cfdcf47f2c26ac9c9c09a86d11a5108d605e79628d9f64d93
   languageName: node
   linkType: hard
 
