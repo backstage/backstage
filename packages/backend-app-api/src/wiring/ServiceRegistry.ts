@@ -44,18 +44,8 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     }
   >;
 
-  constructor(
-    factories: Array<ServiceFactory<unknown> | (() => ServiceFactory<unknown>)>,
-  ) {
-    this.#providedFactories = new Map(
-      factories.map(f => {
-        if (typeof f === 'function') {
-          const cf = f();
-          return [cf.service.id, cf];
-        }
-        return [f.service.id, f];
-      }),
-    );
+  constructor(factories: Array<ServiceFactory<unknown>>) {
+    this.#providedFactories = new Map(factories.map(f => [f.service.id, f]));
     this.#loadedDefaultFactories = new Map();
     this.#implementations = new Map();
   }

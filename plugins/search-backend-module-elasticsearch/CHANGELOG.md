@@ -1,5 +1,15 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.1.1-next.2
+
+### Patch Changes
+
+- 2a49ffbcb3: Improved documentation on the `ElasticSearchSearchEngine.newClient()` method.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.1-next.2
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-search-common@1.2.1-next.0
+
 ## 1.1.1-next.1
 
 ### Patch Changes

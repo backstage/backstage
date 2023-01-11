@@ -20,6 +20,7 @@ import os from 'os';
 import { Writable } from 'stream';
 import { createDebugLogAction } from './log';
 import { join } from 'path';
+import yaml from 'yaml';
 
 describe('debug:log', () => {
   const logStream = {
@@ -82,6 +83,45 @@ describe('debug:log', () => {
       input: {
         message: 'Hello Backstage!',
       },
+    };
+
+    await action.handler(context);
+
+    expect(logStream.write).toHaveBeenCalledTimes(1);
+    expect(logStream.write).toHaveBeenCalledWith(
+      expect.stringContaining('Hello Backstage!'),
+    );
+  });
+
+  it('should log the workspace content from an example, if active', async () => {
+    const example = action.examples?.find(
+      sample => sample.description === 'List the workspace directory',
+    )?.example as string;
+    expect(typeof example).toEqual('string');
+    const context = {
+      ...mockContext,
+      ...yaml.parse(example).steps[0],
+    };
+
+    await action.handler(context);
+
+    expect(logStream.write).toHaveBeenCalledTimes(1);
+    expect(logStream.write).toHaveBeenCalledWith(
+      expect.stringContaining('README.md'),
+    );
+    expect(logStream.write).toHaveBeenCalledWith(
+      expect.stringContaining(join('a-directory', 'index.md')),
+    );
+  });
+
+  it('should log message from an example', async () => {
+    const example = action.examples?.find(
+      sample => sample.description === 'Write a debug message',
+    )?.example as string;
+
+    const context = {
+      ...mockContext,
+      ...yaml.parse(example).steps[0],
     };
 
     await action.handler(context);

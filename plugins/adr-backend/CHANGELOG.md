@@ -1,5 +1,24 @@
 # @backstage/plugin-adr-backend
 
+## 0.2.5-next.2
+
+### Patch Changes
+
+- e4469d0ec1: The ADR plugin can now work with sites other than GitHub. Expanded the ADR backend plugin to provide endpoints to facilitate this.
+
+  **BREAKING** The ADR plugin now uses UrlReaders. You will have to [configure integrations](https://backstage.io/docs/integrations/index#configuration) for all sites you want to get ADRs from. If you would like to create your own implementation that has different behavior, you can override the AdrApi [just like you can with other apis.](https://backstage.io/docs/api/utility-apis#app-apis) The previously used Octokit implementation has been completely removed.
+
+- 21ffbdd5ee: Clarify that default ADR parsers support MADR specification v2.x
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/catalog-client@1.3.0-next.2
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/plugin-adr-common@0.2.5-next.1
+  - @backstage/plugin-search-common@1.2.1-next.0
+
 ## 0.2.5-next.1
 
 ### Patch Changes

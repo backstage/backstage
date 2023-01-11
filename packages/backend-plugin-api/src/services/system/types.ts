@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { FactoryFunctionWithOptions, MaybeOptions } from '../../types';
+
 /**
  * TODO
  *
@@ -69,49 +71,60 @@ export type ServiceFactory<TService = unknown> =
       >;
     };
 
+/**
+ * Represents either a {@link ServiceFactory} or a function that returns one.
+ *
+ * @public
+ */
+export type ServiceFactoryOrFunction<TService = unknown> =
+  | ServiceFactory<TService>
+  | (() => ServiceFactory<TService>);
+
 /** @public */
-export function createServiceRef<T>(options: {
+export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   id: string;
-  scope?: 'plugin';
+  scope?: TScope;
   defaultFactory?: (
-    service: ServiceRef<T, 'plugin'>,
-  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T, 'plugin'>;
-/** @public */
-export function createServiceRef<T>(options: {
-  id: string;
-  scope: 'root';
-  defaultFactory?: (
-    service: ServiceRef<T, 'root'>,
-  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T, 'root'>;
-export function createServiceRef<T>(options: {
-  id: string;
-  scope?: 'plugin' | 'root';
-  defaultFactory?:
-    | ((
-        service: ServiceRef<T, 'plugin'>,
-      ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>)
-    | ((
-        service: ServiceRef<T, 'root'>,
-      ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>);
-}): ServiceRef<T> {
-  const { id, scope = 'plugin', defaultFactory } = options;
+    service: ServiceRef<TService, TScope>,
+  ) => Promise<ServiceFactoryOrFunction<TService>>;
+}
+
+/**
+ * Creates a new service definition. This overload is used to create plugin scoped services.
+ *
+ * @public
+ */
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, 'plugin'>,
+): ServiceRef<TService, 'plugin'>;
+
+/**
+ * Creates a new service definition. This overload is used to create root scoped services.
+ *
+ * @public
+ */
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, 'root'>,
+): ServiceRef<TService, 'root'>;
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, any>,
+): ServiceRef<TService, any> {
+  const { id, scope = 'plugin', defaultFactory } = config;
   return {
     id,
     scope,
-    get T(): T {
+    get T(): TService {
       throw new Error(`tried to read ServiceRef.T of ${this}`);
     },
     toString() {
-      return `serviceRef{${options.id}}`;
+      return `serviceRef{${config.id}}`;
     },
     $$ref: 'service', // TODO: declare
     __defaultFactory: defaultFactory,
-  } as ServiceRef<T, typeof scope> & {
+  } as ServiceRef<TService, typeof scope> & {
     __defaultFactory?: (
-      service: ServiceRef<T>,
-    ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
+      service: ServiceRef<TService>,
+    ) => Promise<ServiceFactory<TService> | (() => ServiceFactory<TService>)>;
   };
 }
 
@@ -125,16 +138,14 @@ type ServiceRefsToInstances<
   }[keyof T]]: T[name] extends ServiceRef<infer TImpl> ? TImpl : never;
 };
 
-/**
- * @public
- */
-export function createServiceFactory<
+/** @public */
+export interface ServiceFactoryConfig<
   TService,
   TScope extends 'root' | 'plugin',
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
-  TOpts extends object | undefined = undefined,
->(config: {
+  TOpts extends MaybeOptions = undefined,
+> {
   service: ServiceRef<TService, TScope>;
   deps: TDeps;
   factory(
@@ -143,9 +154,20 @@ export function createServiceFactory<
   ): TScope extends 'root'
     ? Promise<TImpl>
     : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
-}): undefined extends TOpts
-  ? (options?: TOpts) => ServiceFactory<TService>
-  : (options: TOpts) => ServiceFactory<TService> {
+}
+
+/**
+ * @public
+ */
+export function createServiceFactory<
+  TService,
+  TScope extends 'root' | 'plugin',
+  TImpl extends TService,
+  TDeps extends { [name in string]: ServiceRef<unknown> },
+  TOpts extends MaybeOptions = undefined,
+>(
+  config: ServiceFactoryConfig<TService, TScope, TImpl, TDeps, TOpts>,
+): FactoryFunctionWithOptions<ServiceFactory<TService>, TOpts> {
   return (options?: TOpts) =>
     ({
       scope: config.service.scope,

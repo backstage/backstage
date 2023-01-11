@@ -35,8 +35,8 @@ import {
 import { CategoryPicker } from './CategoryPicker';
 import { RegisterExistingButton } from './RegisterExistingButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { registerComponentRouteRef } from '../../routes';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
+import { registerComponentRouteRef } from '../../routes';
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{

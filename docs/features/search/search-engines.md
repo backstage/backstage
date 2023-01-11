@@ -133,17 +133,25 @@ used internally by the Elasticsearch engine plugin. For example:
 
 ```typescript
 import { isOpenSearchCompatible } from '@backstage/plugin-search-backend-module-elasticsearch';
-import { Client as ElasticClient } from '@elastic/elastic-search';
+import { Client as ElasticClient } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 
-const client = searchEngine.newClient(options => {
-  // In reality, you would only import / instantiate one of the following, but
-  // for illustrative purposes, here are both:
-  if (isOpenSearchCompatible(options)) {
-    return new OpenSearchClient(options);
-  } else {
+// Return an Elasticsearch client
+const esClient = searchEngine.newClient<ElasticClient>(options => {
+  if (!isOpenSearchCompatible(options)) {
     return new ElasticClient(options);
   }
+
+  throw new Error('Incompatible options');
+});
+
+// Return an OpenSearch client
+const osClient = searchEngine.newClient<OpenSearchClient>(options => {
+  if (isOpenSearchCompatible(options)) {
+    return new OpenSearchClient(options);
+  }
+
+  throw new Error('Incompatible options');
 });
 ```
 

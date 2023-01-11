@@ -1,5 +1,74 @@
 # @backstage/plugin-scaffolder
 
+## 1.10.0-next.2
+
+### Minor Changes
+
+- b4955ed7b9: - **Deprecation** - Deprecated the following exports, please import them directly from `@backstage/plugin-scaffolder-react` instead
+
+  ```
+  createScaffolderFieldExtension
+  ScaffolderFieldExtensions
+  useTemplateSecrets
+  scaffolderApiRef
+  ScaffolderApi
+  ScaffolderUseTemplateSecrets
+  TemplateParameterSchema
+  CustomFieldExtensionSchema
+  CustomFieldValidator
+  FieldExtensionOptions
+  FieldExtensionComponentProps
+  FieldExtensionComponent
+  ListActionsResponse
+  LogEvent
+  ScaffolderDryRunOptions
+  ScaffolderDryRunResponse
+  ScaffolderGetIntegrationsListOptions
+  ScaffolderGetIntegrationsListResponse
+  ScaffolderOutputlink
+  ScaffolderScaffoldOptions
+  ScaffolderScaffoldResponse
+  ScaffolderStreamLogsOptions
+  ScaffolderTask
+  ScaffolderTaskOutput
+  ScaffolderTaskStatus
+  ```
+
+  - **Deprecation** - Deprecated the `rootRouteRef` export, this should now be used from `scaffolderPlugin.routes.root`
+
+  - The following `/alpha` types have removed from this package and moved to the `@backstage/plugin-scaffolder-react/alpha` package
+
+    ```
+    createNextScaffolderFieldExtension
+    FormProps
+    NextCustomFieldValidator
+    NextFieldExtensionComponentProps
+    NextFieldExtensionOptions
+    ```
+
+### Patch Changes
+
+- 2fadff2a25: Render the scaffolder action description using the `MarkdownContent` component. This will allow the page to show richer content to describe scaffolder actions.
+- 659c92a1dc: Updated dependency `use-immer` to `^0.8.0`.
+- 489935d625: Show action example yaml on the scaffolder actions documentation page.
+- b8269de9f1: Explicitly declaring children as optional props to facilitate react 18 changes
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.0.0-next.0
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/catalog-client@1.3.0-next.2
+  - @backstage/plugin-catalog-react@1.2.4-next.2
+  - @backstage/plugin-permission-react@0.4.9-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/integration-react@1.1.9-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10-next.1
+  - @backstage/plugin-scaffolder-common@1.2.4-next.1
+
 ## 1.10.0-next.1
 
 ### Patch Changes

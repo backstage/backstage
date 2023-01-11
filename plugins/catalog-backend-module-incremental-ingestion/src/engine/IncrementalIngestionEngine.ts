@@ -116,7 +116,10 @@ export class IncrementalIngestionEngine<TInput>
               );
 
               const backoffLength = currentBackoff.as('milliseconds');
-              this.options.logger.error(error);
+              this.options.logger.error(
+                `incremental-engine: Ingestion '${ingestionId}' failed`,
+                error,
+              );
 
               const truncatedError = stringifyError(error).substring(0, 700);
               this.options.logger.error(

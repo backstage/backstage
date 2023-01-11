@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 import { base64url, exportJWK, generateSecret, jwtVerify, SignJWT } from 'jose';
 import { DateTime, Duration } from 'luxon';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { TokenManager } from './types';
 
 const TOKEN_ALG = 'HS256';
@@ -49,7 +49,7 @@ export interface ServerTokenManagerOptions {
   /**
    * The logger to use.
    */
-  logger: Logger;
+  logger: LoggerService;
 }
 
 /**

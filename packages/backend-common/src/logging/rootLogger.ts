@@ -101,26 +101,27 @@ export function createRootLogger(
   options: winston.LoggerOptions = {},
   env = process.env,
 ): winston.Logger {
-  const logger = winston.createLogger(
-    merge<LoggerOptions, LoggerOptions>(
-      {
-        level: env.LOG_LEVEL || 'info',
-        format: winston.format.combine(
-          winston.format(redactWinstonLogLine)(),
-          env.NODE_ENV === 'production' ? winston.format.json() : coloredFormat,
-        ),
-        defaultMeta: {
-          service: 'backstage',
+  const logger = winston
+    .createLogger(
+      merge<LoggerOptions, LoggerOptions>(
+        {
+          level: env.LOG_LEVEL || 'info',
+          format: winston.format.combine(
+            winston.format(redactWinstonLogLine)(),
+            env.NODE_ENV === 'production'
+              ? winston.format.json()
+              : coloredFormat,
+          ),
+          transports: [
+            new winston.transports.Console({
+              silent: env.JEST_WORKER_ID !== undefined && !env.LOG_LEVEL,
+            }),
+          ],
         },
-        transports: [
-          new winston.transports.Console({
-            silent: env.JEST_WORKER_ID !== undefined && !env.LOG_LEVEL,
-          }),
-        ],
-      },
-      options,
-    ),
-  );
+        options,
+      ),
+    )
+    .child({ service: 'backstage' });
 
   setRootLogger(logger);
 

@@ -1,5 +1,19 @@
 # @backstage/backend-test-utils
 
+## 0.1.32-next.2
+
+### Patch Changes
+
+- 015a6dced6: Updated to make sure that service implementations replace default service implementations.
+- a3ec2f32ea: The `startTestBackend` setup now includes default implementations for all core services.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.3.0-next.1
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/cli@0.22.1-next.2
+  - @backstage/config@1.0.6-next.0
+
 ## 0.1.32-next.1
 
 ### Patch Changes

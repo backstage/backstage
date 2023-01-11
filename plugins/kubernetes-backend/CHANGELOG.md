@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.9.1-next.2
+
+### Patch Changes
+
+- c6f29bfcdc: Added the missing auth provider googleServiceAccount in config schema.
+- Updated dependencies
+  - @backstage/backend-test-utils@0.1.32-next.2
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/catalog-client@1.3.0-next.2
+  - @backstage/plugin-auth-node@0.2.9-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-kubernetes-common@0.5.1-next.1
+
 ## 0.9.1-next.1
 
 ### Patch Changes

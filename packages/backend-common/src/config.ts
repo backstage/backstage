@@ -16,7 +16,7 @@
 
 import { resolve as resolvePath } from 'path';
 import parseArgs from 'minimist';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { findPaths } from '@backstage/cli-common';
 import {
   loadConfigSchema,
@@ -37,7 +37,7 @@ import { setRootLoggerRedactionList } from './logging/rootLogger';
 const updateRedactionList = (
   schema: ConfigSchema,
   configs: AppConfig[],
-  logger: Logger,
+  logger: LoggerService,
 ) => {
   const secretAppConfigs = schema.process(configs, {
     visibility: ['secret'],
@@ -67,7 +67,7 @@ export class ObservableConfigProxy implements Config {
   private readonly subscribers: (() => void)[] = [];
 
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly parent?: ObservableConfigProxy,
     private parentKey?: string,
   ) {
@@ -183,7 +183,7 @@ let currentCancelFunc: () => void;
  * @public
  */
 export async function loadBackendConfig(options: {
-  logger: Logger;
+  logger: LoggerService;
   // process.argv or any other overrides
   remote?: LoadConfigOptionsRemote;
   argv: string[];

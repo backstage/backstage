@@ -22,6 +22,7 @@ import {
   MenuItem,
   MenuList,
   Popover,
+  Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
@@ -114,19 +115,21 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
 
   return (
     <>
-      <IconButton
-        aria-label="more"
-        aria-controls="long-menu"
-        aria-haspopup="true"
-        aria-expanded={!!anchorEl}
-        role="button"
-        onClick={onOpen}
-        data-testid="menu-button"
-        className={classes.button}
-        id="long-menu"
-      >
-        <MoreVert />
-      </IconButton>
+      <Tooltip title="More" arrow>
+        <IconButton
+          aria-label="more"
+          aria-controls="long-menu"
+          aria-haspopup="true"
+          aria-expanded={!!anchorEl}
+          role="button"
+          onClick={onOpen}
+          data-testid="menu-button"
+          className={classes.button}
+          id="long-menu"
+        >
+          <MoreVert />
+        </IconButton>
+      </Tooltip>
       <Popover
         open={Boolean(anchorEl)}
         onClose={onClose}

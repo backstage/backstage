@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { Fragment } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { scaffolderApiRef } from '../../api';
+import {
+  ActionExample,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
 import {
   Typography,
   Paper,
@@ -27,10 +30,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Grid,
   makeStyles,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@material-ui/core';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import classNames from 'classnames';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { useApi } from '@backstage/core-plugin-api';
 import {
@@ -39,6 +47,7 @@ import {
   Header,
   Page,
   ErrorPage,
+  CodeSnippet,
   MarkdownContent,
 } from '@backstage/core-components';
 
@@ -67,6 +76,34 @@ const useStyles = makeStyles(theme => ({
     },
   },
 }));
+
+const ExamplesTable = (props: { examples: ActionExample[] }) => {
+  return (
+    <Grid container>
+      {props.examples.map((example, index) => {
+        return (
+          <Fragment key={`example-${index}`}>
+            <Grid item lg={3}>
+              <Box padding={4}>
+                <Typography>{example.description}</Typography>
+              </Box>
+            </Grid>
+            <Grid item lg={9}>
+              <Box padding={1}>
+                <CodeSnippet
+                  text={example.example}
+                  showLineNumbers
+                  showCopyCodeButton
+                  language="yaml"
+                />
+              </Box>
+            </Grid>
+          </Fragment>
+        );
+      })}
+    </Grid>
+  );
+};
 
 export const ActionsPage = () => {
   const api = useApi(scaffolderApiRef);
@@ -111,7 +148,7 @@ export const ActionsPage = () => {
           <TableCell>
             <>
               {[props.type].flat().map(type => (
-                <Chip label={type} />
+                <Chip label={type} key={type} />
               ))}
             </>
           </TableCell>
@@ -180,6 +217,18 @@ export const ActionsPage = () => {
             <Typography variant="h5">Output</Typography>
             {renderTable(action.schema.output)}
           </Box>
+        )}
+        {action.examples && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h5">Examples</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box pb={2}>
+                <ExamplesTable examples={action.examples} />
+              </Box>
+            </AccordionDetails>
+          </Accordion>
         )}
       </Box>
     );

@@ -93,11 +93,14 @@ export async function startTestBackend<
         factory: async () => impl,
       })();
     }
+    if (typeof serviceDef === 'function') {
+      return serviceDef();
+    }
     return serviceDef as ServiceFactory;
   });
 
   for (const factory of defaultServiceFactories) {
-    if (!factories.some(f => f.service === factory.service)) {
+    if (!factories.some(f => f.service.id === factory.service.id)) {
       factories.push(factory);
     }
   }

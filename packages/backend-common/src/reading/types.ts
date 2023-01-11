@@ -15,11 +15,11 @@
  */
 
 import { Readable } from 'stream';
-import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
   UrlReaderService,
   ReadTreeResponse,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 export type {
@@ -54,7 +54,7 @@ export type UrlReaderPredicateTuple = {
  */
 export type ReaderFactory = (options: {
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 

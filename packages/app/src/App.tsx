@@ -115,6 +115,10 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
+  // Example of application level feature flag
+  // featureFlags: [
+  // { name: 'tech-radar', description: 'Enables the tech radar plugin' },
+  // ],
   components: {
     SignInPage: props => {
       return (

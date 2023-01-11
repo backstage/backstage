@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { FactoryFunctionWithOptions, MaybeOptions } from '../types';
 import {
   BackendRegistrationPoints,
   BackendFeature,
@@ -21,16 +22,21 @@ import {
 } from './types';
 
 /** @public */
-export function createExtensionPoint<T>(options: {
+export interface ExtensionPointConfig {
   id: string;
-}): ExtensionPoint<T> {
+}
+
+/** @public */
+export function createExtensionPoint<T>(
+  config: ExtensionPointConfig,
+): ExtensionPoint<T> {
   return {
-    id: options.id,
+    id: config.id,
     get T(): T {
       throw new Error(`tried to read ExtensionPoint.T of ${this}`);
     },
     toString() {
-      return `extensionPoint{${options.id}}`;
+      return `extensionPoint{${config.id}}`;
     },
     $$ref: 'extension-point', // TODO: declare
   };
@@ -43,14 +49,9 @@ export interface BackendPluginConfig<TOptions> {
 }
 
 /** @public */
-export function createBackendPlugin<
-  TOptions extends object | undefined = undefined,
->(config: {
-  id: string;
-  register(reg: BackendRegistrationPoints, options: TOptions): void;
-}): undefined extends TOptions
-  ? (options?: TOptions) => BackendFeature
-  : (options: TOptions) => BackendFeature {
+export function createBackendPlugin<TOptions extends MaybeOptions = undefined>(
+  config: BackendPluginConfig<TOptions>,
+): FactoryFunctionWithOptions<BackendFeature, TOptions> {
   return (options?: TOptions) => ({
     id: config.id,
     register(register: BackendRegistrationPoints) {
@@ -70,9 +71,11 @@ export interface BackendModuleConfig<TOptions> {
 }
 
 /**
+ * Creates a new backend module for a given plugin.
+ *
  * @public
  *
- * Creates a new backend module for a given plugin.
+ * @remarks
  *
  * The `moduleId` should be equal to the module-specific prefix of the exported name, such
  * that the full name is `moduleId + PluginId + "Module"`. For example, a GitHub entity
@@ -81,13 +84,9 @@ export interface BackendModuleConfig<TOptions> {
  *
  * The `pluginId` should exactly match the `id` of the plugin that the module extends.
  */
-export function createBackendModule<
-  TOptions extends object | undefined = undefined,
->(
+export function createBackendModule<TOptions extends MaybeOptions = undefined>(
   config: BackendModuleConfig<TOptions>,
-): undefined extends TOptions
-  ? (options?: TOptions) => BackendFeature
-  : (options: TOptions) => BackendFeature {
+): FactoryFunctionWithOptions<BackendFeature, TOptions> {
   return (options?: TOptions) => ({
     id: `${config.pluginId}.${config.moduleId}`,
     register(register: BackendRegistrationPoints) {

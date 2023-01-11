@@ -7,6 +7,7 @@
 
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -108,31 +109,23 @@ export namespace coreServices {
   const scheduler: ServiceRef<SchedulerService, 'plugin'>;
   const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
+  const identity: ServiceRef<IdentityService, 'plugin'>;
 }
 
 // @public
-export function createBackendModule<
-  TOptions extends object | undefined = undefined,
->(
+export function createBackendModule<TOptions extends MaybeOptions = undefined>(
   config: BackendModuleConfig<TOptions>,
-): undefined extends TOptions
-  ? (options?: TOptions) => BackendFeature
-  : (options: TOptions) => BackendFeature;
+): FactoryFunctionWithOptions<BackendFeature, TOptions>;
 
 // @public (undocumented)
-export function createBackendPlugin<
-  TOptions extends object | undefined = undefined,
->(config: {
-  id: string;
-  register(reg: BackendRegistrationPoints, options: TOptions): void;
-}): undefined extends TOptions
-  ? (options?: TOptions) => BackendFeature
-  : (options: TOptions) => BackendFeature;
+export function createBackendPlugin<TOptions extends MaybeOptions = undefined>(
+  config: BackendPluginConfig<TOptions>,
+): FactoryFunctionWithOptions<BackendFeature, TOptions>;
 
 // @public (undocumented)
-export function createExtensionPoint<T>(options: {
-  id: string;
-}): ExtensionPoint<T>;
+export function createExtensionPoint<T>(
+  config: ExtensionPointConfig,
+): ExtensionPoint<T>;
 
 // @public (undocumented)
 export function createServiceFactory<
@@ -142,37 +135,20 @@ export function createServiceFactory<
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
   },
-  TOpts extends object | undefined = undefined,
->(config: {
-  service: ServiceRef<TService, TScope>;
-  deps: TDeps;
-  factory(
-    deps: ServiceRefsToInstances<TDeps, 'root'>,
-    options: TOpts,
-  ): TScope extends 'root'
-    ? Promise<TImpl>
-    : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
-}): undefined extends TOpts
-  ? (options?: TOpts) => ServiceFactory<TService>
-  : (options: TOpts) => ServiceFactory<TService>;
+  TOpts extends MaybeOptions = undefined,
+>(
+  config: ServiceFactoryConfig<TService, TScope, TImpl, TDeps, TOpts>,
+): FactoryFunctionWithOptions<ServiceFactory<TService>, TOpts>;
 
-// @public (undocumented)
-export function createServiceRef<T>(options: {
-  id: string;
-  scope?: 'plugin';
-  defaultFactory?: (
-    service: ServiceRef<T, 'plugin'>,
-  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T, 'plugin'>;
+// @public
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, 'plugin'>,
+): ServiceRef<TService, 'plugin'>;
 
-// @public (undocumented)
-export function createServiceRef<T>(options: {
-  id: string;
-  scope: 'root';
-  defaultFactory?: (
-    service: ServiceRef<T, 'root'>,
-  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T, 'root'>;
+// @public
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, 'root'>,
+): ServiceRef<TService, 'root'>;
 
 // @public
 export interface DatabaseService {
@@ -197,10 +173,19 @@ export type ExtensionPoint<T> = {
 };
 
 // @public (undocumented)
+export interface ExtensionPointConfig {
+  // (undocumented)
+  id: string;
+}
+
+// @public (undocumented)
 export interface HttpRouterService {
   // (undocumented)
   use(handler: Handler): void;
 }
+
+// @public (undocumented)
+export interface IdentityService extends IdentityApi {}
 
 // @public (undocumented)
 export interface LifecycleService {
@@ -210,7 +195,7 @@ export interface LifecycleService {
 // @public (undocumented)
 export type LifecycleServiceShutdownHook = {
   fn: () => void | Promise<void>;
-  labels?: Record<string, string>;
+  logger?: LoggerService;
 };
 
 // @public
@@ -344,6 +329,34 @@ export type ServiceFactory<TService = unknown> =
       >;
     };
 
+// @public (undocumented)
+export interface ServiceFactoryConfig<
+  TService,
+  TScope extends 'root' | 'plugin',
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TOpts extends MaybeOptions = undefined,
+> {
+  // (undocumented)
+  deps: TDeps;
+  // (undocumented)
+  factory(
+    deps: ServiceRefsToInstances<TDeps, 'root'>,
+    options: TOpts,
+  ): TScope extends 'root'
+    ? Promise<TImpl>
+    : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
+  // (undocumented)
+  service: ServiceRef<TService, TScope>;
+}
+
+// @public
+export type ServiceFactoryOrFunction<TService = unknown> =
+  | ServiceFactory<TService>
+  | (() => ServiceFactory<TService>);
+
 // @public
 export type ServiceRef<
   TService,
@@ -355,6 +368,18 @@ export type ServiceRef<
   toString(): string;
   $$ref: 'service';
 };
+
+// @public (undocumented)
+export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
+  // (undocumented)
+  defaultFactory?: (
+    service: ServiceRef<TService, TScope>,
+  ) => Promise<ServiceFactoryOrFunction<TService>>;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  scope?: TScope;
+}
 
 // @public
 export interface TokenManagerService {

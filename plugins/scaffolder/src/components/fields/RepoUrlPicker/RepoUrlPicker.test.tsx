@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import React from 'react';
 import { RepoUrlPicker } from './RepoUrlPicker';
 import Form from '@rjsf/core';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -23,13 +23,13 @@ import {
   scmAuthApiRef,
   ScmAuthApi,
 } from '@backstage/integration-react';
-import { scaffolderApiRef } from '../../../api';
-import { ScaffolderApi } from '../../../types';
 
 import {
   SecretsContextProvider,
-  SecretsContext,
-} from '../../secrets/SecretsContext';
+  scaffolderApiRef,
+  ScaffolderApi,
+  useTemplateSecrets,
+} from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 
 describe('RepoUrlPicker', () => {
@@ -119,8 +119,10 @@ describe('RepoUrlPicker', () => {
   describe('requestUserCredentials', () => {
     it('should call the scmAuthApi with the correct params', async () => {
       const SecretsComponent = () => {
-        const value = useContext(SecretsContext);
-        return <div data-testid="current-secrets">{JSON.stringify(value)}</div>;
+        const { secrets } = useTemplateSecrets();
+        return (
+          <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
+        );
       };
       const { getAllByRole, getByTestId } = await renderInTestApp(
         <TestApiProvider
