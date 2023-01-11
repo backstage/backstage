@@ -40,17 +40,28 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { application } = createGraphQLApp({
+  const { run, application } = createGraphQLApp({
     modules: options.modules,
     loader: () => createLoader(options.catalog),
     plugins: options.plugins,
   });
-  const { createApolloExecutor, schema } = application;
 
-  // TODO Update Apollo
+  // TODO Switch to yoga
   const server = new ApolloServer({
-    schema,
-    executor: createApolloExecutor(),
+    schema: application.schema,
+    executor: async requestContext => {
+      const { schema, execute, contextFactory } = run({
+        req: requestContext.request.http,
+      });
+
+      return execute({
+        schema,
+        document: requestContext.document,
+        contextValue: await contextFactory(),
+        variableValues: requestContext.request.variables,
+        operationName: requestContext.operationName,
+      });
+    },
     logger: options.logger,
     introspection: true,
   });

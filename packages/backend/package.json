@@ -47,6 +47,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-explore-backend": "workspace:^",
     "@backstage/plugin-graphql-backend": "workspace:^",
+    "@backstage/plugin-graphql-catalog": "workspace:^",
     "@backstage/plugin-jenkins-backend": "workspace:^",
     "@backstage/plugin-kafka-backend": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",

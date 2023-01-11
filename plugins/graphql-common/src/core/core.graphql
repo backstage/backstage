@@ -23,6 +23,22 @@ interface Node {
   id: ID!
 }
 
+interface IEntity @extend(interface: "Node") {
+  name: String! @field(at: "metadata.name")
+  kind: String! @field(at: "kind")
+  namespace: String! @field(at: "metadata.namespace", default: "default")
+  title: String! @field(at: "metadata.title", default: "")
+  description: String! @field(at: "metadata.description", default: "")
+  tags: [String] @field(at: "metadata.tags")
+  links: [EntityLink] @field(at: "metadata.links")
+}
+
+type EntityLink {
+  url: String!
+  title: String
+  icon: String
+}
+
 interface Connection @extend(generatedTypeName: "NodeConnection") {
   pageInfo: PageInfo!
   edges: [Edge!]!
@@ -43,4 +59,5 @@ interface Edge @extend(generatedTypeName: "NodeEdge") {
 
 type Query {
   node(id: ID!): Node
+  entity(kind: String!, name: String!, namespace: String): IEntity
 }

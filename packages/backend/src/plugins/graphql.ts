@@ -15,6 +15,7 @@
  */
 
 import { createRouter } from '@backstage/plugin-graphql-backend';
+import { Catalog } from '@backstage/plugin-graphql-catalog';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -24,5 +25,6 @@ export default async function createPlugin(
   return await createRouter({
     logger: env.logger,
     catalog: env.client,
+    modules: [Catalog],
   });
 }

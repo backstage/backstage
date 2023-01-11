@@ -52,6 +52,7 @@
     "supertest": "^6.1.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ]
 }
