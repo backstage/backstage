@@ -18,6 +18,10 @@ import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from './keys';
  */
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
 
+/**
+ * A type used to wrap up the FieldExtension to embed the ReturnValue and the InputProps
+ * @public
+ */
 export type LayoutComponent<_TInputProps> = () => null;
 
 /**

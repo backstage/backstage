@@ -23,7 +23,10 @@ import {
   ScaffolderFieldExtensions,
 } from '@backstage/plugin-scaffolder-react';
 import { scaffolderPlugin } from '../../plugin';
-import { createScaffolderLayout, ScaffolderLayouts } from '../../layouts';
+import {
+  createScaffolderLayout,
+  ScaffolderLayouts,
+} from '@backstage/plugin-scaffolder-react';
 
 jest.mock('../TemplateListPage', () => ({
   TemplateListPage: jest.fn(() => null),

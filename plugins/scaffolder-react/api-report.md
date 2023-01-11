@@ -66,6 +66,11 @@ export function createScaffolderFieldExtension<
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
 
 // @public
+export function createScaffolderLayout<TInputProps = unknown>(
+  options: LayoutOptions,
+): Extension<LayoutComponent<TInputProps>>;
+
+// @public
 export type CustomFieldExtensionSchema = {
   returnValue: JSONSchema7;
   uiOptions?: JSONSchema7;
@@ -121,6 +126,9 @@ export type FormProps = Pick<
   FormProps_2,
   'transformErrors' | 'noHtml5Validate'
 >;
+
+// @public
+export type LayoutComponent<_TInputProps> = () => null;
 
 // @public
 export interface LayoutOptions<P = any> {
@@ -288,6 +296,9 @@ export interface ScaffolderGetIntegrationsListResponse {
     host: string;
   }[];
 }
+
+// @public
+export const ScaffolderLayouts: React.ComponentType;
 
 // @public (undocumented)
 export type ScaffolderOutputLink = {

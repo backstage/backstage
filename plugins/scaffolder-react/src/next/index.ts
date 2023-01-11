@@ -15,6 +15,7 @@
  */
 export * from './components';
 export * from './extensions';
+export * from './layouts';
 export * from './types';
 export * from './lib';
 export * from './hooks';

@@ -32,8 +32,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import React, { useCallback, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import yaml from 'yaml';
-import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
-import { LayoutOptions } from '../../layouts';
+import {
+  type FieldExtensionOptions,
+  type LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 
