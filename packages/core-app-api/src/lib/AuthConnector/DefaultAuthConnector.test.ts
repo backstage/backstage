@@ -184,4 +184,36 @@ describe('DefaultAuthConnector', () => {
       url: 'http://my-host/api/auth/my-provider/start?scope=-ab-&origin=http%3A%2F%2Flocalhost&env=production',
     });
   });
+
+  it('should redirect to api server', async () => {
+    const mockOauth = new MockOAuthApi();
+    const mockResponse = jest.fn();
+    Object.defineProperty(window, 'location', {
+      value: {
+        hash: {
+          endsWith: mockResponse,
+          includes: mockResponse,
+        },
+        assign: mockResponse,
+      },
+      writable: true,
+    });
+    const helper = new DefaultAuthConnector({
+      ...defaultOptions,
+      usePopup: false,
+      oauthRequestApi: mockOauth,
+    });
+
+    const sessionPromise = helper.createSession({
+      scopes: new Set(['a', 'b']),
+    });
+
+    await mockOauth.triggerAll();
+
+    await expect(sessionPromise).resolves.toEqual({});
+    // redirect to the auth api
+    expect(window.location.href).toMatch(
+      'http://my-host/api/auth/my-provider/start?scope=a%20b&authType=redirect&env=production',
+    );
+  });
 });
