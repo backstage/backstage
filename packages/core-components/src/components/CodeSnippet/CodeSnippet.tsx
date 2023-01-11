@@ -16,6 +16,8 @@
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import { useTheme } from '@material-ui/core/styles';
+import blue from '@material-ui/core/colors/blue';
+import cyan from '@material-ui/core/colors/cyan';
 import React from 'react';
 import type {} from 'react-syntax-highlighter';
 import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
@@ -85,7 +87,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
   } = props;
   const theme = useTheme<BackstageTheme>();
   const mode = theme.palette.type === 'dark' ? dark : docco;
-  const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
+  const highlightColor = theme.palette.type === 'dark' ? blue.A400 : cyan[100];
 
   return (
     <Box position="relative">

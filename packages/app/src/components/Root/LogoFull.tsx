@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
+import teal from '@material-ui/core/colors/teal';
 
 const useStyles = makeStyles({
   svg: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
     height: 30,
   },
   path: {
-    fill: '#7df3e1',
+    fill: teal.A200,
   },
 });
 const LogoFull = () => {

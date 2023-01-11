@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 import { Chip, withStyles } from '@material-ui/core';
+import amber from '@material-ui/core/colors/amber';
+import green from '@material-ui/core/colors/green';
+import red from '@material-ui/core/colors/red';
 import React from 'react';
 import { ACCEPTED, Alert, PENDING, RESOLVED } from '../../types';
 
 const ResolvedChip = withStyles({
   root: {
-    backgroundColor: '#4caf50',
+    backgroundColor: green[600],
     color: 'white',
     margin: 0,
   },
@@ -27,14 +30,14 @@ const ResolvedChip = withStyles({
 
 const AcceptedChip = withStyles({
   root: {
-    backgroundColor: '#ffb74d',
+    backgroundColor: amber[600],
     color: 'white',
     margin: 0,
   },
 })(Chip);
 const PendingChip = withStyles({
   root: {
-    backgroundColor: '#d32f2f',
+    backgroundColor: red[700],
     color: 'white',
     margin: 0,
   },

@@ -38,6 +38,7 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
+import yellow from '@material-ui/core/colors/yellow';
 import { capitalize } from 'lodash';
 import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
@@ -58,7 +59,7 @@ export interface CatalogTableProps {
 
 const YellowStar = withStyles({
   root: {
-    color: '#f3ba37',
+    color: yellow[800],
   },
 })(Star);
 

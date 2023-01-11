@@ -15,6 +15,7 @@
  */
 import React from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
+import grey from '@material-ui/core/colors/grey';
 import SvgIcon from '@material-ui/core/SvgIcon';
 
 /** @public */
@@ -42,7 +43,7 @@ const ClosedDropdown = () => {
     >
       <path
         d="M7.5 8L6 9.5L12.0703 15.5703L18.1406 9.5L16.6406 8L12.0703 12.5703L7.5 8Z"
-        fill="#616161"
+        fill={grey[700]}
       />
     </SvgIcon>
   );

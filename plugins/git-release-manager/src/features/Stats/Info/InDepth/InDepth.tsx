@@ -21,6 +21,8 @@ import {
   Tooltip as MaterialTooltip,
   Typography,
 } from '@material-ui/core';
+import green from '@material-ui/core/colors/green';
+import grey from '@material-ui/core/colors/grey';
 import { BarChart, Bar, XAxis, YAxis, Legend, Tooltip } from 'recharts';
 
 import { AverageReleaseTime } from './AverageReleaseTime';
@@ -112,9 +114,9 @@ export function InDepth() {
         >
           <XAxis type="number" />
           <YAxis dataKey="version" type="category" />
-          <Tooltip labelStyle={{ color: '#000', fontWeight: 'bold' }} />
+          <Tooltip labelStyle={{ color: grey[900], fontWeight: 'bold' }} />
           <Legend />
-          <Bar dataKey="days" fill="#82ca9d" />
+          <Bar dataKey="days" fill={green[300]} />
         </BarChart>
 
         {progress > 0 && progress < 100 && (

@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { IconButton, Tooltip, withStyles } from '@material-ui/core';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
+import yellow from '@material-ui/core/colors/yellow';
 import React, { ComponentProps } from 'react';
 import { useStarredEntity } from '../../hooks/useStarredEntity';
 
@@ -28,7 +29,7 @@ export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
 
 const YellowStar = withStyles({
   root: {
-    color: '#f3ba37',
+    color: yellow[800],
   },
 })(Star);
 

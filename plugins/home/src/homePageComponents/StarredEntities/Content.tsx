@@ -33,6 +33,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
+import amber from '@material-ui/core/colors/amber';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
@@ -112,7 +113,7 @@ export const Content = (props: {
                   aria-label="unstar"
                   onClick={() => toggleStarredEntity(entity)}
                 >
-                  <StarIcon style={{ color: '#f3ba37' }} />
+                  <StarIcon style={{ color: amber[500] }} />
                 </IconButton>
               </Tooltip>
             </ListItemSecondaryAction>

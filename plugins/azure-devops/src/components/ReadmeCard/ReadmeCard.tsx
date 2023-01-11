@@ -23,28 +23,29 @@ import {
   ErrorPanel,
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { useProjectRepoFromEntity } from '../../hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import React from 'react';
-import { azureDevOpsApiRef } from '../../api';
+import grey from '@material-ui/core/colors/grey';
 import useAsync from 'react-use/lib/useAsync';
+import { useProjectRepoFromEntity } from '../../hooks';
+import { azureDevOpsApiRef } from '../../api';
 
 const useStyles = makeStyles(theme => ({
   readMe: {
     overflowY: 'auto',
     paddingRight: theme.spacing(1),
     '&::-webkit-scrollbar-track': {
-      backgroundColor: '#F5F5F5',
+      backgroundColor: grey[100],
       borderRadius: '5px',
     },
     '&::-webkit-scrollbar': {
       width: '5px',
-      backgroundColor: '#F5F5F5',
+      backgroundColor: grey[100],
       borderRadius: '5px',
     },
     '&::-webkit-scrollbar-thumb': {
-      border: '1px solid #555555',
-      backgroundColor: '#555',
+      border: `1px solid ${grey[800]}`,
+      backgroundColor: grey[800],
       borderRadius: '4px',
     },
   },

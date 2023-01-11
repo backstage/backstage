@@ -27,6 +27,9 @@ import NotesIcon from '@material-ui/icons/Notes';
 import WhatshotIcon from '@material-ui/icons/Whatshot';
 import WarningIcon from '@material-ui/icons/Warning';
 import AddIcon from '@material-ui/icons/Add';
+import deepPurple from '@material-ui/core/colors/deepPurple';
+import grey from '@material-ui/core/colors/grey';
+import purple from '@material-ui/core/colors/purple';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Incident } from '../types';
 import { ServiceIncidentsResponse } from '../../api/types';
@@ -39,37 +42,38 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { deepOrange } from '@material-ui/core/colors';
 
 const useStyles = makeStyles(theme => ({
   button: {
-    color: '#3b2492',
+    color: deepPurple[900],
     display: 'grid',
     gridGap: '4px',
     textAlign: 'center',
     justifyItems: 'center',
     width: '105px',
-    backgroundColor: theme.palette.type === 'dark' ? '#f1edff' : '',
+    backgroundColor: theme.palette.type === 'dark' ? purple[50] : '',
     '&:hover, &:focus': {
-      backgroundColor: '#f1edff',
-      color: '#614ab6',
+      backgroundColor: purple[50],
+      color: deepPurple[500],
     },
     '&:active': {
-      color: '#3b2492',
-      backgroundColor: '#b2a6e3',
+      color: deepPurple[900],
+      backgroundColor: deepPurple[200],
       boxShadow:
         'rgb(59, 36, 146) 0px 0px 0px 1px inset, rgb(141, 134, 188) 3px 3px 0px 0px inset;',
     },
-    border: '1px solid #3b2492',
+    border: `1px solid ${deepPurple[900]}`,
     borderRadius: '5px',
     padding: '8px 10px',
     textTransform: 'none',
   },
   buttonLink: {
-    backgroundColor: '#3b2492',
-    color: '#FFF',
+    backgroundColor: deepPurple[900],
+    color: grey[50],
     textTransform: 'none',
     '&:hover': {
-      backgroundColor: '#614ab6',
+      backgroundColor: deepPurple[500],
     },
   },
   buttonContainer: {
@@ -79,13 +83,13 @@ const useStyles = makeStyles(theme => ({
     gridAutoColumns: 'min-content',
   },
   icon: {
-    color: '#f1642d',
+    color: deepOrange[600],
   },
   link: {
     textDecoration: 'underline',
     fontSize: '16px',
     lineHeight: '27px',
-    color: '#3b2492',
+    color: deepPurple[900],
     '&:hover, &:focus': {
       fontWeight: '500',
     },
@@ -93,7 +97,7 @@ const useStyles = makeStyles(theme => ({
   linksContainer: {
     borderBottom: '1px solid #d5d5d5',
     padding: '10px 0px 10px 20px',
-    backgroundColor: '#f1edff',
+    backgroundColor: purple[50],
     marginBottom: '20px',
   },
   table: {
@@ -103,8 +107,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     padding: '10px',
-    background: '#f1edff',
-    color: '#3b2492',
+    background: purple[50],
+    color: deepPurple[900],
   },
 }));
 

@@ -19,11 +19,12 @@ import ShareIcon from '@material-ui/icons/Share';
 import { DocsTableRow } from './types';
 import { withStyles } from '@material-ui/styles';
 import Star from '@material-ui/icons/Star';
+import yellow from '@material-ui/core/colors/yellow';
 import StarBorder from '@material-ui/icons/StarBorder';
 
 const YellowStar = withStyles({
   root: {
-    color: '#f3ba37',
+    color: yellow[700],
   },
 })(Star);
 

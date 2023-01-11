@@ -19,6 +19,8 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
+import amber from '@material-ui/core/colors/amber';
+import grey from '@material-ui/core/colors/grey';
 import { Schedule } from '../../types';
 import { ilertApiRef } from '../../api';
 import { OnCallShiftItem } from './OnCallShiftItem';
@@ -48,7 +50,7 @@ const useStyles = makeStyles(() => ({
     left: -6,
     width: 12,
     height: 12,
-    background: '#92949c !important',
+    background: `${grey[500]} !important`,
     borderRadius: '50%',
   },
 
@@ -58,8 +60,8 @@ const useStyles = makeStyles(() => ({
     left: -6,
     width: 12,
     height: 12,
-    background: '#ffb74d !important',
-    color: '#ffb74d !important',
+    background: `${amber[600]} !important`,
+    color: `${amber[600]} !important`,
     borderRadius: '50%',
     '&::after': {
       position: 'absolute',
@@ -91,7 +93,7 @@ const useStyles = makeStyles(() => ({
     width: 65,
     height: 20,
     textAlign: 'center',
-    color: '#808289',
+    color: grey[600],
   },
 
   marginBottom: {

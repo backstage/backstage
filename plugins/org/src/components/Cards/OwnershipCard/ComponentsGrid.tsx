@@ -25,6 +25,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
+import grey from '@material-ui/core/colors/grey';
 import React from 'react';
 import pluralize from 'pluralize';
 import { catalogIndexRouteRef } from '../../../routes';
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
       boxShadow: theme.shadows[2],
       borderRadius: '4px',
       padding: theme.spacing(2),
-      color: '#fff',
+      color: grey[50],
       transition: `${theme.transitions.duration.standard}ms`,
       '&:hover': {
         boxShadow: theme.shadows[4],

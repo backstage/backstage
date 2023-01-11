@@ -16,6 +16,7 @@
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
+import grey from '@material-ui/core/colors/grey';
 import { Circle } from 'rc-progress';
 import React, { useEffect, useState } from 'react';
 
@@ -64,7 +65,7 @@ export const getProgressColor: GaugePropsGetColor = ({
   max,
 }) => {
   if (isNaN(value)) {
-    return '#ddd';
+    return grey[300];
   }
 
   if (value < max / 3) {

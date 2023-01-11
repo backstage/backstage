@@ -15,12 +15,13 @@
  */
 import React from 'react';
 import Chip from '@material-ui/core/Chip';
+import grey from '@material-ui/core/colors/grey';
 import { withStyles } from '@material-ui/core/styles';
 import { AlertSource } from '../../types';
 
 const MaintenanceChip = withStyles({
   root: {
-    backgroundColor: '#92949c',
+    backgroundColor: grey[500],
     color: 'white',
     marginTop: 8,
   },

@@ -24,6 +24,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
+import grey from '@material-ui/core/colors/grey';
 import { orderBy } from 'lodash';
 import React, { createContext, useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -71,7 +72,7 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       right: 0,
       zIndex: theme.zIndex.snackbar,
       // SidebarDivider color
-      borderTop: '1px solid #383838',
+      borderTop: `1px solid ${grey[800]}`,
     },
 
     overlay: props => ({

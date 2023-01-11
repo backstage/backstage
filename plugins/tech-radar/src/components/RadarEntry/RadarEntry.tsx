@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
+import grey from '@material-ui/core/colors/grey';
 import { WithLink } from '../../utils/components';
 import { RadarDescription } from '../RadarDescription';
 
@@ -38,7 +39,7 @@ const useStyles = makeStyles<Theme>(() => ({
     pointerEvents: 'none',
     userSelect: 'none',
     fontSize: '9px',
-    fill: '#fff',
+    fill: grey[50],
     textAnchor: 'middle',
   },
 

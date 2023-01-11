@@ -15,6 +15,7 @@
  */
 import React from 'react';
 import { makeStyles, TextField } from '@material-ui/core';
+import grey from '@material-ui/core/colors/grey';
 import { Context } from '../ContextProvider';
 
 const useStyles = makeStyles({
@@ -24,11 +25,11 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
   },
   label: {
-    color: '#fff !important',
+    color: `${grey[50]} !important`,
   },
   outline: {
-    color: '#fff !important',
-    borderColor: '#fff !important',
+    color: `${grey[50]} !important`,
+    borderColor: `${grey[50]} !important`,
   },
 });
 

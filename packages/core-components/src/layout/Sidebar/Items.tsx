@@ -29,6 +29,7 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
+import grey from '@material-ui/core/colors/grey';
 import classnames from 'classnames';
 import { Location } from 'history';
 import React, {
@@ -116,12 +117,12 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
       highlightable: {
         '&:hover': {
           background:
-            theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
+            theme.palette.navigation.navItem?.hoverBackground ?? grey[800],
         },
       },
       highlighted: {
         background:
-          theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
+          theme.palette.navigation.navItem?.hoverBackground ?? grey[800],
       },
       label: {
         // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
@@ -147,7 +148,7 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         marginBottom: 12,
       },
       searchField: {
-        color: '#b5b5b5',
+        color: grey[400],
         fontWeight: theme.typography.fontWeightBold,
         fontSize: theme.typography.fontSize,
       },
@@ -628,7 +629,7 @@ export const SidebarDivider = styled('hr')(
   ({ theme }) => ({
     height: 1,
     width: '100%',
-    background: '#383838',
+    background: grey[800],
     border: 'none',
     margin: theme.spacing(1.2, 0),
   }),

@@ -18,6 +18,8 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import grey from '@material-ui/core/colors/grey';
+
 import React from 'react';
 
 import { CodeSnippet } from '../CodeSnippet';
@@ -54,7 +56,7 @@ const useStyles = makeStyles<BackstageTheme>(
     code: {
       borderRadius: 6,
       margin: `${theme.spacing(2)}px 0px`,
-      background: theme.palette.type === 'dark' ? '#444' : '#fff',
+      background: theme.palette.type === 'dark' ? grey[800] : grey[50],
     },
   }),
   { name: 'BackstageMissingAnnotationEmptyState' },

@@ -16,6 +16,7 @@
 
 import React, { useRef, useLayoutEffect } from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
+import grey from '@material-ui/core/colors/grey';
 
 export type Props = {
   visible: boolean;
@@ -36,13 +37,13 @@ const useStyles = makeStyles<Theme>(() => ({
     opacity: 0.8,
   },
   background: {
-    fill: '#333',
+    fill: grey[800],
   },
   text: {
     pointerEvents: 'none',
     userSelect: 'none',
     fontSize: '10px',
-    fill: '#fff',
+    fill: grey[50],
   },
 }));
 

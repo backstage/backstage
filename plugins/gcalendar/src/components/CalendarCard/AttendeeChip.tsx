@@ -20,6 +20,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { Badge, Chip, makeStyles } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckIcon from '@material-ui/icons/CheckCircle';
+import grey from '@material-ui/core/colors/grey';
 
 import { EventAttendee, ResponseStatus } from '../../api';
 
@@ -44,7 +45,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => {
       '& svg': {
         height: 16,
         width: 16,
-        background: '#fff',
+        background: grey[50],
       },
     },
   };

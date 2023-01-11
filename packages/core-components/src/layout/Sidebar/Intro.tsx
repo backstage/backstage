@@ -20,6 +20,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
+import grey from '@material-ui/core/colors/grey';
 import { useLocalStorageValue } from '@react-hookz/web';
 import React, { useContext, useState } from 'react';
 
@@ -42,7 +43,7 @@ export type SidebarIntroClassKey =
 const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
   theme => ({
     introCard: props => ({
-      color: '#b5b5b5',
+      color: grey[400],
       // XXX (@koroeskohr): should I be using a Mui theme variable?
       fontSize: 12,
       width: props.sidebarConfig.drawerWidthOpen,
@@ -58,7 +59,7 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       marginTop: theme.spacing(1.5),
     },
     introDismissLink: {
-      color: '#dddddd',
+      color: grey[300],
       display: 'flex',
       alignItems: 'center',
       marginBottom: theme.spacing(0.5),

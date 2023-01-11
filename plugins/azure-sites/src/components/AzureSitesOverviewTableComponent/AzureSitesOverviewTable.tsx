@@ -35,6 +35,7 @@ import StartIcon from '@material-ui/icons/PlayArrow';
 import StopIcon from '@material-ui/icons/Stop';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import yellow from '@material-ui/core/colors/yellow';
 import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core-plugin-api';
 import { azureSiteApiRef } from '../../api';
@@ -44,7 +45,7 @@ type Kinds = 'app' | 'functionapp';
 
 const State = ({ value }: { value: States }) => {
   const colorMap = {
-    Waiting: '#dcbc21',
+    Waiting: yellow[800],
     Running: 'green',
     Paused: 'black',
     Failed: 'red',

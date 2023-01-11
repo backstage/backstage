@@ -29,6 +29,8 @@ import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import { Alert } from '@material-ui/lab';
 import { ClassNameMap } from '@material-ui/styles';
+import deepPurple from '@material-ui/core/colors/deepPurple';
+import teal from '@material-ui/core/colors/teal';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import {
@@ -170,9 +172,13 @@ export const CoverageHistoryChart = () => {
             <Line
               type="monotone"
               dataKey="branch.percentage"
-              stroke="#8884d8"
+              stroke={deepPurple[400]}
             />
-            <Line type="monotone" dataKey="line.percentage" stroke="#82ca9d" />
+            <Line
+              type="monotone"
+              dataKey="line.percentage"
+              stroke={teal.A400}
+            />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

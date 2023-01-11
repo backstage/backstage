@@ -15,6 +15,7 @@
  */
 import React from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
+import grey from '@material-ui/core/colors/grey';
 import SvgIcon from '@material-ui/core/SvgIcon';
 
 export type OpenedDropdownClassKey = 'icon';
@@ -41,7 +42,7 @@ const OpenedDropdown = () => {
     >
       <path
         d="M16.5 16L18 14.5L11.9297 8.42969L5.85938 14.5L7.35938 16L11.9297 11.4297L16.5 16Z"
-        fill="#616161"
+        fill={grey[700]}
       />
     </SvgIcon>
   );

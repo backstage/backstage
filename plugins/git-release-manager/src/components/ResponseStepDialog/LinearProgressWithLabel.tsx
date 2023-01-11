@@ -16,6 +16,8 @@
 
 import React from 'react';
 import { Box, LinearProgress, Typography } from '@material-ui/core';
+import red from '@material-ui/core/colors/red';
+import green from '@material-ui/core/colors/green';
 
 import { ResponseStep } from '../../types/types';
 import { TEST_IDS } from '../../test-helpers/test-ids';
@@ -74,7 +76,7 @@ export function LinearProgressWithLabel(props: {
           style={{
             marginTop: 8,
             minWidth: 35,
-            color: failure ? '#ff0033' : '#1DB954',
+            color: failure ? red.A400 : green[500],
             fontWeight: 'bold',
             fontSize: `${getFontSize(progress)}%`,
             transition: 'font-size 250ms ease',

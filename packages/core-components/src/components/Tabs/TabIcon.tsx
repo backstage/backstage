@@ -17,6 +17,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
+import grey from '@material-ui/core/colors/grey';
 import { BackstageTheme } from '@backstage/theme';
 
 interface StyledIconProps {
@@ -31,16 +32,16 @@ export type TabIconClassKey = 'root';
 const useStyles = makeStyles<BackstageTheme, StyledIconProps>(
   theme => ({
     root: {
-      color: '#6E6E6E',
+      color: grey[600],
       overflow: 'visible',
       fontSize: theme.typography.h5.fontSize,
       textAlign: 'center',
       borderRadius: '50%',
-      backgroundColor: '#E6E6E6',
+      backgroundColor: grey[300],
       marginLeft: props => (props.isNext ? 'auto' : '0'),
       marginRight: props => (props.isNext ? '0' : theme.spacing(1.25)),
       '&:hover': {
-        backgroundColor: '#E6E6E6',
+        backgroundColor: grey[300],
         opacity: '1',
       },
     },

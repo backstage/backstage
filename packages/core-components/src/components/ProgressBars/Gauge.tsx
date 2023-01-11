@@ -16,6 +16,7 @@
 
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import grey from '@material-ui/core/colors/grey';
 import { Circle } from 'rc-progress';
 import React, { ReactNode, useEffect, useState } from 'react';
 import Box from '@material-ui/core/Box';
@@ -97,7 +98,7 @@ export const getProgressColor: GaugePropsGetColor = ({
   max,
 }) => {
   if (isNaN(value)) {
-    return '#ddd';
+    return grey[300];
   }
 
   const actualMax = max ? max : defaultGaugeProps.max;

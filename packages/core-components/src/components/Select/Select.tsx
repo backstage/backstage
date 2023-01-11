@@ -29,6 +29,7 @@ import {
   withStyles,
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import grey from '@material-ui/core/colors/grey';
 import React, { useEffect, useState } from 'react';
 
 import ClosedDropdown from './static/ClosedDropdown';
@@ -49,7 +50,7 @@ const BootstrapInput = withStyles(
         borderRadius: theme.shape.borderRadius,
         position: 'relative',
         backgroundColor: theme.palette.background.paper,
-        border: '1px solid #ced4da',
+        border: `1px solid ${grey[300]}`,
         fontSize: theme.typography.body1.fontSize,
         padding: theme.spacing(1.25, 3.25, 1.25, 1.5),
         transition: theme.transitions.create(['border-color', 'box-shadow']),

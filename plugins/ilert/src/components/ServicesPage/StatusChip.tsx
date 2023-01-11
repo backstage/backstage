@@ -15,6 +15,11 @@
  */
 import { Chip, withStyles } from '@material-ui/core';
 import React from 'react';
+import green from '@material-ui/core/colors/green';
+import grey from '@material-ui/core/colors/grey';
+import orange from '@material-ui/core/colors/orange';
+import red from '@material-ui/core/colors/red';
+import yellow from '@material-ui/core/colors/yellow';
 import {
   DEGRADED,
   MAJOR_OUTAGE,
@@ -26,7 +31,7 @@ import {
 
 const OperationalChip = withStyles({
   root: {
-    backgroundColor: '#388E3D',
+    backgroundColor: green[700],
     color: 'white',
     margin: 0,
   },
@@ -34,28 +39,28 @@ const OperationalChip = withStyles({
 
 const UnderMaintenanceChip = withStyles({
   root: {
-    backgroundColor: '#616161',
+    backgroundColor: grey[700],
     color: 'white',
     margin: 0,
   },
 })(Chip);
 const DegradedChip = withStyles({
   root: {
-    backgroundColor: '#FBC02D',
+    backgroundColor: yellow[700],
     color: 'white',
     margin: 0,
   },
 })(Chip);
 const PartialOutageChip = withStyles({
   root: {
-    backgroundColor: '#F57C02',
+    backgroundColor: orange[700],
     color: 'white',
     margin: 0,
   },
 })(Chip);
 const MajorOutageChip = withStyles({
   root: {
-    backgroundColor: '#D22F2E',
+    backgroundColor: red[700],
     color: 'white',
     margin: 0,
   },

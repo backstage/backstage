@@ -18,6 +18,11 @@ import React from 'react';
 import { CodeClimateData } from '../../api';
 import { Link } from '@backstage/core-components';
 import { Box, makeStyles, Typography } from '@material-ui/core';
+import green from '@material-ui/core/colors/green';
+import lime from '@material-ui/core/colors/lime';
+import orange from '@material-ui/core/colors/orange';
+import red from '@material-ui/core/colors/red';
+import yellow from '@material-ui/core/colors/yellow';
 import { BackstageTheme } from '@backstage/theme';
 
 const letterStyle = {
@@ -34,18 +39,18 @@ const fontSize = {
 
 const letterColor = (letter: string) => {
   if (letter === 'A') {
-    return '#45d298';
+    return green.A200;
   } else if (letter === 'B') {
-    return '#a5d86e';
+    return lime[600];
   } else if (letter === 'C') {
-    return '#f1ce0c';
+    return yellow[600];
   } else if (letter === 'D') {
-    return '#f29141';
+    return orange[600];
   } else if (letter === 'F') {
-    return '#df5869';
+    return red[500];
   }
 
-  return '#45d298';
+  return green.A200;
 };
 
 const useStyles = makeStyles<

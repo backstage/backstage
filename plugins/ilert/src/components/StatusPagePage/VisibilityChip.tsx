@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import { Chip, withStyles } from '@material-ui/core';
+import amber from '@material-ui/core/colors/amber';
+import green from '@material-ui/core/colors/green';
 import React from 'react';
 import { PRIVATE, PUBLIC, StatusPage } from '../../types';
 
 const PrivateChip = withStyles({
   root: {
-    backgroundColor: '#4caf50',
+    backgroundColor: green[500],
     color: 'white',
     margin: 0,
   },
@@ -27,7 +29,7 @@ const PrivateChip = withStyles({
 
 const PublicChip = withStyles({
   root: {
-    backgroundColor: '#ffb74d',
+    backgroundColor: amber[600],
     color: 'white',
     margin: 0,
   },

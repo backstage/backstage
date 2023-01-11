@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
+import grey from '@material-ui/core/colors/grey';
 import type { Ring } from '../../utils/types';
 
 export type Props = {
@@ -26,12 +27,12 @@ export type Props = {
 const useStyles = makeStyles<Theme>(theme => ({
   ring: {
     fill: 'none',
-    stroke: '#bbb',
+    stroke: grey[400],
     strokeWidth: '1px',
   },
   axis: {
     fill: 'none',
-    stroke: '#bbb',
+    stroke: grey[400],
     strokeWidth: '1px',
   },
   text: {

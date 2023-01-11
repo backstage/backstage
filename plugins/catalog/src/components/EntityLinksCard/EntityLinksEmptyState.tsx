@@ -16,6 +16,7 @@
 
 import { BackstageTheme } from '@backstage/theme';
 import { Button, makeStyles, Typography } from '@material-ui/core';
+import grey from '@material-ui/core/colors/grey';
 import React from 'react';
 import { CodeSnippet } from '@backstage/core-components';
 
@@ -34,7 +35,7 @@ const useStyles = makeStyles<BackstageTheme>(
     code: {
       borderRadius: 6,
       margin: `${theme.spacing(2)}px 0px`,
-      background: theme.palette.type === 'dark' ? '#444' : '#fff',
+      background: theme.palette.type === 'dark' ? grey[800] : grey[50],
     },
   }),
   { name: 'PluginCatalogEntityLinksEmptyState' },

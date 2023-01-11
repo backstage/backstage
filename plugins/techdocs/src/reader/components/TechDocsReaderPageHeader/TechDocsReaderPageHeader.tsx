@@ -20,6 +20,7 @@ import Helmet from 'react-helmet';
 import { Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import CodeIcon from '@material-ui/icons/Code';
+import grey from '@material-ui/core/colors/grey';
 
 import {
   TechDocsAddonLocations as locations,
@@ -138,7 +139,7 @@ export const TechDocsReaderPageHeader = (
               container
               direction="column"
               alignItems="center"
-              style={{ color: '#fff' }}
+              style={{ color: grey[50] }}
             >
               <Grid style={{ padding: 0 }} item>
                 <CodeIcon style={{ marginTop: '-25px' }} />

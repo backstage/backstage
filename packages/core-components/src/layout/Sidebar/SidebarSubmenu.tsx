@@ -17,6 +17,7 @@ import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import grey from '@material-ui/core/colors/grey';
 import classnames from 'classnames';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 
@@ -53,7 +54,7 @@ const useStyles = makeStyles<
       top: 0,
       bottom: 0,
       padding: 0,
-      background: theme.palette.navigation.submenu?.background ?? '#404040',
+      background: theme.palette.navigation.submenu?.background ?? grey[800],
       overflowX: 'hidden',
       msOverflowStyle: 'none',
       scrollbarWidth: 'none',
@@ -80,7 +81,7 @@ const useStyles = makeStyles<
     title: {
       fontSize: theme.typography.h5.fontSize,
       fontWeight: theme.typography.fontWeightMedium,
-      color: '#FFF',
+      color: grey[50],
       padding: theme.spacing(2.5),
       [theme.breakpoints.down('xs')]: {
         display: 'none',

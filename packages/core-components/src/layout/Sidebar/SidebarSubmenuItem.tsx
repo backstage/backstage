@@ -18,6 +18,7 @@ import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import grey from '@material-ui/core/colors/grey';
 import { Link } from '../../components/Link';
 import { IconComponent } from '@backstage/core-plugin-api';
 import classnames from 'classnames';
@@ -35,7 +36,7 @@ const useStyles = makeStyles<BackstageTheme>(
       height: 48,
       width: '100%',
       '&:hover': {
-        background: '#6f6f6f',
+        background: grey[600],
         color: theme.palette.navigation.selectedColor,
       },
       display: 'flex',
@@ -51,8 +52,8 @@ const useStyles = makeStyles<BackstageTheme>(
       width: '100%',
     },
     selected: {
-      background: '#6f6f6f',
-      color: '#FFF',
+      background: grey[600],
+      color: grey[50],
     },
     label: {
       margin: theme.spacing(1.75),
@@ -82,7 +83,7 @@ const useStyles = makeStyles<BackstageTheme>(
       width: '100%',
       padding: '10px 0 10px 0',
       '&:hover': {
-        background: '#6f6f6f',
+        background: grey[600],
         color: theme.palette.navigation.selectedColor,
       },
     },
