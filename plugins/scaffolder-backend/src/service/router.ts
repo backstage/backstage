@@ -25,12 +25,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  InputError,
-  NotAllowedError,
-  NotFoundError,
-  stringifyError,
-} from '@backstage/errors';
+import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 import {
@@ -61,12 +56,7 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import {
-  findTemplate,
-  getEntityBaseUrl,
-  getWorkingDirectory,
-  TemplateTransform,
-} from './helpers';
+import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
@@ -619,6 +609,7 @@ export async function createRouter(
       entityRef,
       token,
     });
+
     if (!isSupportedTemplate(template)) {
       throw new InputError(
         `Unsupported apiVersion field in schema entity, ${

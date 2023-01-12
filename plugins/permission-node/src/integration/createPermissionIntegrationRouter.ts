@@ -127,7 +127,7 @@ export type MetadataResponse = {
   rules: MetadataResponseSerializedRule[];
 };
 
-const applyConditions = <TResourceType extends string, TResource>(
+export const applyConditions = <TResourceType extends string, TResource>(
   criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
   resource: TResource | undefined,
   getRule: (name: string) => PermissionRule<TResource, unknown, TResourceType>,

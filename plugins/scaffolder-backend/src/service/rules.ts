@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { EntitiesSearchFilter } from '@backstage/plugin-catalog-backend';
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
   TemplateEntityStepV1beta3,
