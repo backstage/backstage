@@ -24,7 +24,6 @@ const ENTITY_YAML = `metadata:
   labels:
     javaVersion: 1.2.3`;
 /** @public */
-export type EntityLabelsEmptyStateClassKey = 'code';
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
