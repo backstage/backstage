@@ -7,7 +7,6 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
-import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
@@ -24,8 +23,5 @@ export class AwsSqsConsumingEventPublisher implements EventPublisher {
 }
 
 // @alpha
-export const awsSqsConsumingEventPublisherEventsModule: FactoryFunction<
-  BackendFeature,
-  []
->;
+export const awsSqsConsumingEventPublisherEventsModule: () => BackendFeature;
 ```

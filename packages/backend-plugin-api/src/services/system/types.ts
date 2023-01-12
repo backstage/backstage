@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { FactoryFunctionConfig, FactoryFunction } from '../../types';
-
 /**
  * TODO
  *
@@ -162,11 +160,12 @@ export function createServiceFactory<
   TDeps extends { [name in string]: ServiceRef<unknown> },
   TOpts extends [options?: object] = [],
 >(
-  config: FactoryFunctionConfig<
-    ServiceFactoryConfig<TService, TScope, TImpl, TDeps>,
-    TOpts
-  >,
-): FactoryFunction<ServiceFactory<TService>, TOpts> {
+  config:
+    | ServiceFactoryConfig<TService, TScope, TImpl, TDeps>
+    | ((
+        ...options: TOpts
+      ) => ServiceFactoryConfig<TService, TScope, TImpl, TDeps>),
+): (...params: TOpts) => ServiceFactory<TService> {
   if (typeof config === 'function') {
     return (...opts: TOpts) => {
       const c = config(...opts);

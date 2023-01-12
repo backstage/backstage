@@ -6,7 +6,6 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { EventParams } from '@backstage/plugin-events-node';
-import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { RequestValidator } from '@backstage/plugin-events-node';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
@@ -23,8 +22,8 @@ export class GithubEventRouter extends SubTopicEventRouter {
 }
 
 // @alpha
-export const githubEventRouterEventsModule: FactoryFunction<BackendFeature, []>;
+export const githubEventRouterEventsModule: () => BackendFeature;
 
 // @alpha
-export const githubWebhookEventsModule: FactoryFunction<BackendFeature, []>;
+export const githubWebhookEventsModule: () => BackendFeature;
 ```

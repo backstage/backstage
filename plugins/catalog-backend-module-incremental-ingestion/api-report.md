@@ -10,7 +10,6 @@ import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
 import type { DurationObjectUnits } from 'luxon';
-import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import type { Logger } from 'winston';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { PluginDatabaseManager } from '@backstage/backend-common';
@@ -69,17 +68,12 @@ export interface IncrementalEntityProviderOptions {
 }
 
 // @alpha
-export const incrementalIngestionEntityProviderCatalogModule: FactoryFunction<
-  BackendFeature,
-  [
-    options: {
-      providers: {
-        provider: IncrementalEntityProvider<unknown, unknown>;
-        options: IncrementalEntityProviderOptions;
-      }[];
-    },
-  ]
->;
+export const incrementalIngestionEntityProviderCatalogModule: (options: {
+  providers: {
+    provider: IncrementalEntityProvider<unknown, unknown>;
+    options: IncrementalEntityProviderOptions;
+  }[];
+}) => BackendFeature;
 
 // @public (undocumented)
 export type PluginEnvironment = {

@@ -34,7 +34,6 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { EntityProviderMutation } from '@backstage/plugin-catalog-node';
 import { EntityRelationSpec } from '@backstage/plugin-catalog-node';
-import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
@@ -238,7 +237,7 @@ export type CatalogPermissionRule<
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha
-export const catalogPlugin: FactoryFunction<BackendFeature, []>;
+export const catalogPlugin: () => BackendFeature;
 
 // @public
 export interface CatalogProcessingEngine {

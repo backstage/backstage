@@ -13,7 +13,6 @@ import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
-import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
@@ -626,7 +625,7 @@ export type RunCommandOptions = {
 };
 
 // @alpha
-export const scaffolderCatalogModule: FactoryFunction<BackendFeature, []>;
+export const scaffolderCatalogModule: () => BackendFeature;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
@@ -643,10 +642,9 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
 }
 
 // @alpha
-export const scaffolderPlugin: FactoryFunction<
-  BackendFeature,
-  [options: ScaffolderPluginOptions]
->;
+export const scaffolderPlugin: (
+  options: ScaffolderPluginOptions,
+) => BackendFeature;
 
 // @alpha
 export type ScaffolderPluginOptions = {

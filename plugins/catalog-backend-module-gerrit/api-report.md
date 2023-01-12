@@ -7,7 +7,6 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
@@ -32,10 +31,7 @@ export class GerritEntityProvider implements EntityProvider {
 }
 
 // @alpha (undocumented)
-export const gerritEntityProviderCatalogModule: FactoryFunction<
-  BackendFeature,
-  []
->;
+export const gerritEntityProviderCatalogModule: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

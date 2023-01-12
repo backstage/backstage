@@ -113,13 +113,13 @@ export namespace coreServices {
 
 // @public
 export function createBackendModule<TOptions extends [options?: object] = []>(
-  config: FactoryFunctionConfig<BackendModuleConfig, TOptions>,
-): FactoryFunction<BackendFeature, TOptions>;
+  config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
+): (...params: TOptions) => BackendFeature;
 
 // @public (undocumented)
 export function createBackendPlugin<TOptions extends [options?: object] = []>(
-  config: FactoryFunctionConfig<BackendPluginConfig, TOptions>,
-): FactoryFunction<BackendFeature, TOptions>;
+  config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
+): (...params: TOptions) => BackendFeature;
 
 // @public (undocumented)
 export function createExtensionPoint<T>(
@@ -136,11 +136,12 @@ export function createServiceFactory<
   },
   TOpts extends [options?: object] = [],
 >(
-  config: FactoryFunctionConfig<
-    ServiceFactoryConfig<TService, TScope, TImpl, TDeps>,
-    TOpts
-  >,
-): FactoryFunction<ServiceFactory<TService>, TOpts>;
+  config:
+    | ServiceFactoryConfig<TService, TScope, TImpl, TDeps>
+    | ((
+        ...options: TOpts
+      ) => ServiceFactoryConfig<TService, TScope, TImpl, TDeps>),
+): (...params: TOpts) => ServiceFactory<TService>;
 
 // @public
 export function createServiceRef<TService>(

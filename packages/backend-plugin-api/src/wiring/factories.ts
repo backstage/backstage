@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { FactoryFunction, FactoryFunctionConfig } from '../types';
 import {
   BackendRegistrationPoints,
   BackendFeature,
@@ -50,10 +49,10 @@ export interface BackendPluginConfig {
 
 /** @public */
 export function createBackendPlugin<TOptions extends [options?: object] = []>(
-  config: FactoryFunctionConfig<BackendPluginConfig, TOptions>,
-): FactoryFunction<BackendFeature, TOptions> {
+  config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
+): (...params: TOptions) => BackendFeature {
   if (typeof config === 'function') {
-    return config as FactoryFunction<BackendFeature, TOptions>;
+    return config;
   }
 
   return () => config;
@@ -83,8 +82,8 @@ export interface BackendModuleConfig {
  * The `pluginId` should exactly match the `id` of the plugin that the module extends.
  */
 export function createBackendModule<TOptions extends [options?: object] = []>(
-  config: FactoryFunctionConfig<BackendModuleConfig, TOptions>,
-): FactoryFunction<BackendFeature, TOptions> {
+  config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
+): (...params: TOptions) => BackendFeature {
   if (typeof config === 'function') {
     return (...options: TOptions) => {
       const c = config(...options);

@@ -9,7 +9,6 @@ import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
@@ -35,10 +34,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 }
 
 // @alpha
-export const gitlabDiscoveryEntityProviderCatalogModule: FactoryFunction<
-  BackendFeature,
-  []
->;
+export const gitlabDiscoveryEntityProviderCatalogModule: () => BackendFeature;
 
 // @public
 export class GitLabDiscoveryProcessor implements CatalogProcessor {

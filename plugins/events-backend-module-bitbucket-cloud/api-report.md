@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { EventParams } from '@backstage/plugin-events-node';
-import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
 // @public
@@ -16,8 +15,5 @@ export class BitbucketCloudEventRouter extends SubTopicEventRouter {
 }
 
 // @alpha
-export const bitbucketCloudEventRouterEventsModule: FactoryFunction<
-  BackendFeature,
-  []
->;
+export const bitbucketCloudEventRouterEventsModule: () => BackendFeature;
 ```
