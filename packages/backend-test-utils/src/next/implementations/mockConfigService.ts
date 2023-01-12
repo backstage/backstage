@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DateTime, Interval } from 'luxon';
-import humanizeDuration from 'humanize-duration';
-import React from 'react';
-import Typography from '@material-ui/core/Typography';
 
-export const CreatedAtColumn = ({ createdAt }: { createdAt: string }) => {
-  const createdAtTime = DateTime.fromISO(createdAt);
-  const formatted = Interval.fromDateTimes(createdAtTime, DateTime.local())
-    .toDuration()
-    .valueOf();
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
-  return (
-    <Typography paragraph>
-      {humanizeDuration(formatted, { round: true })} ago
-    </Typography>
-  );
-};
+/** @public */
+export const mockConfigFactory = createServiceFactory({
+  service: coreServices.config,
+  deps: {},
+  async factory(_, options?: { data?: JsonObject }) {
+    return new ConfigReader(options?.data, 'mock-config');
+  },
+});

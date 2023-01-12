@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import Typography from '@material-ui/core/Typography/Typography';
 import React from 'react';
 import { Entry, Ring } from '../../utils/types';
 import { RadarLegendLink } from './RadarLegendLink';
@@ -38,7 +39,9 @@ export const RadarLegendRing = ({
     <div data-testid="radar-ring" key={ring.id} className={classes.ring}>
       <h3 className={classes.ringHeading}>{ring.name}</h3>
       {entries.length === 0 ? (
-        <p className={classes.ringEmpty}>(empty)</p>
+        <Typography paragraph className={classes.ringEmpty}>
+          (empty)
+        </Typography>
       ) : (
         <ol className={classes.ringList}>
           {entries.map(entry => (

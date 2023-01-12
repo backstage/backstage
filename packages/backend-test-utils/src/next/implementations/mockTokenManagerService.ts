@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduler } from '@backstage/backend-tasks';
 
-/** @public */
-export const schedulerFactory = createServiceFactory({
-  service: coreServices.scheduler,
-  deps: {
-    plugin: coreServices.pluginMetadata,
-    databaseManager: coreServices.database,
-    logger: coreServices.logger,
-  },
+class TokenManagerMock implements TokenManager {
+  async getToken(): Promise<{ token: string }> {
+    return { token: 'mock-token' };
+  }
+  async authenticate(token: string): Promise<void> {
+    if (token !== 'mock-token') {
+      throw new Error('Invalid token');
+    }
+  }
+}
+
+export const mockTokenManagerFactory = createServiceFactory({
+  service: coreServices.tokenManager,
+  deps: {},
   async factory() {
-    return async ({ plugin, databaseManager, logger }) => {
-      return TaskScheduler.forPlugin({
-        pluginId: plugin.getId(),
-        databaseManager,
-        logger: loggerToWinstonLogger(logger),
-      });
+    return async () => {
+      return new TokenManagerMock();
     };
   },
 });
