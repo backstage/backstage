@@ -128,7 +128,7 @@ export type SelectedItems = string | string[] | number | number[];
 export type SelectProps = {
   multiple?: boolean;
   items: SelectItem[];
-  label?: string;
+  label: string;
   placeholder?: string;
   selected?: SelectedItems;
   onChange: (arg: SelectedItems) => void;
