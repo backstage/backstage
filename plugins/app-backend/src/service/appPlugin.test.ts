@@ -19,12 +19,6 @@ import { resolve as resolvePath } from 'path';
 import fetch from 'node-fetch';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
-import {
-  databaseFactory,
-  httpRouterFactory,
-  loggerFactory,
-  rootLoggerFactory,
-} from '@backstage/backend-app-api';
 
 describe('appPlugin', () => {
   beforeEach(() => {
@@ -45,12 +39,6 @@ describe('appPlugin', () => {
 
   it('boots', async () => {
     const { server } = await startTestBackend({
-      services: [
-        loggerFactory(),
-        rootLoggerFactory(),
-        databaseFactory(),
-        httpRouterFactory(),
-      ],
       features: [
         appPlugin({
           appPackageName: 'app',
