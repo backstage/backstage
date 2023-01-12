@@ -42,7 +42,7 @@ export async function createConfigSecretEnumerator(options: {
 
   return (config: Config) => {
     const [secretsData] = schema.process(
-      [{ data: config.get(), context: 'schema-enumerator' }],
+      [{ data: config.getOptional() ?? {}, context: 'schema-enumerator' }],
       {
         visibility: ['secret'],
         ignoreSchemaErrors: true,
