@@ -23,7 +23,6 @@ const ENTITY_YAML = `metadata:
   name: example
   labels:
     javaVersion: 1.2.3`;
-/** @public */
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
