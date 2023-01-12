@@ -18,7 +18,7 @@ import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
 /**
  * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderpage`
  *
- * @alpha
+ * @public
  */
 export type FormProps = Pick<
   SchemaFormProps,
