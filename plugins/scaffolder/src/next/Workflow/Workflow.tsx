@@ -67,6 +67,7 @@ export interface WorkflowProps {
 
 export const Workflow = ({
   ReviewStateWrapper = ReviewState,
+  FormProps = {},
   ...props
 }: WorkflowProps): JSX.Element | null => {
   const styles = useStyles();
@@ -111,7 +112,7 @@ export const Workflow = ({
             manifest={manifest}
             extensions={props.customFieldExtensions}
             onComplete={props.onComplete}
-            FormProps={props.FormProps}
+            FormProps={FormProps}
             initialFormState={props.initialFormState}
             ReviewStateWrapper={ReviewStateWrapper}
           />

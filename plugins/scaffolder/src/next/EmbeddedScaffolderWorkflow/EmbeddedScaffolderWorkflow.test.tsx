@@ -23,8 +23,10 @@ import {
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { EmbeddedScaffolderWorkflow } from './EmbeddedScaffolderWorkflow';
-import { scaffolderApiRef } from '../../api';
-import { ScaffolderApi } from '../../types';
+import {
+  scaffolderApiRef,
+  type ScaffolderApi,
+} from '@backstage/plugin-scaffolder-react';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
@@ -80,6 +82,7 @@ describe('<EmbeddedScaffolderWorkflow />', () => {
           initialFormState={{
             name: 'prefilled-name',
           }}
+          customFieldExtensions={[]}
           frontPage={
             <>
               <h1>Security Insights</h1>

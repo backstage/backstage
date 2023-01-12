@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useAnalytics, useApiHolder, useRouteRefParams } from '@backstage/core-plugin-api';
+import { useAnalytics, useApiHolder } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import {
   Stepper as MuiStepper,
@@ -33,7 +33,6 @@ import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import { useFormDataFromQuery } from '../../hooks/useFormDataFromQuery';
 import validator from '@rjsf/validator-ajv6';
-
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -64,7 +63,7 @@ export type StepperProps = {
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
   initialFormState?: Record<string, JsonValue>;
   ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
-}
+};
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
 // which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because

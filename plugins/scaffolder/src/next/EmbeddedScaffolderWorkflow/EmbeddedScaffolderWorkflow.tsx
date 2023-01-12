@@ -18,22 +18,21 @@ import React, { useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import type { JsonValue } from '@backstage/types';
 import { EmbeddableWorkflow, type WorkflowProps } from '../Workflow/Workflow';
-import { FormProps, useCustomFieldExtensions } from '@backstage/plugin-scaffolder-react';
+import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { Box, Button } from '@material-ui/core';
-import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 /**
  * @alpha
  */
 export type EmbeddedScaffolderWorkflowProps = Omit<
   WorkflowProps,
-  'customFieldExtensions' | 'onComplete'
+  'onComplete' | 'FormProps'
 > & {
   customExtensionsElement?: React.ReactNode;
   initialFormState?: Record<string, JsonValue>;
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
   onError(error: Error | undefined): JSX.Element | null;
-  FormProps: FormProps
+  FormProps?: FormProps;
   frontPage: ReactNode;
   finishPage: ReactNode;
 } & Partial<Pick<WorkflowProps, 'onComplete'>>;
@@ -51,7 +50,6 @@ type OnCompleteArgs = Parameters<WorkflowProps['onComplete']>[0];
 export function EmbeddedScaffolderWorkflow({
   namespace,
   templateName,
-  customExtensionsElement = <></>,
   frontPage,
   finishPage,
   onComplete = async (_values: OnCompleteArgs) => void 0,
@@ -60,9 +58,10 @@ export function EmbeddedScaffolderWorkflow({
   description,
   ReviewStateWrapper,
   initialFormState,
+  customFieldExtensions,
+  FormProps: formProps = {},
 }: EmbeddedScaffolderWorkflowProps): JSX.Element {
   const [display, setDisplay] = useState<Display>('front');
-  const fieldExtensions = useCustomFieldExtensions(customExtensionsElement, DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS);
 
   const startTemplate = useCallback(() => setDisplay('workflow'), []);
 
@@ -92,9 +91,10 @@ export function EmbeddedScaffolderWorkflow({
         templateName={templateName}
         onComplete={onWorkFlowComplete}
         onError={onError}
-        customFieldExtensions={fieldExtensions}
+        customFieldExtensions={customFieldExtensions}
         ReviewStateWrapper={ReviewStateWrapper}
         initialFormState={initialFormState}
+        FormProps={formProps}
       />
     ),
     finish: (

@@ -49,16 +49,10 @@ export {
   EmbeddedScaffolderWorkflow,
   type EmbeddedScaffolderWorkflowProps,
   type WorkflowProps,
-  type ReviewStateProps,
-  type ParsedTemplateSchema,
 } from './next';
-export type { NextRouterProps } from './next';
-export type { TemplateGroupFilter } from './next';
 export {
   nextRouteRef,
   nextScaffolderTaskRouteRef,
   nextSelectedTemplateRouteRef,
-  type TemplateGroupFilter,
-  type NextRouterProps,
   type FormProps,
 } from './next';
