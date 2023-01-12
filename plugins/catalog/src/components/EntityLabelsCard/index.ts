@@ -16,3 +16,4 @@
 
 export { EntityLabelsCard } from './EntityLabelsCard';
 export * from './conditions';
+export type { EntityLabelsCardProps } from './EntityLabelsCard';
