@@ -28,7 +28,6 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
-import { DateTime } from 'luxon';
 import { siteMock } from '../../mocks/mocks';
 import { AzureSitesOverviewTable } from './AzureSitesOverviewTable';
 import { azureSiteApiRef } from '../../api';
