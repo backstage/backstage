@@ -22,8 +22,7 @@ import { FieldExtensionComponentProps as FieldExtensionComponentProps_2 } from '
 import { FieldExtensionOptions as FieldExtensionOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/core';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
-import type { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
-import type { FormProps as FormProps_4 } from '@rjsf/core-v5';
+import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-scaffolder-react';
@@ -158,7 +157,7 @@ export interface FieldSchema<TReturn, TUiOptions> {
 
 // @alpha @deprecated
 export type FormProps = Pick<
-  FormProps_4,
+  FormProps_3,
   'transformErrors' | 'noHtml5Validate'
 >;
 
@@ -208,7 +207,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React_2.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
-  FormProps?: FormProps_3;
+  FormProps?: FormProps;
 };
 
 // @alpha
