@@ -14,100 +14,34 @@
  * limitations under the License.
  */
 
+import { EntitiesSearchFilter } from '@backstage/plugin-catalog-backend';
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  TemplateEntityV1beta3,
+  RESOURCE_TYPE_SCAFFOLDER_STEP,
+  TemplateEntityStepV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import { z } from 'zod';
 
-import get from 'lodash/get';
-import unset from 'lodash/unset';
-import { TemplateTransform } from './helpers';
-import {
-  SecureTemplater,
-  SecureTemplateRenderer,
-} from '../lib/templating/SecureTemplater';
-
-export const createScaffolderPermissionRule = makeCreatePermissionRule<
-  TemplateEntityV1beta3,
-  TemplateTransform,
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
+export const createScaffolderStepPermissionRule = makeCreatePermissionRule<
+  TemplateEntityStepV1beta3,
+  EntitiesSearchFilter,
+  typeof RESOURCE_TYPE_SCAFFOLDER_STEP
 >();
 
-let render: SecureTemplateRenderer;
-
-export const allowCapabilities = createScaffolderPermissionRule({
-  name: 'ALLOW_CAPABILITIES',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  description: 'Allow capabilities based on permissions',
+const hasTag = createScaffolderStepPermissionRule({
+  name: 'HAS_TAG',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_STEP,
+  description: 'Match a scaffolder step with the given tag',
   paramsSchema: z.object({
-    capabilities: z.array(z.string()),
-    templateRef: z.string().optional(),
+    tag: z.string(),
   }),
-  apply: () => true,
-  toQuery:
-    ({ capabilities }) =>
-    template => {
-      const capabilitiesObj = capabilities.reduce((acc, c) => {
-        acc[c] = true;
-        return acc;
-      }, {} as Record<string, boolean>);
-
-      const parametersPath = ['spec', 'parameters'];
-      const capabilitiesKey = 'backstage:capabilities';
-
-      if (Array.isArray(template.spec.parameters)) {
-        template.spec.parameters.forEach((parameter, index) => {
-          const parameterPath = [...parametersPath, index.toString()];
-          stripParams(parameterPath);
-          if (parameter.properties) {
-            Object.keys(parameter.properties).forEach(p => {
-              if (stripParams([...parameterPath, 'properties', p])) {
-                const requiredProperties = get(template, [
-                  ...parameterPath,
-                  'required',
-                ]);
-                if (Array.isArray(requiredProperties)) {
-                  requiredProperties.splice(requiredProperties.indexOf(p), 1);
-                }
-              }
-            });
-          }
-        });
-      } else {
-        stripParams(parametersPath);
-      }
-
-      template.spec.steps.forEach((_p, index) =>
-        stripParams(['spec', 'steps', index.toString()]),
-      );
-
-      function stripParams(path: string[]) {
-        const jsonObject = get(template, path);
-
-        if (
-          typeof jsonObject[capabilitiesKey] === 'string' &&
-          render(jsonObject[capabilitiesKey], {
-            capabilities: capabilitiesObj,
-          }) !== 'true'
-        ) {
-          const parent = get(template, [...path].splice(0, path.length - 1));
-          if (Array.isArray(parent)) {
-            parent.splice(parent.indexOf(jsonObject), 1);
-          } else {
-            unset(template, path);
-          }
-
-          return path[path.length - 1];
-        }
-        return undefined;
-      }
-
-      return template;
-    },
+  apply: (resource, { tag }) => {
+    return resource.metadata?.tags?.includes(tag) ?? false;
+  },
+  toQuery: ({ tag }) => ({
+    key: 'metadata.tags',
+    values: [tag],
+  }),
 });
 
-SecureTemplater.loadRenderer().then(r => (render = r));
-
-export const scaffolderRules = { allowCapabilities };
+export const scaffolderStepRules = { hasTag };

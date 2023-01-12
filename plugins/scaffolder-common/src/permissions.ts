@@ -16,14 +16,42 @@
 
 import { createPermission } from '@backstage/plugin-permission-common';
 
-export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-field';
+export const RESOURCE_TYPE_SCAFFOLDER_PARAMETER = 'scaffolder-parameter';
+export const RESOURCE_TYPE_SCAFFOLDER_PROPERTY = 'scaffolder-property';
+export const RESOURCE_TYPE_SCAFFOLDER_STEP = 'scaffolder-step';
 
-export const templateSchemaExecutePermission = createPermission({
-  name: 'scaffolder.template.schema.execute',
+export const templateParameterReadPermission = createPermission({
+  name: 'scaffolder.template.parameter.read',
   attributes: {
-    action: 'create',
+    action: 'read',
   },
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_PARAMETER,
 });
 
-export const scaffolderPermissions = [templateSchemaExecutePermission];
+export const templatePropertyReadPermission = createPermission({
+  name: 'scaffolder.template.property.read',
+  attributes: {
+    action: 'read',
+  },
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
+});
+
+export const templateStepReadPermission = createPermission({
+  name: 'scaffolder.template.step.read',
+  attributes: {
+    action: 'read',
+  },
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_STEP,
+});
+
+export const scaffolderParameterPermissions = [templateParameterReadPermission];
+export const scaffolderPropertyPermissions = [templatePropertyReadPermission];
+export const scaffolderStepPermissions = [templateStepReadPermission];
+
+/**
+ * TODOs:
+ * 1. Implement for Parameters & Properties
+ * 2. What metadata should be included in the template?
+ * 3. Write tests
+ * 4. Write documentation
+ */

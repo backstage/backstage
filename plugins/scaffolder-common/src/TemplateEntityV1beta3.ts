@@ -55,13 +55,7 @@ export interface TemplateEntityV1beta3 extends Entity {
      * A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
      * javascript action and some optional input parameters that may or may not have been collected from the end user.
      */
-    steps: Array<{
-      id?: string;
-      name?: string;
-      action: string;
-      input?: JsonObject;
-      if?: string | boolean;
-    }>;
+    steps: Array<TemplateEntityStepV1beta3>;
     /**
      * The output is an object where template authors can pull out information from template actions and return them in a known standard way.
      */
@@ -70,6 +64,20 @@ export interface TemplateEntityV1beta3 extends Entity {
      * The owner entityRef of the TemplateEntity
      */
     owner?: string;
+  };
+}
+
+/**
+ * TODO
+ */
+export interface TemplateEntityStepV1beta3 extends JsonObject {
+  id?: string;
+  name?: string;
+  action: string;
+  input?: JsonObject;
+  if?: string | boolean;
+  metadata: {
+    tags?: string[];
   };
 }
 

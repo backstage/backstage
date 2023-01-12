@@ -18,7 +18,7 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
-  isPermission,
+  isResourcePermission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
@@ -27,10 +27,10 @@ import {
 } from '@backstage/plugin-permission-node';
 
 import {
-  createScaffolderConditionalDecision,
-  scaffolderConditions,
+  createScaffolderStepConditionalDecision,
+  scaffolderStepConditions,
 } from '@backstage/plugin-scaffolder-backend';
-import { templateSchemaExecutePermission } from '@backstage/plugin-scaffolder-common';
+import { RESOURCE_TYPE_SCAFFOLDER_STEP } from '@backstage/plugin-scaffolder-common';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -39,12 +39,16 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     request: PolicyQuery,
     _user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
-    if (isPermission(request.permission, templateSchemaExecutePermission)) {
-      return createScaffolderConditionalDecision(request.permission, [
-        scaffolderConditions.allowCapabilities({
-          capabilities: ['example'],
-        }),
-      ]);
+    /**
+     * This is an example of how to use the scaffolder step conditions.
+     */
+    if (
+      isResourcePermission(request.permission, RESOURCE_TYPE_SCAFFOLDER_STEP)
+    ) {
+      return createScaffolderStepConditionalDecision(
+        request.permission,
+        scaffolderStepConditions.hasTag({ tag: 'example' }),
+      );
     }
 
     return {

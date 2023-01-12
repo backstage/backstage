@@ -25,19 +25,14 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  InputError,
-  NotAllowedError,
-  NotFoundError,
-  stringifyError,
-} from '@backstage/errors';
+import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
-  templateSchemaExecutePermission,
+  templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -54,12 +49,7 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import {
-  findTemplate,
-  getEntityBaseUrl,
-  getWorkingDirectory,
-  TemplateTransform,
-} from './helpers';
+import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
@@ -70,11 +60,10 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import {
-  ConditionTransformer,
-  createConditionTransformer,
-  isAndCriteria,
+  applyConditions,
+  createGetRule,
 } from '@backstage/plugin-permission-node';
-import { scaffolderRules } from './rules';
+import { scaffolderStepRules } from './rules';
 
 /**
  * RouterOptions
@@ -274,8 +263,7 @@ export async function createRouter(
     additionalTemplateGlobals,
   });
 
-  const transformConditions: ConditionTransformer<TemplateTransform> =
-    createConditionTransformer(Object.values(scaffolderRules));
+  const getRule = createGetRule(Object.values(scaffolderStepRules));
 
   router
     .get(
@@ -572,11 +560,12 @@ export async function createRouter(
     entityRef: CompoundEntityRef,
     token: string | undefined,
   ) {
-    let template = await findTemplate({
+    const template = await findTemplate({
       catalogApi: catalogClient,
       entityRef,
       token,
     });
+
     if (!isSupportedTemplate(template)) {
       throw new InputError(
         `Unsupported apiVersion field in schema entity, ${
@@ -584,32 +573,24 @@ export async function createRouter(
         }`,
       );
     }
+
     const authorizeDecision = (
       await permissionApi.authorizeConditional(
-        [{ permission: templateSchemaExecutePermission }],
-        {
-          token,
-        },
+        [{ permission: templateStepReadPermission }],
+        { token },
       )
     )[0];
 
     if (authorizeDecision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError(
-        `Not allowed to execute template ${entityRef.kind}:${entityRef.namespace}/${entityRef.name}`,
+      template.spec.steps = [];
+    } else if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      template.spec.steps = template.spec.steps.filter(step =>
+        applyConditions(authorizeDecision.conditions, step, getRule),
       );
     }
-    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
-      const scaffolderFilter = transformConditions(
-        authorizeDecision.conditions,
-      );
-      if (isAndCriteria(scaffolderFilter)) {
-        template = scaffolderFilter.allOf.reduce(
-          (acc, filter) => (filter as TemplateTransform)(acc),
-          template,
-        );
-      }
-    }
+
     return template;
   }
+
   return app;
 }
