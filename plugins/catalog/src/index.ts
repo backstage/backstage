@@ -37,6 +37,7 @@ export * from './components/EntityProcessingErrorsPanel';
 export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
 export * from './overridableComponents';
+export * from './components/EntityLabelsCard';
 export {
   CatalogEntityPage,
   CatalogIndexPage,

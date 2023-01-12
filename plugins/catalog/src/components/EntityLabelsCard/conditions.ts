@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export { EntityLabelsCard } from './EntityLabelsCard';
-export * from './conditions';
+import { Entity } from '@backstage/catalog-model';
+
+/**
+ * Returns true if the given entity has labels annotation given by the
+ * catalog. For use by EntitySwitch
+ *
+ * @public
+ */
+export function hasLabels(entity: Entity) {
+  return entity?.metadata?.labels
+    ? Object.keys(entity?.metadata?.labels).some(Boolean)
+    : false;
+}
