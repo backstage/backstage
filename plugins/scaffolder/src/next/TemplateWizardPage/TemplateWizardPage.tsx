@@ -28,7 +28,7 @@ import {
   NextFieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
-import { FormProps } from '@backstage/plugin-scaffolder-react';
+import { type FormProps } from '../types';
 import { nextRouteRef } from '../routes';
 import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { Header, Page } from '@backstage/core-components';
