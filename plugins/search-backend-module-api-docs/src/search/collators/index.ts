@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './APIDocument';
-export * from './APIDocumentCollatorFactory';
+export * from './APIDefinitionDocument';
+export * from './APIDefinitionDocumentDocumentCollatorFactory';

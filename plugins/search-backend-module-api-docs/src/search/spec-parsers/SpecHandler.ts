@@ -14,21 +14,44 @@
  * limitations under the License.
  */
 
-/** @public */
+/**
+ * Interface for all Spec Parsers
+ *
+ * @public
+ */
 export interface SpecParser {
   readonly specType: string;
+
+  /**
+   * Retrieves search result formatted text given
+   * a spec definition as input.
+   *
+   * @public
+   */
   getSpecText(specDefinition: string): string;
 }
 
-/** @public */
+/**
+ * Class which stores SpecParsers and retrieves them
+ * based on thier type.
+ *
+ * @public
+ */
 export class SpecHandler {
   specParsers: Record<string, SpecParser> = {};
 
+  /**
+   * Adds a SpecParser.
+   * @public
+   */
   addSpecParser(parser: SpecParser): SpecHandler {
     this.specParsers[parser.specType] = parser;
     return this;
   }
-
+  /**
+   * Retrieves a SpecParser based on it's type.
+   * @public
+   */
   getSpecParser(specType: string): SpecParser {
     return this.specParsers[specType];
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
+
+/**
+ * Plugin for indexing the API specification content surfaced via the API tab of a catalog entity.
+ *
+ * @remarks
+ * Intended for use with the {@link https://github.com/backstage/backstage/blob/master/plugins/api-docs/README.md | api-docs plugin}.
+ *
+ * @packageDocumentation
  */
 
 export * from './search/collators';

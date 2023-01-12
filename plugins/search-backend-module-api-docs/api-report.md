@@ -14,15 +14,14 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
 import { TokenManager } from '@backstage/backend-common';
 
-// @public (undocumented)
-export interface APIDocument extends IndexableDocument {
+// @public
+export interface APIDefinitionDocument extends IndexableDocument {
   kind: string;
   lifecycle: string;
 }
 
 // @public
 export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
-  // (undocumented)
   static fromConfig(
     _config: Config,
     options: APIDocumentCollatorFactoryOptions,
@@ -33,7 +32,7 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
   readonly type: string;
 }
 
-// @public (undocumented)
+// @public
 export type APIDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   catalogClient?: CatalogApi;
@@ -43,31 +42,24 @@ export type APIDocumentCollatorFactoryOptions = {
   logger: Logger;
 };
 
-// @public (undocumented)
+// @public
 export class OpenAPISpecParser implements SpecParser {
-  // (undocumented)
   getSpecText(specDefinition: string): string;
-  // (undocumented)
   readonly specType: string;
 }
 
-// @public (undocumented)
+// @public
 export class SpecHandler {
-  // (undocumented)
   addSpecParser(parser: SpecParser): SpecHandler;
-  // (undocumented)
   getSpecParser(specType: string): SpecParser;
   // (undocumented)
   specParsers: Record<string, SpecParser>;
 }
 
-// @public (undocumented)
+// @public
 export interface SpecParser {
-  // (undocumented)
   getSpecText(specDefinition: string): string;
   // (undocumented)
   readonly specType: string;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

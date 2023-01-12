@@ -19,8 +19,23 @@ import { SpecParser } from './SpecHandler';
 import { OpenAPI, OpenAPIV3, OpenAPIV2 } from 'openapi-types';
 import { parse } from 'yaml';
 
-/** @public */
+/**
+ * Class for parsing an OpenAPI Specfication and
+ * producing a text string suitable for display as search result.
+ *
+ * @remarks
+ * This parser's job is to translate a spec definition into
+ * a suitable display for search. This extracts key components from an
+ * openAPI specificfication and joins them with a colon (":") delimter.
+ *
+ *
+ * @public
+ */
 export class OpenAPISpecParser implements SpecParser {
+  /**
+   * Type of spec this parser is
+   * intended to handle.
+   */
   readonly specType: string = 'openapi';
 
   private getV3SpecText(spec: OpenAPIV3.Document): (string | undefined)[] {
@@ -122,6 +137,10 @@ export class OpenAPISpecParser implements SpecParser {
     return fullDocumentText.filter(x => x).join(' : ');
   }
 
+  /**
+   * Given an OpenAPI specification as a text yaml file,
+   * parses it and returns formatted search result.
+   */
   getSpecText(specDefinition: string) {
     const definition = parse(specDefinition);
     const version: string = definition?.openapi || definition?.swagger;

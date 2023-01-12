@@ -26,7 +26,7 @@ import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
-import { APIDocumentCollatorFactory } from './APIDocumentCollatorFactory';
+import { APIDocumentCollatorFactory } from './APIDefinitionDocumentDocumentCollatorFactory';
 import { createLogger, format } from 'winston';
 
 const logger = createLogger({

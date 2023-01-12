@@ -25,11 +25,14 @@ import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
-import { APIDocument } from './APIDocument';
+import { APIDefinitionDocument } from './APIDefinitionDocument';
 
 import { OpenAPISpecParser, SpecHandler, SpecParser } from '../spec-parsers';
 
-/** @public */
+/**
+ * Options for instantiating APIDocumentCollatorFactoryOptions
+ * @public
+ */
 export type APIDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   catalogClient?: CatalogApi;
@@ -40,7 +43,24 @@ export type APIDocumentCollatorFactoryOptions = {
 };
 
 /**
- * Options to configure the TechDocs collator factory
+ * Factory class producing a collator that can be used to index documents
+ * sourced from api catalog entities.
+ *
+ * @remarks
+ * This collator is intended for use by those whose are imlementing the {@link https://github.com/backstage/backstage/blob/master/plugins/api-docs/README.md | api-docs plugin}.
+ * it will gather api definitions and format them to be consumed by core
+ *
+ * @example
+ * ```ts
+ * indexBuilder.addCollator({
+ * apiDefinitionIndexingSchedule,
+ *  factory: APIDocumentCollatorFactory.fromConfig(env.config, {
+ *    logger: env.logger,
+ *    discovery: env.discovery,
+ *    tokenManager: env.tokenManager,
+ *  })
+ * });
+ * ```
  *
  * @public
  */
@@ -78,6 +98,10 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
     }
   }
 
+  /**
+   * Returns a APIDocumentCollatorFactory instance from configuration
+   * and a set of options.
+   */
   static fromConfig(
     _config: Config,
     options: APIDocumentCollatorFactoryOptions,
@@ -89,7 +113,7 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
     return Readable.from(this.execute());
   }
 
-  private async *execute(): AsyncGenerator<APIDocument> {
+  private async *execute(): AsyncGenerator<APIDefinitionDocument> {
     const { token } = await this.tokenManager.getToken();
 
     let entitiesRetrieved = 0;
