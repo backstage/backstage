@@ -15,40 +15,46 @@
  */
 
 import { InfoCard } from '@backstage/core-components';
-import React from 'react';
-import { useUserProfile } from '../useUserProfileInfo';
-import Chip from '@material-ui/core/Chip';
+import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import React from 'react';
+import { useUserProfile } from '../useUserProfileInfo';
 
-/** @public */
-export const UserSettingsIdentityCard = () => {
+const Contents = () => {
   const { backstageIdentity } = useUserProfile();
 
+  if (!backstageIdentity) {
+    return <Typography>No Backstage Identity</Typography>;
+  }
+
   return (
-    <InfoCard title="Backstage Identity">
-      <Grid container spacing={6}>
-        <Grid item xs={12} sm container>
-          <Grid item xs container direction="column" spacing={2}>
-            <Grid item xs>
-              <Typography variant="subtitle1" gutterBottom>
-                User Entity:{' '}
-                <Chip
-                  label={backstageIdentity?.userEntityRef}
-                  variant="outlined"
-                  size="small"
-                />
-              </Typography>
-              <Typography variant="subtitle1">
-                Ownership Entities:{' '}
-                {backstageIdentity?.ownershipEntityRefs.map(it => (
-                  <Chip label={it} variant="outlined" size="small" />
-                ))}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
+    <Grid container spacing={1}>
+      <Grid item xs={12}>
+        <Typography variant="subtitle1" gutterBottom>
+          User Entity:{' '}
+          <EntityRefLinks
+            entityRefs={[backstageIdentity.userEntityRef]}
+            getTitle={ref => ref}
+          />
+        </Typography>
       </Grid>
-    </InfoCard>
+      <Grid item xs={12}>
+        <Typography variant="subtitle1">
+          Ownership Entities:{' '}
+          <EntityRefLinks
+            entityRefs={backstageIdentity.ownershipEntityRefs}
+            getTitle={ref => ref}
+          />
+        </Typography>
+      </Grid>
+    </Grid>
   );
 };
+
+/** @public */
+export const UserSettingsIdentityCard = () => (
+  <InfoCard title="Backstage Identity">
+    <Contents />
+  </InfoCard>
+);
