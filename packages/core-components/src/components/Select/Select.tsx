@@ -200,9 +200,7 @@ export function SelectComponent(props: SelectProps) {
     <Box className={classes.root}>
       <ClickAwayListener onClickAway={handleClickAway}>
         <FormControl className={classes.formControl}>
-          {label && (
-            <InputLabel className={classes.formLabel}>{label}</InputLabel>
-          )}
+          <InputLabel className={classes.formLabel}>{label}</InputLabel>
           <Select
             aria-label={label}
             value={value}
