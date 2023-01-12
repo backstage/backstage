@@ -9,6 +9,7 @@ import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
@@ -135,9 +136,10 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
 }
 
 // @alpha
-export const microsoftGraphOrgEntityProviderCatalogModule: (
-  options?: MicrosoftGraphOrgEntityProviderCatalogModuleOptions | undefined,
-) => BackendFeature;
+export const microsoftGraphOrgEntityProviderCatalogModule: FactoryFunction<
+  BackendFeature,
+  []
+>;
 
 // @alpha
 export interface MicrosoftGraphOrgEntityProviderCatalogModuleOptions {

@@ -11,6 +11,7 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { EventParams } from '@backstage/plugin-events-node';
 import { Events } from '@backstage/plugin-bitbucket-cloud-common';
 import { EventSubscriber } from '@backstage/plugin-events-node';
+import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
@@ -48,7 +49,8 @@ export class BitbucketCloudEntityProvider
 }
 
 // @alpha (undocumented)
-export const bitbucketCloudEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const bitbucketCloudEntityProviderCatalogModule: FactoryFunction<
+  BackendFeature,
+  []
+>;
 ```

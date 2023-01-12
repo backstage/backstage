@@ -6,11 +6,15 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import express from 'express';
+import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @alpha
-export const appPlugin: (options: AppPluginOptions) => BackendFeature;
+export const appPlugin: FactoryFunction<
+  BackendFeature,
+  [options: AppPluginOptions]
+>;
 
 // @alpha (undocumented)
 export type AppPluginOptions = {

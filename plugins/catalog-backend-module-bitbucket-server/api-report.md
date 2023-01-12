@@ -9,6 +9,7 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
@@ -69,9 +70,10 @@ export class BitbucketServerEntityProvider implements EntityProvider {
 }
 
 // @alpha (undocumented)
-export const bitbucketServerEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const bitbucketServerEntityProviderCatalogModule: FactoryFunction<
+  BackendFeature,
+  []
+>;
 
 // @public (undocumented)
 export type BitbucketServerListOptions = {

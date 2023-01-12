@@ -13,6 +13,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
+import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegrationConfig } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -101,9 +102,10 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 }
 
 // @alpha
-export const githubEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const githubEntityProviderCatalogModule: FactoryFunction<
+  BackendFeature,
+  []
+>;
 
 // @public (undocumented)
 export class GithubLocationAnalyzer implements ScmLocationAnalyzer {

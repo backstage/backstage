@@ -9,6 +9,7 @@ import { EventBroker } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import express from 'express';
+import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 
@@ -29,7 +30,7 @@ export class EventsBackend {
 }
 
 // @alpha
-export const eventsPlugin: (options?: undefined) => BackendFeature;
+export const eventsPlugin: FactoryFunction<BackendFeature, []>;
 
 // @public
 export class HttpPostIngressEventPublisher implements EventPublisher {

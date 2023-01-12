@@ -5,6 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { EventParams } from '@backstage/plugin-events-node';
+import { FactoryFunction } from '@backstage/backend-plugin-api/src/types';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
 // @public
@@ -15,7 +16,8 @@ export class AzureDevOpsEventRouter extends SubTopicEventRouter {
 }
 
 // @alpha
-export const azureDevOpsEventRouterEventsModule: (
-  options?: undefined,
-) => BackendFeature;
+export const azureDevOpsEventRouterEventsModule: FactoryFunction<
+  BackendFeature,
+  []
+>;
 ```
