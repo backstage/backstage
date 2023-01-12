@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-export * from './ApiExplorerPage';
-export * from './ApiDefinitionCard';
-export * from './ApiDefinitionDialog';
-export * from './ApisCards';
-export * from './AsyncApiDefinitionWidget';
-export * from './ComponentsCards';
-export * from './GraphQlDefinitionWidget';
-export * from './OpenApiDefinitionWidget';
-export * from './PlainApiDefinitionWidget';
-export * from './TrpcDefinitionWidget';
+export { ApiDefinitionDialog } from './ApiDefinitionDialog';
