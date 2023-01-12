@@ -58,7 +58,7 @@ export class WrapperProviders {
   ) {}
 
   wrap(
-    provider: IncrementalEntityProvider<unknown, unknown>,
+    provider: IncrementalEntityProvider,
     options: IncrementalEntityProviderOptions,
   ): EntityProvider {
     this.numberOfProvidersToConnect += 1;
@@ -81,8 +81,8 @@ export class WrapperProviders {
     ).createRouter();
   }
 
-  private async startProvider<TCursor, TContext, TInput>(
-    provider: IncrementalEntityProvider<TCursor, TContext, TInput>,
+  private async startProvider(
+    provider: IncrementalEntityProvider,
     providerOptions: IncrementalEntityProviderOptions,
     connection: EntityProviderConnection,
   ) {

@@ -24,7 +24,7 @@ import { incrementalIngestionEntityProviderCatalogModule } from './incrementalIn
 
 describe('bitbucketServerEntityProviderCatalogModule', () => {
   it('should register provider at the catalog extension point', async () => {
-    const provider1: IncrementalEntityProvider<number, {}, unknown> = {
+    const provider1: IncrementalEntityProvider = {
       getProviderName: () => 'provider1',
       around: burst => burst(0),
       next: async (cursor, _context) => {
