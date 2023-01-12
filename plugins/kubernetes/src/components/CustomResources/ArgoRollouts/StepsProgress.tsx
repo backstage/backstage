@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Step, StepLabel, Stepper } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   ArgoRolloutCanaryStep,
   SetWeightStep,
@@ -49,11 +50,11 @@ const createLabelForStep = (step: ArgoRolloutCanaryStep): React.ReactNode => {
   } else if (isAnalysisStep(step)) {
     return (
       <div>
-        <p>analysis templates:</p>
+        <Typography paragraph>analysis templates:</Typography>
         {step.analysis.templates.map((t, i) => (
-          <p key={i}>{`${t.templateName}${
+          <Typography paragraph key={i}>{`${t.templateName}${
             t.clusterScope ? ' (cluster scoped)' : ''
-          }`}</p>
+          }`}</Typography>
         ))}
       </div>
     );
