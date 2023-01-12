@@ -18,23 +18,23 @@ import { Router } from 'express';
 import type { UrlReader } from '@backstage/backend-common';
 
 // @public
-export type EntityIteratorResult<T> =
+export type EntityIteratorResult =
   | {
       done: false;
       entities: DeferredEntity[];
-      cursor: T;
+      cursor: unknown;
     }
   | {
       done: true;
       entities?: DeferredEntity[];
-      cursor?: T;
+      cursor?: unknown;
     };
 
 // @public (undocumented)
 export class IncrementalCatalogBuilder {
   // (undocumented)
-  addIncrementalEntityProvider<TCursor, TContext, TInput>(
-    provider: IncrementalEntityProvider<TCursor, TContext, TInput>,
+  addIncrementalEntityProvider(
+    provider: IncrementalEntityProvider,
     options: IncrementalEntityProviderOptions,
   ): void;
   // (undocumented)
@@ -48,9 +48,9 @@ export class IncrementalCatalogBuilder {
 }
 
 // @public
-export interface IncrementalEntityProvider<TCursor, TContext, TInput = null> {
-  around(burst: (context: TContext) => Promise<void>): Promise<void>;
-  deltaMapper?: (payload: TInput) => {
+export interface IncrementalEntityProvider {
+  around(burst: (context: unknown) => Promise<void>): Promise<void>;
+  deltaMapper?: (payload: unknown) => {
     delta:
       | {
           added: DeferredEntity[];
@@ -61,10 +61,7 @@ export interface IncrementalEntityProvider<TCursor, TContext, TInput = null> {
       | undefined;
   };
   getProviderName(): string;
-  next(
-    context: TContext,
-    cursor?: TCursor,
-  ): Promise<EntityIteratorResult<TCursor>>;
+  next(context: unknown, cursor?: unknown): Promise<EntityIteratorResult>;
 }
 
 // @public (undocumented)
@@ -80,7 +77,7 @@ export interface IncrementalEntityProviderOptions {
 // @alpha
 export const incrementalIngestionEntityProviderCatalogModule: (options: {
   providers: {
-    provider: IncrementalEntityProvider<unknown, unknown, unknown>;
+    provider: IncrementalEntityProvider;
     options: IncrementalEntityProviderOptions;
   }[];
 }) => BackendFeature;
