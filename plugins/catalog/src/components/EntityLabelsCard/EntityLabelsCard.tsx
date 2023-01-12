@@ -28,6 +28,7 @@ import { makeStyles, Typography } from '@material-ui/core';
 /** @public */
 export interface EntityLabelsCardProps {
   variant?: InfoCardVariants;
+  title?: string;
 }
 
 const useStyles = makeStyles(_ => ({
@@ -37,7 +38,7 @@ const useStyles = makeStyles(_ => ({
 }));
 
 export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
-  const { variant } = props;
+  const { variant, title } = props;
   const { entity } = useEntity();
   const classes = useStyles();
 
@@ -59,7 +60,7 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
   const labels = entity?.metadata?.labels;
 
   return (
-    <InfoCard title="Entity Labels" variant={variant}>
+    <InfoCard title={title || 'Labels'} variant={variant}>
       {!labels || Object.keys(labels).length === 0 ? (
         <EntityLabelsEmptyState />
       ) : (

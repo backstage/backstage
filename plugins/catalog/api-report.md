@@ -283,6 +283,8 @@ export const EntityLabelsCard: (props: EntityLabelsCardProps) => JSX.Element;
 // @public (undocumented)
 export interface EntityLabelsCardProps {
   // (undocumented)
+  title?: string;
+  // (undocumented)
   variant?: InfoCardVariants;
 }
 
