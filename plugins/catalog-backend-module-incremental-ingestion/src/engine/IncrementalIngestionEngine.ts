@@ -41,7 +41,7 @@ export class IncrementalIngestionEngine
       { minutes: 30 },
       { hours: 3 },
     ];
-    this.providerEventTopic = `${options.provider.getProviderName()}-delta`;
+    this.providerEventTopic = `${options.provider.getProviderName()}-push`;
   }
 
   async taskFn(signal: AbortSignal) {
