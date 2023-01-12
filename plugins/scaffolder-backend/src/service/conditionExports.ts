@@ -14,34 +14,42 @@
  * limitations under the License.
  */
 
-import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common';
+import { RESOURCE_TYPE_SCAFFOLDER_STEP } from '@backstage/plugin-scaffolder-common';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { scaffolderRules } from './rules';
-import {
-  AllOfCriteria,
-  ConditionalPolicyDecision,
-  PermissionCondition,
-  PermissionRuleParams,
-  ResourcePermission,
-} from '@backstage/plugin-permission-common';
+import { scaffolderStepRules } from './rules';
 
-const { conditions: scaffolderConditions, createConditionalDecision } =
-  createConditionExports({
-    pluginId: 'scaffolder',
-    resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-    rules: scaffolderRules,
-  });
+// const {
+//   conditions: scaffolderTemplateConditions,
+//   createConditionalDecision: createScaffolderTemplateConditionalDecision,
+// } = createConditionExports({
+//   pluginId: 'scaffolder',
+//   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+//   rules: scaffolderRules,
+// });
 
-export { scaffolderConditions };
+// const {
+//   conditions: scaffolderPropertyConditions,
+//   createConditionalDecision: createScaffolderPropertyConditionalDecision,
+// } = createConditionExports({
+//   pluginId: 'scaffolder',
+//   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+//   rules: scaffolderRules,
+// });
 
-export function createScaffolderConditionalDecision(
-  permission: ResourcePermission<typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE>,
-  conditions: AllOfCriteria<
-    PermissionCondition<
-      typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-      PermissionRuleParams
-    >
-  >['allOf'],
-): ConditionalPolicyDecision {
-  return createConditionalDecision(permission, { allOf: conditions });
-}
+const {
+  conditions: scaffolderStepConditions,
+  createConditionalDecision: createScaffolderStepConditionalDecision,
+} = createConditionExports({
+  pluginId: 'scaffolder',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_STEP,
+  rules: scaffolderStepRules,
+});
+
+export {
+  // scaffolderTemplateConditions,
+  // createScaffolderTemplateConditionalDecision,
+  // scaffolderPropertyConditions,
+  // createScaffolderPropertyConditionalDecision,
+  scaffolderStepConditions,
+  createScaffolderStepConditionalDecision,
+};

@@ -14,7 +14,6 @@ spec:
         - owner
       properties:
         component_id:
-          backstage:capabilities: ${{ capabilities.cap1 }}
           title: Name
           type: string
           description: Unique name of the component
@@ -44,11 +43,13 @@ spec:
               - github.com
   steps:
     - id: one
-      backstage:capabilities: ${{ capabilities.cap1 }}
       name: First log
       action: debug:log
       input:
         message: hello
+      metadata:
+        tags:
+          - example
     - id: two
       name: Second log
       action: debug:log
