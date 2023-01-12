@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  EmbeddedScaffolderWorkflow,
-  type EmbeddedScaffolderWorkflowProps,
-} from './EmbeddedScaffolderWorkflow';
+export { Workflow, EmbeddableWorkflow, type WorkflowProps } from './Workflow';

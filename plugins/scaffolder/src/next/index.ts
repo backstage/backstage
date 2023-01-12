@@ -18,7 +18,3 @@ export * from './TemplateListPage';
 export * from './TemplateWizardPage';
 export * from './types';
 export * from './routes';
-export * from './Workflow';
-export * from './EmbeddedScaffolderWorkflow';
-export type { WorkflowProps } from './Workflow';
-

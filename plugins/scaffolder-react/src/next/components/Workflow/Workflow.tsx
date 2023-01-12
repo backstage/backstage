@@ -21,20 +21,17 @@ import {
   Progress,
 } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { useTemplateParameterSchema } from '../TemplateWizardPage/TemplateWizardPage';
 import type { ErrorTransformer } from '@rjsf/utils';
 import type { JsonValue } from '@backstage/types';
 import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import {
-  ReviewState,
-  type ReviewStateProps,
-  SecretsContextProvider,
-  Stepper,
-  type NextFieldExtensionOptions,
-} from '@backstage/plugin-scaffolder-react';
-import { type FormProps } from '@backstage/plugin-scaffolder-react';
+import { type NextFieldExtensionOptions } from '../../extensions/types';
+import { type FormProps } from '../../types';
+import { ReviewState, ReviewStateProps } from '../ReviewState/ReviewState';
+import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
+import { Stepper } from '../Stepper/Stepper';
+import { SecretsContextProvider } from '../../../secrets/SecretsContext';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
@@ -65,6 +62,9 @@ export interface WorkflowProps {
   ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
 }
 
+/**
+ * @alpha
+ */
 export const Workflow = ({
   ReviewStateWrapper = ReviewState,
   FormProps = {},
@@ -122,6 +122,9 @@ export const Workflow = ({
   );
 };
 
+/**
+ * @alpha
+ */
 export const EmbeddableWorkflow = (props: WorkflowProps) => (
   <SecretsContextProvider>
     <Workflow {...props} />

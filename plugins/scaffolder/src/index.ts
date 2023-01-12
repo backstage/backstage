@@ -46,11 +46,6 @@ export * from './deprecated';
 /** next exports */
 export { NextScaffolderPage } from './plugin';
 export {
-  EmbeddedScaffolderWorkflow,
-  type EmbeddedScaffolderWorkflowProps,
-  type WorkflowProps,
-} from './next';
-export {
   nextRouteRef,
   nextScaffolderTaskRouteRef,
   nextSelectedTemplateRouteRef,

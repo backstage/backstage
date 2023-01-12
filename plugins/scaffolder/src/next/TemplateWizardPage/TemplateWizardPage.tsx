@@ -27,27 +27,16 @@ import {
   useTemplateSecrets,
   NextFieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react';
-import useAsync from 'react-use/lib/useAsync';
 import { JsonValue } from '@backstage/types';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { nextRouteRef } from '../routes';
 import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { Header, Page } from '@backstage/core-components';
-import { Workflow } from '../Workflow/Workflow';
+import { Workflow } from '@backstage/plugin-scaffolder-react';
 
 type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
   FormProps?: FormProps;
-};
-
-export const useTemplateParameterSchema = (templateRef: string) => {
-  const scaffolderApi = useApi(scaffolderApiRef);
-  const { value, loading, error } = useAsync(
-    () => scaffolderApi.getTemplateParameterSchema(templateRef),
-    [scaffolderApi, templateRef],
-  );
-
-  return { manifest: value, loading, error };
 };
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
