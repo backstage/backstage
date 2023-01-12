@@ -16,23 +16,59 @@
 
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { Handler, Router } from 'express';
+import trimEnd from 'lodash/trimEnd';
 
 function normalizePath(path: string): string {
-  return path.replace(/\/*$/, '/');
+  return `${trimEnd(path, '/')}/`;
 }
 
-export class RestrictedIndexedRouter implements RootHttpRouterService {
-  #indexPath?: false | string;
+/**
+ * Options for the {@link DefaultRootHttpRouter} class.
+ *
+ * @public
+ */
+export interface DefaultRootHttpRouterOptions {
+  /**
+   * The path to forward all unmatched requests to. Defaults to '/api/app' if
+   * not given. Disables index path behavior if false is given.
+   */
+  indexPath?: string | false;
+}
+
+/**
+ * The default implementation of the {@link @backstage/backend-plugin-api#RootHttpRouterService} interface for
+ * {@link @backstage/backend-plugin-api#coreServices.rootHttpRouter}.
+ *
+ * @public
+ */
+export class DefaultRootHttpRouter implements RootHttpRouterService {
+  #indexPath?: string;
 
   #router = Router();
   #namedRoutes = Router();
   #indexRouter = Router();
   #existingPaths = new Array<string>();
 
-  constructor(indexPath?: false | string) {
+  static create(options?: DefaultRootHttpRouterOptions) {
+    let indexPath;
+    if (options?.indexPath === false) {
+      indexPath = undefined;
+    } else if (options?.indexPath === undefined) {
+      indexPath = '/api/app';
+    } else if (options?.indexPath === '') {
+      throw new Error('indexPath option may not be an empty string');
+    } else {
+      indexPath = options.indexPath;
+    }
+    return new DefaultRootHttpRouter(indexPath);
+  }
+
+  private constructor(indexPath?: string) {
     this.#indexPath = indexPath;
     this.#router.use(this.#namedRoutes);
-    this.#router.use(this.#indexRouter);
+    if (this.#indexPath) {
+      this.#router.use(this.#indexRouter);
+    }
   }
 
   use(path: string, handler: Handler) {

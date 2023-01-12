@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduler } from '@backstage/backend-tasks';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 /** @public */
-export const schedulerFactory = createServiceFactory({
-  service: coreServices.scheduler,
-  deps: {
-    plugin: coreServices.pluginMetadata,
-    databaseManager: coreServices.database,
-    logger: coreServices.logger,
-  },
-  async factory() {
-    return async ({ plugin, databaseManager, logger }) => {
-      return TaskScheduler.forPlugin({
-        pluginId: plugin.getId(),
-        databaseManager,
-        logger: loggerToWinstonLogger(logger),
-      });
-    };
+export const mockConfigFactory = createServiceFactory({
+  service: coreServices.config,
+  deps: {},
+  async factory(_, options?: { data?: JsonObject }) {
+    return new ConfigReader(options?.data, 'mock-config');
   },
 });

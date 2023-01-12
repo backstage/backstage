@@ -56,8 +56,7 @@
   "devDependencies": {
     "@backstage/backend-app-api": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/plugin-catalog-backend": "workspace:^",
-    "get-port": "^6.1.2"
+    "@backstage/plugin-catalog-backend": "workspace:^"
   },
   "files": [
     "alpha",

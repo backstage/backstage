@@ -27,7 +27,7 @@ import {
   MiddlewareFactory,
   readHttpServerOptions,
 } from '../../../http';
-import { RestrictedIndexedRouter } from './RestrictedIndexedRouter';
+import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 
 /**
  * @public
@@ -46,7 +46,8 @@ export interface RootHttpRouterConfigureOptions {
  */
 export type RootHttpRouterFactoryOptions = {
   /**
-   * The path to forward all unmatched requests to. Defaults to '/api/app'
+   * The path to forward all unmatched requests to. Defaults to '/api/app' if
+   * not given. Disables index path behavior if false is given.
    */
   indexPath?: string | false;
 
@@ -82,11 +83,10 @@ export const rootHttpRouterFactory = createServiceFactory({
       configure = defaultConfigure,
     }: RootHttpRouterFactoryOptions = {},
   ) {
-    const router = new RestrictedIndexedRouter(indexPath ?? '/api/app');
     const logger = rootLogger.child({ service: 'rootHttpRouter' });
-
     const app = express();
 
+    const router = DefaultRootHttpRouter.create({ indexPath });
     const middleware = MiddlewareFactory.create({ config, logger });
 
     configure({
