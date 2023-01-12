@@ -35,16 +35,13 @@ import {
   errorApiRef,
   githubAuthApiRef,
 } from '@backstage/core-plugin-api';
-import { UrlPatternDiscovery } from './UrlPatternDiscovery';
+import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      UrlPatternDiscovery.compile(
-        `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
-      ),
+    factory: ({ configApi }) => AuthProxyDiscoveryApi.fromConfig(configApi),
   }),
   createApiFactory({
     api: scmIntegrationsApiRef,
