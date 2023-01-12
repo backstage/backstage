@@ -16,9 +16,10 @@
 
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { Handler, Router } from 'express';
+import trimEnd from 'lodash/trimEnd';
 
 function normalizePath(path: string): string {
-  return path.replace(/\/*$/, '/');
+  return `${trimEnd(path, '/')}/`;
 }
 
 /**
