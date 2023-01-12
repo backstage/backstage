@@ -43,8 +43,8 @@ export function EntityLabelsEmptyState() {
   return (
     <>
       <Typography variant="body1">
-        No labels defined for this entity. You can add links to your entity YAML
-        as shown in the highlighted example below:
+        No labels defined for this entity. You can add labels to your entity
+        YAML as shown in the highlighted example below:
       </Typography>
       <div className={classes.code}>
         <CodeSnippet
