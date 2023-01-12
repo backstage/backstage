@@ -410,22 +410,24 @@ export function DependencyGraph<NodeData, EdgeData>(
       viewBox={`0 0 ${maxWidth} ${maxHeight}`}
     >
       <defs>
-        <marker
-          id={ARROW_MARKER_ID}
-          viewBox="0 0 24 24"
-          markerWidth="14"
-          markerHeight="14"
-          refX="16"
-          refY="12"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <path
-            fill={theme.palette.textSubtle}
-            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
-          />
-        </marker>
-        {defs}
+        <>
+          <marker
+            id={ARROW_MARKER_ID}
+            viewBox="0 0 24 24"
+            markerWidth="14"
+            markerHeight="14"
+            refX="16"
+            refY="12"
+            orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <path
+              fill={theme.palette.textSubtle}
+              d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            />
+          </marker>
+          {defs}
+        </>
       </defs>
       <g id={WORKSPACE_ID}>
         <svg

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
 import { AppContextProvider } from './AppContext';
@@ -39,23 +39,22 @@ describe('v1 consumer', () => {
       getSystemIcons: jest.fn(),
     };
 
-    const renderedHook = renderHook(() => useMockAppV1(), {
+    const { result } = renderHook(() => useMockAppV1(), {
       wrapper: ({ children }) => (
         <AppContextProvider appContext={mockContext} children={children} />
       ),
     });
-    const result = renderedHook.result.current;
 
     expect(mockContext.getPlugins).toHaveBeenCalledTimes(0);
-    result.getPlugins();
+    result.current.getPlugins();
     expect(mockContext.getPlugins).toHaveBeenCalledTimes(1);
 
     expect(mockContext.getComponents).toHaveBeenCalledTimes(0);
-    result.getComponents();
+    result.current.getComponents();
     expect(mockContext.getComponents).toHaveBeenCalledTimes(1);
 
     expect(mockContext.getSystemIcon).toHaveBeenCalledTimes(0);
-    result.getSystemIcon('icon');
+    result.current.getSystemIcon('icon');
     expect(mockContext.getSystemIcon).toHaveBeenCalledTimes(1);
     expect(mockContext.getSystemIcon).toHaveBeenCalledWith('icon');
   });

@@ -19,6 +19,7 @@ import React from 'react';
 import { MemoryRouter, Navigate, Route } from 'react-router-dom';
 import { FlatRoutes } from '../routing';
 import { AppManager } from './AppManager';
+import { AppRouter } from './AppRouter';
 import { AppOptions } from './types';
 
 jest.mock('react-router', () => jest.requireActual('react-router-stable'));
@@ -70,7 +71,6 @@ describe('AppManager', () => {
     });
 
     const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
 
     const rendered = render(
       <AppProvider>
@@ -104,7 +104,6 @@ describe('AppManager', () => {
     });
 
     const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
 
     const rendered = render(
       <AppProvider>

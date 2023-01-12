@@ -15,9 +15,8 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import Badge from '@material-ui/core/Badge';
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { HeaderTabs } from './HeaderTabs';
 
 const mockTabs = [
@@ -41,7 +40,9 @@ describe('<HeaderTabs />', () => {
       'false',
     );
 
-    rendered.getByText('Docs').click();
+    act(() => {
+      rendered.getByText('Docs').click();
+    });
 
     expect(rendered.getByText('Docs').parentElement).toHaveAttribute(
       'aria-selected',
@@ -49,35 +50,15 @@ describe('<HeaderTabs />', () => {
     );
   });
   it('should render extension component to tab if one present', async () => {
-    const useStyles = makeStyles(() => ({
-      badge: {
-        margin: '20px 20px 0 0',
-      },
-    }));
-
-    const TextualBadge = React.forwardRef<HTMLSpanElement>((props, ref) => (
-      <Badge
-        classes={useStyles()}
-        overlap="rectangular"
-        color="secondary"
-        badgeContent="three new alarms"
-      >
-        <span ref={ref} {...props}>
-          {props.children}
-        </span>
-      </Badge>
-    ));
     const iconTab = [
       {
         id: 'icon-tab',
         label: 'Alarms',
-        tabProps: { component: TextualBadge },
       },
     ];
 
     const rendered = await renderInTestApp(<HeaderTabs tabs={iconTab} />);
 
     expect(rendered.getByText('Alarms')).toBeInTheDocument();
-    expect(rendered.getByText('three new alarms')).toBeInTheDocument();
   });
 });

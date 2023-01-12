@@ -52,7 +52,7 @@ export const HomePageSearchBar = ({ ...props }: HomePageSearchBarProps) => {
   };
 
   const handleChange = useCallback(
-    value => {
+    (value: string) => {
       setQuery(value);
     },
     [setQuery],

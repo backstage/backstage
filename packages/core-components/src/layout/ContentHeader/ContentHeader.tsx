@@ -16,7 +16,7 @@
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 
 /**
@@ -92,6 +92,7 @@ type ContentHeaderProps = {
   titleComponent?: ReactNode;
   description?: string;
   textAlign?: 'left' | 'right' | 'center';
+  children?: React.ReactNode | React.ReactNode[];
 };
 
 /**
@@ -101,7 +102,7 @@ type ContentHeaderProps = {
  *
  */
 
-export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
+export function ContentHeader(props: ContentHeaderProps) {
   const {
     description,
     title,

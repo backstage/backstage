@@ -192,7 +192,7 @@ export const SearchResultGroupTextFilterField = (
         contentEditable
         suppressContentEditableWarning
       >
-        {value}
+        {value as React.ReactNode}
       </Typography>
     </SearchResultGroupFilterFieldLayout>
   );
@@ -372,7 +372,7 @@ export function SearchResultGroupLayout<FilterOption>(
     filterOptions,
     renderFilterOption = filterOption => (
       <MenuItem key={String(filterOption)} value={String(filterOption)}>
-        {filterOption}
+        {filterOption as unknown as React.ReactNode}
       </MenuItem>
     ),
     filterFields,

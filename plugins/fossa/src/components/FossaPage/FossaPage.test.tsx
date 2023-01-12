@@ -38,7 +38,7 @@ describe('<FossaPage />', () => {
     getFindingSummary: jest.fn(),
     getFindingSummaries: jest.fn(),
   };
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<{ children?: React.ReactNode }>;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

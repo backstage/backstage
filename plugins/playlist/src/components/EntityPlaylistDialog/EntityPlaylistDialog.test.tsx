@@ -25,7 +25,6 @@ import {
 } from '@backstage/plugin-permission-react';
 import { Button } from '@material-ui/core';
 import { fireEvent, getByRole, waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
 import React from 'react';
 import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';
@@ -134,19 +133,17 @@ describe('EntityPlaylistDialog', () => {
     expect(rendered.getByText('playlist-1')).toBeInTheDocument();
     expect(rendered.getByText('playlist-2')).toBeInTheDocument();
 
-    act(() => {
-      fireEvent.input(
-        getByRole(
-          rendered.getByTestId('entity-playlist-dialog-search'),
-          'textbox',
-        ),
-        {
-          target: {
-            value: 'playlist-2',
-          },
+    fireEvent.input(
+      getByRole(
+        rendered.getByTestId('entity-playlist-dialog-search'),
+        'textbox',
+      ),
+      {
+        target: {
+          value: 'playlist-2',
         },
-      );
-    });
+      },
+    );
 
     expect(rendered.queryByText('playlist-1')).toBeNull();
     expect(rendered.getByText('playlist-2')).toBeInTheDocument();
@@ -155,9 +152,7 @@ describe('EntityPlaylistDialog', () => {
   it('should add the current entity to the selected playlist', async () => {
     const rendered = await render();
 
-    act(() => {
-      fireEvent.click(rendered.getByText('playlist-2'));
-    });
+    fireEvent.click(rendered.getByText('playlist-2'));
 
     await waitFor(() => {
       expect(playlistApi.addPlaylistEntities).toHaveBeenCalledWith('id2', [
@@ -176,17 +171,13 @@ describe('EntityPlaylistDialog', () => {
 
     expect(rendered.queryByTestId('mock-playlist-edit-dialog')).toBeNull();
 
-    act(() => {
-      fireEvent.click(rendered.getByText('Create new playlist'));
-    });
+    fireEvent.click(rendered.getByText('Create new playlist'));
 
     expect(
       rendered.getByTestId('mock-playlist-edit-dialog'),
     ).toBeInTheDocument();
 
-    act(() => {
-      fireEvent.click(rendered.getByTestId('mock-playlist-edit-dialog'));
-    });
+    fireEvent.click(rendered.getByTestId('mock-playlist-edit-dialog'));
 
     await waitFor(() => {
       expect(playlistApi.createPlaylist).toHaveBeenCalled();

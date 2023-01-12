@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { WrapperComponent } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
@@ -34,11 +35,11 @@ describe('v1 consumer', () => {
     context.set({ 1: { resolve } });
 
     const routeRef = createRouteRef({ id: 'ref1' });
-
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => <MemoryRouter initialEntries={['/my-page']} children={children} />;
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
-        <MemoryRouter initialEntries={['/my-page']} children={children} />
-      ),
+      wrapper,
     });
 
     const routeFunc = renderedHook.result.current;
@@ -59,14 +60,17 @@ describe('v1 consumer', () => {
     const history = createBrowserHistory();
     history.push('/my-page');
 
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => (
+      <Router
+        location={history.location}
+        navigator={history}
+        children={children}
+      />
+    );
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
-        <Router
-          location={history.location}
-          navigator={history}
-          children={children}
-        />
-      ),
+      wrapper,
     });
 
     expect(resolve).toHaveBeenCalledTimes(1);
@@ -85,14 +89,18 @@ describe('v1 consumer', () => {
     const history = createBrowserHistory();
     history.push('/my-page');
 
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => (
+      <Router
+        location={history.location}
+        navigator={history}
+        children={children}
+      />
+    );
+
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
-        <Router
-          location={history.location}
-          navigator={history}
-          children={children}
-        />
-      ),
+      wrapper,
     });
 
     expect(resolve).toHaveBeenCalledTimes(1);
@@ -111,14 +119,17 @@ describe('v1 consumer', () => {
     const history = createBrowserHistory();
     history.push('/my-page');
 
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => (
+      <Router
+        location={history.location}
+        navigator={history}
+        children={children}
+      />
+    );
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
-        <Router
-          location={history.location}
-          navigator={history}
-          children={children}
-        />
-      ),
+      wrapper,
     });
 
     expect(resolve).toHaveBeenCalledTimes(1);
@@ -137,14 +148,17 @@ describe('v1 consumer', () => {
     const history = createBrowserHistory();
     history.push('/my-page');
 
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => (
+      <Router
+        location={history.location}
+        navigator={history}
+        children={children}
+      />
+    );
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
-        <Router
-          location={history.location}
-          navigator={history}
-          children={children}
-        />
-      ),
+      wrapper,
     });
 
     expect(resolve).toHaveBeenCalledTimes(1);

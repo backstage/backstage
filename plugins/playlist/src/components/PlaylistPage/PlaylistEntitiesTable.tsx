@@ -70,7 +70,7 @@ export const PlaylistEntitiesTable = ({
   );
 
   const removeEntity = useCallback(
-    async (_, entity: Entity | Entity[]) => {
+    async (_: unknown, entity: Entity | Entity[]) => {
       try {
         await playlistApi.removePlaylistEntities(
           playlistId,

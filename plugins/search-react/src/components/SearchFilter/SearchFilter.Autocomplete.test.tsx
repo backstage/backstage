@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { TestApiProvider } from '@backstage/test-utils';
-import { screen, render, waitFor, within } from '@testing-library/react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { screen, render, waitFor, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -28,7 +28,7 @@ const SearchContextFilterSpy = ({ name }: { name: string }) => {
   const value = filters[name];
   return (
     <span data-testid={`${name}-filter-spy`}>
-      {Array.isArray(value) ? value.join(',') : value}
+      {Array.isArray(value) ? value.join(',') : (value as React.ReactNode)}
     </span>
   );
 };
@@ -268,7 +268,7 @@ describe('SearchFilter.Autocomplete', () => {
     });
 
     it('respects tag limit configuration', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider apis={[[searchApiRef, { query }]]}>
           <SearchContextProvider>
             <SearchFilter.Autocomplete
@@ -308,8 +308,10 @@ describe('SearchFilter.Autocomplete', () => {
         ).toBeInTheDocument();
       });
 
-      // Blur the field and only one tag should be shown with a +1.
-      input.blur();
+      // // Blur the field and only one tag should be shown with a +1.
+      act(() => {
+        input.blur();
+      });
       expect(
         screen.queryByRole('button', { name: values[0] }),
       ).not.toBeInTheDocument();

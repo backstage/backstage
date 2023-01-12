@@ -23,7 +23,6 @@ import {
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Button } from '@material-ui/core';
 import { fireEvent, waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
 import React from 'react';
 import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';
@@ -98,9 +97,8 @@ describe('<CreatePlaylistButton/>', () => {
     expect(rendered.getByRole('button')).not.toBeDisabled();
     expect(rendered.queryByTestId('mock-playlist-edit-dialog')).toBeNull();
 
-    act(() => {
-      fireEvent.click(rendered.getByRole('button'));
-    });
+    fireEvent.click(rendered.getByRole('button'));
+
     expect(
       rendered.getByTestId('mock-playlist-edit-dialog'),
     ).toBeInTheDocument();
@@ -109,10 +107,8 @@ describe('<CreatePlaylistButton/>', () => {
   it('should create and navigate to a new playlist on save', async () => {
     const rendered = await render();
 
-    act(() => {
-      fireEvent.click(rendered.getByRole('button'));
-      fireEvent.click(rendered.getByTestId('mock-playlist-edit-dialog'));
-    });
+    fireEvent.click(rendered.getByRole('button'));
+    fireEvent.click(rendered.getByTestId('mock-playlist-edit-dialog'));
 
     await waitFor(() => {
       expect(mockCreatePlaylist).toHaveBeenCalled();
@@ -127,10 +123,8 @@ describe('<CreatePlaylistButton/>', () => {
     });
     const rendered = await render();
 
-    act(() => {
-      fireEvent.click(rendered.getByRole('button'));
-      fireEvent.click(rendered.getByTestId('mock-playlist-edit-dialog'));
-    });
+    fireEvent.click(rendered.getByRole('button'));
+    fireEvent.click(rendered.getByTestId('mock-playlist-edit-dialog'));
 
     await waitFor(() => {
       expect(mockCreatePlaylist).toHaveBeenCalled();

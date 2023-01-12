@@ -315,6 +315,7 @@ export const WorkaroundNavLink = React.forwardRef<
     caseSensitive,
     activeClassName = 'active',
     'aria-current': ariaCurrentProp = 'page',
+    children,
     ...rest
   },
   ref,
@@ -338,6 +339,7 @@ export const WorkaroundNavLink = React.forwardRef<
   return (
     <Link
       {...rest}
+      children={children as React.ReactNode}
       to={to}
       ref={ref}
       aria-current={ariaCurrent}
@@ -406,7 +408,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
           {text}
         </Typography>
       )}
-      <div className={classes.secondaryAction}>{children}</div>
+      <div className={classes.secondaryAction}>{children as ReactNode}</div>
     </>
   );
 
@@ -517,7 +519,7 @@ const SidebarItemWithSubmenu = ({
  */
 export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   // Filter children for SidebarSubmenu components
-  const [submenu] = useElementFilter(props.children, elements =>
+  const [submenu] = useElementFilter(props.children as ReactNode, elements =>
     // Directly comparing child.type with SidebarSubmenu will not work with in
     // combination with react-hot-loader
     //

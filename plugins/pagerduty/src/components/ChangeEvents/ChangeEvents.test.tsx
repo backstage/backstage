@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { PagerDutyChangeEvent } from '../types';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
 import { ApiProvider } from '@backstage/core-app-api';
 import { ChangeEvents } from './ChangeEvents';
@@ -32,12 +32,10 @@ describe('Incidents', () => {
       .fn()
       .mockImplementationOnce(async () => ({ change_events: [] }));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <ChangeEvents serviceId="abc" refreshEvents={false} />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ChangeEvents serviceId="abc" refreshEvents={false} />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('No change events to display yet.')).toBeInTheDocument();
@@ -76,12 +74,10 @@ describe('Incidents', () => {
           },
         ] as PagerDutyChangeEvent[],
       }));
-    const { getByText, getAllByTitle, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <ChangeEvents serviceId="abc" refreshEvents={false} />
-        </ApiProvider>,
-      ),
+    const { getByText, getAllByTitle, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ChangeEvents serviceId="abc" refreshEvents={false} />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('summary of event')).toBeInTheDocument();
@@ -123,12 +119,10 @@ describe('Incidents', () => {
           },
         ] as PagerDutyChangeEvent[],
       }));
-    const { getByText, getAllByTitle, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <ChangeEvents serviceId="abc" refreshEvents={false} />
-        </ApiProvider>,
-      ),
+    const { getByText, getAllByTitle, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ChangeEvents serviceId="abc" refreshEvents={false} />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('summary of event')).toBeInTheDocument();
@@ -143,12 +137,10 @@ describe('Incidents', () => {
       .fn()
       .mockRejectedValueOnce(new Error('Error occurred'));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <ChangeEvents serviceId="abc" refreshEvents={false} />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ChangeEvents serviceId="abc" refreshEvents={false} />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(

@@ -51,7 +51,7 @@ export type RouteFunc<Params extends AnyParams> = (
 export interface BackstageRouteObject {
   caseSensitive: boolean;
   children?: BackstageRouteObject[];
-  element: React.ReactNode;
+  element: React.ReactNode | (() => null);
   path: string;
   routeRefs: Set<RouteRef>;
   plugin?: BackstagePlugin;

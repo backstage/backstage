@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { ThemeProvider } from '@material-ui/core';
 
@@ -95,12 +95,10 @@ describe('context', () => {
     });
 
     it('should return expected entity values', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useEntityMetadata(),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useEntityMetadata(), { wrapper });
 
-      await waitForNextUpdate();
+      const intialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(intialValue));
 
       expect(result.current.value).toBeDefined();
       expect(result.current.error).toBeUndefined();
@@ -116,12 +114,10 @@ describe('context', () => {
     });
 
     it('should return expected techdocs metadata values', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useTechDocsMetadata(),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useTechDocsMetadata(), { wrapper });
 
-      await waitForNextUpdate();
+      const intialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(intialValue));
 
       expect(result.current.value).toBeDefined();
       expect(result.current.error).toBeUndefined();

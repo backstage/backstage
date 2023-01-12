@@ -17,7 +17,6 @@
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, getByRole, waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
 import React from 'react';
 
 import { PlaylistEditDialog } from './PlaylistEditDialog';
@@ -33,46 +32,41 @@ describe('<PlaylistEditDialog/>', () => {
     };
 
     const mockOnSave = jest.fn().mockImplementation(async () => {});
-    const rendered = await renderInTestApp(
+    const { getByTestId, getByText } = await renderInTestApp(
       <TestApiProvider apis={[[identityApiRef, identityApi]]}>
         <PlaylistEditDialog open onClose={jest.fn()} onSave={mockOnSave} />
       </TestApiProvider>,
     );
 
-    act(() => {
-      fireEvent.input(
-        getByRole(rendered.getByTestId('edit-dialog-name-input'), 'textbox'),
-        {
-          target: {
-            value: 'test playlist',
-          },
+    fireEvent.input(
+      getByRole(getByTestId('edit-dialog-name-input'), 'textbox'),
+      {
+        target: {
+          value: 'test playlist',
         },
-      );
+      },
+    );
 
-      fireEvent.input(
-        getByRole(
-          rendered.getByTestId('edit-dialog-description-input'),
-          'textbox',
-        ),
-        {
-          target: {
-            value: 'test description',
-          },
+    fireEvent.input(
+      getByRole(getByTestId('edit-dialog-description-input'), 'textbox'),
+      {
+        target: {
+          value: 'test description',
         },
-      );
+      },
+    );
 
-      fireEvent.mouseDown(
-        getByRole(rendered.getByTestId('edit-dialog-owner-select'), 'button'),
-      );
+    fireEvent.mouseDown(
+      getByRole(getByTestId('edit-dialog-owner-select'), 'button'),
+    );
 
-      fireEvent.click(rendered.getByText('test-owner'));
+    fireEvent.click(getByText('test-owner'));
 
-      fireEvent.click(
-        getByRole(rendered.getByTestId('edit-dialog-public-option'), 'radio'),
-      );
+    fireEvent.click(
+      getByRole(getByTestId('edit-dialog-public-option'), 'radio'),
+    );
 
-      fireEvent.click(rendered.getByTestId('edit-dialog-save-button'));
-    });
+    fireEvent.click(getByTestId('edit-dialog-save-button'));
 
     await waitFor(() => {
       expect(mockOnSave).toHaveBeenCalledWith({

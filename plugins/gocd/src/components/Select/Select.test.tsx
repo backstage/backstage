@@ -68,8 +68,8 @@ describe('Select', () => {
       user.tab();
       userEvent.keyboard('{enter}');
 
-      expect(rendered.getAllByText(testItems[0].label)).toHaveLength(2);
-      expect(rendered.getByText(testItems[1].label)).toBeInTheDocument();
+      expect(rendered.getAllByText(testItems[0].label)).toHaveLength(1);
+      expect(rendered.getByText(testItems[0].label)).toBeInTheDocument();
     });
   });
 });

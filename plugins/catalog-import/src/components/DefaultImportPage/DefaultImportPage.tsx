@@ -42,7 +42,7 @@ export const DefaultImportPage = () => {
       <Content>
         <ContentHeader title={`Start tracking your component in ${appTitle}`}>
           <SupportButton>
-            Start tracking your component in {appTitle} by adding it to the
+            Start tracking your component in {!!appTitle} by adding it to the
             software catalog.
           </SupportButton>
         </ContentHeader>

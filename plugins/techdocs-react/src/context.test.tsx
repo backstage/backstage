@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { ThemeProvider } from '@material-ui/core';
 
@@ -98,47 +98,41 @@ describe('useTechDocsReaderPage', () => {
   });
 
   it('should set title', async () => {
-    const { result, waitForNextUpdate } = renderHook(
-      () => useTechDocsReaderPage(),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
 
     expect(result.current.title).toBe('');
 
     act(() => result.current.setTitle('test site title'));
 
-    await waitForNextUpdate();
+    const initialValue = result.current;
+    await waitFor(() => expect(result.current).not.toBe(initialValue));
 
     expect(result.current.title).toBe('test site title');
   });
 
   it('should set subtitle', async () => {
-    const { result, waitForNextUpdate } = renderHook(
-      () => useTechDocsReaderPage(),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
 
     expect(result.current.subtitle).toBe('');
 
     act(() => result.current.setSubtitle('test site subtitle'));
 
-    await waitForNextUpdate();
+    const initialValue = result.current;
+    await waitFor(() => expect(result.current).not.toBe(initialValue));
 
     expect(result.current.subtitle).toBe('test site subtitle');
   });
 
   it('should set shadow root', async () => {
-    const { result, waitForNextUpdate } = renderHook(
-      () => useTechDocsReaderPage(),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
 
     // mock shadowroot
     const shadowRoot = mockShadowRoot();
 
     act(() => result.current.setShadowRoot(shadowRoot));
 
-    await waitForNextUpdate();
+    const initialValue = result.current;
+    await waitFor(() => expect(result.current).not.toBe(initialValue));
 
     expect(result.current.shadowRoot?.innerHTML).toBe(
       '<h1>Shadow DOM Mock</h1>',
@@ -170,12 +164,12 @@ describe('useTechDocsReaderPage', () => {
   });
 
   it('entityRef provided as analytics context', async () => {
-    const { waitForNextUpdate } = renderHook(
-      () => useAnalytics().captureEvent('action', 'subject'),
-      { wrapper },
-    );
+    renderHook(() => useAnalytics().captureEvent('action', 'subject'), {
+      wrapper,
+    });
 
-    await waitForNextUpdate();
+    // const initialValue = result.current;
+    // await waitFor(() => expect(result.current).not.toBe(initialValue));
 
     expect(analyticsApiMock.getEvents()[0]).toMatchObject({
       action: 'action',

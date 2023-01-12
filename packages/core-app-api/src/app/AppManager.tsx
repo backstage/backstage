@@ -261,7 +261,7 @@ export class AppManager implements BackstageApp {
   }
 
   #getProviderCalled = false;
-  getProvider(): ComponentType<{}> {
+  getProvider(): ComponentType<{ children?: React.ReactNode }> {
     if (this.#getProviderCalled) {
       throw new Error(
         'app.getProvider() or app.createRoot() has already been called, and can only be called once',
@@ -414,7 +414,7 @@ export class AppManager implements BackstageApp {
     return Provider;
   }
 
-  getRouter(): ComponentType<{}> {
+  getRouter(): ComponentType<{ children?: React.ReactNode }> {
     return AppRouter;
   }
 

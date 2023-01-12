@@ -36,6 +36,7 @@
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/plugin-playlist-common": "workspace:^",
+    "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.9.13",
@@ -47,7 +48,7 @@
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0",
+    "react": "^18.2.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
@@ -55,9 +56,9 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^12.1.3",
-    "@testing-library/react-hooks": "^8.0.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.0.0",
     "@types/node": "*",
     "cross-fetch": "^3.1.5",

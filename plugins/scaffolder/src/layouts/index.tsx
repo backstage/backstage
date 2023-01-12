@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
 import type { LayoutOptions } from './types';
 
@@ -51,8 +52,9 @@ export function createScaffolderLayout<TInputProps = unknown>(
  *
  * @public
  */
-export const ScaffolderLayouts: React.ComponentType = (): JSX.Element | null =>
-  null;
+export const ScaffolderLayouts: React.ElementType = (
+  children?: React.ReactNode,
+): JSX.Element | null => <>{children}</>;
 
 attachComponentData(ScaffolderLayouts, LAYOUTS_WRAPPER_KEY, true);
 

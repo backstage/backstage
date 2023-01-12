@@ -19,7 +19,7 @@ import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { CategoryPicker } from './CategoryPicker';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { alertApiRef } from '@backstage/core-plugin-api';
-import { fireEvent } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityTypeFilter: jest.fn(),
@@ -91,7 +91,9 @@ describe('CategoryPicker', () => {
     );
 
     const openButton = getByRole('button', { name: 'Open' });
-    openButton.click();
+    act(() => {
+      openButton.click();
+    });
 
     expect(getByRole('checkbox', { name: 'Foo' })).toBeInTheDocument();
     expect(getByRole('checkbox', { name: 'Bar' })).toBeInTheDocument();

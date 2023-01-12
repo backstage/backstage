@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { splunkOnCallApiRef } from '../../api';
 import { MOCKED_ON_CALL, MOCKED_USER } from '../../api/mocks';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -32,17 +32,15 @@ describe('Escalation', () => {
       .fn()
       .mockImplementationOnce(async () => []);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy
-            users={{
-              [MOCKED_USER.username!]: MOCKED_USER,
-            }}
-            team="team_example"
-          />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy
+          users={{
+            [MOCKED_USER.username!]: MOCKED_USER,
+          }}
+          team="team_example"
+        />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
 
@@ -55,17 +53,15 @@ describe('Escalation', () => {
       .fn()
       .mockImplementationOnce(async () => MOCKED_ON_CALL);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy
-            users={{
-              [MOCKED_USER.username!]: MOCKED_USER,
-            }}
-            team="team_example"
-          />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy
+          users={{
+            [MOCKED_USER.username!]: MOCKED_USER,
+          }}
+          team="team_example"
+        />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
 
@@ -79,17 +75,15 @@ describe('Escalation', () => {
       .fn()
       .mockRejectedValueOnce(new Error('Error message'));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy
-            users={{
-              [MOCKED_USER.username!]: MOCKED_USER,
-            }}
-            team="team_example"
-          />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy
+          users={{
+            [MOCKED_USER.username!]: MOCKED_USER,
+          }}
+          team="team_example"
+        />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
 

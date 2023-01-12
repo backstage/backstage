@@ -28,4 +28,5 @@ export * from './logCollector';
 export * from './providers';
 export * from './testingLibrary';
 export { TestApiProvider, TestApiRegistry } from './TestApiProvider';
+export { waitForValueToChange } from './waitForValueToChange';
 export type { TestApiProviderProps } from './TestApiProvider';

@@ -44,8 +44,10 @@ import { useApi } from '@backstage/core-plugin-api';
 export const LIMIT = 10;
 
 const AuditList = () => {
-  const [dismissedStored] = useLocalStorage(LIGHTHOUSE_INTRO_LOCAL_STORAGE);
-  const [dismissed, setDismissed] = useState(dismissedStored);
+  const [dismissedStored] = useLocalStorage<boolean>(
+    LIGHTHOUSE_INTRO_LOCAL_STORAGE,
+  );
+  const [dismissed, setDismissed] = useState<boolean>(dismissedStored || false);
 
   const query = useQuery();
   const page = query.get('page')

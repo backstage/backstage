@@ -22,7 +22,6 @@ import {
 } from '@backstage/plugin-permission-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, getByText, waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
 import React from 'react';
 import { SWRConfig } from 'swr';
 
@@ -108,10 +107,8 @@ describe('PlaylistPage', () => {
   it('should reflect and toggle the following state of the playlist', async () => {
     const rendered = await renderInTestApp(element);
 
-    act(() => {
-      fireEvent.click(rendered.getByTestId('playlist-page-follow-button'));
-      testPlaylist.isFollowing = true;
-    });
+    fireEvent.click(rendered.getByTestId('playlist-page-follow-button'));
+    testPlaylist.isFollowing = true;
 
     await waitFor(() => {
       expect(playlistApi.followPlaylist).toHaveBeenCalledWith('id1');
@@ -123,10 +120,8 @@ describe('PlaylistPage', () => {
       ).toBeInTheDocument();
     });
 
-    act(() => {
-      fireEvent.click(rendered.getByTestId('playlist-page-follow-button'));
-      testPlaylist.isFollowing = false;
-    });
+    fireEvent.click(rendered.getByTestId('playlist-page-follow-button'));
+    testPlaylist.isFollowing = false;
 
     await waitFor(() => {
       expect(playlistApi.unfollowPlaylist).toHaveBeenCalledWith('id1');

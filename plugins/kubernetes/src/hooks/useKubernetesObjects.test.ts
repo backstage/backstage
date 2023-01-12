@@ -16,7 +16,7 @@
 
 import { useKubernetesObjects } from './useKubernetesObjects';
 import { Entity } from '@backstage/catalog-model';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { generateAuth } from './auth';
 
@@ -87,13 +87,12 @@ describe('useKubernetesObjects', () => {
       getObjectsByEntity:
         mockGetObjectsByEntity.mockResolvedValue(mockResponse),
     });
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useKubernetesObjects(entity),
-    );
+    const { result } = renderHook(() => useKubernetesObjects(entity));
 
     expect(result.current.loading).toEqual(true);
 
-    await waitForNextUpdate();
+    const initialValue = result.current;
+    await waitFor(() => expect(result.current).not.toBe(initialValue));
 
     expect(result.current.error).toBeUndefined();
     expect(result.current.loading).toEqual(false);
@@ -107,14 +106,14 @@ describe('useKubernetesObjects', () => {
       getObjectsByEntity:
         mockGetObjectsByEntity.mockResolvedValue(mockResponse),
     });
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useKubernetesObjects(entity, 100),
-    );
+    const { result } = renderHook(() => useKubernetesObjects(entity, 100));
 
-    await waitForNextUpdate();
+    let initialValue = result.current;
+    await waitFor(() => expect(result.current).not.toBe(initialValue));
     expect(result.current.error).toBeUndefined();
 
-    await waitForNextUpdate();
+    initialValue = result.current;
+    await waitFor(() => expect(result.current).not.toBe(initialValue));
 
     expect(result.current.error).toBeUndefined();
     expect(result.current.loading).toEqual(false);
@@ -129,11 +128,10 @@ describe('useKubernetesObjects', () => {
         message: 'some error',
       }),
     });
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useKubernetesObjects(entity),
-    );
+    const { result } = renderHook(() => useKubernetesObjects(entity));
 
-    await waitForNextUpdate();
+    const initialValue = result.current;
+    await waitFor(() => expect(result.current).not.toBe(initialValue));
 
     expect(result.current.error).toBe('some error');
     expect(result.current.loading).toEqual(false);
@@ -152,21 +150,25 @@ describe('useKubernetesObjects', () => {
           mockGetObjectsByEntity.mockResolvedValue(mockResponse),
       });
 
-      const { result, waitForNextUpdate } = renderHook(() =>
-        useKubernetesObjects(entity, 100),
-      );
+      const { result } = renderHook(() => useKubernetesObjects(entity, 100));
 
-      await waitForNextUpdate();
+      let initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
-      expect(result.current.error).toBe('generateAuth failed');
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBe('generateAuth failed');
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).toBeUndefined();
+      });
 
-      await waitForNextUpdate();
+      initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).not.toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).not.toBeUndefined();
+      });
     });
 
     it('should reset error after getObjectsByEntity has failed and then succeeded', async () => {
@@ -176,21 +178,25 @@ describe('useKubernetesObjects', () => {
           .mockResolvedValue(mockResponse),
       });
 
-      const { result, waitForNextUpdate } = renderHook(() =>
-        useKubernetesObjects(entity, 100),
-      );
+      const { result } = renderHook(() => useKubernetesObjects(entity, 100));
 
-      await waitForNextUpdate();
+      let initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
-      expect(result.current.error).toBe('failed to fetch');
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBe('failed to fetch');
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).toBeUndefined();
+      });
 
-      await waitForNextUpdate();
+      initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).not.toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).not.toBeUndefined();
+      });
     });
 
     it('should reset data after generateAuth succeeded then failed', async () => {
@@ -202,21 +208,25 @@ describe('useKubernetesObjects', () => {
           mockGetObjectsByEntity.mockResolvedValue(mockResponse),
       });
 
-      const { result, waitForNextUpdate } = renderHook(() =>
-        useKubernetesObjects(entity, 100),
-      );
+      const { result } = renderHook(() => useKubernetesObjects(entity, 100));
 
-      await waitForNextUpdate();
+      let initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).not.toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).not.toBeUndefined();
+      });
 
-      await waitForNextUpdate();
+      initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
-      expect(result.current.error).toBe('generateAuth failed');
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBe('generateAuth failed');
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).toBeUndefined();
+      });
     });
 
     it('should reset data after getObjectsByEntity succeeded then failed', async () => {
@@ -226,21 +236,25 @@ describe('useKubernetesObjects', () => {
           .mockRejectedValue({ message: 'failed to fetch' }),
       });
 
-      const { result, waitForNextUpdate } = renderHook(() =>
-        useKubernetesObjects(entity, 100),
-      );
+      const { result } = renderHook(() => useKubernetesObjects(entity, 100));
 
-      await waitForNextUpdate();
+      let initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).not.toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).not.toBeUndefined();
+      });
 
-      await waitForNextUpdate();
+      initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
-      expect(result.current.error).toBe('failed to fetch');
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBe('failed to fetch');
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).toBeUndefined();
+      });
     });
   });
 });

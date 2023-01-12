@@ -36,7 +36,7 @@
     "@backstage/core-plugin-api": "workspace:^"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^18.2.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

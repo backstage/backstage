@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import {
   AnyApiFactory,
   AppTheme,
@@ -70,9 +70,9 @@ export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
-  Router: ComponentType<{ basename?: string }>;
+  Router: ComponentType<{ basename?: string; children?: React.ReactNode }>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider?: ComponentType<{}>;
+  ThemeProvider?: ComponentType<{ children?: React.ReactNode }>;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.
@@ -335,7 +335,7 @@ export type BackstageApp = {
    *
    * @deprecated Use {@link BackstageApp.createRoot} instead.
    */
-  getProvider(): ComponentType<{}>;
+  getProvider(): ComponentType<PropsWithChildren>;
 
   /**
    * Router component that should wrap the App Routes create with getRoutes()
@@ -343,7 +343,7 @@ export type BackstageApp = {
    *
    * @deprecated Import and use the {@link AppRouter} component from `@backstage/core-app-api` instead
    */
-  getRouter(): ComponentType<{}>;
+  getRouter(): ComponentType<{ children?: React.ReactNode }>;
 };
 
 /**

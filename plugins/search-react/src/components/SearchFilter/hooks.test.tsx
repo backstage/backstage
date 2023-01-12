@@ -16,7 +16,7 @@
 import React from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import { TestApiRegistry } from '@backstage/test-utils';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { searchApiRef } from '../../api';
 import { SearchContextProvider, useSearch } from '../../context';
@@ -50,11 +50,15 @@ describe('SearchFilter.hooks', () => {
         </ApiProvider>
       );
     };
+    const customWrapper =
+      (overrides?: any) =>
+      ({ children }: any) =>
+        wrapper({ children, overrides });
 
     it('should set non-empty string value', async () => {
       const expectedFilter = 'someField';
       const expectedValue = 'someValue';
-      const { result, waitForNextUpdate } = renderHook(
+      const { result } = renderHook(
         () => {
           useDefaultFilterValue(expectedFilter, expectedValue);
           return useSearch();
@@ -64,7 +68,8 @@ describe('SearchFilter.hooks', () => {
         },
       );
 
-      await waitForNextUpdate();
+      const initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
       expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
     });
@@ -72,7 +77,7 @@ describe('SearchFilter.hooks', () => {
     it('should set non-empty array value', async () => {
       const expectedFilter = 'someField';
       const expectedValue = ['someValue', 'anotherValue'];
-      const { result, waitForNextUpdate } = renderHook(
+      const { result } = renderHook(
         () => {
           useDefaultFilterValue(expectedFilter, expectedValue);
           return useSearch();
@@ -82,57 +87,42 @@ describe('SearchFilter.hooks', () => {
         },
       );
 
-      await waitForNextUpdate();
-
+      const initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
       expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
     });
 
     it('should not set undefined value', async () => {
       const expectedFilter = 'someField';
       const expectedValue = 'notEmpty';
-      const { result, waitForNextUpdate } = renderHook(
+      const { result } = renderHook(
         () => {
           useDefaultFilterValue(expectedFilter, undefined);
           return useSearch();
         },
         {
-          wrapper,
-          initialProps: {
-            overrides: {
-              filters: {
-                [expectedFilter]: expectedValue,
-              },
-            },
-          },
+          wrapper: customWrapper({
+            filters: { [expectedFilter]: expectedValue },
+          }),
         },
       );
-
-      await waitForNextUpdate();
-
       expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
     });
 
     it('should not set null value', async () => {
       const expectedFilter = 'someField';
       const expectedValue = 'notEmpty';
-      const { result, waitForNextUpdate } = renderHook(
+      const { result } = renderHook(
         () => {
           useDefaultFilterValue(expectedFilter, null);
           return useSearch();
         },
         {
-          wrapper,
-          initialProps: {
-            overrides: {
-              filters: {
-                [expectedFilter]: expectedValue,
-              },
-            },
-          },
+          wrapper: customWrapper({
+            filters: { [expectedFilter]: expectedValue },
+          }),
         },
       );
-
-      await waitForNextUpdate();
 
       expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
     });
@@ -140,24 +130,17 @@ describe('SearchFilter.hooks', () => {
     it('should not set empty string value', async () => {
       const expectedFilter = 'someField';
       const expectedValue = 'notEmpty';
-      const { result, waitForNextUpdate } = renderHook(
+      const { result } = renderHook(
         () => {
           useDefaultFilterValue(expectedFilter, '');
           return useSearch();
         },
         {
-          wrapper,
-          initialProps: {
-            overrides: {
-              filters: {
-                [expectedFilter]: expectedValue,
-              },
-            },
-          },
+          wrapper: customWrapper({
+            filters: { [expectedFilter]: expectedValue },
+          }),
         },
       );
-
-      await waitForNextUpdate();
 
       expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
     });
@@ -165,24 +148,17 @@ describe('SearchFilter.hooks', () => {
     it('should not set empty array value', async () => {
       const expectedFilter = 'someField';
       const expectedValue = ['not', 'empty'];
-      const { result, waitForNextUpdate } = renderHook(
+      const { result } = renderHook(
         () => {
           useDefaultFilterValue(expectedFilter, []);
           return useSearch();
         },
         {
-          wrapper,
-          initialProps: {
-            overrides: {
-              filters: {
-                [expectedFilter]: expectedValue,
-              },
-            },
-          },
+          wrapper: customWrapper({
+            filters: { [expectedFilter]: expectedValue },
+          }),
         },
       );
-
-      await waitForNextUpdate();
 
       expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
     });
@@ -190,24 +166,17 @@ describe('SearchFilter.hooks', () => {
     it('should not affect unrelated filters', async () => {
       const expectedFilter = 'someField';
       const expectedValue = 'someValue';
-      const { result, waitForNextUpdate } = renderHook(
+      const { result } = renderHook(
         () => {
           useDefaultFilterValue(expectedFilter, expectedValue);
           return useSearch();
         },
         {
-          wrapper,
-          initialProps: {
-            overrides: {
-              filters: {
-                unrelatedField: 'unrelatedValue',
-              },
-            },
-          },
+          wrapper: customWrapper({
+            filters: { unrelatedField: 'unrelatedValue' },
+          }),
         },
       );
-
-      await waitForNextUpdate();
 
       expect(result.current.filters.unrelatedField).toEqual('unrelatedValue');
     });
@@ -227,14 +196,15 @@ describe('SearchFilter.hooks', () => {
     it('should return resolved values of provided async function', async () => {
       const expectedValues = ['value1', 'value2'];
       const asyncFn = () => Promise.resolve(expectedValues);
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         useAsyncFilterValues(asyncFn, '', undefined, 1000),
       );
 
       expect(result.current.loading).toEqual(true);
 
       jest.runAllTimers();
-      await waitForNextUpdate();
+      const initialValue = result.current;
+      await waitFor(() => expect(result.current).not.toBe(initialValue));
 
       expect(result.current.loading).toEqual(false);
       expect(result.current.value).toEqual(expectedValues);
@@ -260,29 +230,31 @@ describe('SearchFilter.hooks', () => {
       const asyncFn = jest
         .fn()
         .mockImplementation((x: string) => Promise.resolve([x]));
-      const { rerender, waitForNextUpdate } = renderHook(
+      const { rerender } = renderHook(
         (props: { inputValue: string } = { inputValue: '' }) =>
           useAsyncFilterValues(asyncFn, props.inputValue, undefined, 1000),
       );
 
       expect(asyncFn).not.toHaveBeenCalled();
       jest.runAllTimers();
-      await waitForNextUpdate();
-      expect(asyncFn).toHaveBeenCalledTimes(1);
-      expect(asyncFn).toHaveBeenCalledWith('');
+      await waitFor(() => {
+        expect(asyncFn).toHaveBeenCalledTimes(1);
+        expect(asyncFn).toHaveBeenCalledWith('');
+      });
 
       // Re-render with different input value.
       rerender({ inputValue: 'somethingElse' });
       jest.runAllTimers();
-      await waitForNextUpdate();
-      expect(asyncFn).toHaveBeenCalledTimes(2);
-      expect(asyncFn).toHaveBeenLastCalledWith('somethingElse');
+      await waitFor(() => {
+        expect(asyncFn).toHaveBeenCalledTimes(2);
+        expect(asyncFn).toHaveBeenLastCalledWith('somethingElse');
+      });
     });
 
     it('should not call provided method more than once when re-rendered with same input', async () => {
       const expectedValues = ['value1', 'value2'];
       const asyncFn = jest.fn().mockResolvedValue(expectedValues);
-      const { rerender, waitForNextUpdate } = renderHook(
+      const { rerender } = renderHook(
         (props: { inputValue: string } = { inputValue: '' }) =>
           useAsyncFilterValues(asyncFn, props.inputValue, undefined, 1000),
       );
@@ -290,8 +262,9 @@ describe('SearchFilter.hooks', () => {
       expect(asyncFn).not.toHaveBeenCalled();
 
       jest.runAllTimers();
-      await waitForNextUpdate();
-      expect(asyncFn).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(asyncFn).toHaveBeenCalledTimes(1);
+      });
 
       // Re-render multiple times with the same input.
       rerender();

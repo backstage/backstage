@@ -37,10 +37,10 @@
     "@backstage/plugin-catalog-react": "workspace:^"
   },
   "devDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0"
+    "@types/react": "^18.0.26"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^18.2.0"
   },
   "files": [
     "dist"

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { useTemplateSchema } from './useTemplateSchema';
-import { renderHook } from '@testing-library/react-hooks';
+import { WrapperComponent } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
@@ -49,14 +50,15 @@ describe('useTemplateSchema', () => {
       ],
     };
 
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => (
+      <TestApiProvider apis={[[featureFlagsApiRef, { isActive: () => false }]]}>
+        {children}
+      </TestApiProvider>
+    );
     const { result } = renderHook(() => useTemplateSchema(manifest), {
-      wrapper: ({ children }) => (
-        <TestApiProvider
-          apis={[[featureFlagsApiRef, { isActive: () => false }]]}
-        >
-          {children}
-        </TestApiProvider>
-      ),
+      wrapper,
     });
 
     const [first, second] = result.current.steps;
@@ -116,14 +118,17 @@ describe('useTemplateSchema', () => {
         ],
       };
 
+      const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+        children,
+      }) => (
+        <TestApiProvider
+          apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+        >
+          {children}
+        </TestApiProvider>
+      );
       const { result } = renderHook(() => useTemplateSchema(manifest), {
-        wrapper: ({ children }) => (
-          <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
-          >
-            {children}
-          </TestApiProvider>
-        ),
+        wrapper,
       });
 
       expect(result.current.steps).toHaveLength(1);
@@ -160,14 +165,17 @@ describe('useTemplateSchema', () => {
         ],
       };
 
+      const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+        children,
+      }) => (
+        <TestApiProvider
+          apis={[[featureFlagsApiRef, { isActive: () => true }]]}
+        >
+          {children}
+        </TestApiProvider>
+      );
       const { result } = renderHook(() => useTemplateSchema(manifest), {
-        wrapper: ({ children }) => (
-          <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => true }]]}
-          >
-            {children}
-          </TestApiProvider>
-        ),
+        wrapper,
       });
 
       expect(result.current.steps).toHaveLength(2);
@@ -211,14 +219,17 @@ describe('useTemplateSchema', () => {
         ],
       };
 
+      const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+        children,
+      }) => (
+        <TestApiProvider
+          apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+        >
+          {children}
+        </TestApiProvider>
+      );
       const { result } = renderHook(() => useTemplateSchema(manifest), {
-        wrapper: ({ children }) => (
-          <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
-          >
-            {children}
-          </TestApiProvider>
-        ),
+        wrapper,
       });
 
       const [first] = result.current.steps;

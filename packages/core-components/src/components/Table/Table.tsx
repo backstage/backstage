@@ -374,7 +374,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       const newData = (data as any[]).filter(
         el =>
           !!Object.entries(selectedFilters)
-            .filter(([, value]) => !!value.length)
+            .filter(([, value]) => !!(value as Array<string>).length)
             .every(([key, filterValue]) => {
               const fieldValue = extractValueByField(
                 el,
@@ -451,7 +451,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
   const hasFilters = !!filters?.length;
   const Toolbar = useCallback(
-    toolbarProps => {
+    (toolbarProps: any) => {
       return (
         <TableToolbar
           setSearch={setSearch}
@@ -468,7 +468,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const hasNoRows = typeof data !== 'function' && data.length === 0;
   const columnCount = columns.length;
   const Body = useCallback(
-    bodyProps => {
+    (bodyProps: any) => {
       if (emptyContent && hasNoRows) {
         return (
           <tbody>

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren, FunctionComponent } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Grid, Box } from '@material-ui/core';
 
 type Props = {
   fullscreen: boolean;
 };
 
-const Wrapper: FunctionComponent<Props> = (props: PropsWithChildren<Props>) => {
+const Wrapper = (props: PropsWithChildren<Props>) => {
   const { children, fullscreen } = props;
 
   return (

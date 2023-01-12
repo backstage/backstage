@@ -30,7 +30,7 @@ import React, { FunctionComponent } from 'react';
 import { EntityRelationsGraph } from './EntityRelationsGraph';
 
 describe('<EntityRelationsGraph/>', () => {
-  let Wrapper: FunctionComponent;
+  let Wrapper: FunctionComponent<{ children?: React.ReactNode }>;
   const entities: { [ref: string]: Entity } = {
     'b:d/c': {
       apiVersion: 'a',

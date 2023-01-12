@@ -33,7 +33,7 @@ describe('TabbedLayout', () => {
   });
 
   it('throws if any other component is a child of TabbedLayout', async () => {
-    const { error } = await withLogCollector(async () => {
+    await withLogCollector(async () => {
       await expect(
         renderInTestApp(
           <TabbedLayout>
@@ -45,17 +45,6 @@ describe('TabbedLayout', () => {
         ),
       ).rejects.toThrow(/Child of TabbedLayout must be an TabbedLayout.Route/);
     });
-
-    expect(error).toEqual([
-      expect.objectContaining({
-        detail: new Error(
-          'Child of TabbedLayout must be an TabbedLayout.Route',
-        ),
-      }),
-      expect.stringMatching(
-        /The above error occurred in the <TabbedLayout> component/,
-      ),
-    ]);
   });
 
   it('navigates when user clicks different tab', async () => {

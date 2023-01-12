@@ -185,7 +185,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
                   formData={formData}
                   formContext={{ formData }}
                   onChange={onChange}
-                  onSubmit={e => {
+                  onSubmit={(e: typeof formData) => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}

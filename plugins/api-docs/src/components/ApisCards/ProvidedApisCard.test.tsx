@@ -39,7 +39,7 @@ describe('<ProvidedApisCard />', () => {
     getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
   } as any;
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<{ children?: React.ReactNode }>;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

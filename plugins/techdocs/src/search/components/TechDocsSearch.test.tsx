@@ -57,19 +57,19 @@ describe('<TechDocsSearch />', () => {
 
     const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
 
-    await act(async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apiRegistry}>
-            <TechDocsSearch entityId={entityId} />
-          </ApiProvider>,
-        ),
-      );
+    const rendered = render(
+      wrapInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <TechDocsSearch entityId={entityId} />
+        </ApiProvider>,
+      ),
+    );
 
+    await act(async () => {
       await emptyResults;
-      expect(querySpy).toHaveBeenCalled();
-      expect(rendered.getByTestId('techdocs-search-bar')).toBeInTheDocument();
     });
+    expect(querySpy).toHaveBeenCalled();
+    expect(rendered.getByTestId('techdocs-search-bar')).toBeInTheDocument();
   });
 
   it('should trigger query when autocomplete input changed', async () => {
@@ -79,16 +79,41 @@ describe('<TechDocsSearch />', () => {
 
     const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
 
-    await act(async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apiRegistry}>
-            <TechDocsSearch entityId={entityId} debounceTime={0} />
-          </ApiProvider>,
-        ),
-      );
+    const rendered = render(
+      wrapInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <TechDocsSearch entityId={entityId} debounceTime={0} />
+        </ApiProvider>,
+      ),
+    );
 
+    await act(async () => {
       await singleResult;
+    });
+    expect(querySpy).toHaveBeenCalledWith({
+      filters: {
+        kind: 'Testable',
+        name: 'test',
+        namespace: 'testspace',
+      },
+      pageCursor: '',
+      term: '',
+      types: ['techdocs'],
+    });
+
+    const autocomplete = rendered.getByTestId('techdocs-search-bar');
+    const input = within(autocomplete).getByRole('textbox');
+
+    act(() => {
+      autocomplete.click();
+      autocomplete.focus();
+      fireEvent.change(input, { target: { value: 'asdf' } });
+    });
+
+    await act(async () => {
+      await singleResult;
+    });
+    await waitFor(() =>
       expect(querySpy).toHaveBeenCalledWith({
         filters: {
           kind: 'Testable',
@@ -96,30 +121,10 @@ describe('<TechDocsSearch />', () => {
           namespace: 'testspace',
         },
         pageCursor: '',
-        term: '',
+        term: 'asdf',
         types: ['techdocs'],
-      });
-
-      const autocomplete = rendered.getByTestId('techdocs-search-bar');
-      const input = within(autocomplete).getByRole('textbox');
-      autocomplete.click();
-      autocomplete.focus();
-      fireEvent.change(input, { target: { value: 'asdf' } });
-
-      await singleResult;
-      await waitFor(() =>
-        expect(querySpy).toHaveBeenCalledWith({
-          filters: {
-            kind: 'Testable',
-            name: 'test',
-            namespace: 'testspace',
-          },
-          pageCursor: '',
-          term: 'asdf',
-          types: ['techdocs'],
-        }),
-      );
-    });
+      }),
+    );
   });
 
   it('should update filter values when a new entityName is provided', async () => {
@@ -145,37 +150,41 @@ describe('<TechDocsSearch />', () => {
       );
     };
 
-    await act(async () => {
-      const rendered = render(<WrappedSearchBar />);
+    const rendered = render(<WrappedSearchBar />);
 
+    await act(async () => {
       await singleResult;
+    });
+    expect(querySpy).toHaveBeenCalledWith({
+      filters: {
+        kind: 'Testable',
+        name: 'test',
+        namespace: 'testspace',
+      },
+      pageCursor: '',
+      term: '',
+      types: ['techdocs'],
+    });
+
+    const button = rendered.getByText('Update Entity');
+    act(() => {
+      button.click();
+    });
+
+    await act(async () => {
+      await singleResult;
+    });
+    await waitFor(() =>
       expect(querySpy).toHaveBeenCalledWith({
         filters: {
-          kind: 'Testable',
-          name: 'test',
-          namespace: 'testspace',
+          kind: 'TestableDiff',
+          name: 'test-diff',
+          namespace: 'testspace-diff',
         },
         pageCursor: '',
         term: '',
         types: ['techdocs'],
-      });
-
-      const button = rendered.getByText('Update Entity');
-      button.click();
-
-      await singleResult;
-      await waitFor(() =>
-        expect(querySpy).toHaveBeenCalledWith({
-          filters: {
-            kind: 'TestableDiff',
-            name: 'test-diff',
-            namespace: 'testspace-diff',
-          },
-          pageCursor: '',
-          term: '',
-          types: ['techdocs'],
-        }),
-      );
-    });
+      }),
+    );
   });
 });

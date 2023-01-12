@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { PagerDutyUser } from '../types';
 import { pagerDutyApiRef } from '../../api';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -32,12 +32,10 @@ describe('Escalation', () => {
       .fn()
       .mockImplementationOnce(async () => ({ oncalls: [] }));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy policyId="456" />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy policyId="456" />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
 
@@ -62,12 +60,10 @@ describe('Escalation', () => {
         ],
       }));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy policyId="abc" />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy policyId="abc" />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
 
@@ -81,12 +77,10 @@ describe('Escalation', () => {
       .fn()
       .mockRejectedValueOnce(new Error('Error message'));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy policyId="abc" />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy policyId="abc" />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
 

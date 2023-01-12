@@ -21,7 +21,21 @@ import {
 } from '@backstage/plugin-scaffolder';
 import { Grid } from '@material-ui/core';
 
-const TwoColumn: LayoutTemplate = ({ properties, description, title }) => {
+type Property = {
+  content: JSX.Element & {
+    key: string;
+  };
+};
+type Props = {
+  properties: Array<Property>;
+  description: string;
+  title: string;
+};
+const TwoColumn: LayoutTemplate = ({
+  properties,
+  description,
+  title,
+}: Props) => {
   const mid = Math.ceil(properties.length / 2);
   const left = properties.slice(0, mid);
   const right = properties.slice(mid);

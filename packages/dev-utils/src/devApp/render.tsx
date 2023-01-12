@@ -15,7 +15,7 @@
  */
 
 import { createApp } from '@backstage/app-defaults';
-import { FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -44,7 +44,7 @@ import {
 } from '@backstage/integration-react';
 import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import React, { ComponentType, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
@@ -164,7 +164,7 @@ export class DevAppBuilder {
   /**
    * Build a DevApp component using the resources registered so far
    */
-  build(): ComponentType<{}> {
+  build(): React.ComponentType<{}> {
     const fakeRouteRef = createRouteRef({ id: 'fake' });
     const FakePage = () => <Box p={3}>Page belonging to another plugin.</Box>;
     attachComponentData(FakePage, 'core.mountPoint', fakeRouteRef);
@@ -195,33 +195,28 @@ export class DevAppBuilder {
       },
     });
 
-    const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
-
-    const DevApp = () => {
-      return (
-        <AppProvider>
-          <AlertDisplay />
-          <OAuthRequestDialog />
-          {this.rootChildren}
-          <AppRouter>
-            <SidebarPage>
-              <Sidebar>
-                <SidebarSpacer />
-                {this.sidebarItems}
-                <SidebarSpace />
-                <SidebarDivider />
-                <SidebarThemeSwitcher />
-              </Sidebar>
-              <FlatRoutes>
-                {this.routes}
-                <Route path="/_external_route" element={<FakePage />} />
-              </FlatRoutes>
-            </SidebarPage>
-          </AppRouter>
-        </AppProvider>
-      );
-    };
+    const DevApp = app.createRoot(
+      <>
+        <AlertDisplay />
+        <OAuthRequestDialog />
+        {this.rootChildren}
+        <AppRouter>
+          <SidebarPage>
+            <Sidebar>
+              <SidebarSpacer />
+              {this.sidebarItems}
+              <SidebarSpace />
+              <SidebarDivider />
+              <SidebarThemeSwitcher />
+            </Sidebar>
+            <FlatRoutes>
+              {this.routes}
+              <Route path="/_external_route" element={<FakePage />} />
+            </FlatRoutes>
+          </SidebarPage>
+        </AppRouter>
+      </>,
+    );
 
     return DevApp;
   }

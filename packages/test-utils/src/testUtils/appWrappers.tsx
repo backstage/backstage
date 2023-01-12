@@ -21,7 +21,7 @@ import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 import MockIcon from '@material-ui/icons/AcUnit';
-import { createSpecializedApp } from '@backstage/core-app-api';
+import { AppRouter, createSpecializedApp } from '@backstage/core-app-api';
 import {
   BootErrorPageProps,
   RouteRef,
@@ -178,7 +178,6 @@ export function createTestAppWrapper(
   );
 
   const AppProvider = app.getProvider();
-  const AppRouter = app.getRouter();
 
   const TestAppWrapper = ({ children }: { children: ReactNode }) => (
     <AppProvider>
@@ -201,7 +200,7 @@ export function createTestAppWrapper(
  * @public
  */
 export function wrapInTestApp(
-  Component: ComponentType | ReactNode,
+  Component: ComponentType<React.PropsWithChildren<unknown>> | ReactNode,
   options: TestAppOptions = {},
 ): ReactElement {
   const TestAppWrapper = createTestAppWrapper(options);
@@ -228,7 +227,7 @@ export function wrapInTestApp(
  * @public
  */
 export async function renderInTestApp(
-  Component: ComponentType | ReactNode,
+  Component: ComponentType<React.PropsWithChildren<unknown>> | ReactNode,
   options: TestAppOptions = {},
 ): Promise<RenderResult> {
   let wrappedElement: React.ReactElement;

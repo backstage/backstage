@@ -15,8 +15,13 @@
  */
 
 import { useApi } from '@backstage/core-plugin-api';
-import { render, screen, waitFor } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import {
+  render,
+  screen,
+  waitFor,
+  act,
+  renderHook,
+} from '@testing-library/react';
 import React from 'react';
 import {
   SearchContextProvider,
@@ -29,6 +34,18 @@ jest.mock('@backstage/core-plugin-api', () => ({
   useApi: jest.fn(),
 }));
 
+let asyncError: Error | null = null;
+
+class ErrorBoundary extends React.Component<{ children?: React.ReactNode }> {
+  componentDidCatch(error: Error): void {
+    asyncError = error;
+  }
+
+  render() {
+    return !asyncError && this.props.children;
+  }
+}
+
 describe('SearchContext', () => {
   const query = jest.fn();
 
@@ -37,6 +54,10 @@ describe('SearchContext', () => {
       {children}
     </SearchContextProvider>
   );
+  const customWrapper =
+    (initialState?: any) =>
+    ({ children }: any) =>
+      wrapper({ children, initialState });
 
   const initialState = {
     term: '',
@@ -67,12 +88,16 @@ describe('SearchContext', () => {
     });
   });
 
-  it('Throws error when no context is set', () => {
-    const { result } = renderHook(() => useSearch());
+  it('Throws error when no context is set', async () => {
+    renderHook(() => useSearch(), {
+      wrapper: ErrorBoundary,
+    });
 
-    expect(result.error).toEqual(
-      Error('useSearch must be used within a SearchContextProvider'),
-    );
+    await waitFor(() => {
+      expect(asyncError).toEqual(
+        Error('useSearch must be used within a SearchContextProvider'),
+      );
+    });
   });
 
   it('Checks whether context is set', async () => {
@@ -80,48 +105,41 @@ describe('SearchContext', () => {
 
     expect(hook.result.current).toEqual(false);
 
-    const { result, waitForNextUpdate } = renderHook(
-      () => useSearchContextCheck(),
-      {
-        wrapper,
-        initialProps: {
-          initialState,
-        },
-      },
-    );
+    const { result } = renderHook(() => useSearchContextCheck(), {
+      wrapper: customWrapper(initialState),
+    });
 
-    await waitForNextUpdate();
+    const currentResult = hook.result.current;
+    await waitFor(() => expect(currentResult).not.toBe(result.current));
 
     expect(result.current).toEqual(true);
   });
 
   it('Uses initial state values', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-      wrapper,
-      initialProps: {
-        initialState,
-      },
+    const { result } = renderHook(() => useSearch(), {
+      wrapper: customWrapper(initialState),
     });
 
-    await waitForNextUpdate();
+    const currentResult = result.current;
+    await waitFor(() => expect(currentResult).not.toBe(result.current));
 
     expect(result.current).toEqual(expect.objectContaining(initialState));
   });
 
   describe('Resets cursor', () => {
     it('When term is cleared', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState: {
-            ...initialState,
-            term: 'first term',
-            pageCursor: 'SOMEPAGE',
-          },
-        },
+      const updatedInitialState = {
+        ...initialState,
+        term: 'first term',
+        pageCursor: 'SOMEPAGE',
+      };
+
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper(updatedInitialState),
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.term).toEqual('first term');
       expect(result.current.pageCursor).toEqual('SOMEPAGE');
@@ -130,24 +148,23 @@ describe('SearchContext', () => {
         result.current.setTerm('');
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.pageCursor).toBeUndefined();
     });
 
     it('When term is set (and different from previous)', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState: {
-            ...initialState,
-            term: 'first term',
-            pageCursor: 'SOMEPAGE',
-          },
-        },
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper({
+          ...initialState,
+          term: 'first term',
+          pageCursor: 'SOMEPAGE',
+        }),
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.term).toEqual('first term');
       expect(result.current.pageCursor).toEqual('SOMEPAGE');
@@ -156,25 +173,24 @@ describe('SearchContext', () => {
         result.current.setTerm('second term');
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.pageCursor).toBeUndefined();
     });
 
     it('When filters are cleared', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState: {
-            ...initialState,
-            term: 'first term',
-            filters: { foo: 'bar' },
-            pageCursor: 'SOMEPAGE',
-          },
-        },
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper({
+          ...initialState,
+          term: 'first term',
+          filters: { foo: 'bar' },
+          pageCursor: 'SOMEPAGE',
+        }),
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.filters).toEqual({ foo: 'bar' });
       expect(result.current.pageCursor).toEqual('SOMEPAGE');
@@ -183,25 +199,24 @@ describe('SearchContext', () => {
         result.current.setFilters({});
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.pageCursor).toBeUndefined();
     });
 
     it('When filters are set (and different from previous)', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState: {
-            ...initialState,
-            term: 'first term',
-            filters: { foo: 'bar' },
-            pageCursor: 'SOMEPAGE',
-          },
-        },
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper({
+          ...initialState,
+          term: 'first term',
+          filters: { foo: 'bar' },
+          pageCursor: 'SOMEPAGE',
+        }),
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.filters).toEqual({ foo: 'bar' });
       expect(result.current.pageCursor).toEqual('SOMEPAGE');
@@ -210,7 +225,8 @@ describe('SearchContext', () => {
         result.current.setFilters({ foo: 'test' });
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.pageCursor).toBeUndefined();
     });
@@ -218,14 +234,12 @@ describe('SearchContext', () => {
 
   describe('Performs search (and sets results)', () => {
     it('When term is set', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState,
-        },
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper(initialState),
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       const term = 'term';
 
@@ -233,7 +247,8 @@ describe('SearchContext', () => {
         result.current.setTerm(term);
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(query).toHaveBeenLastCalledWith({
         term,
@@ -243,22 +258,20 @@ describe('SearchContext', () => {
     });
 
     it('When types is set', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState,
-        },
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper(initialState),
       });
 
-      await waitForNextUpdate();
-
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
       const types = ['type'];
 
       act(() => {
         result.current.setTypes(types);
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(query).toHaveBeenLastCalledWith({
         types,
@@ -268,14 +281,15 @@ describe('SearchContext', () => {
     });
 
     it('When filters are set', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper(initialState),
         initialProps: {
           initialState,
         },
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       const filters = { filter: 'filter' };
 
@@ -283,7 +297,8 @@ describe('SearchContext', () => {
         result.current.setFilters(filters);
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(query).toHaveBeenLastCalledWith({
         filters,
@@ -293,14 +308,12 @@ describe('SearchContext', () => {
     });
 
     it('When page limit is set', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState,
-        },
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper(initialState),
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       const pageLimit = 30;
 
@@ -308,7 +321,8 @@ describe('SearchContext', () => {
         result.current.setPageLimit(pageLimit);
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(query).toHaveBeenLastCalledWith({
         pageLimit,
@@ -319,14 +333,12 @@ describe('SearchContext', () => {
     });
 
     it('When page cursor is set', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState,
-        },
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper(initialState),
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       const pageCursor = 'SOMEPAGE';
 
@@ -334,7 +346,8 @@ describe('SearchContext', () => {
         result.current.setPageCursor(pageCursor);
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(query).toHaveBeenLastCalledWith({
         pageCursor,
@@ -350,14 +363,12 @@ describe('SearchContext', () => {
         nextPageCursor: 'NEXT',
       });
 
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState,
-        },
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper(initialState),
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.fetchNextPage).toBeDefined();
       expect(result.current.fetchPreviousPage).toBeUndefined();
@@ -366,7 +377,8 @@ describe('SearchContext', () => {
         result.current.fetchNextPage!();
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(query).toHaveBeenLastCalledWith({
         term: '',
@@ -382,14 +394,12 @@ describe('SearchContext', () => {
         previousPageCursor: 'PREVIOUS',
       });
 
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState,
-        },
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: customWrapper(initialState),
       });
 
-      await waitForNextUpdate();
+      let currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(result.current.fetchNextPage).toBeUndefined();
       expect(result.current.fetchPreviousPage).toBeDefined();
@@ -398,7 +408,8 @@ describe('SearchContext', () => {
         result.current.fetchPreviousPage!();
       });
 
-      await waitForNextUpdate();
+      currentResult = result.current;
+      await waitFor(() => expect(currentResult).not.toBe(result.current));
 
       expect(query).toHaveBeenLastCalledWith({
         term: '',

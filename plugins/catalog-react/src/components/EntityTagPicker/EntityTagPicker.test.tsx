@@ -19,7 +19,7 @@ import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityTagFilter } from '../../filters';
 import { EntityTagPicker } from './EntityTagPicker';
-import { TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -115,7 +115,7 @@ describe('<EntityTagPicker/>', () => {
 
   it('adds tags to filters', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{

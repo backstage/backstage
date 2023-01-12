@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, waitFor, fireEvent, act } from '@testing-library/react';
+import { waitFor, fireEvent, act } from '@testing-library/react';
 import { PagerDutyCard, isPluginApplicableToEntity } from '../PagerDutyCard';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
 import { PagerDutyService, PagerDutyUser } from '../types';
 
@@ -132,14 +132,12 @@ describe('PageDutyCard', () => {
       .fn()
       .mockImplementationOnce(async () => ({ service }));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <PagerDutyCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('Service Directory')).toBeInTheDocument();
@@ -153,14 +151,12 @@ describe('PageDutyCard', () => {
       .fn()
       .mockRejectedValueOnce(new UnauthorizedError());
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <PagerDutyCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('Missing or invalid PagerDuty Token')).toBeInTheDocument();
@@ -171,14 +167,12 @@ describe('PageDutyCard', () => {
       .fn()
       .mockRejectedValueOnce(new NotFoundError());
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <PagerDutyCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('PagerDuty Service Not Found')).toBeInTheDocument();
@@ -188,14 +182,12 @@ describe('PageDutyCard', () => {
     mockPagerDutyApi.getServiceByEntity = jest
       .fn()
       .mockRejectedValueOnce(new Error('An error occurred'));
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <PagerDutyCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
 
@@ -211,14 +203,12 @@ describe('PageDutyCard', () => {
       .fn()
       .mockImplementationOnce(async () => ({ service }));
 
-    const { getByText, queryByTestId, getByRole } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId, getByRole } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <PagerDutyCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('Service Directory')).toBeInTheDocument();
@@ -236,14 +226,12 @@ describe('PageDutyCard', () => {
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
-          </ApiProvider>,
-        ),
+      const { getByText, queryByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entityWithServiceId}>
+            <PagerDutyCard />
+          </EntityProvider>
+        </ApiProvider>,
       );
       await waitFor(() => !queryByTestId('progress'));
       expect(getByText('Service Directory')).toBeInTheDocument();
@@ -257,14 +245,12 @@ describe('PageDutyCard', () => {
         .fn()
         .mockRejectedValueOnce(new UnauthorizedError());
 
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
-          </ApiProvider>,
-        ),
+      const { getByText, queryByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entityWithServiceId}>
+            <PagerDutyCard />
+          </EntityProvider>
+        </ApiProvider>,
       );
       await waitFor(() => !queryByTestId('progress'));
       expect(
@@ -277,14 +263,12 @@ describe('PageDutyCard', () => {
         .fn()
         .mockRejectedValueOnce(new NotFoundError());
 
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
-          </ApiProvider>,
-        ),
+      const { getByText, queryByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entityWithServiceId}>
+            <PagerDutyCard />
+          </EntityProvider>
+        </ApiProvider>,
       );
       await waitFor(() => !queryByTestId('progress'));
       expect(getByText('PagerDuty Service Not Found')).toBeInTheDocument();
@@ -294,14 +278,12 @@ describe('PageDutyCard', () => {
       mockPagerDutyApi.getServiceByEntity = jest
         .fn()
         .mockRejectedValueOnce(new Error('An error occurred'));
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
-          </ApiProvider>,
-        ),
+      const { getByText, queryByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entityWithServiceId}>
+            <PagerDutyCard />
+          </EntityProvider>
+        </ApiProvider>,
       );
       await waitFor(() => !queryByTestId('progress'));
 
@@ -317,14 +299,12 @@ describe('PageDutyCard', () => {
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
-      const { queryByTestId, getByTitle } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
-          </ApiProvider>,
-        ),
+      const { queryByTestId, getByTitle } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entityWithServiceId}>
+            <PagerDutyCard />
+          </EntityProvider>
+        </ApiProvider>,
       );
       await waitFor(() => !queryByTestId('progress'));
       expect(
@@ -340,14 +320,12 @@ describe('PageDutyCard', () => {
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithAllAnnotations}>
-              <PagerDutyCard />
-            </EntityProvider>
-          </ApiProvider>,
-        ),
+      const { getByText, queryByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entityWithAllAnnotations}>
+            <PagerDutyCard />
+          </EntityProvider>
+        </ApiProvider>,
       );
       await waitFor(() => !queryByTestId('progress'));
       expect(getByText('Service Directory')).toBeInTheDocument();

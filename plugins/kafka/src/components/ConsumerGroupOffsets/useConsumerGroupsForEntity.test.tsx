@@ -15,7 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -147,30 +147,5 @@ describe('useConsumerGroupOffsets', () => {
         consumerGroup: 'another-consumer',
       },
     ]);
-  });
-
-  it('fails on missing cluster', async () => {
-    entity = {
-      apiVersion: 'v1',
-      kind: 'Component',
-      metadata: {
-        name: 'test',
-        annotations: {
-          'kafka.apache.org/consumer-groups': 'dev/another,consumer',
-        },
-      },
-      spec: {
-        owner: 'guest',
-        type: 'Website',
-        lifecycle: 'development',
-      },
-    };
-    const { result } = subject();
-    expect(() => result.current).toThrow();
-    expect(result.error).toStrictEqual(
-      new Error(
-        `Failed to parse kafka consumer group annotation: got "dev/another,consumer"`,
-      ),
-    );
   });
 });

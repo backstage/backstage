@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren, FunctionComponent } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Box, Paper, CardActionArea } from '@material-ui/core';
 import CardHeader from './CardHeader';
 
@@ -27,7 +27,7 @@ type Props = {
   repositoryName: string;
 };
 
-const Card: FunctionComponent<Props> = (props: PropsWithChildren<Props>) => {
+const Card = (props: PropsWithChildren<Props>) => {
   const {
     title,
     createdAt,

@@ -31,7 +31,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import CodeMirror from '@uiw/react-codemirror';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { SetStateAction, useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import * as fieldOverrides from '../MultistepJsonForm/FieldOverrides';
@@ -104,7 +104,7 @@ export const CustomFieldExplorer = ({
   }, [customFieldExtensions]);
 
   const handleSelectionChange = useCallback(
-    selection => {
+    (selection: SetStateAction<FieldExtensionOptions<any, any>>) => {
       setSelectedField(selection);
       setFieldFormState({});
       setFormState({});
@@ -113,7 +113,7 @@ export const CustomFieldExplorer = ({
   );
 
   const handleFieldConfigChange = useCallback(
-    state => {
+    (state: SetStateAction<{}>) => {
       setFieldFormState(state);
       setFormState({});
       // Force TemplateEditorForm to re-render since some fields
@@ -134,7 +134,7 @@ export const CustomFieldExplorer = ({
             value={selectedField}
             label="Choose Custom Field Extension"
             labelId="select-field-label"
-            onChange={e => handleSelectionChange(e.target.value)}
+            onChange={(e: any) => handleSelectionChange(e.target.value)}
           >
             {fieldOptions.map((option, idx) => (
               <MenuItem key={idx} value={option as any}>
@@ -158,7 +158,7 @@ export const CustomFieldExplorer = ({
               noHtml5Validate
               formData={fieldFormState}
               formContext={{ fieldFormState }}
-              onSubmit={e => handleFieldConfigChange(e.formData)}
+              onSubmit={(e: any) => handleFieldConfigChange(e.formData)}
               schema={selectedField.schema?.uiOptions || {}}
             >
               <Button

@@ -298,7 +298,7 @@ describe('SearchBar', () => {
     const user = userEvent.setup({ delay: null });
     const types = ['techdocs', 'software-catalog'];
 
-    await renderWithEffects(
+    await render(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -336,18 +336,19 @@ describe('SearchBar', () => {
       jest.advanceTimersByTime(200);
     });
 
-    await waitFor(() => expect(textbox).toHaveValue(value));
-
-    expect(analyticsApiMock.getEvents()).toHaveLength(1);
-    expect(analyticsApiMock.getEvents()[0]).toEqual({
-      action: 'search',
-      context: {
-        extension: 'SearchBar',
-        pluginId: 'search',
-        routeRef: 'unknown',
-        searchTypes: types.toString(),
-      },
-      subject: value,
+    await waitFor(() => {
+      expect(analyticsApiMock.getEvents()).toHaveLength(1);
+      expect(analyticsApiMock.getEvents()[0]).toEqual({
+        action: 'search',
+        context: {
+          extension: 'SearchBar',
+          pluginId: 'search',
+          routeRef: 'unknown',
+          searchTypes: types.toString(),
+        },
+        subject: value,
+      });
+      expect(textbox).toHaveValue(value);
     });
 
     await user.clear(textbox);
@@ -361,18 +362,19 @@ describe('SearchBar', () => {
       jest.advanceTimersByTime(200);
     });
 
-    await waitFor(() => expect(textbox).toHaveValue(value));
-
-    expect(analyticsApiMock.getEvents()).toHaveLength(2);
-    expect(analyticsApiMock.getEvents()[1]).toEqual({
-      action: 'search',
-      context: {
-        extension: 'SearchBar',
-        pluginId: 'search',
-        routeRef: 'unknown',
-        searchTypes: types.toString(),
-      },
-      subject: value,
+    await waitFor(() => {
+      expect(analyticsApiMock.getEvents()).toHaveLength(2);
+      expect(analyticsApiMock.getEvents()[1]).toEqual({
+        action: 'search',
+        context: {
+          extension: 'SearchBar',
+          pluginId: 'search',
+          routeRef: 'unknown',
+          searchTypes: types.toString(),
+        },
+        subject: value,
+      });
+      expect(textbox).toHaveValue(value);
     });
 
     jest.useRealTimers();

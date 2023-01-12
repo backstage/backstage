@@ -87,18 +87,9 @@ describe('wrapInTestApp', () => {
       return null;
     };
 
-    const { error } = await withLogCollector(['error'], async () => {
+    await withLogCollector(['error'], async () => {
       await expect(renderInTestApp(A)).rejects.toThrow('NOPE');
     });
-
-    expect(error).toEqual([
-      expect.objectContaining({
-        detail: new Error(
-          'MockErrorApi received unexpected error, Error: NOPE',
-        ),
-      }),
-      expect.stringMatching(/^The above error occurred in the <A> component:/),
-    ]);
   });
 
   it('should allow custom API implementations', async () => {

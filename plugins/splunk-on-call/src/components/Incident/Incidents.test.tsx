@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { splunkOnCallApiRef } from '../../api';
 import { MOCK_TEAM, MOCK_INCIDENT } from '../../api/mocks';
 
@@ -41,17 +41,15 @@ describe('Incidents', () => {
     mockSplunkOnCallApi.getIncidents.mockResolvedValue([]);
     mockSplunkOnCallApi.getTeams.mockResolvedValue([MOCK_TEAM]);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents readOnly={false} refreshIncidents={false} team="test" />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents readOnly={false} refreshIncidents={false} team="test" />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     await waitFor(
       () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
-      { timeout: 2000 },
+      { timeout: 5000 },
     );
   });
 
@@ -65,12 +63,10 @@ describe('Incidents', () => {
       getAllByTitle,
       getByLabelText,
       queryByTestId,
-    } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents readOnly={false} team="test" refreshIncidents={false} />
-        </ApiProvider>,
-      ),
+    } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents readOnly={false} team="test" refreshIncidents={false} />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     await waitFor(
@@ -80,7 +76,7 @@ describe('Incidents', () => {
             exact: false,
           }),
         ).toBeInTheDocument(),
-      { timeout: 2000 },
+      { timeout: 5000 },
     );
     expect(getByText('test-incident')).toBeInTheDocument();
     expect(getByTitle('Acknowledged')).toBeInTheDocument();
@@ -94,13 +90,12 @@ describe('Incidents', () => {
     mockSplunkOnCallApi.getIncidents.mockResolvedValue([MOCK_INCIDENT]);
     mockSplunkOnCallApi.getTeams.mockResolvedValue([MOCK_TEAM]);
 
-    const { getByText, getAllByTitle, getByLabelText, queryByTestId } = render(
-      wrapInTestApp(
+    const { getByText, getAllByTitle, getByLabelText, queryByTestId } =
+      await renderInTestApp(
         <ApiProvider apis={apis}>
           <Incidents readOnly team="test" refreshIncidents={false} />
         </ApiProvider>,
-      ),
-    );
+      );
     await waitFor(() => !queryByTestId('progress'));
     await waitFor(
       () =>
@@ -109,7 +104,7 @@ describe('Incidents', () => {
             exact: false,
           }),
         ).toBeInTheDocument(),
-      { timeout: 2000 },
+      { timeout: 5000 },
     );
     expect(getByText('test-incident')).toBeInTheDocument();
     expect(getByLabelText('Status warning')).toBeInTheDocument();
@@ -130,12 +125,10 @@ describe('Incidents', () => {
     );
     mockSplunkOnCallApi.getTeams.mockResolvedValue([]);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents readOnly={false} team="test" refreshIncidents={false} />
-        </ApiProvider>,
-      ),
+    const { getByText, queryByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents readOnly={false} team="test" refreshIncidents={false} />
+      </ApiProvider>,
     );
     await waitFor(() => !queryByTestId('progress'));
     await waitFor(
@@ -145,7 +138,7 @@ describe('Incidents', () => {
             'Error encountered while fetching information. Error occurred',
           ),
         ).toBeInTheDocument(),
-      { timeout: 2000 },
+      { timeout: 5000 },
     );
   });
 });

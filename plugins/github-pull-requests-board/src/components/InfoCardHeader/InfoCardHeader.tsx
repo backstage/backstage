@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren, FunctionComponent } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Typography, Box, IconButton } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
@@ -21,9 +21,7 @@ type Props = {
   onRefresh: () => void;
 };
 
-const InfoCardHeader: FunctionComponent<Props> = (
-  props: PropsWithChildren<Props>,
-) => {
+const InfoCardHeader = (props: PropsWithChildren<Props>) => {
   const { children, onRefresh } = props;
 
   return (

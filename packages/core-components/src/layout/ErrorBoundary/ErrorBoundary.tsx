@@ -28,6 +28,7 @@ type SlackChannel = {
 export type ErrorBoundaryProps = {
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
+  children?: React.ReactNode;
 };
 
 type State = {

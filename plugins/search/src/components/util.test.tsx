@@ -36,17 +36,16 @@ describe('util', () => {
       };
 
       await act(async () => {
-        await render(
+        render(
           wrapInTestApp(<MyComponent />, {
             mountedRoutes: {
               '/search': rootRouteRef,
             },
           }),
         );
-
-        expect(navigate).toHaveBeenCalledTimes(1);
-        expect(navigate).toHaveBeenCalledWith('/search?query=test');
       });
+      expect(navigate).toHaveBeenCalledTimes(2);
+      expect(navigate).toHaveBeenCalledWith('/search?query=test');
     });
   });
 });

@@ -18,6 +18,7 @@ import { createTestShadowDom } from '../../test-utils';
 import { copyToClipboard } from './copyToClipboard';
 import { lightTheme } from '@backstage/theme';
 import { waitFor } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 
 const clipboardSpy = jest.fn();
 Object.defineProperty(window.navigator, 'clipboard', {
@@ -29,22 +30,27 @@ Object.defineProperty(window.navigator, 'clipboard', {
 describe('copyToClipboard', () => {
   it('calls navigator.clipboard.writeText when clipboard button has been clicked', async () => {
     const expectedClipboard = 'function foo() {return "bar";}';
-    const shadowDom = await createTestShadowDom(
-      `
-      <!DOCTYPE html>
-      <html>
-        <body>
-          <pre><code><span>${expectedClipboard}</span></code></pre>
-        </body>
-      </html>
-    `,
-      {
-        preTransformers: [],
-        postTransformers: [copyToClipboard(lightTheme)],
-      },
-    );
+    let shadowDom: ShadowRoot | null;
+    await act(async () => {
+      shadowDom = await createTestShadowDom(
+        `
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <pre><code><span>${expectedClipboard}</span></code></pre>
+          </body>
+        </html>
+      `,
+        {
+          preTransformers: [],
+          postTransformers: [copyToClipboard(lightTheme)],
+        },
+      );
+    });
 
-    shadowDom.querySelector('button')?.click();
+    act(() => {
+      shadowDom!.querySelector('button')?.click();
+    });
 
     await waitFor(() => {
       const tooltip = document.querySelector('[role="tooltip"]');

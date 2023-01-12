@@ -21,7 +21,8 @@ import {
   act,
   renderHook,
   RenderHookResult,
-} from '@testing-library/react-hooks';
+  waitFor,
+} from '@testing-library/react';
 import React from 'react';
 import {
   UseUnregisterEntityDialogState,
@@ -85,7 +86,10 @@ describe('useUnregisterEntityDialogState', () => {
   });
 
   it('goes through the happy unregister path', async () => {
-    let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
+    let rendered: RenderHookResult<
+      UseUnregisterEntityDialogState,
+      UseUnregisterEntityDialogState
+    >;
     act(() => {
       rendered = renderHook(() => useUnregisterEntityDialogState(entity), {
         wrapper: Wrapper,
@@ -97,9 +101,8 @@ describe('useUnregisterEntityDialogState', () => {
     resolveLocation({ type: 'url', target: 'https://example.com', id: 'x' });
     resolveColocatedEntities([entity]);
 
-    await act(async () => {
-      await rendered!.waitForNextUpdate();
-    });
+    const initialValue = rendered!.result.current;
+    await waitFor(() => expect(initialValue).not.toBe(rendered.result.current));
 
     expect(rendered!.result.current).toEqual({
       type: 'unregister',
@@ -114,7 +117,10 @@ describe('useUnregisterEntityDialogState', () => {
     entity.metadata.annotations![ANNOTATION_ORIGIN_LOCATION] =
       'bootstrap:bootstrap';
 
-    let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
+    let rendered: RenderHookResult<
+      UseUnregisterEntityDialogState,
+      UseUnregisterEntityDialogState
+    >;
     act(() => {
       rendered = renderHook(() => useUnregisterEntityDialogState(entity), {
         wrapper: Wrapper,
@@ -123,9 +129,8 @@ describe('useUnregisterEntityDialogState', () => {
 
     resolveLocation({ type: 'bootstrap', target: 'bootstrap', id: 'x' });
     resolveColocatedEntities([]);
-    await act(async () => {
-      await rendered!.waitForNextUpdate();
-    });
+    const initialValue = rendered!.result.current;
+    await waitFor(() => expect(initialValue).not.toBe(rendered.result.current));
 
     expect(rendered!.result.current).toEqual({
       type: 'bootstrap',
@@ -137,7 +142,10 @@ describe('useUnregisterEntityDialogState', () => {
   it('chooses only-delete when there was no location annotation', async () => {
     delete entity.metadata.annotations![ANNOTATION_ORIGIN_LOCATION];
 
-    let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
+    let rendered: RenderHookResult<
+      UseUnregisterEntityDialogState,
+      UseUnregisterEntityDialogState
+    >;
     act(() => {
       rendered = renderHook(() => useUnregisterEntityDialogState(entity), {
         wrapper: Wrapper,
@@ -146,9 +154,8 @@ describe('useUnregisterEntityDialogState', () => {
 
     resolveLocation(undefined);
     resolveColocatedEntities([]);
-    await act(async () => {
-      await rendered!.waitForNextUpdate();
-    });
+    const initialValue = rendered!.result.current;
+    await waitFor(() => expect(initialValue).not.toBe(rendered.result.current));
 
     expect(rendered!.result.current).toEqual({
       type: 'only-delete',
@@ -157,7 +164,10 @@ describe('useUnregisterEntityDialogState', () => {
   });
 
   it('chooses only-delete when the location could not be found', async () => {
-    let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
+    let rendered: RenderHookResult<
+      UseUnregisterEntityDialogState,
+      UseUnregisterEntityDialogState
+    >;
     act(() => {
       rendered = renderHook(() => useUnregisterEntityDialogState(entity), {
         wrapper: Wrapper,
@@ -166,9 +176,8 @@ describe('useUnregisterEntityDialogState', () => {
 
     resolveLocation(undefined);
     resolveColocatedEntities([]);
-    await act(async () => {
-      await rendered!.waitForNextUpdate();
-    });
+    const initialValue = rendered!.result.current;
+    await waitFor(() => expect(initialValue).not.toBe(rendered.result.current));
 
     expect(rendered!.result.current).toEqual({
       type: 'only-delete',

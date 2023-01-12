@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import React from 'react';
+import { WrapperComponent } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { ConfigReader } from '@backstage/core-app-api';
 import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
@@ -31,7 +32,9 @@ const configApiMock: ConfigApi = new ConfigReader({
   },
 });
 
-const wrapper: FC = ({ children }) => (
+const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+  children,
+}) => (
   <TestApiProvider apis={[[configApiRef, configApiMock]]}>
     {children}
   </TestApiProvider>

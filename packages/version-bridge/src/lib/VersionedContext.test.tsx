@@ -15,7 +15,8 @@
  */
 
 import React, { useContext } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { WrapperComponent } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import {
   createVersionedContext,
   createVersionedContextForTesting,
@@ -29,14 +30,15 @@ describe('VersionedContext', () => {
   it('should provide a versioned value', () => {
     const Context = createVersionedContext<ContextType>('test-context-1');
 
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => (
+      <Context.Provider value={createVersionedValueMap({ 1: '1v1', 2: '1v2' })}>
+        {children}
+      </Context.Provider>
+    );
     const rendered = renderHook(() => useContext(Context), {
-      wrapper: ({ children }) => (
-        <Context.Provider
-          value={createVersionedValueMap({ 1: '1v1', 2: '1v2' })}
-        >
-          {children}
-        </Context.Provider>
-      ),
+      wrapper,
     });
 
     expect(rendered.result.current?.atVersion(1)).toBe('1v1');
@@ -46,14 +48,15 @@ describe('VersionedContext', () => {
   it('should provide a versioned value to hook', () => {
     const Context = createVersionedContext<ContextType>('test-context-2');
 
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => (
+      <Context.Provider value={createVersionedValueMap({ 1: '2v1', 2: '2v2' })}>
+        {children}
+      </Context.Provider>
+    );
     const rendered = renderHook(() => useVersionedContext('test-context-2'), {
-      wrapper: ({ children }) => (
-        <Context.Provider
-          value={createVersionedValueMap({ 1: '2v1', 2: '2v2' })}
-        >
-          {children}
-        </Context.Provider>
-      ),
+      wrapper,
     });
 
     expect(rendered.result.current?.atVersion(1)).toBe('2v1');

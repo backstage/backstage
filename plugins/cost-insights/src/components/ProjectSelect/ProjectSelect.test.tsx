@@ -28,7 +28,7 @@ const mockProjects = [
 ];
 
 describe('<ProjectSelect />', () => {
-  let Component: React.ReactNode;
+  let Component: () => JSX.Element;
   beforeEach(() => {
     Component = () => (
       <MockFilterProvider>

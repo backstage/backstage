@@ -17,7 +17,7 @@
 import type { Transformer } from './transformer';
 import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 export const addSidebarToggle = (): Transformer => {
   return dom => {
@@ -33,7 +33,8 @@ export const addSidebarToggle = (): Transformer => {
     }
 
     const toggleSidebar = mkdocsToggleSidebar.cloneNode() as HTMLLabelElement;
-    ReactDOM.render(React.createElement(MenuIcon), toggleSidebar);
+    const root = createRoot(toggleSidebar!);
+    root.render(React.createElement(MenuIcon));
     toggleSidebar.id = 'toggle-sidebar';
     toggleSidebar.title = 'Toggle Sidebar';
     toggleSidebar.classList.add('md-content__button');

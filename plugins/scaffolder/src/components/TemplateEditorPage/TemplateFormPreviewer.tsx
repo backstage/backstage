@@ -36,6 +36,7 @@ import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { LayoutOptions } from '../../layouts';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
@@ -121,7 +122,9 @@ export const TemplateFormPreviewer = ({
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
-  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState<
+    TemplateEntityV1beta3 | string
+  >('');
   const [errorText, setErrorText] = useState<string>();
   const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>([]);
   const [templateYaml, setTemplateYaml] = useState(defaultPreviewTemplate);
@@ -162,7 +165,7 @@ export const TemplateFormPreviewer = ({
   );
 
   const handleSelectChange = useCallback(
-    selected => {
+    (selected: TemplateEntityV1beta3) => {
       setSelectedTemplate(selected);
       setTemplateYaml(yaml.stringify(selected.spec));
     },
@@ -182,7 +185,7 @@ export const TemplateFormPreviewer = ({
               value={selectedTemplate}
               label="Load Existing Template"
               labelId="select-template-label"
-              onChange={e => handleSelectChange(e.target.value)}
+              onChange={(e: any) => handleSelectChange(e.target.value)}
             >
               {templateOptions.map((option, idx) => (
                 <MenuItem key={idx} value={option.value as any}>

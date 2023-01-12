@@ -15,18 +15,20 @@
  */
 import React from 'react';
 import { useTemplateSecrets, SecretsContextProvider } from './SecretsContext';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { WrapperComponent } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 
 describe('SecretsContext', () => {
   it('should allow the setting of secrets in the context', async () => {
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => <SecretsContextProvider>{children}</SecretsContextProvider>;
     const { result } = renderHook(
       () => ({
         hook: useTemplateSecrets(),
       }),
       {
-        wrapper: ({ children }) => (
-          <SecretsContextProvider>{children}</SecretsContextProvider>
-        ),
+        wrapper,
       },
     );
     expect(result.current.hook?.secrets.foo).toEqual(undefined);

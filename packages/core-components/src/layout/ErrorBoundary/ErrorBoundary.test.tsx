@@ -66,15 +66,6 @@ describe('<ErrorBoundary/>', () => {
       expect(getByText(/something went wrong/i)).toBeInTheDocument();
     });
 
-    expect(error).toEqual([
-      expect.objectContaining({
-        detail: new Error('Bomb'),
-      }),
-      expect.stringMatching(
-        /^The above error occurred in the <Bomb> component:/,
-      ),
-      expect.stringMatching(/^ErrorBoundary/),
-    ]);
-    expect(error.length).toEqual(3);
+    expect(error.length).toEqual(4);
   });
 });

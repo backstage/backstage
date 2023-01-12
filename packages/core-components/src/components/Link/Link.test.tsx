@@ -24,7 +24,8 @@ import {
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { Route, Routes } from 'react-router-dom';
-import { renderHook, WrapperComponent } from '@testing-library/react-hooks';
+import { WrapperComponent } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 
 describe('<Link />', () => {
@@ -134,7 +135,9 @@ describe('<Link />', () => {
   });
 
   describe('useResolvedPath', () => {
-    const wrapper: WrapperComponent<{}> = ({ children }) => {
+    const wrapper: WrapperComponent<{ children?: React.ReactNode }> = ({
+      children,
+    }) => {
       const configApi = new ConfigReader({
         app: { baseUrl: 'http://localhost:3000/example' },
       });

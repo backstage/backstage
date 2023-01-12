@@ -171,7 +171,9 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
                     >
                       {entity.metadata.description}
                     </Typography>
-                    <Typography>{entity.spec?.type}</Typography>
+                    <Typography>
+                      {entity.spec?.type as React.ReactNode}
+                    </Typography>
                     <Box marginTop="0.5em">
                       {(entity.metadata.tags || [])
                         .slice(0, maxTagChips)

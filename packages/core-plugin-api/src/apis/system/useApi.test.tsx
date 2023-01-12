@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { createApiRef } from './ApiRef';
 import { useApi } from './useApi';

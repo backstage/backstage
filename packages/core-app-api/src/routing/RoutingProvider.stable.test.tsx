@@ -17,7 +17,7 @@
 import React, { PropsWithChildren, ReactElement } from 'react';
 import { MemoryRouter, Routes, Route, useOutlet } from 'react-router-dom';
 import { render } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
   childDiscoverer,

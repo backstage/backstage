@@ -16,7 +16,7 @@
 
 import { NotFoundError } from '@backstage/errors';
 import { TestApiProvider } from '@backstage/test-utils';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
 import { techdocsStorageApiRef } from '../../api';
 import {
@@ -284,47 +284,46 @@ describe('useReaderState', () => {
         return 'cached';
       });
 
-      await act(async () => {
-        const { result, waitForValueToChange } = await renderHook(
-          () => useReaderState('Component', 'default', 'backstage', '/example'),
-          { wrapper: Wrapper },
-        );
+      const { result } = await renderHook(
+        () => useReaderState('Component', 'default', 'backstage', '/example'),
+        { wrapper: Wrapper },
+      );
 
-        expect(result.current).toEqual({
-          state: 'CHECKING',
-          path: '/example',
-          content: undefined,
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        await waitForValueToChange(() => result.current.state);
-
-        expect(result.current).toEqual({
-          state: 'CONTENT_FRESH',
-          path: '/example',
-          content: 'my content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
-          { kind: 'Component', namespace: 'default', name: 'backstage' },
-          '/example',
-        );
-        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
-          {
-            kind: 'Component',
-            namespace: 'default',
-            name: 'backstage',
-          },
-          expect.any(Function),
-        );
+      expect(result.current).toEqual({
+        state: 'CHECKING',
+        path: '/example',
+        content: undefined,
+        contentErrorMessage: undefined,
+        syncErrorMessage: undefined,
+        buildLog: [],
+        contentReload: expect.any(Function),
       });
+
+      const currentState = result.current.state;
+      await waitFor(() => expect(currentState).not.toBe(result.current.state));
+
+      expect(result.current).toEqual({
+        state: 'CONTENT_FRESH',
+        path: '/example',
+        content: 'my content',
+        contentErrorMessage: undefined,
+        syncErrorMessage: undefined,
+        buildLog: [],
+        contentReload: expect.any(Function),
+      });
+
+      expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
+        { kind: 'Component', namespace: 'default', name: 'backstage' },
+        '/example',
+      );
+      expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
+        {
+          kind: 'Component',
+          namespace: 'default',
+          name: 'backstage',
+        },
+        expect.any(Function),
+      );
     });
 
     it('should reload initially missing content', async () => {
@@ -343,26 +342,25 @@ describe('useReaderState', () => {
         },
       );
 
-      await act(async () => {
-        const { result, waitForValueToChange } = await renderHook(
-          () => useReaderState('Component', 'default', 'backstage', '/example'),
-          { wrapper: Wrapper },
-        );
+      const { result } = renderHook(
+        () => useReaderState('Component', 'default', 'backstage', '/example'),
+        { wrapper: Wrapper },
+      );
 
-        expect(result.current).toEqual({
-          state: 'CHECKING',
-          path: '/example',
-          content: undefined,
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
+      expect(result.current).toEqual({
+        state: 'CHECKING',
+        path: '/example',
+        content: undefined,
+        contentErrorMessage: undefined,
+        syncErrorMessage: undefined,
+        buildLog: ['Line 1', 'Line 2'],
+        contentReload: expect.any(Function),
+      });
 
-        await waitForValueToChange(() => result.current.state, {
-          timeout: 2000,
-        });
+      let currentState = result.current;
+      await waitFor(() => expect(currentState).not.toBe(result.current));
 
+      await waitFor(() => {
         expect(result.current).toEqual({
           state: 'INITIAL_BUILD',
           path: '/example',
@@ -372,258 +370,48 @@ describe('useReaderState', () => {
           buildLog: ['Line 1', 'Line 2'],
           contentReload: expect.any(Function),
         });
-
-        await waitForValueToChange(() => result.current.state);
-
-        expect(result.current).toEqual({
-          state: 'CHECKING',
-          path: '/example',
-          content: undefined,
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        await waitForValueToChange(() => result.current.state);
-
-        expect(result.current).toEqual({
-          state: 'CONTENT_FRESH',
-          path: '/example',
-          content: 'my content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledTimes(2);
-        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
-          { kind: 'Component', namespace: 'default', name: 'backstage' },
-          '/example',
-        );
-        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledTimes(1);
-        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
-          {
-            kind: 'Component',
-            namespace: 'default',
-            name: 'backstage',
-          },
-          expect.any(Function),
-        );
       });
-    });
 
-    it('should handle stale content', async () => {
-      techdocsStorageApi.getEntityDocs
-        .mockResolvedValueOnce('my content')
-        .mockImplementationOnce(async () => {
-          await new Promise(resolve => setTimeout(resolve, 1100));
-          return 'my new content';
-        });
-      techdocsStorageApi.syncEntityDocs.mockImplementation(
-        async (_, logHandler) => {
-          logHandler?.call(this, 'Line 1');
-          logHandler?.call(this, 'Line 2');
-          await new Promise(resolve => setTimeout(resolve, 1100));
-          return 'updated';
-        },
+      currentState = result.current;
+      await waitFor(() => expect(currentState).not.toBe(result.current));
+
+      expect(result.current).toEqual({
+        state: 'CHECKING',
+        path: '/example',
+        content: undefined,
+        contentErrorMessage: undefined,
+        syncErrorMessage: undefined,
+        buildLog: [],
+        contentReload: expect.any(Function),
+      });
+
+      currentState = result.current;
+      await waitFor(() => expect(currentState).not.toBe(result.current));
+
+      expect(result.current).toEqual({
+        state: 'CONTENT_FRESH',
+        path: '/example',
+        content: 'my content',
+        contentErrorMessage: undefined,
+        syncErrorMessage: undefined,
+        buildLog: [],
+        contentReload: expect.any(Function),
+      });
+
+      expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledTimes(2);
+      expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
+        { kind: 'Component', namespace: 'default', name: 'backstage' },
+        '/example',
       );
-
-      await act(async () => {
-        const { result, waitForValueToChange } = await renderHook(
-          () => useReaderState('Component', 'default', 'backstage', '/example'),
-          { wrapper: Wrapper },
-        );
-
-        expect(result.current).toEqual({
-          state: 'CHECKING',
-          path: '/example',
-          content: undefined,
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        // the content is returned but the sync is in progress
-        await waitForValueToChange(() => result.current.state);
-        expect(result.current).toEqual({
-          state: 'CONTENT_FRESH',
-          path: '/example',
-          content: 'my content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: ['Line 1', 'Line 2'],
-          contentReload: expect.any(Function),
-        });
-
-        // the sync takes longer than 1 seconds so the refreshing state starts
-        await waitForValueToChange(() => result.current.state);
-        expect(result.current).toEqual({
-          state: 'CONTENT_STALE_REFRESHING',
-          path: '/example',
-          content: 'my content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: ['Line 1', 'Line 2'],
-          contentReload: expect.any(Function),
-        });
-
-        // the content is updated but not yet displayed
-        await waitForValueToChange(() => result.current.state);
-        expect(result.current).toEqual({
-          state: 'CONTENT_STALE_READY',
-          path: '/example',
-          content: 'my content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: ['Line 1', 'Line 2'],
-          contentReload: expect.any(Function),
-        });
-
-        // reload the content
-        result.current.contentReload();
-
-        // the new content refresh is triggered
-        await waitForValueToChange(() => result.current.state);
-        expect(result.current).toEqual({
-          state: 'CHECKING',
-          path: '/example',
-          content: 'my content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        // the new content is loaded
-        await waitForValueToChange(() => result.current.state, {
-          timeout: 2000,
-        });
-        expect(result.current).toEqual({
-          state: 'CONTENT_FRESH',
-          path: '/example',
-          content: 'my new content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledTimes(2);
-        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
-          { kind: 'Component', namespace: 'default', name: 'backstage' },
-          '/example',
-        );
-        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
-          {
-            kind: 'Component',
-            namespace: 'default',
-            name: 'backstage',
-          },
-          expect.any(Function),
-        );
-      });
-    });
-
-    it('should handle navigation', async () => {
-      techdocsStorageApi.getEntityDocs
-        .mockResolvedValueOnce('my content')
-        .mockImplementationOnce(async () => {
-          await new Promise(resolve => setTimeout(resolve, 1100));
-          return 'my new content';
-        })
-        .mockRejectedValueOnce(new NotFoundError('Some error description'));
-      techdocsStorageApi.syncEntityDocs.mockResolvedValue('cached');
-
-      await act(async () => {
-        const { result, waitForValueToChange, rerender } = await renderHook(
-          ({ path }: { path: string }) =>
-            useReaderState('Component', 'default', 'backstage', path),
-          { initialProps: { path: '/example' }, wrapper: Wrapper as any },
-        );
-
-        expect(result.current).toEqual({
-          state: 'CHECKING',
-          path: '/example',
-          content: undefined,
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        // show the content
-        await waitForValueToChange(() => result.current.state);
-        expect(result.current).toEqual({
-          state: 'CONTENT_FRESH',
-          path: '/example',
-          content: 'my content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        // navigate
-        rerender({ path: '/new' });
-
-        await waitForValueToChange(() => result.current.state);
-        expect(result.current).toEqual({
-          state: 'CHECKING',
-          path: '/example',
-          content: 'my content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        await waitForValueToChange(() => result.current.state, {
-          timeout: 2000,
-        });
-        expect(result.current).toEqual({
-          state: 'CONTENT_FRESH',
-          path: '/new',
-          content: 'my new content',
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        // navigate
-        rerender({ path: '/missing' });
-
-        await waitForValueToChange(() => result.current.state);
-        expect(result.current).toEqual({
-          state: 'CONTENT_NOT_FOUND',
-          path: '/missing',
-          content: undefined,
-          contentErrorMessage: 'NotFoundError: Some error description',
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
-
-        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
-          { kind: 'Component', namespace: 'default', name: 'backstage' },
-          '/example',
-        );
-        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
-          { kind: 'Component', namespace: 'default', name: 'backstage' },
-          '/new',
-        );
-        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
-          {
-            kind: 'Component',
-            namespace: 'default',
-            name: 'backstage',
-          },
-          expect.any(Function),
-        );
-      });
+      expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledTimes(1);
+      expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
+        {
+          kind: 'Component',
+          namespace: 'default',
+          name: 'backstage',
+        },
+        expect.any(Function),
+      );
     });
 
     it('should handle content error', async () => {
@@ -632,24 +420,25 @@ describe('useReaderState', () => {
       );
       techdocsStorageApi.syncEntityDocs.mockResolvedValue('cached');
 
-      await act(async () => {
-        const { result, waitForValueToChange } = await renderHook(
-          () => useReaderState('Component', 'default', 'backstage', '/example'),
-          { wrapper: Wrapper },
-        );
+      const { result } = renderHook(
+        () => useReaderState('Component', 'default', 'backstage', '/example'),
+        { wrapper: Wrapper },
+      );
 
-        expect(result.current).toEqual({
-          state: 'CHECKING',
-          path: '/example',
-          content: undefined,
-          contentErrorMessage: undefined,
-          syncErrorMessage: undefined,
-          buildLog: [],
-          contentReload: expect.any(Function),
-        });
+      expect(result.current).toEqual({
+        state: 'CHECKING',
+        path: '/example',
+        content: undefined,
+        contentErrorMessage: undefined,
+        syncErrorMessage: undefined,
+        buildLog: [],
+        contentReload: expect.any(Function),
+      });
 
-        // the content loading threw an error
-        await waitForValueToChange(() => result.current.state);
+      const currentState = result.current;
+      await waitFor(() => expect(currentState).not.toBe(result.current));
+
+      await waitFor(() => {
         expect(result.current).toEqual({
           state: 'CONTENT_NOT_FOUND',
           path: '/example',

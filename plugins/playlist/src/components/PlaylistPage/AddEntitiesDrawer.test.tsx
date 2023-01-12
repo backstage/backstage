@@ -22,7 +22,6 @@ import {
 import { SearchApi, searchApiRef } from '@backstage/plugin-search-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, getByText } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
 import React from 'react';
 
 import { AddEntitiesDrawer } from './AddEntitiesDrawer';
@@ -150,9 +149,7 @@ describe('AddEntitiesDrawer', () => {
   it('should add entities correctly', async () => {
     const rendered = await render();
 
-    act(() => {
-      fireEvent.click(rendered.getAllByTestId('entity-drawer-add-button')[1]);
-    });
+    fireEvent.click(rendered.getAllByTestId('entity-drawer-add-button')[1]);
 
     expect(mockOnAdd).toHaveBeenCalledWith('component:foo/test-ent2');
   });

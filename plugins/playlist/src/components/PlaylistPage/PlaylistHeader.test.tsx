@@ -27,8 +27,7 @@ import {
 import { permissions, Playlist } from '@backstage/plugin-playlist-common';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Button } from '@material-ui/core';
-import { fireEvent, waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
+import { fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';
@@ -127,9 +126,7 @@ describe('PlaylistHeader', () => {
   it('has edit and delete options enabled if authorized', async () => {
     const rendered = await render();
 
-    act(() => {
-      fireEvent.click(rendered.getByTestId('header-action-menu'));
-    });
+    fireEvent.click(rendered.getByTestId('header-action-menu'));
 
     const actionItems = rendered.getAllByTestId('header-action-item');
     // .toBeDisabled() matcher doesn't seem to work with disabled header action items
@@ -191,14 +188,12 @@ describe('PlaylistHeader', () => {
 
     expect(rendered.queryByTestId('mock-playlist-edit-dialog')).toBeNull();
 
-    act(() => {
-      fireEvent.click(rendered.getByTestId('header-action-menu'));
-      fireEvent.click(
-        rendered
-          .getAllByTestId('header-action-item')
-          .find(e => e.innerHTML.includes('Edit Details'))!,
-      );
-    });
+    fireEvent.click(rendered.getByTestId('header-action-menu'));
+    fireEvent.click(
+      rendered
+        .getAllByTestId('header-action-item')
+        .find(e => e.innerHTML.includes('Edit Details'))!,
+    );
 
     expect(
       rendered.getByTestId('mock-playlist-edit-dialog'),
@@ -223,15 +218,13 @@ describe('PlaylistHeader', () => {
   it('should handle deleting a playlist', async () => {
     const rendered = await render();
 
-    act(() => {
-      fireEvent.click(rendered.getByTestId('header-action-menu'));
-      fireEvent.click(
-        rendered
-          .getAllByTestId('header-action-item')
-          .find(e => e.innerHTML.includes('Delete Playlist'))!,
-      );
-      fireEvent.click(rendered.getByTestId('delete-playlist-dialog-button'));
-    });
+    fireEvent.click(rendered.getByTestId('header-action-menu'));
+    fireEvent.click(
+      rendered
+        .getAllByTestId('header-action-item')
+        .find(e => e.innerHTML.includes('Delete Playlist'))!,
+    );
+    fireEvent.click(rendered.getByTestId('delete-playlist-dialog-button'));
 
     await waitFor(() => {
       expect(playlistApi.deletePlaylist).toHaveBeenCalledWith('id1');

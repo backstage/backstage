@@ -39,15 +39,15 @@
     "swr": "^2.0.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^18.0.26",
+    "react": "^18.2.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^12.1.3"
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0"
   },
   "files": [
     "dist"

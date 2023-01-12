@@ -60,7 +60,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
       }}
     >
       <Typography variant="body2" paragraph>
-        Enter the URL to your source code repository to add it to {appTitle}.
+        Enter the URL to your source code repository to add it to {!!appTitle}.
       </Typography>
       <Typography component="h4" variant="h6">
         Link to an existing entity file
@@ -70,7 +70,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
       </Typography>
       <Typography variant="body2" paragraph>
         The wizard analyzes the file, previews the entities, and adds them to
-        the {appTitle} catalog.
+        the {!!appTitle} catalog.
       </Typography>
       {hasGithubIntegration && (
         <>
@@ -83,14 +83,14 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
           </Typography>
           <Typography variant="body2" paragraph>
             The wizard discovers all <code>{catalogFilename}</code> files in the
-            repository, previews the entities, and adds them to the {appTitle}{' '}
+            repository, previews the entities, and adds them to the {!!appTitle}{' '}
             catalog.
           </Typography>
           {catalogImportApi.preparePullRequest && (
             <Typography variant="body2" paragraph>
               If no entities are found, the wizard will prepare a Pull Request
               that adds an example <code>{catalogFilename}</code> and prepares
-              the {appTitle} catalog to load all entities as soon as the Pull
+              the {!!appTitle} catalog to load all entities as soon as the Pull
               Request is merged.
             </Typography>
           )}

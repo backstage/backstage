@@ -17,10 +17,10 @@
 import { LocalStorageFeatureFlags, NoOpAnalyticsApi } from '../apis';
 import {
   MockAnalyticsApi,
+  renderInTestApp,
   renderWithEffects,
-  withLogCollector,
 } from '@backstage/test-utils';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import React, { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
@@ -543,7 +543,7 @@ describe('Integration Test', () => {
     expect(capturedEvents).toHaveLength(2);
   });
 
-  it('should throw some error when the route has duplicate params', () => {
+  it('should throw some error when the route has duplicate params', async () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
@@ -562,31 +562,24 @@ describe('Integration Test', () => {
 
     const Provider = app.getProvider();
     const Router = app.getRouter();
-    const { error: errorLogs } = withLogCollector(() => {
-      expect(() =>
-        render(
-          <Provider>
-            <Router>
-              <Routes>
-                <Route path="/test/:thing" element={<ExposedComponent />}>
-                  <Route path="/some/:thing" element={<HiddenComponent />} />
-                </Route>
-              </Routes>
-            </Router>
-          </Provider>,
-        ),
-      ).toThrow(
-        'Parameter :thing is duplicated in path test/:thing/some/:thing',
-      );
-    });
-    expect(errorLogs).toEqual([
-      expect.stringContaining(
-        'The above error occurred in the <Provider> component',
+    await expect(() =>
+      renderInTestApp(
+        <Provider>
+          <Router>
+            <Routes>
+              <Route path="/test/:thing" element={<ExposedComponent />}>
+                <Route path="/some/:thing" element={<HiddenComponent />} />
+              </Route>
+            </Routes>
+          </Router>
+        </Provider>,
       ),
-    ]);
+    ).rejects.toThrow(
+      'Parameter :thing is duplicated in path test/:thing/some/:thing',
+    );
   });
 
-  it('should throw an error when required external plugin routes are not bound', () => {
+  it('should throw an error when required external plugin routes are not bound', async () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
@@ -599,26 +592,19 @@ describe('Integration Test', () => {
 
     const Provider = app.getProvider();
     const Router = app.getRouter();
-    const { error: errorLogs } = withLogCollector(() => {
-      expect(() =>
-        render(
-          <Provider>
-            <Router>
-              <Routes>
-                <Route path="/test/:thing" element={<ExposedComponent />} />
-              </Routes>
-            </Router>
-          </Provider>,
-        ),
-      ).toThrow(
-        /^External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route/,
-      );
-    });
-    expect(errorLogs).toEqual([
-      expect.stringContaining(
-        'The above error occurred in the <Provider> component',
+    await expect(() =>
+      renderInTestApp(
+        <Provider>
+          <Router>
+            <Routes>
+              <Route path="/test/:thing" element={<ExposedComponent />} />
+            </Routes>
+          </Router>
+        </Provider>,
       ),
-    ]);
+    ).rejects.toThrow(
+      /^External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route/,
+    );
   });
 
   describe('relative url resolvers', () => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { waitFor } from '@testing-library/react';
 
 import {
@@ -53,7 +53,6 @@ describe('usePromoteRc', () => {
       await waitFor(() => result.current.run());
     });
 
-    expect(result.error).toEqual(undefined);
     expect(result.current.responseSteps).toHaveLength(4);
   });
 

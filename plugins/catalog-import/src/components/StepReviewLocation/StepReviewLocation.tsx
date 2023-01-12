@@ -126,7 +126,7 @@ export const StepReviewLocation = ({
           </Typography>
 
           <Typography paragraph>
-            You can already import the location and {appTitle} will fetch the
+            You can already import the location and {!!appTitle} will fetch the
             entities as soon as the Pull Request is merged.
           </Typography>
         </>
