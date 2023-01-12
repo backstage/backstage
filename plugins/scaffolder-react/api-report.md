@@ -8,6 +8,7 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { Dispatch } from 'react';
+import type { ErrorTransformer } from '@rjsf/utils';
 import { Extension } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldProps as FieldProps_2 } from '@rjsf/utils';
@@ -78,6 +79,9 @@ export type CustomFieldValidator<TFieldReturnValue> = (
     apiHolder: ApiHolder;
   },
 ) => void | Promise<void>;
+
+// @alpha (undocumented)
+export const EmbeddableWorkflow: (props: WorkflowProps) => JSX.Element;
 
 // @alpha
 export const extractSchemaFromStep: (inputStep: JsonObject) => {
@@ -186,10 +190,12 @@ export interface ParsedTemplateSchema {
 export const ReviewState: (props: ReviewStateProps) => JSX.Element;
 
 // @alpha
-export type ReviewStateProps = {
-  schemas: ParsedTemplateSchema[];
+export interface ReviewStateProps {
+  // (undocumented)
   formState: JsonObject;
-};
+  // (undocumented)
+  schemas: ParsedTemplateSchema[];
+}
 
 // @public
 export interface ScaffolderApi {
@@ -342,7 +348,12 @@ export const SecretsContextProvider: ({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @alpha
-export const Stepper: (props: StepperProps) => JSX.Element;
+export const Stepper: ({
+  ReviewStateWrapper,
+  createButtonText,
+  reviewButtonText,
+  ...props
+}: StepperProps) => JSX.Element;
 
 // @alpha
 export type StepperProps = {
@@ -352,6 +363,9 @@ export type StepperProps = {
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
+  createButtonText?: string;
+  reviewButtonText?: string;
 };
 
 // @alpha
@@ -418,6 +432,13 @@ export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
 
+// @alpha (undocumented)
+export const useTemplateParameterSchema: (templateRef: string) => {
+  manifest: TemplateParameterSchema | undefined;
+  loading: boolean;
+  error: Error | undefined;
+};
+
 // @alpha
 export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
   steps: ParsedTemplateSchema[];
@@ -425,6 +446,39 @@ export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
+
+// @alpha (undocumented)
+export const Workflow: ({
+  ReviewStateWrapper,
+  FormProps,
+  ...props
+}: WorkflowProps) => JSX.Element | null;
+
+// @alpha (undocumented)
+export interface WorkflowProps {
+  // (undocumented)
+  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  FormProps?: FormProps;
+  // (undocumented)
+  initialFormState?: Record<string, JsonValue>;
+  // (undocumented)
+  namespace: string;
+  // (undocumented)
+  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  // (undocumented)
+  onError(error: Error | undefined): JSX.Element | null;
+  // (undocumented)
+  ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
+  // (undocumented)
+  templateName: string;
+  // (undocumented)
+  title?: string;
+  // (undocumented)
+  transformErrors?: ErrorTransformer;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

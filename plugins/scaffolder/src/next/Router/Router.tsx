@@ -52,9 +52,7 @@ export type NextRouterProps = {
  */
 export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   const { components: { TemplateCardComponent } = {} } = props;
-
   const outlet = useOutlet() || props.children;
-
   const customFieldExtensions =
     useCustomFieldExtensions<NextFieldExtensionOptions>(outlet);
   const fieldExtensions = [

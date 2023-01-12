@@ -22,7 +22,8 @@ import { FieldExtensionComponentProps as FieldExtensionComponentProps_2 } from '
 import { FieldExtensionOptions as FieldExtensionOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/core';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
-import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
+import type { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
+import type { FormProps as FormProps_4 } from '@rjsf/core-v5';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-scaffolder-react';
@@ -31,11 +32,7 @@ import { Observable } from '@backstage/types';
 import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
-<<<<<<< HEAD
 import { ReactNode } from 'react';
-=======
-import type { ReactNode } from 'react';
->>>>>>> 1a12ad8e8d (fix api-reports)
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScaffolderApi as ScaffolderApi_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderDryRunOptions as ScaffolderDryRunOptions_2 } from '@backstage/plugin-scaffolder-react';
@@ -73,45 +70,7 @@ export type CustomFieldValidator<TReturnFieldData> =
   CustomFieldValidator_2<TReturnFieldData>;
 
 // @public
-<<<<<<< HEAD
 export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
-=======
-export type CustomFieldValidator<TFieldReturnValue> = (
-  data: TFieldReturnValue,
-  field: FieldValidation,
-  context: {
-    apiHolder: ApiHolder;
-  },
-) => void | Promise<void>;
-
-// @alpha
-export function EmbeddedScaffolderWorkflow({
-  namespace,
-  templateName,
-  customExtensionsElement,
-  frontPage,
-  finishPage,
-  onComplete,
-  onError,
-  title,
-  description,
-  ReviewStateWrapper,
-  initialFormState,
-}: EmbeddedScaffolderWorkflowProps): JSX.Element;
-
-// @alpha (undocumented)
-export type EmbeddedScaffolderWorkflowProps = Omit<
-  WorkflowProps,
-  'customFieldExtensions' | 'onComplete'
-> & {
-  customExtensionsElement?: React_2.ReactNode;
-  frontPage: ReactNode;
-  finishPage: ReactNode;
-} & Partial<Pick<WorkflowProps, 'onComplete'>>;
-
-// @public
-export const EntityNamePickerFieldExtension: FieldExtensionComponent<
->>>>>>> b2747a3f35 (api-reports)
   string,
   {}
 >;
@@ -199,7 +158,7 @@ export interface FieldSchema<TReturn, TUiOptions> {
 
 // @alpha @deprecated
 export type FormProps = Pick<
-  FormProps_3,
+  FormProps_4,
   'transformErrors' | 'noHtml5Validate'
 >;
 
@@ -249,7 +208,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React_2.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
-  FormProps?: FormProps;
+  FormProps?: FormProps_3;
 };
 
 // @alpha
@@ -324,20 +283,6 @@ export const OwnerPickerFieldSchema: FieldSchema<
 // @public
 export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
 
-// @alpha (undocumented)
-export interface ParsedTemplateSchema {
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  mergedSchema: JsonObject;
-  // (undocumented)
-  schema: JsonObject;
-  // (undocumented)
-  title: string;
-  // (undocumented)
-  uiSchema: UiSchema;
-}
-
 // @public
 export const repoPickerValidation: (
   value: string,
@@ -402,14 +347,6 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
 // @public
 export type RepoUrlPickerUiOptions =
   typeof RepoUrlPickerFieldSchema.uiOptionsType;
-
-// @alpha (undocumented)
-export interface ReviewStateProps {
-  // (undocumented)
-  formState: JsonObject;
-  // (undocumented)
-  schemas: ParsedTemplateSchema[];
-}
 
 // @public
 export type ReviewStepProps = {
@@ -590,43 +527,6 @@ export type TemplateParameterSchema = TemplateParameterSchema_2;
 // @public
 export const TemplateTypePicker: () => JSX.Element | null;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
-=======
-// @alpha
-export const useGetCustomFields: (
-  element: React_2.ReactNode,
-) => NextFieldExtensionOptions<unknown, unknown>[];
-
-=======
->>>>>>> 1a12ad8e8d (fix api-reports)
-// @public
-export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
-
-// @alpha (undocumented)
-export interface WorkflowProps {
-  // (undocumented)
-  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  initialFormState?: Record<string, JsonValue>;
-  // (undocumented)
-  namespace: string;
-  // (undocumented)
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-  // (undocumented)
-  onError(error: Error | undefined): JSX.Element | null;
-  // (undocumented)
-  ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
-  // (undocumented)
-  templateName: string;
-  // (undocumented)
-  title?: string;
-  // (undocumented)
-  transformErrors?: ErrorTransformer;
-}
->>>>>>> b2747a3f35 (api-reports)
 ```

@@ -49,5 +49,7 @@ export {
   nextRouteRef,
   nextScaffolderTaskRouteRef,
   nextSelectedTemplateRouteRef,
+  type TemplateGroupFilter,
+  type NextRouterProps,
   type FormProps,
 } from './next';
