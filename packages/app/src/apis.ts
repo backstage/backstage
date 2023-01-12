@@ -31,11 +31,21 @@ import {
   AnyApiFactory,
   configApiRef,
   createApiFactory,
+  discoveryApiRef,
   errorApiRef,
   githubAuthApiRef,
 } from '@backstage/core-plugin-api';
+import { UrlPatternDiscovery } from './UrlPatternDiscovery';
 
 export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: discoveryApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) =>
+      UrlPatternDiscovery.compile(
+        `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
+      ),
+  }),
   createApiFactory({
     api: scmIntegrationsApiRef,
     deps: { configApi: configApiRef },
