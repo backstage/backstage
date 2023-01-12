@@ -16,9 +16,12 @@
 
 import { createServiceFactory, createServiceRef } from './types';
 
+const ref = createServiceRef<string>({ id: 'x' });
+const rootDep = createServiceRef<number>({ id: 'y', scope: 'root' });
+const pluginDep = createServiceRef<boolean>({ id: 'z' });
+
 describe('createServiceFactory', () => {
   it('should create a meta factory with no options', () => {
-    const ref = createServiceRef<string>({ id: 'x' });
     const metaFactory = createServiceFactory({
       service: ref,
       deps: {},
@@ -37,12 +40,12 @@ describe('createServiceFactory', () => {
     metaFactory({ x: 1 });
     // @ts-expect-error
     metaFactory(null);
+    // @ts-expect-error
     metaFactory(undefined);
     metaFactory();
   });
 
   it('should create a meta factory with optional options', () => {
-    const ref = createServiceRef<string>({ id: 'x' });
     const metaFactory = createServiceFactory((_opts?: { x: number }) => ({
       service: ref,
       deps: {},
@@ -66,7 +69,6 @@ describe('createServiceFactory', () => {
   });
 
   it('should create a meta factory with required options', () => {
-    const ref = createServiceRef<string>({ id: 'x' });
     const metaFactory = createServiceFactory((_opts: { x: number }) => ({
       service: ref,
       deps: {},
@@ -95,7 +97,6 @@ describe('createServiceFactory', () => {
     interface TestOptions {
       x: number;
     }
-    const ref = createServiceRef<string>({ id: 'x' });
     const metaFactory = createServiceFactory((_opts?: TestOptions) => ({
       service: ref,
       deps: {},
@@ -122,7 +123,6 @@ describe('createServiceFactory', () => {
     interface TestOptions {
       x: number;
     }
-    const ref = createServiceRef<string>({ id: 'x' });
     const metaFactory = createServiceFactory((_opts: TestOptions) => ({
       service: ref,
       deps: {},
@@ -147,8 +147,91 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
+  it('should create factory with required options and dependencies', () => {
+    interface TestOptions {
+      x: number;
+    }
+
+    function unused(..._any: any[]) {}
+
+    const metaFactory = createServiceFactory((_opts: TestOptions) => ({
+      service: ref,
+      deps: {
+        root: rootDep,
+        plugin: pluginDep,
+      },
+      async factory({ root }) {
+        const root1: number = root;
+        // @ts-expect-error
+        const root2: string = root;
+        return async ({ plugin }) => {
+          const plugin3: boolean = plugin;
+          // @ts-expect-error
+          const plugin4: number = plugin;
+          unused(root1, root2, plugin3, plugin4);
+          return 'x';
+        };
+      },
+    }));
+    expect(metaFactory).toEqual(expect.any(Function));
+
+    // @ts-expect-error
+    metaFactory('string');
+    // @ts-expect-error
+    metaFactory({});
+    metaFactory({ x: 1 });
+    // @ts-expect-error
+    metaFactory({ x: 1, y: 2 });
+    // @ts-expect-error
+    metaFactory(null);
+    // @ts-expect-error
+    metaFactory(undefined);
+    // @ts-expect-error
+    metaFactory();
+  });
+
+  it('should create factory with optional options and dependencies', () => {
+    interface TestOptions {
+      x: number;
+    }
+
+    function unused(..._any: any[]) {}
+
+    const metaFactory = createServiceFactory((_opts?: TestOptions) => ({
+      service: ref,
+      deps: {
+        root: rootDep,
+        plugin: pluginDep,
+      },
+      async factory({ root }) {
+        const root1: number = root;
+        // @ts-expect-error
+        const root2: string = root;
+        return async ({ plugin }) => {
+          const plugin3: boolean = plugin;
+          // @ts-expect-error
+          const plugin4: number = plugin;
+          unused(root1, root2, plugin3, plugin4);
+          return 'x';
+        };
+      },
+    }));
+    expect(metaFactory).toEqual(expect.any(Function));
+
+    // @ts-expect-error
+    metaFactory('string');
+    // @ts-expect-error
+    metaFactory({});
+    metaFactory({ x: 1 });
+    // @ts-expect-error
+    metaFactory({ x: 1, y: 2 });
+    // @ts-expect-error
+    metaFactory(null);
+    metaFactory(undefined);
+    metaFactory();
+  });
+
   it('should only allow objects as options', () => {
-    const ref = createServiceRef<string>({ id: 'x' });
     // @ts-expect-error
     const metaFactory = createServiceFactory((_opts: string) => ({
       service: ref,

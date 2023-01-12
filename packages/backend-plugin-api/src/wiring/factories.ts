@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  FactoryFunctionWithOptions,
-  MaybeOptions,
-  FactoryFunctionConfig,
-} from '../types';
+import { FactoryFunction, FactoryFunctionConfig } from '../types';
 import {
   BackendRegistrationPoints,
   BackendFeature,
@@ -53,11 +49,11 @@ export interface BackendPluginConfig {
 }
 
 /** @public */
-export function createBackendPlugin<TOptions extends MaybeOptions = undefined>(
+export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: FactoryFunctionConfig<BackendPluginConfig, TOptions>,
-): FactoryFunctionWithOptions<BackendFeature, TOptions> {
+): FactoryFunction<BackendFeature, TOptions> {
   if (typeof config === 'function') {
-    return config as FactoryFunctionWithOptions<BackendFeature, TOptions>;
+    return config as FactoryFunction<BackendFeature, TOptions>;
   }
 
   return () => config;
@@ -86,12 +82,12 @@ export interface BackendModuleConfig {
  *
  * The `pluginId` should exactly match the `id` of the plugin that the module extends.
  */
-export function createBackendModule<TOptions extends MaybeOptions = undefined>(
+export function createBackendModule<TOptions extends [options?: object] = []>(
   config: FactoryFunctionConfig<BackendModuleConfig, TOptions>,
-): FactoryFunctionWithOptions<BackendFeature, TOptions> {
+): FactoryFunction<BackendFeature, TOptions> {
   if (typeof config === 'function') {
-    return (options?: TOptions) => {
-      const c = config(options!);
+    return (...options: TOptions) => {
+      const c = config(...options);
       return {
         id: `${c.pluginId}.${c.moduleId}`,
         register: c.register,

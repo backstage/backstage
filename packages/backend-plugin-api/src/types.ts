@@ -15,26 +15,17 @@
  */
 
 /**
- * Base type for options objects that aren't required.
- *
  * @ignore
  */
-export type MaybeOptions = object | undefined;
-
-/**
- * @ignore
- */
-export type FactoryFunctionConfig<TConfig, TOptions> =
+export type FactoryFunctionConfig<TConfig, TParams extends unknown[]> =
   | TConfig
-  | ((options: TOptions) => TConfig)
-  | (() => TConfig);
+  | ((...params: TParams) => TConfig);
 
 /**
  * Helper type that makes the options argument optional if options are not required.
  *
  * @ignore
  */
-export type FactoryFunctionWithOptions<TResult, TOptions> =
-  undefined extends TOptions
-    ? (options?: TOptions) => TResult
-    : (options: TOptions) => TResult;
+export type FactoryFunction<TResult, TParams extends unknown[]> = (
+  ...params: TParams
+) => TResult;
