@@ -81,8 +81,8 @@ export class WrapperProviders {
     ).createRouter();
   }
 
-  private async startProvider<TCursor, TContext, TInput>(
-    provider: IncrementalEntityProvider<TCursor, TContext, TInput>,
+  private async startProvider<TCursor, TContext>(
+    provider: IncrementalEntityProvider<TCursor, TContext>,
     providerOptions: IncrementalEntityProviderOptions,
     connection: EntityProviderConnection,
   ) {

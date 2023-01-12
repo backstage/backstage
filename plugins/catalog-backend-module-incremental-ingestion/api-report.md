@@ -18,23 +18,23 @@ import { Router } from 'express';
 import type { UrlReader } from '@backstage/backend-common';
 
 // @public
-export type EntityIteratorResult =
+export type EntityIteratorResult<T> =
   | {
       done: false;
       entities: DeferredEntity[];
-      cursor: unknown;
+      cursor: T;
     }
   | {
       done: true;
       entities?: DeferredEntity[];
-      cursor?: unknown;
+      cursor?: T;
     };
 
 // @public (undocumented)
 export class IncrementalCatalogBuilder {
   // (undocumented)
-  addIncrementalEntityProvider(
-    provider: IncrementalEntityProvider,
+  addIncrementalEntityProvider<TCursor, TContext>(
+    provider: IncrementalEntityProvider<TCursor, TContext>,
     options: IncrementalEntityProviderOptions,
   ): void;
   // (undocumented)
@@ -48,8 +48,8 @@ export class IncrementalCatalogBuilder {
 }
 
 // @public
-export interface IncrementalEntityProvider {
-  around(burst: (context: unknown) => Promise<void>): Promise<void>;
+export interface IncrementalEntityProvider<TCursor, TContext> {
+  around(burst: (context: TContext) => Promise<void>): Promise<void>;
   deltaMapper?: (payload: unknown) => {
     delta:
       | {
@@ -61,7 +61,10 @@ export interface IncrementalEntityProvider {
       | undefined;
   };
   getProviderName(): string;
-  next(context: unknown, cursor?: unknown): Promise<EntityIteratorResult>;
+  next(
+    context: TContext,
+    cursor?: TCursor,
+  ): Promise<EntityIteratorResult<TCursor>>;
 }
 
 // @public (undocumented)
@@ -77,7 +80,7 @@ export interface IncrementalEntityProviderOptions {
 // @alpha
 export const incrementalIngestionEntityProviderCatalogModule: (options: {
   providers: {
-    provider: IncrementalEntityProvider;
+    provider: IncrementalEntityProvider<unknown, unknown>;
     options: IncrementalEntityProviderOptions;
   }[];
 }) => BackendFeature;

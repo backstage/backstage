@@ -68,8 +68,8 @@ export class IncrementalCatalogBuilder {
     return { incrementalAdminRouter };
   }
 
-  addIncrementalEntityProvider<TCursor, TContext, TInput>(
-    provider: IncrementalEntityProvider<TCursor, TContext, TInput>,
+  addIncrementalEntityProvider<TCursor, TContext>(
+    provider: IncrementalEntityProvider<TCursor, TContext>,
     options: IncrementalEntityProviderOptions,
   ) {
     const { burstInterval, burstLength, restLength } = options;

@@ -23,7 +23,7 @@ import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
-export class IncrementalIngestionEngine<TInput>
+export class IncrementalIngestionEngine
   implements IterationEngine, EventSubscriber
 {
   private readonly restLength: Duration;
@@ -32,7 +32,7 @@ export class IncrementalIngestionEngine<TInput>
 
   private manager: IncrementalIngestionDatabaseManager;
 
-  constructor(private options: IterationEngineOptions<TInput>) {
+  constructor(private options: IterationEngineOptions) {
     this.manager = options.manager;
     this.restLength = Duration.fromObject(options.restLength);
     this.backoff = options.backoff ?? [
@@ -347,13 +347,11 @@ export class IncrementalIngestionEngine<TInput>
       `incremental-engine: Received ${this.providerEventTopic} event`,
     );
 
-    const payload = eventPayload as TInput;
-
     if (!provider.deltaMapper) {
       return;
     }
 
-    const update = provider.deltaMapper(payload);
+    const update = provider.deltaMapper(eventPayload);
 
     if (update.delta) {
       if (update.delta.added.length > 0) {

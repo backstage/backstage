@@ -36,7 +36,7 @@ import {
   incrementalIngestionEntityProviderCatalogModule,
 } from '.';
 
-const provider: IncrementalEntityProvider<number, {}, unknown> = {
+const provider: IncrementalEntityProvider<number, {}> = {
   getProviderName: () => 'test-provider',
   around: burst => burst(0),
   next: async (_context, cursor) => {
