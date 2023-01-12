@@ -41,7 +41,7 @@ describe('WrapperProviders', () => {
     async databaseId => {
       const client = await databases.init(databaseId);
 
-      const provider1: IncrementalEntityProvider = {
+      const provider1: IncrementalEntityProvider<number, {}> = {
         getProviderName: () => 'provider1',
         around: burst => burst(0),
         next: async (_context, cursor) => {
@@ -51,7 +51,7 @@ describe('WrapperProviders', () => {
         },
       };
 
-      const provider2: IncrementalEntityProvider = {
+      const provider2: IncrementalEntityProvider<number, {}> = {
         getProviderName: () => 'provider2',
         around: burst => burst(0),
         next: async (_context, cursor) => {

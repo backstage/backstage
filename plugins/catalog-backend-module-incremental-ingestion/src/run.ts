@@ -36,10 +36,10 @@ import {
   incrementalIngestionEntityProviderCatalogModule,
 } from '.';
 
-const provider: IncrementalEntityProvider = {
+const provider: IncrementalEntityProvider<number, {}, unknown> = {
   getProviderName: () => 'test-provider',
   around: burst => burst(0),
-  next: async (_context, cursor: number | undefined) => {
+  next: async (_context, cursor) => {
     await new Promise(resolve => setTimeout(resolve, 500));
     if (cursor === undefined || cursor < 3) {
       console.log(`### Returning batch #${cursor}`);

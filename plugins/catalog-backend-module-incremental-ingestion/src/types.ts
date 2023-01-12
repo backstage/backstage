@@ -46,7 +46,7 @@ import { IncrementalIngestionDatabaseManager } from './database/IncrementalInges
  *
  * @public
  */
-export interface IncrementalEntityProvider {
+export interface IncrementalEntityProvider<TCursor, TContext, TInput = null> {
   /**
    * This name must be unique between all of the entity providers
    * operating in the catalog.
@@ -62,7 +62,10 @@ export interface IncrementalEntityProvider {
    * @returns The entities to be ingested, as well as the cursor of
    * the next page after this one.
    */
-  next(context: unknown, cursor?: unknown): Promise<EntityIteratorResult>;
+  next(
+    context: TContext,
+    cursor?: TCursor,
+  ): Promise<EntityIteratorResult<TCursor>>;
 
   /**
    * Do any setup and teardown necessary in order to provide the
@@ -71,13 +74,13 @@ export interface IncrementalEntityProvider {
    *
    * @param burst - a function which performs a series of iterations
    */
-  around(burst: (context: unknown) => Promise<void>): Promise<void>;
+  around(burst: (context: TContext) => Promise<void>): Promise<void>;
 
   /**
    * If present, this method maps incoming payloads to apply updates
    * outside of the incremental ingestion schedule.
    */
-  deltaMapper?: (payload: unknown) => {
+  deltaMapper?: (payload: TInput) => {
     delta:
       | {
           added: DeferredEntity[];
@@ -93,16 +96,16 @@ export interface IncrementalEntityProvider {
  *
  * @public
  */
-export type EntityIteratorResult =
+export type EntityIteratorResult<T> =
   | {
       done: false;
       entities: DeferredEntity[];
-      cursor: unknown;
+      cursor: T;
     }
   | {
       done: true;
       entities?: DeferredEntity[];
-      cursor?: unknown;
+      cursor?: T;
     };
 
 /** @public */
@@ -164,11 +167,11 @@ export interface IterationEngine {
   taskFn: TaskFunction;
 }
 
-export interface IterationEngineOptions {
+export interface IterationEngineOptions<TInput> {
   logger: Logger;
   connection: EntityProviderConnection;
   manager: IncrementalIngestionDatabaseManager;
-  provider: IncrementalEntityProvider;
+  provider: IncrementalEntityProvider<unknown, unknown, TInput>;
   restLength: DurationObjectUnits;
   ready: Promise<void>;
   backoff?: IncrementalEntityProviderOptions['backoff'];
