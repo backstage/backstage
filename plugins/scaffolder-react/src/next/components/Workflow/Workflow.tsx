@@ -113,7 +113,7 @@ export const Workflow = ({
             extensions={props.customFieldExtensions}
             onComplete={props.onComplete}
             FormProps={FormProps}
-            initialFormState={props.initialFormState}
+            initialState={props.initialFormState}
             ReviewStateWrapper={ReviewStateWrapper}
           />
         </InfoCard>

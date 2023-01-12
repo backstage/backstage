@@ -61,8 +61,9 @@ export type StepperProps = {
   initialState?: Record<string, JsonValue>;
 
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-  initialFormState?: Record<string, JsonValue>;
   ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
+  createButtonText?: string;
+  reviewButtonText?: string;
 };
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -77,6 +78,8 @@ const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
 
 export const Stepper = ({
   ReviewStateWrapper = ReviewState,
+  createButtonText = 'Create',
+  reviewButtonText = 'Review',
   ...props
 }: StepperProps) => {
   const analytics = useAnalytics();
@@ -182,7 +185,7 @@ export const Stepper = ({
                 Back
               </Button>
               <Button variant="contained" color="primary" type="submit">
-                {activeStep === steps.length - 1 ? 'Review' : 'Next'}
+                {activeStep === steps.length - 1 ? reviewButtonText : 'Next'}
               </Button>
             </div>
           </Form>
@@ -211,7 +214,7 @@ export const Stepper = ({
                   );
                 }}
               >
-                Create
+                {createButtonText}
               </Button>
             </div>
           </>

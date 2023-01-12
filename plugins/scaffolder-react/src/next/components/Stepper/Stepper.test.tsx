@@ -352,4 +352,42 @@ describe('Stepper', () => {
     // flush promises
     return new Promise(process.nextTick);
   });
+
+  it('should override the Create and Review button text', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Custom Fields',
+      steps: [
+        {
+          title: 'Test',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    const { getByRole } = await renderInTestApp(
+      <Stepper
+        manifest={manifest}
+        onComplete={jest.fn()}
+        extensions={[]}
+        createButtonText="Make"
+        reviewButtonText="Inspect"
+      />,
+    );
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Inspect' }));
+    });
+
+    expect(getByRole('button', { name: 'Make' })).toBeInTheDocument();
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Make' }));
+    });
+  });
 });

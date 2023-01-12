@@ -26,7 +26,7 @@ import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 export interface ReviewStateProps {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
-};
+}
 
 /**
  * The component used by the {@link Stepper} to render the review step.
