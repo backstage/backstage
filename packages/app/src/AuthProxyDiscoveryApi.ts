@@ -32,7 +32,11 @@ export class AuthProxyDiscoveryApi implements IDiscoveryApi {
   }
 
   async getBaseUrl(pluginId: string) {
-    if (this.isAuthProxyingEnabled && this.authProxyUrl) {
+    if (
+      pluginId === 'auth' &&
+      this.isAuthProxyingEnabled &&
+      this.authProxyUrl
+    ) {
       return this.authProxyUrl;
     }
 
