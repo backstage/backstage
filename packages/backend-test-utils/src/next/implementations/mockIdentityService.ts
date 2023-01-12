@@ -38,7 +38,6 @@ class MockIdentityServiceImpl implements IdentityService {
   }
 }
 
-/** @public */
 export const mockIdentityFactory = createServiceFactory({
   service: coreServices.identity,
   deps: {},
