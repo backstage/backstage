@@ -53,7 +53,7 @@ export type EntityLifecyclePickerProps = {
 
 /** @public */
 export const EntityLifecyclePicker = (props: EntityLifecyclePickerProps) => {
-  const { initialFilter } = props;
+  const { initialFilter = [] } = props;
   const classes = useStyles();
   const {
     updateFilters,
@@ -70,7 +70,7 @@ export const EntityLifecyclePicker = (props: EntityLifecyclePickerProps) => {
   const [selectedLifecycles, setSelectedLifecycles] = useState(
     queryParamLifecycles.length
       ? queryParamLifecycles
-      : filters.lifecycles?.values ?? (initialFilter || []),
+      : filters.lifecycles?.values ?? initialFilter,
   );
 
   // Set selected lifecycles on query parameter updates; this happens at initial page load and from
