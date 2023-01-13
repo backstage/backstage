@@ -31,6 +31,6 @@ export const tokenManagerFactory = createServiceFactory({
     const tokenManager = ServerTokenManager.fromConfig(config, {
       logger,
     });
-    return async () => tokenManager;
+    return tokenManager;
   },
 });

@@ -34,17 +34,17 @@ export type IdentityFactoryOptions = {
 };
 
 /** @public */
-export const identityFactory = createServiceFactory({
-  service: coreServices.identity,
-  deps: {
-    config: coreServices.config,
-    discovery: coreServices.discovery,
-    tokenManager: coreServices.tokenManager,
-  },
+export const identityFactory = createServiceFactory(
+  (options?: IdentityFactoryOptions) => ({
+    service: coreServices.identity,
+    deps: {
+      config: coreServices.config,
+      discovery: coreServices.discovery,
+      tokenManager: coreServices.tokenManager,
+    },
 
-  async factory({}, options?: IdentityFactoryOptions) {
-    return async ({ discovery }) => {
+    async factory({ discovery }) {
       return DefaultIdentityClient.create({ discovery, ...options });
-    };
-  },
-});
+    },
+  }),
+);
