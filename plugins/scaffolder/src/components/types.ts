@@ -29,6 +29,7 @@ export type ReviewStepProps = {
   handleBack: () => void;
   handleReset: () => void;
   handleCreate: () => void;
+  actionButtonText?: string;
   steps: {
     uiSchema: UiSchema;
     mergedSchema: JsonObject;

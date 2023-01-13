@@ -91,6 +91,7 @@ export const ReviewStep = (props: ReviewStepProps) => {
     handleCreate,
     handleReset,
     steps,
+    actionButtonText,
   } = props;
   return (
     <Content>
@@ -113,7 +114,7 @@ export const ReviewStep = (props: ReviewStepProps) => {
           onClick={handleCreate}
           disabled={disableButtons}
         >
-          Create
+          {actionButtonText || 'Create'}
         </Button>
       </Paper>
     </Content>

@@ -83,6 +83,7 @@ interface TemplateEditorFormProps {
   data: JsonObject;
   onUpdate: (data: JsonObject) => void;
   setErrorText: (errorText?: string) => void;
+  actionButtonText: string;
 
   onDryRun?: (data: JsonObject) => Promise<void>;
   fieldExtensions?: FieldExtensionOptions<any, any>[];

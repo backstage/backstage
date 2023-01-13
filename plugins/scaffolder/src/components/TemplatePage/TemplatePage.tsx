@@ -167,6 +167,7 @@ export const TemplatePage = ({
                 onReset={handleFormReset}
                 onFinish={handleCreate}
                 layouts={layouts}
+                actionButtonText={schema.actionButtonText}
                 steps={schema.steps.map(step => {
                   return {
                     ...step,

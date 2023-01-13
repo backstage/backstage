@@ -46,6 +46,10 @@ export interface TemplateEntityV1beta3 extends Entity {
      */
     type: string;
     /**
+     * This is text that will be used for the action button on the UI. If not set a default will be used.
+     */
+    actionButtonText?: string;
+    /**
      * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
      * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
      * variables passed from the user into each action in the template.

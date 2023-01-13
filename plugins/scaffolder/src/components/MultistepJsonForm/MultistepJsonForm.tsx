@@ -63,6 +63,7 @@ export type MultistepJsonFormProps = {
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
+  actionButtonText?: string;
   layouts: LayoutOptions[];
   ReviewStepComponent?: ComponentType<ReviewStepProps>;
 };
@@ -87,6 +88,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     widgets,
     layouts,
     ReviewStepComponent,
+    actionButtonText,
   } = props;
   const { templateName } = useRouteRefParams(selectedTemplateRouteRef);
   const analytics = useAnalytics();
@@ -207,6 +209,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
         <ReviewStepElement
           disableButtons={disableButtons}
           handleBack={handleBack}
+          actionButtonText={actionButtonText}
           handleCreate={handleCreate}
           handleReset={handleReset}
           formData={formData}
