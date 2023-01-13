@@ -166,10 +166,10 @@ export interface PluginServiceFactoryConfig<
 }
 
 /**
- * Creates a root scoped service factory.
+ * Creates a root scoped service factory without options.
  *
  * @public
- * @param config
+ * @param config - The service factory configuration.
  */
 export function createServiceFactory<
   TService,
@@ -183,7 +183,7 @@ export function createServiceFactory<
  * Creates a root scoped service factory with optional options.
  *
  * @public
- * @param config
+ * @param config - The service factory configuration.
  */
 export function createServiceFactory<
   TService,
@@ -194,10 +194,10 @@ export function createServiceFactory<
   config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService>;
 /**
- * Creates a plugin scoped service factory with required options.
+ * Creates a root scoped service factory with required options.
  *
  * @public
- * @param config
+ * @param config - The service factory configuration.
  */
 export function createServiceFactory<
   TService,
@@ -208,10 +208,10 @@ export function createServiceFactory<
   config: (options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
 ): (options: TOpts) => ServiceFactory<TService>;
 /**
- * Creates a plugin scoped service factory with optional options.
+ * Creates a plugin scoped service factory without options.
  *
  * @public
- * @param config
+ * @param config - The service factory configuration.
  */
 export function createServiceFactory<
   TService,
@@ -223,10 +223,10 @@ export function createServiceFactory<
   config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
 ): () => ServiceFactory<TService>;
 /**
- * Creates a plugin scoped service factory with required options.
+ * Creates a plugin scoped service factory with optional options.
  *
  * @public
- * @param config
+ * @param config - The service factory configuration.
  */
 export function createServiceFactory<
   TService,
@@ -239,6 +239,12 @@ export function createServiceFactory<
     options?: TOpts,
   ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService>;
+/**
+ * Creates a plugin scoped service factory with required options.
+ *
+ * @public
+ * @param config - The service factory configuration.
+ */
 export function createServiceFactory<
   TService,
   TImpl extends TService,

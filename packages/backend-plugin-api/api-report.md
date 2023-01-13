@@ -126,22 +126,86 @@ export function createExtensionPoint<T>(
   config: ExtensionPointConfig,
 ): ExtensionPoint<T>;
 
-// @public (undocumented)
+// @public
 export function createServiceFactory<
   TService,
-  TScope extends 'root' | 'plugin',
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
   },
-  TOpts extends [options?: object] = [],
+  TOpts extends object | undefined = undefined,
+>(
+  config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
+): () => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TOpts extends object | undefined = undefined,
+>(
+  config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
+): (options?: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TOpts extends object | undefined = undefined,
+>(
+  config: (options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
+): (options: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+): () => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  config: (
+    options?: TOpts,
+  ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+): (options?: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
 >(
   config:
-    | ServiceFactoryConfig<TService, TScope, TImpl, TDeps>
+    | PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>
     | ((
-        ...options: TOpts
-      ) => ServiceFactoryConfig<TService, TScope, TImpl, TDeps>),
-): (...params: TOpts) => ServiceFactory<TService>;
+        options: TOpts,
+      ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
+): (options: TOpts) => ServiceFactory<TService>;
 
 // @public
 export function createServiceRef<TService>(
@@ -229,6 +293,30 @@ export interface PluginMetadataService {
   getId(): string;
 }
 
+// @public (undocumented)
+export interface PluginServiceFactoryConfig<
+  TService,
+  TContext,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> {
+  // (undocumented)
+  createRootContext?(
+    deps: ServiceRefsToInstances<TDeps, 'root'>,
+  ): Promise<TContext>;
+  // (undocumented)
+  deps: TDeps;
+  // (undocumented)
+  factory(
+    deps: ServiceRefsToInstances<TDeps>,
+    context: TContext,
+  ): Promise<TImpl>;
+  // (undocumented)
+  service: ServiceRef<TService, 'plugin'>;
+}
+
 // @public
 export type ReadTreeOptions = {
   filter?(
@@ -285,6 +373,22 @@ export interface RootLifecycleService extends LifecycleService {}
 export interface RootLoggerService extends LoggerService {}
 
 // @public (undocumented)
+export interface RootServiceFactoryConfig<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> {
+  // (undocumented)
+  deps: TDeps;
+  // (undocumented)
+  factory(deps: ServiceRefsToInstances<TDeps, 'root'>): Promise<TImpl>;
+  // (undocumented)
+  service: ServiceRef<TService, 'root'>;
+}
+
+// @public (undocumented)
 export interface SchedulerService extends PluginTaskScheduler {}
 
 // @public
@@ -323,35 +427,16 @@ export type ServiceFactory<TService = unknown> =
       deps: {
         [key in string]: ServiceRef<unknown>;
       };
-      factory(deps: {
+      createRootContext?(deps: {
         [key in string]: unknown;
-      }): Promise<
-        (deps: {
+      }): Promise<unknown>;
+      factory(
+        deps: {
           [key in string]: unknown;
-        }) => Promise<TService>
-      >;
+        },
+        context: unknown,
+      ): Promise<TService>;
     };
-
-// @public (undocumented)
-export interface ServiceFactoryConfig<
-  TService,
-  TScope extends 'root' | 'plugin',
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-> {
-  // (undocumented)
-  deps: TDeps;
-  // (undocumented)
-  factory(
-    deps: ServiceRefsToInstances<TDeps, 'root'>,
-  ): TScope extends 'root'
-    ? Promise<TImpl>
-    : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
-  // (undocumented)
-  service: ServiceRef<TService, TScope>;
-}
 
 // @public
 export type ServiceFactoryOrFunction<TService = unknown> =
