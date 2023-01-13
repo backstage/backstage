@@ -114,10 +114,10 @@ export class TechInsightsDatabase implements TechInsightsStore {
 
       if (lifecycle && isTtl(lifecycle)) {
         const expiration = DateTime.now().minus(lifecycle.timeToLive);
-        await this.deleteExpiredFactsByDate(tx, factRows, expiration);
+        await this.deleteExpiredFactsByDate(tx, id, expiration);
       }
       if (lifecycle && isMaxItems(lifecycle)) {
-        await this.deleteExpiredFactsByNumber(tx, factRows, lifecycle.maxItems);
+        await this.deleteExpiredFactsByNumber(tx, id, lifecycle.maxItems);
       }
     });
   }
@@ -195,13 +195,13 @@ export class TechInsightsDatabase implements TechInsightsStore {
 
   private async deleteExpiredFactsByDate(
     tx: Transaction,
-    factRows: { id: string; entity: string }[],
+    factRetrieverId: string,
     timestamp: DateTime,
   ) {
     await tx<RawDbFactRow>('facts')
-      .whereIn(
-        ['id', 'entity'],
-        factRows.map(it => [it.id, it.entity]),
+      .where({ id: factRetrieverId })
+      .and.whereIn('entity', db =>
+        db.distinct('entity').where({ id: factRetrieverId }),
       )
       .and.where('timestamp', '<', timestamp.toISO())
       .delete();
@@ -209,13 +209,13 @@ export class TechInsightsDatabase implements TechInsightsStore {
 
   private async deleteExpiredFactsByNumber(
     tx: Transaction,
-    factRows: { id: string; entity: string }[],
+    factRetrieverId: string,
     maxItems: number,
   ) {
     const deletables = await tx<RawDbFactRow>('facts')
-      .whereIn(
-        ['id', 'entity'],
-        factRows.map(it => [it.id, it.entity]),
+      .where({ id: factRetrieverId })
+      .and.whereIn('entity', db =>
+        db.distinct('entity').where({ id: factRetrieverId }),
       )
       .and.leftJoin(
         joinTable =>
