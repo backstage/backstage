@@ -29,9 +29,7 @@ const sf1 = createServiceFactory({
   service: ref1,
   deps: {},
   async factory() {
-    return async () => {
-      return { x: 1 };
-    };
+    return { x: 1 };
   },
 })();
 
@@ -61,7 +59,7 @@ const refDefault1 = createServiceRef<{ x: number }>({
       service,
       deps: {},
       async factory() {
-        return async () => ({ x: 10 });
+        return { x: 10 };
       },
     })(),
 });
@@ -73,7 +71,7 @@ const refDefault2a = createServiceRef<{ x: number }>({
       service,
       deps: {},
       async factory() {
-        return async () => ({ x: 20 });
+        return { x: 20 };
       },
     }),
 });
@@ -85,7 +83,7 @@ const refDefault2b = createServiceRef<{ x: number }>({
       service,
       deps: {},
       async factory() {
-        return async () => ({ x: 220 });
+        return { x: 220 };
       },
     }),
 });
@@ -144,7 +142,7 @@ describe('ServiceRegistry', () => {
       service: ref1,
       deps: { rootDep: ref2 },
       factory: async ({ rootDep }) => {
-        return async () => ({ x: rootDep.x });
+        return { x: rootDep.x };
       },
     });
     const registry = new ServiceRegistry([factory(), sf2]);
@@ -173,8 +171,8 @@ describe('ServiceRegistry', () => {
     const factory = createServiceFactory({
       service: ref,
       deps: { meta: coreServices.pluginMetadata },
-      async factory() {
-        return async ({ meta }) => ({ pluginId: meta.getId() });
+      async factory({ meta }) {
+        return { pluginId: meta.getId() };
       },
     });
     const registry = new ServiceRegistry([factory()]);
@@ -224,13 +222,11 @@ describe('ServiceRegistry', () => {
   });
 
   it('should only call each default factory loader once', async () => {
-    const factoryLoader = jest.fn(async (service: ServiceRef<void>) =>
+    const factoryLoader = jest.fn(async (service: ServiceRef<void, 'plugin'>) =>
       createServiceFactory({
         service,
         deps: {},
-        async factory() {
-          return async () => {};
-        },
+        async factory() {},
       }),
     );
     const ref = createServiceRef<void>({
@@ -247,10 +243,31 @@ describe('ServiceRegistry', () => {
   });
 
   it('should not call factory functions more than once', async () => {
-    const innerFactory = jest.fn(async () => {
-      return { x: 1 };
+    const createRootContext = jest.fn(async () => ({ x: 1 }));
+    const factory = jest.fn(async () => ({ x: 1 }));
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: {},
+      createRootContext,
+      factory,
     });
-    const factory = jest.fn(async () => innerFactory);
+
+    const registry = new ServiceRegistry([myFactory()]);
+
+    await Promise.all([
+      registry.get(ref1, 'catalog')!,
+      registry.get(ref1, 'catalog')!,
+      registry.get(ref1, 'catalog')!,
+      registry.get(ref1, 'scaffolder')!,
+      registry.get(ref1, 'scaffolder')!,
+    ]);
+
+    expect(createRootContext).toHaveBeenCalledTimes(1);
+    expect(factory).toHaveBeenCalledTimes(2);
+  });
+
+  it('should not call factory functions more than once without root context', async () => {
+    const factory = jest.fn(async () => ({ x: 1 }));
     const myFactory = createServiceFactory({
       service: ref1,
       deps: {},
@@ -267,8 +284,7 @@ describe('ServiceRegistry', () => {
       registry.get(ref1, 'scaffolder')!,
     ]);
 
-    expect(factory).toHaveBeenCalledTimes(1);
-    expect(innerFactory).toHaveBeenCalledTimes(2);
+    expect(factory).toHaveBeenCalledTimes(2);
   });
 
   it('should throw if dependencies are not available', async () => {
@@ -296,9 +312,7 @@ describe('ServiceRegistry', () => {
     const factoryA = createServiceFactory({
       service: refA,
       deps: { b: refB },
-      async factory() {
-        return async ({ b }) => b;
-      },
+      factory: async ({ b }) => b,
     });
 
     const factoryB = createServiceFactory({
@@ -320,15 +334,18 @@ describe('ServiceRegistry', () => {
     const myFactory = createServiceFactory({
       service: ref1,
       deps: {},
-      factory() {
+      createRootContext() {
         throw new Error('top-level error');
+      },
+      factory() {
+        throw new Error(`error in plugin`);
       },
     });
 
     const registry = new ServiceRegistry([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
-      "Failed to instantiate service '1' because the top-level factory function threw an error, Error: top-level error",
+      "Failed to instantiate service '1' because createRootContext threw an error, Error: top-level error",
     );
   });
 
@@ -337,9 +354,7 @@ describe('ServiceRegistry', () => {
       service: ref1,
       deps: {},
       async factory() {
-        return () => {
-          throw new Error(`error in plugin`);
-        };
+        throw new Error(`error in plugin`);
       },
     });
 
