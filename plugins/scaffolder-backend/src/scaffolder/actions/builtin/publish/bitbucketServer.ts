@@ -183,14 +183,14 @@ export function createPublishBitbucketServerAction(options: {
             description: `Sets the commit message on the repository. The default value is 'initial commit'`,
           },
           gitAuthorName: {
-            title: 'Default Author Name',
+            title: 'Author Name',
             type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+            description: `Sets the author name for the commit. The default value is 'Scaffolder'`,
           },
           gitAuthorEmail: {
-            title: 'Default Author Email',
+            title: 'Author Email',
             type: 'string',
-            description: `Sets the default author email for the commit.`,
+            description: `Sets the author email for the commit.`,
           },
         },
       },
