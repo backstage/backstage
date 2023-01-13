@@ -167,6 +167,14 @@ describe('createServiceFactory', () => {
       },
     });
     expect(metaFactory).toEqual(expect.any(Function));
+
+    // @ts-expect-error
+    metaFactory({});
+    // @ts-expect-error
+    metaFactory(null);
+    // @ts-expect-error
+    metaFactory(undefined);
+    metaFactory();
   });
 
   it('should create root scoped factory with dependencies and optional options', () => {
@@ -213,14 +221,17 @@ describe('createServiceFactory', () => {
         unused(root1, root2);
         return { root };
       },
-      async factory({ plugin }, { root }) {
+      async factory({ plugin, root: rootB }, { root }) {
         const root1: number = root;
         // @ts-expect-error
         const root2: string = root;
+        const root3: number = rootB;
+        // @ts-expect-error
+        const root4: string = rootB;
         const plugin3: boolean = plugin;
         // @ts-expect-error
         const plugin4: number = plugin;
-        unused(root1, root2, plugin3, plugin4);
+        unused(root1, root2, root3, root4, plugin3, plugin4);
         return 'x';
       },
     });

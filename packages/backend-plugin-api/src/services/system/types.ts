@@ -176,7 +176,7 @@ export function createServiceFactory<
   TOpts extends object | undefined = undefined,
 >(
   config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
-): (params: TOpts) => ServiceFactory<TService>;
+): () => ServiceFactory<TService>;
 /**
  * Creates a root scoped service factory with optional options.
  *
