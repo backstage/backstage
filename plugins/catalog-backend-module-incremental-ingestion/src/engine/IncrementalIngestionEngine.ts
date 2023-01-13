@@ -347,11 +347,11 @@ export class IncrementalIngestionEngine
       `incremental-engine: Received ${this.providerEventTopic} event`,
     );
 
-    if (!provider.deltaMapper) {
+    if (!provider.onEvent) {
       return;
     }
 
-    const update = provider.deltaMapper(eventPayload);
+    const update = provider.onEvent(eventPayload);
 
     if (update.delta) {
       if (update.delta.added.length > 0) {

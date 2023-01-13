@@ -77,10 +77,13 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
 
   /**
-   * If present, this method maps incoming payloads to apply updates
-   * outside of the incremental ingestion schedule.
+   * If present, this method accepts an incoming event, and maps the
+   * payload to an object containing a delta mutation.
+   *
+   * If a delta is present, the incremental entity provider will apply
+   * it automatically.
    */
-  deltaMapper?: (payload: unknown) => {
+  onEvent?: (payload: unknown) => {
     delta:
       | {
           added: DeferredEntity[];

@@ -50,7 +50,12 @@ export class IncrementalCatalogBuilder {
 // @public
 export interface IncrementalEntityProvider<TCursor, TContext> {
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
-  deltaMapper?: (payload: unknown) => {
+  getProviderName(): string;
+  next(
+    context: TContext,
+    cursor?: TCursor,
+  ): Promise<EntityIteratorResult<TCursor>>;
+  onEvent?: (payload: unknown) => {
     delta:
       | {
           added: DeferredEntity[];
@@ -60,11 +65,6 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
         }
       | undefined;
   };
-  getProviderName(): string;
-  next(
-    context: TContext,
-    cursor?: TCursor,
-  ): Promise<EntityIteratorResult<TCursor>>;
 }
 
 // @public (undocumented)
