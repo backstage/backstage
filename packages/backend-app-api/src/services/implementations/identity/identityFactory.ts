@@ -38,11 +38,8 @@ export const identityFactory = createServiceFactory(
   (options?: IdentityFactoryOptions) => ({
     service: coreServices.identity,
     deps: {
-      config: coreServices.config,
       discovery: coreServices.discovery,
-      tokenManager: coreServices.tokenManager,
     },
-
     async factory({ discovery }) {
       return DefaultIdentityClient.create({ discovery, ...options });
     },

@@ -26,10 +26,7 @@ export const discoveryFactory = createServiceFactory({
   deps: {
     config: coreServices.config,
   },
-  async createRootContext({ config }) {
+  async factory({ config }) {
     return SingleHostDiscovery.fromConfig(config);
-  },
-  async factory(_, discovery) {
-    return discovery;
   },
 });
