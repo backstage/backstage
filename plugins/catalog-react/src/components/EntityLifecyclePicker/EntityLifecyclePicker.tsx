@@ -47,7 +47,13 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /** @public */
-export const EntityLifecyclePicker = () => {
+export type EntityLifecyclePickerProps = {
+  initialFilter?: string[];
+};
+
+/** @public */
+export const EntityLifecyclePicker = (props: EntityLifecyclePickerProps) => {
+  const { initialFilter } = props;
   const classes = useStyles();
   const {
     updateFilters,
@@ -64,7 +70,7 @@ export const EntityLifecyclePicker = () => {
   const [selectedLifecycles, setSelectedLifecycles] = useState(
     queryParamLifecycles.length
       ? queryParamLifecycles
-      : filters.lifecycles?.values ?? [],
+      : filters.lifecycles?.values ?? (initialFilter || []),
   );
 
   // Set selected lifecycles on query parameter updates; this happens at initial page load and from
