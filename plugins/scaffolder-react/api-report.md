@@ -399,6 +399,7 @@ export interface TemplateGroupProps {
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
+  actionButtonText?: string;
   steps: Array<{
     title: string;
     description?: string;

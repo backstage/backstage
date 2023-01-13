@@ -43,6 +43,7 @@ export interface TemplateEntityV1beta3 extends Entity {
   kind: 'Template';
   spec: {
     type: string;
+    actionButtonText?: string;
     parameters?: JsonObject | JsonObject[];
     steps: Array<{
       id?: string;
