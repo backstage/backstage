@@ -194,14 +194,9 @@ export class EntityLifecycleFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityLifecyclePicker: (
-  props: EntityLifecyclePickerProps,
-) => JSX.Element | null;
-
-// @public (undocumented)
-export type EntityLifecyclePickerProps = {
+export const EntityLifecyclePicker: (props: {
   initialFilter?: string[];
-};
+}) => JSX.Element | null;
 
 // @public
 export const EntityListContext: React_2.Context<

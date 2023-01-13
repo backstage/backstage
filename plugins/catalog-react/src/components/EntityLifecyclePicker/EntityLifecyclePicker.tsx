@@ -47,12 +47,7 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /** @public */
-export type EntityLifecyclePickerProps = {
-  initialFilter?: string[];
-};
-
-/** @public */
-export const EntityLifecyclePicker = (props: EntityLifecyclePickerProps) => {
+export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
   const { initialFilter = [] } = props;
   const classes = useStyles();
   const {

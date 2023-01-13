@@ -15,7 +15,4 @@
  */
 
 export { EntityLifecyclePicker } from './EntityLifecyclePicker';
-export type {
-  CatalogReactEntityLifecyclePickerClassKey,
-  EntityLifecyclePickerProps,
-} from './EntityLifecyclePicker';
+export type { CatalogReactEntityLifecyclePickerClassKey } from './EntityLifecyclePicker';
