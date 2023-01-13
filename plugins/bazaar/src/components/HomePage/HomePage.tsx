@@ -19,7 +19,14 @@ import { Header, RoutedTabs } from '@backstage/core-components';
 import { SortView } from '../SortView';
 import { About } from '../About';
 
-export const HomePage = () => {
+export type HomePageProps = {
+  title?: string;
+  subtitle?: string;
+};
+
+export const HomePage = (props: HomePageProps) => {
+  const { title, subtitle } = props;
+
   const tabContent = [
     {
       path: '/',
@@ -35,7 +42,10 @@ export const HomePage = () => {
 
   return (
     <div>
-      <Header title="Bazaar" subtitle="Marketplace for inner source projects" />
+      <Header
+        title={title || 'Bazaar'}
+        subtitle={subtitle || 'Marketplace for inner source projects'}
+      />
       <RoutedTabs routes={tabContent} />
     </div>
   );
