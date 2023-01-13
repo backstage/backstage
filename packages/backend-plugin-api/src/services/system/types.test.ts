@@ -30,7 +30,7 @@ describe('createServiceFactory', () => {
     const metaFactory = createServiceFactory({
       service: ref,
       deps: {},
-      async rootFactory() {},
+      async createRootContext() {},
       async factory(_deps) {
         return 'x';
       },
@@ -55,7 +55,7 @@ describe('createServiceFactory', () => {
     const metaFactory = createServiceFactory((_opts?: { x: number }) => ({
       service: ref,
       deps: {},
-      async rootFactory() {},
+      async createRootContext() {},
       async factory() {
         return 'x';
       },
@@ -79,7 +79,7 @@ describe('createServiceFactory', () => {
     const metaFactory = createServiceFactory((_opts: { x: number }) => ({
       service: ref,
       deps: {},
-      async rootFactory() {},
+      async createRootContext() {},
       async factory() {
         return 'x';
       },
@@ -105,7 +105,7 @@ describe('createServiceFactory', () => {
     const metaFactory = createServiceFactory((_opts?: TestOptions) => ({
       service: ref,
       deps: {},
-      async rootFactory() {},
+      async createRootContext() {},
       async factory() {
         return 'x';
       },
@@ -129,7 +129,7 @@ describe('createServiceFactory', () => {
     const metaFactory = createServiceFactory((_opts: TestOptions) => ({
       service: ref,
       deps: {},
-      async rootFactory() {},
+      async createRootContext() {},
       async factory() {
         return 'x';
       },
@@ -206,7 +206,7 @@ describe('createServiceFactory', () => {
         root: rootDep,
         plugin: pluginDep,
       },
-      async rootFactory({ root }) {
+      async createRootContext({ root }) {
         const root1: number = root;
         // @ts-expect-error
         const root2: string = root;
@@ -272,7 +272,7 @@ describe('createServiceFactory', () => {
         root: rootDep,
         plugin: pluginDep,
       },
-      async rootFactory({ root }) {
+      async createRootContext({ root }) {
         const root1: number = root;
         // @ts-expect-error
         const root2: string = root;
@@ -314,7 +314,7 @@ describe('createServiceFactory', () => {
         root: rootDep,
         plugin: pluginDep,
       },
-      async rootFactory({ root }) {
+      async createRootContext({ root }) {
         const root1: number = root;
         // @ts-expect-error
         const root2: string = root;

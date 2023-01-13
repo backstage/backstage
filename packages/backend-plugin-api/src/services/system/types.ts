@@ -154,7 +154,9 @@ export interface PluginServiceFactoryConfig<
 > {
   service: ServiceRef<TService, 'plugin'>;
   deps: TDeps;
-  rootFactory?(deps: ServiceRefsToInstances<TDeps, 'root'>): Promise<TContext>;
+  createRootContext?(
+    deps: ServiceRefsToInstances<TDeps, 'root'>,
+  ): Promise<TContext>;
   factory(
     deps: ServiceRefsToInstances<TDeps>,
     context: TContext,
@@ -211,9 +213,9 @@ export function createServiceFactory<
  */
 export function createServiceFactory<
   TService,
-  TContext,
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
+  TContext = undefined,
   TOpts extends object | undefined = undefined,
 >(
   config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
@@ -226,9 +228,9 @@ export function createServiceFactory<
  */
 export function createServiceFactory<
   TService,
-  TContext,
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
+  TContext = undefined,
   TOpts extends object | undefined = undefined,
 >(
   config: (
@@ -237,9 +239,9 @@ export function createServiceFactory<
 ): (options?: TOpts) => ServiceFactory<TService>;
 export function createServiceFactory<
   TService,
-  TContext,
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
+  TContext = undefined,
   TOpts extends object | undefined = undefined,
 >(
   config:
@@ -250,9 +252,9 @@ export function createServiceFactory<
 ): (options: TOpts) => ServiceFactory<TService>;
 export function createServiceFactory<
   TService,
-  TContext,
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
+  TContext,
   TOpts extends object | undefined = undefined,
 >(
   config:
