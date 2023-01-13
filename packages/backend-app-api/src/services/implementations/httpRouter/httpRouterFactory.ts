@@ -23,30 +23,32 @@ import { Handler } from 'express';
 /**
  * @public
  */
-export type HttpRouterFactoryOptions = {
+export interface HttpRouterFactoryOptions {
   /**
    * A callback used to generate the path for each plugin, defaults to `/api/{pluginId}`.
    */
   getPath(pluginId: string): string;
-};
+}
 
 /** @public */
-export const httpRouterFactory = createServiceFactory({
-  service: coreServices.httpRouter,
-  deps: {
-    plugin: coreServices.pluginMetadata,
-    rootHttpRouter: coreServices.rootHttpRouter,
-  },
-  async factory({ rootHttpRouter }, options?: HttpRouterFactoryOptions) {
-    const getPath = options?.getPath ?? (id => `/api/${id}`);
+export const httpRouterFactory = createServiceFactory(
+  (options?: HttpRouterFactoryOptions) => ({
+    service: coreServices.httpRouter,
+    deps: {
+      plugin: coreServices.pluginMetadata,
+      rootHttpRouter: coreServices.rootHttpRouter,
+    },
+    async factory({ rootHttpRouter }) {
+      const getPath = options?.getPath ?? (id => `/api/${id}`);
 
-    return async ({ plugin }) => {
-      const path = getPath(plugin.getId());
-      return {
-        use(handler: Handler) {
-          rootHttpRouter.use(path, handler);
-        },
+      return async ({ plugin }) => {
+        const path = getPath(plugin.getId());
+        return {
+          use(handler: Handler) {
+            rootHttpRouter.use(path, handler);
+          },
+        };
       };
-    };
-  },
-});
+    },
+  }),
+);

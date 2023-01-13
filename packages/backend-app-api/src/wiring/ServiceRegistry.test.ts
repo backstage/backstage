@@ -143,7 +143,7 @@ describe('ServiceRegistry', () => {
     const factory = createServiceFactory({
       service: ref1,
       deps: { rootDep: ref2 },
-      async factory({ rootDep }) {
+      factory: async ({ rootDep }) => {
         return async () => ({ x: rootDep.x });
       },
     });

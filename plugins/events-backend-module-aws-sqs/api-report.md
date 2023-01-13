@@ -23,7 +23,5 @@ export class AwsSqsConsumingEventPublisher implements EventPublisher {
 }
 
 // @alpha
-export const awsSqsConsumingEventPublisherEventsModule: (
-  options?: undefined,
-) => BackendFeature;
+export const awsSqsConsumingEventPublisherEventsModule: () => BackendFeature;
 ```

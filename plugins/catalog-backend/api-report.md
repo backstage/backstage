@@ -237,7 +237,7 @@ export type CatalogPermissionRule<
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha
-export const catalogPlugin: (options?: undefined) => BackendFeature;
+export const catalogPlugin: () => BackendFeature;
 
 // @public
 export interface CatalogProcessingEngine {

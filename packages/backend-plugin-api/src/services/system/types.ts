@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { FactoryFunctionWithOptions, MaybeOptions } from '../../types';
-
 /**
  * TODO
  *
@@ -133,9 +131,7 @@ type ServiceRefsToInstances<
   T extends { [key in string]: ServiceRef<unknown> },
   TScope extends 'root' | 'plugin' = 'root' | 'plugin',
 > = {
-  [name in {
-    [key in keyof T]: T[key] extends ServiceRef<unknown, TScope> ? key : never;
-  }[keyof T]]: T[name] extends ServiceRef<infer TImpl> ? TImpl : never;
+  [key in keyof T as T[key]['scope'] extends TScope ? key : never]: T[key]['T'];
 };
 
 /** @public */
@@ -144,13 +140,11 @@ export interface ServiceFactoryConfig<
   TScope extends 'root' | 'plugin',
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
-  TOpts extends MaybeOptions = undefined,
 > {
   service: ServiceRef<TService, TScope>;
   deps: TDeps;
   factory(
     deps: ServiceRefsToInstances<TDeps, 'root'>,
-    options: TOpts,
   ): TScope extends 'root'
     ? Promise<TImpl>
     : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
@@ -164,17 +158,23 @@ export function createServiceFactory<
   TScope extends 'root' | 'plugin',
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
-  TOpts extends MaybeOptions = undefined,
+  TOpts extends [options?: object] = [],
 >(
-  config: ServiceFactoryConfig<TService, TScope, TImpl, TDeps, TOpts>,
-): FactoryFunctionWithOptions<ServiceFactory<TService>, TOpts> {
-  return (options?: TOpts) =>
+  config:
+    | ServiceFactoryConfig<TService, TScope, TImpl, TDeps>
+    | ((
+        ...options: TOpts
+      ) => ServiceFactoryConfig<TService, TScope, TImpl, TDeps>),
+): (...params: TOpts) => ServiceFactory<TService> {
+  if (typeof config === 'function') {
+    return (...opts: TOpts) => {
+      const c = config(...opts);
+      return { ...c, scope: c.service.scope } as ServiceFactory<TService>;
+    };
+  }
+  return () =>
     ({
+      ...config,
       scope: config.service.scope,
-      service: config.service,
-      deps: config.deps,
-      factory(deps: ServiceRefsToInstances<TDeps, 'root'>) {
-        return config.factory(deps, options!);
-      },
     } as ServiceFactory<TService>);
 }
