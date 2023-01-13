@@ -19,6 +19,7 @@ import { Header, RoutedTabs } from '@backstage/core-components';
 import { SortView } from '../SortView';
 import { About } from '../About';
 
+/** @public */
 export type HomePageProps = {
   title?: string;
   subtitle?: string;

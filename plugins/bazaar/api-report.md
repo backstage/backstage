@@ -24,7 +24,7 @@ export type BazaarOverviewCardProps = {
 };
 
 // @public (undocumented)
-export const BazaarPage: () => JSX.Element;
+export const BazaarPage: (props: HomePageProps) => JSX.Element;
 
 // @public (undocumented)
 export const bazaarPlugin: BackstagePlugin<
@@ -37,6 +37,12 @@ export const bazaarPlugin: BackstagePlugin<
 
 // @public (undocumented)
 export const EntityBazaarInfoCard: () => JSX.Element | null;
+
+// @public (undocumented)
+export type HomePageProps = {
+  title?: string;
+  subtitle?: string;
+};
 
 // @public (undocumented)
 export const isBazaarAvailable: (
