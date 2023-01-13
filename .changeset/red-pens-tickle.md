@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-Override default commit message and author details in BitbucketServer
+Added ability to override the commit message and author details for the `publish:bitbucketServer` action.
