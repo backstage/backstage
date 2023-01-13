@@ -85,7 +85,9 @@ export function createBackend(options?: CreateBackendOptions): Backend {
   if (options?.env) {
     const env = options.env as unknown as InternalSharedBackendEnvironment;
     if (env.version !== 'v1') {
-      throw new Error(`Unsupported shared environment version: ${env.version}`);
+      throw new Error(
+        `Shared environment version '${env.version}' is invalid or not supported`,
+      );
     }
 
     const environmentServices =
