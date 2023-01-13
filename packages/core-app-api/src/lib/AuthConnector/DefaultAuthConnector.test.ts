@@ -188,6 +188,7 @@ describe('DefaultAuthConnector', () => {
   it('should redirect to api server', async () => {
     const mockOauth = new MockOAuthApi();
     const mockResponse = jest.fn();
+    // replace the window.location object
     Object.defineProperty(window, 'location', {
       value: {
         hash: {

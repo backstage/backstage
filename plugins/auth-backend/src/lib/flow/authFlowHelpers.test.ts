@@ -19,6 +19,7 @@ import {
   safelyEncodeURIComponent,
   ensuresXRequestedWith,
   postMessageResponse,
+  redirectMessageResponse,
 } from './authFlowHelpers';
 import { WebMessageResponse } from './types';
 
@@ -175,6 +176,22 @@ describe('oauth helpers', () => {
       expect(mockResponse.end).toHaveBeenCalledWith(
         expect.stringContaining('Adam%20l%27H%C3%B4pital'),
       );
+    });
+  });
+
+  describe('redirectMessageResponse', () => {
+    const redirectUrl = 'http://localhost:3000/catalog';
+    it('should perform redirect', () => {
+      const mockResponse = {
+        end: jest.fn().mockReturnThis(),
+        setHeader: jest.fn().mockReturnThis(),
+        redirect: jest.fn().mockReturnThis(),
+      } as unknown as express.Response;
+
+      redirectMessageResponse(mockResponse, redirectUrl);
+      expect(mockResponse.redirect).toHaveBeenCalledTimes(1);
+      expect(mockResponse.end).not.toHaveBeenCalled();
+      expect(mockResponse.setHeader).not.toHaveBeenCalled();
     });
   });
 

@@ -145,7 +145,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
     try {
       const state: OAuthState = readState(req.query.state?.toString() ?? '');
-      const redirectUrl = state.redirectUrl || '';
+      const redirectUrl = state.redirectUrl ?? '';
 
       if (state.origin) {
         try {
