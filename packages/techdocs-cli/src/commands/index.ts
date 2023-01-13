@@ -102,10 +102,6 @@ export function registerCommands(program: Command) {
       'Optional AWS S3 option to force path style.',
     )
     .option(
-      '--awsBucketRootPath',
-      'Optional sub-directory to store files in Amazon S3',
-    )
-    .option(
       '--osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>',
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
     )
@@ -176,6 +172,10 @@ export function registerCommands(program: Command) {
     .option(
       '--awsS3ForcePathStyle',
       'Optional AWS S3 option to force path style.',
+    )
+    .option(
+      '--awsBucketRootPath <AWS BUCKET ROOT PATH>',
+      'Optional sub-directory to store files in Amazon S3',
     )
     .option(
       '--osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>',
