@@ -142,6 +142,9 @@ export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
         );
 
         if (!specParser) {
+          this.logger.warn(
+            `No Spec Parser Available for Entity Type ${entity.spec?.type}`,
+          );
           continue;
         }
 
