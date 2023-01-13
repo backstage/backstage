@@ -15,7 +15,5 @@ export class BitbucketCloudEventRouter extends SubTopicEventRouter {
 }
 
 // @alpha
-export const bitbucketCloudEventRouterEventsModule: (
-  options?: undefined,
-) => BackendFeature;
+export const bitbucketCloudEventRouterEventsModule: () => BackendFeature;
 ```

@@ -48,7 +48,5 @@ export class BitbucketCloudEntityProvider
 }
 
 // @alpha (undocumented)
-export const bitbucketCloudEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const bitbucketCloudEntityProviderCatalogModule: () => BackendFeature;
 ```

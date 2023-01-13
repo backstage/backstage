@@ -23,7 +23,7 @@ export interface BackendFeature {
 }
 
 // @public (undocumented)
-export interface BackendModuleConfig<TOptions> {
+export interface BackendModuleConfig {
   // (undocumented)
   moduleId: string;
   // (undocumented)
@@ -31,16 +31,15 @@ export interface BackendModuleConfig<TOptions> {
   // (undocumented)
   register(
     reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
-    options: TOptions,
   ): void;
 }
 
 // @public (undocumented)
-export interface BackendPluginConfig<TOptions> {
+export interface BackendPluginConfig {
   // (undocumented)
   id: string;
   // (undocumented)
-  register(reg: BackendRegistrationPoints, options: TOptions): void;
+  register(reg: BackendRegistrationPoints): void;
 }
 
 // @public (undocumented)
@@ -113,14 +112,14 @@ export namespace coreServices {
 }
 
 // @public
-export function createBackendModule<TOptions extends MaybeOptions = undefined>(
-  config: BackendModuleConfig<TOptions>,
-): FactoryFunctionWithOptions<BackendFeature, TOptions>;
+export function createBackendModule<TOptions extends [options?: object] = []>(
+  config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
+): (...params: TOptions) => BackendFeature;
 
 // @public (undocumented)
-export function createBackendPlugin<TOptions extends MaybeOptions = undefined>(
-  config: BackendPluginConfig<TOptions>,
-): FactoryFunctionWithOptions<BackendFeature, TOptions>;
+export function createBackendPlugin<TOptions extends [options?: object] = []>(
+  config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
+): (...params: TOptions) => BackendFeature;
 
 // @public (undocumented)
 export function createExtensionPoint<T>(
@@ -135,10 +134,14 @@ export function createServiceFactory<
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
   },
-  TOpts extends MaybeOptions = undefined,
+  TOpts extends [options?: object] = [],
 >(
-  config: ServiceFactoryConfig<TService, TScope, TImpl, TDeps, TOpts>,
-): FactoryFunctionWithOptions<ServiceFactory<TService>, TOpts>;
+  config:
+    | ServiceFactoryConfig<TService, TScope, TImpl, TDeps>
+    | ((
+        ...options: TOpts
+      ) => ServiceFactoryConfig<TService, TScope, TImpl, TDeps>),
+): (...params: TOpts) => ServiceFactory<TService>;
 
 // @public
 export function createServiceRef<TService>(
@@ -337,14 +340,12 @@ export interface ServiceFactoryConfig<
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
   },
-  TOpts extends MaybeOptions = undefined,
 > {
   // (undocumented)
   deps: TDeps;
   // (undocumented)
   factory(
     deps: ServiceRefsToInstances<TDeps, 'root'>,
-    options: TOpts,
   ): TScope extends 'root'
     ? Promise<TImpl>
     : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;

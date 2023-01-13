@@ -70,9 +70,9 @@ export type AppPluginOptions = {
  * The App plugin is responsible for serving the frontend app bundle and static assets.
  * @alpha
  */
-export const appPlugin = createBackendPlugin({
+export const appPlugin = createBackendPlugin((options: AppPluginOptions) => ({
   id: 'app',
-  register(env, options: AppPluginOptions) {
+  register(env) {
     env.registerInit({
       deps: {
         logger: coreServices.logger,
@@ -101,4 +101,4 @@ export const appPlugin = createBackendPlugin({
       },
     });
   },
-});
+}));

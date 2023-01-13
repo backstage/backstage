@@ -16,9 +16,12 @@
 
 import { createServiceFactory, createServiceRef } from './types';
 
+const ref = createServiceRef<string>({ id: 'x' });
+const rootDep = createServiceRef<number>({ id: 'y', scope: 'root' });
+const pluginDep = createServiceRef<boolean>({ id: 'z' });
+
 describe('createServiceFactory', () => {
   it('should create a meta factory with no options', () => {
-    const ref = createServiceRef<string>({ id: 'x' });
     const metaFactory = createServiceFactory({
       service: ref,
       deps: {},
@@ -37,19 +40,19 @@ describe('createServiceFactory', () => {
     metaFactory({ x: 1 });
     // @ts-expect-error
     metaFactory(null);
+    // @ts-expect-error
     metaFactory(undefined);
     metaFactory();
   });
 
   it('should create a meta factory with optional options', () => {
-    const ref = createServiceRef<string>({ id: 'x' });
-    const metaFactory = createServiceFactory({
+    const metaFactory = createServiceFactory((_opts?: { x: number }) => ({
       service: ref,
       deps: {},
-      async factory(_deps, _opts?: { x: number }) {
+      async factory() {
         return async () => 'x';
       },
-    });
+    }));
     expect(metaFactory).toEqual(expect.any(Function));
 
     // @ts-expect-error
@@ -66,14 +69,13 @@ describe('createServiceFactory', () => {
   });
 
   it('should create a meta factory with required options', () => {
-    const ref = createServiceRef<string>({ id: 'x' });
-    const metaFactory = createServiceFactory({
+    const metaFactory = createServiceFactory((_opts: { x: number }) => ({
       service: ref,
       deps: {},
-      async factory(_deps, _opts: { x: number }) {
+      async factory() {
         return async () => 'x';
       },
-    });
+    }));
     expect(metaFactory).toEqual(expect.any(Function));
 
     // @ts-expect-error
@@ -95,14 +97,13 @@ describe('createServiceFactory', () => {
     interface TestOptions {
       x: number;
     }
-    const ref = createServiceRef<string>({ id: 'x' });
-    const metaFactory = createServiceFactory({
+    const metaFactory = createServiceFactory((_opts?: TestOptions) => ({
       service: ref,
       deps: {},
-      async factory(_deps, _opts?: TestOptions) {
+      async factory() {
         return async () => 'x';
       },
-    });
+    }));
     expect(metaFactory).toEqual(expect.any(Function));
 
     // @ts-expect-error
@@ -122,14 +123,13 @@ describe('createServiceFactory', () => {
     interface TestOptions {
       x: number;
     }
-    const ref = createServiceRef<string>({ id: 'x' });
-    const metaFactory = createServiceFactory({
+    const metaFactory = createServiceFactory((_opts: TestOptions) => ({
       service: ref,
       deps: {},
-      async factory(_deps, _opts: TestOptions) {
+      async factory() {
         return async () => 'x';
       },
-    });
+    }));
     expect(metaFactory).toEqual(expect.any(Function));
 
     // @ts-expect-error
@@ -147,80 +147,163 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should only allow objects as options', () => {
-    const ref = createServiceRef<string>({ id: 'x' });
-    const metaFactory = createServiceFactory({
+  it('should create factory with required options and dependencies', () => {
+    interface TestOptions {
+      x: number;
+    }
+
+    function unused(..._any: any[]) {}
+
+    const metaFactory = createServiceFactory((_opts: TestOptions) => ({
       service: ref,
-      deps: {},
-      // @ts-expect-error
-      async factory(_deps, _opts: string) {
-        return async () => 'x';
+      deps: {
+        root: rootDep,
+        plugin: pluginDep,
       },
-    });
+      async factory({ root }) {
+        const root1: number = root;
+        // @ts-expect-error
+        const root2: string = root;
+        return async ({ plugin }) => {
+          const plugin3: boolean = plugin;
+          // @ts-expect-error
+          const plugin4: number = plugin;
+          unused(root1, root2, plugin3, plugin4);
+          return 'x';
+        };
+      },
+    }));
     expect(metaFactory).toEqual(expect.any(Function));
-    createServiceFactory({
+
+    // @ts-expect-error
+    metaFactory('string');
+    // @ts-expect-error
+    metaFactory({});
+    metaFactory({ x: 1 });
+    // @ts-expect-error
+    metaFactory({ x: 1, y: 2 });
+    // @ts-expect-error
+    metaFactory(null);
+    // @ts-expect-error
+    metaFactory(undefined);
+    // @ts-expect-error
+    metaFactory();
+  });
+
+  it('should create factory with optional options and dependencies', () => {
+    interface TestOptions {
+      x: number;
+    }
+
+    function unused(..._any: any[]) {}
+
+    const metaFactory = createServiceFactory((_opts?: TestOptions) => ({
+      service: ref,
+      deps: {
+        root: rootDep,
+        plugin: pluginDep,
+      },
+      async factory({ root }) {
+        const root1: number = root;
+        // @ts-expect-error
+        const root2: string = root;
+        return async ({ plugin }) => {
+          const plugin3: boolean = plugin;
+          // @ts-expect-error
+          const plugin4: number = plugin;
+          unused(root1, root2, plugin3, plugin4);
+          return 'x';
+        };
+      },
+    }));
+    expect(metaFactory).toEqual(expect.any(Function));
+
+    // @ts-expect-error
+    metaFactory('string');
+    // @ts-expect-error
+    metaFactory({});
+    metaFactory({ x: 1 });
+    // @ts-expect-error
+    metaFactory({ x: 1, y: 2 });
+    // @ts-expect-error
+    metaFactory(null);
+    metaFactory(undefined);
+    metaFactory();
+  });
+
+  it('should only allow objects as options', () => {
+    // @ts-expect-error
+    const metaFactory = createServiceFactory((_opts: string) => ({
       service: ref,
       deps: {},
-      // @ts-expect-error
-      async factory(_deps, _opts: number) {
+      async factory() {
         return async () => 'x';
       },
-    });
-    createServiceFactory({
+    }));
+    expect(metaFactory).toEqual(expect.any(Function));
+    // @ts-expect-error
+    createServiceFactory((_opts: number) => ({
       service: ref,
       deps: {},
-      // @ts-expect-error
-      async factory(_deps, _opts: symbol) {
+      async factory() {
         return async () => 'x';
       },
-    });
-    createServiceFactory({
+    }));
+    // @ts-expect-error
+    createServiceFactory((_opts: symbol) => ({
       service: ref,
       deps: {},
-      // @ts-expect-error
-      async factory(_deps, _opts: bigint) {
+      async factory() {
         return async () => 'x';
       },
-    });
-    createServiceFactory({
+    }));
+    // @ts-expect-error
+    createServiceFactory((_opts: bigint) => ({
       service: ref,
       deps: {},
-      // @ts-expect-error
-      async factory(_deps, _opts: 'string') {
+      async factory() {
         return async () => 'x';
       },
-    });
-    createServiceFactory({
+    }));
+    // @ts-expect-error
+    createServiceFactory((_opts: 'string') => ({
       service: ref,
       deps: {},
-      // @ts-expect-error
-      async factory(_deps, _opts: Array) {
+      async factory() {
         return async () => 'x';
       },
-    });
-    createServiceFactory({
+    }));
+    // @ts-expect-error
+    createServiceFactory((_opts: Array) => ({
       service: ref,
       deps: {},
-      // @ts-expect-error
-      async factory(_deps, _opts: Map) {
+      async factory() {
         return async () => 'x';
       },
-    });
-    createServiceFactory({
+    }));
+    // @ts-expect-error
+    createServiceFactory((_opts: Map) => ({
       service: ref,
       deps: {},
-      // @ts-expect-error
-      async factory(_deps, _opts: Set) {
+      async factory() {
         return async () => 'x';
       },
-    });
-    createServiceFactory({
+    }));
+    // @ts-expect-error
+    createServiceFactory((_opts: Set) => ({
       service: ref,
       deps: {},
-      // @ts-expect-error
-      async factory(_deps, _opts: null) {
+      async factory() {
         return async () => 'x';
       },
-    });
+    }));
+    // @ts-expect-error
+    createServiceFactory((_opts: null) => ({
+      service: ref,
+      deps: {},
+      async factory() {
+        return async () => 'x';
+      },
+    }));
   });
 });
