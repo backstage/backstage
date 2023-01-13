@@ -31,7 +31,7 @@ class MockIdentityServiceImpl implements IdentityService {
       token: 'mock-token',
       identity: {
         type: 'user',
-        userEntityRef: 'user:default/mockUser',
+        userEntityRef: 'user:default/mock-user',
         ownershipEntityRefs: [],
       },
     });
