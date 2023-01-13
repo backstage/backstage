@@ -64,9 +64,11 @@ export type ServiceFactory<TService = unknown> =
       scope: 'plugin';
       service: ServiceRef<TService, 'plugin'>;
       deps: { [key in string]: ServiceRef<unknown> };
-      factory(deps: { [key in string]: unknown }): Promise<
-        (deps: { [key in string]: unknown }) => Promise<TService>
-      >;
+      createRootContext?(deps: { [key in string]: unknown }): Promise<unknown>;
+      factory(
+        deps: { [key in string]: unknown },
+        context: unknown,
+      ): Promise<TService>;
     };
 
 /**
