@@ -154,7 +154,7 @@ export interface PluginServiceFactoryConfig<
 > {
   service: ServiceRef<TService, 'plugin'>;
   deps: TDeps;
-  rootFactory(deps: ServiceRefsToInstances<TDeps, 'root'>): Promise<TContext>;
+  rootFactory?(deps: ServiceRefsToInstances<TDeps, 'root'>): Promise<TContext>;
   factory(
     deps: ServiceRefsToInstances<TDeps>,
     context: TContext,

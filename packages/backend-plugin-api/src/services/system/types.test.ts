@@ -199,38 +199,6 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create root scoped factory with dependencies and required options', () => {
-    const metaFactory = createServiceFactory((_options: TestOptions) => ({
-      service: createServiceRef({ id: 'foo', scope: 'root' }),
-      deps: {
-        root: rootDep,
-        plugin: pluginDep,
-      },
-      async factory({ root }) {
-        const root1: number = root;
-        // @ts-expect-error
-        const root2: string = root;
-        unused(root1, root2);
-        return 0;
-      },
-    }));
-    expect(metaFactory).toEqual(expect.any(Function));
-
-    // @ts-expect-error
-    metaFactory('string');
-    // @ts-expect-error
-    metaFactory({});
-    metaFactory({ x: 1 });
-    // @ts-expect-error
-    metaFactory({ x: 1, y: 2 });
-    // @ts-expect-error
-    metaFactory(null);
-    // @ts-expect-error
-    metaFactory(undefined);
-    // @ts-expect-error
-    metaFactory();
-  });
-
   it('should create factory with dependencies', () => {
     const metaFactory = createServiceFactory({
       service: createServiceRef({ id: 'derp' }),
@@ -256,6 +224,36 @@ describe('createServiceFactory', () => {
         return 'x';
       },
     });
+    expect(metaFactory).toEqual(expect.any(Function));
+
+    // @ts-expect-error
+    metaFactory({});
+    // @ts-expect-error
+    metaFactory(null);
+    // @ts-expect-error
+    metaFactory(undefined);
+    metaFactory();
+  });
+
+  it('should create factory with dependencies with optional derpFactory', () => {
+    const metaFactory = createServiceFactory({
+      service: createServiceRef({ id: 'derp' }),
+      deps: {
+        root: rootDep,
+        plugin: pluginDep,
+      },
+      async factory({ root, plugin }) {
+        const root1: number = root;
+        // @ts-expect-error
+        const root2: string = root;
+        const plugin3: boolean = plugin;
+        // @ts-expect-error
+        const plugin4: number = plugin;
+        unused(root1, root2, plugin3, plugin4);
+        return 'x';
+      },
+    });
+
     expect(metaFactory).toEqual(expect.any(Function));
 
     // @ts-expect-error
