@@ -3,4 +3,3 @@
 ---
 
 Add possibility to re-use EntityPicker for filters with multiple select.
-**BREAKING** Style name `CatalogReactEntityTagPicker` was changed to `EntityAutocompletePickerInput`

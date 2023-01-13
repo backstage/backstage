@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles, TextField } from '@material-ui/core';
-import { AutocompleteRenderInputParams } from '@material-ui/lab';
+import { makeStyles, TextField, TextFieldProps } from '@material-ui/core';
 import React from 'react';
+import classnames from 'classnames';
 
 const useStyles = makeStyles(
   {
     input: {},
   },
   {
-    name: 'EntityAutocompletePickerInput',
+    name: 'CatalogReactEntityAutocompletePickerInput',
   },
 );
 
-export function EntityAutocompletePickerInput(
-  params: AutocompleteRenderInputParams,
-) {
+export function EntityAutocompletePickerInput(params: TextFieldProps) {
   const classes = useStyles();
 
-  return <TextField {...params} className={classes.input} variant="outlined" />;
+  return (
+    <TextField
+      variant="outlined"
+      {...params}
+      className={classnames(classes.input, params.className)}
+    />
+  );
 }

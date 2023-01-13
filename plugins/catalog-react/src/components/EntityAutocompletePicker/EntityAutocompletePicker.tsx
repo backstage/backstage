@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { Box, Typography } from '@material-ui/core';
+import { Box, TextFieldProps, Typography } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  DefaultEntityFilters,
-  useEntityList,
-} from '../../hooks/useEntityListProvider';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityAutocompletePickerOption } from './EntityAutocompletePickerOption';
 import { EntityAutocompletePickerInput } from './EntityAutocompletePickerInput';
+import {
+  DefaultEntityFilters,
+  useEntityList,
+} from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
 
 type KeysMatchingCondition<T, V, K> = T extends V ? K : never;
@@ -53,6 +53,7 @@ export type EntityAutocompletePickerProps<
   path: string;
   showCounts?: boolean;
   Filter: ConstructableFilter<NonNullable<T[Name]>>;
+  InputProps?: TextFieldProps;
 };
 
 /** @public */
@@ -60,7 +61,7 @@ export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
 >(props: EntityAutocompletePickerProps<T, Name>) {
-  const { label, name, path, showCounts, Filter } = props;
+  const { label, name, path, showCounts, Filter, InputProps } = props;
 
   const {
     updateFilters,
@@ -141,7 +142,9 @@ export function EntityAutocompletePicker<
           popupIcon={
             <ExpandMoreIcon data-testid={`${String(name)}-picker-expand`} />
           }
-          renderInput={EntityAutocompletePickerInput}
+          renderInput={params => (
+            <EntityAutocompletePickerInput {...params} {...InputProps} />
+          )}
         />
       </Typography>
     </Box>
