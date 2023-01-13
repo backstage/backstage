@@ -62,6 +62,23 @@ export function createSharedEnvironment<
       typeof sf === 'function' ? sf() : sf,
     );
 
-    return { services } as unknown as SharedBackendEnvironment;
+    const exists = new Set<string>();
+    const duplicates = new Set<string>();
+    for (const { service } of services ?? []) {
+      if (exists.has(service.id)) {
+        duplicates.add(service.id);
+      } else {
+        exists.add(service.id);
+      }
+    }
+
+    if (duplicates.size > 0) {
+      const dupStr = [...duplicates].map(id => `'${id}'`).join(', ');
+      throw new Error(
+        `Duplicate service implementations provided in shared environment for ${dupStr}`,
+      );
+    }
+
+    return { version: 'v1', services } as unknown as SharedBackendEnvironment;
   };
 }
