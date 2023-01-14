@@ -25,6 +25,9 @@ import { JsonValue } from '@backstage/types';
 type PackageJSON = Package['packageJson'];
 
 export interface ExtendedPackageJSON extends PackageJSON {
+  main?: string;
+  module?: string;
+
   scripts?: {
     [key: string]: string;
   };

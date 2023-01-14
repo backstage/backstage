@@ -178,6 +178,7 @@ export async function createDistWorkspace(
       if (outputs.size > 0) {
         standardBuilds.push({
           targetDir: pkg.dir,
+          packageJson: pkg.packageJson,
           outputs: outputs,
           logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
           // No need to detect these for the backend builds, we assume no minification or types
