@@ -27,6 +27,7 @@ type PackageJSON = Package['packageJson'];
 export interface ExtendedPackageJSON extends PackageJSON {
   main?: string;
   module?: string;
+  types?: string;
 
   scripts?: {
     [key: string]: string;
