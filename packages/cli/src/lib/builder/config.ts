@@ -31,6 +31,10 @@ import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
 import { paths } from '../paths';
 import { svgrTemplate } from '../svgrTemplate';
+import { ExtendedPackageJSON } from '../monorepo';
+import { readEntryPoints } from '../monorepo/entryPoints';
+
+const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 
 function isFileImport(source: string) {
   if (source.startsWith('.')) {
@@ -50,6 +54,13 @@ export async function makeRollupConfigs(
 ): Promise<RollupOptions[]> {
   const configs = new Array<RollupOptions>();
   const targetDir = options.targetDir ?? paths.targetDir;
+
+  let targetPkg = options.packageJson;
+  if (!targetPkg) {
+    const packagePath = resolvePath(targetDir, 'package.json');
+    targetPkg = (await fs.readJson(packagePath)) as ExtendedPackageJSON;
+  }
+
   const onwarn = ({ code, message }: RollupWarning) => {
     if (code === 'EMPTY_BUNDLE') {
       return; // We don't care about this one
@@ -62,111 +73,118 @@ export async function makeRollupConfigs(
   };
 
   const distDir = resolvePath(targetDir, 'dist');
+  const entryPoints = readEntryPoints(targetPkg);
 
-  if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
-    const output = new Array<OutputOptions>();
-    const mainFields = ['module', 'main'];
-
-    if (options.outputs.has(Output.cjs)) {
-      output.push({
-        dir: distDir,
-        entryFileNames: 'index.cjs.js',
-        chunkFileNames: 'cjs/[name]-[hash].cjs.js',
-        format: 'commonjs',
-        sourcemap: true,
-      });
-    }
-    if (options.outputs.has(Output.esm)) {
-      output.push({
-        dir: distDir,
-        entryFileNames: 'index.esm.js',
-        chunkFileNames: 'esm/[name]-[hash].esm.js',
-        format: 'module',
-        sourcemap: true,
-      });
-      // Assume we're building for the browser if ESM output is included
-      mainFields.unshift('browser');
+  for (const { path, name, ext } of entryPoints) {
+    if (!SCRIPT_EXTS.includes(ext)) {
+      continue;
     }
 
-    configs.push({
-      input: resolvePath(targetDir, 'src/index.ts'),
-      output,
-      onwarn,
-      preserveEntrySignatures: 'strict',
-      // All module imports are always marked as external
-      external: (source, importer, isResolved) =>
-        Boolean(importer && !isResolved && !isFileImport(source)),
-      plugins: [
-        resolve({ mainFields }),
-        commonjs({
-          include: /node_modules/,
-          exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
-        }),
-        postcss(),
-        forwardFileImports({
-          exclude: /\.icon\.svg$/,
-          include: [
-            /\.svg$/,
-            /\.png$/,
-            /\.gif$/,
-            /\.jpg$/,
-            /\.jpeg$/,
-            /\.eot$/,
-            /\.woff$/,
-            /\.woff2$/,
-            /\.ttf$/,
-          ],
-        }),
-        json(),
-        yaml(),
-        svgr({
-          include: /\.icon\.svg$/,
-          template: svgrTemplate,
-        }),
-        esbuild({
-          target: 'es2019',
-          minify: options.minify,
-        }),
-      ],
-    });
-  }
+    if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
+      const output = new Array<OutputOptions>();
+      const mainFields = ['module', 'main'];
 
-  if (options.outputs.has(Output.types) && !options.useApiExtractor) {
-    const typesInput = paths.resolveTargetRoot(
-      'dist-types',
-      relativePath(paths.targetRoot, targetDir),
-      'src/index.d.ts',
-    );
+      if (options.outputs.has(Output.cjs)) {
+        output.push({
+          dir: distDir,
+          entryFileNames: `${name}.cjs.js`,
+          chunkFileNames: `cjs/${name}/[name]-[hash].cjs.js`,
+          format: 'commonjs',
+          sourcemap: true,
+        });
+      }
+      if (options.outputs.has(Output.esm)) {
+        output.push({
+          dir: distDir,
+          entryFileNames: `${name}.esm.js`,
+          chunkFileNames: `esm/${name}/[name]-[hash].esm.js`,
+          format: 'module',
+          sourcemap: true,
+        });
+        // Assume we're building for the browser if ESM output is included
+        mainFields.unshift('browser');
+      }
 
-    const declarationsExist = await fs.pathExists(typesInput);
-    if (!declarationsExist) {
-      const path = relativePath(targetDir, typesInput);
-      throw new Error(
-        `No declaration files found at ${path}, be sure to run ${chalk.bgRed.white(
-          'yarn tsc',
-        )} to generate .d.ts files before packaging`,
+      configs.push({
+        input: resolvePath(targetDir, path),
+        output,
+        onwarn,
+        preserveEntrySignatures: 'strict',
+        // All module imports are always marked as external
+        external: (source, importer, isResolved) =>
+          Boolean(importer && !isResolved && !isFileImport(source)),
+        plugins: [
+          resolve({ mainFields }),
+          commonjs({
+            include: /node_modules/,
+            exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
+          }),
+          postcss(),
+          forwardFileImports({
+            exclude: /\.icon\.svg$/,
+            include: [
+              /\.svg$/,
+              /\.png$/,
+              /\.gif$/,
+              /\.jpg$/,
+              /\.jpeg$/,
+              /\.eot$/,
+              /\.woff$/,
+              /\.woff2$/,
+              /\.ttf$/,
+            ],
+          }),
+          json(),
+          yaml(),
+          svgr({
+            include: /\.icon\.svg$/,
+            template: svgrTemplate,
+          }),
+          esbuild({
+            target: 'es2019',
+            minify: options.minify,
+          }),
+        ],
+      });
+    }
+
+    if (options.outputs.has(Output.types) && !options.useApiExtractor) {
+      const typesInput = paths.resolveTargetRoot(
+        'dist-types',
+        relativePath(paths.targetRoot, targetDir),
+        path.replace(/\.ts$/, '.d.ts'),
       );
-    }
 
-    configs.push({
-      input: typesInput,
-      output: {
-        file: resolvePath(distDir, 'index.d.ts'),
-        format: 'es',
-      },
-      external: [
-        /\.css$/,
-        /\.scss$/,
-        /\.sass$/,
-        /\.svg$/,
-        /\.eot$/,
-        /\.woff$/,
-        /\.woff2$/,
-        /\.ttf$/,
-      ],
-      onwarn,
-      plugins: [dts()],
-    });
+      const declarationsExist = await fs.pathExists(typesInput);
+      if (!declarationsExist) {
+        const declarationPath = relativePath(targetDir, typesInput);
+        throw new Error(
+          `No declaration files found at ${declarationPath}, be sure to run ${chalk.bgRed.white(
+            'yarn tsc',
+          )} to generate .d.ts files before packaging`,
+        );
+      }
+
+      configs.push({
+        input: typesInput,
+        output: {
+          file: resolvePath(distDir, `${name}.d.ts`),
+          format: 'es',
+        },
+        external: [
+          /\.css$/,
+          /\.scss$/,
+          /\.sass$/,
+          /\.svg$/,
+          /\.eot$/,
+          /\.woff$/,
+          /\.woff2$/,
+          /\.ttf$/,
+        ],
+        onwarn,
+        plugins: [dts()],
+      });
+    }
   }
 
   return configs;
