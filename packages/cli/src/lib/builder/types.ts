@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ExtendedPackageJSON } from '../monorepo';
+
 export enum Output {
   esm,
   cjs,
@@ -23,6 +25,7 @@ export enum Output {
 export type BuildOptions = {
   logPrefix?: string;
   targetDir?: string;
+  packageJson?: ExtendedPackageJSON;
   outputs: Set<Output>;
   minify?: boolean;
   useApiExtractor?: boolean;
