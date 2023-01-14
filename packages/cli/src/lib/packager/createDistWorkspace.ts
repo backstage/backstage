@@ -37,7 +37,7 @@ import {
   getOutputsForRole,
   Output,
 } from '../builder';
-import { copyPackageDist } from './copyPackageDist';
+import { productionPack } from './productionPack';
 import { getRoleInfo } from '../role';
 import { runParallelWorkers } from '../parallel';
 
@@ -258,7 +258,10 @@ async function moveToDistWorkspace(
 
       const outputDir = relativePath(paths.targetRoot, target.dir);
       const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
-      await copyPackageDist(target.dir, absoluteOutputPath);
+      await productionPack({
+        packageDir: target.dir,
+        targetDir: absoluteOutputPath,
+      });
     }),
   );
 
