@@ -42,6 +42,8 @@ export interface ExtendedPackageJSON extends PackageJSON {
 
   exports?: JsonValue;
   typesVersions?: Record<string, Record<string, string[]>>;
+
+  files?: string[];
 }
 
 export type ExtendedPackage = {
