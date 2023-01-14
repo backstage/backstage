@@ -212,6 +212,9 @@ async function writeExportsEntryPoints(
         },
         { encoding: 'utf8', spaces: 2 },
       );
+      if (Array.isArray(pkg.files) && !pkg.files.includes(entryPoint.name)) {
+        pkg.files.push(entryPoint.name);
+      }
     }
 
     if (Object.keys(exp).length > 0) {
