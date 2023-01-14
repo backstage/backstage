@@ -300,6 +300,33 @@ function logApiReportInstructions() {
   console.log('');
 }
 
+async function findPackageEntryPoints(
+  packageDirs: string[],
+): Promise<Array<{ packageDir: string; name: string }>> {
+  return Promise.all(
+    packageDirs.map(async packageDir => {
+      const pkg = await fs.readJson(
+        cliPaths.resolveTargetRoot(packageDir, 'package.json'),
+      );
+
+      if (pkg.exports && typeof pkg.exports !== 'string') {
+        return Object.keys(pkg.exports).map(mount => {
+          let name = mount;
+          if (name.startsWith('./')) {
+            name = name.slice(2);
+          }
+          if (!name || name === '.') {
+            return { packageDir, name: 'index' };
+          }
+          return { packageDir, name };
+        });
+      }
+
+      return { packageDir, name: 'index' };
+    }),
+  ).then(results => results.flat());
+}
+
 interface ApiExtractionOptions {
   packageDirs: string[];
   outputDir: string;
@@ -319,9 +346,11 @@ export async function runApiExtraction({
 }: ApiExtractionOptions) {
   await fs.remove(outputDir);
 
-  const entryPoints = packageDirs.map(packageDir => {
+  const packageEntryPoints = await findPackageEntryPoints(packageDirs);
+
+  const entryPoints = packageEntryPoints.map(({ packageDir, name }) => {
     return cliPaths.resolveTargetRoot(
-      `./dist-types/${packageDir}/src/index.d.ts`,
+      `./dist-types/${packageDir}/src/${name}.d.ts`,
     );
   });
 
@@ -337,7 +366,7 @@ export async function runApiExtraction({
   }
   const warnings = new Array<string>();
 
-  for (const packageDir of packageDirs) {
+  for (const { packageDir, name } of packageEntryPoints) {
     console.log(`## Processing ${packageDir}`);
     const noBail = Array.isArray(allowWarnings)
       ? allowWarnings.some(aw => aw === packageDir || minimatch(packageDir, aw))
@@ -351,9 +380,10 @@ export async function runApiExtraction({
 
     const warningCountBefore = await countApiReportWarnings(projectFolder);
 
+    const prefix = name === 'index' ? '' : `${name}-`;
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
-        mainEntryPointFilePath: resolvePath(packageFolder, 'src/index.d.ts'),
+        mainEntryPointFilePath: resolvePath(packageFolder, `src/${name}.d.ts`),
         bundledPackages: [],
 
         compiler: {
@@ -362,16 +392,19 @@ export async function runApiExtraction({
 
         apiReport: {
           enabled: true,
-          reportFileName: 'api-report.md',
+          reportFileName: `${prefix}api-report.md`,
           reportFolder: projectFolder,
-          reportTempFolder: resolvePath(outputDir, '<unscopedPackageName>'),
+          reportTempFolder: resolvePath(
+            outputDir,
+            `${prefix}<unscopedPackageName>`,
+          ),
         },
 
         docModel: {
           enabled: true,
           apiJsonFilePath: resolvePath(
             outputDir,
-            '<unscopedPackageName>.api.json',
+            `${prefix}<unscopedPackageName>.api.json`,
           ),
         },
 
