@@ -305,14 +305,14 @@ export interface PluginServiceFactoryConfig<
   // (undocumented)
   createRootContext?(
     deps: ServiceRefsToInstances<TDeps, 'root'>,
-  ): Promise<TContext>;
+  ): TContext | Promise<TContext>;
   // (undocumented)
   deps: TDeps;
   // (undocumented)
   factory(
     deps: ServiceRefsToInstances<TDeps>,
     context: TContext,
-  ): Promise<TImpl>;
+  ): TImpl | Promise<TImpl>;
   // (undocumented)
   service: ServiceRef<TService, 'plugin'>;
 }
@@ -383,7 +383,7 @@ export interface RootServiceFactoryConfig<
   // (undocumented)
   deps: TDeps;
   // (undocumented)
-  factory(deps: ServiceRefsToInstances<TDeps, 'root'>): Promise<TImpl>;
+  factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
   // (undocumented)
   service: ServiceRef<TService, 'root'>;
 }

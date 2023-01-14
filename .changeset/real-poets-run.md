@@ -2,7 +2,7 @@
 '@backstage/backend-plugin-api': patch
 ---
 
-The `createServiceFactory` function has been updated to no longer use a duplicate callback pattern for plugin scoped services. The outer callback is now replaced by an optional `createRootContext` method. This change was made in order to support TypeScript 4.9, but it also simplifies the API surface a bit, especially for plugin scoped service factories that don't need to create a root context.
+The `createServiceFactory` function has been updated to no longer use a duplicate callback pattern for plugin scoped services. The outer callback is now replaced by an optional `createRootContext` method. This change was made in order to support TypeScript 4.9, but it also simplifies the API surface a bit, especially for plugin scoped service factories that don't need to create a root context. In addition, the factory and root context functions can now be synchronous.
 
 A factory that previously would have looked like this:
 
@@ -49,7 +49,7 @@ createServiceFactory({
     rootLogger: coreServices.rootLogger,
     plugin: coreServices.pluginMetadata,
   },
-  async factory({ rootLogger, plugin }) {
+  factory({ rootLogger, plugin }) {
     return rootLogger.child({ plugin: plugin.getId() });
   },
 });

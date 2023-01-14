@@ -26,7 +26,56 @@ interface TestOptions {
 function unused(..._any: any[]) {}
 
 describe('createServiceFactory', () => {
-  it('should create a meta factory with no options', () => {
+  it('should create a sync factory with no options', () => {
+    const metaFactory = createServiceFactory({
+      service: ref,
+      deps: {},
+      createRootContext() {},
+      factory(_deps) {
+        return 'x';
+      },
+    });
+    expect(metaFactory).toEqual(expect.any(Function));
+    expect(metaFactory().service).toBe(ref);
+
+    // @ts-expect-error
+    metaFactory('string');
+    // @ts-expect-error
+    metaFactory({});
+    // @ts-expect-error
+    metaFactory({ x: 1 });
+    // @ts-expect-error
+    metaFactory(null);
+    // @ts-expect-error
+    metaFactory(undefined);
+    metaFactory();
+  });
+
+  it('should create a sync root factory with no options', () => {
+    const metaFactory = createServiceFactory({
+      service: rootDep,
+      deps: {},
+      factory(_deps) {
+        return 0;
+      },
+    });
+    expect(metaFactory).toEqual(expect.any(Function));
+    expect(metaFactory().service).toBe(rootDep);
+
+    // @ts-expect-error
+    metaFactory('string');
+    // @ts-expect-error
+    metaFactory({});
+    // @ts-expect-error
+    metaFactory({ x: 1 });
+    // @ts-expect-error
+    metaFactory(null);
+    // @ts-expect-error
+    metaFactory(undefined);
+    metaFactory();
+  });
+
+  it('should create a factory with no options', () => {
     const metaFactory = createServiceFactory({
       service: ref,
       deps: {},
@@ -51,7 +100,7 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create a meta factory with optional options', () => {
+  it('should create a factory with optional options', () => {
     const metaFactory = createServiceFactory((_opts?: { x: number }) => ({
       service: ref,
       deps: {},
@@ -75,7 +124,7 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create a meta factory with required options', () => {
+  it('should create a factory with required options', () => {
     const metaFactory = createServiceFactory((_opts: { x: number }) => ({
       service: ref,
       deps: {},
@@ -101,7 +150,7 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create a meta factory with optional options as interface', () => {
+  it('should create a factory with optional options as interface', () => {
     const metaFactory = createServiceFactory((_opts?: TestOptions) => ({
       service: ref,
       deps: {},
@@ -125,7 +174,7 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create a meta factory with required options as interface', () => {
+  it('should create a factory with required options as interface', () => {
     const metaFactory = createServiceFactory((_opts: TestOptions) => ({
       service: ref,
       deps: {},

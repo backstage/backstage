@@ -144,7 +144,7 @@ export interface RootServiceFactoryConfig<
 > {
   service: ServiceRef<TService, 'root'>;
   deps: TDeps;
-  factory(deps: ServiceRefsToInstances<TDeps, 'root'>): Promise<TImpl>;
+  factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
 }
 
 /** @public */
@@ -158,11 +158,11 @@ export interface PluginServiceFactoryConfig<
   deps: TDeps;
   createRootContext?(
     deps: ServiceRefsToInstances<TDeps, 'root'>,
-  ): Promise<TContext>;
+  ): TContext | Promise<TContext>;
   factory(
     deps: ServiceRefsToInstances<TDeps>,
     context: TContext,
-  ): Promise<TImpl>;
+  ): TImpl | Promise<TImpl>;
 }
 
 /**
@@ -278,6 +278,16 @@ export function createServiceFactory<
   const configCallback = typeof config === 'function' ? config : () => config;
   return (options: TOpts) => {
     const c = configCallback(options);
-    return { ...c, scope: c.service.scope } as ServiceFactory<TService>;
+    return {
+      ...c,
+      ...('createRootContext' in c
+        ? {
+            createRootContext: async (deps: TDeps) =>
+              c?.createRootContext?.(deps),
+          }
+        : {}),
+      factory: async (deps: TDeps, ctx: TContext) => c.factory(deps, ctx),
+      scope: c.service.scope,
+    } as ServiceFactory<TService>;
   };
 }
