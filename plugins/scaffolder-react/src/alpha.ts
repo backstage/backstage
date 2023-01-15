@@ -14,18 +14,5 @@
  * limitations under the License.
  */
 
-import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
-
-// TODO(Rugvip): The FormProps type is actually supposed to be alpha, but since we want to
-//               refer to it from @backstage/plugin-scaffolder, it needs to be public for now.
-//               Once we support internal alpha re-exports this should be switched to an alpha export.
-
-/**
- * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderpage`
- *
- * @alpha
- */
-export type FormProps = Pick<
-  SchemaFormProps,
-  'transformErrors' | 'noHtml5Validate'
->;
+export * from './next';
+export type { FormProps } from './next';
