@@ -85,7 +85,7 @@ describe('readCorsOptions', () => {
     expect(cors?.origin).toBeUndefined();
   });
 
-  it('get\'s undefined properties removed', () => {
+  it("get's undefined properties removed", () => {
     const config = new ConfigReader({
       cors: {
         methods: ['get'],
@@ -106,7 +106,7 @@ describe('readCorsOptions', () => {
   it('does not have undefined optionsSuccessStatus', () => {
     const config = new ConfigReader({
       cors: {
-        optionsSuccessStatus: undefined
+        optionsSuccessStatus: undefined,
       },
     });
     const cors = readCorsOptions(config);
@@ -116,7 +116,7 @@ describe('readCorsOptions', () => {
   it('does have defined optionsSuccessStatus', () => {
     const config = new ConfigReader({
       cors: {
-        optionsSuccessStatus: 200
+        optionsSuccessStatus: 200,
       },
     });
     const cors = readCorsOptions(config);
