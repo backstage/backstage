@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { PackageGraph } from '../../lib/monorepo';
+import { ExtendedPackageJSON, PackageGraph } from '../../lib/monorepo';
 
 function trimRelative(path: string): string {
   if (path.startsWith('./')) {
@@ -35,10 +35,12 @@ export async function command() {
         return;
       }
 
+      let changed = false;
+      let newPackageJson = packageJson;
+
       const existingTypesVersions = JSON.stringify(packageJson.typesVersions);
 
       const typeEntries: Record<string, [string]> = {};
-
       for (const [path, value] of Object.entries(exp)) {
         const newPath = path === '.' ? '*' : trimRelative(path);
 
@@ -58,10 +60,9 @@ export async function command() {
       }
 
       const typesVersions = { '*': typeEntries };
-
       if (existingTypesVersions !== JSON.stringify(typesVersions)) {
         console.log(`Synchronizing exports in ${packageJson.name}`);
-        const newPkgEntries = Object.entries(packageJson).filter(
+        const newPkgEntries = Object.entries(newPackageJson).filter(
           ([name]) => name !== 'typesVersions',
         );
         newPkgEntries.splice(
@@ -70,13 +71,29 @@ export async function command() {
           ['typesVersions', typesVersions],
         );
 
-        await fs.writeJson(
-          resolvePath(dir, 'package.json'),
-          Object.fromEntries(newPkgEntries),
-          {
-            spaces: 2,
-          },
-        );
+        newPackageJson = Object.fromEntries(
+          newPkgEntries,
+        ) as ExtendedPackageJSON;
+        changed = true;
+      }
+
+      // Remove the legacy fields from publishConfig, which are no longer needed
+      const publishConfig = newPackageJson.publishConfig as
+        | Record<string, string>
+        | undefined;
+      if (publishConfig) {
+        for (const field of ['main', 'module', 'browser', 'types']) {
+          if (publishConfig[field]) {
+            delete publishConfig[field];
+            changed = true;
+          }
+        }
+      }
+
+      if (changed) {
+        await fs.writeJson(resolvePath(dir, 'package.json'), newPackageJson, {
+          spaces: 2,
+        });
       }
     }),
   );
