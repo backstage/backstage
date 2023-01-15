@@ -22,7 +22,7 @@ import {
 } from '@rjsf/utils';
 import { PropsWithChildren } from 'react';
 import { JsonObject } from '@backstage/types';
-import { CustomFieldExtensionSchema } from '../../extensions';
+import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
 
 /**
  * Type for Field Extension Props for RJSF v5
