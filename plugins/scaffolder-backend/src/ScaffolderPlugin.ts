@@ -26,8 +26,12 @@ import {
   ScaffolderActionsExtensionPoint,
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
-import { TemplateFilter, TemplateGlobal } from './lib';
-import { createBuiltinActions, TaskBroker } from './scaffolder';
+import {
+  TemplateFilter,
+  TemplateGlobal,
+  TaskBroker,
+} from '@backstage/plugin-scaffolder-backend';
+import { createBuiltinActions } from './scaffolder';
 import { createRouter } from './service/router';
 
 /**
