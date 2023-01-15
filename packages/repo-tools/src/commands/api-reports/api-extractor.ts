@@ -334,6 +334,7 @@ interface ApiExtractionOptions {
   tsconfigFilePath: string;
   allowWarnings?: boolean | string[];
   omitMessages?: string[];
+  validateReleaseTags?: boolean;
 }
 
 export async function runApiExtraction({
@@ -343,6 +344,7 @@ export async function runApiExtraction({
   tsconfigFilePath,
   allowWarnings = false,
   omitMessages = [],
+  validateReleaseTags = false,
 }: ApiExtractionOptions) {
   await fs.remove(outputDir);
 
@@ -493,6 +495,30 @@ export async function runApiExtraction({
       },
       compilerState,
     });
+
+    // This release tag validation makes sure that the release tag of known entry points match expectations.
+    // The root index entrypoint is only allowed @public exports, while /alpha and /beta only allow @alpha and @beta.
+    if (validateReleaseTags) {
+      if (['index', 'alpha', 'beta'].includes(name)) {
+        const report = await fs.readFile(
+          extractorConfig.reportFilePath,
+          'utf8',
+        );
+        const lines = report.split(/\r?\n/);
+        const expectedTag = name === 'index' ? 'public' : name;
+        for (let i = 0; i < lines.length; i += 1) {
+          const line = lines[i];
+          const match = line.match(/^\/\/ @(alpha|beta|public)/);
+          if (match && match[1] !== expectedTag) {
+            throw new Error(
+              `Unexpected release tag ${match[1]} in ${
+                extractorConfig.reportFilePath
+              } at line ${i + 1}`,
+            );
+          }
+        }
+      }
+    }
 
     if (!extractorResult.succeeded) {
       if (shouldLogInstructions) {
