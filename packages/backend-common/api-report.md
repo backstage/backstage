@@ -20,7 +20,6 @@ import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import cors from 'cors';
 import Docker from 'dockerode';
-import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { GerritIntegration } from '@backstage/integration';
@@ -209,29 +208,6 @@ export const coloredFormat: winston.Logform.Format;
 // @public
 export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
-}
-
-// @alpha
-export interface Context {
-  readonly abortSignal: AbortSignal;
-  readonly deadline: Date | undefined;
-  value<T = unknown>(key: string): T | undefined;
-}
-
-// @alpha
-export class Contexts {
-  static root(): Context;
-  static withAbort(
-    parentCtx: Context,
-    source: AbortController | AbortSignal,
-  ): Context;
-  static withTimeoutDuration(parentCtx: Context, timeout: Duration): Context;
-  static withTimeoutMillis(parentCtx: Context, timeout: number): Context;
-  static withValue(
-    parentCtx: Context,
-    key: string,
-    value: unknown | ((previous: unknown | undefined) => unknown),
-  ): Context;
 }
 
 // @public
