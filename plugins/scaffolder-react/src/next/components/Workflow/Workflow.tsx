@@ -59,17 +59,19 @@ export interface WorkflowProps {
   onError(error: Error | undefined): JSX.Element | null;
   initialFormState?: Record<string, JsonValue>;
   FormProps?: FormProps;
-  ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
+  ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
 }
 
 /**
  * @alpha
  */
-export const Workflow = ({
-  ReviewStateWrapper = ReviewState,
-  FormProps = {},
-  ...props
-}: WorkflowProps): JSX.Element | null => {
+export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
+  const {
+    ReviewStateComponent = ReviewState,
+    FormProps = {},
+    ...props
+  } = workflowProps;
+
   const styles = useStyles();
   const templateRef = stringifyEntityRef({
     kind: 'Template',
@@ -114,7 +116,7 @@ export const Workflow = ({
             onComplete={props.onComplete}
             FormProps={FormProps}
             initialState={props.initialFormState}
-            ReviewStateWrapper={ReviewStateWrapper}
+            ReviewStateComponent={ReviewStateComponent}
           />
         </InfoCard>
       )}

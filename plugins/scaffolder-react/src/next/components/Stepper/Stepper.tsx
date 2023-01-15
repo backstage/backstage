@@ -61,7 +61,7 @@ export type StepperProps = {
   initialState?: Record<string, JsonValue>;
 
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-  ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
+  ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
   createButtonText?: string;
   reviewButtonText?: string;
 };
@@ -76,12 +76,14 @@ const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
  * @alpha
  */
 
-export const Stepper = ({
-  ReviewStateWrapper = ReviewState,
-  createButtonText = 'Create',
-  reviewButtonText = 'Review',
-  ...props
-}: StepperProps) => {
+export const Stepper = (stepperProps: StepperProps) => {
+  const {
+    ReviewStateComponent = ReviewState,
+    createButtonText = 'Create',
+    reviewButtonText = 'Review',
+    ...props
+  } = stepperProps;
+
   const analytics = useAnalytics();
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
@@ -191,7 +193,7 @@ export const Stepper = ({
           </Form>
         ) : (
           <>
-            <ReviewStateWrapper formState={formState} schemas={steps} />
+            <ReviewStateComponent formState={formState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}

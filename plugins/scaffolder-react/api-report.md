@@ -190,12 +190,10 @@ export interface ParsedTemplateSchema {
 export const ReviewState: (props: ReviewStateProps) => JSX.Element;
 
 // @alpha
-export interface ReviewStateProps {
-  // (undocumented)
-  formState: JsonObject;
-  // (undocumented)
+export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
-}
+  formState: JsonObject;
+};
 
 // @public
 export interface ScaffolderApi {
@@ -348,12 +346,7 @@ export const SecretsContextProvider: ({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @alpha
-export const Stepper: ({
-  ReviewStateWrapper,
-  createButtonText,
-  reviewButtonText,
-  ...props
-}: StepperProps) => JSX.Element;
+export const Stepper: (stepperProps: StepperProps) => JSX.Element;
 
 // @alpha
 export type StepperProps = {
@@ -363,7 +356,7 @@ export type StepperProps = {
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-  ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
+  ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
   createButtonText?: string;
   reviewButtonText?: string;
 };
@@ -448,11 +441,7 @@ export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 
 // @alpha (undocumented)
-export const Workflow: ({
-  ReviewStateWrapper,
-  FormProps,
-  ...props
-}: WorkflowProps) => JSX.Element | null;
+export const Workflow: (workflowProps: WorkflowProps) => JSX.Element | null;
 
 // @alpha (undocumented)
 export interface WorkflowProps {
@@ -471,7 +460,7 @@ export interface WorkflowProps {
   // (undocumented)
   onError(error: Error | undefined): JSX.Element | null;
   // (undocumented)
-  ReviewStateWrapper?: (props: ReviewStateProps) => JSX.Element;
+  ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
   // (undocumented)
   templateName: string;
   // (undocumented)

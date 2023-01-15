@@ -80,7 +80,7 @@ describe('<Workflow />', () => {
           initialFormState={{
             name: 'prefilled-name',
           }}
-          ReviewStateWrapper={() => (
+          ReviewStateComponent={() => (
             <h1>This is a different wrapper for the review page</h1>
           )}
           customFieldExtensions={[]}
