@@ -6,7 +6,6 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
-import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
@@ -37,9 +36,6 @@ import { Writable } from 'stream';
 
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
-
-// @alpha
-export const catalogModuleTemplateKind: () => BackendFeature;
 
 // @public
 export const createBuiltinActions: (
@@ -665,20 +661,6 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   // (undocumented)
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
-
-// @alpha
-export const scaffolderPlugin: (
-  options: ScaffolderPluginOptions,
-) => BackendFeature;
-
-// @alpha
-export type ScaffolderPluginOptions = {
-  actions?: TemplateAction_2<any>[];
-  taskWorkers?: number;
-  taskBroker?: TaskBroker;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-};
 
 // @public
 export type SerializedTask = {
