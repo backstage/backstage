@@ -21,10 +21,12 @@ import useDebounce from 'react-use/lib/useDebounce';
 import yaml from 'yaml';
 import {
   LayoutOptions,
-  NextFieldExtensionOptions,
-  Stepper,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
+import {
+  NextFieldExtensionOptions,
+  Stepper,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { useDryRun } from '../../components/TemplateEditorPage/DryRunContext';
 import { useDirectoryEditor } from '../../components/TemplateEditorPage/DirectoryEditorContext';
 
