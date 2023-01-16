@@ -19,9 +19,4 @@ export * from './createConditionExports';
 export * from './createConditionTransformer';
 export * from './createPermissionIntegrationRouter';
 export * from './createPermissionRule';
-export {
-  createGetRule,
-  isAndCriteria,
-  isOrCriteria,
-  isNotCriteria,
-} from './util';
+export { isAndCriteria, isOrCriteria, isNotCriteria } from './util';

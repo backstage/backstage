@@ -126,7 +126,7 @@ export type MetadataResponse = {
   rules: MetadataResponseSerializedRule[];
 };
 
-export const applyConditions = <TResourceType extends string, TResource>(
+const applyConditions = <TResourceType extends string, TResource>(
   criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
   resource: TResource | undefined,
   getRule: (name: string) => PermissionRule<TResource, unknown, TResourceType>,
@@ -158,6 +158,27 @@ export const applyConditions = <TResourceType extends string, TResource>(
   }
 
   return rule.apply(resource, criteria.params ?? {});
+};
+
+/**
+
+ * Takes some permission conditions and returns a definitive authorization result
+ * on the resource to which they apply.
+ *
+ * @public
+ */
+export const createIsAuthorized = <
+  TResourceType extends string,
+  TResource,
+  TQuery,
+>(
+  rules: PermissionRule<TResource, TQuery, string>[],
+) => {
+  const getRule = createGetRule(rules);
+  return (
+    criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
+    resource: TResource | undefined,
+  ) => applyConditions(criteria, resource, getRule);
 };
 
 /**
