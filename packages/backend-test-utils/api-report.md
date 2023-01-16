@@ -5,6 +5,7 @@
 ```ts
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ConfigReader } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -17,13 +18,25 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 export function isDockerDisabledForTests(): boolean;
 
 // @alpha (undocumented)
-export const mockConfigFactory: (
-  options?:
-    | {
-        data?: JsonObject | undefined;
-      }
-    | undefined,
-) => ServiceFactory<ConfigService>;
+export namespace mockFactories {
+  const // (undocumented)
+    config: (
+      options?: mockServices.config.Options | undefined,
+    ) => ServiceFactory<ConfigService>;
+}
+
+// @alpha (undocumented)
+export namespace mockServices {
+  // (undocumented)
+  export namespace config {
+    // (undocumented)
+    export type Options = {
+      data?: JsonObject;
+    };
+  }
+  // (undocumented)
+  export function config(options?: config.Options): ConfigReader;
+}
 
 // @public
 export function setupRequestMockHandlers(worker: {

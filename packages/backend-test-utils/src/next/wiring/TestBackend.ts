@@ -41,7 +41,7 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 
-import { mockConfigFactory } from '../implementations/mockConfigService';
+import { mockFactories } from '../implementations';
 import { mockRootLoggerService } from '../implementations/mockRootLoggerService';
 import { mockTokenManagerFactory } from '../implementations/mockTokenManagerService';
 import { ConfigReader } from '@backstage/config';
@@ -89,7 +89,7 @@ const defaultServiceFactories = [
   httpRouterFactory(),
   lifecycleFactory(),
   loggerFactory(),
-  mockConfigFactory(),
+  mockFactories.config(),
   mockRootLoggerService(),
   mockIdentityFactory(),
   mockTokenManagerFactory(),

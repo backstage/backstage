@@ -13,5 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { mockFactories } from './mockFactories';
-export { mockServices } from './mockServices';
+
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { mockServices } from './mockServices';
+
+/**
+ * @alpha
+ */
+export namespace mockFactories {
+  export const config = createServiceFactory(
+    (options?: mockServices.config.Options) => ({
+      service: coreServices.config,
+      deps: {},
+      async factory() {
+        return mockServices.config(options);
+      },
+    }),
+  );
+}
