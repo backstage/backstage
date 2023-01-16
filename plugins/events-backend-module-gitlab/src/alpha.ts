@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * The module "gitlab" for the Backstage backend plugin "events-backend"
- * adding an event router and token validator for GitLab.
- *
- * @packageDocumentation
- */
-
-export { createGitlabTokenValidator } from './http/createGitlabTokenValidator';
-export { GitlabEventRouter } from './router/GitlabEventRouter';
+export { gitlabEventRouterEventsModule } from './service/GitlabEventRouterEventsModule';
+export { gitlabWebhookEventsModule } from './service/GitlabWebhookEventsModule';
