@@ -1,11 +1,11 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: searcher
-  description: Searcher
-  tags:
-    - go
+  name: example
+  description: example.com
+  annotations:
+    backstage.io/techdocs-ref: value
 spec:
-  type: service
+  type: website
   lifecycle: production
   owner: user:guest
