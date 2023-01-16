@@ -46,6 +46,7 @@ import { mockRootLoggerService } from '../implementations/mockRootLoggerService'
 import { mockTokenManagerFactory } from '../implementations/mockTokenManagerService';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
+import { mockIdentityFactory } from '../implementations/mockIdentityService';
 
 /** @alpha */
 export interface TestBackendOptions<
@@ -90,6 +91,7 @@ const defaultServiceFactories = [
   loggerFactory(),
   mockConfigFactory(),
   mockRootLoggerService(),
+  mockIdentityFactory(),
   mockTokenManagerFactory(),
   permissionsFactory(),
   rootLifecycleFactory(),
