@@ -15,25 +15,33 @@
  */
 
 import {
-  loadBackendConfig,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
-import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { LoadConfigOptionsRemote } from '@backstage/config-loader';
+import { loadBackendConfig } from '../../../config';
+
+/** @public */
+export interface ConfigFactoryOptions {
+  /**
+   * Process arguments to use instead of the default `process.argv()`.
+   */
+  argv?: string[];
+
+  /**
+   * Enables and sets options for remote configuration loading.
+   */
+  remote?: LoadConfigOptionsRemote;
+}
 
 /** @public */
 export const configFactory = createServiceFactory({
   service: coreServices.config,
-  deps: {
-    logger: coreServices.rootLogger,
-  },
-  async factory({ logger }) {
-    const config = await loadBackendConfig({
-      argv: process.argv,
-      logger: loggerToWinstonLogger(logger),
-    });
+  deps: {},
+  async factory({}, options?: ConfigFactoryOptions) {
+    const { argv = process.argv, remote } = options ?? {};
+
+    const { config } = await loadBackendConfig({ argv, remote });
     return config;
   },
 });

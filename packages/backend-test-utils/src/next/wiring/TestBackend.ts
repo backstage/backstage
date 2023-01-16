@@ -20,7 +20,6 @@ import {
   lifecycleFactory,
   rootLifecycleFactory,
   loggerFactory,
-  rootLoggerFactory,
   cacheFactory,
   permissionsFactory,
   schedulerFactory,
@@ -43,6 +42,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 import { mockConfigFactory } from '../implementations/mockConfigService';
+import { mockRootLoggerService } from '../implementations/mockRootLoggerService';
 import { mockTokenManagerFactory } from '../implementations/mockTokenManagerService';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -89,10 +89,10 @@ const defaultServiceFactories = [
   lifecycleFactory(),
   loggerFactory(),
   mockConfigFactory(),
+  mockRootLoggerService(),
   mockTokenManagerFactory(),
   permissionsFactory(),
   rootLifecycleFactory(),
-  rootLoggerFactory(),
   schedulerFactory(),
   urlReaderFactory(),
 ];

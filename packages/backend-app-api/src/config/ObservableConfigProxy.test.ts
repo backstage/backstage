@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { ObservableConfigProxy } from './config';
+import { ObservableConfigProxy } from './ObservableConfigProxy';
 
 describe('ObservableConfigProxy', () => {
-  const errLogger = {
-    error: (message: string) => {
-      throw new Error(message);
-    },
-  } as unknown as LoggerService;
-
   it('should notify subscribers', () => {
-    const config = new ObservableConfigProxy(errLogger);
+    const config = new ObservableConfigProxy();
 
     const fn = jest.fn();
     const sub = config.subscribe(fn);
@@ -51,7 +44,7 @@ describe('ObservableConfigProxy', () => {
   });
 
   it('should forward subscriptions', () => {
-    const config1 = new ObservableConfigProxy(errLogger);
+    const config1 = new ObservableConfigProxy();
 
     const fn1 = jest.fn();
     const fn2 = jest.fn();
@@ -119,7 +112,7 @@ describe('ObservableConfigProxy', () => {
   });
 
   it('should make sub configs available as expected', () => {
-    const config = new ObservableConfigProxy(errLogger);
+    const config = new ObservableConfigProxy();
 
     config.setConfig(new ConfigReader({ a: { x: 1 } }));
 

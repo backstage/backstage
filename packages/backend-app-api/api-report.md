@@ -12,13 +12,16 @@ import { CorsOptions } from 'cors';
 import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { Format } from 'logform';
 import { Handler } from 'express';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
+import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { LogMeta } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
@@ -33,6 +36,7 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
+import { transport } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
@@ -50,6 +54,18 @@ export const cacheFactory: () => ServiceFactory<PluginCacheManager>;
 
 // @public (undocumented)
 export const configFactory: () => ServiceFactory<ConfigService>;
+
+// @public (undocumented)
+export interface ConfigFactoryOptions {
+  argv?: string[];
+  remote?: LoadConfigOptionsRemote;
+}
+
+// @public (undocumented)
+export function createConfigSecretEnumerator(options: {
+  logger: LoggerService;
+  dir?: string;
+}): Promise<(config: Config) => Iterable<string>>;
 
 // @public
 export function createHttpServer(
@@ -147,6 +163,14 @@ export type IdentityFactoryOptions = {
 // @public
 export const lifecycleFactory: () => ServiceFactory<LifecycleService>;
 
+// @public
+export function loadBackendConfig(options: {
+  remote?: LoadConfigOptionsRemote;
+  argv: string[];
+}): Promise<{
+  config: Config;
+}>;
+
 // @public (undocumented)
 export const loggerFactory: () => ServiceFactory<LoggerService>;
 
@@ -231,4 +255,38 @@ export const tokenManagerFactory: () => ServiceFactory<TokenManagerService>;
 
 // @public (undocumented)
 export const urlReaderFactory: () => ServiceFactory<UrlReader>;
+
+// @public
+export class WinstonLogger implements RootLoggerService {
+  // (undocumented)
+  addRedactions(redactions: Iterable<string>): void;
+  // (undocumented)
+  child(meta: LogMeta): LoggerService;
+  static colorFormat(): Format;
+  static create(options: WinstonLoggerOptions): WinstonLogger;
+  // (undocumented)
+  debug(message: string, meta?: LogMeta): void;
+  // (undocumented)
+  error(message: string, meta?: LogMeta): void;
+  // (undocumented)
+  info(message: string, meta?: LogMeta): void;
+  static redacter(): {
+    format: Format;
+    add: (redactions: Iterable<string>) => void;
+  };
+  // (undocumented)
+  warn(message: string, meta?: LogMeta): void;
+}
+
+// @public (undocumented)
+export interface WinstonLoggerOptions {
+  // (undocumented)
+  format: Format;
+  // (undocumented)
+  level: string;
+  // (undocumented)
+  meta?: LogMeta;
+  // (undocumented)
+  transports: transport[];
+}
 ```

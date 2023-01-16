@@ -15,3 +15,4 @@
  */
 
 export { configFactory } from './configFactory';
+export type { ConfigFactoryOptions } from './configFactory';

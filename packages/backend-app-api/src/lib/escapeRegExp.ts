@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,10 @@
  */
 
 /**
- * Core API used by Backstage backend apps.
+ * Escapes a given string to be used inside a RegExp.
  *
- * @packageDocumentation
+ * Taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
  */
-
-export * from './config';
-export * from './http';
-export * from './logging';
-export * from './wiring';
-export * from './services/implementations';
+export const escapeRegExp = (text: string) => {
+  return text.replace(/[.*+?^${}(\)|[\]\\]/g, '\\$&');
+};
