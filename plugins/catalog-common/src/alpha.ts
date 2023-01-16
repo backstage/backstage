@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-/**
- * Provides shared objects useful for interacting with the catalog and its
- * entities, such as catalog permissions.
- *
- * @packageDocumentation
- */
-
-export * from './search';
-export * from './ingestion';
-export type { LocationSpec } from './common';
+export {
+  RESOURCE_TYPE_CATALOG_ENTITY,
+  catalogEntityReadPermission,
+  catalogEntityCreatePermission,
+  catalogEntityDeletePermission,
+  catalogEntityRefreshPermission,
+  catalogLocationReadPermission,
+  catalogLocationCreatePermission,
+  catalogLocationDeletePermission,
+  catalogPermissions,
+} from './permissions';
+export type { CatalogEntityPermission } from './permissions';
