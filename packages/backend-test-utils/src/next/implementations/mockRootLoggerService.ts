@@ -80,7 +80,7 @@ class MockLogger implements RootLoggerService {
   }
 }
 
-/** @public */
+/** @alpha */
 export const mockRootLoggerService = createServiceFactory({
   service: coreServices.rootLogger,
   deps: {},

@@ -21,7 +21,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 
-/** @public */
+/** @alpha */
 export const mockConfigFactory = createServiceFactory(
   (options?: { data?: JsonObject }) => ({
     service: coreServices.config,

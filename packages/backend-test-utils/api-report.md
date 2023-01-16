@@ -16,7 +16,7 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
 
-// @public (undocumented)
+// @alpha (undocumented)
 export const mockConfigFactory: (
   options?:
     | {

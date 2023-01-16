@@ -30,6 +30,7 @@ class TokenManagerMock implements TokenManager {
   }
 }
 
+/** @alpha */
 export const mockTokenManagerFactory = createServiceFactory({
   service: coreServices.tokenManager,
   deps: {},
