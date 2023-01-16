@@ -25,6 +25,10 @@ import {
   PermissionPolicy,
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
+import {
+  DefaultPlaylistPermissionPolicy,
+  isPlaylistPermission,
+} from '@backstage/plugin-playlist-backend';
 
 import {
   createScaffolderStepConditionalDecision,
@@ -35,13 +39,16 @@ import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
+  private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
+
   async handle(
     request: PolicyQuery,
-    _user?: BackstageIdentityResponse,
+    user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
-    /**
-     * This is an example of how to use the scaffolder step conditions.
-     */
+    if (isPlaylistPermission(request.permission)) {
+      return this.playlistPermissionPolicy.handle(request, user);
+    }
+
     if (
       isResourcePermission(
         request.permission,
