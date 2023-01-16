@@ -20,7 +20,6 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
-import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
@@ -474,9 +473,6 @@ export function InspectEntityDialog(props: {
   onClose: () => void;
 }): JSX.Element | null;
 
-// @alpha
-export function isOwnerOf(owner: Entity, entity: Entity): boolean;
-
 // @public (undocumented)
 export function MockEntityListContextProvider<
   T extends DefaultEntityFilters = DefaultEntityFilters,
@@ -536,15 +532,6 @@ export function useEntityList<
 export function useEntityOwnership(): {
   loading: boolean;
   isOwnedEntity: (entity: Entity) => boolean;
-};
-
-// @alpha
-export function useEntityPermission(
-  permission: ResourcePermission<'catalog-entity'>,
-): {
-  loading: boolean;
-  allowed: boolean;
-  error?: Error;
 };
 
 // @public
