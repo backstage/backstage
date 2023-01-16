@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import { EntitiesSearchFilter } from '@backstage/plugin-catalog-backend';
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_STEP,
+  RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
   TemplateEntityStepV1beta3,
+  TemplateParameter,
 } from '@backstage/plugin-scaffolder-common';
+import { TemplateProperty } from '@backstage/plugin-scaffolder-common';
 import { z } from 'zod';
 
 export const createScaffolderStepPermissionRule = makeCreatePermissionRule<
-  TemplateEntityStepV1beta3,
-  EntitiesSearchFilter,
-  typeof RESOURCE_TYPE_SCAFFOLDER_STEP
+  TemplateEntityStepV1beta3 | TemplateProperty | TemplateParameter,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_PROPERTY
 >();
 
 const hasTag = createScaffolderStepPermissionRule({
   name: 'HAS_TAG',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_STEP,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
   description: 'Match a scaffolder step with the given tag',
   paramsSchema: z.object({
     tag: z.string(),
@@ -38,10 +39,7 @@ const hasTag = createScaffolderStepPermissionRule({
   apply: (resource, { tag }) => {
     return resource.metadata?.tags?.includes(tag) ?? false;
   },
-  toQuery: ({ tag }) => ({
-    key: 'metadata.tags',
-    values: [tag],
-  }),
+  toQuery: () => ({}),
 });
 
 export const scaffolderStepRules = { hasTag };
