@@ -50,7 +50,7 @@ export interface TemplateEntityV1beta3 extends Entity {
      * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
      * variables passed from the user into each action in the template.
      */
-    parameters?: JsonObject | JsonObject[];
+    parameters?: TemplateParameter | TemplateParameter[];
     /**
      * A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
      * javascript action and some optional input parameters that may or may not have been collected from the end user.
@@ -76,9 +76,29 @@ export interface TemplateEntityStepV1beta3 extends JsonObject {
   action: string;
   input?: JsonObject;
   if?: string | boolean;
-  metadata: {
-    tags?: string[];
-  };
+  metadata?: TemplateSpecValuesMetadata;
+}
+
+/**
+ * TODO
+ */
+export interface TemplateSpecValuesMetadata extends JsonObject {
+  tags?: string[];
+}
+
+/**
+ * TODO
+ */
+export interface TemplateParameter extends JsonObject {
+  metadata?: TemplateSpecValuesMetadata;
+  properties?: { [name: string]: TemplateProperty };
+}
+
+/**
+ * TODO
+ */
+export interface TemplateProperty extends JsonObject {
+  metadata?: TemplateSpecValuesMetadata;
 }
 
 const validator = entityKindSchemaValidator(schema);
