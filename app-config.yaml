@@ -280,6 +280,8 @@ catalog:
     # Backstage end-to-end tests of TechDocs
     - type: file
       target: ../../cypress/e2e-fixture.catalog.info.yaml
+    
+    # TODO: Remove once approach is validated on RFC. 
     - type: file
       target: ../../template.yaml
 scaffolder:
