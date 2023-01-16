@@ -30,7 +30,7 @@ import {
   createScaffolderStepConditionalDecision,
   scaffolderStepConditions,
 } from '@backstage/plugin-scaffolder-backend';
-import { RESOURCE_TYPE_SCAFFOLDER_STEP } from '@backstage/plugin-scaffolder-common';
+import { RESOURCE_TYPE_SCAFFOLDER_PROPERTY } from '@backstage/plugin-scaffolder-common';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -43,7 +43,10 @@ class ExamplePermissionPolicy implements PermissionPolicy {
      * This is an example of how to use the scaffolder step conditions.
      */
     if (
-      isResourcePermission(request.permission, RESOURCE_TYPE_SCAFFOLDER_STEP)
+      isResourcePermission(
+        request.permission,
+        RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
+      )
     ) {
       return createScaffolderStepConditionalDecision(
         request.permission,
