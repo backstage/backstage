@@ -25120,9 +25120,9 @@ __metadata:
   linkType: hard
 
 "immer@npm:^9.0.1, immer@npm:^9.0.7":
-  version: 9.0.17
-  resolution: "immer@npm:9.0.17"
-  checksum: 046d562b74f050632d2861042dbcad49a5e86ffe5bb9b8bff6e699b1c7d8478019d9a3be61e72117cecc29826d2caa4fa927a7e10262381144dd33c735b9531c
+  version: 9.0.18
+  resolution: "immer@npm:9.0.18"
+  checksum: 85b3153dd01fce73c40591d0d6d7cd95878dab49f8ec4744c044adac05e0dab847b30c26259c478a5f87f974897be6df2780ff5bf86c8a0a27578fdeb300eb10
   languageName: node
   linkType: hard
 
