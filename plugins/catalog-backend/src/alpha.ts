@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-export type {
-  CatalogEnvironment,
-  CatalogPermissionRuleInput,
-} from './CatalogBuilder';
-export { CatalogBuilder } from './CatalogBuilder';
+export * from './permissions';
+export { catalogPlugin } from './service/CatalogPlugin';
