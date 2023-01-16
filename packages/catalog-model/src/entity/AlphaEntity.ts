@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-export * from './conditions';
-export * from './constants';
-export type { Entity, EntityLink, EntityMeta, EntityRelation } from './Entity';
-export type { EntityEnvelope } from './EntityEnvelope';
-export * from './policies';
-export {
-  getCompoundEntityRef,
-  parseEntityRef,
-  stringifyEntityRef,
-} from './ref';
+import { Entity } from './Entity';
+import { EntityStatus } from './EntityStatus';
+
+/**
+ * A version of the {@link Entity} type that contains unstable alpha fields.
+ *
+ * @remarks
+ *
+ * Available via the `@backstage/catalog-model/alpha` import.
+ *
+ * @alpha
+ */
+export interface AlphaEntity extends Entity {
+  /**
+   * The current status of the entity, as claimed by various sources.
+   *
+   * The keys are implementation defined and the values can be any JSON object
+   * with semantics that match that implementation.
+   */
+  status?: EntityStatus;
+}
