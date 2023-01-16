@@ -212,6 +212,10 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Workflow',
     field: 'workflow.name',
+    highlight: true,
+    render: (row: Partial<CITableBuildInfo>) => (
+      <Link to={row?.workflow?.url ?? ''}>{row?.workflow?.name}</Link>
+    ),
   },
   {
     title: 'Actions',
