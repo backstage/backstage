@@ -16,16 +16,14 @@
 
 import { createPermission } from '@backstage/plugin-permission-common';
 
-export const RESOURCE_TYPE_SCAFFOLDER_PARAMETER = 'scaffolder-parameter';
 export const RESOURCE_TYPE_SCAFFOLDER_PROPERTY = 'scaffolder-property';
-export const RESOURCE_TYPE_SCAFFOLDER_STEP = 'scaffolder-step';
 
 export const templateParameterReadPermission = createPermission({
   name: 'scaffolder.template.parameter.read',
   attributes: {
     action: 'read',
   },
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_PARAMETER,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
 });
 
 export const templatePropertyReadPermission = createPermission({
@@ -41,16 +39,18 @@ export const templateStepReadPermission = createPermission({
   attributes: {
     action: 'read',
   },
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_STEP,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
 });
 
-export const scaffolderParameterPermissions = [templateParameterReadPermission];
-export const scaffolderPropertyPermissions = [templatePropertyReadPermission];
-export const scaffolderStepPermissions = [templateStepReadPermission];
+export const scaffolderPermissions = [
+  templatePropertyReadPermission,
+  templateParameterReadPermission,
+  templateStepReadPermission,
+];
 
 /**
  * TODOs:
- * 1. Implement for Parameters & Properties
+ * 1. ~Implement for Parameters & Properties~
  * 2. What metadata should be included in the template?
  * 3. Write tests
  * 4. Write documentation
