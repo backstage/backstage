@@ -32,7 +32,6 @@ import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
-  TemplateParameter,
   templateParameterReadPermission,
   TemplateProperty,
   templatePropertyReadPermission,
@@ -63,11 +62,10 @@ import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import {
-  applyConditions,
-  createGetRule,
-} from '@backstage/plugin-permission-node';
+import { createIsAuthorized } from '@backstage/plugin-permission-node';
 import { scaffolderStepRules } from './rules';
+
+const isAuthorized = createIsAuthorized(Object.values(scaffolderStepRules));
 
 /**
  * RouterOptions
@@ -266,8 +264,6 @@ export async function createRouter(
     additionalTemplateFilters,
     additionalTemplateGlobals,
   });
-
-  const getRule = createGetRule(Object.values(scaffolderStepRules));
 
   router
     .get(
@@ -594,16 +590,12 @@ export async function createRouter(
     } else if (parameterDecision.result === AuthorizeResult.CONDITIONAL) {
       if (Array.isArray(template.spec.parameters)) {
         template.spec.parameters = template.spec.parameters.filter(step =>
-          applyConditions(parameterDecision.conditions, step, getRule),
+          isAuthorized(parameterDecision.conditions, step),
         );
       } else {
         if (
           template.spec.parameters &&
-          !applyConditions(
-            parameterDecision.conditions,
-            template.spec.parameters,
-            getRule,
-          )
+          !isAuthorized(parameterDecision.conditions, template.spec.parameters)
         ) {
           template.spec.parameters = undefined;
         }
@@ -627,7 +619,7 @@ export async function createRouter(
           parameter.properties = Object.entries(
             parameter.properties || {},
           ).reduce<Record<string, TemplateProperty>>((acc, [key, value]) => {
-            if (applyConditions(propertyDecision.conditions, value, getRule)) {
+            if (isAuthorized(propertyDecision.conditions, value)) {
               acc[key] = value;
             }
             return acc;
@@ -639,7 +631,7 @@ export async function createRouter(
           template.spec.parameters.properties = Object.entries(
             template.spec.parameters.properties || {},
           ).reduce<Record<string, TemplateProperty>>((acc, [key, value]) => {
-            if (applyConditions(propertyDecision.conditions, value, getRule)) {
+            if (isAuthorized(propertyDecision.conditions, value)) {
               acc[key] = value;
             }
             return acc;
@@ -653,7 +645,7 @@ export async function createRouter(
       template.spec.steps = [];
     } else if (stepDecision.result === AuthorizeResult.CONDITIONAL) {
       template.spec.steps = template.spec.steps.filter(step =>
-        applyConditions(stepDecision.conditions, step, getRule),
+        isAuthorized(stepDecision.conditions, step),
       );
     }
 
