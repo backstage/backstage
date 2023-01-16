@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * The module `github` for the Backstage backend plugin "events-backend"
- * adding an event router and signature validator for GitHub.
- *
- * @packageDocumentation
- */
-
-export { createGithubSignatureValidator } from './http/createGithubSignatureValidator';
-export { GithubEventRouter } from './router/GithubEventRouter';
+export { githubEventRouterEventsModule } from './service/GithubEventRouterEventsModule';
+export { githubWebhookEventsModule } from './service/GithubWebhookEventsModule';
