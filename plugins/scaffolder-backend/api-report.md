@@ -341,6 +341,9 @@ export function createPublishBitbucketServerAction(options: {
   sourcePath?: string | undefined;
   enableLFS?: boolean | undefined;
   token?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
 }>;
 
 // @public
