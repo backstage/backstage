@@ -32,6 +32,10 @@ import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
+  TemplateParameter,
+  templateParameterReadPermission,
+  TemplateProperty,
+  templatePropertyReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
@@ -578,18 +582,82 @@ export async function createRouter(
       );
     }
 
-    const authorizeDecision = (
+    const [parameterDecision, propertyDecision, stepDecision] =
       await permissionApi.authorizeConditional(
-        [{ permission: templateStepReadPermission }],
+        [
+          { permission: templateParameterReadPermission },
+          { permission: templatePropertyReadPermission },
+          { permission: templateStepReadPermission },
+        ],
         { token },
-      )
-    )[0];
+      );
 
-    if (authorizeDecision.result === AuthorizeResult.DENY) {
+    // authorize parameters
+    if (parameterDecision.result === AuthorizeResult.DENY) {
+      template.spec.parameters = [];
+    } else if (parameterDecision.result === AuthorizeResult.CONDITIONAL) {
+      if (Array.isArray(template.spec.parameters)) {
+        template.spec.parameters = template.spec.parameters.filter(step =>
+          applyConditions(parameterDecision.conditions, step, getRule),
+        );
+      } else {
+        if (
+          template.spec.parameters &&
+          !applyConditions(
+            parameterDecision.conditions,
+            template.spec.parameters,
+            getRule,
+          )
+        ) {
+          template.spec.parameters = undefined;
+        }
+      }
+    }
+
+    // authorize properties
+    if (propertyDecision.result === AuthorizeResult.DENY) {
+      if (Array.isArray(template.spec.parameters)) {
+        template.spec.parameters.forEach(parameter => {
+          parameter.properties = {};
+        });
+      } else {
+        if (template.spec.parameters) {
+          template.spec.parameters.properties = {};
+        }
+      }
+    } else if (propertyDecision.result === AuthorizeResult.CONDITIONAL) {
+      if (Array.isArray(template.spec.parameters)) {
+        template.spec.parameters.forEach(parameter => {
+          parameter.properties = Object.entries(
+            parameter.properties || {},
+          ).reduce<Record<string, TemplateProperty>>((acc, [key, value]) => {
+            if (applyConditions(propertyDecision.conditions, value, getRule)) {
+              acc[key] = value;
+            }
+            return acc;
+          }, {});
+        });
+      } else {
+        // TODO extract this to a generic method and use it in the above if block
+        if (template.spec.parameters) {
+          template.spec.parameters.properties = Object.entries(
+            template.spec.parameters.properties || {},
+          ).reduce<Record<string, TemplateProperty>>((acc, [key, value]) => {
+            if (applyConditions(propertyDecision.conditions, value, getRule)) {
+              acc[key] = value;
+            }
+            return acc;
+          }, {});
+        }
+      }
+    }
+
+    // authorize steps
+    if (stepDecision.result === AuthorizeResult.DENY) {
       template.spec.steps = [];
-    } else if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+    } else if (stepDecision.result === AuthorizeResult.CONDITIONAL) {
       template.spec.steps = template.spec.steps.filter(step =>
-        applyConditions(authorizeDecision.conditions, step, getRule),
+        applyConditions(stepDecision.conditions, step, getRule),
       );
     }
 
