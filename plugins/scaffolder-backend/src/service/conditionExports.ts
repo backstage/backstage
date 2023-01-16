@@ -14,42 +14,17 @@
  * limitations under the License.
  */
 
-import { RESOURCE_TYPE_SCAFFOLDER_STEP } from '@backstage/plugin-scaffolder-common';
+import { RESOURCE_TYPE_SCAFFOLDER_PROPERTY } from '@backstage/plugin-scaffolder-common';
 import { createConditionExports } from '@backstage/plugin-permission-node';
 import { scaffolderStepRules } from './rules';
-
-// const {
-//   conditions: scaffolderTemplateConditions,
-//   createConditionalDecision: createScaffolderTemplateConditionalDecision,
-// } = createConditionExports({
-//   pluginId: 'scaffolder',
-//   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-//   rules: scaffolderRules,
-// });
-
-// const {
-//   conditions: scaffolderPropertyConditions,
-//   createConditionalDecision: createScaffolderPropertyConditionalDecision,
-// } = createConditionExports({
-//   pluginId: 'scaffolder',
-//   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-//   rules: scaffolderRules,
-// });
 
 const {
   conditions: scaffolderStepConditions,
   createConditionalDecision: createScaffolderStepConditionalDecision,
 } = createConditionExports({
   pluginId: 'scaffolder',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_STEP,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
   rules: scaffolderStepRules,
 });
 
-export {
-  // scaffolderTemplateConditions,
-  // createScaffolderTemplateConditionalDecision,
-  // scaffolderPropertyConditions,
-  // createScaffolderPropertyConditionalDecision,
-  scaffolderStepConditions,
-  createScaffolderStepConditionalDecision,
-};
+export { scaffolderStepConditions, createScaffolderStepConditionalDecision };
