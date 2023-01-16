@@ -34,7 +34,7 @@ const hasTag = createScaffolderStepPermissionRule({
   resourceType: RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
   description: 'Match a scaffolder step with the given tag',
   paramsSchema: z.object({
-    tag: z.string(),
+    tag: z.string().describe('Name of the tag to match on'),
   }),
   apply: (resource, { tag }) => {
     return resource.metadata?.tags?.includes(tag) ?? false;
