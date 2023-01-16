@@ -19,7 +19,7 @@ import {
   createBackendModule,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { AzureDevOpsEntityProvider } from '../providers';
 
 /**
