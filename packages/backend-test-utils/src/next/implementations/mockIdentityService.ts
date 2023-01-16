@@ -42,9 +42,6 @@ export const mockIdentityFactory = createServiceFactory({
   service: coreServices.identity,
   deps: {},
   async factory() {
-    const service = new MockIdentityServiceImpl();
-    return async () => {
-      return service;
-    };
+    return new MockIdentityServiceImpl();
   },
 });
