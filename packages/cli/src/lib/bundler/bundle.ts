@@ -122,15 +122,9 @@ async function build(config: webpack.Configuration, isCi: boolean) {
     warnings: true,
     errors: true,
   });
-  // NOTE(freben): The code below that extracts the message part of the errors,
-  // is due to react-dev-utils not yet being compatible with webpack 5. This
-  // may be possible to remove (just passing the serialized stats object
-  // directly into the format function) after a new release of react-dev-utils
-  // has been made available.
-  // See https://github.com/facebook/create-react-app/issues/9880
   const { errors, warnings } = formatWebpackMessages({
-    errors: serializedStats.errors?.map(e => (e.message ? e.message : e)),
-    warnings: serializedStats.warnings?.map(e => (e.message ? e.message : e)),
+    errors: serializedStats.errors,
+    warnings: serializedStats.warnings,
   });
 
   if (errors.length) {
