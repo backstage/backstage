@@ -83,7 +83,7 @@ Options:
   --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>
   --osAuthUrl <OPENSTACK SWIFT AUTHURL>
   --osSwiftUrl <OPENSTACK SWIFT SWIFTURL>
-  --gcsBucketRootPath
+  --gcsBucketRootPath <GCS BUCKET ROOT PATH>
   --directory <PATH>
   -h, --help
 ```

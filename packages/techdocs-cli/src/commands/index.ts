@@ -194,7 +194,7 @@ export function registerCommands(program: Command) {
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
     )
     .option(
-      '--gcsBucketRootPath',
+      '--gcsBucketRootPath <GCS BUCKET ROOT PATH>',
       'Optional sub-directory to store files in Google cloud storage',
     )
     .option(
