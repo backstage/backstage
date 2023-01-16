@@ -106,7 +106,7 @@ describe('TestBackend', () => {
       deps: {},
       service: testRef,
       factory: async () => {
-        return async () => testFn;
+        return testFn;
       },
     });
 

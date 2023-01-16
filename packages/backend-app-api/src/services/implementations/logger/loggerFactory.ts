@@ -26,9 +26,7 @@ export const loggerFactory = createServiceFactory({
     rootLogger: coreServices.rootLogger,
     plugin: coreServices.pluginMetadata,
   },
-  async factory({ rootLogger }) {
-    return async ({ plugin }) => {
-      return rootLogger.child({ plugin: plugin.getId() });
-    };
+  factory({ rootLogger, plugin }) {
+    return rootLogger.child({ plugin: plugin.getId() });
   },
 });

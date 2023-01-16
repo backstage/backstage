@@ -29,13 +29,11 @@ export const schedulerFactory = createServiceFactory({
     databaseManager: coreServices.database,
     logger: coreServices.logger,
   },
-  async factory() {
-    return async ({ plugin, databaseManager, logger }) => {
-      return TaskScheduler.forPlugin({
-        pluginId: plugin.getId(),
-        databaseManager,
-        logger: loggerToWinstonLogger(logger),
-      });
-    };
+  async factory({ plugin, databaseManager, logger }) {
+    return TaskScheduler.forPlugin({
+      pluginId: plugin.getId(),
+      databaseManager,
+      logger: loggerToWinstonLogger(logger),
+    });
   },
 });

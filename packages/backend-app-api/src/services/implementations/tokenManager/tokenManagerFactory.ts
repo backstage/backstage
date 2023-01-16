@@ -27,10 +27,12 @@ export const tokenManagerFactory = createServiceFactory({
     config: coreServices.config,
     logger: coreServices.rootLogger,
   },
-  async factory({ config, logger }) {
-    const tokenManager = ServerTokenManager.fromConfig(config, {
+  createRootContext({ config, logger }) {
+    return ServerTokenManager.fromConfig(config, {
       logger,
     });
-    return async () => tokenManager;
+  },
+  async factory(_deps, tokenManager) {
+    return tokenManager;
   },
 });

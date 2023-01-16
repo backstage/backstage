@@ -27,16 +27,27 @@ describe('httpRouterFactory', () => {
       ServiceFactory<HttpRouterService>,
       { scope: 'root' }
     >;
-    const innerFactory = await factory.factory({ rootHttpRouter });
 
     const handler1 = () => {};
-    const router1 = await innerFactory({ plugin: { getId: () => 'test1' } });
+    const router1 = await factory.factory(
+      {
+        rootHttpRouter,
+        plugin: { getId: () => 'test1' },
+      },
+      undefined,
+    );
     router1.use(handler1);
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
     expect(rootHttpRouter.use).toHaveBeenCalledWith('/api/test1', handler1);
 
     const handler2 = () => {};
-    const router2 = await innerFactory({ plugin: { getId: () => 'test2' } });
+    const router2 = await factory.factory(
+      {
+        rootHttpRouter,
+        plugin: { getId: () => 'test2' },
+      },
+      undefined,
+    );
     router2.use(handler2);
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
     expect(rootHttpRouter.use).toHaveBeenCalledWith('/api/test2', handler2);
@@ -47,10 +58,15 @@ describe('httpRouterFactory', () => {
     const factory = httpRouterFactory({
       getPath: id => `/some/${id}/path`,
     }) as Exclude<ServiceFactory<HttpRouterService>, { scope: 'root' }>;
-    const innerFactory = await factory.factory({ rootHttpRouter });
 
     const handler1 = () => {};
-    const router1 = await innerFactory({ plugin: { getId: () => 'test1' } });
+    const router1 = await factory.factory(
+      {
+        rootHttpRouter,
+        plugin: { getId: () => 'test1' },
+      },
+      undefined,
+    );
     router1.use(handler1);
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
@@ -59,7 +75,13 @@ describe('httpRouterFactory', () => {
     );
 
     const handler2 = () => {};
-    const router2 = await innerFactory({ plugin: { getId: () => 'test2' } });
+    const router2 = await factory.factory(
+      {
+        rootHttpRouter,
+        plugin: { getId: () => 'test2' },
+      },
+      undefined,
+    );
     router2.use(handler2);
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(

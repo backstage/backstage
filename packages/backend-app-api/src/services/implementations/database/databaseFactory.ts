@@ -28,8 +28,8 @@ export const databaseFactory = createServiceFactory({
     config: coreServices.config,
     plugin: coreServices.pluginMetadata,
   },
-  async factory({ config }) {
-    const databaseManager = config.getOptional('backend.database')
+  async createRootContext({ config }) {
+    return config.getOptional('backend.database')
       ? DatabaseManager.fromConfig(config)
       : DatabaseManager.fromConfig(
           new ConfigReader({
@@ -38,9 +38,8 @@ export const databaseFactory = createServiceFactory({
             },
           }),
         );
-
-    return async ({ plugin }) => {
-      return databaseManager.forPlugin(plugin.getId());
-    };
+  },
+  async factory({ plugin }, databaseManager) {
+    return databaseManager.forPlugin(plugin.getId());
   },
 });

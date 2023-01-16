@@ -168,7 +168,7 @@ export async function startTestBackend<
           backend: { baseUrl: `http://localhost:${port}`, listen: { port } },
         }),
       );
-      return async () => discovery;
+      return discovery;
     },
   });
 
@@ -179,13 +179,13 @@ export async function startTestBackend<
       const [ref, impl] = serviceDef;
       if (ref.scope === 'plugin') {
         return createServiceFactory({
-          service: ref,
+          service: ref as ServiceRef<unknown, 'plugin'>,
           deps: {},
-          factory: async () => async () => impl,
+          factory: async () => impl,
         })();
       }
       return createServiceFactory({
-        service: ref,
+        service: ref as ServiceRef<unknown, 'root'>,
         deps: {},
         factory: async () => impl,
       })();

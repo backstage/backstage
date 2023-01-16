@@ -38,16 +38,13 @@ export const httpRouterFactory = createServiceFactory(
       plugin: coreServices.pluginMetadata,
       rootHttpRouter: coreServices.rootHttpRouter,
     },
-    async factory({ rootHttpRouter }) {
+    async factory({ plugin, rootHttpRouter }) {
       const getPath = options?.getPath ?? (id => `/api/${id}`);
-
-      return async ({ plugin }) => {
-        const path = getPath(plugin.getId());
-        return {
-          use(handler: Handler) {
-            rootHttpRouter.use(path, handler);
-          },
-        };
+      const path = getPath(plugin.getId());
+      return {
+        use(handler: Handler) {
+          rootHttpRouter.use(path, handler);
+        },
       };
     },
   }),

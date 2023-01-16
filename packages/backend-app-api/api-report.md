@@ -152,7 +152,9 @@ export type HttpServerOptions = {
 };
 
 // @public (undocumented)
-export const identityFactory: () => ServiceFactory<IdentityService>;
+export const identityFactory: (
+  options?: IdentityFactoryOptions | undefined,
+) => ServiceFactory<IdentityService>;
 
 // @public
 export type IdentityFactoryOptions = {
