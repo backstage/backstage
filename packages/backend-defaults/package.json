@@ -36,6 +36,7 @@
     "@backstage/backend-plugin-api": "workspace:^"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
   },
   "files": [
