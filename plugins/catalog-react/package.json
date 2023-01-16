@@ -6,10 +6,21 @@
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts",
-    "alphaTypes": "dist/index.alpha.d.ts"
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "src/index.ts"
+      ],
+      "alpha": [
+        "src/alpha.ts"
+      ]
+    }
   },
   "backstage": {
     "role": "web-library"
@@ -24,7 +35,7 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli package build --experimental-type-build",
+    "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
@@ -78,7 +89,6 @@
     "react-test-renderer": "^16.13.1"
   },
   "files": [
-    "dist",
-    "alpha"
+    "dist"
   ]
 }
