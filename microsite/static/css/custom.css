@@ -1210,7 +1210,8 @@ code {
 }
 
 .nav-footer .copyright {
-  width: 600px;
+  width: 100%;
+  padding: 0 8px;
   color: #fff;
   margin: 0 auto;
   font-size: 10pt;

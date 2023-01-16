@@ -12,6 +12,7 @@ import { CorsOptions } from 'cors';
 import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { Handler } from 'express';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
@@ -45,14 +46,10 @@ export interface Backend {
 }
 
 // @public (undocumented)
-export const cacheFactory: (
-  options?: undefined,
-) => ServiceFactory<PluginCacheManager>;
+export const cacheFactory: () => ServiceFactory<PluginCacheManager>;
 
 // @public (undocumented)
-export const configFactory: (
-  options?: undefined,
-) => ServiceFactory<ConfigService>;
+export const configFactory: () => ServiceFactory<ConfigService>;
 
 // @public
 export function createHttpServer(
@@ -75,14 +72,25 @@ export interface CreateSpecializedBackendOptions {
 }
 
 // @public (undocumented)
-export const databaseFactory: (
-  options?: undefined,
-) => ServiceFactory<PluginDatabaseManager>;
+export const databaseFactory: () => ServiceFactory<PluginDatabaseManager>;
+
+// @public
+export class DefaultRootHttpRouter implements RootHttpRouterService {
+  // (undocumented)
+  static create(options?: DefaultRootHttpRouterOptions): DefaultRootHttpRouter;
+  // (undocumented)
+  handler(): Handler;
+  // (undocumented)
+  use(path: string, handler: Handler): void;
+}
+
+// @public
+export interface DefaultRootHttpRouterOptions {
+  indexPath?: string | false;
+}
 
 // @public (undocumented)
-export const discoveryFactory: (
-  options?: undefined,
-) => ServiceFactory<PluginEndpointDiscovery>;
+export const discoveryFactory: () => ServiceFactory<PluginEndpointDiscovery>;
 
 // @public
 export interface ExtendedHttpServer extends http.Server {
@@ -100,9 +108,9 @@ export const httpRouterFactory: (
 ) => ServiceFactory<HttpRouterService>;
 
 // @public (undocumented)
-export type HttpRouterFactoryOptions = {
+export interface HttpRouterFactoryOptions {
   getPath(pluginId: string): string;
-};
+}
 
 // @public
 export type HttpServerCertificateOptions =
@@ -128,9 +136,7 @@ export type HttpServerOptions = {
 };
 
 // @public (undocumented)
-export const identityFactory: (
-  options?: IdentityFactoryOptions | undefined,
-) => ServiceFactory<IdentityService>;
+export const identityFactory: () => ServiceFactory<IdentityService>;
 
 // @public
 export type IdentityFactoryOptions = {
@@ -139,14 +145,10 @@ export type IdentityFactoryOptions = {
 };
 
 // @public
-export const lifecycleFactory: (
-  options?: undefined,
-) => ServiceFactory<LifecycleService>;
+export const lifecycleFactory: () => ServiceFactory<LifecycleService>;
 
 // @public (undocumented)
-export const loggerFactory: (
-  options?: undefined,
-) => ServiceFactory<LoggerService>;
+export const loggerFactory: () => ServiceFactory<LoggerService>;
 
 // @public
 export class MiddlewareFactory {
@@ -174,9 +176,7 @@ export interface MiddlewareFactoryOptions {
 }
 
 // @public (undocumented)
-export const permissionsFactory: (
-  options?: undefined,
-) => ServiceFactory<PermissionsService>;
+export const permissionsFactory: () => ServiceFactory<PermissionsService>;
 
 // @public
 export function readCorsOptions(config?: Config): CorsOptions;
@@ -204,9 +204,7 @@ export interface RootHttpRouterConfigureOptions {
 }
 
 // @public (undocumented)
-export const rootHttpRouterFactory: (
-  options?: RootHttpRouterFactoryOptions | undefined,
-) => ServiceFactory<RootHttpRouterService>;
+export const rootHttpRouterFactory: () => ServiceFactory<RootHttpRouterService>;
 
 // @public (undocumented)
 export type RootHttpRouterFactoryOptions = {
@@ -215,19 +213,13 @@ export type RootHttpRouterFactoryOptions = {
 };
 
 // @public
-export const rootLifecycleFactory: (
-  options?: undefined,
-) => ServiceFactory<RootLifecycleService>;
+export const rootLifecycleFactory: () => ServiceFactory<RootLifecycleService>;
 
 // @public (undocumented)
-export const rootLoggerFactory: (
-  options?: undefined,
-) => ServiceFactory<RootLoggerService>;
+export const rootLoggerFactory: () => ServiceFactory<RootLoggerService>;
 
 // @public (undocumented)
-export const schedulerFactory: (
-  options?: undefined,
-) => ServiceFactory<SchedulerService>;
+export const schedulerFactory: () => ServiceFactory<SchedulerService>;
 
 // @public (undocumented)
 export type ServiceOrExtensionPoint<T = unknown> =
@@ -235,12 +227,8 @@ export type ServiceOrExtensionPoint<T = unknown> =
   | ServiceRef<T>;
 
 // @public (undocumented)
-export const tokenManagerFactory: (
-  options?: undefined,
-) => ServiceFactory<TokenManagerService>;
+export const tokenManagerFactory: () => ServiceFactory<TokenManagerService>;
 
 // @public (undocumented)
-export const urlReaderFactory: (
-  options?: undefined,
-) => ServiceFactory<UrlReader>;
+export const urlReaderFactory: () => ServiceFactory<UrlReader>;
 ```

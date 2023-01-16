@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import user from '@testing-library/user-event';
 import React from 'react';
 import { EntityPeekAheadPopover } from './EntityPeekAheadPopover';
 import { ApiProvider } from '@backstage/core-app-api';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Button } from '@material-ui/core';
 import { entityRouteRef } from '../../routes';
 
 const catalogApi: Partial<CatalogApi> = {
-  getEntityByRef: async (
-    entityRef: CompoundEntityRef,
-  ): Promise<Entity | undefined> => {
-    if (
-      entityRef.name === 'service1' &&
-      entityRef.namespace === 'default' &&
-      entityRef.kind === 'component'
-    ) {
+  getEntityByRef: async (entityRef: string): Promise<Entity | undefined> => {
+    if (entityRef === 'component:default/service1') {
       return {
         apiVersion: '',
         kind: 'Component',
@@ -71,14 +66,14 @@ describe('<EntityPeekAheadPopover/>', () => {
     );
     expect(screen.getByText('s1')).toBeInTheDocument();
     expect(screen.queryByText('service1')).toBeNull();
-    fireEvent.mouseOver(screen.getByTestId('popover1'));
+    user.hover(screen.getByTestId('popover1'));
     expect(await screen.findByText('service1')).toBeInTheDocument();
 
     expect(screen.getByText('s2')).toBeInTheDocument();
     expect(screen.queryByText('service2')).toBeNull();
-    fireEvent.mouseOver(screen.getByTestId('popover2'));
+    user.hover(screen.getByTestId('popover2'));
     expect(
-      await screen.findByText('Error: service2 was not found'),
+      await screen.findByText('Error: component:default/service2 not found'),
     ).toBeInTheDocument();
   });
 });

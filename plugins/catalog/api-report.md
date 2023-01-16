@@ -277,6 +277,17 @@ export const EntityHasSubcomponentsCard: (
 // @public (undocumented)
 export const EntityHasSystemsCard: (props: HasSystemsCardProps) => JSX.Element;
 
+// @public (undocumented)
+export const EntityLabelsCard: (props: EntityLabelsCardProps) => JSX.Element;
+
+// @public (undocumented)
+export interface EntityLabelsCardProps {
+  // (undocumented)
+  title?: string;
+  // (undocumented)
+  variant?: InfoCardVariants;
+}
+
 // @public
 export const EntityLayout: {
   (props: EntityLayoutProps): JSX.Element;
@@ -384,6 +395,9 @@ export interface HasComponentsCardProps {
   // (undocumented)
   variant?: InfoCardVariants;
 }
+
+// @public
+export function hasLabels(entity: Entity): boolean;
 
 // @public (undocumented)
 export interface HasResourcesCardProps {

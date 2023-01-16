@@ -13,20 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Base type for options objects that aren't required.
- *
- * @ignore
- */
-export type MaybeOptions = object | undefined;
-
-/**
- * Helper type that makes the options argument optional if options are not required.
- *
- * @ignore
- */
-export type FactoryFunctionWithOptions<TResult, TOptions> =
-  undefined extends TOptions
-    ? (options?: TOptions) => TResult
-    : (options: TOptions) => TResult;
+export { mockConfigFactory } from './mockConfigService';

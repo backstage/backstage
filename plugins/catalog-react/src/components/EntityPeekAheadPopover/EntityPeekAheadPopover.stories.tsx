@@ -33,12 +33,8 @@ import { Table, TableColumn } from '@backstage/core-components';
 import { EntityRefLink } from '../EntityRefLink';
 
 const mockCatalogApi = {
-  getEntityByRef: async (entityRef: CompoundEntityRef) => {
-    if (
-      entityRef.namespace === 'default' &&
-      entityRef.name === 'playback' &&
-      entityRef.kind === 'component'
-    ) {
+  getEntityByRef: async (entityRef: string) => {
+    if (entityRef === 'component:default/playback') {
       return {
         kind: 'Component',
         metadata: {
@@ -48,11 +44,7 @@ const mockCatalogApi = {
         },
       };
     }
-    if (
-      entityRef.namespace === 'default' &&
-      entityRef.name === 'fname.lname' &&
-      entityRef.kind === 'user'
-    ) {
+    if (entityRef === 'user:default/fname.lname') {
       return {
         kind: 'User',
         metadata: {
@@ -66,11 +58,7 @@ const mockCatalogApi = {
         },
       };
     }
-    if (
-      entityRef.namespace === 'default' &&
-      entityRef.name === 'slow.catalog.item' &&
-      entityRef.kind === 'component'
-    ) {
+    if (entityRef === 'component:default/slow.catalog.item') {
       await new Promise(resolve => setTimeout(resolve, 3000));
       return {
         kind: 'Component',

@@ -78,8 +78,19 @@ export interface FactRetrieverRegistry {
 }
 
 // @public
+export const initializePersistenceContext: (
+  database: PluginDatabaseManager,
+  options?: PersistenceContextOptions,
+) => Promise<PersistenceContext>;
+
+// @public
 export type PersistenceContext = {
   techInsightsStore: TechInsightsStore;
+};
+
+// @public
+export type PersistenceContextOptions = {
+  logger: Logger;
 };
 
 // @public
@@ -122,6 +133,7 @@ export interface TechInsightsOptions<
   factRetrievers?: FactRetrieverRegistration[];
   // (undocumented)
   logger: Logger;
+  persistenceContext?: PersistenceContext;
   // (undocumented)
   scheduler: PluginTaskScheduler;
   // (undocumented)

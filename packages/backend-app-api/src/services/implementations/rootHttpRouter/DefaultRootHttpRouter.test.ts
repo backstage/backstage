@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { RestrictedIndexedRouter } from './RestrictedIndexedRouter';
+import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 
-describe('RestrictedIndexedRouter', () => {
+describe('DefaultRootHttpRouter', () => {
   it.each([
     [['/b'], '/a'],
     [['/a'], '/aa/b'],
@@ -25,7 +25,7 @@ describe('RestrictedIndexedRouter', () => {
     [['/b/a'], '/a'],
     [['/a'], '/aa'],
   ])(`with existing paths %s, adds %s without conflict`, (existing, added) => {
-    const router = new RestrictedIndexedRouter(false);
+    const router = DefaultRootHttpRouter.create();
     for (const path of existing) {
       router.use(path, () => {});
     }
@@ -39,7 +39,7 @@ describe('RestrictedIndexedRouter', () => {
   ])(
     `find conflict when existing paths %s, adds %s`,
     (existing, added, conflict) => {
-      const router = new RestrictedIndexedRouter(false);
+      const router = DefaultRootHttpRouter.create();
       for (const path of existing) {
         router.use(path, () => {});
       }
@@ -48,4 +48,10 @@ describe('RestrictedIndexedRouter', () => {
       );
     },
   );
+
+  it('should not be possible to supply an empty indexPath', () => {
+    expect(() => DefaultRootHttpRouter.create({ indexPath: '' })).toThrow(
+      'indexPath option may not be an empty string',
+    );
+  });
 });

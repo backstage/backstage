@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { IconButton } from '@material-ui/core';
 import EmailIcon from '@material-ui/icons/Email';
 import React from 'react';
@@ -23,14 +24,13 @@ import { Link } from '@backstage/core-components';
  *
  * @private
  */
-export const EmailCardAction = ({ email }: { email: string }) => {
+export const EmailCardAction = (props: { email: string }) => {
   return (
     <IconButton
       component={Link}
       aria-label="Email"
-      title={`Email ${email}`}
-      to={`mailto:${email}`}
-      target="_blank"
+      title={`Email ${props.email}`}
+      to={`mailto:${props.email}`}
     >
       <EmailIcon />
     </IconButton>
