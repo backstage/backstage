@@ -76,10 +76,10 @@ import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
-import {
-  CatalogPermissionRule,
-  permissionRules as catalogPermissionRules,
-} from '../permissions/rules';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { EntitiesSearchFilter } from '../catalog/types';
+import { permissionRules as catalogPermissionRules } from '../permissions/rules';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import {
   PermissionAuthorizer,
   PermissionEvaluator,
@@ -94,10 +94,19 @@ import { basicEntityFilter } from './request/basicEntityFilter';
 import {
   catalogPermissions,
   RESOURCE_TYPE_CATALOG_ENTITY,
-} from '@backstage/plugin-catalog-common';
+} from '@backstage/plugin-catalog-common/alpha';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
+
+/**
+ * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
+ *
+ * @public
+ */
+export type CatalogPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 /** @public */
 export type CatalogEnvironment = {
@@ -154,7 +163,7 @@ export class CatalogBuilder {
       maxSeconds: 150,
     });
   private locationAnalyzer: LocationAnalyzer | undefined = undefined;
-  private readonly permissionRules: CatalogPermissionRule[];
+  private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
 
@@ -379,11 +388,10 @@ export class CatalogBuilder {
    * {@link @backstage/plugin-permission-node#PermissionRule}.
    *
    * @param permissionRules - Additional permission rules
-   * @alpha
    */
   addPermissionRules(
     ...permissionRules: Array<
-      CatalogPermissionRule | Array<CatalogPermissionRule>
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
     >
   ) {
     this.permissionRules.push(...permissionRules.flat());

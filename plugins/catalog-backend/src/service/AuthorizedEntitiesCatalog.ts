@@ -18,7 +18,7 @@ import { NotAllowedError } from '@backstage/errors';
 import {
   catalogEntityDeletePermission,
   catalogEntityReadPermission,
-} from '@backstage/plugin-catalog-common';
+} from '@backstage/plugin-catalog-common/alpha';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AuthorizeResult,

@@ -34,7 +34,7 @@ import {
   createPermissionIntegrationRouter,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { z } from 'zod';
 
