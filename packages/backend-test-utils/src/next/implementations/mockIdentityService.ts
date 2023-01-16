@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  coreServices,
-  createServiceFactory,
-  IdentityService,
-} from '@backstage/backend-plugin-api';
+import { IdentityService } from '@backstage/backend-plugin-api';
 import {
   IdentityApiGetIdentityRequest,
   BackstageIdentityResponse,
 } from '@backstage/plugin-auth-node';
 
-class MockIdentityServiceImpl implements IdentityService {
+export class MockIdentityService implements IdentityService {
   getIdentity(
     _options: IdentityApiGetIdentityRequest,
   ): Promise<BackstageIdentityResponse | undefined> {
@@ -37,11 +33,3 @@ class MockIdentityServiceImpl implements IdentityService {
     });
   }
 }
-
-export const mockIdentityFactory = createServiceFactory({
-  service: coreServices.identity,
-  deps: {},
-  async factory() {
-    return new MockIdentityServiceImpl();
-  },
-});

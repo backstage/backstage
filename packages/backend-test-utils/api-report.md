@@ -5,14 +5,27 @@
 ```ts
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CacheService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { HttpRouterFactoryOptions } from '@backstage/backend-app-api';
+import { HttpRouterService } from '@backstage/backend-plugin-api';
+import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
+import { LifecycleService } from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { PermissionsService } from '@backstage/backend-plugin-api';
+import { RootLifecycleService } from '@backstage/backend-plugin-api';
+import { RootLoggerService } from '@backstage/backend-plugin-api';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { TokenManagerService } from '@backstage/backend-plugin-api';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
@@ -23,6 +36,34 @@ export namespace mockFactories {
     config: (
       options?: mockServices.config.Options | undefined,
     ) => ServiceFactory<ConfigService>;
+  const // (undocumented)
+    rootLogger: (
+      options?: mockServices.rootLogger.Options | undefined,
+    ) => ServiceFactory<RootLoggerService>;
+  const // (undocumented)
+    tokenManager: () => ServiceFactory<TokenManagerService>;
+  const // (undocumented)
+    identity: () => ServiceFactory<IdentityService>;
+  const // (undocumented)
+    cache: () => ServiceFactory<CacheService>;
+  const // (undocumented)
+    database: () => ServiceFactory<DatabaseService>;
+  const // (undocumented)
+    httpRouter: (
+      options?: HttpRouterFactoryOptions | undefined,
+    ) => ServiceFactory<HttpRouterService>;
+  const // (undocumented)
+    lifecycle: () => ServiceFactory<LifecycleService>;
+  const // (undocumented)
+    logger: () => ServiceFactory<LoggerService>;
+  const // (undocumented)
+    permissions: () => ServiceFactory<PermissionsService>;
+  const // (undocumented)
+    rootLifecycle: () => ServiceFactory<RootLifecycleService>;
+  const // (undocumented)
+    scheduler: () => ServiceFactory<SchedulerService>;
+  const // (undocumented)
+    urlReader: () => ServiceFactory<UrlReaderService>;
 }
 
 // @alpha (undocumented)
@@ -36,6 +77,26 @@ export namespace mockServices {
   }
   // (undocumented)
   export function config(options?: config.Options): ConfigReader;
+  // (undocumented)
+  export function identity(): IdentityService;
+  // (undocumented)
+  export namespace rootLogger {
+    // (undocumented)
+    export type Options = {
+      levels:
+        | boolean
+        | {
+            error: boolean;
+            warn: boolean;
+            info: boolean;
+            debug: boolean;
+          };
+    };
+  }
+  // (undocumented)
+  export function rootLogger(options?: rootLogger.Options): LoggerService;
+  // (undocumented)
+  export function tokenManager(): TokenManagerService;
 }
 
 // @public

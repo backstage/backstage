@@ -17,15 +17,6 @@
 import {
   Backend,
   createSpecializedBackend,
-  lifecycleFactory,
-  rootLifecycleFactory,
-  loggerFactory,
-  cacheFactory,
-  permissionsFactory,
-  schedulerFactory,
-  urlReaderFactory,
-  databaseFactory,
-  httpRouterFactory,
   MiddlewareFactory,
   createHttpServer,
   ExtendedHttpServer,
@@ -42,11 +33,8 @@ import {
 } from '@backstage/backend-plugin-api';
 
 import { mockFactories } from '../implementations';
-import { mockRootLoggerService } from '../implementations/mockRootLoggerService';
-import { mockTokenManagerFactory } from '../implementations/mockTokenManagerService';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
-import { mockIdentityFactory } from '../implementations/mockIdentityService';
 
 /** @alpha */
 export interface TestBackendOptions<
@@ -84,19 +72,18 @@ export interface TestBackend extends Backend {
 }
 
 const defaultServiceFactories = [
-  cacheFactory(),
-  databaseFactory(),
-  httpRouterFactory(),
-  lifecycleFactory(),
-  loggerFactory(),
+  mockFactories.cache(),
+  mockFactories.database(),
+  mockFactories.httpRouter(),
+  mockFactories.lifecycle(),
+  mockFactories.logger(),
   mockFactories.config(),
-  mockRootLoggerService(),
-  mockIdentityFactory(),
-  mockTokenManagerFactory(),
-  permissionsFactory(),
-  rootLifecycleFactory(),
-  schedulerFactory(),
-  urlReaderFactory(),
+  mockFactories.identity(),
+  mockFactories.tokenManager(),
+  mockFactories.permissions(),
+  mockFactories.rootLifecycle(),
+  mockFactories.scheduler(),
+  mockFactories.urlReader(),
 ];
 
 const backendInstancesToCleanUp = new Array<Backend>();
