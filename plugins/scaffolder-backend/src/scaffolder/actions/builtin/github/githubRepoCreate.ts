@@ -59,6 +59,12 @@ export function createGithubRepoCreateAction(options: {
       teams?: string[];
       apps?: string[];
     };
+    requiredApprovingReviewCount?: number;
+    restrictions?: {
+      users: string[];
+      teams: string[];
+      apps?: string[];
+    };
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
     requiredConversationResolution?: boolean;
@@ -83,6 +89,7 @@ export function createGithubRepoCreateAction(options: {
     hasIssues?: boolean;
     token?: string;
     topics?: string[];
+    requireCommitSigning?: boolean;
   }>({
     id: 'github:repo:create',
     description: 'Creates a GitHub repository.',
@@ -97,6 +104,8 @@ export function createGithubRepoCreateAction(options: {
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+          restrictions: inputProps.restrictions,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           requiredConversationResolution:
@@ -115,6 +124,7 @@ export function createGithubRepoCreateAction(options: {
           hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
+          requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
       output: {
