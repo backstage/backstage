@@ -79,6 +79,12 @@ export function createSharedEnvironment<
       );
     }
 
-    return { version: 'v1', services } as unknown as SharedBackendEnvironment;
+    // Here to ensure type safety in this internal implementation.
+    const env: SharedBackendEnvironment & InternalSharedBackendEnvironment = {
+      $$type: 'SharedBackendEnvironment',
+      version: 'v1',
+      services,
+    };
+    return env;
   };
 }
