@@ -53,13 +53,13 @@ export class PluginTaskSchedulerJanitor {
 
   private async runOnce() {
     const dbNull = this.knex.raw('null');
-    let tasks = [];
+    let tasks: Array<{ id: string }>;
     const configClient = this.knex.client.config.client;
 
     if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
       const now = await this.knex.select(this.knex.fn.now());
       tasks = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
-        .select('*')
+        .select('id')
         .where('current_run_expires_at', '<', now);
       await this.knex<DbTasksRow>(DB_TASKS_TABLE)
         .where('current_run_expires_at', '<', now)
