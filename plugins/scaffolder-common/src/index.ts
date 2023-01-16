@@ -26,4 +26,7 @@ export { templateEntityV1beta3Validator } from './TemplateEntityV1beta3';
 export type {
   TemplateEntityV1beta3,
   TemplateEntityStepV1beta3,
+  TemplateParameter,
+  TemplateProperty,
+  TemplateSpecValuesMetadata,
 } from './TemplateEntityV1beta3';
