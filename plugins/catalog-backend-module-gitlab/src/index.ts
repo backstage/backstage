@@ -25,4 +25,3 @@ export {
   GitlabDiscoveryEntityProvider,
   GitlabOrgDiscoveryEntityProvider,
 } from './providers';
-export { gitlabDiscoveryEntityProviderCatalogModule } from './service/GitlabDiscoveryEntityProviderCatalogModule';
