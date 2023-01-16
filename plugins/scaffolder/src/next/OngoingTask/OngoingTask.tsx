@@ -25,10 +25,8 @@ import { nextSelectedTemplateRouteRef } from '../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
-import {
-  DefaultTemplateOutputs,
-  ScaffolderTaskOutput,
-} from '@backstage/plugin-scaffolder-react';
+import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
+import { DefaultTemplateOutputs } from '@backstage/plugin-scaffolder-react/alpha';
 
 const useStyles = makeStyles({
   contentWrapper: {

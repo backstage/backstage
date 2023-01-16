@@ -30,7 +30,7 @@ import {
   useApp,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import { TemplateGroup } from '@backstage/plugin-scaffolder-react';
+import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
 import { viewTechDocRouteRef } from '../../routes';
 import { nextSelectedTemplateRouteRef } from '../routes';
 import { useNavigate } from 'react-router-dom';
