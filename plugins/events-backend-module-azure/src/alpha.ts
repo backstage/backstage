@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * The module "azure" for the Backstage backend plugin "events-backend"
- * adding an event router for Azure DevOps.
- *
- * @packageDocumentation
- */
-
-export { AzureDevOpsEventRouter } from './router/AzureDevOpsEventRouter';
+export { azureDevOpsEventRouterEventsModule } from './service/AzureDevOpsEventRouterEventsModule';
