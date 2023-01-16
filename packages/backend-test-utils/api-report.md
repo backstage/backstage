@@ -31,54 +31,82 @@ import { UrlReaderService } from '@backstage/backend-plugin-api';
 export function isDockerDisabledForTests(): boolean;
 
 // @alpha (undocumented)
-export namespace mockFactories {
-  const // (undocumented)
-    config: (
-      options?: mockServices.config.Options | undefined,
-    ) => ServiceFactory<ConfigService>;
-  const // (undocumented)
-    rootLogger: (
-      options?: mockServices.rootLogger.Options | undefined,
-    ) => ServiceFactory<RootLoggerService>;
-  const // (undocumented)
-    tokenManager: () => ServiceFactory<TokenManagerService>;
-  const // (undocumented)
-    identity: () => ServiceFactory<IdentityService>;
-  const // (undocumented)
-    cache: () => ServiceFactory<CacheService>;
-  const // (undocumented)
-    database: () => ServiceFactory<DatabaseService>;
-  const // (undocumented)
-    httpRouter: (
-      options?: HttpRouterFactoryOptions | undefined,
-    ) => ServiceFactory<HttpRouterService>;
-  const // (undocumented)
-    lifecycle: () => ServiceFactory<LifecycleService>;
-  const // (undocumented)
-    logger: () => ServiceFactory<LoggerService>;
-  const // (undocumented)
-    permissions: () => ServiceFactory<PermissionsService>;
-  const // (undocumented)
-    rootLifecycle: () => ServiceFactory<RootLifecycleService>;
-  const // (undocumented)
-    scheduler: () => ServiceFactory<SchedulerService>;
-  const // (undocumented)
-    urlReader: () => ServiceFactory<UrlReaderService>;
-}
-
-// @alpha (undocumented)
 export namespace mockServices {
+  // (undocumented)
+  export namespace cache {
+    const // (undocumented)
+      ref: ServiceRef<CacheService, 'plugin'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<CacheService>;
+  }
+  // (undocumented)
+  export function config(options?: config.Options): ConfigReader;
   // (undocumented)
   export namespace config {
     // (undocumented)
     export type Options = {
       data?: JsonObject;
     };
+    const // (undocumented)
+      ref: ServiceRef<ConfigService, 'root'>;
+    const // (undocumented)
+      factory: (options?: Options | undefined) => ServiceFactory<ConfigService>;
   }
   // (undocumented)
-  export function config(options?: config.Options): ConfigReader;
+  export namespace database {
+    const // (undocumented)
+      ref: ServiceRef<DatabaseService, 'plugin'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<DatabaseService>;
+  }
+  // (undocumented)
+  export namespace httpRouter {
+    const // (undocumented)
+      ref: ServiceRef<HttpRouterService, 'plugin'>;
+    const // (undocumented)
+      factory: (
+        options?: HttpRouterFactoryOptions | undefined,
+      ) => ServiceFactory<HttpRouterService>;
+  }
   // (undocumented)
   export function identity(): IdentityService;
+  // (undocumented)
+  export namespace identity {
+    const // (undocumented)
+      ref: ServiceRef<IdentityService, 'plugin'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<IdentityService>;
+  }
+  // (undocumented)
+  export namespace lifecycle {
+    const // (undocumented)
+      ref: ServiceRef<LifecycleService, 'plugin'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<LifecycleService>;
+  }
+  // (undocumented)
+  export namespace logger {
+    const // (undocumented)
+      ref: ServiceRef<LoggerService, 'plugin'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<LoggerService>;
+  }
+  // (undocumented)
+  export namespace permissions {
+    const // (undocumented)
+      ref: ServiceRef<PermissionsService, 'plugin'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<PermissionsService>;
+  }
+  // (undocumented)
+  export namespace rootLifecycle {
+    const // (undocumented)
+      ref: ServiceRef<RootLifecycleService, 'root'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<RootLifecycleService>;
+  }
+  // (undocumented)
+  export function rootLogger(options?: rootLogger.Options): LoggerService;
   // (undocumented)
   export namespace rootLogger {
     // (undocumented)
@@ -92,11 +120,34 @@ export namespace mockServices {
             debug: boolean;
           };
     };
+    const // (undocumented)
+      ref: ServiceRef<RootLoggerService, 'root'>;
+    const // (undocumented)
+      factory: (options?: Options | undefined) => ServiceFactory<LoggerService>;
   }
   // (undocumented)
-  export function rootLogger(options?: rootLogger.Options): LoggerService;
+  export namespace scheduler {
+    const // (undocumented)
+      ref: ServiceRef<SchedulerService, 'plugin'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<SchedulerService>;
+  }
   // (undocumented)
   export function tokenManager(): TokenManagerService;
+  // (undocumented)
+  export namespace tokenManager {
+    const // (undocumented)
+      ref: ServiceRef<TokenManagerService, 'plugin'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<TokenManagerService>;
+  }
+  // (undocumented)
+  export namespace urlReader {
+    const // (undocumented)
+      ref: ServiceRef<UrlReaderService, 'plugin'>;
+    const // (undocumented)
+      factory: () => ServiceFactory<UrlReaderService>;
+  }
 }
 
 // @public

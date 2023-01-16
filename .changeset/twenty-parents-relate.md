@@ -2,4 +2,4 @@
 '@backstage/backend-test-utils': patch
 ---
 
-All mock service factories and mock service implementations are now available via two new exports, `mockServices`, and `mockFactories`.
+All mock service factories and mock service implementations are now available via the new experimental `mockServices` export.

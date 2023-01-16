@@ -32,7 +32,7 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 
-import { mockFactories } from '../implementations';
+import { mockServices } from '../implementations';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 
@@ -72,18 +72,18 @@ export interface TestBackend extends Backend {
 }
 
 const defaultServiceFactories = [
-  mockFactories.cache(),
-  mockFactories.database(),
-  mockFactories.httpRouter(),
-  mockFactories.lifecycle(),
-  mockFactories.logger(),
-  mockFactories.config(),
-  mockFactories.identity(),
-  mockFactories.tokenManager(),
-  mockFactories.permissions(),
-  mockFactories.rootLifecycle(),
-  mockFactories.scheduler(),
-  mockFactories.urlReader(),
+  mockServices.cache.factory(),
+  mockServices.database.factory(),
+  mockServices.httpRouter.factory(),
+  mockServices.lifecycle.factory(),
+  mockServices.logger.factory(),
+  mockServices.config.factory(),
+  mockServices.identity.factory(),
+  mockServices.tokenManager.factory(),
+  mockServices.permissions.factory(),
+  mockServices.rootLifecycle.factory(),
+  mockServices.scheduler.factory(),
+  mockServices.urlReader.factory(),
 ];
 
 const backendInstancesToCleanUp = new Array<Backend>();
