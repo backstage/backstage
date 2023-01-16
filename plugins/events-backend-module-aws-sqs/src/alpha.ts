@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * The module "sqs" for the Backstage backend plugin "events"
- * adding an AWS SQS-based publisher,
- * receiving events from an AWS SQS queue and passing it to the
- * internal event broker.
- *
- * @packageDocumentation
- */
-
-export { AwsSqsConsumingEventPublisher } from './publisher/AwsSqsConsumingEventPublisher';
+export { awsSqsConsumingEventPublisherEventsModule } from './service/AwsSqsConsumingEventPublisherEventsModule';
