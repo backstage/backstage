@@ -28,7 +28,14 @@ import {
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
-import { nextSelectedTemplateRouteRef } from '../routes';
+
+import { FormProps } from '../types';
+import {
+  nextScaffolderTaskRouteRef,
+  nextSelectedTemplateRouteRef,
+} from '../routes';
+import { ErrorPage } from '@backstage/core-components';
+import { TaskPage } from '../TaskPage';
 
 /**
  * The Props for the Scaffolder Router
@@ -90,6 +97,11 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
             />
           </SecretsContextProvider>
         }
+      />
+      <Route path={nextScaffolderTaskRouteRef.path} element={<TaskPage />} />
+      <Route
+        path="*"
+        element={<ErrorPage status="404" statusMessage="Page not found" />}
       />
     </Routes>
   );
