@@ -212,43 +212,45 @@ export class TechInsightsDatabase implements TechInsightsStore {
     factRetrieverId: string,
     maxItems: number,
   ) {
-    const deletables = await tx<RawDbFactRow>('facts')
-      .where({ id: factRetrieverId })
-      .and.whereIn('entity', db =>
-        db.distinct('entity').where({ id: factRetrieverId }),
-      )
-      .and.leftJoin(
-        joinTable =>
-          joinTable
-            .select('*')
-            .from(
-              this.db('facts')
-                .column(
-                  { fid: 'id' },
-                  { fentity: 'entity' },
-                  { ftimestamp: 'timestamp' },
-                )
-                .column(
-                  this.db.raw(
-                    'row_number() over (partition by id, entity order by timestamp desc) as fact_rank',
-                  ),
-                )
-                .as('ranks'),
-            )
-            .where('fact_rank', '<=', maxItems)
-            .as('filterjoin'),
-        joinClause => {
-          joinClause
-            .on('filterjoin.fid', 'facts.id')
-            .on('filterjoin.fentity', 'facts.entity')
-            .on('filterjoin.ftimestamp', 'facts.timestamp');
-        },
-      )
-      .whereNull('filterjoin.fid');
+    const deletionFilterQuery = (subTx: Knex.QueryBuilder<any, unknown[]>) =>
+      subTx
+        .select(['id', 'entity', 'timestamp'])
+        .from('facts')
+        .where({ id: factRetrieverId })
+        .and.whereIn('entity', db =>
+          db.distinct('entity').where({ id: factRetrieverId }),
+        )
+        .and.leftJoin(
+          joinTable =>
+            joinTable
+              .select('*')
+              .from(
+                this.db('facts')
+                  .column(
+                    { fid: 'id' },
+                    { fentity: 'entity' },
+                    { ftimestamp: 'timestamp' },
+                  )
+                  .column(
+                    this.db.raw(
+                      'row_number() over (partition by id, entity order by timestamp desc) as fact_rank',
+                    ),
+                  )
+                  .as('ranks'),
+              )
+              .where('fact_rank', '<=', maxItems)
+              .as('filterjoin'),
+          joinClause => {
+            joinClause
+              .on('filterjoin.fid', 'facts.id')
+              .on('filterjoin.fentity', 'facts.entity')
+              .on('filterjoin.ftimestamp', 'facts.timestamp');
+          },
+        )
+        .whereNull('filterjoin.fid');
     await tx('facts')
-      .whereIn(
-        ['id', 'entity', 'timestamp'],
-        deletables.map(it => [it.id, it.entity, it.timestamp]),
+      .whereIn(['id', 'entity', 'timestamp'], database =>
+        deletionFilterQuery(database),
       )
       .delete();
   }
