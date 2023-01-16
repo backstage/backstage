@@ -18,7 +18,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
