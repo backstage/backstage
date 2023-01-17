@@ -1,5 +1,12 @@
 # @backstage/plugin-adr-backend
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.1
+
 ## 0.2.5
 
 ### Patch Changes

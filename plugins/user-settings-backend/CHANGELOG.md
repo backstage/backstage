@@ -1,5 +1,13 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.1
+  - @backstage/plugin-auth-node@0.2.10
+
 ## 0.1.4
 
 ### Patch Changes

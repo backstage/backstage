@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.1
+  - @backstage/backend-test-utils@0.1.33
+  - @backstage/plugin-auth-node@0.2.10
+
 ## 0.9.1
 
 ### Patch Changes

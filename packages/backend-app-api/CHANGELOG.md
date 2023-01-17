@@ -1,5 +1,17 @@
 # @backstage/backend-app-api
 
+## 0.3.1
+
+### Patch Changes
+
+- 021233c215: Fixed an issue were the log redaction didn't properly escape RegExp characters.
+- Updated dependencies
+  - @backstage/backend-common@0.18.1
+  - @backstage/backend-tasks@0.4.2
+  - @backstage/plugin-auth-node@0.2.10
+  - @backstage/plugin-permission-node@0.7.4
+  - @backstage/backend-plugin-api@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes
