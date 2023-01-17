@@ -89,6 +89,17 @@ export interface RadarQuadrant {
   name: string;
 }
 
+class RadarEntryLink {
+  /**
+   * URL of the link
+   */
+  url: string;
+  /**
+   * Display name of the link
+   */
+  title: string;
+}
+
 /**
  * Single Entry in Tech Radar
  *
@@ -127,6 +138,7 @@ export interface RadarEntry {
    * Description of the Entry
    */
   description?: string;
+  links?: Array<RadarEntryLink>;
 }
 
 /**
