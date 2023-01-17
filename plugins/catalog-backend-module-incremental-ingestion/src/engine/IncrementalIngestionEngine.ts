@@ -336,14 +336,14 @@ export class IncrementalIngestionEngine
   }
 
   async onEvent(params: EventParams): Promise<void> {
-    const { topic, eventPayload } = params;
+    const { topic } = params;
     if (topic !== this.providerEventTopic) {
       return;
     }
 
     const { logger, provider, connection } = this.options;
     const providerName = provider.getProviderName();
-    logger.info(
+    logger.debug(
       `incremental-engine: Received ${this.providerEventTopic} event`,
     );
 
@@ -351,48 +351,50 @@ export class IncrementalIngestionEngine
       return;
     }
 
-    const update = provider.onEvent(eventPayload);
+    const update = provider.onEvent(params);
 
-    if (update.delta) {
-      if (update.delta.added.length > 0) {
-        const ingestionRecord = await this.manager.getCurrentIngestionRecord(
-          providerName,
-        );
-
-        if (!ingestionRecord) {
-          logger.debug(
-            `incremental-engine: Skipping delta addition because incremental ingestion is restarting.`,
+    if (update) {
+      if (update.delta) {
+        if (update.delta.added.length > 0) {
+          const ingestionRecord = await this.manager.getCurrentIngestionRecord(
+            providerName,
           );
-        } else {
-          const mark =
-            ingestionRecord.status === 'resting'
-              ? await this.manager.getLastMark(ingestionRecord.id)
-              : await this.manager.getFirstMark(ingestionRecord.id);
 
-          if (!mark) {
-            throw new Error(
-              `Cannot apply delta, page records are missing! Please re-run incremental ingestion for ${providerName}.`,
+          if (!ingestionRecord) {
+            logger.debug(
+              `incremental-engine: Skipping delta addition because incremental ingestion is restarting.`,
             );
+          } else {
+            const mark =
+              ingestionRecord.status === 'resting'
+                ? await this.manager.getLastMark(ingestionRecord.id)
+                : await this.manager.getFirstMark(ingestionRecord.id);
+
+            if (!mark) {
+              throw new Error(
+                `Cannot apply delta, page records are missing! Please re-run incremental ingestion for ${providerName}.`,
+              );
+            }
+            await this.manager.createMarkEntities(mark.id, update.delta.added);
           }
-          await this.manager.createMarkEntities(mark.id, update.delta.added);
         }
-      }
 
-      if (update.delta.removed.length > 0) {
-        await this.manager.deleteEntityRecordsByRef(update.delta.removed);
-      }
+        if (update.delta.removed.length > 0) {
+          await this.manager.deleteEntityRecordsByRef(update.delta.removed);
+        }
 
-      await connection.applyMutation({
-        type: 'delta',
-        ...update.delta,
-      });
-      logger.info(
-        `incremental-engine: Processed ${this.providerEventTopic} event`,
-      );
-    } else {
-      logger.warn(
-        `incremental-engine: Rejected ${this.providerEventTopic} event - empty or invalid`,
-      );
+        await connection.applyMutation({
+          type: 'delta',
+          ...update.delta,
+        });
+        logger.debug(
+          `incremental-engine: Processed ${this.providerEventTopic} event`,
+        );
+      } else {
+        logger.warn(
+          `incremental-engine: Rejected ${this.providerEventTopic} event - empty or invalid`,
+        );
+      }
     }
   }
 

@@ -10,6 +10,7 @@ import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
 import type { DurationObjectUnits } from 'luxon';
+import { EventParams } from '@backstage/plugin-events-node';
 import type { Logger } from 'winston';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { PluginDatabaseManager } from '@backstage/backend-common';
@@ -55,16 +56,18 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
     context: TContext,
     cursor?: TCursor,
   ): Promise<EntityIteratorResult<TCursor>>;
-  onEvent?: (payload: unknown) => {
-    delta:
-      | {
-          added: DeferredEntity[];
-          removed: {
-            entityRef: string;
-          }[];
-        }
-      | undefined;
-  };
+  onEvent?: (params: EventParams) =>
+    | {
+        delta:
+          | {
+              added: DeferredEntity[];
+              removed: {
+                entityRef: string;
+              }[];
+            }
+          | undefined;
+      }
+    | undefined;
 }
 
 // @public (undocumented)

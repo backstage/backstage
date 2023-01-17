@@ -27,6 +27,7 @@ import type {
   DeferredEntity,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-backend';
+import { EventParams } from '@backstage/plugin-events-node';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
@@ -77,20 +78,23 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
 
   /**
-   * If present, this method accepts an incoming event, and maps the
-   * payload to an object containing a delta mutation.
+   * This method accepts an incoming event for the provider, and
+   * (optionally) maps the payload to an object containing a delta
+   * mutation.
    *
-   * If a delta is present, the incremental entity provider will apply
-   * it automatically.
+   * If a valid delta is returned by this method, it will be ingested
+   * automatically by the provider.
    */
-  onEvent?: (payload: unknown) => {
-    delta:
-      | {
-          added: DeferredEntity[];
-          removed: { entityRef: string }[];
-        }
-      | undefined;
-  };
+  onEvent?: (params: EventParams) =>
+    | {
+        delta:
+          | {
+              added: DeferredEntity[];
+              removed: { entityRef: string }[];
+            }
+          | undefined;
+      }
+    | undefined;
 }
 
 /**

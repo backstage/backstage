@@ -239,7 +239,7 @@ export class IncrementalProviderRouter implements EventPublisher {
       });
     });
 
-    router.post(`${PROVIDER_BASE_PATH}/delta`, async (req, res) => {
+    router.post(`${PROVIDER_BASE_PATH}/event`, async (req, res) => {
       const { provider } = req.params;
 
       const topic = `${provider}-push`;
