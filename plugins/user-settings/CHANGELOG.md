@@ -1,5 +1,22 @@
 # @backstage/plugin-user-settings
 
+## 0.6.2
+
+### Patch Changes
+
+- a942f70435: Minor update to the `UserSettingsIdentityCard` to have clickable entity refs
+- d61f622db8: Refactor for the feature flag filter functionality
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- bca8e8b393: Feature flags now accept a description property.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/core-app-api@1.4.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+
 ## 0.6.2-next.2
 
 ### Patch Changes

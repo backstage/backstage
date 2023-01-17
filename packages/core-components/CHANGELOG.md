@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.12.3
+
+### Patch Changes
+
+- f2ea446de0: Applied fix from v1.9.1
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- f23146520e: Ensure that the "Custom User" sign-in makes use of supplied custom tokens, if any
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
 ## 0.12.3-next.2
 
 ### Patch Changes

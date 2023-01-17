@@ -1,5 +1,107 @@
 # @backstage/plugin-scaffolder
 
+## 1.10.0
+
+### Minor Changes
+
+- e4c0240445: Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+
+  The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
+
+  - Get all entities of kind `Group`
+
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+    ```
+
+  - Get entities of kind `Group` and spec.type `team`
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+            spec.type: team
+    ```
+
+- b4955ed7b9: - **Deprecation** - Deprecated the following exports, please import them directly from `@backstage/plugin-scaffolder-react` instead
+
+  ```
+  createScaffolderFieldExtension
+  ScaffolderFieldExtensions
+  useTemplateSecrets
+  scaffolderApiRef
+  ScaffolderApi
+  ScaffolderUseTemplateSecrets
+  TemplateParameterSchema
+  CustomFieldExtensionSchema
+  CustomFieldValidator
+  FieldExtensionOptions
+  FieldExtensionComponentProps
+  FieldExtensionComponent
+  ListActionsResponse
+  LogEvent
+  ScaffolderDryRunOptions
+  ScaffolderDryRunResponse
+  ScaffolderGetIntegrationsListOptions
+  ScaffolderGetIntegrationsListResponse
+  ScaffolderOutputlink
+  ScaffolderScaffoldOptions
+  ScaffolderScaffoldResponse
+  ScaffolderStreamLogsOptions
+  ScaffolderTask
+  ScaffolderTaskOutput
+  ScaffolderTaskStatus
+  ```
+
+  - **Deprecation** - Deprecated the `rootRouteRef` export, this should now be used from `scaffolderPlugin.routes.root`
+
+  - The following `/alpha` types have removed from this package and moved to the `@backstage/plugin-scaffolder-react/alpha` package
+
+    ```
+    createNextScaffolderFieldExtension
+    FormProps
+    NextCustomFieldValidator
+    NextFieldExtensionComponentProps
+    NextFieldExtensionOptions
+    ```
+
+### Patch Changes
+
+- 3c112f6967: rollback `@rjsf/validator-ajv8` to `@rjsf/validator-v6`
+- 2fadff2a25: Render the scaffolder action description using the `MarkdownContent` component. This will allow the page to show richer content to describe scaffolder actions.
+- 27a5e90e97: Small updates to some paragraph components to ensure theme typography properties are inherited correctly.
+- 223e2c5f03: add `onChange` handler to`Stepper` component
+- 659c92a1dc: Updated dependency `use-immer` to `^0.8.0`.
+- 489935d625: Show action example yaml on the scaffolder actions documentation page.
+- b8269de9f1: Explicitly declaring children as optional props to facilitate react 18 changes
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-scaffolder-common@1.2.4
+  - @backstage/catalog-client@1.3.0
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-scaffolder-react@1.0.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.9
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10
+
 ## 1.10.0-next.2
 
 ### Minor Changes

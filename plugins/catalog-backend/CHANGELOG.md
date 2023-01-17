@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend
 
+## 1.7.0
+
+### Minor Changes
+
+- f75bf76330: Implemented server side ordering in the entities endpoint
+
+### Patch Changes
+
+- e23f13a573: Enable the `by-refs` endpoint to receive `fields` through the POST body as well as through query parameters.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- d136793ff0: Fixed an issue where internal references in the catalog would stick around for longer than expected, causing entities to not be deleted or orphaned as expected.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-scaffolder-common@1.2.4
+  - @backstage/catalog-client@1.3.0
+  - @backstage/plugin-catalog-node@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.3
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.7.0-next.2
 
 ### Patch Changes

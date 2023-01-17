@@ -1,5 +1,13 @@
 # @backstage/integration
 
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+
 ## 1.4.2-next.0
 
 ### Patch Changes

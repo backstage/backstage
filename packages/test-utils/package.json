@@ -1,7 +1,7 @@
 {
   "name": "@backstage/test-utils",
   "description": "Utilities to test Backstage plugins and apps.",
-  "version": "1.2.4-next.1",
+  "version": "1.2.4",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",

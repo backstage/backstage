@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-search-common",
   "description": "Common functionalities for Search, to be shared between various search-enabled plugins",
-  "version": "1.2.1-next.0",
+  "version": "1.2.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {

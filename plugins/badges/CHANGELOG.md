@@ -1,5 +1,17 @@
 # @backstage/plugin-badges
 
+## 0.2.38
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+
 ## 0.2.38-next.2
 
 ### Patch Changes

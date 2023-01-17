@@ -1,5 +1,21 @@
 # @backstage/plugin-adr-backend
 
+## 0.2.5
+
+### Patch Changes
+
+- aa17643a06: This plugin now exports a `createRouter` method which uses `UrlReaders` to make requests to your SCM. Please make sure you read the [install instructions](https://github.com/backstage/backstage/blob/master/plugins/adr-backend/README.md#install)
+- 21ffbdd5ee: Clarify that default ADR parsers support MADR specification v2.x
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/catalog-client@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/plugin-adr-common@0.2.5
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.2.5-next.2
 
 ### Patch Changes

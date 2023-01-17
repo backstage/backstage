@@ -1,5 +1,23 @@
 # @backstage/plugin-playlist
 
+## 0.1.5
+
+### Patch Changes
+
+- 1a53a735b7: Updated dependency `swr` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-search-react@1.4.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.10
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-playlist-common@0.1.4
+
 ## 0.1.5-next.2
 
 ### Patch Changes

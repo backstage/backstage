@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog
 
+## 1.7.2
+
+### Patch Changes
+
+- cebe24ef1d: Add `EntityLabelsCard` to show the labels for an entity.
+- 5353b4df61: There is now tooltip in the entity context menu
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/catalog-client@1.3.0
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-search-react@1.4.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration-react@1.1.9
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.7.2-next.2
 
 ### Patch Changes

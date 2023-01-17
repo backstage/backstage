@@ -1,5 +1,14 @@
 # @backstage/integration-aws-node
 
+## 0.1.1
+
+### Patch Changes
+
+- 89062b8ba0: Skip STS API calls where not needed, to support Minio use cases
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+
 ## 0.1.1-next.0
 
 ### Patch Changes

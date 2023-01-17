@@ -1,5 +1,51 @@
 # @backstage/plugin-search-react
 
+## 1.4.0
+
+### Minor Changes
+
+- 6d9a93def8: Allow customizing empty state component through `noResultsComponent` property.
+
+  Example:
+
+  ```jsx
+  <SearchResult noResultsComponent={<>No results were found</>}>
+    {({ results }) => (
+      <List>
+        {results.map(({ type, document }) => {
+          switch (type) {
+            case 'custom-result-item':
+              return (
+                <CustomResultListItem
+                  key={document.location}
+                  result={document}
+                />
+              );
+            default:
+              return (
+                <DefaultResultListItem
+                  key={document.location}
+                  result={document}
+                />
+              );
+          }
+        })}
+      </List>
+    )}
+  </SearchResult>
+  ```
+
+### Patch Changes
+
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.4.0-next.2
 
 ### Minor Changes

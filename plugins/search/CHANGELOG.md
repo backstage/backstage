@@ -1,5 +1,24 @@
 # @backstage/plugin-search
 
+## 1.0.7
+
+### Patch Changes
+
+- a24387c6de: When the search modal is opened, the focus is placed on the search bar input field.
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-search-react@1.4.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.0.7-next.2
 
 ### Patch Changes

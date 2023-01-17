@@ -1,5 +1,19 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.10
+
+### Patch Changes
+
+- 27a5e90e97: Small updates to some paragraph components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-home@0.4.30
+  - @backstage/plugin-search-react@1.4.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.1.10-next.2
 
 ### Patch Changes
