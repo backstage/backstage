@@ -30,13 +30,30 @@ export async function command() {
 
   await Promise.all(
     packages.map(async ({ dir, packageJson }) => {
-      const { exports: exp } = packageJson;
-      if (!exp || typeof exp !== 'object' || Array.isArray(exp)) {
+      let { exports: exp } = packageJson;
+      if (!exp) {
         return;
+      }
+      if (Array.isArray(exp)) {
+        throw new Error('Unexpected array in package.json exports field');
       }
 
       let changed = false;
       let newPackageJson = packageJson;
+
+      // If exports is a string we rewrite it to an object to add package.json
+      if (typeof exp === 'string') {
+        changed = true;
+        exp = { '.': exp };
+        newPackageJson.exports = exp;
+      } else if (typeof exp !== 'object') {
+        return;
+      }
+
+      if (!exp['./package.json']) {
+        changed = true;
+        exp['./package.json'] = './package.json';
+      }
 
       const existingTypesVersions = JSON.stringify(packageJson.typesVersions);
 
