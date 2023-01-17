@@ -1,0 +1,37 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: example-delay-tempalte
+  title: Delay template
+  description: An example template for the scaffolder that creates a simple Node.js service
+spec:
+  type: service
+
+  parameters: []
+
+  steps:
+    - id: delay1
+      name: Delay 1
+      action: mock:delay
+
+    - id: delay2
+      name: Delay 2
+      action: mock:delay
+
+    - id: delay3
+      name: Delay 3
+      action: mock:delay
+
+    - id: delay4
+      name: Delay 4
+      action: mock:delay
+
+    - id: delay5
+      if: true
+      name: Delay 5
+      action: mock:delay
+
+    - id: delay6
+      name: Delay 6
+      action: mock:delay

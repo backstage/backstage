@@ -255,6 +255,12 @@ catalog:
     # Backstage example entities
     - type: file
       target: ../catalog-model/examples/all.yaml
+
+    - type: file
+      target: ./test-template.yaml
+      rules:
+        - allow: [Template]
+
     # Backstage example groups and users
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
