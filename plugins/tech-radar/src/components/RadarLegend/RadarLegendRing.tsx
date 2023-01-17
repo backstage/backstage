@@ -61,7 +61,7 @@ export const RadarLegendRing = ({
                 title={entry.title}
                 description={entry.description}
                 active={entry.active}
-                links={entry.links}
+                links={entry.links ?? []}
               />
             </li>
           ))}
