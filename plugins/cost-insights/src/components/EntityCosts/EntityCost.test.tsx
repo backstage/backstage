@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  MockPluginProvider,
-  renderInTestApp,
-  TestApiProvider,
-} from '@backstage/test-utils';
+import { MockPluginProvider } from '@backstage/test-utils/alpha';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   changeOf,
   MockAggregatedDailyCosts,

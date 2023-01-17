@@ -19,7 +19,10 @@ import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
-import { startTestBackend, mockServices } from '@backstage/backend-test-utils';
+import {
+  startTestBackend,
+  mockServices,
+} from '@backstage/backend-test-utils/alpha';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { Duration } from 'luxon';

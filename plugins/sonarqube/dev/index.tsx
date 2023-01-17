@@ -22,10 +22,10 @@ import { EntitySonarQubeCard, sonarQubePlugin } from '../src';
 import { Content, Header, Page } from '@backstage/core-components';
 import {
   FindingSummary,
-  SONARQUBE_PROJECT_KEY_ANNOTATION,
   SonarQubeApi,
   sonarQubeApiRef,
-} from '@backstage/plugin-sonarqube-react';
+} from '@backstage/plugin-sonarqube-react/alpha';
+import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '@backstage/plugin-sonarqube-react';
 
 const entity = (name?: string) =>
   ({

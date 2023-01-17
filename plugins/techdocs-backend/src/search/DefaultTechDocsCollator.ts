@@ -29,7 +29,7 @@ import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
 import pLimit from 'p-limit';
 import { Config } from '@backstage/config';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { Permission } from '@backstage/plugin-permission-common';
 import {
   CatalogApi,
