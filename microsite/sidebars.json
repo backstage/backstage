@@ -238,8 +238,7 @@
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
-          "plugins/url-reader",
-          "plugins/new-backend-system"
+          "plugins/url-reader"
         ]
       },
       {
