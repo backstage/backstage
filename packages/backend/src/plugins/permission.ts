@@ -28,7 +28,6 @@ import {
   DefaultPlaylistPermissionPolicy,
   isPlaylistPermission,
 } from '@backstage/plugin-playlist-backend';
-
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
