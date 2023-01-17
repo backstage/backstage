@@ -218,7 +218,6 @@ catalog:
         - System
         - Domain
         - Location
-        - Template
 
   processors:
     ldapOrg:
@@ -275,10 +274,6 @@ catalog:
     # Backstage end-to-end tests of TechDocs
     - type: file
       target: ../../cypress/e2e-fixture.catalog.info.yaml
-    
-    # TODO: Remove once approach is validated on RFC. 
-    - type: file
-      target: ../../template.yaml
 scaffolder:
   # Use to customize default commit author info used when new components are created
   # defaultAuthor:
