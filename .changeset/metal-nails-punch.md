@@ -1,8 +1,8 @@
 ---
-'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-scaffolder-backend': minor
 ---
 
-This patch adds changes to provide examples alongside scaffolder task actions.
+This change adds changes to provide examples alongside scaffolder task actions.
 
 The `createTemplateAction` function now takes a list of examples e.g.
 
