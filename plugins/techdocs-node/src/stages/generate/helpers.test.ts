@@ -190,6 +190,7 @@ describe('helpers', () => {
     beforeEach(() => {
       mockFs({
         '/mkdocs.yml': mkdocsYml,
+        '/mkdocs_default.yml': mkdocsDefaultYml,
         '/mkdocs_with_repo_url.yml': mkdocsYmlWithRepoUrl,
         '/mkdocs_with_edit_uri.yml': mkdocsYmlWithEditUri,
         '/mkdocs_with_extensions.yml': mkdocsYmlWithExtensions,
@@ -525,35 +526,47 @@ describe('helpers', () => {
     it('returns expected contents when .yml file is present', async () => {
       const key = path.join(inputDir, 'mkdocs.yml');
       mockFs({ [key]: mkdocsYml });
-      const { path: mkdocsPath, content } = await getMkdocsYml(
-        inputDir,
-        siteOptions,
-      );
+      const {
+        path: mkdocsPath,
+        content,
+        configExists,
+      } = await getMkdocsYml(inputDir, siteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
+      expect(configExists).toBe(true);
     });
 
     it('returns expected contents when .yaml file is present', async () => {
       const key = path.join(inputDir, 'mkdocs.yaml');
       mockFs({ [key]: mkdocsYml });
-      const { path: mkdocsPath, content } = await getMkdocsYml(
-        inputDir,
-        siteOptions,
-      );
+      const {
+        path: mkdocsPath,
+        content,
+        configExists,
+      } = await getMkdocsYml(inputDir, siteOptions);
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
+      expect(configExists).toBe(true);
     });
 
     it('returns expected contents when default file is present', async () => {
+      const defaultSiteOptions = {
+        name: 'Default Test site name',
+      };
       const key = path.join(inputDir, 'mkdocs.yml');
+      const mockPathExists = jest.spyOn(fs, 'pathExists');
+      mockPathExists.mockImplementation(() => Promise.resolve(false));
       mockFs({ [key]: mkdocsDefaultYml });
-      const { path: mkdocsPath, content } = await getMkdocsYml(
-        inputDir,
-        siteOptions,
-      );
+      const {
+        path: mkdocsPath,
+        content,
+        configExists,
+      } = await getMkdocsYml(inputDir, defaultSiteOptions);
+
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsDefaultYml.toString());
+      expect(configExists).toBe(false);
     });
 
     it('throws when neither .yml nor .yaml nor default file is present', async () => {
