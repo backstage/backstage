@@ -78,8 +78,11 @@ export function createBitbucketCloudPipelineUpdateAction(options: {
     async handler(ctx) {
       const { repoUrl, token, enable } = ctx.input;
 
-      const { integrationConfig, project, repo, workspace } =
-        getBitbucketCloudConfig({ repoUrl, token, integrations });
+      const { integrationConfig, repo, workspace } = getBitbucketCloudConfig({
+        repoUrl,
+        token,
+        integrations,
+      });
 
       const client = BitbucketCloudClient.fromConfig(integrationConfig.config);
 

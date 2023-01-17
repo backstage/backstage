@@ -23,8 +23,7 @@ import {
 } from '@backstage/plugin-bitbucket-cloud-common';
 
 /**
- * Creates a new action that initializes a git repository of the content in the workspace
- * and publishes it to Bitbucket Cloud.
+ * Creates a new action that uses the Bitbucket Cloud api to create a new git repository.
  * @public
  */
 export function createBitbucketCloudRepoCreateAction(options: {
@@ -37,7 +36,7 @@ export function createBitbucketCloudRepoCreateAction(options: {
     repoUrl: string;
     description?: string;
     defaultBranch?: string;
-    isPrivate?: boolean;
+    is_private?: boolean;
     token?: string;
   }>({
     id: 'bitbucketCloud:repo:create',
@@ -56,8 +55,9 @@ export function createBitbucketCloudRepoCreateAction(options: {
             title: 'Repository Description',
             type: 'string',
           },
-          isPrivate: {
-            title: `Repository Visibility. The default is 'private'`,
+          // TODO Document this change based on the BB API
+          is_private: {
+            title: `Repository Visibility. The default is 'true' (private)`,
             type: 'boolean',
           },
           defaultBranch: {
@@ -76,46 +76,43 @@ export function createBitbucketCloudRepoCreateAction(options: {
       output: {
         type: 'object',
         properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
+          gitLink: {
+            title: 'A URL to clone the new Bitbucket Cloud repository',
             type: 'string',
           },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
+          htmlLink: {
+            title: 'A URL view the new Bitbucket Cloud repository',
             type: 'string',
           },
         },
       },
     },
     async handler(ctx) {
-      const { repoUrl, token, description, defaultBranch, isPrivate } =
+      const { repoUrl, token, description, defaultBranch, is_private } =
         ctx.input;
 
+      // TODO refactor get config
       const { integrationConfig, project, repo, workspace } =
         getBitbucketCloudConfig({ repoUrl, token, integrations });
 
       const client = BitbucketCloudClient.fromConfig(integrationConfig.config);
 
       // Use Bitbucket API to create a new repository
-      // try {
-      console.log('\n\n Scaffolder start');
-      const response = await client.createRepository(workspace, repo, {
+      const repository = await client.createRepository(workspace, repo, {
         type: 'repository',
         project: {
           key: project,
         } as Models.Project,
         description,
         defaultBranch,
-        is_private: isPrivate,
+        is_private: is_private,
       } as Models.Repository);
-      console.log('\n\n Scaffolder end');
 
-      // TODO better error handling
-      console.log(response);
-
-      // ctx.output('remoteUrl', remoteUrl);
-      // ctx.output('repoContentsUrl', repoContentsUrl);
-      // ctx.output('enablePipeline', enablePipeline);
+      ctx.output(
+        'gitLink',
+        repository.links?.clone?.find(o => o.name === 'https')?.href as string,
+      );
+      ctx.output('htmlLink', repository.links?.html?.href as string);
     },
   });
 }

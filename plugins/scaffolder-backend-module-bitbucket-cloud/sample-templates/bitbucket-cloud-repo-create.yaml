@@ -37,21 +37,6 @@ spec:
           type: string
           description: The default branch for the repository
           default: master
-        name:
-          title: Name
-          type: string
-          description: Unique name of the component
-          ui:autofocus: true
-          ui:options:
-            rows: 5
-        # owner:
-        #   title: Owner
-        #   type: string
-        #   description: Owner of the component
-        #   ui:field: OwnerPicker
-        #   ui:options:
-        #     catalogFilter:
-        #       kind: Group
 
   steps:
     - id: create
@@ -65,8 +50,10 @@ spec:
 
   output:
     links:
-      - title: Repository
-        url: ${{ steps['publish'].output.remoteUrl }}
-      - title: Open in catalog
-        icon: catalog
-        entityRef: ${{ steps['register'].output.entityRef }}
+      - title: Repository Git link
+        url: ${{ steps['create'].output.gitLink }}
+      - title: Repository HTML link
+        url: ${{ steps['create'].output.htmlLink }}
+      # - title: Open in catalog
+      #   icon: catalog
+      #   entityRef: ${{ steps['register'].output.entityRef }}

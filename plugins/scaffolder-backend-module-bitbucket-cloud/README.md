@@ -1,6 +1,6 @@
 # scaffolder-backend-module-bitbucket-cloud
 
-Welcome to the scaffolder-backend-module-bitbucket-cloud-backend scaffoler plugin!
+Welcome to the scaffolder-backend-module-bitbucket-cloud-backend scaffolder plugin!
 
 _This plugin was created through the Backstage CLI_
 

@@ -11247,6 +11247,16 @@
           "204": {
             "description": "An empty response indicating the authenticated user's approval has been withdrawn."
           },
+          "400": {
+            "description": "Pull request cannot be unapproved because the pull request has already been merged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "The request wasn't authenticated.",
             "content": {
@@ -11291,6 +11301,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/participant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Pull request cannot be approved because the pull request has already been merged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -12157,6 +12177,16 @@
           "204": {
             "description": "An empty response indicating the authenticated user's request for change has been withdrawn."
           },
+          "400": {
+            "description": "Pull request requested changes cannot be removed because the pull request has already been merged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "The request wasn't authenticated.",
             "content": {
@@ -12201,6 +12231,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/participant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Pull request changes cannot be requested because the pull request has already been merged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -19032,7 +19072,7 @@
       "description": "A workspace is where you create repositories, collaborate on\nyour code, and organize different streams of work in your Bitbucket\nCloud account. Workspaces replace the use of teams and users in API\ncalls.\n"
     }
   ],
-  "x-revision": "b3e968485931",
+  "x-revision": "e695e1d23596",
   "x-atlassian-narrative": {
     "documents": [
       {
@@ -19861,7 +19901,7 @@
               "state": {
                 "type": "string",
                 "description": "Provides some indication of the status of this commit",
-                "enum": ["FAILED", "SUCCESSFUL", "INPROGRESS", "STOPPED"]
+                "enum": ["STOPPED", "FAILED", "SUCCESSFUL", "INPROGRESS"]
               },
               "updated_on": {
                 "type": "string",
@@ -20727,31 +20767,31 @@
             "type": "string",
             "description": "The event identifier.",
             "enum": [
+              "pullrequest:updated",
+              "repo:transfer",
+              "project:updated",
+              "pullrequest:created",
+              "repo:commit_comment_created",
+              "pullrequest:unapproved",
+              "issue:comment_created",
               "pullrequest:rejected",
               "repo:fork",
+              "repo:commit_status_created",
               "pullrequest:comment_created",
-              "pullrequest:changes_request_removed",
-              "pullrequest:created",
-              "pullrequest:unapproved",
-              "repo:commit_comment_created",
               "pullrequest:approved",
+              "pullrequest:fulfilled",
+              "pullrequest:changes_request_created",
               "repo:push",
-              "pullrequest:updated",
+              "pullrequest:comment_updated",
+              "pullrequest:comment_deleted",
+              "repo:created",
+              "repo:deleted",
               "repo:commit_status_updated",
               "issue:created",
-              "issue:updated",
-              "pullrequest:comment_updated",
-              "repo:deleted",
               "repo:imported",
-              "pullrequest:comment_deleted",
-              "repo:updated",
-              "project:updated",
-              "repo:transfer",
-              "repo:commit_status_created",
-              "issue:comment_created",
-              "pullrequest:changes_request_created",
-              "repo:created",
-              "pullrequest:fulfilled"
+              "pullrequest:changes_request_removed",
+              "issue:updated",
+              "repo:updated"
             ]
           },
           "label": {
@@ -25494,31 +25534,31 @@
                 "items": {
                   "type": "string",
                   "enum": [
+                    "pullrequest:updated",
+                    "repo:transfer",
+                    "project:updated",
+                    "pullrequest:created",
+                    "repo:commit_comment_created",
+                    "pullrequest:unapproved",
+                    "issue:comment_created",
                     "pullrequest:rejected",
                     "repo:fork",
+                    "repo:commit_status_created",
                     "pullrequest:comment_created",
-                    "pullrequest:changes_request_removed",
-                    "pullrequest:created",
-                    "pullrequest:unapproved",
-                    "repo:commit_comment_created",
                     "pullrequest:approved",
+                    "pullrequest:fulfilled",
+                    "pullrequest:changes_request_created",
                     "repo:push",
-                    "pullrequest:updated",
+                    "pullrequest:comment_updated",
+                    "pullrequest:comment_deleted",
+                    "repo:created",
+                    "repo:deleted",
                     "repo:commit_status_updated",
                     "issue:created",
-                    "issue:updated",
-                    "pullrequest:comment_updated",
-                    "repo:deleted",
                     "repo:imported",
-                    "pullrequest:comment_deleted",
-                    "repo:updated",
-                    "project:updated",
-                    "repo:transfer",
-                    "repo:commit_status_created",
-                    "issue:comment_created",
-                    "pullrequest:changes_request_created",
-                    "repo:created",
-                    "pullrequest:fulfilled"
+                    "pullrequest:changes_request_removed",
+                    "issue:updated",
+                    "repo:updated"
                   ]
                 },
                 "minItems": 1,

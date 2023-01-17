@@ -106,28 +106,6 @@ export class BitbucketCloudClient {
             pipelinesConfigResponse,
         ),
     );
-
-    // // Create request object to pass
-    // const requestOptions: RequestInit = {
-    //   method: 'PUT',
-    //   body: JSON.stringify({
-    //     enabled: true,
-    //     repository: {
-    //       type: 'repository_pipelines_configuration',
-    //       slug: repo_slug,
-    //     } as Models.Repository,
-    //   }),
-    // };
-
-    // let response: Response;
-    // try {
-    //   response = await this.request(
-    //     new Request(url.toString(), requestOptions),
-    //   );
-    // } catch (e) {
-    //   throw new Error(`Unable to enable pipelines, ${e}`);
-    // }
-    // return response;
   }
 
   private createUrl(endpoint: string, options?: RequestOptions): URL {
@@ -193,13 +171,7 @@ export class BitbucketCloudClient {
       .catch((error: Response) => {
         return error.text().then((responseText: String) => {
           throw new Error(
-            `Unexpected response for ${req.method} ${
-              req.url
-            }. Expected 200 but got ${error.status} - ${
-              error.statusText
-            }: ${responseText} \n Headers: ${JSON.stringify(
-              req.headers,
-            )} \n Body: ${req.body}`,
+            `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${error.status} - ${error.statusText}: ${responseText}`,
           );
         });
       });
