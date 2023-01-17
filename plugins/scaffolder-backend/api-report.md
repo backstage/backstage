@@ -97,6 +97,14 @@ export function createDebugLogAction(): TemplateAction<{
 }>;
 
 // @public
+export function createFetchCatalogEntityAction(options: {
+  catalogClient: CatalogApi;
+}): TemplateAction<{
+  entityRef: string;
+  optional?: boolean | undefined;
+}>;
+
+// @public
 export function createFetchPlainAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
