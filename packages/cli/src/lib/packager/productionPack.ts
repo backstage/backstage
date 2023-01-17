@@ -24,6 +24,7 @@ const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
 
 const SKIPPED_KEYS = ['access', 'registry', 'tag', 'alphaTypes', 'betaTypes'];
+const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 
 interface ProductionPackOptions {
   packageDir: string;
@@ -189,6 +190,9 @@ async function prepareExportsEntryPoints(
 
   const entryPoints = readEntryPoints(pkg);
   for (const entryPoint of entryPoints) {
+    if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
+      continue;
+    }
     const exp = {} as Record<string, string>;
     for (const [key, ext] of Object.entries(EXPORT_MAP)) {
       const name = `${entryPoint.name}${ext}`;
