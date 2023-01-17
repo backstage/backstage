@@ -50,9 +50,10 @@ export async function productionPack(options: ProductionPackOptions) {
   }
 
   // This mutates pkg to fill in index exports, so call it before applying publishConfig
-  if (pkg.exports) {
-    await writeExportsEntryPoints(pkg, targetDir ?? packageDir);
-  }
+  const writeCompatibilityEntryPoints = await prepareExportsEntryPoints(
+    pkg,
+    packageDir,
+  );
 
   // TODO(Rugvip): Once exports are rolled out more broadly we should deprecate and remove this behavior
   const publishConfig = pkg.publishConfig ?? {};
@@ -99,6 +100,9 @@ export async function productionPack(options: ProductionPackOptions) {
   }
   if (publishConfig.betaTypes) {
     await writeReleaseStageEntrypoint(pkg, 'beta', targetDir ?? packageDir);
+  }
+  if (writeCompatibilityEntryPoints) {
+    await writeCompatibilityEntryPoints(targetDir ?? packageDir);
   }
 }
 
@@ -166,15 +170,19 @@ const EXPORT_MAP = {
 
 /**
  * Rewrites the exports field in package.json to point to dist files, as
- * well as creating backwards compatibility entry points for importers
- * that don't support exports.
+ * well as returning a function that creates backwards compatibility
+ * entry points for importers that don't support exports.
  */
-async function writeExportsEntryPoints(
+async function prepareExportsEntryPoints(
   pkg: ExtendedPackageJSON,
-  targetDir: string,
+  packageDir: string,
 ) {
-  const distFiles = await fs.readdir(resolvePath(targetDir, 'dist'));
+  const distFiles = await fs.readdir(resolvePath(packageDir, 'dist'));
   const outputExports = {} as Record<string, Record<string, string>>;
+
+  const compatibilityWriters = new Array<
+    (targetDir: string) => Promise<void>
+  >();
 
   const entryPoints = readEntryPoints(pkg);
   for (const entryPoint of entryPoints) {
@@ -199,19 +207,22 @@ async function writeExportsEntryPoints(
         pkg.types = exp.types;
       }
     } else {
-      const entryPointDir = resolvePath(targetDir, entryPoint.name);
-      await fs.ensureDir(entryPointDir);
-      await fs.writeJson(
-        resolvePath(entryPointDir, PKG_PATH),
-        {
-          name: pkg.name,
-          version: pkg.version,
-          ...(exp.default ? { main: joinPath('..', exp.default) } : {}),
-          ...(exp.import ? { module: joinPath('..', exp.import) } : {}),
-          ...(exp.types ? { types: joinPath('..', exp.types) } : {}),
-        },
-        { encoding: 'utf8', spaces: 2 },
-      );
+      // This is deferred until after we have created the target directory
+      compatibilityWriters.push(async targetDir => {
+        const entryPointDir = resolvePath(targetDir, entryPoint.name);
+        await fs.ensureDir(entryPointDir);
+        await fs.writeJson(
+          resolvePath(entryPointDir, PKG_PATH),
+          {
+            name: pkg.name,
+            version: pkg.version,
+            ...(exp.default ? { main: joinPath('..', exp.default) } : {}),
+            ...(exp.import ? { module: joinPath('..', exp.import) } : {}),
+            ...(exp.types ? { types: joinPath('..', exp.types) } : {}),
+          },
+          { encoding: 'utf8', spaces: 2 },
+        );
+      });
       if (Array.isArray(pkg.files) && !pkg.files.includes(entryPoint.name)) {
         pkg.files.push(entryPoint.name);
       }
@@ -223,4 +234,11 @@ async function writeExportsEntryPoints(
   }
 
   pkg.exports = outputExports;
+
+  if (compatibilityWriters.length > 0) {
+    return async (targetDir: string) => {
+      await Promise.all(compatibilityWriters.map(writer => writer(targetDir)));
+    };
+  }
+  return undefined;
 }
