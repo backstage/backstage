@@ -97,6 +97,7 @@ export const getMkdocsYml: (
 ) => Promise<{
   path: string;
   content: string;
+  configExists: boolean;
 }>;
 
 // @public
