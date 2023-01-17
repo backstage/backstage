@@ -1,5 +1,14 @@
 # example-app
 
+## 0.2.80
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.0.1
+  - @backstage/plugin-scaffolder@1.10.1
+  - @backstage/cli@0.22.1
+
 ## 0.2.79
 
 ### Patch Changes

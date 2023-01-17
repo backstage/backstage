@@ -1,5 +1,12 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.1
+
 ## 0.3.19
 
 ### Patch Changes

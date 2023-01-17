@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder
 
+## 1.10.1
+
+### Patch Changes
+
+- 021233c215: lock versions of `@rjsf/*-beta` packages
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.0.1
+
 ## 1.10.0
 
 ### Minor Changes
