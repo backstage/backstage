@@ -8,7 +8,6 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { Dispatch } from 'react';
-import type { ErrorTransformer } from '@rjsf/utils';
 import { Extension } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldProps as FieldProps_2 } from '@rjsf/utils';
@@ -22,6 +21,7 @@ import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { SetStateAction } from 'react';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
@@ -356,9 +356,11 @@ export type StepperProps = {
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
-  ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
-  createButtonText?: string;
-  reviewButtonText?: string;
+  components?: {
+    ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
+    createButtonText?: ReactNode;
+    reviewButtonText?: ReactNode;
+  };
 };
 
 // @alpha
@@ -444,30 +446,16 @@ export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 export const Workflow: (workflowProps: WorkflowProps) => JSX.Element | null;
 
 // @alpha (undocumented)
-export interface WorkflowProps {
-  // (undocumented)
-  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  FormProps?: FormProps;
-  // (undocumented)
-  initialFormState?: Record<string, JsonValue>;
-  // (undocumented)
-  namespace: string;
-  // (undocumented)
-  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
-  // (undocumented)
-  onError(error: Error | undefined): JSX.Element | null;
-  // (undocumented)
-  ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
-  // (undocumented)
-  templateName: string;
-  // (undocumented)
+export type WorkflowProps = {
   title?: string;
-  // (undocumented)
-  transformErrors?: ErrorTransformer;
-}
+  description?: string;
+  namespace: string;
+  templateName: string;
+  onError(error: Error | undefined): JSX.Element | null;
+} & Pick<
+  StepperProps,
+  'extensions' | 'FormProps' | 'components' | 'onCreate' | 'initialState'
+>;
 
 // (No @packageDocumentation comment for this package)
 ```
