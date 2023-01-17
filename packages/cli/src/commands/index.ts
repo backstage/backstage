@@ -193,7 +193,7 @@ export function registerMigrateCommand(program: Command) {
 
   command
     .command('package-exports')
-    .description('Synchronize package sub-path export definitions')
+    .description('Synchronize package subpath export definitions')
     .action(
       lazy(() => import('./migrate/packageExports').then(m => m.command)),
     );
