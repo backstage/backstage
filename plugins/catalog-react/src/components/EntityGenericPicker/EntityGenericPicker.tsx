@@ -52,60 +52,8 @@ export interface EntityGenericPickerProps {
   filterValue: string;
 }
 
-function useAvailableOptions(
-  filterValue: string,
-  filters: DefaultEntityFilters,
-) {
-  const catalogApi = useApi(catalogApiRef);
-
-  const [availableOptions, setAvailableOptions] = useState<string[]>([]);
-
-  const {
-    error,
-    loading,
-    value: facets,
-  } = useAsync(async () => {
-    const facet = filterValue;
-    const items = await catalogApi
-      .getEntityFacets({
-        facets: [facet],
-        filter: filters.kind?.getCatalogFilters(),
-      })
-      .then(response => response.facets[facet] || []);
-
-    return items;
-  }, [catalogApi]);
-
-  const facetsRef = useRef(facets);
-  useEffect(() => {
-    const oldFacets = facetsRef.current;
-    facetsRef.current = facets;
-    // Delay processing hook until facets load updates have settled to generate list of kinds;
-    // This prevents resetting the kind filter due to saved kind value from query params not matching the
-    // empty set of kind values while values are still being loaded; also only run this hook on changes
-    // to facets
-    if (loading || oldFacets === facets || !facets) {
-      return;
-    }
-
-    const newOptions = [
-      ...new Set(
-        sortBy(facets, f => f.value).map(f =>
-          f.value.toLocaleLowerCase('en-US'),
-        ),
-      ),
-    ];
-
-    setAvailableOptions(newOptions);
-  }, [loading, facets, setAvailableOptions]);
-
-  return { loading, error, availableOptions };
-}
-
 function useEntityFieldFilter(opts: { filterValue: string }): {
-  loading: boolean;
-  error?: Error;
-  availableOptions: string[];
+  availableOptions: { [k: string]: number } | undefined;
   selectedOptions: string[];
   setSelectedOptions: (option: string[]) => void;
 } {
@@ -131,14 +79,6 @@ function useEntityFieldFilter(opts: { filterValue: string }): {
     }
   }, [queryParamGenres]);
 
-  // Set selected kind from filters; this happens when the kind filter is
-  // updated from another component
-  // useEffect(() => {
-  //   if (filters.kind?.value) {
-  //     setSelectedOption(filters.kind?.value);
-  //   }
-  // }, [filters.kind]);
-
   useEffect(() => {
     updateFilters({
       option: selectedOptions.length
@@ -147,14 +87,19 @@ function useEntityFieldFilter(opts: { filterValue: string }): {
     });
   }, [selectedOptions, updateFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { availableOptions, loading, error } = useAvailableOptions(
-    opts.filterValue,
-    filters,
-  );
+  const catalogApi = useApi(catalogApiRef);
+  const { value: availableOptions } = useAsync(async () => {
+    const facet = opts.filterValue;
+    const { facets } = await catalogApi.getEntityFacets({
+      facets: [facet],
+      filter: filters.kind?.getCatalogFilters(),
+    });
+    return Object.fromEntries(
+      facets[facet].map(({ value, count }) => [value, count]),
+    );
+  }, [filters.kind]);
 
   return {
-    loading,
-    error,
     availableOptions,
     selectedOptions,
     setSelectedOptions,
@@ -165,30 +110,19 @@ function useEntityFieldFilter(opts: { filterValue: string }): {
 export const EntityGenericPicker = (props: EntityGenericPickerProps) => {
   const { name, filterValue } = props;
 
-  const alertApi = useApi(alertApiRef);
-
-  const { error, availableOptions, selectedOptions, setSelectedOptions } =
+  const { availableOptions, selectedOptions, setSelectedOptions } =
     useEntityFieldFilter({
       filterValue: filterValue,
     });
 
-  useEffect(() => {
-    if (error) {
-      alertApi.post({
-        message: `Failed to load entity kinds`,
-        severity: 'error',
-      });
-    }
-  }, [error, alertApi]);
-
-  if (availableOptions?.length === 0 || error) return null;
+  if (!Object.keys(availableOptions ?? {}).length) return null;
 
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">{name}</Typography>
       <Autocomplete
         multiple
-        options={availableOptions}
+        options={Object.keys(availableOptions ?? {})}
         value={selectedOptions}
         onChange={(_: object, value: string[]) => setSelectedOptions(value)}
         renderOption={(option, { selected }) => (

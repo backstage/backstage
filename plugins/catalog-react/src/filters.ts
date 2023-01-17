@@ -247,7 +247,16 @@ export class EntityFieldFilter implements EntityFilter {
   constructor(readonly values: string[], readonly filterValue: string) {}
   filterEntity(entity: Entity): boolean {
     return this.values.every(v => {
-      return (lodash.get(entity, this.filterValue) ?? []).includes(v);
+      let path = this.filterValue.split('.');
+      let val = '';
+      if (this.filterValue.startsWith('metadata.annotations.')) {
+        val = this.filterValue.substring('metadata.annotations.'.length);
+        path = ['metadata', 'annotations', val];
+      } else if (this.filterValue.startsWith('metadata.labels.')) {
+        val = this.filterValue.substring('metadata.labels.'.length);
+        path = ['metadata', 'labels', val];
+      }
+      return (lodash.get(entity, path) ?? []).includes(v);
     });
   }
 }

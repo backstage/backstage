@@ -15,141 +15,162 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityFieldFilter } from '../../filters';
 import { EntityGenericPicker } from './EntityGenericPicker';
+import { catalogApiRef } from '../../api';
+import { CatalogApi } from '@backstage/catalog-client';
+import { TestApiProvider } from '@backstage/test-utils';
 
-const mockEntities: Entity[] = [
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-1',
-      domain: 'domain1',
-      tags: ['tag4', 'tag1', 'tag2'],
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-2',
-      domain: 'domain2',
-      tags: ['tag3', 'tag4'],
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-3',
-      domain: 'domain2',
-      tags: ['tag3', 'tag4'],
-    },
-  },
-];
+// const mockEntities: Entity[] = [
+//   {
+//     apiVersion: '1',
+//     kind: 'Component',
+//     metadata: {
+//       name: 'component-1',
+//       domain: 'domain1',
+//       tags: ['tag4', 'tag1', 'tag2'],
+//     },
+//   },
+//   {
+//     apiVersion: '1',
+//     kind: 'Component',
+//     metadata: {
+//       name: 'component-2',
+//       domain: 'domain2',
+//       tags: ['tag3', 'tag4'],
+//     },
+//   },
+//   {
+//     apiVersion: '1',
+//     kind: 'Component',
+//     metadata: {
+//       name: 'component-3',
+//       domain: 'domain2',
+//       tags: ['tag3', 'tag4'],
+//     },
+//   },
+// ];
+
+const domains = ['domain1', 'domain2', 'domain3'];
 
 const EntityDomainPicker = () => (
   <EntityGenericPicker name="domain" filterValue="metadata.domain" />
 );
 
 describe('<EntityGenericPicker/>', () => {
-  it('renders all options', () => {
+  const mockCatalogApiRef = {
+    getEntityFacets: async () => ({
+      facets: { 'metadata.domain': domains.map(value => ({ value })) },
+    }),
+  } as unknown as CatalogApi;
+  it('renders all options', async () => {
     render(
-      <MockEntityListContextProvider
-        value={{ entities: mockEntities, backendEntities: mockEntities }}
-      >
-        <EntityDomainPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityDomainPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(screen.getByText(/domain/i)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText(/domain/i)).toBeInTheDocument(),
+    );
 
     fireEvent.click(screen.getByTestId('domain-picker-expand'));
-    mockEntities
-      .flatMap(e => e.metadata.domain!)
-      .forEach(domain => {
-        expect(screen.getByText(domain as string)).toBeInTheDocument();
-      });
+    domains.forEach(domain => {
+      expect(screen.getByText(domain as string)).toBeInTheDocument();
+    });
   });
 
-  it('renders unique options in alphabetical order', () => {
+  it('renders unique options in alphabetical order', async () => {
     render(
-      <MockEntityListContextProvider
-        value={{ entities: mockEntities, backendEntities: mockEntities }}
-      >
-        <EntityDomainPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityDomainPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(screen.getByText(/domain/i)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText(/domain/i)).toBeInTheDocument(),
+    );
 
     fireEvent.click(screen.getByTestId('domain-picker-expand'));
 
     expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
       'domain1',
       'domain2',
+      'domain3',
     ]);
   });
 
-  it('select a value from filter', () => {
+  it('select a value from filter', async () => {
     const updateFilters = jest.fn();
     render(
-      <MockEntityListContextProvider
-        value={{
-          entities: mockEntities,
-          backendEntities: mockEntities,
-          updateFilters,
-        }}
-      >
-        <EntityDomainPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+          }}
+        >
+          <EntityDomainPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-
+    await waitFor(() =>
+      expect(screen.getByText(/domain/i)).toBeInTheDocument(),
+    );
     fireEvent.click(screen.getByTestId('domain-picker-expand'));
     fireEvent.click(screen.getByText('domain1'));
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
+      }),
+    );
   });
 
-  it('respects the query parameter filter value', () => {
+  it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { option: ['domain2'] };
     render(
-      <MockEntityListContextProvider
-        value={{
-          entities: mockEntities,
-          backendEntities: mockEntities,
-          updateFilters,
-          queryParameters,
-        }}
-      >
-        <EntityDomainPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityDomainPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
 
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityFieldFilter(['domain2'], 'metadata.domain'),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        option: new EntityFieldFilter(['domain2'], 'metadata.domain'),
+      }),
+    );
   });
 
-  it('adds a value from available options to filters', () => {
+  it('adds a value from available options to filters', async () => {
     const updateFilters = jest.fn();
     render(
-      <MockEntityListContextProvider
-        value={{
-          entities: mockEntities,
-          backendEntities: mockEntities,
-          updateFilters,
-        }}
-      >
-        <EntityDomainPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+          }}
+        >
+          <EntityDomainPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      option: undefined,
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        option: undefined,
+      }),
+    );
 
     fireEvent.click(screen.getByTestId('domain-picker-expand'));
     fireEvent.click(screen.getByText('domain1'));
@@ -158,25 +179,27 @@ describe('<EntityGenericPicker/>', () => {
     });
   });
 
-  it('removes a value from filters', () => {
+  it('removes a value from filters', async () => {
     const updateFilters = jest.fn();
     render(
-      <MockEntityListContextProvider
-        value={{
-          entities: mockEntities,
-          backendEntities: mockEntities,
-          updateFilters,
-          filters: {
-            option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
-          },
-        }}
-      >
-        <EntityDomainPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            filters: {
+              option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
+            },
+          }}
+        >
+          <EntityDomainPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
+      }),
+    );
     fireEvent.click(screen.getByTestId('domain-picker-expand'));
     expect(screen.getByLabelText('domain1')).toBeChecked();
 
@@ -186,30 +209,37 @@ describe('<EntityGenericPicker/>', () => {
     });
   });
 
-  it('responds to external queryParameters changes', () => {
+  it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
     const rendered = render(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { option: ['domain2'] },
-        }}
-      >
-        <EntityDomainPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { option: ['domain2'] },
+          }}
+        >
+          <EntityDomainPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityFieldFilter(['domain2'], 'metadata.domain'),
-    });
+
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        option: new EntityFieldFilter(['domain2'], 'metadata.domain'),
+      }),
+    );
     rendered.rerender(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { option: ['domain1'] },
-        }}
-      >
-        <EntityDomainPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { option: ['domain1'] },
+          }}
+        >
+          <EntityDomainPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
       option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
