@@ -26,7 +26,7 @@ import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { SupportedGeneratorKey } from './types';
+import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
 
 // TODO: Implement proper support for more generators.
@@ -169,13 +169,16 @@ export const generateMkdocsYml = async (
 
     const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
     const defaultSiteName = siteOptions?.name ?? 'Documentation Site';
-    const defaultMkdocsContent =
-      `site_name: ${defaultSiteName}\n` +
-      'docs_dir: docs\n' +
-      'plugins:\n' +
-      '  - techdocs-core\n';
+    const defaultMkdocsContent: DefaultMkdocsContent = {
+      site_name: defaultSiteName,
+      docs_dir: 'docs',
+      plugins: ['techdocs-core'],
+    };
 
-    await fs.writeFile(mkdocsYmlPath, defaultMkdocsContent);
+    await fs.writeFile(
+      mkdocsYmlPath,
+      yaml.dump(defaultMkdocsContent, { schema: MKDOCS_SCHEMA }),
+    );
   } catch (error) {
     throw new ForwardedError('Could not generate mkdocs.yml file', error);
   }

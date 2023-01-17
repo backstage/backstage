@@ -91,3 +91,9 @@ export type GeneratorBuilder = {
   register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
   get(entity: Entity): GeneratorBase;
 };
+
+export type DefaultMkdocsContent = {
+  site_name: string;
+  docs_dir: string;
+  plugins: String[];
+};
