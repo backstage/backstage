@@ -19,9 +19,11 @@ import {
   Step as MuiStep,
   StepButton as MuiStepButton,
   StepLabel as MuiStepLabel,
+  StepIconProps,
 } from '@material-ui/core';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { Step } from '../../../components/hooks/useEventStream';
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 
 interface StepperProps {
   steps: (TaskStep & Step)[];
@@ -41,17 +43,20 @@ export const TaskSteps = (props: StepperProps) => {
         const isFailed = step.status === 'failed';
         const isActive = step.status === 'processing';
         const isSkipped = step.status === 'skipped';
+        const stepIconProps: Partial<StepIconProps> = {
+          completed: isCompleted,
+          error: isFailed,
+          active: isActive,
+        };
+
+        if (isSkipped) {
+          stepIconProps.icon = <RemoveCircleOutlineIcon />;
+        }
 
         return (
           <MuiStep key={index}>
             <MuiStepButton>
-              <MuiStepLabel
-                StepIconProps={{
-                  completed: isCompleted,
-                  error: isFailed,
-                  active: isActive,
-                }}
-              >
+              <MuiStepLabel StepIconProps={stepIconProps}>
                 {step.name}
               </MuiStepLabel>
             </MuiStepButton>

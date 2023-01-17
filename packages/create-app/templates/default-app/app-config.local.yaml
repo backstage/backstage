@@ -1,1 +1,5 @@
 # Backstage override configuration for your local development environment
+catalog:
+  locations:
+    - type: file
+      target: ./test-template.yaml
