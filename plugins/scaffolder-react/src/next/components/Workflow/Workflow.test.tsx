@@ -45,7 +45,7 @@ const apis = TestApiRegistry.from(
 
 describe('<Workflow />', () => {
   it('should complete a workflow', async () => {
-    const onComplete = jest.fn();
+    const onCreate = jest.fn();
     const onError = jest.fn();
     scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
 
@@ -56,6 +56,16 @@ describe('<Workflow />', () => {
           schema: {
             properties: {
               name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+        {
+          title: 'Step 2',
+          schema: {
+            properties: {
+              age: {
                 type: 'string',
               },
             },
@@ -73,17 +83,22 @@ describe('<Workflow />', () => {
       ## This is markdown
       - overriding the template description
             `}
-          onComplete={onComplete}
+          onCreate={onCreate}
           onError={onError}
           namespace="default"
           templateName="docs-template"
-          initialFormState={{
+          initialState={{
             name: 'prefilled-name',
+            age: '53',
           }}
-          ReviewStateComponent={() => (
-            <h1>This is a different wrapper for the review page</h1>
-          )}
-          customFieldExtensions={[]}
+          components={{
+            ReviewStateComponent: () => (
+              <h1>This is a different wrapper for the review page</h1>
+            ),
+            reviewButtonText: <i>Onwards</i>,
+            createButtonText: <b>Make</b>,
+          }}
+          extensions={[]}
         />
       </ApiProvider>,
     );
@@ -93,14 +108,24 @@ describe('<Workflow />', () => {
       'Different title than template',
     );
 
-    const input = getByRole('textbox') as HTMLInputElement;
+    const nameInput = getByRole('textbox', {
+      name: 'name',
+    }) as HTMLInputElement;
 
-    expect(input).toBeInTheDocument();
+    expect(nameInput).toBeInTheDocument();
 
-    expect(input.value).toBe('prefilled-name');
+    expect(nameInput.value).toBe('prefilled-name');
 
     await act(async () => {
-      fireEvent.click(getByRole('button', { name: 'Review' }));
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    const ageInput = getByRole('textbox', { name: 'age' }) as HTMLInputElement;
+
+    expect(ageInput.value).toBe('53');
+
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Onwards' }));
     });
 
     expect(
@@ -111,6 +136,9 @@ describe('<Workflow />', () => {
       fireEvent.click(getAllByRole('button')[1] as HTMLButtonElement);
     });
 
-    expect(onComplete).toHaveBeenCalledWith({ name: 'prefilled-name' });
+    expect(onCreate).toHaveBeenCalledWith({
+      name: 'prefilled-name',
+      age: '53',
+    });
   });
 });

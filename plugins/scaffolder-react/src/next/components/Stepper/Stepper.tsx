@@ -24,7 +24,7 @@ import {
 } from '@material-ui/core';
 import { type IChangeEvent, withTheme } from '@rjsf/core-v5';
 import { ErrorSchema, FieldValidation } from '@rjsf/utils';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
@@ -59,11 +59,12 @@ export type StepperProps = {
   templateName?: string;
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
-
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-  ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
-  createButtonText?: string;
-  reviewButtonText?: string;
+  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
+  components?: {
+    ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
+    createButtonText?: ReactNode;
+    reviewButtonText?: ReactNode;
+  };
 };
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -77,12 +78,12 @@ const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
  */
 
 export const Stepper = (stepperProps: StepperProps) => {
+  const { components = {}, ...props } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
     createButtonText = 'Create',
     reviewButtonText = 'Review',
-    ...props
-  } = stepperProps;
+  } = components;
 
   const analytics = useAnalytics();
   const { steps } = useTemplateSchema(props.manifest);
@@ -205,7 +206,7 @@ export const Stepper = (stepperProps: StepperProps) => {
               <Button
                 variant="contained"
                 onClick={() => {
-                  props.onComplete(formState);
+                  props.onCreate(formState);
                   const name =
                     typeof formState.name === 'string'
                       ? formState.name

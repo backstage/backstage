@@ -21,16 +21,11 @@ import {
   Progress,
 } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import type { ErrorTransformer } from '@rjsf/utils';
-import type { JsonValue } from '@backstage/types';
 import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { type NextFieldExtensionOptions } from '../../extensions/types';
-import { type FormProps } from '../../types';
-import { ReviewState, ReviewStateProps } from '../ReviewState/ReviewState';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
-import { Stepper } from '../Stepper/Stepper';
+import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
@@ -48,35 +43,29 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
 /**
  * @alpha
  */
-export interface WorkflowProps {
+export type WorkflowProps = {
   title?: string;
   description?: string;
   namespace: string;
   templateName: string;
-  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
-  transformErrors?: ErrorTransformer;
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
   onError(error: Error | undefined): JSX.Element | null;
-  initialFormState?: Record<string, JsonValue>;
-  FormProps?: FormProps;
-  ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
-}
+} & Pick<
+  StepperProps,
+  'extensions' | 'FormProps' | 'components' | 'onCreate' | 'initialState'
+>;
 
 /**
  * @alpha
  */
 export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
-  const {
-    ReviewStateComponent = ReviewState,
-    FormProps = {},
-    ...props
-  } = workflowProps;
+  const { title, description, namespace, templateName, ...props } =
+    workflowProps;
 
   const styles = useStyles();
   const templateRef = stringifyEntityRef({
     kind: 'Template',
-    namespace: props.namespace,
-    name: props.templateName,
+    namespace: namespace,
+    name: templateName,
   });
 
   const errorApi = useApi(errorApiRef);
@@ -98,26 +87,17 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
       {loading && <Progress />}
       {manifest && (
         <InfoCard
-          title={props.title ?? manifest.title}
+          title={title ?? manifest.title}
           subheader={
             <MarkdownContent
               className={styles.markdown}
-              content={
-                props.description ?? manifest.description ?? 'No description'
-              }
+              content={description ?? manifest.description ?? 'No description'}
             />
           }
           noPadding
           titleTypographyProps={{ component: 'h2' }}
         >
-          <Stepper
-            manifest={manifest}
-            extensions={props.customFieldExtensions}
-            onComplete={props.onComplete}
-            FormProps={FormProps}
-            initialState={props.initialFormState}
-            ReviewStateComponent={ReviewStateComponent}
-          />
+          <Stepper manifest={manifest} {...props} />
         </InfoCard>
       )}
     </Content>

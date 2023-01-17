@@ -55,7 +55,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     name: templateName,
   });
 
-  const onComplete = async (values: Record<string, JsonValue>) => {
+  const onCreate = async (values: Record<string, JsonValue>) => {
     const { taskId } = await scaffolderApi.scaffold({
       templateRef,
       values,
@@ -78,9 +78,9 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
         <Workflow
           namespace={namespace}
           templateName={templateName}
-          onComplete={onComplete}
+          onCreate={onCreate}
           onError={onError}
-          customFieldExtensions={props.customFieldExtensions}
+          extensions={props.customFieldExtensions}
           FormProps={props.FormProps}
         />
       </Page>

@@ -355,7 +355,7 @@ export type StepperProps = {
   templateName?: string;
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
   ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
   createButtonText?: string;
   reviewButtonText?: string;
@@ -456,7 +456,7 @@ export interface WorkflowProps {
   // (undocumented)
   namespace: string;
   // (undocumented)
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
   // (undocumented)
   onError(error: Error | undefined): JSX.Element | null;
   // (undocumented)
