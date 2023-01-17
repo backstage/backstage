@@ -17,10 +17,11 @@ import React from 'react';
 import type { FieldValidation } from '@rjsf/utils';
 import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { TextField } from '@material-ui/core';
-
 import {
   NextFieldExtensionComponentProps,
   createNextScaffolderFieldExtension,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import {
   createScaffolderFieldExtension,
   FieldExtensionComponentProps,
 } from '@backstage/plugin-scaffolder-react';

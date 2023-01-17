@@ -19,7 +19,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
+import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
 import { IncrementalEntityProvider } from '.';
 import { incrementalIngestionEntityProviderCatalogModule } from './alpha';
 

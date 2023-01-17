@@ -116,7 +116,7 @@ export function registerScriptCommand(program: Command) {
     )
     .option(
       '--experimental-type-build',
-      'Enable experimental type build. Does not apply to app or backend packages.',
+      'Enable experimental type build. Does not apply to app or backend packages. [DEPRECATED]',
     )
     .option(
       '--skip-build-dependencies',

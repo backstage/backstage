@@ -21,7 +21,7 @@ import { SonarQubeClient } from './index';
 import { InstanceUrlWrapper, FindingsWrapper } from './types';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
-import { FindingSummary } from '@backstage/plugin-sonarqube-react';
+import { FindingSummary } from '@backstage/plugin-sonarqube-react/alpha';
 
 const server = setupServer();
 
