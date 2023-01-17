@@ -47,11 +47,3 @@ export const scaffolderPermissions = [
   templateParameterReadPermission,
   templateStepReadPermission,
 ];
-
-/**
- * TODOs:
- * 1. ~Implement for Parameters & Properties~
- * 2. What metadata should be included in the template?
- * 3. Write tests
- * 4. Write documentation
- */
