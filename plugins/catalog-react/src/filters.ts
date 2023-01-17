@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  AlphaEntity,
-  Entity,
-  RELATION_OWNED_BY,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { humanizeEntityRef } from './components/EntityRefLink';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils';

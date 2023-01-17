@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
   scaffolderActionsExtensionPoint,
   ScaffolderActionsExtensionPoint,

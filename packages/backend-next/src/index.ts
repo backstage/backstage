@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend';
+import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
+import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend/alpha';
 import { createBackend } from '@backstage/backend-defaults';
-import { appPlugin } from '@backstage/plugin-app-backend';
+import { appPlugin } from '@backstage/plugin-app-backend/alpha';
 import { todoPlugin } from '@backstage/plugin-todo-backend';
 
 const backend = createBackend();

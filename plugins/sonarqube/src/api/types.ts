@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { MetricKey as NonDeprecatedMetricKey } from '@backstage/plugin-sonarqube-react';
-import { SonarUrlProcessorFunc as NonDeprecatedSonarUrlProcessorFunc } from '@backstage/plugin-sonarqube-react';
+import {
+  MetricKey as NonDeprecatedMetricKey,
+  SonarUrlProcessorFunc as NonDeprecatedSonarUrlProcessorFunc,
+} from '@backstage/plugin-sonarqube-react/alpha';
 
 export interface InstanceUrlWrapper {
   instanceUrl: string;

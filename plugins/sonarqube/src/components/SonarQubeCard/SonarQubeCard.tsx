@@ -16,10 +16,10 @@
 
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
-  SONARQUBE_PROJECT_KEY_ANNOTATION,
   sonarQubeApiRef,
   useProjectInfo,
-} from '@backstage/plugin-sonarqube-react';
+} from '@backstage/plugin-sonarqube-react/alpha';
+import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '@backstage/plugin-sonarqube-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import BugReport from '@material-ui/icons/BugReport';
