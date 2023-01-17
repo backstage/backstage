@@ -1,5 +1,28 @@
 # @backstage/plugin-adr
 
+## 0.3.0
+
+### Minor Changes
+
+- e4469d0ec1: The ADR plugin can now work with sites other than GitHub. Expanded the ADR backend plugin to provide endpoints to facilitate this.
+
+  **BREAKING** The ADR plugin now requires the `@backstage/plugin-adr-backend` plugin to be installed by using the `createRouter` method to add into your `backend`. You read more in the [install instructions](https://github.com/backstage/backstage/blob/master/plugins/adr-backend/README.md#install)
+
+### Patch Changes
+
+- 21ffbdd5ee: Clarify that default ADR parsers support MADR specification v2.x
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-search-react@1.4.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/integration-react@1.1.9
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-adr-common@0.2.5
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.3.0-next.2
 
 ### Minor Changes

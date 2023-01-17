@@ -1,5 +1,17 @@
 # @backstage/plugin-explore-backend
 
+## 0.0.2
+
+### Patch Changes
+
+- 358554ff3c: Bump `msw` to `^0.49.0`
+- 9f9d279bd1: Updated `README.md` examples
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.0.2-next.2
 
 ### Patch Changes

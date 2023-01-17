@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.1.1
+
+### Patch Changes
+
+- ecbec4ec4c: Internal refactor to match new options pattern in the experimental backend system.
+- 045b66ce02: Fixed issue with sometimes trying to commit an empty array of references
+- 9f2b786fc9: Provide context for logged errors.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/backend-test-utils@0.1.32
+  - @backstage/catalog-model@1.1.5
+  - @backstage/backend-tasks@0.4.1
+  - @backstage/plugin-catalog-node@1.3.1
+  - @backstage/plugin-catalog-backend@1.7.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.1.1-next.2
 
 ### Patch Changes

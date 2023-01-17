@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.7
+
+### Patch Changes
+
+- 27a5e90e97: Small updates to some paragraph components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-kubernetes-common@0.5.1
+
 ## 0.7.7-next.2
 
 ### Patch Changes

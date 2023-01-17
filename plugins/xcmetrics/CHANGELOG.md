@@ -1,5 +1,16 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.34
+
+### Patch Changes
+
+- 27a5e90e97: Small updates to some paragraph components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+
 ## 0.2.34-next.2
 
 ### Patch Changes

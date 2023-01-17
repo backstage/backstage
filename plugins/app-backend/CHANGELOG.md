@@ -1,5 +1,19 @@
 # @backstage/plugin-app-backend
 
+## 0.3.40
+
+### Patch Changes
+
+- b4ffa3bd91: The warning for missing app contents is now logged as an error instead, but only in production.
+- ecbec4ec4c: Internal refactor to match new options pattern in the experimental backend system.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/types@1.0.2
+
 ## 0.3.40-next.1
 
 ### Patch Changes

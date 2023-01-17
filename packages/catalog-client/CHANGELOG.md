@@ -1,5 +1,18 @@
 # @backstage/catalog-client
 
+## 1.3.0
+
+### Minor Changes
+
+- f75bf76330: Implemented support for the `order` directive on `getEntities`
+
+### Patch Changes
+
+- e23f13a573: Enable the `by-refs` endpoint to receive `fields` through the POST body as well as through query parameters.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/errors@1.1.4
+
 ## 1.3.0-next.2
 
 ### Patch Changes

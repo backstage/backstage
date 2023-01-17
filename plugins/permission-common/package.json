@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-permission-common",
   "description": "Isomorphic types and client for Backstage permissions and authorization",
-  "version": "0.7.3-next.0",
+  "version": "0.7.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {

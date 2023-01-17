@@ -1,5 +1,19 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.1.2
+
+### Patch Changes
+
+- 9f2b786fc9: Provide context for logged errors.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/backend-tasks@0.4.1
+  - @backstage/config@1.0.6
+  - @backstage/plugin-events-node@0.2.1
+  - @backstage/types@1.0.2
+
 ## 0.1.2-next.1
 
 ### Patch Changes

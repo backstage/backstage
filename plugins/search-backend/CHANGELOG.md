@@ -1,5 +1,21 @@
 # @backstage/plugin-search-backend
 
+## 1.2.1
+
+### Patch Changes
+
+- bfd66b0478: Allow max page limit for search results to be configurable
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/plugin-search-backend-node@1.1.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.3
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.2.1-next.2
 
 ### Patch Changes

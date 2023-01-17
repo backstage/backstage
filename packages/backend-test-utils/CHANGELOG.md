@@ -1,5 +1,24 @@
 # @backstage/backend-test-utils
 
+## 0.1.32
+
+### Patch Changes
+
+- 6cfd4d7073: Include implementations for the new `rootLifecycleServiceRef`.
+- 015a6dced6: Updated to make sure that service implementations replace default service implementations.
+- a3ec2f32ea: The `startTestBackend` setup now includes default implementations for all core services.
+- 483e907eaf: Internal updates of `createServiceFactory` from `@backstage/backend-plugin-api`.
+- 51b7a7ed07: The backend started by `startTestBackend` now has default implementations of all core services. It now also returns a `TestBackend` instance, which provides access to the underlying `server` that can be used with testing libraries such as `supertest`.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/cli@0.22.1
+  - @backstage/backend-common@0.18.0
+  - @backstage/backend-app-api@0.3.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+
 ## 0.1.32-next.2
 
 ### Patch Changes

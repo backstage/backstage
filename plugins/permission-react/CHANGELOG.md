@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-react
 
+## 0.4.9
+
+### Patch Changes
+
+- 1a53a735b7: Updated dependency `swr` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.4.9-next.1
 
 ### Patch Changes

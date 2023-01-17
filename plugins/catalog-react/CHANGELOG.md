@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-react
 
+## 1.2.4
+
+### Patch Changes
+
+- 37426f6f5e: Fixed bug in `EntityTagPicker` that filtered on unavailable tags for the selected kind.
+- 516b2039b6: Add a reusable pop over `EntityPeekAheadPopover` component. It shows more details about the associated entity. See the playbook here https://backstage.io/storybook/?path=/story/catalog-entitypeekaheadpopover--default
+- 0e33627996: Remove usage of raw span
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/catalog-client@1.3.0
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.10
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 1.2.4-next.2
 
 ### Patch Changes

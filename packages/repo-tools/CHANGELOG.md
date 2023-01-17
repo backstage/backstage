@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.1.1
+
+### Patch Changes
+
+- c447a5221b: Use the project tsconfig in case of selection all packages
+- 93cff3053e: Move some dependencies as `peerDependencies` because we need to always use same version as in `api-extractor`
+- d48cf39f2a: fix glob on windows os
+- 75275b0b0b: Updated dependency `@microsoft/tsdoc-config` to `0.16.2`.
+- 76fc6f7ec8: Updates Api-extractor and api-documenter version
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/errors@1.1.4
+
 ## 0.1.1-next.2
 
 ### Patch Changes
