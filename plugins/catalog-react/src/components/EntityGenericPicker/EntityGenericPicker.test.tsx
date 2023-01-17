@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
@@ -23,36 +22,6 @@ import { EntityGenericPicker } from './EntityGenericPicker';
 import { catalogApiRef } from '../../api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { TestApiProvider } from '@backstage/test-utils';
-
-// const mockEntities: Entity[] = [
-//   {
-//     apiVersion: '1',
-//     kind: 'Component',
-//     metadata: {
-//       name: 'component-1',
-//       domain: 'domain1',
-//       tags: ['tag4', 'tag1', 'tag2'],
-//     },
-//   },
-//   {
-//     apiVersion: '1',
-//     kind: 'Component',
-//     metadata: {
-//       name: 'component-2',
-//       domain: 'domain2',
-//       tags: ['tag3', 'tag4'],
-//     },
-//   },
-//   {
-//     apiVersion: '1',
-//     kind: 'Component',
-//     metadata: {
-//       name: 'component-3',
-//       domain: 'domain2',
-//       tags: ['tag3', 'tag4'],
-//     },
-//   },
-// ];
 
 const domains = ['domain1', 'domain2', 'domain3'];
 

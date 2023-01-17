@@ -25,16 +25,12 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  DefaultEntityFilters,
-  useEntityList,
-} from '../../hooks/useEntityListProvider';
-import sortBy from 'lodash/sortBy';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useEntityList } from '../../hooks/useEntityListProvider';
 import useAsync from 'react-use/lib/useAsync';
 import { EntityFieldFilter } from '../../filters';
 import { catalogApiRef } from '../../api';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 
 /** @public */
 export type CatalogReactEntityGenericPickerClassKey = 'input';
