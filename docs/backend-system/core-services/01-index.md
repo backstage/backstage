@@ -38,6 +38,7 @@ createBackendPlugin({
         router.get('/hello', (_req, res) => {
           res.status(200).json({ hello: 'world' });
         });
+        // Registers the router at the /api/example path
         http.use(router);
       },
     });
@@ -47,7 +48,7 @@ createBackendPlugin({
 
 ## Logging and Configuration Service
 
-It is common for plugins to need access to configuration values and log.
+It is common for plugins to need access to configuration values and log messages.
 
 ```ts
 import {
@@ -61,13 +62,13 @@ createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        logger: coreServices.logger,
+        log: coreServices.logger,
         config: coreServices.config,
       },
-
-      async init({ config, logger }) {
+      async init({ config, log }) {
+        log.warn('Brace yourself for more log output');
         const url = config.getString('backend.baseUrl');
-        c;
+        log.info(`Backend URL is running on ${url}`);
       },
     });
   },
