@@ -193,7 +193,7 @@ export const generateMkdocsYml = async (
 export const getMkdocsYml = async (
   inputDir: string,
   siteOptions?: { name?: string },
-): Promise<{ path: string; content: string }> => {
+): Promise<{ path: string; content: string; configExists: boolean }> => {
   let mkdocsYmlPath: string;
   let mkdocsYmlFileString: string;
   try {
@@ -203,6 +203,7 @@ export const getMkdocsYml = async (
       return {
         path: mkdocsYmlPath,
         content: mkdocsYmlFileString,
+        configExists: true,
       };
     }
 
@@ -212,6 +213,7 @@ export const getMkdocsYml = async (
       return {
         path: mkdocsYmlPath,
         content: mkdocsYmlFileString,
+        configExists: true,
       };
     }
 
@@ -228,6 +230,7 @@ export const getMkdocsYml = async (
   return {
     path: mkdocsYmlPath,
     content: mkdocsYmlFileString,
+    configExists: false,
   };
 };
 
