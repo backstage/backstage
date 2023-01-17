@@ -127,6 +127,7 @@ export function createFetchTemplateAction(options: {
   copyWithoutRender?: string[] | undefined;
   copyWithoutTemplating?: string[] | undefined;
   cookiecutterCompat?: boolean | undefined;
+  replace?: boolean | undefined;
 }>;
 
 // @public
