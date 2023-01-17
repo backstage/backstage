@@ -27,6 +27,7 @@ import {
   transports,
   transport as Transport,
 } from 'winston';
+import { escapeRegExp } from '../lib/escapeRegExp';
 
 /**
  * @public
@@ -98,10 +99,10 @@ export class WinstonLogger implements RootLoggerService {
           }
         }
         if (added > 0) {
-          redactionPattern = new RegExp(
-            `(${Array.from(redactionSet).join('|')})`,
-            'g',
-          );
+          const redactions = Array.from(redactionSet)
+            .map(r => escapeRegExp(r))
+            .join('|');
+          redactionPattern = new RegExp(`(${redactions})`, 'g');
         }
       },
     };
