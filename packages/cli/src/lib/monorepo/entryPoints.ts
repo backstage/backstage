@@ -24,6 +24,15 @@ export interface EntryPoint {
   ext: string;
 }
 
+// Unless explicitly specified in exports, the index entrypoint is always
+// assumed to be at src/index.ts for backwards compatibility.
+const defaultIndex = {
+  mount: '.',
+  path: 'src/index.ts',
+  name: 'index',
+  ext: '.ts',
+};
+
 function parseEntryPoint(mount: string, path: string): EntryPoint {
   let name = mount;
   if (name === '.') {
@@ -41,7 +50,7 @@ function parseEntryPoint(mount: string, path: string): EntryPoint {
 export function readEntryPoints(pkg: ExtendedPackageJSON): Array<EntryPoint> {
   const exp = pkg.exports;
   if (typeof exp === 'string') {
-    return [parseEntryPoint('.', exp)];
+    return [defaultIndex];
   } else if (exp && typeof exp === 'object' && !Array.isArray(exp)) {
     const entryPoints = new Array<{
       mount: string;
@@ -64,10 +73,5 @@ export function readEntryPoints(pkg: ExtendedPackageJSON): Array<EntryPoint> {
     return entryPoints;
   }
 
-  const main = pkg.main || pkg.module;
-  if (main) {
-    return [parseEntryPoint('.', main)];
-  }
-
-  return [];
+  return [defaultIndex];
 }
