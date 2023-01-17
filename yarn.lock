@@ -4113,6 +4113,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/eslint-plugin@workspace:packages/eslint-plugin":
+  version: 0.0.0-use.local
+  resolution: "@backstage/eslint-plugin@workspace:packages/eslint-plugin"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/integration-aws-node@workspace:^, @backstage/integration-aws-node@workspace:packages/integration-aws-node":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-aws-node@workspace:packages/integration-aws-node"

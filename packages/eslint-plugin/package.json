@@ -1,0 +1,16 @@
+{
+  "name": "@backstage/eslint-plugin",
+  "description": "Backstage ESLint plugin",
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/eslint-plugin"
+  },
+  "license": "Apache-2.0",
+  "main": "./index.js"
+}
