@@ -363,7 +363,7 @@
       "architecture-decisions/adrs-adr013"
     ],
     "FAQ": ["FAQ"],
-    "Experimental Backend System": [
+    "Experimental Backend System": [{"_hidden_": [
       "backend-system/index",
       {
         "type": "subcategory",
@@ -400,6 +400,6 @@
           "backend-system/core-services/index"
         ]
       }
-    ]
+    ]}]
   }
 }
