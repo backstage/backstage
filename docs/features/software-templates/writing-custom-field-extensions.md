@@ -94,14 +94,14 @@ import {
   createScaffolderFieldExtension,
 } from '@backstage/plugin-scaffolder';
 import {
-  ValidateKebabCase,
+  ValidateKebabCaseExtension,
   validateKebabCaseValidation,
 } from './ValidateKebabCase';
 
 export const ValidateKebabCaseFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     name: 'ValidateKebabCase',
-    component: ValidateKebabCase,
+    component: ValidateKebabCaseExtension,
     validation: validateKebabCaseValidation,
   }),
 );
@@ -173,7 +173,7 @@ spec:
           title: Name
           type: string
           description: My custom name for the component
-          ui:field: ValidateKebabCaseExtension
+          ui:field: ValidateKebabCase
   steps:
   [...]
 ```
