@@ -54,7 +54,7 @@ export function createFetchRailsAction(options: {
   }>({
     id: 'fetch:rails',
     description:
-      'Downloads a template from the given URL into the workspace, and runs a rails new generator on it.',
+      'Downloads a template from the given `url` into the workspace, and runs a rails new generator on it.',
     schema: {
       input: {
         type: 'object',
@@ -128,6 +128,12 @@ export function createFetchRailsAction(options: {
                     description: 'Skip Action Text gem',
                     type: 'boolean',
                   },
+                  skipActiveRecord: {
+                    title: 'skipActiveRecord',
+                    description: 'Skip Active Record files',
+                    type: 'boolean',
+                  },
+
                   force: {
                     title: 'force',
                     description: 'Overwrite files that already exist',

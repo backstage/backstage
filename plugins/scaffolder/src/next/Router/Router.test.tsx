@@ -21,7 +21,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
-} from '../../extensions';
+} from '@backstage/plugin-scaffolder-react';
 import { scaffolderPlugin } from '../../plugin';
 
 jest.mock('../TemplateListPage', () => ({

@@ -1,5 +1,53 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.2
+
+### Patch Changes
+
+- 7115c7389b: Updated dependency `jss` to `~10.9.0`.
+- b8269de9f1: Explicitly declaring children as optional props to facilitate react 18 changes
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/version-bridge@1.0.3
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- b8269de9f1: Explicitly declaring children as optional props to facilitate react 18 changes
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/version-bridge@1.0.3
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- 7115c7389b: Updated dependency `jss` to `~10.9.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/config@1.0.5
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/version-bridge@1.0.3
+
 ## 1.1.1
 
 ### Patch Changes

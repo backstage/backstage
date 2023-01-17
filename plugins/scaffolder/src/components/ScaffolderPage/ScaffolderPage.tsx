@@ -34,12 +34,12 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import React, { ComponentType } from 'react';
-import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
+import { registerComponentRouteRef } from '../../routes';
 
 export type ScaffolderPageProps = {
   TemplateCardComponent?:

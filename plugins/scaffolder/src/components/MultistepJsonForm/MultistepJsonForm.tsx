@@ -30,7 +30,6 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
-import { UiSchema } from '@rjsf/utils';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { ComponentType, useState } from 'react';
 import { transformSchemaToProps } from './schema';
@@ -39,8 +38,8 @@ import * as fieldOverrides from './FieldOverrides';
 import { LayoutOptions } from '../../layouts';
 import { ReviewStepProps } from '../types';
 import { ReviewStep } from './ReviewStep';
+import { extractSchemaFromStep } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { extractSchemaFromStep } from '../../next/TemplateWizardPage/Stepper/schema';
 
 const Form = withTheme(MuiTheme);
 
@@ -68,11 +67,7 @@ export type MultistepJsonFormProps = {
   ReviewStepComponent?: ComponentType<ReviewStepProps>;
 };
 
-export function getSchemasFromSteps(steps: Step[]): {
-  uiSchema: UiSchema;
-  mergedSchema: JsonObject;
-  schema: JsonObject;
-}[] {
+export function getSchemasFromSteps(steps: Step[]) {
   return steps.map(({ schema }) => ({
     mergedSchema: schema,
     ...extractSchemaFromStep(schema),

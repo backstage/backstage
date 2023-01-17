@@ -16,6 +16,8 @@
 
 /* eslint-disable jest/no-disabled-tests */
 
+import { configApiRef } from '@backstage/core-plugin-api';
+
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');
   const mockNavigation = jest.fn();
@@ -28,6 +30,7 @@ jest.mock('react-router-dom', () => {
 
 import {
   setupRequestMockHandlers,
+  TestApiProvider,
   TestApiRegistry,
   wrapInTestApp,
 } from '@backstage/test-utils';
@@ -39,13 +42,18 @@ import { Audit, lighthouseApiRef, LighthouseRestApi, Website } from '../../api';
 import { formatTime } from '../../utils';
 import * as data from '../../__fixtures__/website-response.json';
 import AuditView from './index';
-import { ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { rootRouteRef } from '../../plugin';
 
 const { useParams }: { useParams: jest.Mock } =
   jest.requireMock('react-router-dom');
 const websiteResponse = data as Website;
 
 describe('AuditView', () => {
+  const lighthouseRestApiMock = new LighthouseRestApi('https://lighthouse');
+  const testAppOptions = {
+    mountedRoutes: { '/': rootRouteRef },
+  };
   let apis: TestApiRegistry;
   let id: string;
 
@@ -59,10 +67,7 @@ describe('AuditView', () => {
       ),
     );
 
-    apis = TestApiRegistry.from([
-      lighthouseApiRef,
-      new LighthouseRestApi('https://lighthouse'),
-    ]);
+    apis = TestApiRegistry.from([lighthouseApiRef, lighthouseRestApiMock]);
     id = websiteResponse.audits.find(a => a.status === 'COMPLETED')
       ?.id as string;
     useParams.mockReturnValue({ id });
@@ -74,6 +79,7 @@ describe('AuditView', () => {
         <ApiProvider apis={apis}>
           <AuditView />
         </ApiProvider>,
+        testAppOptions,
       ),
     );
 
@@ -91,6 +97,7 @@ describe('AuditView', () => {
           <ApiProvider apis={apis}>
             <AuditView />
           </ApiProvider>,
+          testAppOptions,
         ),
       );
 
@@ -109,6 +116,7 @@ describe('AuditView', () => {
           <ApiProvider apis={apis}>
             <AuditView />
           </ApiProvider>,
+          testAppOptions,
         ),
       );
 
@@ -137,6 +145,7 @@ describe('AuditView', () => {
           <ApiProvider apis={apis}>
             <AuditView />
           </ApiProvider>,
+          testAppOptions,
         ),
       );
 
@@ -149,6 +158,36 @@ describe('AuditView', () => {
         ).toHaveAttribute('href', `/audit/${a.id}`);
       });
     });
+
+    it('navigates to the next report with respect to the base path', async () => {
+      const configApiMock = new ConfigReader({
+        app: { baseUrl: `http://localhost:3000/example` },
+      });
+      const rendered = render(
+        wrapInTestApp(
+          <TestApiProvider
+            apis={[
+              [lighthouseApiRef, lighthouseRestApiMock],
+              [configApiRef, configApiMock],
+            ]}
+          >
+            <AuditView />
+          </TestApiProvider>,
+          {
+            mountedRoutes: { [`/example/lighthouse`]: rootRouteRef },
+          },
+        ),
+      );
+
+      await rendered.findByTestId('audit-sidebar');
+
+      websiteResponse.audits.forEach(a => {
+        expect(
+          rendered.getByText(formatTime(a.timeCreated)).parentElement
+            ?.parentElement,
+        ).toHaveAttribute('href', `/example/lighthouse/audit/${a.id}`);
+      });
+    });
   });
 
   describe('when the request for the website by id is pending', () => {
@@ -159,6 +198,7 @@ describe('AuditView', () => {
           <ApiProvider apis={apis}>
             <AuditView />
           </ApiProvider>,
+          testAppOptions,
         ),
       );
       expect(await rendered.findByTestId('progress')).toBeInTheDocument();
@@ -177,6 +217,7 @@ describe('AuditView', () => {
           <ApiProvider apis={apis}>
             <AuditView />
           </ApiProvider>,
+          testAppOptions,
         ),
       );
       expect(await rendered.findByText(/failed to fetch/)).toBeInTheDocument();
@@ -194,6 +235,7 @@ describe('AuditView', () => {
           <ApiProvider apis={apis}>
             <AuditView />
           </ApiProvider>,
+          testAppOptions,
         ),
       );
 
@@ -214,6 +256,7 @@ describe('AuditView', () => {
           <ApiProvider apis={apis}>
             <AuditView />
           </ApiProvider>,
+          testAppOptions,
         ),
       );
 

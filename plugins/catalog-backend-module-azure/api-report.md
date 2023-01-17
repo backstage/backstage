@@ -58,7 +58,5 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
 }
 
 // @alpha
-export const azureDevOpsEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const azureDevOpsEntityProviderCatalogModule: () => BackendFeature;
 ```

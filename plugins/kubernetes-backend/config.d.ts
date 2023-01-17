@@ -47,7 +47,8 @@ export interface Config {
               | 'google'
               | 'serviceAccount'
               | 'azure'
-              | 'oidc';
+              | 'oidc'
+              | 'googleServiceAccount';
             /** @visibility frontend */
             oidcTokenProvider?: string;
             /** @visibility frontend */

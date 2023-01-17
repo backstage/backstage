@@ -33,7 +33,7 @@ import { Theme as MuiTheme } from '@rjsf/material-ui';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
-import { FieldExtensionOptions } from '../../extensions';
+import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import * as fieldOverrides from '../MultistepJsonForm/FieldOverrides';
 import { TemplateEditorForm } from './TemplateEditorForm';
 

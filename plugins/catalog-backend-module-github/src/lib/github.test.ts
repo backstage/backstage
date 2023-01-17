@@ -29,6 +29,9 @@ import {
   QueryResponse,
   GithubUser,
   GithubTeam,
+  createAddEntitiesOperation,
+  createRemoveEntitiesOperation,
+  createReplaceEntitiesOperation,
 } from './github';
 import fetch from 'node-fetch';
 
@@ -555,6 +558,109 @@ describe('github', () => {
       await expect(
         getOrganizationRepositories(graphql, 'a', 'catalog-info.yaml'),
       ).resolves.toEqual(output);
+    });
+  });
+
+  describe('createAddEntitiesOperation', () => {
+    it('create a function to add deferred entities to a delta operation', () => {
+      const operation = createAddEntitiesOperation('my-id', 'host');
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+      expect(operation('org', [userEntity])).toEqual({
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+        removed: [],
+      });
+    });
+  });
+
+  describe('createRemoveEntitiesOperation', () => {
+    it('create a function to remove deferred entities to a delta operation', () => {
+      const operation = createRemoveEntitiesOperation('my-id', 'host');
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+      expect(operation('org', [userEntity])).toEqual({
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+        added: [],
+      });
+    });
+  });
+  describe('createReplaceEntitiesOperation', () => {
+    it('create a function to replace deferred entities to a delta operation', () => {
+      const operation = createReplaceEntitiesOperation('my-id', 'host');
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'githubuser',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/githubuser',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
+          },
+        },
+        spec: {
+          memberOf: ['new-team'],
+        },
+      };
+      expect(operation('org', [userEntity])).toEqual({
+        removed: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: userEntity,
+          },
+        ],
+      });
     });
   });
 });

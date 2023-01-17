@@ -65,7 +65,7 @@ export function createFetchTemplateAction(options: {
   }>({
     id: 'fetch:template',
     description:
-      "Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
+      'Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.',
     schema: {
       input: {
         type: 'object',

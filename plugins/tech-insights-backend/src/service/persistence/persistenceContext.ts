@@ -36,22 +36,27 @@ export type PersistenceContext = {
   techInsightsStore: TechInsightsStore;
 };
 
-export type CreateDatabaseOptions = {
+/**
+ * A Container for persistence context initialization options
+ *
+ * @public
+ */
+export type PersistenceContextOptions = {
   logger: Logger;
 };
 
-const defaultOptions: CreateDatabaseOptions = {
+const defaultOptions: PersistenceContextOptions = {
   logger: getVoidLogger(),
 };
 
 /**
- * A factory method to construct persistence context for running implementation.
+ * A factory function to construct persistence context for running implementation.
  *
  * @public
  */
 export const initializePersistenceContext = async (
   database: PluginDatabaseManager,
-  options: CreateDatabaseOptions = defaultOptions,
+  options: PersistenceContextOptions = defaultOptions,
 ): Promise<PersistenceContext> => {
   const client = await database.getClient();
 

@@ -284,7 +284,7 @@ describe('tasks', () => {
   });
 
   describe('readGitConfig', () => {
-    const tmpDir = resolvePath(os.tmpdir(), 'git-temp-dir');
+    const tmpDirPrefix = resolvePath(os.tmpdir(), 'git-temp-dir-');
 
     it('should return git config if git package is installed and git credentials are set', async () => {
       mockExec.mockImplementation((_command, _options, callback) => {
@@ -299,17 +299,17 @@ describe('tasks', () => {
       expect(mockExec).toHaveBeenCalledTimes(3);
       expect(mockExec).toHaveBeenCalledWith(
         'git init',
-        { cwd: tmpDir },
+        { cwd: expect.stringContaining(tmpDirPrefix) },
         expect.any(Function),
       );
       expect(mockExec).toHaveBeenCalledWith(
         'git commit --allow-empty -m "Initial commit"',
-        { cwd: tmpDir },
+        { cwd: expect.stringContaining(tmpDirPrefix) },
         expect.any(Function),
       );
       expect(mockExec).toHaveBeenCalledWith(
         'git branch --format="%(refname:short)"',
-        { cwd: tmpDir },
+        { cwd: expect.stringContaining(tmpDirPrefix) },
         expect.any(Function),
       );
     });

@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
+import { renderInTestApp } from '@backstage/test-utils';
 import CloudIcon from '@material-ui/icons/Cloud';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { IconLink } from './IconLink';
 
 describe('IconLink', () => {
-  it('should render an icon link', () => {
-    render(
-      <ThemeProvider theme={lightTheme}>
-        <IconLink
-          href="https://example.com"
-          text="I am Link"
-          Icon={CloudIcon}
-        />
-      </ThemeProvider>,
+  it('should render an icon link', async () => {
+    await renderInTestApp(
+      <IconLink href="https://example.com" text="I am Link" Icon={CloudIcon} />,
     );
 
     expect(screen.getByText('I am Link')).toBeInTheDocument();

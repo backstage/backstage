@@ -287,6 +287,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -309,6 +313,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -331,6 +339,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
   });
 
@@ -356,6 +368,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -378,6 +394,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -400,6 +420,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: false,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
   });
 
@@ -425,6 +449,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -449,6 +477,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -472,6 +504,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -496,6 +532,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
   });
 
@@ -540,6 +580,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -562,6 +606,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: true,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -584,6 +632,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
   });
 
@@ -609,6 +661,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -631,6 +687,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: true,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -653,6 +713,10 @@ describe('github:repo:push', () => {
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
   });
 });

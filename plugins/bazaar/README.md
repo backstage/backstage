@@ -12,6 +12,10 @@ Many companies today are of high need to increase the ease of cross-team coopera
 
 The Bazaar allows engineers and teams to open up and announce their new and exciting projects for transparent cooperation in other parts of larger organizations. The Bazaar ensures that new Inner Sourcing friendly projects gain visibility through Backstage and a way for interested engineers to show their interest and in the future contribute with their specific skill set. The Bazaar also provides an easy way to manage, catalog, and browse these Inner Sourcing friendly projects and components.
 
+# Note
+
+You will **need** to also perform the installation instructions in [Bazaar Backend](https://github.com/backstage/backstage/tree/master/plugins/bazaar-backend) in order for this plugin to work.
+
 ## Getting Started
 
 First install the plugin into your app:
@@ -49,17 +53,20 @@ Add a **Bazaar icon** to the Sidebar to easily access the Bazaar. In `packages/a
 Add a **Bazaar card** to the overview tab on the `packages/app/src/components/catalog/EntityPage.tsx` add:
 
 ```diff
-+ import { EntityBazaarInfoCard } from '@backstage/plugin-bazaar';
++ import { EntityBazaarInfoCard, isBazaarAvailable } from '@backstage/plugin-bazaar';
 
 const overviewContent = (
 
     <Grid item md={8} xs={12}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
-
-+   <Grid item sm={6}>
-+     <EntityBazaarInfoCard />
-+   </Grid>
++   <EntitySwitch>
++     <EntitySwitch.Case if={isBazaarAvailable}>
++       <Grid item sm={6}>
++         <EntityBazaarInfoCard />
++       </Grid>
++     </EntitySwitch.Case>
++    </EntitySwitch>
 
     {/* ...other entity-cards */}
 ```
@@ -90,7 +97,7 @@ The property `title` is optional and can be used to customize the title in the c
 
 The properties `fullHeight` and `fullWidth` are also optional and can be used to adjust the cards styling.
 
-## How does the Bazaar work?
+# How does the Bazaar work?
 
 ### Layout
 

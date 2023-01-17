@@ -30,9 +30,9 @@ export const WhyCostsMatter = () => {
           <Grid item>
             <Typography variant="h6">
               Sustainability{' '}
-              <span role="img" aria-label="globe">
+              <Typography component="span" role="img" aria-label="globe">
                 🌎
-              </span>
+              </Typography>
             </Typography>
             <Typography>
               Reducing cloud usage improves our carbon footprint.
@@ -44,9 +44,13 @@ export const WhyCostsMatter = () => {
           <Grid item>
             <Typography variant="h6">
               Revenue{' '}
-              <span role="img" aria-label="money-with-wings">
+              <Typography
+                component="span"
+                role="img"
+                aria-label="money-with-wings"
+              >
                 💸
-              </span>
+              </Typography>
             </Typography>
             <Typography>
               Keeping cloud costs well-tuned prevents infrastructure from eating
@@ -59,9 +63,9 @@ export const WhyCostsMatter = () => {
           <Grid item>
             <Typography variant="h6">
               Innovation{' '}
-              <span role="img" aria-label="medal">
+              <Typography component="span" role="img" aria-label="medal">
                 🥇
-              </span>
+              </Typography>
             </Typography>
             <Typography>
               The more we save, the more we can reinvest in speed and

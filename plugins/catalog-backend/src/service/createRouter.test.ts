@@ -268,6 +268,8 @@ describe('createRouter readonly disabled', () => {
       '{"unknown":7}',
       '{"entityRefs":7}',
       '{"entityRefs":[7]}',
+      '{"entityRefs":[7],"fields":7}',
+      '{"entityRefs":[7],"fields":[7]}',
     ])('properly rejects malformed request body, %p', async p => {
       await expect(
         request(app)
@@ -283,8 +285,12 @@ describe('createRouter readonly disabled', () => {
       const response = await request(app)
         .post('/entities/by-refs')
         .set('Content-Type', 'application/json')
-        .send('{"entityRefs":["a"]}');
+        .send('{"entityRefs":["a"],"fields":["b"]}');
       expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['a'],
+        fields: expect.any(Function),
+      });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ items: [entity] });
     });

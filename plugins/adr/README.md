@@ -4,16 +4,18 @@ Welcome to the ADR plugin!
 
 This plugin allows you to browse ADRs associated with your entities as well as a way to discover ADRs across others entities via Backstage Search. Use this to learn from the past experience of other projects to guide your own architecture decisions.
 
-NOTE: This plugin currently only supports entities/ADRs registered via GitHub integration.
-
 ## Setup
 
-Install this plugin:
+1. Install this plugin:
 
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/app add @backstage/plugin-adr
 ```
+
+2. Make sure the [ADR backend plugin](../adr-backend/README.md) is installed.
+
+3. [Configure integrations](https://backstage.io/docs/integrations/) for all sites you would like to pull ADRs from.
 
 ### Entity Pages
 
@@ -79,7 +81,7 @@ case 'adr':
 
 ## Custom ADR formats
 
-By default, this plugin will parse ADRs according to the format specified by the [Markdown Architecture Decision Record (MADR)](https://adr.github.io/madr/) template. If your ADRs are written using a different format, you can apply the following customizations to correctly identify and parse your documents:
+By default, this plugin will parse ADRs according to the format specified by the [Markdown Architecture Decision Record (MADR) v2.x template](https://github.com/adr/madr/tree/2.1.2). If your ADRs are written using a different format, you can apply the following customizations to correctly identify and parse your documents:
 
 ### Custom Filename/Path Format
 

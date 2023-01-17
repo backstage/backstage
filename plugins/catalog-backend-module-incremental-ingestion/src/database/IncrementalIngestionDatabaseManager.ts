@@ -577,13 +577,15 @@ export class IncrementalIngestionDatabaseManager {
         .update('ingestion_mark_id', markId)
         .whereIn('ref', existingRefsArray);
 
-      await tx('ingestion_mark_entities').insert(
-        newRefs.map(ref => ({
-          id: v4(),
-          ingestion_mark_id: markId,
-          ref,
-        })),
-      );
+      if (newRefs.length > 0) {
+        await tx('ingestion_mark_entities').insert(
+          newRefs.map(ref => ({
+            id: v4(),
+            ingestion_mark_id: markId,
+            ref,
+          })),
+        );
+      }
     });
   }
 

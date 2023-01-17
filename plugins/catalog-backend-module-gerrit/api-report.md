@@ -31,9 +31,7 @@ export class GerritEntityProvider implements EntityProvider {
 }
 
 // @alpha (undocumented)
-export const gerritEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const gerritEntityProviderCatalogModule: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

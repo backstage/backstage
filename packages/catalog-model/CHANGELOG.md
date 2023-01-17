@@ -1,5 +1,34 @@
 # @backstage/catalog-model
 
+## 1.1.5
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.5-next.0
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- Updated dependencies
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
 ## 1.1.4
 
 ### Patch Changes

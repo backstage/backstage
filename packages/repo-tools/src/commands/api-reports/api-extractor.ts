@@ -18,11 +18,9 @@ import {
   resolve as resolvePath,
   relative as relativePath,
   basename,
-  dirname,
   join,
 } from 'path';
 import { execFile } from 'child_process';
-import type prettierType from 'prettier';
 import fs from 'fs-extra';
 import {
   Extractor,
@@ -70,32 +68,7 @@ const tmpDir = cliPaths.resolveTargetRoot(
 );
 
 /**
- * All of this monkey patching below is because MUI has these bare package.json file as a method
- * for making TypeScript accept imports like `@material-ui/core/Button`, and improve tree-shaking
- * by declaring them side effect free.
- *
- * The package.json lookup logic in api-extractor really doesn't like that though, as it enforces
- * that the 'name' field exists in all package.json files that it discovers. This below is just
- * making sure that we ignore those file package.json files instead of crashing.
- */
-const {
-  PackageJsonLookup,
-} = require('@rushstack/node-core-library/lib/PackageJsonLookup');
-
-const old = PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor;
-PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor =
-  function tryGetPackageJsonFilePathForPatch(path: string) {
-    if (
-      path.includes('@material-ui') &&
-      !dirname(path).endsWith('@material-ui')
-    ) {
-      return undefined;
-    }
-    return old.call(this, path);
-  };
-
-/**
- * Another monkey patch where we apply prettier to the API reports. This has to be patched into
+ * All of this monkey patching below is for apply prettier to the API reports. This has to be patched into
  * the middle of the process as API Extractor does a comparison of the contents of the old
  * and new files during generation. This inserts the formatting just before that comparison.
  */
@@ -134,7 +107,6 @@ ApiReportGenerator.generateReviewFileContent =
     ...moreArgs: any[]
   ) {
     const program = collector.program as Program;
-
     // The purpose of this override is to allow the @ignore tag to be used to ignore warnings
     // of the form "Warning: (ae-forgotten-export) The symbol "FooBar" needs to be exported by the entry point index.d.ts"
     patchFileMessageFetcher(
@@ -166,7 +138,16 @@ ApiReportGenerator.generateReviewFileContent =
           }
 
           // The local name of the symbol within the file, rather than the exported name
-          const localName = (sourceFile as any).identifiers?.get(symbolName);
+          let localName = (sourceFile as any).identifiers?.get(symbolName);
+
+          if (!localName) {
+            // Sometimes the symbol name is suffixed with a number to disambiguate,
+            // e.g. "Props_14" instead of "Props" if there are multiple Props interfaces
+            // so we tyry to strip that suffix and look up the symbol again.
+            const [, trimmedSymbolName] = symbolName.match(/(.*)_\d+/) || [];
+            localName = (sourceFile as any).identifiers?.get(trimmedSymbolName);
+          }
+
           if (!localName) {
             throw new Error(
               `Unable to find local name of "${symbolName}" in ${sourceFile.fileName}`,
@@ -213,7 +194,7 @@ ApiReportGenerator.generateReviewFileContent =
     );
 
     try {
-      const prettier = require('prettier') as typeof prettierType;
+      const prettier = require('prettier') as typeof import('prettier');
 
       const config = prettier.resolveConfig.sync(cliPaths.targetRoot) ?? {};
       return prettier.format(content, {
@@ -221,7 +202,6 @@ ApiReportGenerator.generateReviewFileContent =
         parser: 'markdown',
       });
     } catch (e) {
-      // console.warn('Failed to format API report with prettier', e);
       return content;
     }
   };
@@ -434,6 +414,7 @@ export async function runApiExtraction({
       configObjectFullPath: projectFolder,
       packageJsonFullPath: resolvePath(projectFolder, 'package.json'),
       tsdocConfigFile: await getTsDocConfig(),
+      ignoreMissingEntryPoint: true,
     });
 
     // The `packageFolder` needs to point to the location within `dist-types` in order for relative

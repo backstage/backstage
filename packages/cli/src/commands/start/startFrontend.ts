@@ -80,7 +80,7 @@ export async function startFrontend(options: StartAppOptions) {
         `⚠️   Conflict between app baseUrl and backend baseUrl:
 
     app.baseUrl:     ${appBaseUrl}
-    backend.baseUrl: ${appBaseUrl}
+    backend.baseUrl: ${backendBaseUrl}
 
     Must have unique hostname and/or ports.
 

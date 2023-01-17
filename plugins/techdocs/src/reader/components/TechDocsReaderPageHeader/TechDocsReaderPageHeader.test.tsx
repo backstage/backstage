@@ -16,9 +16,6 @@
 import React from 'react';
 import { act, waitFor } from '@testing-library/react';
 
-import { ThemeProvider } from '@material-ui/core';
-
-import { lightTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
@@ -71,13 +68,11 @@ const Wrapper = ({
   entityRef?: CompoundEntityRef;
   children: React.ReactNode;
 }) => (
-  <ThemeProvider theme={lightTheme}>
-    <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
-      <TechDocsReaderPageProvider entityRef={entityRef}>
-        {children}
-      </TechDocsReaderPageProvider>
-    </TestApiProvider>
-  </ThemeProvider>
+  <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
+    <TechDocsReaderPageProvider entityRef={entityRef}>
+      {children}
+    </TechDocsReaderPageProvider>
+  </TestApiProvider>
 );
 
 describe('<TechDocsReaderPageHeader />', () => {
