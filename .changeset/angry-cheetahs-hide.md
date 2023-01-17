@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-scaffolder-backend': minor
 ---
 
-Implement "Required approving review count", "Restrictions", and "Required commit signing" support for "publish:github" action
+Implement `Required approving review count`, `Restrictions`, and `Required commit signing` support for `publish:github` action
