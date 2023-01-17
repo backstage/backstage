@@ -16,7 +16,7 @@
 
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   TemplateEntityStepV1beta3,
   TemplateParameter,
 } from '@backstage/plugin-scaffolder-common';
@@ -26,12 +26,12 @@ import { z } from 'zod';
 export const createScaffolderStepPermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateProperty | TemplateParameter,
   {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_PROPERTY
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
 >();
 
 const hasTag = createScaffolderStepPermissionRule({
   name: 'HAS_TAG',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_PROPERTY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   description: 'Match a scaffolder step with the given tag',
   paramsSchema: z.object({
     tag: z.string().describe('Name of the tag to match on'),
