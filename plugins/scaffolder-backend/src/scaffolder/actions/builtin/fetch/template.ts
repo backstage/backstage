@@ -62,7 +62,7 @@ export function createFetchTemplateAction(options: {
     copyWithoutRender?: string[];
     copyWithoutTemplating?: string[];
     cookiecutterCompat?: boolean;
-    replace: boolean;
+    replace?: boolean;
   }>({
     id: 'fetch:template',
     description:
