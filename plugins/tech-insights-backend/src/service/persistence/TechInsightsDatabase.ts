@@ -205,9 +205,6 @@ export class TechInsightsDatabase implements TechInsightsStore {
   ) {
     await tx<RawDbFactRow>('facts')
       .where({ id: factRetrieverId })
-      .and.whereIn('entity', db =>
-        db.distinct('entity').where({ id: factRetrieverId }),
-      )
       .and.where('timestamp', '<', timestamp.toISO())
       .delete();
   }
