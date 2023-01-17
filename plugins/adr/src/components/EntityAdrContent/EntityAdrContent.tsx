@@ -73,11 +73,10 @@ export const EntityAdrContent = (props: {
   const adrApi = useApi(adrApiRef);
   const entityHasAdrs = isAdrAvailable(entity);
 
-  const url = getAdrLocationUrl(entity, scmIntegrations);
-  const { value, loading, error } = useAsync(
-    async () => adrApi.listAdrs(url),
-    [url],
-  );
+  const { value, loading, error } = useAsync(async () => {
+    const url = getAdrLocationUrl(entity, scmIntegrations);
+    return adrApi.listAdrs(url);
+  }, [entity, scmIntegrations]);
 
   const selectedAdr =
     adrList.find(adr => adr === searchParams.get('record')) ?? '';
