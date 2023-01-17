@@ -19,10 +19,7 @@ import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
-import {
-  startTestBackend,
-  mockConfigFactory,
-} from '@backstage/backend-test-utils';
+import { startTestBackend, mockServices } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node';
 import { Duration } from 'luxon';
@@ -59,7 +56,7 @@ describe('bitbucketCloudEntityProviderCatalogModule', () => {
         [eventsExtensionPoint, eventsExtensionPointImpl],
       ],
       services: [
-        mockConfigFactory({
+        mockServices.config.factory({
           data: {
             catalog: {
               providers: {
