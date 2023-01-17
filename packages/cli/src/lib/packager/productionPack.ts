@@ -63,6 +63,9 @@ export async function productionPack(options: ProductionPackOptions) {
     }
   }
 
+  // For published packages we rely on compatibility entry points rather than this
+  delete pkg.typesVersions;
+
   // We remove the dependencies from package.json of packages that are marked
   // as bundled, so that yarn doesn't try to install them.
   if (pkg.bundled) {
