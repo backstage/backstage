@@ -36,8 +36,10 @@ export const exampleServiceRef = createServiceRef<ExampleApi>({
   id: 'example',
   scope: 'plugin', // can be 'root' or 'plugin'
 
-  // The defaultFactory is optional to implement but it will be used if no other factory is provided to the backend.
-  // This is allows for the backend to provide a default implementation of the service without having to wire it beforehand.
+  // The defaultFactory is optional to implement but it will be used if no
+  // other factory is provided to the backend. This allows for the backend
+  // to provide a default implementation of the service without having to wire
+  // it beforehand.
   defaultFactory: async service =>
     createServiceFactory({
       service,
@@ -45,14 +47,21 @@ export const exampleServiceRef = createServiceRef<ExampleApi>({
         logger: coreServices.logger,
         plugin: coreServices.pluginMetadata,
       },
-      // Logger is available directly in the factory as it's a root scoped service and will be created once per backend instance.
-      async factory({ logger, plugin }) {
-        // plugin is available as it's a plugin scoped service and will be created once per plugin.
-        return async ({ plugin }) => {
-          // This block will be executed once for every plugin that depends on this service
-          logger.info('Initializing example service plugin instance');
-          return new ExampleImpl({ logger, plugin });
-        };
+      // This root context method is only available for plugin scoped services.
+      // It's only called once per backend instance.
+      // Logger is available at the root context level as it's also a root
+      // scoped service.
+      createRootContext({ logger }) {
+        return new ExampleImplFactory({ logger });
+      },
+      // Plugin is available as it's a plugin scoped service and will be
+      // created once per plugin. The logger can be had here too if needed.
+      // Both this anc the root context can also be async.
+      factory({ logger, plugin }, rootContext) {
+        // This block will be executed once for every plugin that depends on
+        // this service
+        logger.info('Initializing example service plugin instance');
+        return rootContext.forPlugin(plugin.getId());
       },
     }),
 });
