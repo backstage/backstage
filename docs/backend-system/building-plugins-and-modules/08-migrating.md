@@ -179,7 +179,8 @@ export const kubernetesPlugin = createBackendPlugin({
   id: 'kubernetes',
   register(env) {
     const extensionPoint = new ClusterSupplier();
-    // We register the extensionPoint with the backend which allows modules to register their own ClusterSupplier.
+    // We register the extension point with the backend, which allows modules to
+    // register their own ClusterSupplier.
     env.registerExtensionPoint(
       kubernetesClustersSupplierExtensionPoint,
       extensionPoint,
