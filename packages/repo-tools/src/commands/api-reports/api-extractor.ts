@@ -19,6 +19,7 @@ import {
   relative as relativePath,
   basename,
   join,
+  extname,
 } from 'path';
 import { execFile } from 'child_process';
 import fs from 'fs-extra';
@@ -309,15 +310,19 @@ async function findPackageEntryPoints(
       );
 
       if (pkg.exports && typeof pkg.exports !== 'string') {
-        return Object.keys(pkg.exports).map(mount => {
+        return Object.entries(pkg.exports).flatMap(([mount, path]) => {
+          const ext = extname(String(path));
+          if (!['.ts', '.tsx', '.cts', '.mts'].includes(ext)) {
+            return []; // Ignore non-TS entry points
+          }
           let name = mount;
           if (name.startsWith('./')) {
             name = name.slice(2);
           }
           if (!name || name === '.') {
-            return { packageDir, name: 'index' };
+            return [{ packageDir, name: 'index' }];
           }
-          return { packageDir, name };
+          return [{ packageDir, name }];
         });
       }
 
