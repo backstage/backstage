@@ -18,7 +18,7 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityList: jest.fn(),
 }));
 
-jest.mock('@backstage/plugin-scaffolder-react', () => ({
+jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
   TemplateGroup: jest.fn(() => null),
 }));
 
