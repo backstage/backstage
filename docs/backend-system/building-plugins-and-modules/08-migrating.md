@@ -125,7 +125,7 @@ backend.add(
 
 Just to echo what was said above, this is not a very flexible solution and will for example be problematic to keep backwards compatible if we start evolving the options to for example accept multiple suppliers or tweak the `ClusterSupplier` interface.
 
-The new [ExtensionPoints](fixme.md) API allows [Modules](fixme) to add function into the backend plugin itself, in this case an additional `ClusterSupplier`
+The new [extension points](fixme.md) API allows [modules](fixme) to add functionality into the backend plugin itself, in this case an additional `ClusterSupplier`.
 
 The kubernetes backend plugin only supports one `ClusterSupplier` at this time but let's look at how we could add support for multiple suppliers using extension points. This allows users to install several modules that add their own `ClusterSupplier` implementations to the plugin like this:
 
