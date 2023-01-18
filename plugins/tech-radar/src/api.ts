@@ -89,6 +89,11 @@ export interface RadarQuadrant {
   name: string;
 }
 
+/**
+ * Single link in {@link RadarEntry}
+ *
+ * @public
+ */
 export interface RadarEntryLink {
   /**
    * URL of the link
