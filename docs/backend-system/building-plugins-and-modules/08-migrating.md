@@ -156,7 +156,7 @@ export const kubernetesClustersSupplierExtensionPoint =
   });
 ```
 
-Now we can use this extension point in the kubernetes backend plugin to register the ExtensionPoint for modules to use.
+Now we can use this extension point in the kubernetes backend plugin to register the extension point for modules to use.
 
 ```ts
 import { kubernetesClustersSupplierExtensionPoint } from '@backstage/plugin-kubernetes-node';
