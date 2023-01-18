@@ -669,4 +669,81 @@ describe('fetch:template', () => {
       ).resolves.toEqual('test-project: 1234');
     });
   });
+
+  describe('with replacement of existing files', () => {
+    let context: ActionContext<FetchTemplateInput>;
+
+    beforeEach(async () => {
+      context = mockContext({
+        values: {
+          name: 'test-project',
+          count: 1234,
+        },
+        replace: true,
+      });
+
+      mockFetchContents.mockImplementation(({ outputPath }) => {
+        mockFs({
+          ...realFiles,
+          [joinPath(workspacePath, 'target')]: {
+            'static-content.txt': 'static-content',
+          },
+          [outputPath]: {
+            'static-content.txt': '${{ values.name }}: ${{ values.count }}',
+          },
+        });
+
+        return Promise.resolve();
+      });
+
+      await action.handler(context);
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('overwrites existing file', async () => {
+      await expect(
+        fs.readFile(`${workspacePath}/target/static-content.txt`, 'utf-8'),
+      ).resolves.toEqual('test-project: 1234');
+    });
+  });
+
+  describe('without replacement of existing files', () => {
+    let context: ActionContext<FetchTemplateInput>;
+
+    beforeEach(async () => {
+      context = mockContext({
+        values: {
+          name: 'test-project',
+          count: 1234,
+        },
+        targetPath: './target',
+        replace: false,
+      });
+
+      mockFetchContents.mockImplementation(({ outputPath }) => {
+        mockFs({
+          ...realFiles,
+          [joinPath(workspacePath, 'target')]: {
+            'static-content.txt': 'static-content',
+          },
+          [outputPath]: {
+            'static-content.txt': '${{ values.name }}: ${{ values.count }}',
+          },
+        });
+
+        return Promise.resolve();
+      });
+
+      await action.handler(context);
+    });
+
+    it('keeps existing file', async () => {
+      await expect(
+        fs.readFile(`${workspacePath}/target/static-content.txt`, 'utf-8'),
+      ).resolves.toEqual('static-content');
+    });
+  });
 });
