@@ -7251,7 +7251,7 @@ __metadata:
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.0.0-beta.16"
     "@rjsf/utils": 5.0.0-beta.16
-    "@rjsf/validator-ajv6": 5.0.0-beta.16
+    "@rjsf/validator-ajv6": 5.0.0-beta.17
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
@@ -12667,16 +12667,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/validator-ajv6@npm:5.0.0-beta.16":
-  version: 5.0.0-beta.16
-  resolution: "@rjsf/validator-ajv6@npm:5.0.0-beta.16"
+"@rjsf/validator-ajv6@npm:5.0.0-beta.17":
+  version: 5.0.0-beta.17
+  resolution: "@rjsf/validator-ajv6@npm:5.0.0-beta.17"
   dependencies:
     ajv: ^6.7.0
     lodash: ^4.17.15
     lodash-es: ^4.17.15
   peerDependencies:
     "@rjsf/utils": ^5.0.0-beta.1
-  checksum: c4296e37608907c904424c46c884a15991101229e708caaa43e2e3c7d7e44a7e88ba206a902f80853f9a7f4c78d129fe47452ee5265cfd845b916051e99cd70d
+  checksum: 855c5e81e5038c7fec1359c3ace4888cf136f6dad49557dd603f1d6289493e5cc2f0b66a006e7c0cf305b04aa67a36ab197bed5c8c52fbbb3fffc73a6b0e2823
   languageName: node
   linkType: hard
 
