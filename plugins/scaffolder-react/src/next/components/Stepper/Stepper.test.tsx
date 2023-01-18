@@ -33,7 +33,7 @@ describe('Stepper', () => {
     };
 
     const { getByText } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onComplete={jest.fn()} />,
+      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
     );
 
     for (const step of manifest.steps) {
@@ -51,7 +51,7 @@ describe('Stepper', () => {
     };
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onComplete={jest.fn()} />,
+      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
     );
 
     expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
@@ -91,7 +91,7 @@ describe('Stepper', () => {
     };
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onComplete={jest.fn()} />,
+      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
     );
 
     await fireEvent.change(getByRole('textbox', { name: 'name' }), {
@@ -162,7 +162,7 @@ describe('Stepper', () => {
       title: 'React JSON Schema Form Test',
     };
 
-    const onComplete = jest.fn(async (values: Record<string, JsonValue>) => {
+    const onCreate = jest.fn(async (values: Record<string, JsonValue>) => {
       expect(values).toEqual({
         first: { repository: 'Repo' },
         second: { owner: 'Owner' },
@@ -172,7 +172,7 @@ describe('Stepper', () => {
     const { getByRole } = await renderInTestApp(
       <Stepper
         manifest={manifest}
-        onComplete={onComplete}
+        onCreate={onCreate}
         extensions={[
           { name: 'Repo', component: Repo },
           { name: 'Owner', component: Owner },
@@ -200,7 +200,7 @@ describe('Stepper', () => {
       await fireEvent.click(getByRole('button', { name: 'Create' }));
     });
 
-    expect(onComplete).toHaveBeenCalled();
+    expect(onCreate).toHaveBeenCalled();
   });
 
   it('should render custom field extensions properly', async () => {
@@ -229,7 +229,7 @@ describe('Stepper', () => {
       <Stepper
         manifest={manifest}
         extensions={[{ name: 'Mock', component: MockComponent }]}
-        onComplete={jest.fn()}
+        onCreate={jest.fn()}
       />,
     );
 
@@ -266,7 +266,7 @@ describe('Stepper', () => {
       <Stepper
         manifest={manifest}
         extensions={[]}
-        onComplete={jest.fn()}
+        onCreate={jest.fn()}
         FormProps={{ transformErrors }}
       />,
     );
@@ -308,7 +308,7 @@ describe('Stepper', () => {
     });
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onComplete={jest.fn()} />,
+      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
     );
 
     expect(getByRole('textbox', { name: 'firstName' })).toHaveValue('John');
@@ -331,12 +331,12 @@ describe('Stepper', () => {
       title: 'initialize formData',
     };
 
-    const onComplete = jest.fn(async (values: Record<string, JsonValue>) => {
+    const onCreate = jest.fn(async (values: Record<string, JsonValue>) => {
       expect(values).toHaveProperty('firstName');
     });
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onComplete={onComplete} />,
+      <Stepper manifest={manifest} extensions={[]} onCreate={onCreate} />,
     );
 
     await act(async () => {
@@ -351,5 +351,45 @@ describe('Stepper', () => {
 
     // flush promises
     return new Promise(process.nextTick);
+  });
+
+  it('should override the Create and Review button text', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Custom Fields',
+      steps: [
+        {
+          title: 'Test',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    const { getByRole } = await renderInTestApp(
+      <Stepper
+        manifest={manifest}
+        onCreate={jest.fn()}
+        extensions={[]}
+        components={{
+          createButtonText: <b>Make</b>,
+          reviewButtonText: <i>Inspect</i>,
+        }}
+      />,
+    );
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Inspect' }));
+    });
+
+    expect(getByRole('button', { name: 'Make' })).toBeInTheDocument();
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Make' }));
+    });
   });
 });

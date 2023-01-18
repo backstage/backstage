@@ -26,7 +26,7 @@ import {
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
-import { FormProps } from '../types';
+import { type FormProps } from '../types';
 import { nextSelectedTemplateRouteRef } from '../routes';
 
 /**

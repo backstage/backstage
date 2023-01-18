@@ -1,5 +1,7 @@
+import { useApi } from '@backstage/core-plugin-api';
+
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import useAsync from 'react-use/lib/useAsync';
+import { scaffolderApiRef } from '../../api/ref';
 
-export * from './extensions';
-export * from './types';
-export * from './secrets';
-export * from './api';
-export * from './hooks';
+/**
+ * @alpha
+ */
+export const useTemplateParameterSchema = (templateRef: string) => {
+  const scaffolderApi = useApi(scaffolderApiRef);
+  const { value, loading, error } = useAsync(
+    () => scaffolderApi.getTemplateParameterSchema(templateRef),
+    [scaffolderApi, templateRef],
+  );
 
-export * from './next';
-export type { FormProps } from './next';
+  return { manifest: value, loading, error };
+};

@@ -13,12 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './extensions';
-export * from './types';
-export * from './secrets';
-export * from './api';
-export * from './hooks';
-
-export * from './next';
-export type { FormProps } from './next';
+export { Workflow, EmbeddableWorkflow, type WorkflowProps } from './Workflow';

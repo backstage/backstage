@@ -21,6 +21,7 @@ import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { SetStateAction } from 'react';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
@@ -78,6 +79,9 @@ export type CustomFieldValidator<TFieldReturnValue> = (
     apiHolder: ApiHolder;
   },
 ) => void | Promise<void>;
+
+// @alpha (undocumented)
+export const EmbeddableWorkflow: (props: WorkflowProps) => JSX.Element;
 
 // @alpha
 export const extractSchemaFromStep: (inputStep: JsonObject) => {
@@ -342,7 +346,7 @@ export const SecretsContextProvider: ({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @alpha
-export const Stepper: (props: StepperProps) => JSX.Element;
+export const Stepper: (stepperProps: StepperProps) => JSX.Element;
 
 // @alpha
 export type StepperProps = {
@@ -351,7 +355,12 @@ export type StepperProps = {
   templateName?: string;
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
+  components?: {
+    ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
+    createButtonText?: ReactNode;
+    reviewButtonText?: ReactNode;
+  };
 };
 
 // @alpha
@@ -418,6 +427,13 @@ export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
 
+// @alpha (undocumented)
+export const useTemplateParameterSchema: (templateRef: string) => {
+  manifest: TemplateParameterSchema | undefined;
+  loading: boolean;
+  error: Error | undefined;
+};
+
 // @alpha
 export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
   steps: ParsedTemplateSchema[];
@@ -425,6 +441,21 @@ export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
+
+// @alpha (undocumented)
+export const Workflow: (workflowProps: WorkflowProps) => JSX.Element | null;
+
+// @alpha (undocumented)
+export type WorkflowProps = {
+  title?: string;
+  description?: string;
+  namespace: string;
+  templateName: string;
+  onError(error: Error | undefined): JSX.Element | null;
+} & Pick<
+  StepperProps,
+  'extensions' | 'FormProps' | 'components' | 'onCreate' | 'initialState'
+>;
 
 // (No @packageDocumentation comment for this package)
 ```
