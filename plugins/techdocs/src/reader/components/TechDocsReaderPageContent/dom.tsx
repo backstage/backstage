@@ -247,7 +247,7 @@ export const useTechDocsReaderDom = (
       }
 
       // Scroll to top after render
-      window.scroll({ top: 0 });
+      document.querySelector('[class^=BackstageHeader]')?.scrollIntoView();
 
       // Post-render
       const postTransformedDomElement = await postRender(
