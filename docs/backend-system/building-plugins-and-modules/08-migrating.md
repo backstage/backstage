@@ -135,7 +135,7 @@ backend.add(GoogleContainerEngineModule());
 backend.add(EKSModule());
 ```
 
-Now let's look at how to implement this with extension points. First we need to define the extension point itself. As the ExtensionPoint will be used by other modules we need to export its common practice to export these from a shared package so that they can be imported by other modules and plugins.
+Now let's look at how to implement this with extension points. First we need to define the extension point itself. As the extension point will be used by other modules, it's common practice to export these from a shared package so that they can be imported by other modules and plugins.
 
 We'll go ahead and create a `@backstage/plugin-kubernetes-node` package for this and from there we'll export the extension point.
 
