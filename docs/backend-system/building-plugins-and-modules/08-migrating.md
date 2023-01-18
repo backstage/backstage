@@ -8,7 +8,7 @@ description: How to migrate existing backend plugins to the new backend system
 
 Migrating an existing backend plugin to the new backend system is fairly straightforward. The process is similar across the majority of plugins which just return a `Router` that is then wired up in the `index.ts` file of your backend. The primary thing that we need to do is to make sure that the dependencies that are required by the plugin are available, and then registering the router with the HTTP router service.
 
-Let's look at an example of migrating the Kubernetes Backend Plugin. In the existing(old) system the kubernetes backend is structured like this:
+Let's look at an example of migrating the Kubernetes backend plugin. In the existing (old) system, the kubernetes backend is structured like this:
 
 ```ts
 // @backstage/plugin-kubernetes-backend/src/service/router.ts
