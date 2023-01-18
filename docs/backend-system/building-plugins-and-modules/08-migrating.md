@@ -63,7 +63,7 @@ export const kubernetesPlugin = createBackendPlugin({
           discovery,
         }).build();
 
-        // We registered the router with the http service.
+        // We register the router with the http service.
         http.use(router);
       },
     });
