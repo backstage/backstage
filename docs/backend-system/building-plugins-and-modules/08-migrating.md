@@ -161,7 +161,7 @@ Now we can use this extension point in the kubernetes backend plugin to register
 ```ts
 import { kubernetesClustersSupplierExtensionPoint } from '@backstage/plugin-kubernetes-node';
 
-// Our internal implementation of the extensionPoint which we do not need to export.
+// Our internal implementation of the extension point, should not be exported.
 class ClusterSupplier implements KubernetesClustersSupplier {
   private clusterSuppliers: KubernetesClustersSupplier[] = [];
 
