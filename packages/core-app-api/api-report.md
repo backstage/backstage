@@ -263,6 +263,7 @@ export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
   provider?: AuthProviderInfo;
+  usePopup?: boolean;
 };
 
 // @public
@@ -516,6 +517,7 @@ export type OneLoginAuthCreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
+  usePopup?: boolean;
   provider?: AuthProviderInfo;
 };
 

@@ -41,6 +41,7 @@ export type AuthProviderConfig = {
   appUrl: string;
   isOriginAllowed: (origin: string) => boolean;
   cookieConfigurer?: CookieConfigurer;
+  isPopupAuthenticationRequest: boolean;
 };
 
 // @public (undocumented)
@@ -268,7 +269,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     handlers: OAuthHandlers,
     options: Pick<
       OAuthAdapterOptions,
-      'providerId' | 'persistScopes' | 'callbackUrl'
+      'providerId' | 'persistScopes' | 'callbackUrl' | 'redirectUrl'
     >,
   ): OAuthAdapter;
   // (undocumented)
@@ -284,10 +285,12 @@ export type OAuthAdapterOptions = {
   providerId: string;
   persistScopes?: boolean;
   appOrigin: string;
+  redirectUrl?: string;
   baseUrl: string;
   cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
+  isPopupAuthenticationRequest: boolean;
 };
 
 // @public (undocumented)
@@ -385,6 +388,7 @@ export type OAuthState = {
   env: string;
   origin?: string;
   scope?: string;
+  redirectUrl?: string;
 };
 
 // @public
@@ -666,6 +670,12 @@ export const providers: Readonly<{
 
 // @public (undocumented)
 export const readState: (stateString: string) => OAuthState;
+
+// @public (undocumented)
+export const redirectMessageResponse: (
+  res: express.Response,
+  redirectUrl: string,
+) => void;
 
 // @public (undocumented)
 export interface RouterOptions {

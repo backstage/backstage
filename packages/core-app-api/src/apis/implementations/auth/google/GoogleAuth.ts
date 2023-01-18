@@ -21,6 +21,7 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'google',
   title: 'Google',
+  provider_id: 'google-auth-provider',
   icon: () => null,
 };
 
@@ -37,6 +38,7 @@ export default class GoogleAuth {
       discoveryApi,
       oauthRequestApi,
       environment = 'development',
+      usePopup = true,
       provider = DEFAULT_PROVIDER,
       defaultScopes = [
         'openid',
@@ -50,6 +52,7 @@ export default class GoogleAuth {
       oauthRequestApi,
       provider,
       environment,
+      usePopup,
       defaultScopes,
       scopeTransform(scopes: string[]) {
         return scopes.map(scope => {

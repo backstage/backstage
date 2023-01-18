@@ -114,5 +114,11 @@ export interface Config {
      * @visibility frontend
      */
     environment?: string;
+    /**
+     $ The authentication flow type - either using a popup to authenticate or perform a http redirect
+     * default value: 'true'
+     * @visibility frontend
+     */
+    usePopup?: boolean;
   };
 }

@@ -33,6 +33,10 @@ type Options<AuthSession> = {
    */
   environment: string;
   /**
+   * use a popup or a redirect for authentication with backend authentication api
+   */
+  usePopup: boolean;
+  /**
    * Information about the auth provider to be shown to the user.
    * The ID Must match the backend auth plugin configuration, for example 'google'.
    */
@@ -77,12 +81,37 @@ export class DefaultAuthConnector<AuthSession>
       provider,
       joinScopes = defaultJoinScopes,
       oauthRequestApi,
+      usePopup,
       sessionTransform = id => id,
     } = options;
 
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
-      onAuthRequest: scopes => this.showPopup(scopes),
+      onAuthRequest: async scopes => {
+        if (!usePopup) {
+          // modal before redirect
+          const scope = this.joinScopesFunc(scopes);
+          const redirectUrl = await this.buildUrl('/start', {
+            scope,
+            origin: window.location.origin,
+            redirectUrl: window.location.href,
+            authType: 'redirect',
+          });
+
+          if (provider.hasOwnProperty('provider_id')) {
+            // set the sign in provider here
+            localStorage.setItem(
+              '@backstage/core:SignInPage:provider',
+              provider.provider_id!,
+            );
+          }
+
+          window.location.href = redirectUrl;
+          // we need to return to exit function or else popup occurs
+          return Promise.resolve({} as AuthSession);
+        }
+        return this.showPopup(scopes);
+      },
     });
 
     this.discoveryApi = discoveryApi;

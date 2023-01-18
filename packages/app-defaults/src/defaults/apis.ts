@@ -131,6 +131,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
       }),
   }),
   createApiFactory({
@@ -145,6 +146,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
       }),
   }),
   createApiFactory({
@@ -160,6 +162,7 @@ export const apis = [
         oauthRequestApi,
         defaultScopes: ['read:user'],
         environment: configApi.getOptionalString('auth.environment'),
+        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
       }),
   }),
   createApiFactory({
@@ -174,6 +177,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
       }),
   }),
   createApiFactory({
@@ -188,6 +192,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
       }),
   }),
   createApiFactory({
@@ -202,6 +207,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
       }),
   }),
   createApiFactory({
@@ -217,6 +223,7 @@ export const apis = [
         oauthRequestApi,
         defaultScopes: ['team'],
         environment: configApi.getOptionalString('auth.environment'),
+        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
       }),
   }),
   createApiFactory({
@@ -231,6 +238,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
+        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
       });
     },
   }),

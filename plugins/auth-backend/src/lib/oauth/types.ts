@@ -90,6 +90,7 @@ export type OAuthState = {
   env: string;
   origin?: string;
   scope?: string;
+  redirectUrl?: string;
 };
 
 /** @public */

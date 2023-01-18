@@ -70,6 +70,14 @@ export const postMessageResponse = (
 };
 
 /** @public */
+export const redirectMessageResponse = (
+  res: express.Response,
+  redirectUrl: string,
+) => {
+  res.redirect(redirectUrl);
+};
+
+/** @public */
 export const ensuresXRequestedWith = (req: express.Request) => {
   const requiredHeader = req.header('X-Requested-With');
   if (!requiredHeader || requiredHeader !== 'XMLHttpRequest') {

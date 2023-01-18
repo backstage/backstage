@@ -77,6 +77,7 @@ export default class OAuth2
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = [],
+      usePopup = true,
       scopeTransform = x => x,
     } = options;
 
@@ -85,6 +86,7 @@ export default class OAuth2
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,
+      usePopup,
       sessionTransform(res: OAuth2Response): OAuth2Session {
         return {
           ...res,
