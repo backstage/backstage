@@ -83,7 +83,7 @@ There's one thing missing that those sharp eyed readers might have noticed: the 
 
 One alternative is to pass the `ClusterSupplier` in as options to the plugin, which is quick and easy but not very flexible, and also hard to evolve without introducing breaking changes as it changes the public API for the plugin. Having complex types passed in directly to the plugin also clutters the backend setup code and makes it harder to read.
 
-Options are primarily used for simple configuration values that are not complex types. In this case we want to allow users to register their own `ClusterSupplier` implementations to the plugin. This is where the new backend system's [ExtensionPoints](fixme.md) but let's look at doing this with options first.
+Options are primarily used for simple configuration values that are not complex types. In this case we want to allow users to register their own `ClusterSupplier` implementations to the plugin. This is where the new backend system's [extension points](fixme.md) come in handy, but let's look at doing this with options first.
 
 ```ts
 /* omitted imports but they remain the same as above */
