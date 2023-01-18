@@ -129,11 +129,15 @@ export type BreadcrumbsStyledBoxClassKey = 'root';
 // @public
 export function BrokenImageIcon(props: IconComponentProps): JSX.Element;
 
-// @public @deprecated
+// Warning: (ae-missing-release-tag) "Button" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
 export const Button: (props: ButtonProps) => JSX.Element;
 
-// @public @deprecated
-export type ButtonProps = ButtonProps_2 & Omit<LinkProps, 'variant' | 'color'>;
+// Warning: (ae-missing-release-tag) "ButtonProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
+export type ButtonProps = LinkButtonProps;
 
 // @public (undocumented)
 export type CardActionsTopRightClassKey = 'root';
@@ -630,7 +634,7 @@ export function LinearGauge(props: Props_11): JSX.Element | null;
 export const Link: (props: LinkProps) => JSX.Element;
 
 // @public
-export const LinkButton: (props: LinkButtonProps) => JSX.Element;
+export const LinkButton: (props: ButtonProps) => JSX.Element;
 
 // @public
 export type LinkButtonProps = ButtonProps_2 &
