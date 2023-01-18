@@ -16,6 +16,7 @@
 import { DateTime, Interval } from 'luxon';
 import humanizeDuration from 'humanize-duration';
 import React from 'react';
+import Typography from '@material-ui/core/Typography';
 
 export const CreatedAtColumn = ({ createdAt }: { createdAt: string }) => {
   const createdAtTime = DateTime.fromISO(createdAt);
@@ -23,5 +24,9 @@ export const CreatedAtColumn = ({ createdAt }: { createdAt: string }) => {
     .toDuration()
     .valueOf();
 
-  return <p>{humanizeDuration(formatted, { round: true })} ago</p>;
+  return (
+    <Typography paragraph>
+      {humanizeDuration(formatted, { round: true })} ago
+    </Typography>
+  );
 };

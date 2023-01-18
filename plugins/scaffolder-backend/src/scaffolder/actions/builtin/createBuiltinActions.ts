@@ -26,6 +26,7 @@ import { JsonObject } from '@backstage/types';
 import {
   createCatalogRegisterAction,
   createCatalogWriteAction,
+  createFetchCatalogEntityAction,
 } from './catalog';
 
 import { TemplateFilter, TemplateGlobal } from '../../../lib';
@@ -160,6 +161,7 @@ export const createBuiltinActions = (
     }),
     createDebugLogAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),
+    createFetchCatalogEntityAction({ catalogClient }),
     createCatalogWriteAction(),
     createFilesystemDeleteAction(),
     createFilesystemRenameAction(),

@@ -27,7 +27,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.12
+        uses: backstage/actions/yarn-install@v0.5.13
         with:
           cache-prefix: linux-v16
 
@@ -52,13 +52,13 @@ jobs:
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: registry.uffizzi.com/${{ env.UUID_TAG_APP }}
           tags: type=raw,value=60d
 
       - name: Build Image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: packages/backend/Dockerfile

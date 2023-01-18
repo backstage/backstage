@@ -33,6 +33,7 @@ import PublicIcon from '@material-ui/icons/Public';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import StartIcon from '@material-ui/icons/PlayArrow';
 import StopIcon from '@material-ui/icons/Stop';
+import Typography from '@material-ui/core/Typography';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core-plugin-api';
@@ -51,7 +52,8 @@ const State = ({ value }: { value: States }) => {
   };
   return (
     <Box display="flex" alignItems="center">
-      <span
+      <Typography
+        component="span"
         style={{
           display: 'block',
           width: '8px',

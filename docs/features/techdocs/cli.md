@@ -70,6 +70,11 @@ a Backstage app server on port 3000. The Backstage app has a custom TechDocs API
 implementation, which uses the MkDocs preview server as a proxy to fetch the
 generated documentation files and assets.
 
+Backstage instances might differ from the provided preview app in appearance and
+behavior. To preview documentation with a different app, use
+`--preview-app-bundle-path` with a path to the bundle of the app to use instead.
+Typically, a `dist` or `build` directory.
+
 NOTE: When using a custom `techdocs` docker image, make sure the entry point is
 also `ENTRYPOINT ["mkdocs"]` or override with `--docker-entrypoint`.
 
@@ -81,14 +86,17 @@ Usage: techdocs-cli serve [options]
 Serve a documentation project locally in a Backstage app-like environment
 
 Options:
-  -i, --docker-image <DOCKER_IMAGE>        The mkdocs docker container to use (default: "spotify/techdocs")
-  --docker-entrypoint <DOCKER_ENTRYPOINT>  Override the image entrypoint
-  --docker-option <DOCKER_OPTION...>       Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12"
-                                           (can be added multiple times).
-  --no-docker                              Do not use Docker, use MkDocs executable in current user environment.
-  --mkdocs-port <PORT>                     Port for MkDocs server to use (default: "8000")
-  -v --verbose                             Enable verbose output. (default: false)
-  -h, --help                               display help for command
+  -i, --docker-image <DOCKER_IMAGE>           The mkdocs docker container to use (default: "spotify/techdocs")
+  --docker-entrypoint <DOCKER_ENTRYPOINT>     Override the image entrypoint
+  --docker-option <DOCKER_OPTION...>          Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12"
+                                              (can be added multiple times).
+  --no-docker                                 Do not use Docker, use MkDocs executable in current user environment.
+  --mkdocs-port <PORT>                        Port for MkDocs server to use (default: "8000")
+  --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using a web app other than the included one.
+  --preview-app-port <PORT>                   Port where the preview will be served.
+                                              Can only be used with "--preview-app-bundle-path". (default: "3000")
+  -v --verbose                                Enable verbose output. (default: false)
+  -h, --help                                  display help for command
 ```
 
 ### Generate TechDocs site from a documentation project

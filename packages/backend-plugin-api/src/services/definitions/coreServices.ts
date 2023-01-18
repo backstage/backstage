@@ -104,6 +104,15 @@ export namespace coreServices {
   >({ id: 'core.pluginMetadata' });
 
   /**
+   * The service reference for the root scoped {@link RootHttpRouterService}.
+   *
+   * @public
+   */
+  export const rootHttpRouter = createServiceRef<
+    import('./RootHttpRouterService').RootHttpRouterService
+  >({ id: 'core.rootHttpRouter', scope: 'root' });
+
+  /**
    * The service reference for the root scoped {@link RootLifecycleService}.
    *
    * @public
@@ -147,4 +156,13 @@ export namespace coreServices {
   export const urlReader = createServiceRef<
     import('./UrlReaderService').UrlReaderService
   >({ id: 'core.urlReader' });
+
+  /**
+   * The service reference for the plugin scoped {@link IdentityService}.
+   *
+   * @public
+   */
+  export const identity = createServiceRef<
+    import('./IdentityService').IdentityService
+  >({ id: 'core.identity' });
 }

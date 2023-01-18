@@ -17,8 +17,8 @@
 import {
   createBackendPlugin,
   coreServices,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   EventBroker,
   EventPublisher,

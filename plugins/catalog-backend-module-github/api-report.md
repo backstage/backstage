@@ -101,9 +101,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 }
 
 // @alpha
-export const githubEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const githubEntityProviderCatalogModule: () => BackendFeature;
 
 // @public (undocumented)
 export class GithubLocationAnalyzer implements ScmLocationAnalyzer {

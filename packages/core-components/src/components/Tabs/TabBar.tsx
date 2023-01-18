@@ -17,6 +17,7 @@
 import React, { PropsWithChildren } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
+import Typography from '@material-ui/core/Typography';
 import { BackstageTheme } from '@backstage/theme';
 
 interface StyledTabsProps {
@@ -53,7 +54,7 @@ export const StyledTabs = (props: PropsWithChildren<StyledTabsProps>) => {
     <Tabs
       classes={classes}
       {...props}
-      TabIndicatorProps={{ children: <span /> }}
+      TabIndicatorProps={{ children: <Typography component="span" /> }}
     />
   );
 };

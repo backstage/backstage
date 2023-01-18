@@ -44,9 +44,10 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { useOctokitRequest } from '../../hooks';
 import { rootRouteRef } from '../../routes';
 import { AdrContentDecorator, AdrReader } from '../AdrReader';
+import { adrApiRef } from '../../api';
+import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles((theme: Theme) => ({
   adrMenu: {
@@ -69,11 +70,13 @@ export const EntityAdrContent = (props: {
   const [adrList, setAdrList] = useState<string[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const scmIntegrations = useApi(scmIntegrationsApiRef);
+  const adrApi = useApi(adrApiRef);
   const entityHasAdrs = isAdrAvailable(entity);
 
-  const { value, loading, error } = useOctokitRequest(
-    getAdrLocationUrl(entity, scmIntegrations),
-  );
+  const { value, loading, error } = useAsync(async () => {
+    const url = getAdrLocationUrl(entity, scmIntegrations);
+    return adrApi.listAdrs(url);
+  }, [entity, scmIntegrations]);
 
   const selectedAdr =
     adrList.find(adr => adr === searchParams.get('record')) ?? '';

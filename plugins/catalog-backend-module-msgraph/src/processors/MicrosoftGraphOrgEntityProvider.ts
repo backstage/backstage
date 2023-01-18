@@ -351,7 +351,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
           try {
             await this.read({ logger });
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });

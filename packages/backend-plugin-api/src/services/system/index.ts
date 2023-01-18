@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export type { ServiceRef, TypesToServiceRef, ServiceFactory } from './types';
+export type {
+  ServiceRef,
+  ServiceRefConfig,
+  TypesToServiceRef,
+  ServiceFactory,
+  PluginServiceFactoryConfig,
+  RootServiceFactoryConfig,
+  ServiceFactoryOrFunction,
+} from './types';
 export { createServiceRef, createServiceFactory } from './types';

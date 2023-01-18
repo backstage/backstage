@@ -20,3 +20,4 @@ export { BazaarOverviewCard } from './components/BazaarOverviewCard';
 export type { BazaarOverviewCardProps } from './components/BazaarOverviewCard';
 export { EntityBazaarInfoCard } from './components/EntityBazaarInfoCard';
 export { SortView } from './components/SortView';
+export type { HomePageProps as BazaarPageProps } from './components/HomePage';

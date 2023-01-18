@@ -130,6 +130,9 @@ export function createPublishBitbucketServerAction(options: {
     sourcePath?: string;
     enableLFS?: boolean;
     token?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:bitbucketServer',
     description:
@@ -174,6 +177,21 @@ export function createPublishBitbucketServerAction(options: {
             description:
               'The token to use for authorization to BitBucket Server',
           },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+          },
+          gitAuthorName: {
+            title: 'Author Name',
+            type: 'string',
+            description: `Sets the author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Author Email',
+            type: 'string',
+            description: `Sets the author email for the commit.`,
+          },
         },
       },
       output: {
@@ -197,6 +215,9 @@ export function createPublishBitbucketServerAction(options: {
         defaultBranch = 'master',
         repoVisibility = 'private',
         enableLFS = false,
+        gitCommitMessage = 'initial commit',
+        gitAuthorName,
+        gitAuthorEmail,
       } = ctx.input;
 
       const { project, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -241,8 +262,12 @@ export function createPublishBitbucketServerAction(options: {
       });
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: gitAuthorName
+          ? gitAuthorName
+          : config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: gitAuthorEmail
+          ? gitAuthorEmail
+          : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
       const auth = authConfig.token
@@ -260,9 +285,9 @@ export function createPublishBitbucketServerAction(options: {
         auth,
         defaultBranch,
         logger: ctx.logger,
-        commitMessage: config.getOptionalString(
-          'scaffolder.defaultCommitMessage',
-        ),
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
+          : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
 

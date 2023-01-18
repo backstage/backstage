@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { KeyboardEvent, useRef, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   DialogActions,
   DialogContent,
@@ -25,6 +26,7 @@ import {
   Paper,
   useTheme,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import BuildIcon from '@material-ui/icons/Build';
 import LaunchIcon from '@material-ui/icons/Launch';
 import {
@@ -73,29 +75,48 @@ const useStyles = makeStyles(theme => ({
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
 
+const rootRouteRef = searchPlugin.routes.root;
+
 export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
-  const getSearchLink = useRouteRef(searchPlugin.routes.root);
   const classes = useStyles();
+  const navigate = useNavigate();
+  const { transitions } = useTheme();
+  const { focusContent } = useContent();
 
   const catalogApi = useApi(catalogApiRef);
-  const { term, types } = useSearch();
-  const { focusContent } = useContent();
-  const { transitions } = useTheme();
 
-  const handleResultClick = () => {
+  const { term, types } = useSearch();
+  const searchBarRef = useRef<HTMLInputElement | null>(null);
+  const searchPagePath = `${useRouteRef(rootRouteRef)()}?query=${term}`;
+
+  useEffect(() => {
+    searchBarRef?.current?.focus();
+  });
+
+  const handleSearchResulClick = useCallback(() => {
     toggleModal();
     setTimeout(focusContent, transitions.duration.leavingScreen);
-  };
+  }, [toggleModal, focusContent, transitions]);
 
-  const handleKeyPress = () => {
-    handleResultClick();
-  };
+  const handleSearchBarKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      if (e.key === 'Enter') {
+        navigate(searchPagePath);
+        toggleModal();
+      }
+    },
+    [navigate, toggleModal, searchPagePath],
+  );
 
   return (
     <>
       <DialogTitle>
         <Paper className={classes.container}>
-          <SearchBar className={classes.input} />
+          <SearchBar
+            className={classes.input}
+            inputProps={{ ref: searchBarRef }}
+            onKeyDown={handleSearchBarKeyDown}
+          />
         </Paper>
       </DialogTitle>
       <DialogContent>
@@ -168,19 +189,13 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
               alignItems="center"
             >
               <Grid item>
-                <Link
-                  onClick={() => {
-                    toggleModal();
-                    setTimeout(
-                      focusContent,
-                      transitions.duration.leavingScreen,
-                    );
-                  }}
-                  to={`${getSearchLink()}?query=${term}`}
-                >
-                  <span className={classes.viewResultsLink}>
+                <Link to={searchPagePath} onClick={handleSearchResulClick}>
+                  <Typography
+                    component="span"
+                    className={classes.viewResultsLink}
+                  >
                     View Full Results
-                  </span>
+                  </Typography>
                   <LaunchIcon color="primary" />
                 </Link>
               </Grid>
@@ -241,8 +256,8 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                         role="button"
                         tabIndex={0}
                         key={`${document.location}-btn`}
-                        onClick={handleResultClick}
-                        onKeyPress={handleKeyPress}
+                        onClick={handleSearchResulClick}
+                        onKeyDown={handleSearchResulClick}
                       >
                         {resultItem}
                       </div>

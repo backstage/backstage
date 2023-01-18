@@ -153,4 +153,19 @@ describe('SearchModal', () => {
     expect(getByTestId('search-bar-next')).toBeInTheDocument();
     expect(getByTestId('search-bar-next')).not.toBeVisible();
   });
+
+  it('should focus on its search bar when opened', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden={false} toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByLabelText('Search')).toHaveFocus();
+  });
 });

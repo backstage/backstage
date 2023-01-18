@@ -15,7 +15,5 @@ export class GerritEventRouter extends SubTopicEventRouter {
 }
 
 // @alpha
-export const gerritEventRouterEventsModule: (
-  options?: undefined,
-) => BackendFeature;
+export const gerritEventRouterEventsModule: () => BackendFeature;
 ```

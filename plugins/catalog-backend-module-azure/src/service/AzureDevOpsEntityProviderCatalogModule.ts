@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   createBackendModule,
-  loggerToWinstonLogger,
   coreServices,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';

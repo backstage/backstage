@@ -24,10 +24,12 @@ import {
 import React from 'react';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { ListTasksPage } from './ListTasksPage';
-import { ScaffolderApi } from '../../types';
-import { scaffolderApiRef } from '../../api';
-import { rootRouteRef } from '../../routes';
+import {
+  scaffolderApiRef,
+  ScaffolderApi,
+} from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
+import { rootRouteRef } from '../../routes';
 
 describe('<ListTasksPage />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {

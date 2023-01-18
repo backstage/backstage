@@ -19,38 +19,16 @@
  *
  * @packageDocumentation
  */
+export { ScaffolderClient } from './api';
 
-export { scaffolderApiRef, ScaffolderClient } from './api';
-export type {
-  ListActionsResponse,
-  LogEvent,
-  ScaffolderApi,
-  ScaffolderDryRunOptions,
-  ScaffolderDryRunResponse,
-  ScaffolderGetIntegrationsListOptions,
-  ScaffolderGetIntegrationsListResponse,
-  ScaffolderOutputLink,
-  ScaffolderScaffoldOptions,
-  ScaffolderScaffoldResponse,
-  ScaffolderStreamLogsOptions,
-  ScaffolderTask,
-  ScaffolderTaskOutput,
-  ScaffolderTaskStatus,
-  TemplateParameterSchema,
-} from './types';
 export {
-  createScaffolderFieldExtension,
-  ScaffolderFieldExtensions,
-} from './extensions';
-export type {
-  CustomFieldExtensionSchema,
-  CustomFieldValidator,
-  FieldExtensionOptions,
-  FieldExtensionComponentProps,
-  FieldExtensionComponent,
-} from './extensions';
-export { createScaffolderLayout, ScaffolderLayouts } from './layouts';
-export type { LayoutOptions, LayoutTemplate, LayoutComponent } from './layouts';
+  createScaffolderLayout,
+  ScaffolderLayouts,
+  type LayoutOptions,
+  type LayoutTemplate,
+  type LayoutComponent,
+} from './layouts';
+
 export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,
@@ -61,23 +39,17 @@ export {
   ScaffolderPage,
   scaffolderPlugin,
 } from './plugin';
+
 export * from './components';
-export {
-  rootRouteRef,
-  nextRouteRef,
-  selectedTemplateRouteRef,
-  nextSelectedTemplateRouteRef,
-} from './routes';
-export type { TaskPageProps } from './components/TaskPage';
+export * from './deprecated';
 
 /** next exports */
 export { NextScaffolderPage } from './plugin';
-export type { NextRouterProps } from './next';
-export type { TemplateGroupFilter } from './next';
-export type { FormProps } from './next';
 export {
-  createNextScaffolderFieldExtension,
-  type NextCustomFieldValidator,
-  type NextFieldExtensionOptions,
-  type NextFieldExtensionComponentProps,
-} from './extensions';
+  nextRouteRef,
+  nextScaffolderTaskRouteRef,
+  nextSelectedTemplateRouteRef,
+  type TemplateGroupFilter,
+  type NextRouterProps,
+  type FormProps,
+} from './next';

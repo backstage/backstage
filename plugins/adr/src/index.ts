@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * ADR frontend plugin
  *
  * @packageDocumentation
  */
+
+export { adrApiRef, AdrClient } from './api';
+export type {
+  AdrApi,
+  AdrClientOptions,
+  AdrFileInfo,
+  AdrListResult,
+  AdrReadResult,
+} from './api';
 export { isAdrAvailable } from '@backstage/plugin-adr-common';
 export * from './components/AdrReader';
 export { adrPlugin, EntityAdrContent } from './plugin';

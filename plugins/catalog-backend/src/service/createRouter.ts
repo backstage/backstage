@@ -181,7 +181,7 @@ export async function createRouter(
         const token = getBearerToken(req.header('authorization'));
         const response = await entitiesCatalog.entitiesBatch({
           entityRefs: request.entityRefs,
-          fields: parseEntityTransformParams(req.query),
+          fields: parseEntityTransformParams(req.query, request.fields),
           authorizationToken: token,
         });
         res.status(200).json(response);

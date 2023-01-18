@@ -90,7 +90,5 @@ export class AwsS3EntityProvider implements EntityProvider {
 }
 
 // @alpha
-export const awsS3EntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const awsS3EntityProviderCatalogModule: () => BackendFeature;
 ```

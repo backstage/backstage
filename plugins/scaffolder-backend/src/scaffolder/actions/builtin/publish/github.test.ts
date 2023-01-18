@@ -788,11 +788,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -810,11 +814,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -832,11 +840,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
 
@@ -860,11 +872,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -882,11 +898,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: false,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -904,11 +924,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
 
@@ -932,11 +956,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -956,11 +984,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: ['statusCheck'],
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -979,11 +1011,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1001,11 +1037,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
 
@@ -1084,11 +1124,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1106,11 +1150,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: true,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1128,11 +1176,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
   it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredConversationResolution', async () => {
@@ -1155,11 +1207,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1177,11 +1233,15 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: true,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
 
     await action.handler({
@@ -1199,11 +1259,567 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+  });
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredApprovingReviewCount', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repo',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredApprovingReviewCount: 2,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 2,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredApprovingReviewCount: 0,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 0,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+  });
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of restrictions', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repo',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        restrictions: {
+          users: ['user'],
+          teams: [],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: {
+        users: ['user'],
+        teams: [],
+      },
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        restrictions: {
+          users: [],
+          teams: ['team'],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: {
+        users: [],
+        teams: ['team'],
+      },
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        restrictions: {
+          users: [],
+          teams: [],
+          apps: ['app'],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: {
+        users: [],
+        teams: [],
+        apps: ['app'],
+      },
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        restrictions: {
+          users: ['user'],
+          teams: ['team'],
+          apps: ['app'],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: {
+        users: ['user'],
+        teams: ['team'],
+        apps: ['app'],
+      },
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        restrictions: {
+          users: ['user1', 'user2'],
+          teams: ['team1', 'team2'],
+          apps: ['app1', 'app2'],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: {
+        users: ['user1', 'user2'],
+        teams: ['team1', 'team2'],
+        apps: ['app1', 'app2'],
+      },
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+  });
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredCommitSigning', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repo',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredCommitSigning: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredCommitSigning: true,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: true,
+    });
+  });
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of bypassPullRequestAllowances', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repo',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        bypassPullRequestAllowances: {
+          users: ['user'],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: {
+        users: ['user'],
+      },
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        bypassPullRequestAllowances: {
+          teams: ['team'],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: {
+        teams: ['team'],
+      },
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        bypassPullRequestAllowances: {
+          apps: ['app'],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: {
+        apps: ['app'],
+      },
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        bypassPullRequestAllowances: {
+          users: ['user'],
+          teams: ['team'],
+          apps: ['app'],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: {
+        users: ['user'],
+        teams: ['team'],
+        apps: ['app'],
+      },
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        bypassPullRequestAllowances: {
+          users: ['user1', 'user2'],
+          teams: ['team1', 'team2'],
+          apps: ['app1', 'app2'],
+        },
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      bypassPullRequestAllowances: {
+        users: ['user1', 'user2'],
+        teams: ['team1', 'team2'],
+        apps: ['app1', 'app2'],
+      },
+      requiredApprovingReviewCount: 1,
+      restrictions: undefined,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      requiredCommitSigning: false,
     });
   });
 });

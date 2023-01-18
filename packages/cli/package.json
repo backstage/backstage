@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.22.1-next.1",
+  "version": "0.22.1",
   "publishConfig": {
     "access": "public"
   },
@@ -156,8 +156,7 @@
     "mock-fs": "^5.1.0",
     "msw": "^0.49.0",
     "nodemon": "^2.0.2",
-    "ts-node": "^10.0.0",
-    "type-fest": "^2.0.0"
+    "ts-node": "^10.0.0"
   },
   "peerDependencies": {
     "@microsoft/api-extractor": "^7.21.2"

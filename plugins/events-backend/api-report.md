@@ -29,7 +29,7 @@ export class EventsBackend {
 }
 
 // @alpha
-export const eventsPlugin: (options?: undefined) => BackendFeature;
+export const eventsPlugin: () => BackendFeature;
 
 // @public
 export class HttpPostIngressEventPublisher implements EventPublisher {

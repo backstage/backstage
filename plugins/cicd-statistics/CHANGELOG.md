@@ -1,5 +1,24 @@
 # @backstage/plugin-cicd-statistics
 
+## 0.1.16
+
+### Patch Changes
+
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-plugin-api@1.3.0
+
+## 0.1.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/plugin-catalog-react@1.2.4-next.2
+  - @backstage/catalog-model@1.1.5-next.1
+
 ## 0.1.16-next.1
 
 ### Patch Changes

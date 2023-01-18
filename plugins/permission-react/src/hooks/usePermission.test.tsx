@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { render } from '@testing-library/react';
 import { usePermission } from './usePermission';
 import {
@@ -30,7 +30,7 @@ const permission = createPermission({
   attributes: { action: 'read' },
 });
 
-const TestComponent: FC = () => {
+const TestComponent = () => {
   const { loading, allowed, error } = usePermission({ permission });
   return (
     <div>
@@ -47,7 +47,6 @@ function renderComponent(mockApi: PermissionApi) {
       <TestApiProvider apis={[[permissionApiRef, mockApi]]}>
         <TestComponent />
       </TestApiProvider>
-      ,
     </SWRConfig>,
   );
 }

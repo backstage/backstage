@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import React from 'react';
-import { scaffolderApiRef } from '../../api';
 import { ActionsPage } from './ActionsPage';
-import { rootRouteRef } from '../../routes';
+import {
+  scaffolderApiRef,
+  ScaffolderApi,
+} from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
-import { ScaffolderApi } from '../../types';
+import { rootRouteRef } from '../../routes';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   scaffold: jest.fn(),
