@@ -30,16 +30,16 @@ export async function command() {
 
   await Promise.all(
     packages.map(async ({ dir, packageJson }) => {
-      let { exports: exp } = packageJson;
+      let changed = false;
+      let newPackageJson = packageJson;
+
+      let { exports: exp } = newPackageJson;
       if (!exp) {
         return;
       }
       if (Array.isArray(exp)) {
         throw new Error('Unexpected array in package.json exports field');
       }
-
-      let changed = false;
-      let newPackageJson = packageJson;
 
       // If exports is a string we rewrite it to an object to add package.json
       if (typeof exp === 'string') {
