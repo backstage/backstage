@@ -212,7 +212,7 @@ And that's it! Modules can now be built that add clusters into to the kubernetes
 ```ts
 import { kubernetesClustersSupplierExtensionPoint } from '@backstage/plugin-kubernetes-node';
 
-export const kubernetesGKEClusterSupplier = createBackendModule({
+export const kubernetesGkeClusterSupplier = createBackendModule({
   pluginId: 'kubernetes',
   moduleId: 'gke.supplier',
   register(env) {
