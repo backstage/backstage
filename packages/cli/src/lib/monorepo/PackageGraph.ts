@@ -44,6 +44,14 @@ export interface ExtendedPackageJSON extends PackageJSON {
   typesVersions?: Record<string, Record<string, string[]>>;
 
   files?: string[];
+
+  publishConfig?: {
+    access?: 'public' | 'restricted';
+    directory?: string;
+    registry?: string;
+    alphaTypes?: string;
+    betaTypes?: string;
+  };
 }
 
 export type ExtendedPackage = {
