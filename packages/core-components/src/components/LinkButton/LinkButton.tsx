@@ -43,11 +43,17 @@ const LinkWrapper = React.forwardRef<any, LinkProps>((props, ref) => (
  *
  * @public
  * @remarks
- *
- * Makes the Button to utilize react-router
  */
-export const LinkButton = React.forwardRef<any, LinkButtonProps>(
-  (props, ref) => (
-    <MaterialButton ref={ref} component={LinkWrapper} {...props} />
-  ),
-) as (props: LinkButtonProps) => JSX.Element;
+export const LinkButton = React.forwardRef<any, ButtonProps>((props, ref) => (
+  <MaterialButton ref={ref} component={LinkWrapper} {...props} />
+)) as (props: ButtonProps) => JSX.Element;
+
+/**
+ * @deprecated use LinkButton instead
+ */
+export const Button = LinkButton;
+
+/**
+ * @deprecated use LinkButtonProps instead
+ */
+export type ButtonProps = LinkButtonProps;

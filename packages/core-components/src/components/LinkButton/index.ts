@@ -15,3 +15,6 @@
  */
 export { LinkButton } from './LinkButton';
 export type { LinkButtonProps } from './LinkButton';
+
+export { Button } from './LinkButton';
+export type { ButtonProps } from './LinkButton';

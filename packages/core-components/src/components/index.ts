@@ -16,7 +16,7 @@
 
 export * from './AlertDisplay';
 export * from './Avatar';
-export * from './Button';
+export * from './LinkButton';
 export * from './CodeSnippet';
 export * from './CopyTextButton';
 export * from './CreateButton';
