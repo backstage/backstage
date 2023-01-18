@@ -147,7 +147,7 @@ export interface KubernetesClusterSupplierExtensionPoint {
 }
 
 /**
- * An extension point that allows other plugins to add catalog processors.
+ * An extension point that allows other plugins to add cluster suppliers.
  * @public
  */
 export const kubernetesClustersSupplierExtensionPoint =
