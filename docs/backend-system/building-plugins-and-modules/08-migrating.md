@@ -97,7 +97,7 @@ const kubernetesPlugin = createBackendPlugin((options: KubernetesOptions) => ({
   register(env) {
     env.registerInit({
       deps: {
-        /* omitted imports but they remain the same as above */
+        /* omitted dependencies but they remain the same as above */
       },
       async init({ config, logger, catalogApi, discovery, http }) {
         const { router } = await KubernetesBuilder.createBuilder({
