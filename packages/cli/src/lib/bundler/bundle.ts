@@ -32,6 +32,10 @@ import chalk from 'chalk';
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 
+function applyContextToError(error: string, moduleName: string): string {
+  return `Failed to compile '${moduleName}':\n  ${error}`;
+}
+
 export async function buildBundle(options: BuildOptions) {
   const { statsJsonEnabled, schema: configSchema } = options;
 
@@ -127,15 +131,25 @@ async function build(config: webpack.Configuration, isCi: boolean) {
   if (errors.length) {
     // Only keep the first error. Others are often indicative
     // of the same problem, but confuse the reader with noise.
-    throw new Error(`Failed to compile.\n${errors[0]}`);
+    const errorWithContext = applyContextToError(
+      errors[0],
+      serializedStats.errors?.[0].moduleName || '',
+    );
+    throw new Error(errorWithContext);
   }
   if (isCi && warnings.length) {
+    const warningsWithContext = warnings.map((warning, i) => {
+      return applyContextToError(
+        warning,
+        serializedStats.warnings?.[i].moduleName || '',
+      );
+    });
     console.log(
       chalk.yellow(
         '\nTreating warnings as errors because process.env.CI = true.\n',
       ),
     );
-    throw new Error(`Failed to compile.\n${warnings.join('\n\n')}`);
+    throw new Error(warningsWithContext.join('\n\n'));
   }
 
   return { stats };
