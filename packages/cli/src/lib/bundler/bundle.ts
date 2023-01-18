@@ -63,10 +63,7 @@ export async function buildBundle(options: BuildOptions) {
     );
   }
 
-  const { stats } = await build(config, isCi).catch(error => {
-    console.log(chalk.red('Failed to compile.\n'));
-    throw new Error(`Failed to compile.\n${error.message || error}`);
-  });
+  const { stats } = await build(config, isCi);
 
   if (!stats) {
     throw new Error('No stats returned');
@@ -114,7 +111,7 @@ async function build(config: webpack.Configuration, isCi: boolean) {
   );
 
   if (!stats) {
-    throw new Error('No stats provided');
+    throw new Error('Failed to compile: No stats provided');
   }
 
   const serializedStats = stats.toJson({
@@ -130,7 +127,7 @@ async function build(config: webpack.Configuration, isCi: boolean) {
   if (errors.length) {
     // Only keep the first error. Others are often indicative
     // of the same problem, but confuse the reader with noise.
-    throw new Error(errors[0]);
+    throw new Error(`Failed to compile.\n${errors[0]}`);
   }
   if (isCi && warnings.length) {
     console.log(
@@ -138,7 +135,7 @@ async function build(config: webpack.Configuration, isCi: boolean) {
         '\nTreating warnings as errors because process.env.CI = true.\n',
       ),
     );
-    throw new Error(warnings.join('\n\n'));
+    throw new Error(`Failed to compile.\n${warnings.join('\n\n')}`);
   }
 
   return { stats };
