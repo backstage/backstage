@@ -8,6 +8,12 @@ import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
 // @public (undocumented)
 export class BitbucketCloudClient {
   // (undocumented)
+  createRepository(
+    workspace: string,
+    repo_slug: string,
+    repository: Models.Repository,
+  ): Promise<Models.Repository>;
+  // (undocumented)
   static fromConfig(
     config: BitbucketCloudIntegrationConfig,
   ): BitbucketCloudClient;
@@ -22,6 +28,12 @@ export class BitbucketCloudClient {
     query: string,
     options?: FilterAndSortOptions & PartialResponseOptions,
   ): WithPagination<Models.SearchResultPage, Models.SearchCodeSearchResult>;
+  // (undocumented)
+  updatePipelinesConfig(
+    workspace: string,
+    repo_slug: string,
+    pipelinesConfig: Models.PipelinesConfig,
+  ): Promise<Models.PipelinesConfig>;
 }
 
 // @public (undocumented)
@@ -231,6 +243,11 @@ export namespace Models {
   // (undocumented)
   export type ParticipantStateEnum =
     typeof ParticipantStateEnum[keyof typeof ParticipantStateEnum];
+  export interface PipelinesConfig extends ModelObject {
+    enabled?: boolean;
+    // (undocumented)
+    repository?: Repository;
+  }
   export interface Project extends ModelObject {
     // (undocumented)
     created_on?: string;
