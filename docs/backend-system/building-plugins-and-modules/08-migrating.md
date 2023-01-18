@@ -79,7 +79,7 @@ import { kubernetesPlugin } from '@backstage/plugin-kubernetes-backend';
 backend.add(kubernetesPlugin);
 ```
 
-There's one thing missing that those sharp eyed readers might have noticed, the `clusterSupplier` option is missing from the original plugin. Let's add it and discuss the alternatives.
+There's one thing missing that those sharp eyed readers might have noticed: the `clusterSupplier` option is missing from the original plugin. Let's add it and discuss the alternatives.
 
 One alternative is pass the `ClusterSupplier` in as options to the plugin which is quick and easy but not very flexible and hard to evolve without introducing breaking changes as it changes the public API for the plugin. Having complex types passed in directly to the plugin also clutters the backend setup code and makes it harder to read.
 
