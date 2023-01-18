@@ -89,7 +89,7 @@ export interface RadarQuadrant {
   name: string;
 }
 
-class RadarEntryLink {
+export interface RadarEntryLink {
   /**
    * URL of the link
    */
