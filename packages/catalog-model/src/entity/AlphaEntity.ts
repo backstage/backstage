@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity } from './Entity';
+// TODO(Rugvip): Figure out best way to allow this import
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Entity } from '@backstage/catalog-model';
 import { EntityStatus } from './EntityStatus';
 
 /**
- * A version of the {@link Entity} type that contains unstable alpha fields.
+ * A version of the `Entity` type that contains unstable alpha fields.
  *
  * @remarks
  *
