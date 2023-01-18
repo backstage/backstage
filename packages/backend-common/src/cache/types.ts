@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { CacheClient } from './CacheClient';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
-/**
- * Options given when constructing a {@link CacheClient}.
- *
- * @public
- */
-export type CacheClientOptions = {
-  /**
-   * An optional default TTL (in milliseconds) to be set when getting a client
-   * instance. If not provided, data will persist indefinitely by default (or
-   * can be configured per entry at set-time).
-   */
-  defaultTtl?: number;
-};
+export type {
+  CacheService as PluginCacheManager,
+  CacheClientOptions,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Options given when constructing a {@link CacheManager}.
@@ -40,29 +30,11 @@ export type CacheManagerOptions = {
   /**
    * An optional logger for use by the PluginCacheManager.
    */
-  logger?: Logger;
+  logger?: LoggerService;
 
   /**
    * An optional handler for connection errors emitted from the underlying data
    * store.
    */
   onError?: (err: Error) => void;
-};
-
-/**
- * Manages access to cache stores that plugins get.
- *
- * @public
- */
-export type PluginCacheManager = {
-  /**
-   * Provides backend plugins cache connections for themselves.
-   *
-   * @remarks
-   *
-   * The purpose of this method is to allow plugins to get isolated data stores
-   * so that plugins are discouraged from cache-level integration and/or cache
-   * key collisions.
-   */
-  getClient: (options?: CacheClientOptions) => CacheClient;
 };

@@ -167,6 +167,7 @@ export const SearchResultState = (props: SearchResultStateProps) => {
  */
 export type SearchResultProps = Pick<SearchResultStateProps, 'query'> & {
   children: (resultSet: SearchResultSet) => JSX.Element;
+  noResultsComponent?: JSX.Element;
 };
 
 /**
@@ -176,7 +177,13 @@ export type SearchResultProps = Pick<SearchResultStateProps, 'query'> & {
  * @public
  */
 export const SearchResultComponent = (props: SearchResultProps) => {
-  const { query, children } = props;
+  const {
+    query,
+    children,
+    noResultsComponent = (
+      <EmptyState missing="data" title="Sorry, no results were found" />
+    ),
+  } = props;
 
   return (
     <SearchResultState query={query}>
@@ -195,9 +202,7 @@ export const SearchResultComponent = (props: SearchResultProps) => {
         }
 
         if (!value?.results.length) {
-          return (
-            <EmptyState missing="data" title="Sorry, no results were found" />
-          );
+          return noResultsComponent;
         }
 
         return children(value);

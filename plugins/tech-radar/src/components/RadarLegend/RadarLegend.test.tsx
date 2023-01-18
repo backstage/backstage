@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
@@ -47,13 +45,11 @@ describe('RadarLegend', () => {
     GetBBoxPolyfill.remove();
   });
 
-  it('should render', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <svg>
-          <RadarLegend {...minProps} />
-        </svg>
-      </ThemeProvider>,
+  it('should render', async () => {
+    const rendered = await renderInTestApp(
+      <svg>
+        <RadarLegend {...minProps} />
+      </svg>,
     );
 
     expect(rendered.getByTestId('radar-legend')).toBeInTheDocument();

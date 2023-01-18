@@ -1,5 +1,64 @@
 # @backstage/app-defaults
 
+## 1.1.0
+
+### Minor Changes
+
+- bca8e8b393: Allow defining application level feature flags. See [Feature Flags documentation](https://backstage.io/docs/plugins/feature-flags#in-the-application) for reference.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/core-app-api@1.4.0
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/theme@0.2.16
+
+## 1.1.0-next.2
+
+### Minor Changes
+
+- bca8e8b393: Allow defining application level feature flags. See [Feature Flags documentation](https://backstage.io/docs/plugins/feature-flags#in-the-application) for reference.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/core-app-api@1.4.0-next.1
+  - @backstage/plugin-permission-react@0.4.9-next.1
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/theme@0.2.16
+
+## 1.0.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.3.1-next.0
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-permission-react@0.4.9-next.0
+
+## 1.0.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-app-api@1.3.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-permission-react@0.4.8
+
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+
 ## 1.0.9
 
 ### Patch Changes

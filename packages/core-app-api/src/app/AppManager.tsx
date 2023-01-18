@@ -40,6 +40,7 @@ import {
   featureFlagsApiRef,
   identityApiRef,
   BackstagePlugin,
+  FeatureFlag,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -211,6 +212,8 @@ export class AppManager implements BackstageApp {
   private readonly apis: Iterable<AnyApiFactory>;
   private readonly icons: NonNullable<AppOptions['icons']>;
   private readonly plugins: Set<CompatiblePlugin>;
+  private readonly featureFlags: (FeatureFlag &
+    Omit<FeatureFlag, 'pluginId'>)[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
@@ -224,6 +227,7 @@ export class AppManager implements BackstageApp {
     this.apis = options.apis ?? [];
     this.icons = options.icons;
     this.plugins = new Set((options.plugins as CompatiblePlugin[]) ?? []);
+    this.featureFlags = options.featureFlags ?? [];
     this.components = options.components;
     this.themes = options.themes as AppTheme[];
     this.configLoader = options.configLoader ?? defaultConfigLoader;
@@ -341,6 +345,12 @@ export class AppManager implements BackstageApp {
         const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
 
         if (featureFlagsApi) {
+          for (const flag of this.featureFlags) {
+            featureFlagsApi.registerFlag({
+              ...flag,
+              pluginId: '',
+            });
+          }
           for (const plugin of this.plugins.values()) {
             if ('getFeatureFlags' in plugin) {
               for (const flag of plugin.getFeatureFlags()) {

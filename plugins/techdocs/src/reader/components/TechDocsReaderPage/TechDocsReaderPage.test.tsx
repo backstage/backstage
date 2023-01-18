@@ -15,10 +15,8 @@
  */
 import React from 'react';
 import { act } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
-import { lightTheme } from '@backstage/theme';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
@@ -84,17 +82,15 @@ jest.mock('@backstage/core-components', () => ({
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ThemeProvider theme={lightTheme}>
-      <TestApiProvider
-        apis={[
-          [scmIntegrationsApiRef, {}],
-          [techdocsApiRef, techdocsApiMock],
-          [techdocsStorageApiRef, techdocsStorageApiMock],
-        ]}
-      >
-        {children}
-      </TestApiProvider>
-    </ThemeProvider>
+    <TestApiProvider
+      apis={[
+        [scmIntegrationsApiRef, {}],
+        [techdocsApiRef, techdocsApiMock],
+        [techdocsStorageApiRef, techdocsStorageApiMock],
+      ]}
+    >
+      {children}
+    </TestApiProvider>
   );
 };
 

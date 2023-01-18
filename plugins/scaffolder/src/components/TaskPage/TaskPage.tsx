@@ -48,14 +48,17 @@ import React, { memo, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useInterval from 'react-use/lib/useInterval';
 import {
+  ScaffolderTaskStatus,
+  ScaffolderTaskOutput,
+} from '@backstage/plugin-scaffolder-react';
+import { useTaskEventStream } from '../hooks/useEventStream';
+import { TaskErrors } from './TaskErrors';
+import { TaskPageLinks } from './TaskPageLinks';
+import {
   rootRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
-import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
-import { useTaskEventStream } from '../hooks/useEventStream';
-import { TaskErrors } from './TaskErrors';
-import { TaskPageLinks } from './TaskPageLinks';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');

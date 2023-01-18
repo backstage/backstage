@@ -56,7 +56,9 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
 };
 
 // @public
-export const TechDocsAddons: React_2.ComponentType;
+export const TechDocsAddons: React_2.ComponentType<
+  React_2.PropsWithChildren<{}>
+>;
 
 // @public
 export interface TechDocsApi {

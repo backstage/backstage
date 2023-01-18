@@ -14,22 +14,39 @@
  * limitations under the License.
  */
 
-import * as coreServices from './coreServices';
-
-export { coreServices };
-export type { CacheService } from './cacheServiceRef';
-export type { ConfigService } from './configServiceRef';
-export type { DatabaseService } from './databaseServiceRef';
-export type { DiscoveryService } from './discoveryServiceRef';
-export type { HttpRouterService } from './httpRouterServiceRef';
+export { coreServices } from './coreServices';
+export type {
+  CacheService,
+  CacheClient,
+  CacheClientOptions,
+  CacheClientSetOptions,
+} from './CacheService';
+export type { ConfigService } from './ConfigService';
+export type { DatabaseService } from './DatabaseService';
+export type { DiscoveryService } from './DiscoveryService';
+export type { HttpRouterService } from './HttpRouterService';
 export type {
   LifecycleService,
   LifecycleServiceShutdownHook,
-} from './lifecycleServiceRef';
-export type { LoggerService, LogMeta } from './loggerServiceRef';
-export type { PermissionsService } from './permissionsServiceRef';
-export type { PluginMetadataService } from './pluginMetadataServiceRef';
-export type { RootLoggerService } from './rootLoggerServiceRef';
-export type { SchedulerService } from './schedulerServiceRef';
-export type { TokenManagerService } from './tokenManagerServiceRef';
-export type { UrlReaderService } from './urlReaderServiceRef';
+} from './LifecycleService';
+export type { LoggerService, LogMeta } from './LoggerService';
+export type { PermissionsService } from './PermissionsService';
+export type { PluginMetadataService } from './PluginMetadataService';
+export type { RootHttpRouterService } from './RootHttpRouterService';
+export type { RootLifecycleService } from './RootLifecycleService';
+export type { RootLoggerService } from './RootLoggerService';
+export type { SchedulerService } from './SchedulerService';
+export type { TokenManagerService } from './TokenManagerService';
+export type {
+  ReadTreeOptions,
+  ReadTreeResponse,
+  ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
+  ReadUrlResponse,
+  ReadUrlOptions,
+  SearchOptions,
+  SearchResponse,
+  SearchResponseFile,
+  UrlReaderService,
+} from './UrlReaderService';
+export type { IdentityService } from './IdentityService';

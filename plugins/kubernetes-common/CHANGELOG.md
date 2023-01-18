@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+
+## 0.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.1
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+
 ## 0.5.0
 
 ### Minor Changes

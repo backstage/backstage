@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import Keyv from 'keyv';
 import KeyvMemcache from '@keyv/memcache';
 import KeyvRedis from '@keyv/redis';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';
 import { DefaultCacheClient, CacheClient } from './CacheClient';
 import { NoStore } from './NoStore';
@@ -50,7 +50,7 @@ export class CacheManager {
    */
   private readonly memoryStore = new Map();
 
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
   private readonly errorHandler: CacheManagerOptions['onError'];
@@ -79,7 +79,7 @@ export class CacheManager {
   private constructor(
     store: string,
     connectionString: string,
-    logger: Logger,
+    logger: LoggerService,
     errorHandler: CacheManagerOptions['onError'],
   ) {
     if (!this.storeFactories.hasOwnProperty(store)) {
@@ -105,7 +105,7 @@ export class CacheManager {
         // Always provide an error handler to avoid stopping the process.
         concreteClient.on('error', (err: Error) => {
           // In all cases, just log the error.
-          this.logger.error(err);
+          this.logger.error('Failed to create cache client', err);
 
           // Invoke any custom error handler if provided.
           if (typeof this.errorHandler === 'function') {

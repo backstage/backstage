@@ -142,7 +142,7 @@ Changesets **are** needed for new packages, as that is what triggers the package
 6. Push the commit with your changeset to the branch associated with your PR
 7. Accept our gratitude for making the release process easier on the maintainers
 
-For more information, checkout [adding a changeset](https://github.com/atlassian/changesets/blob/master/docs/adding-a-changeset.md) documentation in the changesets repository.
+For more information, check out [adding a changeset](https://github.com/atlassian/changesets/blob/master/docs/adding-a-changeset.md) documentation in the changesets repository.
 
 ## Merging to Master
 

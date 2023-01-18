@@ -1,5 +1,56 @@
 # @backstage/plugin-codescene
 
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+
+## 0.1.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/config@1.0.5
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+
 ## 0.1.7
 
 ### Patch Changes

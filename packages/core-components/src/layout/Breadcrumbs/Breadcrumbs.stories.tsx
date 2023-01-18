@@ -36,9 +36,9 @@ export default {
 export const InHeader = () => (
   <MemoryRouter>
     <h2>Standard breadcrumbs</h2>
-    <p>
+    <Typography paragraph>
       Underlined pages are links. This should show a hierarchical relationship.
-    </p>
+    </Typography>
 
     <Page themeId="other">
       <Header title="Current Page" type="General Page" typeLink="/" />
@@ -61,17 +61,17 @@ export const OutsideOfHeader = () => {
   const open = Boolean(anchorEl);
   return (
     <MemoryRouter>
-      <p>
+      <Typography paragraph>
         It might be the case that you want to keep your breadcrumbs outside of
         the header. In that case, they should be positioned above the title of
         the page.
-      </p>
+      </Typography>
 
       <h2>Standard breadcrumbs</h2>
-      <p>
+      <Typography paragraph>
         Underlined pages are links. This should show a hierarchical
         relationship.
-      </p>
+      </Typography>
 
       <Breadcrumbs color="primaryText" />
 
@@ -82,10 +82,10 @@ export const OutsideOfHeader = () => {
       </Breadcrumbs>
 
       <h2>Hidden breadcrumbs</h2>
-      <p>
+      <Typography paragraph>
         Use this when you have more than three breadcrumbs. When user clicks on
         ellipses, expand the breadcrumbs out.
-      </p>
+      </Typography>
 
       <Breadcrumbs color="primaryText">
         <Link to="/">General Page</Link>
@@ -96,17 +96,17 @@ export const OutsideOfHeader = () => {
       </Breadcrumbs>
 
       <h2>Layered breadcrumbs</h2>
-      <p>
+      <Typography paragraph>
         Use this when you want to show alternative breadcrumbs on the same
         hierarchical level.
-      </p>
+      </Typography>
 
       <Fragment>
         <Breadcrumbs color="primaryText">
           <Link to="/">General Page</Link>
           <Link to="/" onClick={handleClick}>
             <Box display="flex" alignItems="center">
-              <span>Second Page</span>
+              <Typography component="span">Second Page</Typography>
               {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </Box>
           </Link>

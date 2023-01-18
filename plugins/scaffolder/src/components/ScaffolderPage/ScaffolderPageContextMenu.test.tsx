@@ -18,8 +18,8 @@ import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { rootRouteRef } from '../../routes';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
+import { rootRouteRef } from '../../routes';
 
 describe('ScaffolderPageContextMenu', () => {
   it('does not render anything if fully disabled', async () => {

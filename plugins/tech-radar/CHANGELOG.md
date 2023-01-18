@@ -1,5 +1,58 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.0
+
+### Minor Changes
+
+- 38fd519fc1: Add highlighting of legend item and show bubble on hover within the Tech Radar
+
+### Patch Changes
+
+- 27a5e90e97: Small updates to some paragraph components to ensure theme typography properties are inherited correctly.
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
+## 0.6.0-next.2
+
+### Minor Changes
+
+- 38fd519fc1: Add highlighting of legend item and show bubble on hover within the Tech Radar
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/theme@0.2.16
+
+## 0.5.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/theme@0.2.16
+
+## 0.5.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/theme@0.2.16
+
+## 0.5.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+
 ## 0.5.19
 
 ### Patch Changes

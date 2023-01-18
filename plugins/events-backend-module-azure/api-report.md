@@ -15,7 +15,5 @@ export class AzureDevOpsEventRouter extends SubTopicEventRouter {
 }
 
 // @alpha
-export const azureDevOpsEventRouterEventsModule: (
-  options?: undefined,
-) => BackendFeature;
+export const azureDevOpsEventRouterEventsModule: () => BackendFeature;
 ```

@@ -100,6 +100,8 @@ Options:
   --no-docker
   --mkdocs-port <PORT>
   -v --verbose
+  --preview-app-bundle-path <PATH_TO_BUNDLE>
+  --preview-app-port <PORT>
   -h, --help
 ```
 

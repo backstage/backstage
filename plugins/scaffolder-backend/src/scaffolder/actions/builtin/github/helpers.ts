@@ -102,6 +102,8 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   deleteBranchOnMerge: boolean,
   allowMergeCommit: boolean,
   allowSquashMerge: boolean,
+  squashMergeCommitTitle: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined,
+  squashMergeCommitMessage: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK' | undefined,
   allowRebaseMerge: boolean,
   allowAutoMerge: boolean,
   access: string | undefined,
@@ -109,11 +111,11 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     | (
         | {
             user: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             team: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             /** @deprecated This field is deprecated in favor of team */
@@ -144,6 +146,8 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           delete_branch_on_merge: deleteBranchOnMerge,
           allow_merge_commit: allowMergeCommit,
           allow_squash_merge: allowSquashMerge,
+          squash_merge_commit_title: squashMergeCommitTitle,
+          squash_merge_commit_message: squashMergeCommitMessage,
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
           homepage: homepage,
@@ -158,6 +162,8 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           delete_branch_on_merge: deleteBranchOnMerge,
           allow_merge_commit: allowMergeCommit,
           allow_squash_merge: allowSquashMerge,
+          squash_merge_commit_title: squashMergeCommitTitle,
+          squash_merge_commit_message: squashMergeCommitMessage,
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
           homepage: homepage,
@@ -265,6 +271,14 @@ export async function initRepoPushAndProtect(
         apps?: string[];
       }
     | undefined,
+  requiredApprovingReviewCount: number,
+  restrictions:
+    | {
+        users: string[];
+        teams: string[];
+        apps?: string[];
+      }
+    | undefined,
   requiredStatusCheckContexts: string[],
   requireBranchesToBeUpToDate: boolean,
   requiredConversationResolution: boolean,
@@ -274,6 +288,7 @@ export async function initRepoPushAndProtect(
   gitAuthorName?: string,
   gitAuthorEmail?: string,
   dismissStaleReviews?: boolean,
+  requiredCommitSigning?: boolean,
 ) {
   const gitAuthorInfo = {
     name: gitAuthorName
@@ -310,12 +325,15 @@ export async function initRepoPushAndProtect(
         logger,
         defaultBranch,
         bypassPullRequestAllowances,
+        requiredApprovingReviewCount,
+        restrictions,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
         requiredConversationResolution,
         enforceAdmins: protectEnforceAdmins,
         dismissStaleReviews: dismissStaleReviews,
+        requiredCommitSigning: requiredCommitSigning,
       });
     } catch (e) {
       assertError(e);

@@ -154,6 +154,29 @@ Some more real world usable examples:
 
   `/entities?fields=kind,metadata.namespace,metadata.name`
 
+### Ordering
+
+By default the entities are returned in an undefined, but stable order. You can
+pass in one or more `order` query parameters to affect that ordering.
+
+Each parameter starts either with `asc:` for ascending lexicographical order or
+`desc:` for descending (reverse) lexicographical order, followed by a
+dot-separated path into an entity's keys. The ordering is case insensitive. If
+more than one order directive is given, later directives have lower precedence
+(they are applied only when directives of higher precedence have equal values).
+
+Example:
+
+```text
+/entities?order=asc:kind&order=desc:metadata.name
+```
+
+This will order the output first by kind ascending, and then within each kind
+(if there's more than one of a given kind) by their name descending. When given
+a field that does NOT exist on all entities in the result set, those entities
+that do not have the field will always be sorted last in that particular order
+step, no matter what the desired order was.
+
 #### Pagination
 
 You may pass the `offset` and `limit` query parameters to do classical
@@ -222,6 +245,37 @@ value. These are special in that they form the entity's unique
 
 The return type is JSON, as a single [`Entity`](descriptor-format.md), or a 404
 error if there was no entity with that reference triplet.
+
+### `POST /entities/by-refs`
+
+Gets a batch of entities by their entity refs. This is useful in contexts where
+you want to fetch a large number of specific entities efficiently, for example
+in GraphQL resolvers.
+
+The request body is JSON, on the form
+
+```json
+{
+  "entityRefs": ["component:default/foo", "api:default/bar"],
+  "fields": ["kind", "metadata.name"]
+}
+```
+
+where each `entityRefs` entry is an entity ref that you want to fetch. The
+`fields` array is optional and works the same way as the `GET /entities` fields
+above, e.g. it's used to fetch only certain slices of each entity.
+
+The return type is JSON, on the form
+
+```json
+{
+  "items": [{ "kind": "Component", "metadata": { "name": "foo" } }, null]
+}
+```
+
+where the `items` array has _the same length_ and _the same order_ as the input
+`entityRefs` array. Each element contains the corresponding entity data, or
+`null` if no entity existed in the catalog with that ref.
 
 ## Locations
 

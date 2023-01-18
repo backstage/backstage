@@ -7,10 +7,36 @@
 
 import { AdrDocument } from '@backstage/plugin-adr-common';
 import { AdrFilePathFilterFn } from '@backstage/plugin-adr-common';
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { isAdrAvailable } from '@backstage/plugin-adr-common';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+
+// @public
+export interface AdrApi {
+  listAdrs(url: string): Promise<AdrListResult>;
+  readAdr(url: string): Promise<AdrReadResult>;
+}
+
+// @public
+export const adrApiRef: ApiRef<AdrApi>;
+
+// @public
+export class AdrClient implements AdrApi {
+  constructor(options: AdrClientOptions);
+  // (undocumented)
+  listAdrs(url: string): Promise<AdrListResult>;
+  // (undocumented)
+  readAdr(url: string): Promise<AdrReadResult>;
+}
+
+// @public
+export interface AdrClientOptions {
+  // (undocumented)
+  discoveryApi: DiscoveryApi;
+}
 
 // @public
 export type AdrContentDecorator = (adrInfo: {
@@ -18,6 +44,18 @@ export type AdrContentDecorator = (adrInfo: {
   content: string;
 }) => {
   content: string;
+};
+
+// @public
+export type AdrFileInfo = {
+  type: string;
+  path: string;
+  name: string;
+};
+
+// @public
+export type AdrListResult = {
+  data: AdrFileInfo[];
 };
 
 // @public
@@ -36,6 +74,11 @@ export const AdrReader: {
     createRewriteRelativeLinksDecorator(): AdrContentDecorator;
     createRewriteRelativeEmbedsDecorator(): AdrContentDecorator;
   }>;
+};
+
+// @public
+export type AdrReadResult = {
+  data: string;
 };
 
 // @public

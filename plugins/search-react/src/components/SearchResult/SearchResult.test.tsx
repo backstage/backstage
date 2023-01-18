@@ -93,6 +93,22 @@ describe('SearchResult', () => {
     });
   });
 
+  it('On empty result value state with custom component', async () => {
+    (useSearch as jest.Mock).mockReturnValueOnce({
+      result: { loading: false, error: '', value: { results: [] } },
+    });
+
+    const { getByText } = await renderInTestApp(
+      <SearchResult noResultsComponent={<>No results found</>}>
+        {() => <></>}
+      </SearchResult>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('No results found')).toBeInTheDocument();
+    });
+  });
+
   it('Calls children with results set to result.value', async () => {
     (useSearch as jest.Mock).mockReturnValueOnce({
       result: {

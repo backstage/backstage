@@ -97,6 +97,14 @@ export function createDebugLogAction(): TemplateAction<{
 }>;
 
 // @public
+export function createFetchCatalogEntityAction(options: {
+  catalogClient: CatalogApi;
+}): TemplateAction<{
+  entityRef: string;
+  optional?: boolean | undefined;
+}>;
+
+// @public
 export function createFetchPlainAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
@@ -119,6 +127,7 @@ export function createFetchTemplateAction(options: {
   copyWithoutRender?: string[] | undefined;
   copyWithoutTemplating?: string[] | undefined;
   cookiecutterCompat?: boolean | undefined;
+  replace?: boolean | undefined;
 }>;
 
 // @public
@@ -195,6 +204,12 @@ export function createGithubRepoCreateAction(options: {
   gitAuthorEmail?: string | undefined;
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
+  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+  squashMergeCommitMessage?:
+    | 'PR_BODY'
+    | 'COMMIT_MESSAGES'
+    | 'BLANK'
+    | undefined;
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
@@ -202,6 +217,14 @@ export function createGithubRepoCreateAction(options: {
     | {
         users?: string[] | undefined;
         teams?: string[] | undefined;
+        apps?: string[] | undefined;
+      }
+    | undefined;
+  requiredApprovingReviewCount?: number | undefined;
+  restrictions?:
+    | {
+        users: string[];
+        teams: string[];
         apps?: string[] | undefined;
       }
     | undefined;
@@ -213,11 +236,11 @@ export function createGithubRepoCreateAction(options: {
     | (
         | {
             user: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             team: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             username: string;
@@ -230,6 +253,7 @@ export function createGithubRepoCreateAction(options: {
   hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
+  requireCommitSigning?: boolean | undefined;
 }>;
 
 // @public
@@ -255,11 +279,20 @@ export function createGithubRepoPushAction(options: {
         apps?: string[];
       }
     | undefined;
+  requiredApprovingReviewCount?: number | undefined;
+  restrictions?:
+    | {
+        users: string[];
+        teams: string[];
+        apps?: string[];
+      }
+    | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
   requiredConversationResolution?: boolean | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
+  requiredCommitSigning?: boolean | undefined;
 }>;
 
 // @public
@@ -335,6 +368,9 @@ export function createPublishBitbucketServerAction(options: {
   sourcePath?: string | undefined;
   enableLFS?: boolean | undefined;
   token?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
 }>;
 
 // @public
@@ -383,6 +419,12 @@ export function createPublishGithubAction(options: {
   gitAuthorEmail?: string | undefined;
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
+  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+  squashMergeCommitMessage?:
+    | 'PR_BODY'
+    | 'COMMIT_MESSAGES'
+    | 'BLANK'
+    | undefined;
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   sourcePath?: string | undefined;
@@ -390,6 +432,14 @@ export function createPublishGithubAction(options: {
     | {
         users?: string[];
         teams?: string[];
+        apps?: string[];
+      }
+    | undefined;
+  requiredApprovingReviewCount?: number | undefined;
+  restrictions?:
+    | {
+        users: string[];
+        teams: string[];
         apps?: string[];
       }
     | undefined;
@@ -403,11 +453,11 @@ export function createPublishGithubAction(options: {
     | (
         | {
             user: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             team: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             username: string;
@@ -420,6 +470,7 @@ export function createPublishGithubAction(options: {
   hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
+  requiredCommitSigning?: boolean | undefined;
 }>;
 
 // @public
@@ -613,7 +664,7 @@ export type RunCommandOptions = {
 };
 
 // @alpha
-export const scaffolderCatalogModule: (options?: undefined) => BackendFeature;
+export const scaffolderCatalogModule: () => BackendFeature;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
@@ -843,6 +894,10 @@ export class TaskWorker {
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
   description?: string;
+  examples?: {
+    description: string;
+    example: string;
+  }[];
   supportsDryRun?: boolean;
   schema?: {
     input?: Schema;

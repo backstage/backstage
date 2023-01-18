@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
+import Typography from '@material-ui/core/Typography';
 import { Audit, AuditCompleted, LighthouseCategoryId } from '../../api';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import AuditStatusIcon from '../AuditStatusIcon';
@@ -52,7 +53,7 @@ const LighthouseCategoryScoreStatus = (props: { score: number }) => {
         </>
       );
     default:
-      return <span>N/A</span>;
+      return <Typography component="span">N/A</Typography>;
   }
 };
 

@@ -1,5 +1,48 @@
 # @internal/plugin-todo-list
 
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
+## 1.0.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/theme@0.2.16
+
+## 1.0.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/theme@0.2.16
+
+## 1.0.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/theme@0.2.16
+
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+
 ## 1.0.8
 
 ### Patch Changes

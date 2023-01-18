@@ -21,7 +21,7 @@ import git, {
 } from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /*
 provider          username         password
@@ -52,7 +52,7 @@ export class Git {
       username?: string;
       password?: string;
       token?: string;
-      logger?: Logger;
+      logger?: LoggerService;
     },
   ) {
     this.headers = {
@@ -308,7 +308,7 @@ export class Git {
     username?: string;
     password?: string;
     token?: string;
-    logger?: Logger;
+    logger?: LoggerService;
   }) => {
     const { username, password, token, logger } = options;
     return new Git({ username, password, token, logger });

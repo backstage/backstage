@@ -57,6 +57,8 @@ export function createPublishGithubAction(options: {
     gitAuthorEmail?: string;
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
+    squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
     sourcePath?: string;
@@ -64,6 +66,14 @@ export function createPublishGithubAction(options: {
       | {
           users?: string[];
           teams?: string[];
+          apps?: string[];
+        }
+      | undefined;
+    requiredApprovingReviewCount?: number;
+    restrictions?:
+      | {
+          users: string[];
+          teams: string[];
           apps?: string[];
         }
       | undefined;
@@ -76,11 +86,11 @@ export function createPublishGithubAction(options: {
     collaborators?: Array<
       | {
           user: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          access: string;
         }
       | {
           team: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          access: string;
         }
       | {
           /** @deprecated This field is deprecated in favor of team */
@@ -93,6 +103,7 @@ export function createPublishGithubAction(options: {
     hasIssues?: boolean | undefined;
     token?: string;
     topics?: string[];
+    requiredCommitSigning?: boolean;
   }>({
     id: 'publish:github',
     description:
@@ -107,6 +118,8 @@ export function createPublishGithubAction(options: {
           homepage: inputProps.homepage,
           access: inputProps.access,
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+          restrictions: inputProps.restrictions,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           dismissStaleReviews: inputProps.dismissStaleReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
@@ -123,6 +136,8 @@ export function createPublishGithubAction(options: {
           gitAuthorEmail: inputProps.gitAuthorEmail,
           allowMergeCommit: inputProps.allowMergeCommit,
           allowSquashMerge: inputProps.allowSquashMerge,
+          squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
+          squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
           allowRebaseMerge: inputProps.allowRebaseMerge,
           allowAutoMerge: inputProps.allowAutoMerge,
           sourcePath: inputProps.sourcePath,
@@ -132,6 +147,7 @@ export function createPublishGithubAction(options: {
           hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
+          requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
       output: {
@@ -151,6 +167,8 @@ export function createPublishGithubAction(options: {
         requireCodeOwnerReviews = false,
         dismissStaleReviews = false,
         bypassPullRequestAllowances,
+        requiredApprovingReviewCount = 1,
+        restrictions,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
         requiredConversationResolution = false,
@@ -164,6 +182,8 @@ export function createPublishGithubAction(options: {
         gitAuthorEmail,
         allowMergeCommit = true,
         allowSquashMerge = true,
+        squashMergeCommitTitle = 'COMMIT_OR_PR_TITLE',
+        squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,
         collaborators,
@@ -172,6 +192,7 @@ export function createPublishGithubAction(options: {
         hasIssues = undefined,
         topics,
         token: providedToken,
+        requiredCommitSigning = false,
       } = ctx.input;
 
       const octokitOptions = await getOctokitOptions({
@@ -198,6 +219,8 @@ export function createPublishGithubAction(options: {
         deleteBranchOnMerge,
         allowMergeCommit,
         allowSquashMerge,
+        squashMergeCommitTitle,
+        squashMergeCommitMessage,
         allowRebaseMerge,
         allowAutoMerge,
         access,
@@ -225,6 +248,8 @@ export function createPublishGithubAction(options: {
         repo,
         requireCodeOwnerReviews,
         bypassPullRequestAllowances,
+        requiredApprovingReviewCount,
+        restrictions,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
         requiredConversationResolution,
@@ -234,6 +259,7 @@ export function createPublishGithubAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         dismissStaleReviews,
+        requiredCommitSigning,
       );
 
       ctx.output('remoteUrl', remoteUrl);

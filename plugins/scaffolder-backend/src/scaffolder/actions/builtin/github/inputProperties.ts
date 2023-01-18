@@ -94,6 +94,17 @@ const allowSquashMerge = {
   type: 'boolean',
   description: `Allow squash merges. The default value is 'true'`,
 };
+const squashMergeCommitTitle = {
+  title: 'Default squash merge commit title',
+  enum: ['PR_TITLE', 'COMMIT_OR_PR_TITLE'],
+  description: `Sets the default value for a squash merge commit title. The default value is 'COMMIT_OR_PR_TITLE'`,
+};
+const squashMergeCommitMessage = {
+  title: 'Default squash merge commit message',
+  enum: ['PR_BODY', 'COMMIT_MESSAGES', 'BLANK'],
+  description: `Sets the default value for a squash merge commit message. The default value is 'COMMIT_MESSAGES'`,
+};
+
 const allowRebaseMerge = {
   title: 'Allow Rebase Merges',
   type: 'boolean',
@@ -116,7 +127,6 @@ const collaborators = {
       access: {
         type: 'string',
         description: 'The type of access for the user',
-        enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
       },
       user: {
         type: 'string',
@@ -215,10 +225,52 @@ const sourcePath = {
   type: 'string',
 };
 
+const requiredApprovingReviewCount = {
+  title: 'Required approving review count',
+  type: 'number',
+  description: `Specify the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers. Defaults to 1.`,
+};
+
+const restrictions = {
+  title: 'Restrict who can push to the protected branch',
+  description:
+    'Restrict who can push to the protected branch. User, app, and team restrictions are only available for organization-owned repositories.',
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    apps: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    users: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    teams: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+  },
+};
+
+const requiredCommitSigning = {
+  title: 'Require commit signing',
+  type: 'boolean',
+  description: `Require commit signing so that you must sign commits on this branch.`,
+};
+
 export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
 export { allowSquashMerge };
+export { squashMergeCommitTitle };
+export { squashMergeCommitMessage };
 export { allowAutoMerge };
 export { collaborators };
 export { defaultBranch };
@@ -231,6 +283,8 @@ export { homepage };
 export { protectDefaultBranch };
 export { protectEnforceAdmins };
 export { bypassPullRequestAllowances };
+export { requiredApprovingReviewCount };
+export { restrictions };
 export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };
@@ -244,3 +298,4 @@ export { hasWiki };
 export { sourcePath };
 export { token };
 export { topics };
+export { requiredCommitSigning };

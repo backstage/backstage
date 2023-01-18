@@ -69,9 +69,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
 }
 
 // @alpha (undocumented)
-export const bitbucketServerEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const bitbucketServerEntityProviderCatalogModule: () => BackendFeature;
 
 // @public (undocumented)
 export type BitbucketServerListOptions = {

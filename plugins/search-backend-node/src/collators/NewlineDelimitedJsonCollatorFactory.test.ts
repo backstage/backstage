@@ -53,7 +53,6 @@ describe('DefaultCatalogCollatorFactory', () => {
       readable._read = () => {};
       reader = {
         search: jest.fn(),
-        read: jest.fn(),
         readTree: jest.fn(),
         readUrl: jest.fn(),
       };

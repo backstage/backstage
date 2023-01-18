@@ -32,10 +32,10 @@ describe('createExtensionPoint', () => {
 
 describe('createBackendPlugin', () => {
   it('should create a BackendPlugin', () => {
-    const plugin = createBackendPlugin({
+    const plugin = createBackendPlugin((_options: { a: string }) => ({
       id: 'x',
-      register(_reg, _options: { a: string }) {},
-    });
+      register() {},
+    }));
     expect(plugin).toBeDefined();
     expect(plugin({ a: 'a' })).toBeDefined();
     expect(plugin({ a: 'a' }).id).toBe('x');
@@ -46,10 +46,10 @@ describe('createBackendPlugin', () => {
   });
 
   it('should create plugins with optional options', () => {
-    const plugin = createBackendPlugin({
+    const plugin = createBackendPlugin((_options?: { a: string }) => ({
       id: 'x',
-      register(_reg, _options?: { a: string }) {},
-    });
+      register() {},
+    }));
     expect(plugin).toBeDefined();
     expect(plugin({ a: 'a' })).toBeDefined();
     expect(plugin()).toBeDefined();
@@ -73,10 +73,10 @@ describe('createBackendPlugin', () => {
     interface TestOptions {
       a: string;
     }
-    const plugin = createBackendPlugin({
+    const plugin = createBackendPlugin((_options: TestOptions) => ({
       id: 'x',
-      register(_reg, _options: TestOptions) {},
-    });
+      register() {},
+    }));
     expect(plugin).toBeDefined();
     expect(plugin({ a: 'a' })).toBeDefined();
     expect(plugin({ a: 'a' }).id).toBe('x');
@@ -90,10 +90,10 @@ describe('createBackendPlugin', () => {
     interface TestOptions {
       a: string;
     }
-    const plugin = createBackendPlugin({
+    const plugin = createBackendPlugin((_options?: TestOptions) => ({
       id: 'x',
-      register(_reg, _options?: TestOptions) {},
-    });
+      register() {},
+    }));
     expect(plugin).toBeDefined();
     expect(plugin({ a: 'a' })).toBeDefined();
     expect(plugin()).toBeDefined();
@@ -104,11 +104,11 @@ describe('createBackendPlugin', () => {
 
 describe('createBackendModule', () => {
   it('should create a BackendModule', () => {
-    const mod = createBackendModule({
+    const mod = createBackendModule((_options: { a: string }) => ({
       pluginId: 'x',
       moduleId: 'y',
-      register(_reg, _options: { a: string }) {},
-    });
+      register() {},
+    }));
     expect(mod).toBeDefined();
     expect(mod({ a: 'a' })).toBeDefined();
     expect(mod({ a: 'a' }).id).toBe('x.y');
@@ -119,11 +119,11 @@ describe('createBackendModule', () => {
   });
 
   it('should create modules with optional options', () => {
-    const mod = createBackendModule({
+    const mod = createBackendModule((_options?: { a: string }) => ({
       pluginId: 'x',
       moduleId: 'y',
-      register(_reg, _options?: { a: string }) {},
-    });
+      register() {},
+    }));
     expect(mod).toBeDefined();
     expect(mod({ a: 'a' })).toBeDefined();
     expect(mod()).toBeDefined();
@@ -148,11 +148,11 @@ describe('createBackendModule', () => {
     interface TestOptions {
       a: string;
     }
-    const mod = createBackendModule({
+    const mod = createBackendModule((_options: TestOptions) => ({
       pluginId: 'x',
       moduleId: 'y',
-      register(_reg, _options: TestOptions) {},
-    });
+      register() {},
+    }));
     expect(mod).toBeDefined();
     expect(mod({ a: 'a' })).toBeDefined();
     expect(mod({ a: 'a' }).id).toBe('x.y');
@@ -166,11 +166,11 @@ describe('createBackendModule', () => {
     interface TestOptions {
       a: string;
     }
-    const mod = createBackendModule({
+    const mod = createBackendModule((_options?: TestOptions) => ({
       pluginId: 'x',
       moduleId: 'y',
-      register(_reg, _options?: TestOptions) {},
-    });
+      register() {},
+    }));
     expect(mod).toBeDefined();
     expect(mod({ a: 'a' })).toBeDefined();
     expect(mod()).toBeDefined();

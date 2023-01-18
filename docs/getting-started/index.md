@@ -49,7 +49,7 @@ installation. Running the command below will install Backstage. The wizard will
 create a subdirectory inside your current working directory.
 
 ```bash
-npx @backstage/create-app
+npx @backstage/create-app@latest
 ```
 
 The wizard will ask you for the name of the app, which will also be the name of the directory

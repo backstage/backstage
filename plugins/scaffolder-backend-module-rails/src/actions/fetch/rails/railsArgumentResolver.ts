@@ -57,6 +57,7 @@ export type RailsRunOptions = {
   skipBundle?: boolean;
   skipTest?: boolean;
   skipWebpackInstall?: boolean;
+  skipActiveRecord?: boolean;
   template?: string;
   webpacker?: Webpacker;
 };
@@ -82,6 +83,10 @@ export const railsArgumentResolver = (
 
   if (options?.skipWebpackInstall) {
     argumentsToRun.push('--skip-webpack-install');
+  }
+
+  if (options?.skipActiveRecord) {
+    argumentsToRun.push('--skip-active-record');
   }
 
   if (options?.skipTest) {

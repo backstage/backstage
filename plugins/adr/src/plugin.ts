@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { adrApiRef, AdrClient } from './api';
 import {
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
 } from '@backstage/core-plugin-api';
-
 import { rootRouteRef } from './routes';
 
 /**
@@ -27,6 +29,17 @@ import { rootRouteRef } from './routes';
  */
 export const adrPlugin = createPlugin({
   id: 'adr',
+  apis: [
+    createApiFactory({
+      api: adrApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+      },
+      factory({ discoveryApi }) {
+        return new AdrClient({ discoveryApi });
+      },
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },

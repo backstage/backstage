@@ -111,10 +111,10 @@ export class FrobsProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
-    const raw = await this.reader.read(
+    const response = await this.reader.readUrl(
       `https://frobs-${this.env}.example.com/data`,
     );
-    const data = JSON.parse(raw.toString());
+    const data = JSON.parse(await response.buffer()).toString();
 
     /** [5] **/
     const entities: Entity[] = frobsToEntities(data);
@@ -525,8 +525,8 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       // API. If you prefer, you can just use plain fetch here
       // (from the node-fetch package), or any other method of
       // your choosing.
-      const data = await this.reader.read(location.target);
-      const json = JSON.parse(data.toString());
+      const response = await this.reader.readUrl(location.target);
+      const json = JSON.parse((await response.buffer()).toString());
       // Repeatedly call emit(processingResult.entity(location, <entity>))
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
@@ -627,7 +627,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       // We send the ETag from the previous run if it exists.
       // The previous ETag will be set in the headers for the outgoing request and system-x
       // is going to throw NOT_MODIFIED (HTTP 304) if the ETag matches.
-      const response = await this.reader.readUrl?.(location.target, {
+      const response = await this.reader.readUrl(location.target, {
         etag: cacheItem?.etag,
       });
       if (!response) {

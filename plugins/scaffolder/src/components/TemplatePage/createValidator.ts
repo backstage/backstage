@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CustomFieldValidator } from '../../extensions';
+import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { FormValidation } from '@rjsf/core';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
