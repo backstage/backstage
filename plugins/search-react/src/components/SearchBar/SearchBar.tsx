@@ -92,12 +92,21 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
 
       const configApi = useApi(configApiRef);
       const [value, setValue] = useState<string>('');
+      const [showClearButton, setShowClearButton] = useState<string>('none');
 
       useEffect(() => {
         setValue(prevValue =>
           prevValue !== defaultValue ? String(defaultValue) : prevValue,
         );
       }, [defaultValue]);
+
+      useEffect(() => {
+        if (value !== '') {
+          setShowClearButton('none');
+        } else {
+          setShowClearButton('inline-block');
+        }
+      }, [value]);
 
       useDebounce(() => onChange(value), debounceTime, [value]);
 
@@ -119,6 +128,7 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       );
 
       const handleClear = useCallback(() => {
+        setShowClearButton('none');
         onChange('');
         if (onClear) {
           onClear();
@@ -138,7 +148,11 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       );
 
       const endAdornment = (
-        <InputAdornment position="end">
+        <InputAdornment
+          aria-label="Clear search box"
+          sx={{ display: showClearButton }}
+          position="end"
+        >
           <IconButton aria-label="Clear" size="small" onClick={handleClear}>
             <ClearButton />
           </IconButton>
