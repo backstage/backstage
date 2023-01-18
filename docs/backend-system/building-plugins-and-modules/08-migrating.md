@@ -214,7 +214,7 @@ import { kubernetesClustersSupplierExtensionPoint } from '@backstage/plugin-kube
 
 export const kubernetesGKEClusterSupplier = createBackendModule({
   pluginId: 'kubernetes',
-  moduleId: 'gce.supplier',
+  moduleId: 'gke.supplier',
   register(env) {
     env.registerInit({
       deps: {
