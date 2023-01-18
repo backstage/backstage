@@ -83,7 +83,7 @@ There's one thing missing that those sharp eyed readers might have noticed: the 
 
 One alternative is to pass the `ClusterSupplier` in as options to the plugin, which is quick and easy but not very flexible, and also hard to evolve without introducing breaking changes as it changes the public API for the plugin. Having complex types passed in directly to the plugin also clutters the backend setup code and makes it harder to read.
 
-Options are primarily used for simple configuration values that are not complex types. In this case we want to allow users to register their own `ClusterSupplier` implementations to the plugin. This is where the new backend system's [extension points](fixme.md) come in handy, but let's look at doing this with options first.
+Options are primarily used for simple configuration values that are not complex types. In this case we want to allow users to register their own `ClusterSupplier` implementations to the plugin. This is where the new backend system's [extension points](../architecture/05-extension-points.md) come in handy, but let's look at doing this with options first.
 
 ```ts
 /* omitted imports but they remain the same as above */
@@ -125,14 +125,14 @@ backend.add(
 
 Just to echo what was said above, this is not a very flexible solution and will for example be problematic to keep backwards compatible if we start evolving the options to for example accept multiple suppliers or tweak the `ClusterSupplier` interface.
 
-The new [extension points](fixme.md) API allows [modules](fixme) to add functionality into the backend plugin itself, in this case an additional `ClusterSupplier`.
+The new [extension points](../architecture/05-extension-points.md) API allows [modules](../architecture/06-modules.md) to add functionality into the backend plugin itself, in this case an additional `ClusterSupplier`.
 
 The kubernetes backend plugin only supports one `ClusterSupplier` at this time but let's look at how we could add support for multiple suppliers using extension points. This allows users to install several modules that add their own `ClusterSupplier` implementations to the plugin like this:
 
 ```ts
 backend.add(kubernetesPlugin());
-backend.add(GoogleContainerEngineModule());
-backend.add(EKSModule());
+backend.add(kubernetesGoogleContainerEngineClusterSupplier());
+backend.add(kubernetesElasticContainerEngine());
 ```
 
 Now let's look at how to implement this with extension points. First we need to define the extension point itself. As the extension point will be used by other modules, it's common practice to export these from a shared package so that they can be imported by other modules and plugins.
@@ -159,19 +159,23 @@ export const kubernetesClustersSupplierExtensionPoint =
 Now we can use this extension point in the kubernetes backend plugin to register the extension point for modules to use.
 
 ```ts
-import { kubernetesClustersSupplierExtensionPoint } from '@backstage/plugin-kubernetes-node';
+import { kubernetesClustersSupplierExtensionPoint, KubernetesClusterSupplierExtensionPoint } from '@backstage/plugin-kubernetes-node';
 
 // Our internal implementation of the extension point, should not be exported.
-class ClusterSupplier implements KubernetesClustersSupplier {
-  private clusterSuppliers: KubernetesClustersSupplier[] = [];
+class ClusterSupplier implements KubernetesClusterSupplierExtensionPoint {
+  private clusterSuppliers: KubernetesClustersSupplier | undefined;
 
-  // This method is private and only used internally to retrieve the registered suppliers.
-  getClusterSuppliers(): KubernetesClustersSupplier[] {
+  // This method is private and only used internally to retrieve the registered supplier.
+  getClusterSupplier() {
     return this.clusterSuppliers;
   }
 
   addClusterSupplier(supplier: KubernetesClustersSupplier) {
-    this.clusterSuppliers.push(supplier);
+    // We can remove this check once the plugin support multiple suppliers.
+    if(this.clusterSuppliers) {
+      throw new Error('Multiple Kubernetes cluster suppliers is not supported at this time');
+    }
+    this.clusterSuppliers = supplier;
   }
 }
 
@@ -197,8 +201,8 @@ export const kubernetesPlugin = createBackendPlugin({
           catalogApi,
           discovery,
         })
-          // We pass in the all the registered suppliers to the builder.
-          .setClusterSuppliers(...extensionPoint.getClusterSuppliers())
+          // We pass in the registered supplier from the extension point.
+          .setClusterSupplier(extensionPoint.getClusterSupplier())
           .build();
         http.use(router);
       },
@@ -212,18 +216,19 @@ And that's it! Modules can now be built that add clusters into to the kubernetes
 ```ts
 import { kubernetesClustersSupplierExtensionPoint } from '@backstage/plugin-kubernetes-node';
 
-export const kubernetesGkeClusterSupplier = createBackendModule({
-  pluginId: 'kubernetes',
-  moduleId: 'gke.supplier',
-  register(env) {
-    env.registerInit({
-      deps: {
-        supplier: kubernetesClustersSupplierExtensionPoint,
-      },
-      async init({ supplier }) {
-        supplier.addClusterSupplier(new GoogleContainerEngineSupplier());
-      },
-    });
-  },
-});
+export const kubernetesGoogleContainerEngineClusterSupplier =
+  createBackendModule({
+    pluginId: 'kubernetes',
+    moduleId: 'gke.supplier',
+    register(env) {
+      env.registerInit({
+        deps: {
+          supplier: kubernetesClustersSupplierExtensionPoint,
+        },
+        async init({ supplier }) {
+          supplier.addClusterSupplier(new GoogleContainerEngineSupplier());
+        },
+      });
+    },
+  });
 ```
