@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import type { mockServices } from './mockServices';
 
-export class MockLogger implements RootLoggerService {
+export class MockRootLoggerService implements RootLoggerService {
   #levels: Exclude<mockServices.rootLogger.Options['levels'], boolean>;
   #meta: LogMeta;
 
@@ -42,7 +42,7 @@ export class MockLogger implements RootLoggerService {
   }
 
   child(meta: LogMeta): LoggerService {
-    return new MockLogger(this.#levels, { ...this.#meta, ...meta });
+    return new MockRootLoggerService(this.#levels, { ...this.#meta, ...meta });
   }
 
   constructor(

@@ -31,8 +31,7 @@ import {
   ExtensionPoint,
   coreServices,
 } from '@backstage/backend-plugin-api';
-
-import { mockServices } from '../implementations';
+import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 

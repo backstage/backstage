@@ -36,8 +36,8 @@ import {
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import { MockIdentityService } from './mockIdentityService';
-import { MockLogger } from './mockRootLoggerService';
+import { MockIdentityService } from './MockIdentityService';
+import { MockRootLoggerService } from './MockRootLoggerService';
 
 function simpleFactory<TService, TOptions extends [options?: object] = []>(
   ref: ServiceRef<TService>,
@@ -67,7 +67,7 @@ export namespace mockServices {
   }
 
   export function rootLogger(options?: rootLogger.Options): LoggerService {
-    return new MockLogger(options?.levels ?? false, {});
+    return new MockRootLoggerService(options?.levels ?? false, {});
   }
   export namespace rootLogger {
     export type Options = {
