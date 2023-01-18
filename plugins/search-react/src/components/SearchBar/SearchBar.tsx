@@ -42,7 +42,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { SearchContextProvider, useSearch } from '../../context';
-import { TrackSearch } from '../SearchTracker';
+import { SearchTracker } from '../SearchTracker';
 
 function withContext<T>(Component: ComponentType<T>) {
   return forwardRef<unknown, T>((props, ref) => (
@@ -146,7 +146,7 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       );
 
       return (
-        <TrackSearch>
+        <SearchTracker>
           <InputBase
             data-testid="search-bar-next"
             ref={ref}
@@ -160,7 +160,7 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
             onKeyDown={handleKeyDown}
             {...rest}
           />
-        </TrackSearch>
+        </SearchTracker>
       );
     }),
   );

@@ -22,7 +22,7 @@ import usePrevious from 'react-use/lib/usePrevious';
 /**
  * Capture search event on term change.
  */
-export const TrackSearch = ({ children }: { children: React.ReactChild }) => {
+export const SearchTracker = ({ children }: { children: React.ReactChild }) => {
   const useHasChanged = (value: any) => {
     const previousVal = usePrevious(value);
     return previousVal !== value;
