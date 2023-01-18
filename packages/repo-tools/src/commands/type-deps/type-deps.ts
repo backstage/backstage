@@ -105,7 +105,10 @@ function checkTypes(pkg: Package) {
 
   const errors = [];
   const typeDeps = [];
-  for (const dep of deps) {
+  for (let dep of deps) {
+    if (dep.endsWith('/*')) {
+      dep = dep.slice(0, -2);
+    }
     try {
       const typeDep = findTypesPackage(dep, pkg);
       if (typeDep) {
