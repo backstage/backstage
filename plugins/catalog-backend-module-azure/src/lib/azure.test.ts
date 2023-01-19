@@ -114,6 +114,9 @@ describe('azure', () => {
         {
           fileName: 'catalog-info.yaml',
           path: '/catalog-info.yaml',
+          project: {
+            name: '*',
+          },
           repository: {
             name: 'backstage',
           },
