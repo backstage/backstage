@@ -51,7 +51,7 @@ async function main() {
   const todoEnv = useHotMemoize(module, () => createEnv('todo')); // repeated for N plugins
   const apiRouter = Router();
   apiRouter.use('/todo', await todo(todoEnv)); // repeated for N plugins
-  // ... return composite router
+  // ... wire up and start http server
 }
 
 module.hot?.accept();
@@ -166,31 +166,17 @@ custom API, so we use a helper function to transform that particular one.
 To make additions as mentioned above to the environment, you will start to get
 into the weeds of how the backend system wiring works. You'll need to have a
 service reference, and a service factory that performs the actual creation of
-your service. For now, let's add them directly in the same file, and then you
-can move them out into a separate file at a later time.
+your service. Please see [the services
+article](../architecture/03-services.md#defining-a-service) to learn how to
+create a service ref and its default factory. You can place that code directly
+in the index file for now if you want, or near the actual implementation class
+in question.
 
-In this example, we'll assume that your added environment item is named "example".
+In this example, we'll assume that your added environment field is named
+`example`, and the created ref is named `exampleServiceRef`.
 
 ```diff
--import { coreServices } from '@backstage/backend-plugin-api';
-+import { coreServices, createServiceFactory } from '@backstage/backend-plugin-api';
-+import { ExampleApi, ExampleImpl } from '<somewhere>';
-
-+const exampleServiceRef = createServiceRef<ExampleApi>({
-+  id: 'example',
-+  scope: 'plugin', // can be 'root' or 'plugin'
-+  defaultFactory: async service => createServiceFactory({
-+    service,
-+    // optional; just an example of how dependencies work
-+    deps: {
-+      logger: coreServices.logger,
-+    },
-+    // here instances of the declared dependencies are injected
-+    async factory({ logger }) {
-+      // return your ExampleImpl
-+    },
-+  }),
-+});
++import { exampleServiceRef } from '<somewhere>'; // if the definition is elsewhere
 
  const legacyPlugin = makeLegacyPlugin(
    {
@@ -203,7 +189,13 @@ In this example, we'll assume that your added environment item is named "example
  );
 ```
 
-After this, your backend will know how to instantiate your thing on demand.
+After this, your backend will know how to instantiate your thing on demand and
+place it in the legacy plugin environment.
+
+> NOTE: If you happen to be dealing with a service ref that does NOT have a
+> default implementation, but rather has a separate service factory, then you
+> will also need to import that factory and pass it to the `services` array
+> argument of `createBackend`.
 
 # Cleaning Up the Plugins Folder
 
@@ -213,32 +205,101 @@ later time.
 
 For third party backend plugins, in particular the larger core plugins that are
 maintained by the Backstage maintainers, you may find that they have already
-been migrated to the new backend system. Let's try to clean up the `plugins`
-folder a bit.
+been migrated to the new backend system. This section describes some specific
+such migrations you can make.
 
-Each plugin file is under your control, and it was added as part of following
-their installation instructions. You were then free to start tweaking those
-files and adding customizations. The simplest case is when you did NOT perform
-any customizations at all. For those plugins, you can in general just delete the
-corresponding file in the `plugins` folder, and instead importing the backend
-plugin from the package directly.
+> NOTE: For each of these, note that your backend still needs to have a
+> dependency (e.g. in `packages/backend/package.json`) to those plugin packages,
+> and they still need to be configured properly in your app-config. Those
+> mechanisms still work just the same as they used to in the old backend system.
+
+## The App Plugin
+
+The app backend plugin that serves the frontend from the backend can trivially
+be used in its new form.
 
 ```diff
- import { createBackend } from '@backstage/backend-defaults';
- import { legacyPlugin } from '@backstage/backend-common';
-+import { catalogPlugin } from '@backstage/plugin-catalog-backend';
+ // packages/backend/src/index.ts
++import { appPlugin } from '@backstage/plugin-app-backend';
 
  const backend = createBackend();
- backend.add(legacyPlugin('todo', import('./plugins/todo')));
-+backend.add(catalogPlugin());
- backend.start();
++backend.add(appPlugin({ appPackageName: 'app' }));
 ```
 
-This will install a fully functioning catalog backend plugin, in its default
-state (not amended with any custom processors or providers, for example). You
-still need to have the `@backstage/plugin-catalog-backend` dependency in your
-`package.json`. You also need to have your app-config set up properly like
-before; that subsystem works the same as it used to even though its
-instantiation now happens behind the scenes.
+This is an example of how options can be passed into some backend plugins. The
+app plugin specifically needs to know the name of the package that holds the
+frontend code. This is the `"name"` field in that package's `package.json`,
+typically found in your `packages/app` folder. By default it's just plain "app".
 
-You can now delete `plugins/catalog.ts`.
+You should be able to delete the `plugins/app.ts` file at this point.
+
+## The Catalog Plugin
+
+A basic installation of the catalog plugin looks as follows.
+
+```diff
+ // packages/backend/src/index.ts
++import { catalogPlugin } from '@backstage/plugin-catalog-backend';
++import { scaffolderCatalogModule } from '@backstage/plugin-scaffolder-backend';
+
+ const backend = createBackend();
++backend.add(catalogPlugin());
++backend.add(scaffolderCatalogModule());
+```
+
+Note that this also installs a module from the scaffolder, namely the one which
+enables the use of the `Template` kind. In the unlikely event that you do not
+use templates at all, you can remove those lines.
+
+If you have other customizations made to `plugins/catalog.ts`, such as adding
+custom processors or entity providers, read on. Otherwise, you should be able to
+just delete the `plugins/catalog.ts` file at this point.
+
+You will use the [extension points](../architecture/05-extension-points.md)
+mechanism to extend or tweak the functionality of the catalog. To do that,
+you'll make your own bespoke [module](../architecture/06-modules.md) which
+depends on the appropriate extension point and interacts with it.
+
+```diff
+ // packages/backend/src/index.ts
++import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
++import { createBackendModule } from '@backstage/backend-plugin-api';
+
++const catalogExtensionsModule = createBackendModule({
++  pluginId: 'catalog',    // name of the plugin that the module is targeting
++  moduleId: 'extensions', // you can choose this one freely
++  register(env) {
++    env.registerInit({
++      deps: {
++        catalog: catalogProcessingExtensionPoint,
++        // ... and other dependencies as needed
++      },
++      init({ catalog /* ..., other dependencies */ }) {
++        // Here you have the opportunity to interact with the catalog extension
++        // point before the catalog plugin itself gets instantiated
++        catalog.addEntityProvider(new MyEntityProvider()); // just an example
++        catalog.addProcessor(new MyProcessor());           // just an example
++      },
++    });
++  },
++});
+
+ const backend = createBackend();
+ backend.add(catalogPlugin());
+ backend.add(scaffolderCatalogModule());
++backend.add(catalogExtensionsModule());
+```
+
+This also requires that you have a dependency on the catalog node package, if
+you didn't already have one.
+
+```bash
+# from the repository root
+yarn add --cwd packages/backend @backstage/plugin-catalog-node
+```
+
+Here we've placed the module directly in the backend index file just to get
+going easily, but feel free to move it out to where it fits best. As you migrate
+your entire plugin flora to the new backend system, you will probably make more
+and more of these modules as "first class" things, living right next to the
+implementations that they represent, and being exported from there.
