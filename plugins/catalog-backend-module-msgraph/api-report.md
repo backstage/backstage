@@ -135,9 +135,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
 }
 
 // @alpha
-export const microsoftGraphOrgEntityProviderCatalogModule: (
-  options?: MicrosoftGraphOrgEntityProviderCatalogModuleOptions | undefined,
-) => BackendFeature;
+export const microsoftGraphOrgEntityProviderCatalogModule: () => BackendFeature;
 
 // @alpha
 export interface MicrosoftGraphOrgEntityProviderCatalogModuleOptions {

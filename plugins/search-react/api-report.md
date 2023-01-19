@@ -402,6 +402,7 @@ export const SearchResultPager: () => JSX.Element;
 // @public
 export type SearchResultProps = Pick<SearchResultStateProps, 'query'> & {
   children: (resultSet: SearchResultSet) => JSX.Element;
+  noResultsComponent?: JSX.Element;
 };
 
 // @public

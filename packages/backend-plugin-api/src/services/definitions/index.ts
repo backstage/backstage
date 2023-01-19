@@ -14,13 +14,39 @@
  * limitations under the License.
  */
 
-import * as coreServices from './coreServices';
-
-export { coreServices };
-export type { HttpRouterService } from './httpRouterServiceRef';
-export type { Logger } from './loggerServiceRef';
+export { coreServices } from './coreServices';
 export type {
-  BackendLifecycle,
-  BackendLifecycleShutdownHook,
-} from './lifecycleServiceRef';
-export type { PluginMetadata } from './pluginMetadataServiceRef';
+  CacheService,
+  CacheClient,
+  CacheClientOptions,
+  CacheClientSetOptions,
+} from './CacheService';
+export type { ConfigService } from './ConfigService';
+export type { DatabaseService } from './DatabaseService';
+export type { DiscoveryService } from './DiscoveryService';
+export type { HttpRouterService } from './HttpRouterService';
+export type {
+  LifecycleService,
+  LifecycleServiceShutdownHook,
+} from './LifecycleService';
+export type { LoggerService, LogMeta } from './LoggerService';
+export type { PermissionsService } from './PermissionsService';
+export type { PluginMetadataService } from './PluginMetadataService';
+export type { RootHttpRouterService } from './RootHttpRouterService';
+export type { RootLifecycleService } from './RootLifecycleService';
+export type { RootLoggerService } from './RootLoggerService';
+export type { SchedulerService } from './SchedulerService';
+export type { TokenManagerService } from './TokenManagerService';
+export type {
+  ReadTreeOptions,
+  ReadTreeResponse,
+  ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
+  ReadUrlResponse,
+  ReadUrlOptions,
+  SearchOptions,
+  SearchResponse,
+  SearchResponseFile,
+  UrlReaderService,
+} from './UrlReaderService';
+export type { IdentityService } from './IdentityService';

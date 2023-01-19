@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren } from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { TabbedLayout } from './TabbedLayout';
 
 export default {

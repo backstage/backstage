@@ -44,6 +44,7 @@ import { satisfiesTopicFilter } from '../lib/util';
 
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { PushEvent, Commit } from '@octokit/webhooks-types';
+import { Minimatch } from 'minimatch';
 
 const TOPIC_REPO_PUSH = 'github.push';
 
@@ -156,7 +157,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });
@@ -387,10 +388,11 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       ? this.config.catalogPath.substring(1)
       : this.config.catalogPath;
 
+    const matcher = new Minimatch(catalogFile);
     return commits
       .map(transformOperation)
       .flat()
-      .filter(file => catalogFile.includes(file));
+      .filter(file => matcher.match(file));
   }
 
   private toDeferredEntities(targets: string[]): DeferredEntity[] {

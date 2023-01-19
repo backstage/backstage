@@ -16,6 +16,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { CardHeader, Divider, IconButton, makeStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
@@ -182,7 +183,11 @@ export const EntityBazaarInfoContent = ({
         )}
 
         <CardHeader
-          title={<p className={classes.wordBreak}>{bazaarProject?.title!}</p>}
+          title={
+            <Typography paragraph className={classes.wordBreak}>
+              {bazaarProject?.title!}
+            </Typography>
+          }
           action={
             <div>
               <IconButton

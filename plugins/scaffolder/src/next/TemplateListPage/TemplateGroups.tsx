@@ -13,14 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { TemplateGroup } from './TemplateGroup';
-import { Entity } from '@backstage/catalog-model';
+import React, { useCallback } from 'react';
+
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { Progress, Link } from '@backstage/core-components';
+import { Progress, Link, DocsIcon } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  errorApiRef,
+  useApi,
+  useApp,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
+import { TemplateGroup } from '@backstage/plugin-scaffolder-react';
+import { viewTechDocRouteRef } from '../../routes';
+import { nextSelectedTemplateRouteRef } from '../routes';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * @alpha
@@ -41,6 +54,17 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
   const { loading, error, entities } = useEntityList();
   const { groups, TemplateCardComponent } = props;
   const errorApi = useApi(errorApiRef);
+  const app = useApp();
+  const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
+  const templateRoute = useRouteRef(nextSelectedTemplateRouteRef);
+  const navigate = useNavigate();
+  const onSelected = useCallback(
+    (template: TemplateEntityV1beta3) => {
+      const { namespace, name } = parseEntityRef(stringifyEntityRef(template));
+      navigate(templateRoute({ namespace, templateName: name }));
+    },
+    [navigate, templateRoute],
+  );
 
   if (loading) {
     return <Progress />;
@@ -65,16 +89,41 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
 
   return (
     <>
-      {groups.map(({ title, filter }, index) => (
-        <TemplateGroup
-          key={index}
-          templates={entities.filter((e): e is TemplateEntityV1beta3 =>
-            filter(e),
-          )}
-          title={title}
-          components={{ CardComponent: TemplateCardComponent }}
-        />
-      ))}
+      {groups.map(({ title, filter }, index) => {
+        const templates = entities
+          .filter((e): e is TemplateEntityV1beta3 => filter(e))
+          .map(template => {
+            const { kind, namespace, name } = parseEntityRef(
+              stringifyEntityRef(template),
+            );
+            const additionalLinks =
+              template.metadata.annotations?.['backstage.io/techdocs-ref'] &&
+              viewTechDocsLink
+                ? [
+                    {
+                      icon: app.getSystemIcon('docs') ?? DocsIcon,
+                      text: 'View TechDocs',
+                      url: viewTechDocsLink({ kind, namespace, name }),
+                    },
+                  ]
+                : [];
+
+            return {
+              template,
+              additionalLinks,
+            };
+          });
+
+        return (
+          <TemplateGroup
+            key={index}
+            templates={templates}
+            title={title}
+            components={{ CardComponent: TemplateCardComponent }}
+            onSelected={onSelected}
+          />
+        );
+      })}
     </>
   );
 };

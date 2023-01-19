@@ -15,15 +15,15 @@
  */
 import React from 'react';
 import type { FieldValidation } from '@rjsf/utils';
+import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import { TextField } from '@material-ui/core';
+
 import {
+  NextFieldExtensionComponentProps,
   createNextScaffolderFieldExtension,
   createScaffolderFieldExtension,
   FieldExtensionComponentProps,
-  NextFieldExtensionComponentProps,
-  scaffolderPlugin,
-} from '@backstage/plugin-scaffolder';
-
-import { TextField } from '@material-ui/core';
+} from '@backstage/plugin-scaffolder-react';
 
 const TextValuePicker = (props: FieldExtensionComponentProps<string>) => {
   const {

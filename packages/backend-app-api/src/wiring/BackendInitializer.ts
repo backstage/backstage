@@ -17,11 +17,13 @@
 import {
   BackendFeature,
   ExtensionPoint,
+  coreServices,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
+import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleFactory';
 import {
   BackendRegisterInit,
-  ServiceHolder,
+  EnumerableServiceHolder,
   ServiceOrExtensionPoint,
 } from './types';
 
@@ -30,9 +32,9 @@ export class BackendInitializer {
   #features = new Map<BackendFeature, unknown>();
   #registerInits = new Array<BackendRegisterInit>();
   #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
-  #serviceHolder: ServiceHolder;
+  #serviceHolder: EnumerableServiceHolder;
 
-  constructor(serviceHolder: ServiceHolder) {
+  constructor(serviceHolder: EnumerableServiceHolder) {
     this.#serviceHolder = serviceHolder;
   }
 
@@ -85,6 +87,14 @@ export class BackendInitializer {
     }
     this.#started = true;
 
+    // Initialize all root scoped services
+    for (const ref of this.#serviceHolder.getServiceRefs()) {
+      if (ref.scope === 'root') {
+        await this.#serviceHolder.get(ref, 'root');
+      }
+    }
+
+    // Initialize all features
     for (const [feature] of this.#features) {
       const provides = new Set<ExtensionPoint<unknown>>();
 
@@ -164,5 +174,23 @@ export class BackendInitializer {
     }
 
     return orderedRegisterInits;
+  }
+
+  async stop(): Promise<void> {
+    if (!this.#started) {
+      return;
+    }
+
+    const lifecycleService = await this.#serviceHolder.get(
+      coreServices.rootLifecycle,
+      'root',
+    );
+
+    // TODO(Rugvip): Find a better way to do this
+    if (lifecycleService instanceof BackendLifecycleImpl) {
+      await lifecycleService.shutdown();
+    } else {
+      throw new Error('Unexpected lifecycle service implementation');
+    }
   }
 }

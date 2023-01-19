@@ -41,6 +41,7 @@ import {
   parseEntityTransformParams,
 } from './request';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
+import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { LocationService, RefreshOptions, RefreshService } from './types';
 import {
   disallowReadonlyMode,
@@ -113,6 +114,7 @@ export async function createRouter(
         const { entities, pageInfo } = await entitiesCatalog.entities({
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query),
+          order: parseEntityOrderParams(req.query),
           pagination: parseEntityPaginationParams(req.query),
           authorizationToken: getBearerToken(req.header('authorization')),
         });
@@ -179,7 +181,7 @@ export async function createRouter(
         const token = getBearerToken(req.header('authorization'));
         const response = await entitiesCatalog.entitiesBatch({
           entityRefs: request.entityRefs,
-          fields: parseEntityTransformParams(req.query),
+          fields: parseEntityTransformParams(req.query, request.fields),
           authorizationToken: token,
         });
         res.status(200).json(response);

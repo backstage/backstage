@@ -19,7 +19,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { Link } from '../../components/Link';
 import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';

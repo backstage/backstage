@@ -20,6 +20,8 @@
  * @packageDocumentation
  */
 
+export { legacyPlugin, makeLegacyPlugin } from './legacy';
+export type { LegacyCreateRouter } from './legacy';
 export * from './cache';
 export { loadBackendConfig } from './config';
 export * from './context';

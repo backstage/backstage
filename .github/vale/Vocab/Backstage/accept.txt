@@ -82,6 +82,7 @@ dependabot
 deps
 destructured
 destructuring
+Deutsche
 dev
 devops
 devs
@@ -411,3 +412,6 @@ zoomable
 zsh
 Lainfiesta
 allowlisted
+Dominik
+Henneke
+Kuang

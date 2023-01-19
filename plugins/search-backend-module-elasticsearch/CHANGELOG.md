@@ -1,5 +1,80 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.1.1
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- 1e1a9fe979: Fixed a bug that could cause an indexing process to silently fail, timeout, and accumulate stale indices.
+- 2a49ffbcb3: Improved documentation on the `ElasticSearchSearchEngine.newClient()` method.
+- 56633804dd: Fixed a bug that could cause the backstage backend to unexpectedly terminate when client errors were encountered during the indexing process.
+- aa33a06894: Improved index throughput by optimizing when and how many documents were made available to the bulk client.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.1
+  - @backstage/config@1.0.6
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.1.1-next.2
+
+### Patch Changes
+
+- 2a49ffbcb3: Improved documentation on the `ElasticSearchSearchEngine.newClient()` method.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.1-next.2
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-search-backend-node@1.1.1-next.1
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- 1e1a9fe979: Fixed a bug that could cause an indexing process to silently fail, timeout, and accumulate stale indices.
+- 56633804dd: Fixed a bug that could cause the backstage backend to unexpectedly terminate when client errors were encountered during the indexing process.
+- aa33a06894: Improved index throughput by optimizing when and how many documents were made available to the bulk client.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.1-next.0
+  - @backstage/config@1.0.5
+  - @backstage/plugin-search-common@1.2.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults is now provided alongside the query result
+- dff9843718: The search engine now better handles the case when it receives 0 documents at index-time. Prior to this change, the indexer would replace any existing index with an empty index, effectively deleting it. Now instead, a warning is logged, and any existing index is left alone (preserving the index from the last successful indexing attempt).
+- d09485ea79: Added support for self hosted OpenSearch via new provider
+
+### Patch Changes
+
+- 45eb4d23cf: Fixed a bug that prevented indices from being cleaned up under some circumstances, which could have led to shard exhaustion.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.0
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/config@1.0.5
+
+## 1.1.0-next.3
+
+### Minor Changes
+
+- d09485ea79: Added support for self hosted OpenSearch via new provider
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-search-backend-node@1.1.0-next.3
+  - @backstage/plugin-search-common@1.2.0-next.3
+
 ## 1.1.0-next.2
 
 ### Minor Changes

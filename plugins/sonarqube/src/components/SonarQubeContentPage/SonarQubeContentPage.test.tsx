@@ -16,14 +16,13 @@
 
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import {
   isSonarQubeAvailable,
   SONARQUBE_PROJECT_KEY_ANNOTATION,
-} from '../useProjectKey';
-import { SonarQubeApi, sonarQubeApiRef } from '../../api';
+  SonarQubeApi,
+  sonarQubeApiRef,
+} from '@backstage/plugin-sonarqube-react';
 
 const Providers = ({
   annotation,
@@ -43,7 +42,7 @@ const Providers = ({
         kind: 'Component',
       }}
     >
-      <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
+      {children}
     </EntityProvider>
   </TestApiProvider>
 );

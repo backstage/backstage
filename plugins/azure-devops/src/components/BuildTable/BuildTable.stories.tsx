@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-azure-devops-common';
 
 import { BuildTable } from './BuildTable';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
 export default {

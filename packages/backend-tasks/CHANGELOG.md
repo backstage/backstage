@@ -1,5 +1,72 @@
 # @backstage/backend-tasks
 
+## 0.4.1
+
+### Patch Changes
+
+- 3fad4ed40a: Added a new static `TaskScheduler.forPlugin` method.
+- b99c030f1b: Minor internal refactor to avoid import cycle issue.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- b99c030f1b: Minor internal refactor to avoid import cycle issue.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.4.0
+
+### Minor Changes
+
+- de8a975911: Changed to use native `AbortController` and `AbortSignal` from Node.js, instead
+  of the one from `node-abort-controller`. This is possible now that the minimum
+  supported Node.js version of the project is 16.
+
+  Note that their interfaces are very slightly different, but typically not in a
+  way that matters to consumers. If you see any typescript errors as a direct
+  result from this, they are compatible with each other in the ways that we
+  interact with them, and should be possible to type-cast across without ill
+  effects.
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
+## 0.4.0-next.3
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+
 ## 0.4.0-next.2
 
 ### Patch Changes

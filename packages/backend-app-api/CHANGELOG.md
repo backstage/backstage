@@ -1,5 +1,105 @@
 # @backstage/backend-app-api
 
+## 0.3.0
+
+### Minor Changes
+
+- 02b119ff93: **BREAKING**: The `httpRouterFactory` now accepts a `getPath` option rather than `indexPlugin`. To set up custom index path, configure the new `rootHttpRouterFactory` with a custom `indexPath` instead.
+
+  Added an implementation for the new `rootHttpRouterServiceRef`.
+
+### Patch Changes
+
+- ecc6bfe4c9: Use new `ServiceFactoryOrFunction` type.
+- b99c030f1b: Moved over implementation of the root HTTP service from `@backstage/backend-common`, and replaced the `middleware` option with a `configure` callback option.
+- 170282ece6: Fixed a bug in the default token manager factory where it created multiple incompatible instances.
+- 843a0a158c: Added service factory for the new core identity service.
+- 150a7dd790: An error will now be thrown if attempting to override the plugin metadata service.
+- 483e907eaf: Internal updates of `createServiceFactory` from `@backstage/backend-plugin-api`.
+- 015a6dced6: The `createSpecializedBackend` function will now throw an error if duplicate service implementations are provided.
+- e3fca10038: Tweaked the plugin logger to use `plugin` as the label for the plugin ID, rather than `pluginId`.
+- ecbec4ec4c: Internal refactor to match new options pattern in the experimental backend system.
+- 51b7a7ed07: Exported the default root HTTP router implementation as `DefaultRootHttpRouter`. It only implements the routing layer and needs to be exposed via an HTTP server similar to the built-in setup in the `rootHttpRouterFactory`.
+- 0e63aab311: Moved over logging and configuration loading implementations from `@backstage/backend-common`. There is a now `WinstonLogger` which implements the `RootLoggerService` through Winston with accompanying utilities. For configuration the `loadBackendConfig` function has been moved over, but it now instead returns an object with a `config` property.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- 3b8fd4169b: Internal folder structure refactor.
+- 6cfd4d7073: Updated implementations for the new `RootLifecycleService`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/backend-tasks@0.4.1
+  - @backstage/config@1.0.6
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+  - @backstage/plugin-permission-node@0.7.3
+
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 02b119ff93: **BREAKING**: The `httpRouterFactory` now accepts a `getPath` option rather than `indexPlugin`. To set up custom index path, configure the new `rootHttpRouterFactory` with a custom `indexPath` instead.
+
+  Added an implementation for the new `rootHttpRouterServiceRef`.
+
+### Patch Changes
+
+- ecc6bfe4c9: Use new `ServiceFactoryOrFunction` type.
+- b99c030f1b: Moved over implementation of the root HTTP service from `@backstage/backend-common`, and replaced the `middleware` option with a `configure` callback option.
+- 150a7dd790: An error will now be thrown if attempting to override the plugin metadata service.
+- 015a6dced6: The `createSpecializedBackend` function will now throw an error if duplicate service implementations are provided.
+- e3fca10038: Tweaked the plugin logger to use `plugin` as the label for the plugin ID, rather than `pluginId`.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/backend-tasks@0.4.1-next.1
+  - @backstage/plugin-permission-node@0.7.3-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- 6cfd4d7073: Updated implementations for the new `RootLifecycleService`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/backend-tasks@0.4.1-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-permission-node@0.7.3-next.0
+
+## 0.2.4
+
+### Patch Changes
+
+- cb1c2781c0: Updated logger implementations to match interface changes.
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- afa3bf5657: Added `.stop()` method to `Backend`.
+- d6dbf1792b: Added `lifecycleFactory` implementation.
+- 05a928e296: Updated usages of types from `@backstage/backend-plugin-api`.
+- 5260d8fc7d: Root scoped services are now always initialized, regardless of whether they're used by any features.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/plugin-permission-node@0.7.2
+  - @backstage/errors@1.1.4
+  - @backstage/backend-plugin-api@0.2.0
+
+## 0.2.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.0-next.3
+  - @backstage/plugin-permission-node@0.7.2-next.3
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-plugin-api@0.2.0-next.3
+  - @backstage/errors@1.1.4-next.1
+
 ## 0.2.4-next.2
 
 ### Patch Changes

@@ -27,7 +27,7 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { createApp } from '@backstage/app-defaults';
-import { FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -60,12 +60,12 @@ import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
 import {
-  ScaffolderFieldExtensions,
   ScaffolderPage,
   NextScaffolderPage,
   scaffolderPlugin,
   ScaffolderLayouts,
 } from '@backstage/plugin-scaffolder';
+import { ScaffolderFieldExtensions } from '@backstage/plugin-scaffolder-react';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import {
@@ -86,7 +86,7 @@ import {
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
-import { Navigate, Route } from 'react-router';
+import { Navigate, Route } from 'react-router-dom';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { homePage } from './components/home/HomePage';
@@ -115,6 +115,10 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
+  // Example of application level feature flag
+  // featureFlags: [
+  // { name: 'tech-radar', description: 'Enables the tech radar plugin' },
+  // ],
   components: {
     SignInPage: props => {
       return (
@@ -144,9 +148,6 @@ const app = createApp({
     });
   },
 });
-
-const AppProvider = app.getProvider();
-const AppRouter = app.getRouter();
 
 const routes = (
   <FlatRoutes>
@@ -278,14 +279,12 @@ const routes = (
   </FlatRoutes>
 );
 
-const App = () => (
-  <AppProvider>
+export default app.createRoot(
+  <>
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
     <AppRouter>
       <Root>{routes}</Root>
     </AppRouter>
-  </AppProvider>
+  </>,
 );
-
-export default App;

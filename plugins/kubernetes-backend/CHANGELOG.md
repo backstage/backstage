@@ -1,5 +1,100 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.9.1
+
+### Patch Changes
+
+- 083bf1b9fa: fixes a bug affecting clusters that have a base path in the URL. The base path was being replaced with the resource path instead of being appended
+- c6f29bfcdc: Added the missing auth provider googleServiceAccount in config schema.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/backend-test-utils@0.1.32
+  - @backstage/catalog-model@1.1.5
+  - @backstage/catalog-client@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.9
+  - @backstage/plugin-kubernetes-common@0.5.1
+
+## 0.9.1-next.2
+
+### Patch Changes
+
+- c6f29bfcdc: Added the missing auth provider googleServiceAccount in config schema.
+- Updated dependencies
+  - @backstage/backend-test-utils@0.1.32-next.2
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/catalog-client@1.3.0-next.2
+  - @backstage/plugin-auth-node@0.2.9-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-kubernetes-common@0.5.1-next.1
+
+## 0.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@0.1.32-next.1
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/catalog-client@1.3.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.9-next.0
+  - @backstage/plugin-kubernetes-common@0.5.1-next.1
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-test-utils@0.1.32-next.0
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/plugin-kubernetes-common@0.5.1-next.0
+
+## 0.9.0
+
+### Minor Changes
+
+- 2db8acffe7: Kubernetes plugin now gracefully surfaces transport-level errors (like DNS or timeout, or other socket errors) occurring while fetching data. This will be merged into any data that is fetched successfully, fixing a bug where the whole page would be empty if any fetch operation encountered such an error.
+
+### Patch Changes
+
+- 22e20b3a59: Clusters declared in the app-config can now have their CA configured via a local filesystem path using the `caFile` property.
+- 9ce7866ecd: Updated dependency `@kubernetes/client-node` to `0.18.0`.
+- b585179770: Added Kubernetes proxy API route to backend Kubernetes plugin, allowing Backstage plugin developers to read/write new information from Kubernetes (if proper credentials are provided).
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.5.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-test-utils@0.1.31
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
+## 0.8.1-next.4
+
+### Patch Changes
+
+- 22e20b3a59: Clusters declared in the app-config can now have their CA configured via a local filesystem path using the `caFile` property.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-test-utils@0.1.31-next.4
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.3
+  - @backstage/plugin-kubernetes-common@0.4.5-next.1
+
 ## 0.8.1-next.3
 
 ### Patch Changes

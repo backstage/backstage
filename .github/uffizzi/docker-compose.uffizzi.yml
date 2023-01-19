@@ -1,0 +1,29 @@
+version: '3'
+
+x-uffizzi:
+  ingress:
+    service: backstage
+    port: 7007
+
+services:
+  backstage:
+    image: '${BACKSTAGE_IMAGE}'
+
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      NODE_ENV: production
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+    entrypoint: '/bin/sh'
+    command:
+      - '-c'
+      - "APP_CONFIG_app_baseUrl=$$UFFIZZI_URL APP_CONFIG_backend_baseUrl=$$UFFIZZI_URL APP_CONFIG_auth_environment='production' node packages/backend --config app-config.yaml"
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: example

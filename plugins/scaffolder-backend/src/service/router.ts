@@ -271,6 +271,7 @@ export async function createRouter(
           res.json({
             title: template.metadata.title ?? template.metadata.name,
             description: template.metadata.description,
+            'ui:options': template.metadata['ui:options'],
             steps: parameters.map(schema => ({
               title: schema.title ?? 'Please enter the following information',
               description: schema.description,
@@ -291,6 +292,7 @@ export async function createRouter(
         return {
           id: action.id,
           description: action.description,
+          examples: action.examples,
           schema: action.schema,
         };
       });

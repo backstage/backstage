@@ -17,8 +17,8 @@
 import {
   coreServices,
   createBackendModule,
-  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node';
 import { AwsSqsConsumingEventPublisher } from '../publisher/AwsSqsConsumingEventPublisher';
 

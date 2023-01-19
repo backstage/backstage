@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import React from 'react';
-import { scaffolderApiRef } from '../../api';
 import { ActionsPage } from './ActionsPage';
-import { rootRouteRef } from '../../routes';
+import {
+  scaffolderApiRef,
+  ScaffolderApi,
+} from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
-import { ScaffolderApi } from '../../types';
+import { rootRouteRef } from '../../routes';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   scaffold: jest.fn(),
@@ -113,6 +115,48 @@ describe('TemplatePage', () => {
     expect(rendered.getByText('example description')).toBeInTheDocument();
     expect(rendered.getByText('foobar')).toBeInTheDocument();
     expect(rendered.getByText('Test output')).toBeInTheDocument();
+  });
+
+  it('renders action with multipel input types', async () => {
+    scaffolderApiMock.listActions.mockResolvedValue([
+      {
+        id: 'test',
+        description: 'example description',
+        schema: {
+          input: {
+            type: 'object',
+            required: ['foobar'],
+            properties: {
+              foobar: {
+                title: 'Test title',
+                type: ['array', 'number'],
+              },
+            },
+          },
+          output: {
+            type: 'object',
+            properties: {
+              buzz: {
+                title: 'Test output',
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    ]);
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ActionsPage />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create/actions': rootRouteRef,
+        },
+      },
+    );
+    expect(rendered.getByText('array')).toBeInTheDocument();
+    expect(rendered.getByText('number')).toBeInTheDocument();
   });
 
   it('renders action with oneOf input', async () => {

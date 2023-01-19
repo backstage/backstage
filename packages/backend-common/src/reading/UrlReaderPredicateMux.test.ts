@@ -70,7 +70,6 @@ describe('UrlReaderPredicateMux', () => {
     mux.register({
       predicate: url => url.hostname === 'foo',
       reader: {
-        read: jest.fn(),
         readUrl: jest.fn(),
         readTree: jest.fn(),
         search: jest.fn(),

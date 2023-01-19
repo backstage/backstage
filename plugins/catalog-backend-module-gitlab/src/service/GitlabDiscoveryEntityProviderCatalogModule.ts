@@ -16,9 +16,9 @@
 
 import {
   createBackendModule,
-  loggerToWinstonLogger,
   coreServices,
 } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { GitlabDiscoveryEntityProvider } from '../providers';
 

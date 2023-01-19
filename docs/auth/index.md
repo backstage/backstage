@@ -150,6 +150,31 @@ const app = createApp({
 });
 ```
 
+If the provider in auth backend expects additional headers such as `x-provider-token`, there is now a way to configure that in `ProxiedSignInPage` using the optional `headers` prop.
+
+Example:
+
+```tsx
+<ProxiedSignInPage
+  {...props}
+  provider="my-custom-provider"
+  headers={{ 'x-some-key': someValue }}
+/>
+```
+
+Headers can also be returned in an async manner:
+
+```tsx
+<ProxiedSignInPage
+  {...props}
+  provider="my-custom-provider"
+  headers={async () => {
+    const someValue = await someFn();
+    return { 'x-some-key': someValue };
+  }}
+/>
+```
+
 A downside of this method is that it can be cumbersome to set up for local development.
 As a workaround for this, it's possible to dynamically select the sign-in page based on
 what environment the app is running in, and then use a different sign-in method for local

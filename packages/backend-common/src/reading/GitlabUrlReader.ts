@@ -42,7 +42,7 @@ import { trimEnd, trimStart } from 'lodash';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
- * Implements a {@link UrlReader} for files on GitLab.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files on GitLab.
  *
  * @public
  */
@@ -188,8 +188,7 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const commitSha = (await commitsGitlabResponse.json())[0].id;
-
+    const commitSha = (await commitsGitlabResponse.json())[0]?.id ?? '';
     if (etag && etag === commitSha) {
       throw new NotModifiedError();
     }

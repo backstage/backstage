@@ -100,6 +100,15 @@ describe('backendPlugin factory', () => {
         'backstage-plugin-test-backend': '^1.0.0',
       },
     });
+    const standaloneServerFile = await fs.readFile(
+      '/root/plugins/test-backend/src/service/standaloneServer.ts',
+      'utf-8',
+    );
+
+    expect(standaloneServerFile).toContain(
+      `const logger = options.logger.child({ service: 'test-backend' });`,
+    );
+    expect(standaloneServerFile).toContain(`.addRouter('/test', router);`);
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {

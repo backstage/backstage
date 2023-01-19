@@ -33,10 +33,8 @@ export const catalogServiceRef = createServiceRef<CatalogApi>({
       deps: {
         discoveryApi: coreServices.discovery,
       },
-      async factory() {
-        return async ({ discoveryApi }) => {
-          return new CatalogClient({ discoveryApi });
-        };
+      async factory({ discoveryApi }) {
+        return new CatalogClient({ discoveryApi });
       },
     }),
 });

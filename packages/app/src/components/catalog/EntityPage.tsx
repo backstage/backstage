@@ -52,6 +52,7 @@ import {
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
+  EntityLabelsCard,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
   EntitySwitch,
@@ -59,6 +60,7 @@ import {
   isComponentType,
   isKind,
   isOrphan,
+  hasLabels,
 } from '@internal/plugin-catalog-customized';
 import {
   Direction,
@@ -363,6 +365,14 @@ const overviewContent = (
     <Grid item md={4} xs={12}>
       <EntityLinksCard />
     </Grid>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasLabels}>
+        <Grid item md={4} xs={12}>
+          <EntityLabelsCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
 
     {cicdCard}
 

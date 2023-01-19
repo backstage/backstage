@@ -1,5 +1,136 @@
 # @backstage/plugin-techdocs
 
+## 1.4.3
+
+### Patch Changes
+
+- a74dd61534: Fix sizing of build log component to render all lines
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- 7115c7389b: Updated dependency `jss` to `~10.9.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-search-react@1.4.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/plugin-techdocs-react@1.1.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.9
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.4.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.4.0-next.2
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/plugin-catalog-react@1.2.4-next.2
+  - @backstage/plugin-techdocs-react@1.1.2-next.2
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/integration-react@1.1.9-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.4.3-next.1
+
+### Patch Changes
+
+- a74dd61534: Fix sizing of build log component to render all lines
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/integration-react@1.1.9-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.2.4-next.1
+  - @backstage/plugin-search-common@1.2.1-next.0
+  - @backstage/plugin-search-react@1.3.2-next.1
+  - @backstage/plugin-techdocs-react@1.1.2-next.1
+
+## 1.4.3-next.0
+
+### Patch Changes
+
+- 7115c7389b: Updated dependency `jss` to `~10.9.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/plugin-catalog-react@1.2.4-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/plugin-techdocs-react@1.1.2-next.0
+  - @backstage/config@1.0.5
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/integration-react@1.1.9-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/plugin-search-react@1.3.2-next.0
+
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/integration-react@1.1.8
+  - @backstage/plugin-catalog-react@1.2.3
+  - @backstage/plugin-search-react@1.3.1
+  - @backstage/plugin-techdocs-react@1.1.1
+
+## 1.4.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- a19cffbeed: Update search links to only have header as linkable text
+- 5d3058355d: Add `react/forbid-elements` linter rule for button, suggest MUI `Button`
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 786f1b1419: Support older versions of react-router
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.1.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/plugin-search-react@1.3.0
+  - @backstage/core-components@0.12.1
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/integration-react@1.1.7
+  - @backstage/integration@1.4.1
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/theme@0.2.16
+
+## 1.4.1-next.4
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/plugin-search-react@1.3.0-next.4
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/integration-react@1.1.7-next.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.0-next.3
+  - @backstage/plugin-techdocs-react@1.0.7-next.4
+
 ## 1.4.1-next.3
 
 ### Patch Changes

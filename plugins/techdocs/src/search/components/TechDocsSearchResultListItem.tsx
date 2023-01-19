@@ -22,6 +22,7 @@ import {
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
@@ -137,7 +138,8 @@ export const TechDocsSearchResultListItem = (
           </LinkWrapper>
         }
         secondary={
-          <span
+          <Typography
+            component="span"
             style={{
               display: '-webkit-box',
               WebkitBoxOrient: 'vertical',
@@ -154,7 +156,7 @@ export const TechDocsSearchResultListItem = (
             ) : (
               result.text
             )}
-          </span>
+          </Typography>
         }
       />
     );

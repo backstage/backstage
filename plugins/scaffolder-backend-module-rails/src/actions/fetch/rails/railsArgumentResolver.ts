@@ -44,16 +44,22 @@ enum RailsVersion {
 }
 
 export type RailsRunOptions = {
-  minimal?: boolean;
   api?: boolean;
+  database?: Database;
+  force?: boolean;
+  minimal?: boolean;
+  railsVersion?: RailsVersion;
+  skipActionCable?: boolean;
+  skipActionMailbox?: boolean;
+  skipActionMailer?: boolean;
+  skipActionText?: boolean;
+  skipActiveStorage?: boolean;
+  skipBundle?: boolean;
+  skipTest?: boolean;
+  skipWebpackInstall?: boolean;
+  skipActiveRecord?: boolean;
   template?: string;
   webpacker?: Webpacker;
-  database?: Database;
-  railsVersion?: RailsVersion;
-  skipBundle?: boolean;
-  skipWebpackInstall?: boolean;
-  skipTest?: boolean;
-  force?: boolean;
 };
 
 export const railsArgumentResolver = (
@@ -79,8 +85,32 @@ export const railsArgumentResolver = (
     argumentsToRun.push('--skip-webpack-install');
   }
 
+  if (options?.skipActiveRecord) {
+    argumentsToRun.push('--skip-active-record');
+  }
+
   if (options?.skipTest) {
     argumentsToRun.push('--skip-test');
+  }
+
+  if (options?.skipActionCable) {
+    argumentsToRun.push('--skip-action-cable');
+  }
+
+  if (options?.skipActionMailer) {
+    argumentsToRun.push('--skip-action-mailer');
+  }
+
+  if (options?.skipActionMailbox) {
+    argumentsToRun.push('--skip-action-mailbox');
+  }
+
+  if (options?.skipActiveStorage) {
+    argumentsToRun.push('--skip-active-storage');
+  }
+
+  if (options?.skipActionText) {
+    argumentsToRun.push('--skip-action-text');
   }
 
   if (options?.force) {

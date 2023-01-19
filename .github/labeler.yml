@@ -13,6 +13,8 @@ techdocs:
   - plugins/techdocs/**/*
   - plugins/techdocs-*/**/*
   - packages/techdocs-*/**/*
+homepage:
+  - plugins/home/**/*
 documentation:
   - docs/**/*
 microsite:

@@ -47,13 +47,18 @@ export interface Config {
               | 'google'
               | 'serviceAccount'
               | 'azure'
-              | 'oidc';
+              | 'oidc'
+              | 'googleServiceAccount';
             /** @visibility frontend */
             oidcTokenProvider?: string;
             /** @visibility frontend */
             skipTLSVerify?: boolean;
             /** @visibility frontend */
             skipMetricsLookup?: boolean;
+            /** @visibility secret  */
+            caData?: string;
+            /** @visibility secret  */
+            caFile?: string;
           }>;
         }
       | {

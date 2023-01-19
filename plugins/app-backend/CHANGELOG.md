@@ -1,5 +1,67 @@
 # @backstage/plugin-app-backend
 
+## 0.3.40
+
+### Patch Changes
+
+- b4ffa3bd91: The warning for missing app contents is now logged as an error instead, but only in production.
+- ecbec4ec4c: Internal refactor to match new options pattern in the experimental backend system.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/types@1.0.2
+
+## 0.3.40-next.1
+
+### Patch Changes
+
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/types@1.0.2
+
+## 0.3.40-next.0
+
+### Patch Changes
+
+- b4ffa3bd91: The warning for missing app contents is now logged as an error instead, but only in production.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/types@1.0.2
+
+## 0.3.39
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/config-loader@1.1.7
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
+## 0.3.39-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-plugin-api@0.2.0-next.3
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/types@1.0.2-next.1
+
 ## 0.3.39-next.2
 
 ### Patch Changes

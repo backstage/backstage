@@ -49,6 +49,7 @@ export function createGithubRepoPushAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     requireCodeOwnerReviews?: boolean;
+    dismissStaleReviews?: boolean;
     bypassPullRequestAllowances?:
       | {
           users?: string[];
@@ -56,10 +57,20 @@ export function createGithubRepoPushAction(options: {
           apps?: string[];
         }
       | undefined;
+    requiredApprovingReviewCount?: number;
+    restrictions?:
+      | {
+          users: string[];
+          teams: string[];
+          apps?: string[];
+        }
+      | undefined;
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
+    requiredConversationResolution?: boolean;
     sourcePath?: string;
     token?: string;
+    requiredCommitSigning?: boolean;
   }>({
     id: 'github:repo:push',
     description:
@@ -71,9 +82,14 @@ export function createGithubRepoPushAction(options: {
         properties: {
           repoUrl: inputProps.repoUrl,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          dismissStaleReviews: inputProps.dismissStaleReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+          restrictions: inputProps.restrictions,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+          requiredConversationResolution:
+            inputProps.requiredConversationResolution,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
           protectEnforceAdmins: inputProps.protectEnforceAdmins,
@@ -82,6 +98,7 @@ export function createGithubRepoPushAction(options: {
           gitAuthorEmail: inputProps.gitAuthorEmail,
           sourcePath: inputProps.sourcePath,
           token: inputProps.token,
+          requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
       output: {
@@ -102,10 +119,15 @@ export function createGithubRepoPushAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         requireCodeOwnerReviews = false,
+        dismissStaleReviews = false,
         bypassPullRequestAllowances,
+        requiredApprovingReviewCount = 1,
+        restrictions,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
+        requiredConversationResolution = false,
         token: providedToken,
+        requiredCommitSigning = false,
       } = ctx.input;
 
       const { owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -141,13 +163,18 @@ export function createGithubRepoPushAction(options: {
         repo,
         requireCodeOwnerReviews,
         bypassPullRequestAllowances,
+        requiredApprovingReviewCount,
+        restrictions,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
+        requiredConversationResolution,
         config,
         ctx.logger,
         gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
+        dismissStaleReviews,
+        requiredCommitSigning,
       );
 
       ctx.output('remoteUrl', remoteUrl);

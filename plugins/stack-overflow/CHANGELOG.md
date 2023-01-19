@@ -1,5 +1,97 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.10
+
+### Patch Changes
+
+- 27a5e90e97: Small updates to some paragraph components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-home@0.4.30
+  - @backstage/plugin-search-react@1.4.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.4.0-next.2
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-home@0.4.30-next.2
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-home@0.4.30-next.1
+  - @backstage/plugin-search-common@1.2.1-next.0
+  - @backstage/plugin-search-react@1.3.2-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/config@1.0.5
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-home@0.4.30-next.0
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/plugin-search-react@1.3.2-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/plugin-home@0.4.29
+  - @backstage/plugin-search-react@1.3.1
+
+## 0.1.8
+
+### Patch Changes
+
+- a19cffbeed: Update search links to only have header as linkable text
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- c981e83612: The `<StackOverflowSearchResultListItem />` component is now able to highlight the result title and/or text when provided. To take advantage of this, pass in the `highlight` prop, similar to how it is done on other result list item components.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/plugin-search-react@1.3.0
+  - @backstage/core-components@0.12.1
+  - @backstage/plugin-home@0.4.28
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/config@1.0.5
+  - @backstage/theme@0.2.16
+
+## 0.1.8-next.4
+
+### Patch Changes
+
+- c981e83612: The `<StackOverflowSearchResultListItem />` component is now able to highlight the result title and/or text when provided. To take advantage of this, pass in the `highlight` prop, similar to how it is done on other result list item components.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-home@0.4.28-next.4
+  - @backstage/plugin-search-react@1.3.0-next.4
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.0-next.3
+
 ## 0.1.8-next.3
 
 ### Patch Changes

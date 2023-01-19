@@ -20,14 +20,47 @@ import * as yaml from 'yaml';
 import { Entity } from '@backstage/catalog-model';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 
+const id = 'catalog:write';
+
+const examples = [
+  {
+    description: 'Write a catalog yaml file',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: id,
+          id: 'create-catalog-info-file',
+          name: 'Create catalog file',
+          input: {
+            entity: {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test',
+                annotations: {},
+              },
+              spec: {
+                type: 'service',
+                lifecycle: 'production',
+                owner: 'default/owner',
+              },
+            },
+          },
+        },
+      ],
+    }),
+  },
+];
+
 /**
  * Writes a catalog descriptor file containing the provided entity to a path in the workspace.
  * @public
  */
 export function createCatalogWriteAction() {
   return createTemplateAction<{ filePath?: string; entity: Entity }>({
-    id: 'catalog:write',
+    id,
     description: 'Writes the catalog-info.yaml for your template',
+    examples,
     schema: {
       input: {
         type: 'object',

@@ -208,6 +208,7 @@ export type AppOptions = {
       >;
     }
   >;
+  featureFlags?: (FeatureFlag & Omit<FeatureFlag, 'pluginId'>)[];
   components: AppComponents;
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
@@ -226,6 +227,15 @@ export type AppRouteBinder = <
     KeysWithType<ExternalRoutes, ExternalRouteRef<any, true>>
   >,
 ) => void;
+
+// @public
+export function AppRouter(props: AppRouterProps): JSX.Element;
+
+// @public
+export interface AppRouterProps {
+  // (undocumented)
+  children?: ReactNode;
+}
 
 // @public
 export class AppThemeSelector implements AppThemeApi {
@@ -259,6 +269,7 @@ export type AuthApiCreateOptions = {
 export type BackstageApp = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
+  createRoot(element: JSX.Element): ComponentType<{}>;
   getProvider(): ComponentType<{}>;
   getRouter(): ComponentType<{}>;
 };

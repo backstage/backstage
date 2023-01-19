@@ -1,0 +1,55 @@
+{
+  "name": "@backstage/integration-aws-node",
+  "description": "Helpers for fetching AWS account credentials",
+  "version": "0.1.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "node-library"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/integration-aws-node"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sts": "^3.208.0",
+    "@aws-sdk/credential-provider-node": "^3.208.0",
+    "@aws-sdk/credential-providers": "^3.208.0",
+    "@aws-sdk/types": "^3.208.0",
+    "@aws-sdk/util-arn-parser": "^3.208.0",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/config-loader": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "aws-sdk-client-mock": "^2.0.0",
+    "aws-sdk-client-mock-jest": "^2.0.0"
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
+}

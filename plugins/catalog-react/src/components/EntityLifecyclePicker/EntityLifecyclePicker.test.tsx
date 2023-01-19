@@ -169,6 +169,7 @@ describe('<EntityLifecyclePicker/>', () => {
         value={{
           updateFilters,
           queryParameters: { lifecycles: ['experimental'] },
+          backendEntities: sampleEntities,
         }}
       >
         <EntityLifecyclePicker />
@@ -182,6 +183,7 @@ describe('<EntityLifecyclePicker/>', () => {
         value={{
           updateFilters,
           queryParameters: { lifecycles: ['production'] },
+          backendEntities: sampleEntities,
         }}
       >
         <EntityLifecyclePicker />
@@ -189,6 +191,23 @@ describe('<EntityLifecyclePicker/>', () => {
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
       lifecycles: new EntityLifecycleFilter(['production']),
+    });
+  });
+  it('removes lifecycles from filters if there are no available lifecycles', () => {
+    const updateFilters = jest.fn();
+    render(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { lifecycles: ['experimental'] },
+          backendEntities: [],
+        }}
+      >
+        <EntityLifecyclePicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      lifecycles: undefined,
     });
   });
 });

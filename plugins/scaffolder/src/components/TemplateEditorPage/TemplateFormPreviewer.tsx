@@ -32,7 +32,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import React, { useCallback, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import yaml from 'yaml';
-import { FieldExtensionOptions } from '../../extensions';
+import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { LayoutOptions } from '../../layouts';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
@@ -53,8 +53,8 @@ parameters:
         description: Owner of the component
         ui:field: OwnerPicker
         ui:options:
-          allowedKinds:
-            - Group
+          catalogFilter:
+            kind: Group
   - title: Choose a location
     required:
       - repoUrl

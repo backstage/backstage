@@ -19,7 +19,7 @@ import zodToJsonSchema from 'zod-to-json-schema';
 import {
   CustomFieldExtensionSchema,
   FieldExtensionComponentProps,
-} from '../../extensions';
+} from '@backstage/plugin-scaffolder-react';
 
 /**
  * @public

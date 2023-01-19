@@ -33,6 +33,9 @@ export const SHADOW_DOM_STYLE_LOAD_EVENT = 'TECH_DOCS_SHADOW_DOM_STYLE_LOAD';
 export type SyncResult = 'cached' | 'updated';
 
 // @public
+export const TECHDOCS_ADDONS_KEY = 'techdocs.addons.addon.v1';
+
+// @public
 export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
 
 // @public
@@ -53,7 +56,9 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
 };
 
 // @public
-export const TechDocsAddons: React_2.ComponentType;
+export const TechDocsAddons: React_2.ComponentType<
+  React_2.PropsWithChildren<{}>
+>;
 
 // @public
 export interface TechDocsApi {

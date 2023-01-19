@@ -95,11 +95,11 @@ export class StackOverflowQuestionsCollatorFactory
       'https://api.stackexchange.com/2.2';
     const maxPage = options.maxPage || 100;
     return new StackOverflowQuestionsCollatorFactory({
-      ...options,
       baseUrl,
       maxPage,
       apiKey,
       apiAccessToken,
+      ...options,
     });
   }
 

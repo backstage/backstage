@@ -1,5 +1,50 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.0.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/plugin-permission-common@0.7.3-next.0
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-search-common@1.2.0
+
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/catalog-model@1.1.4
+
+## 1.0.9-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/plugin-search-common@1.2.0-next.3
+
 ## 1.0.9-next.2
 
 ### Patch Changes

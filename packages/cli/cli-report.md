@@ -569,6 +569,7 @@ Usage: backstage-cli versions:bump [options]
 Options:
   --pattern <glob>
   --release <version|next|main>
+  --skip-install
   -h, --help
 ```
 

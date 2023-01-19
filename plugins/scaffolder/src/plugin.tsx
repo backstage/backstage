@@ -15,7 +15,11 @@
  */
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import { scaffolderApiRef, ScaffolderClient } from './api';
+import {
+  createScaffolderFieldExtension,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
+import { ScaffolderClient } from './api';
 import {
   EntityPicker,
   EntityPickerSchema,
@@ -34,13 +38,6 @@ import {
   RepoUrlPicker,
   RepoUrlPickerSchema,
 } from './components/fields/RepoUrlPicker/RepoUrlPicker';
-import { createScaffolderFieldExtension } from './extensions';
-import {
-  nextRouteRef,
-  registerComponentRouteRef,
-  rootRouteRef,
-  viewTechDocRouteRef,
-} from './routes';
 import {
   createApiFactory,
   createPlugin,
@@ -57,6 +54,14 @@ import {
   EntityTagsPicker,
   EntityTagsPickerSchema,
 } from './components/fields/EntityTagsPicker/EntityTagsPicker';
+import {
+  registerComponentRouteRef,
+  rootRouteRef,
+  viewTechDocRouteRef,
+  selectedTemplateRouteRef,
+  scaffolderTaskRouteRef,
+} from './routes';
+import { nextRouteRef } from './next';
 
 /**
  * The main plugin export for the scaffolder.
@@ -84,6 +89,8 @@ export const scaffolderPlugin = createPlugin({
   ],
   routes: {
     root: rootRouteRef,
+    selectedTemplate: selectedTemplateRouteRef,
+    ongoingTask: scaffolderTaskRouteRef,
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,

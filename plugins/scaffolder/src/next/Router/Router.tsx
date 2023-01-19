@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren } from 'react';
-import { Routes, Route, useOutlet } from 'react-router';
+import { Routes, Route, useOutlet } from 'react-router-dom';
 import { TemplateListPage } from '../TemplateListPage';
 import { TemplateWizardPage } from '../TemplateWizardPage';
 import {
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FIELD_EXTENSION_KEY,
-  DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
   NextFieldExtensionOptions,
-  FieldExtensionOptions,
-} from '../../extensions';
+  SecretsContextProvider,
+  useCustomFieldExtensions,
+} from '@backstage/plugin-scaffolder-react';
 
-import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
-import { nextSelectedTemplateRouteRef } from '../../routes';
-import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
-import type { ErrorTransformer } from '@rjsf/utils';
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
+import { type FormProps } from '../types';
+import { nextSelectedTemplateRouteRef } from '../routes';
 
 /**
  * The Props for the Scaffolder Router
@@ -45,7 +42,7 @@ export type NextRouterProps = {
     TaskPageComponent?: React.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
-  transformErrors?: ErrorTransformer;
+  FormProps?: FormProps;
 };
 
 /**
@@ -55,19 +52,9 @@ export type NextRouterProps = {
  */
 export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   const { components: { TemplateCardComponent } = {} } = props;
-
   const outlet = useOutlet() || props.children;
-
-  const customFieldExtensions = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: FIELD_EXTENSION_WRAPPER_KEY,
-      })
-      .findComponentData<FieldExtensionOptions | NextFieldExtensionOptions>({
-        key: FIELD_EXTENSION_KEY,
-      }),
-  );
-
+  const customFieldExtensions =
+    useCustomFieldExtensions<NextFieldExtensionOptions>(outlet);
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
@@ -93,7 +80,10 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         path={nextSelectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateWizardPage customFieldExtensions={fieldExtensions} />
+            <TemplateWizardPage
+              customFieldExtensions={fieldExtensions}
+              FormProps={props.FormProps}
+            />
           </SecretsContextProvider>
         }
       />

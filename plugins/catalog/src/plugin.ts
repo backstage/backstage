@@ -127,6 +127,17 @@ export const EntityLinksCard = catalogPlugin.provide(
 );
 
 /** @public */
+export const EntityLabelsCard = catalogPlugin.provide(
+  createComponentExtension({
+    name: 'EntityLabelsCard',
+    component: {
+      lazy: () =>
+        import('./components/EntityLabelsCard').then(m => m.EntityLabelsCard),
+    },
+  }),
+);
+
+/** @public */
 export const EntityHasSystemsCard: (props: HasSystemsCardProps) => JSX.Element =
   catalogPlugin.provide(
     createComponentExtension({

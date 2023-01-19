@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType } from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 
 import { List, ListItem } from '@material-ui/core';
 import DefaultIcon from '@material-ui/icons/InsertDriveFile';
@@ -214,6 +214,35 @@ export const GroupLayout = () => {
             )}
           />
         </>
+      )}
+    </SearchResult>
+  );
+};
+
+export const WithCustomNoResultsComponent = () => {
+  return (
+    <SearchResult noResultsComponent={<>No results were found</>}>
+      {({ results }) => (
+        <List>
+          {results.map(({ type, document }) => {
+            switch (type) {
+              case 'custom-result-item':
+                return (
+                  <CustomResultListItem
+                    key={document.location}
+                    result={document}
+                  />
+                );
+              default:
+                return (
+                  <DefaultResultListItem
+                    key={document.location}
+                    result={document}
+                  />
+                );
+            }
+          })}
+        </List>
       )}
     </SearchResult>
   );
