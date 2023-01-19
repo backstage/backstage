@@ -24,33 +24,15 @@ import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
+import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReader } from '@backstage/backend-common';
-import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
-
-// @public
-export type ActionContext<Input extends JsonObject> = {
-  logger: Logger;
-  logStream: Writable;
-  secrets?: TaskSecrets;
-  workspacePath: string;
-  input: Input;
-  output(name: string, value: JsonValue): void;
-  createTemporaryDirectory(): Promise<string>;
-  templateInfo?: TemplateInfo;
-  isDryRun?: boolean;
-  user?: {
-    entity?: UserEntity;
-    ref?: string;
-  };
-};
 
 // @public
 export const createBuiltinActions: (
@@ -529,11 +511,6 @@ export const createPublishGitlabMergeRequestAction: (options: {
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
-export const createTemplateAction: <TInput extends JsonObject>(
-  templateAction: TemplateAction<TInput>,
-) => TemplateAction<TInput>;
-
-// @public
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
@@ -799,11 +776,6 @@ export class TaskManager implements TaskContext {
 }
 
 // @public
-export type TaskSecrets = Record<string, string> & {
-  backstageToken?: string;
-};
-
-// @public
 export type TaskStatus =
   | 'open'
   | 'processing'
@@ -889,22 +861,6 @@ export class TaskWorker {
   // (undocumented)
   start(): void;
 }
-
-// @public (undocumented)
-export type TemplateAction<Input extends JsonObject> = {
-  id: string;
-  description?: string;
-  examples?: {
-    description: string;
-    example: string;
-  }[];
-  supportsDryRun?: boolean;
-  schema?: {
-    input?: Schema;
-    output?: Schema;
-  };
-  handler: (ctx: ActionContext<Input>) => Promise<void>;
-};
 
 // @public
 export class TemplateActionRegistry {

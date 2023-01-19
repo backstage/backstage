@@ -20,7 +20,7 @@ import { initRepoAndPush } from '../helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 
 /**

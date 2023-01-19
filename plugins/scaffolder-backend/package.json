@@ -46,6 +46,7 @@
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
+    "@backstage/plugin-scaffolder-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@gitbeaker/core": "^35.6.0",
     "@gitbeaker/node": "^35.1.0",
