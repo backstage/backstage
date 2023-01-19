@@ -243,7 +243,7 @@ These are the available `--select` options supported by the `create` command:
 | ----------------- | ------------------------------------------------------- | ------------------------------ | -------------------------------------------------------------------- |
 | plugin            | Used to generate a default frontend plugin              | `packages/app`                 | [Create a Plugin](https://backstage.io/docs/plugins/create-a-plugin) |
 | backend-plugin    | Used to generate a backend-specific plugin              | `packages/backend`             | [Backend Plugin](https://backstage.io/docs/plugins/backend-plugin)   |
-| plugin-common     | Generates a common library to be shared amongst plugins | `@backstage/plugin-adr-common` |                                                                      |
+| plugin-common     | Generates a plugin specific package to be shared amongst backend and frontend plugins | `@backstage/plugin-adr-common` |                                                                      |
 | web-library       | Placeholder                                             | `@backstage/version-bridge`    |                                                                      |
 | scaffolder-module | Placeholder                                             | Placeholder                    |                                                                      |
 
