@@ -27,9 +27,9 @@ import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FormFactor,
-  lighthouseApiRef,
   LighthouseConfigSettings,
-} from '../../api';
+} from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 

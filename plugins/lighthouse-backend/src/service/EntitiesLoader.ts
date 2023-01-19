@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core-plugin-api';
-import { LighthouseApi } from '@backstage/plugin-lighthouse-common';
+import {
+  CatalogClient,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/catalog-client';
 
-/** @public */
-export const lighthouseApiRef = createApiRef<LighthouseApi>({
-  id: 'plugin.lighthouse.service',
-});
+export async function loadLighthouseEntities(catalogClient: CatalogClient) {
+  const filter: Record<string, symbol | string> = {
+    kind: 'Component',
+    'spec.type': 'website',
+    ['lighthouse.com/website-url']: CATALOG_FILTER_EXISTS,
+  };
+
+  return await catalogClient.getEntities({
+    filter: [filter],
+  });
+}

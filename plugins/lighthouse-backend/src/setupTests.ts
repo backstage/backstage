@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core-plugin-api';
-import { LighthouseApi } from '@backstage/plugin-lighthouse-common';
-
-/** @public */
-export const lighthouseApiRef = createApiRef<LighthouseApi>({
-  id: 'plugin.lighthouse.service',
-});
+export {};

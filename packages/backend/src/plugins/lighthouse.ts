@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core-plugin-api';
-import { LighthouseApi } from '@backstage/plugin-lighthouse-common';
+import { create } from '@backstage/plugin-lighthouse-backend';
+import { PluginEnvironment } from '../types';
+import { CatalogClient } from '@backstage/catalog-client';
 
-/** @public */
-export const lighthouseApiRef = createApiRef<LighthouseApi>({
-  id: 'plugin.lighthouse.service',
-});
+export default async function createPlugin(env: PluginEnvironment) {
+  const { logger, scheduler, config } = env;
+
+  const catalogClient = new CatalogClient({
+    discoveryApi: env.discovery,
+  });
+
+  await create({ logger, scheduler, config, catalogClient });
+}
