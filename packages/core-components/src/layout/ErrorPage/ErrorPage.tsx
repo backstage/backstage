@@ -67,6 +67,7 @@ export function ErrorPage(props: IErrorPageProps) {
   const classes = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
+  const supportLink = supportUrl || support?.url;
 
   return (
     <Grid container spacing={0} className={classes.container}>
@@ -88,9 +89,12 @@ export function ErrorPage(props: IErrorPageProps) {
           <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
-          ... or please{' '}
-          <Link to={supportUrl || support.url}>contact support</Link> if you
-          think this is a bug.
+          {supportLink && (
+            <>
+              ... or please <Link to={supportLink}>contact support</Link> if you
+              think this is a bug.
+            </>
+          )}
         </Typography>
       </Grid>
       <MicDrop />

@@ -32,30 +32,13 @@ export type SupportConfig = {
   items: SupportItem[];
 };
 
-const DEFAULT_SUPPORT_CONFIG: SupportConfig = {
-  url: 'https://github.com/backstage/backstage/issues',
-  items: [
-    {
-      title: 'Support Not Configured',
-      icon: 'warning',
-      links: [
-        {
-          // TODO: Update to dedicated support page on backstage.io/docs
-          title: 'Add `app.support` config key',
-          url: 'https://github.com/backstage/backstage/blob/master/app-config.yaml',
-        },
-      ],
-    },
-  ],
-};
-
-export function useSupportConfig(): SupportConfig {
+export function useSupportConfig(): SupportConfig | undefined {
   const apiHolder = useApiHolder();
   const config = apiHolder.get(configApiRef);
   const supportConfig = config?.getOptionalConfig('app.support');
 
   if (!supportConfig) {
-    return DEFAULT_SUPPORT_CONFIG;
+    return undefined;
   }
 
   return {

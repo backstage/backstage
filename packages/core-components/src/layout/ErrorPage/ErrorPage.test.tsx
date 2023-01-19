@@ -17,7 +17,27 @@
 import React from 'react';
 import { ErrorPage } from './ErrorPage';
 import { Link } from '../../components/Link';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  MockConfigApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import { configApiRef } from '@backstage/core-plugin-api';
+
+const configApi = new MockConfigApi({
+  app: {
+    support: {
+      url: 'https://github.com',
+      items: [
+        {
+          title: 'Github',
+          icon: 'github',
+          links: [{ title: 'Github Issues', url: '/issues' }],
+        },
+      ],
+    },
+  },
+});
 
 describe('<ErrorPage/>', () => {
   it('should render with status code, status message and go back link', async () => {
@@ -68,9 +88,11 @@ describe('<ErrorPage/>', () => {
     expect(getByText(/a link/i)).toHaveAttribute('href', '/test');
   });
 
-  it('should render with default support url if supportUrl is not provided', async () => {
+  it('should render with config support url if supportUrl is not provided', async () => {
     const { getByText } = await renderInTestApp(
-      <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
+      </TestApiProvider>,
     );
     expect(
       getByText(/looks like someone dropped the mic!/i),
@@ -78,7 +100,7 @@ describe('<ErrorPage/>', () => {
     expect(getByText(/contact support/i)).toBeInTheDocument();
     expect(getByText(/contact support/i)).toHaveAttribute(
       'href',
-      'https://github.com/backstage/backstage/issues',
+      'https://github.com',
     );
   });
 

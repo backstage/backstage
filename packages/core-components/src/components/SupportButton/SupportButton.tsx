@@ -84,7 +84,8 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
 
 export function SupportButton(props: SupportButtonProps) {
   const { title, items, children } = props;
-  const { items: configItems } = useSupportConfig();
+  const config = useSupportConfig();
+  const supportItems = items ?? config?.items;
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -101,6 +102,10 @@ export function SupportButton(props: SupportButtonProps) {
   const popoverCloseHandler = () => {
     setPopoverOpen(false);
   };
+
+  if (!supportItems || supportItems.length === 0) {
+    return null;
+  }
 
   return (
     <>
@@ -151,7 +156,7 @@ export function SupportButton(props: SupportButtonProps) {
               {child}
             </ListItem>
           ))}
-          {(items ?? configItems).map((item, i) => (
+          {supportItems.map((item, i) => (
             <SupportListItem item={item} key={`item-${i}`} />
           ))}
         </List>

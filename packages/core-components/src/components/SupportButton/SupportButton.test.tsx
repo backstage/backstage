@@ -44,14 +44,22 @@ const POPOVER_ID = 'support-button-popover';
 
 describe('<SupportButton />', () => {
   it('renders without exploding', async () => {
-    await renderInTestApp(<SupportButton />);
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <SupportButton />
+      </TestApiProvider>,
+    );
     await expect(
       screen.findByTestId(SUPPORT_BUTTON_ID),
     ).resolves.toBeInTheDocument();
   });
 
   it('supports passing a title', async () => {
-    await renderInTestApp(<SupportButton title="Custom title" />);
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <SupportButton title="Custom title" />
+      </TestApiProvider>,
+    );
     fireEvent.click(screen.getByTestId(SUPPORT_BUTTON_ID));
     expect(screen.getByText('Custom title')).toBeInTheDocument();
   });
@@ -95,7 +103,11 @@ describe('<SupportButton />', () => {
   });
 
   it('shows popover on click', async () => {
-    await renderInTestApp(<SupportButton />);
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <SupportButton />
+      </TestApiProvider>,
+    );
 
     await expect(
       screen.findByTestId(SUPPORT_BUTTON_ID),
@@ -105,5 +117,15 @@ describe('<SupportButton />', () => {
     });
 
     await expect(screen.findByTestId(POPOVER_ID)).resolves.toBeInTheDocument();
+  });
+
+  it('hide button if config is missing', async () => {
+    const emptyConfig = new MockConfigApi({});
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, emptyConfig]]}>
+        <SupportButton />
+      </TestApiProvider>,
+    );
+    await expect(screen.findByTestId(SUPPORT_BUTTON_ID)).rejects.toThrow();
   });
 });
