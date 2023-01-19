@@ -6,7 +6,7 @@ sidebar_label: Migration Guide
 description: How to migrate existing backends to the new backend system
 ---
 
-# Overview
+## Overview
 
 This section describes how to migrate an existing Backstage backend service
 package (typically in `packages/backend`) to use the new backend system.
@@ -23,7 +23,7 @@ package as a result of these steps, and then being able to [migrate
 plugins](../building-plugins-and-modules/08-migrating.md) as a separate
 endeavour later.
 
-# Overall Structure
+## Overall Structure
 
 Your typical backend package has a few overall component parts:
 
@@ -58,7 +58,7 @@ module.hot?.accept();
 main().catch(...);
 ```
 
-# Migrating the Index File
+## Migrating the Index File
 
 This migration will try to leave the `plugins` folder unchanged initially, first
 focusing on removing the environment type and reducing the index file to its
@@ -114,11 +114,11 @@ then passes them into the relevant `createPlugin` export function, and makes
 sure that the route handler it returns is passed into the HTTP router with the
 given prefix.
 
-# Handling Custom Environments
+## Handling Custom Environments
 
 In the simple case, what we did above is sufficient, TypeScript is happy, and
 the backend runs with the new feature. If they do, feel free to skip this entire
-section.
+section, and deleting `types.ts`.
 
 Sometimes though, type errors can be reported on the newly added line, saying
 that parts of the `PluginEnvironment` type do not match. This happens when the
@@ -197,7 +197,7 @@ place it in the legacy plugin environment.
 > will also need to import that factory and pass it to the `services` array
 > argument of `createBackend`.
 
-# Cleaning Up the Plugins Folder
+## Cleaning Up the Plugins Folder
 
 For plugins that are private and your own, you can follow a [dedicated migration
 guide](../building-plugins-and-modules/08-migrating.md) as you see fit, at a
@@ -213,7 +213,7 @@ such migrations you can make.
 > and they still need to be configured properly in your app-config. Those
 > mechanisms still work just the same as they used to in the old backend system.
 
-## The App Plugin
+### The App Plugin
 
 The app backend plugin that serves the frontend from the backend can trivially
 be used in its new form.
@@ -233,7 +233,7 @@ typically found in your `packages/app` folder. By default it's just plain "app".
 
 You should be able to delete the `plugins/app.ts` file at this point.
 
-## The Catalog Plugin
+### The Catalog Plugin
 
 A basic installation of the catalog plugin looks as follows.
 
@@ -253,10 +253,10 @@ use templates at all, you can remove those lines.
 
 If you have other customizations made to `plugins/catalog.ts`, such as adding
 custom processors or entity providers, read on. Otherwise, you should be able to
-just delete the `plugins/catalog.ts` file at this point.
+just delete that file at this point.
 
 You will use the [extension points](../architecture/05-extension-points.md)
-mechanism to extend or tweak the functionality of the catalog. To do that,
+mechanism to extend or tweak the functionality of the plugin. To do that,
 you'll make your own bespoke [module](../architecture/06-modules.md) which
 depends on the appropriate extension point and interacts with it.
 
@@ -275,8 +275,8 @@ depends on the appropriate extension point and interacts with it.
 +        // ... and other dependencies as needed
 +      },
 +      init({ catalog /* ..., other dependencies */ }) {
-+        // Here you have the opportunity to interact with the catalog extension
-+        // point before the catalog plugin itself gets instantiated
++        // Here you have the opportunity to interact with the extension
++        // point before the plugin itself gets instantiated
 +        catalog.addEntityProvider(new MyEntityProvider()); // just an example
 +        catalog.addProcessor(new MyProcessor());           // just an example
 +      },
@@ -290,12 +290,139 @@ depends on the appropriate extension point and interacts with it.
 +backend.add(catalogExtensionsModule());
 ```
 
-This also requires that you have a dependency on the catalog node package, if
-you didn't already have one.
+This also requires that you have a dependency on the corresponding node package,
+if you didn't already have one.
 
 ```bash
 # from the repository root
 yarn add --cwd packages/backend @backstage/plugin-catalog-node
+```
+
+Here we've placed the module directly in the backend index file just to get
+going easily, but feel free to move it out to where it fits best. As you migrate
+your entire plugin flora to the new backend system, you will probably make more
+and more of these modules as "first class" things, living right next to the
+implementations that they represent, and being exported from there.
+
+### The Events Plugin
+
+A basic installation of the events plugin looks as follows.
+
+```diff
+ // packages/backend/src/index.ts
++import { eventsPlugin } from '@backstage/plugin-events-backend';
+
+ const backend = createBackend();
++backend.add(eventsPlugin());
+```
+
+If you have other customizations made to `plugins/events.ts`, such as adding
+custom subscribers, read on. Otherwise, you should be able to just delete that
+file at this point.
+
+You will use the [extension points](../architecture/05-extension-points.md)
+mechanism to extend or tweak the functionality of the plugin. To do that,
+you'll make your own bespoke [module](../architecture/06-modules.md) which
+depends on the appropriate extension point and interacts with it.
+
+```diff
+ // packages/backend/src/index.ts
++import { eventsExtensionPoint } from '@backstage/plugin-events-node';
++import { createBackendModule } from '@backstage/backend-plugin-api';
+
++const eventsExtensionsModule = createBackendModule({
++  pluginId: 'events',     // name of the plugin that the module is targeting
++  moduleId: 'extensions', // you can choose this one freely
++  register(env) {
++    env.registerInit({
++      deps: {
++        events: eventsExtensionPoint,
++        // ... and other dependencies as needed
++      },
++      init({ events /* ..., other dependencies */ }) {
++        // Here you have the opportunity to interact with the extension
++        // point before the plugin itself gets instantiated
++        events.addSubscribers(new MySubscriber()); // just an example
++      },
++    });
++  },
++});
+
+ const backend = createBackend();
+ backend.add(eventsPlugin());
++backend.add(eventsExtensionsModule());
+```
+
+This also requires that you have a dependency on the corresponding node package,
+if you didn't already have one.
+
+```bash
+# from the repository root
+yarn add --cwd packages/backend @backstage/plugin-events-node
+```
+
+Here we've placed the module directly in the backend index file just to get
+going easily, but feel free to move it out to where it fits best. As you migrate
+your entire plugin flora to the new backend system, you will probably make more
+and more of these modules as "first class" things, living right next to the
+implementations that they represent, and being exported from there.
+
+### The Scaffolder Plugin
+
+A basic installation of the scaffolder plugin looks as follows.
+
+```diff
+ // packages/backend/src/index.ts
++import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend';
+
+ const backend = createBackend();
++backend.add(scaffolderPlugin());
+```
+
+If you have other customizations made to `plugins/scaffolder.ts`, such as adding
+custom actions, read on. Otherwise, you should be able to just delete that file
+at this point.
+
+You will use the [extension points](../architecture/05-extension-points.md)
+mechanism to extend or tweak the functionality of the plugin. To do that,
+you'll make your own bespoke [module](../architecture/06-modules.md) which
+depends on the appropriate extension point and interacts with it.
+
+```diff
+ // packages/backend/src/index.ts
+ // TODO: This might be moved to @backstage/plugin-scaffolder-node
++import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-backend/alpha';
++import { createBackendModule } from '@backstage/backend-plugin-api';
+
++const scaffolderExtensionsModule = createBackendModule({
++  pluginId: 'scaffolder', // name of the plugin that the module is targeting
++  moduleId: 'extensions', // you can choose this one freely
++  register(env) {
++    env.registerInit({
++      deps: {
++        scaffolder: scaffolderActionsExtensionPoint,
++        // ... and other dependencies as needed
++      },
++      init({ scaffolder /* ..., other dependencies */ }) {
++        // Here you have the opportunity to interact with the extension
++        // point before the plugin itself gets instantiated
++        scaffolder.addActions(new MyAction()); // just an example
++      },
++    });
++  },
++});
+
+ const backend = createBackend();
+ backend.add(scaffolderPlugin());
++backend.add(scaffolderExtensionsModule());
+```
+
+This also requires that you have a dependency on the corresponding node package,
+if you didn't already have one.
+
+```bash
+# from the repository root
+yarn add --cwd packages/backend @backstage/plugin-scaffolder-node
 ```
 
 Here we've placed the module directly in the backend index file just to get
