@@ -370,30 +370,22 @@ export const SecretsContextProvider: ({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @alpha
-<<<<<<< HEAD
 export const Stepper: (stepperProps: StepperProps) => JSX.Element;
-=======
-export const Stepper: ({ layouts, ...props }: StepperProps) => JSX.Element;
->>>>>>> be504a73cc (run api-report)
 
 // @alpha
 export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
   templateName?: string;
+  FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
-<<<<<<< HEAD
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
   components?: {
     ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
   };
-=======
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
-  FormProps?: FormProps;
   layouts?: LayoutOptions[];
->>>>>>> be504a73cc (run api-report)
 };
 
 // @alpha
@@ -492,7 +484,12 @@ export type WorkflowProps = {
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
   StepperProps,
-  'extensions' | 'FormProps' | 'components' | 'onCreate' | 'initialState'
+  | 'extensions'
+  | 'FormProps'
+  | 'components'
+  | 'onCreate'
+  | 'initialState'
+  | 'layouts'
 >;
 
 // (No @packageDocumentation comment for this package)

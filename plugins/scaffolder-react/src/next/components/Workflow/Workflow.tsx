@@ -51,7 +51,12 @@ export type WorkflowProps = {
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
   StepperProps,
-  'extensions' | 'FormProps' | 'components' | 'onCreate' | 'initialState' | 'layouts'
+  | 'extensions'
+  | 'FormProps'
+  | 'components'
+  | 'onCreate'
+  | 'initialState'
+  | 'layouts'
 >;
 
 /**

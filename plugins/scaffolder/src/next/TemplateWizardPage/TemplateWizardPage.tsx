@@ -26,11 +26,9 @@ import {
   scaffolderApiRef,
   useTemplateSecrets,
   Workflow,
-  type LayoutOptions
+  type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
-import {
-  NextFieldExtensionOptions,
-} from '@backstage/plugin-scaffolder-react';
+import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
 import { type FormProps } from '../types';
 import { nextRouteRef } from '../routes';

@@ -37,7 +37,7 @@ describe('useTransformSchemaToProps', () => {
     };
 
     const { result } = renderHook(
-      () => useTransformSchemaToProps(step, layouts),
+      () => useTransformSchemaToProps(step, { layouts }),
       {
         wrapper: ({ children }) => (
           <TestApiProvider apis={[]}>{children}</TestApiProvider>

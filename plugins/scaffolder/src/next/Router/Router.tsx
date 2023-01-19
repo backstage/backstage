@@ -86,9 +86,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
             <TemplateWizardPage
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
-              FormProps={{
-                ...props.FormProps,
-              }}
+              FormProps={props.FormProps}
             />
           </SecretsContextProvider>
         }

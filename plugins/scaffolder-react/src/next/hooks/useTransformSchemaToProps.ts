@@ -16,10 +16,15 @@
 import { type ParsedTemplateSchema } from './useTemplateSchema';
 import { type LayoutOptions } from '../types';
 
+interface Options {
+  layouts?: LayoutOptions[];
+}
+
 export const useTransformSchemaToProps = (
   step: ParsedTemplateSchema,
-  layouts: LayoutOptions[] = [],
+  options: Options = {},
 ): ParsedTemplateSchema => {
+  const { layouts = [] } = options;
   const objectFieldTemplate = step?.uiSchema['ui:ObjectFieldTemplate'] as
     | string
     | undefined;

@@ -152,7 +152,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
-  const currentStep = useTransformSchemaToProps(steps[activeStep], layouts);
+  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 
   return (
     <>
