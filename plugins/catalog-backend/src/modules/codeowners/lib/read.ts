@@ -52,6 +52,7 @@ export async function findCodeOwnerByTarget(
   reader: UrlReader,
   targetUrl: string,
   scmIntegration: ScmIntegration,
+  pattern: string,
 ): Promise<string | undefined> {
   const codeownersPaths = scmCodeOwnersPaths[scmIntegration?.type ?? ''];
 
@@ -70,7 +71,7 @@ export async function findCodeOwnerByTarget(
     return undefined;
   }
 
-  const owner = resolveCodeOwner(contents);
+  const owner = resolveCodeOwner(contents, pattern);
 
   return owner;
 }

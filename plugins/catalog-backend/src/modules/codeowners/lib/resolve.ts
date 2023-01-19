@@ -29,7 +29,7 @@ export function resolveCodeOwner(
   const owners = codeowners.parse(contents);
 
   return pipe(
-    filter((e: CodeOwnersEntry) => e.pattern === pattern),
+    filter((e: CodeOwnersEntry) => pattern.includes(e.pattern)),
     reverse,
     head,
     get('owners'),
