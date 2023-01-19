@@ -165,7 +165,7 @@ custom API, so we use a helper function to transform that particular one.
 
 To make additions as mentioned above to the environment, you will start to get
 into the weeds of how the backend system wiring works. You'll need to have a
-service reference, and a service factory that performs the actual creation of
+service reference and a service factory that performs the actual creation of
 your service. Please see [the services
 article](../architecture/03-services.md#defining-a-service) to learn how to
 create a service ref and its default factory. You can place that code directly

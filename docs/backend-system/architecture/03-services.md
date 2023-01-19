@@ -101,12 +101,3 @@ const backend = createBackend({
   ],
 });
 ```
-
-### Migrating Your Own Utilities Into Services
-
-As your backends grow in complexity, you may have started writing utility
-classes with shared backend functionality, that you pass down into your plugins.
-Maybe you have placed them into your `PluginEnvironment` in
-`packages/backend/src/types.ts`. If this applies to you, you'll probably be
-interested in migrating those to become proper backend services according to the
-new backend system, so that they can be dependency injected into your backends.
