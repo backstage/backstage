@@ -340,7 +340,7 @@ export default class ApiRouter<
     ...handlers: core.RequestHandler<
       core.ParamsDictionary,
       any,
-      FieldPathValue<FieldPathValue<TFieldValues, TFieldName>, 'get'>,
+      FieldPathValue<TFieldValues, TFieldName>,
       ParsedQs,
       Record<string, string>
     >[]
