@@ -85,7 +85,7 @@ following command:
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/backend-common @backstage/backend-defaults @backstage/backend-plugin-api
+yarn add --cwd packages/backend @backstage/backend-defaults @backstage/backend-plugin-api
 ```
 
 You should now be able to start this up with the familiar `yarn workspace
