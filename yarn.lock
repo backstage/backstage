@@ -7199,7 +7199,7 @@ __metadata:
     msw: ^0.49.0
     node-fetch: ^2.6.7
     nunjucks: ^3.2.3
-    octokit: ^2.0.0
+    octokit: ^2.0.4
     octokit-plugin-create-pull-request: ^3.10.0
     p-limit: ^3.1.0
     p-queue: ^6.6.2
@@ -30400,7 +30400,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"octokit@npm:^2.0.0, octokit@npm:^2.0.4":
+"octokit@npm:^2.0.4":
   version: 2.0.7
   resolution: "octokit@npm:2.0.7"
   dependencies:
