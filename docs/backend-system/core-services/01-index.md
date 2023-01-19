@@ -225,3 +225,151 @@ createBackendPlugin({
   },
 });
 ```
+
+## Discovery
+
+When building plugins, you might find that you will need to lookup where in fact another plugins `baseUrl`. This could be for example, a `http` route or some `ws` protocol URL. For this we have the `discovery` service that you can query both the internal and external `baseUrl`s given a plugin ID.
+
+### Using the service
+
+The following example shows how to get the `DiscoveryService` in your `example` backend plugin and making a request to both the internal and external `baseUrl`s for the `derp` plugin.
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { fetch } from 'node-fetch';
+import { Router } from 'express';
+
+createBackendPlugin({
+  id: 'example',
+  register(env) {
+    env.registerInit({
+      deps: {
+        discovery: coreServices.discovery,
+      },
+      async init({ discovery }) {
+        const urls = await Promise.all[
+          discovery.getBaseUrl('derp'),
+          discovery.getExternalBaseUrl('derp'),
+        ];
+
+        await Promise.all(
+          urls.map(
+            (url) => fetch(url).then((r) => r.json()),
+          ),
+        );
+      },
+    });
+  },
+});
+```
+
+## Identity
+
+When working with backend plugins, you might find that you will need to interact with the `auth-backend` plugin to both authenticate backstage tokens, and get things like the `entityRef` of the authenticated user, and anything that they might claim to own through `ownershipEntityRefs`.
+
+### Using the service
+
+The following example shows how to get the `IdentityService` in your `example` backend plugin and retrieve the users `entityRef` and ownership claims for the incoming `http` request.
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { Router } from 'express';
+
+createBackendPlugin({
+  id: 'example',
+  register(env) {
+    env.registerInit({
+      deps: {
+        identity: coreServices.identity,
+        http: coreServices.httpRouter,
+      },
+      async init({ http, identity }) {
+        const router = Router();
+        router.get('/test-me', (request, response) => {
+          // use the identityService pull out the header from the request and get the user
+          const { identity: userEntityRef, ownershipEntityRefs } =
+            await identity.getIdentity({
+              request,
+            });
+
+          // sent the decoded and validated things back to the user
+          response.json({
+            userEntityRef,
+            ownershipEntityRefs,
+          });
+        });
+
+        http.use(router);
+      },
+    });
+  },
+});
+```
+
+### Configuration of the service
+
+There's additional configuration that you can optionally pass to setup the `identity` core service.
+
+- `issuer` - Set an optional issuer for validation of the `jwt`
+- `algorithms` - `jws` `alg` header for validation of the `jwt`, defaults to `ES256`. More info on supported algorithms under [jose](https://github.com/panva/jose)
+
+You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
+
+```ts
+import { identityFactory } from '@backstage/backend-app-api`;
+
+const backend = createBackend({
+  services: [
+    identityFactory({
+      issuer: 'backstage',
+      algorithms: ['ES256', 'RS256']
+    }),
+  ],
+});
+```
+
+## Lifecycle
+
+When writing plugins, it's often that you will have long running things that you might want to ensure clean shutdowns of when the plugins are torn down, or when the backend is quit (think local development). You shouldn't have to worry too much about providing shutdowns for any of the core services that you use, and should really only need to take care of anything that you create that you should stop when your plugin stops.
+
+### Using the service
+
+The following example shows how to get the `LifecycleService` in your `example` backend plugin to clean a long running interval on teardown.
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { Router } from 'express';
+
+createBackendPlugin({
+  id: 'example',
+  register(env) {
+    env.registerInit({
+      deps: {
+        lifecycle: coreServices.lifecycle,
+        logger: coreServices.logger,
+      },
+      async init({ lifecycle, logger }) {
+        // setup by creating an interval that does something that we want to stop after the plugin is stopped.
+        const interval = setInterval(async () => {
+          await fetch('http://google.com/keepalive').then(r => r.json());
+          // do some other stuff.
+        });
+
+        lifecycle.addShutdownHook({
+          fn: () => clearInterval(interval),
+          logger,
+        });
+      },
+    });
+  },
+});
+```
