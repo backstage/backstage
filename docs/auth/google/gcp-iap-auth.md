@@ -41,7 +41,7 @@ besides the config section above, it also needs to be given one or more
 callbacks in actual code as well as described below.
 
 Add a `providerFactories` entry to the router in
-`packages/backend/plugin/auth.ts`.
+`packages/backend/src/plugins/auth.ts`.
 
 ```ts
 import { providers } from '@backstage/plugin-auth-backend';
@@ -75,7 +75,10 @@ export default async function createPlugin(
             // GSuite or similar, based on the IAP token sub/email claims
             const id = iapToken.email.split('@')[0];
             const sub = stringifyEntityRef({ kind: 'User', name: id });
-            const ent = [sub, stringifyEntityRef({ kind: 'Group', name: 'team-name' });
+            const ent = [
+              sub,
+              stringifyEntityRef({ kind: 'Group', name: 'team-name' }),
+            ];
             return ctx.issueToken({ claims: { sub, ent } });
           },
         },

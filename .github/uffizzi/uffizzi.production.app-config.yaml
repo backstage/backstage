@@ -30,6 +30,9 @@ backend:
 auth:
   environment: production
   providers: {}
+  proxy:
+    enabled: true
+    url: https://demo.backstage.io/api/auth
 
 catalog:
   locations:

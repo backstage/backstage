@@ -28,12 +28,10 @@ export const permissionsFactory = createServiceFactory({
     discovery: coreServices.discovery,
     tokenManager: coreServices.tokenManager,
   },
-  async factory({ config }) {
-    return async ({ discovery, tokenManager }) => {
-      return ServerPermissionClient.fromConfig(config, {
-        discovery,
-        tokenManager,
-      });
-    };
+  async factory({ config, discovery, tokenManager }) {
+    return ServerPermissionClient.fromConfig(config, {
+      discovery,
+      tokenManager,
+    });
   },
 });

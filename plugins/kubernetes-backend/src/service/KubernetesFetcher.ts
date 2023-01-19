@@ -203,7 +203,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       );
     }
 
-    url.pathname = resourcePath;
+    if (url.pathname === '/') {
+      url.pathname = resourcePath;
+    } else {
+      url.pathname += resourcePath;
+    }
+
     if (labelSelector) {
       url.search = `labelSelector=${labelSelector}`;
     }

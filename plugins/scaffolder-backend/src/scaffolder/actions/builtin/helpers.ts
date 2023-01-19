@@ -190,11 +190,18 @@ type BranchProtectionOptions = {
     teams?: string[];
     apps?: string[];
   };
+  requiredApprovingReviewCount?: number;
+  restrictions?: {
+    users: string[];
+    teams: string[];
+    apps?: string[];
+  };
   requireBranchesToBeUpToDate?: boolean;
   requiredConversationResolution?: boolean;
   defaultBranch?: string;
   enforceAdmins?: boolean;
   dismissStaleReviews?: boolean;
+  requiredCommitSigning?: boolean;
 };
 
 export const enableBranchProtectionOnDefaultRepoBranch = async ({
@@ -204,12 +211,15 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   logger,
   requireCodeOwnerReviews,
   bypassPullRequestAllowances,
+  requiredApprovingReviewCount,
+  restrictions,
   requiredStatusCheckContexts = [],
   requireBranchesToBeUpToDate = true,
   requiredConversationResolution = false,
   defaultBranch = 'master',
   enforceAdmins = true,
   dismissStaleReviews = false,
+  requiredCommitSigning = false,
 }: BranchProtectionOptions): Promise<void> => {
   const tryOnce = async () => {
     try {
@@ -231,16 +241,24 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
           strict: requireBranchesToBeUpToDate,
           contexts: requiredStatusCheckContexts,
         },
-        restrictions: null,
+        restrictions: restrictions ?? null,
         enforce_admins: enforceAdmins,
         required_pull_request_reviews: {
-          required_approving_review_count: 1,
+          required_approving_review_count: requiredApprovingReviewCount,
           require_code_owner_reviews: requireCodeOwnerReviews,
           bypass_pull_request_allowances: bypassPullRequestAllowances,
           dismiss_stale_reviews: dismissStaleReviews,
         },
         required_conversation_resolution: requiredConversationResolution,
       });
+
+      if (requiredCommitSigning) {
+        await client.rest.repos.createCommitSignatureProtection({
+          owner,
+          repo: repoName,
+          branch: defaultBranch,
+        });
+      }
     } catch (e) {
       assertError(e);
       if (

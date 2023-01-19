@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { KeyboardEvent, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogActions,
@@ -94,27 +95,43 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const Modal = ({ toggleModal }: SearchModalProps) => {
-  const getSearchLink = useRouteRef(rootRouteRef);
   const classes = useStyles();
+  const navigate = useNavigate();
+  const { transitions } = useTheme();
+  const { focusContent } = useContent();
 
   const { term } = useSearch();
-  const { focusContent } = useContent();
-  const { transitions } = useTheme();
+  const searchBarRef = useRef<HTMLInputElement | null>(null);
+  const searchPagePath = `${useRouteRef(rootRouteRef)()}?query=${term}`;
 
-  const handleResultClick = () => {
+  useEffect(() => {
+    searchBarRef?.current?.focus();
+  });
+
+  const handleSearchResultClick = useCallback(() => {
     toggleModal();
     setTimeout(focusContent, transitions.duration.leavingScreen);
-  };
+  }, [toggleModal, focusContent, transitions]);
 
-  const handleKeyPress = () => {
-    handleResultClick();
-  };
+  const handleSearchBarKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      if (e.key === 'Enter') {
+        navigate(searchPagePath);
+        handleSearchResultClick();
+      }
+    },
+    [navigate, handleSearchResultClick, searchPagePath],
+  );
 
   return (
     <>
       <DialogTitle>
         <Paper className={classes.container}>
-          <SearchBar className={classes.input} />
+          <SearchBar
+            className={classes.input}
+            inputProps={{ ref: searchBarRef }}
+            onKeyDown={handleSearchBarKeyDown}
+          />
         </Paper>
       </DialogTitle>
       <DialogContent>
@@ -125,13 +142,7 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
           alignItems="center"
         >
           <Grid item>
-            <Link
-              onClick={() => {
-                toggleModal();
-                setTimeout(focusContent, transitions.duration.leavingScreen);
-              }}
-              to={`${getSearchLink()}?query=${term}`}
-            >
+            <Link to={searchPagePath} onClick={handleSearchResultClick}>
               <Typography component="span" className={classes.viewResultsLink}>
                 View Full Results
               </Typography>
@@ -148,8 +159,8 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
                   role="button"
                   tabIndex={0}
                   key={`${document.location}-btn`}
-                  onClick={handleResultClick}
-                  onKeyPress={handleKeyPress}
+                  onClick={handleSearchResultClick}
+                  onKeyDown={handleSearchResultClick}
                 >
                   <DefaultResultListItem
                     key={document.location}

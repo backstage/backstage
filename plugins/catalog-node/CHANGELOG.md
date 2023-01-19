@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-node
 
+## 1.3.1
+
+### Patch Changes
+
+- 483e907eaf: Internal updates of `createServiceFactory` from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/catalog-client@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10
+
 ## 1.3.1-next.2
 
 ### Patch Changes

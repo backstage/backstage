@@ -27,12 +27,10 @@ export const urlReaderFactory = createServiceFactory({
     config: coreServices.config,
     logger: coreServices.logger,
   },
-  async factory() {
-    return async ({ config, logger }) => {
-      return UrlReaders.default({
-        config,
-        logger: loggerToWinstonLogger(logger),
-      });
-    };
+  async factory({ config, logger }) {
+    return UrlReaders.default({
+      config,
+      logger: loggerToWinstonLogger(logger),
+    });
   },
 });

@@ -24,16 +24,15 @@ import {
 } from '@material-ui/core';
 import { type IChangeEvent, withTheme } from '@rjsf/core-v5';
 import { ErrorSchema, FieldValidation } from '@rjsf/utils';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
+import type { FormProps } from '../../types';
+import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
-import { ReviewState } from '../ReviewState';
+import { useFormDataFromQuery } from '../../hooks/useFormDataFromQuery';
 import validator from '@rjsf/validator-ajv6';
-
-import { useFormDataFromQuery } from '../../hooks';
-import { FormProps } from '../../types';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -60,8 +59,12 @@ export type StepperProps = {
   templateName?: string;
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
-
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
+  components?: {
+    ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
+    createButtonText?: ReactNode;
+    reviewButtonText?: ReactNode;
+  };
 };
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -73,7 +76,15 @@ const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
  * The `Stepper` component is the Wizard that is rendered when a user selects a template
  * @alpha
  */
-export const Stepper = (props: StepperProps) => {
+
+export const Stepper = (stepperProps: StepperProps) => {
+  const { components = {}, ...props } = stepperProps;
+  const {
+    ReviewStateComponent = ReviewState,
+    createButtonText = 'Create',
+    reviewButtonText = 'Review',
+  } = components;
+
   const analytics = useAnalytics();
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
@@ -177,13 +188,13 @@ export const Stepper = (props: StepperProps) => {
                 Back
               </Button>
               <Button variant="contained" color="primary" type="submit">
-                {activeStep === steps.length - 1 ? 'Review' : 'Next'}
+                {activeStep === steps.length - 1 ? reviewButtonText : 'Next'}
               </Button>
             </div>
           </Form>
         ) : (
           <>
-            <ReviewState formState={formState} schemas={steps} />
+            <ReviewStateComponent formState={formState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}
@@ -195,7 +206,7 @@ export const Stepper = (props: StepperProps) => {
               <Button
                 variant="contained"
                 onClick={() => {
-                  props.onComplete(formState);
+                  props.onCreate(formState);
                   const name =
                     typeof formState.name === 'string'
                       ? formState.name
@@ -206,7 +217,7 @@ export const Stepper = (props: StepperProps) => {
                   );
                 }}
               >
-                Create
+                {createButtonText}
               </Button>
             </div>
           </>

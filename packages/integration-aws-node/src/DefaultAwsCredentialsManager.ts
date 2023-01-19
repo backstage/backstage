@@ -221,7 +221,6 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
   ): Promise<AwsCredentialProvider> {
     // If no options provided, fall back to the main account
     if (!opts) {
-      await fillInAccountId(this.mainAccountCredentialProvider);
       return this.mainAccountCredentialProvider;
     }
 
@@ -235,7 +234,6 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
     // If the account ID was not provided (explicitly or in the ARN),
     // fall back to the main account
     if (!accountId) {
-      await fillInAccountId(this.mainAccountCredentialProvider);
       return this.mainAccountCredentialProvider;
     }
 

@@ -21,3 +21,4 @@ export * from './api';
 export * from './hooks';
 
 export * from './next';
+export type { FormProps } from './next';

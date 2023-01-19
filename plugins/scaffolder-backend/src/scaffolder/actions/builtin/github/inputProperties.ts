@@ -225,6 +225,46 @@ const sourcePath = {
   type: 'string',
 };
 
+const requiredApprovingReviewCount = {
+  title: 'Required approving review count',
+  type: 'number',
+  description: `Specify the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers. Defaults to 1.`,
+};
+
+const restrictions = {
+  title: 'Restrict who can push to the protected branch',
+  description:
+    'Restrict who can push to the protected branch. User, app, and team restrictions are only available for organization-owned repositories.',
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    apps: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    users: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    teams: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+  },
+};
+
+const requiredCommitSigning = {
+  title: 'Require commit signing',
+  type: 'boolean',
+  description: `Require commit signing so that you must sign commits on this branch.`,
+};
+
 export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
@@ -243,6 +283,8 @@ export { homepage };
 export { protectDefaultBranch };
 export { protectEnforceAdmins };
 export { bypassPullRequestAllowances };
+export { requiredApprovingReviewCount };
+export { restrictions };
 export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };
@@ -256,3 +298,4 @@ export { hasWiki };
 export { sourcePath };
 export { token };
 export { topics };
+export { requiredCommitSigning };

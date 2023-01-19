@@ -31,7 +31,7 @@ export function useUserTeamIds(userId: string | undefined): {
     error,
   } = useAsync(() => {
     return userId ? api.getUserTeamIds(userId) : Promise.resolve(undefined);
-  }, [api]);
+  }, [userId, api]);
 
   return {
     teamIds,

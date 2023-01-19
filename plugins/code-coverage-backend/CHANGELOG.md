@@ -1,5 +1,18 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.6
+
+### Patch Changes
+
+- dcfdaeccd3: `RouterOptions` now accepts an optional `catalogApi` argument, allowing custom catalog clients to be used. This is leveraged in the local standalone development runner to pass in a catalog client that returns fake data.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/catalog-client@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+
 ## 0.2.6-next.2
 
 ### Patch Changes

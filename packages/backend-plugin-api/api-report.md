@@ -23,7 +23,7 @@ export interface BackendFeature {
 }
 
 // @public (undocumented)
-export interface BackendModuleConfig<TOptions> {
+export interface BackendModuleConfig {
   // (undocumented)
   moduleId: string;
   // (undocumented)
@@ -31,16 +31,15 @@ export interface BackendModuleConfig<TOptions> {
   // (undocumented)
   register(
     reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
-    options: TOptions,
   ): void;
 }
 
 // @public (undocumented)
-export interface BackendPluginConfig<TOptions> {
+export interface BackendPluginConfig {
   // (undocumented)
   id: string;
   // (undocumented)
-  register(reg: BackendRegistrationPoints, options: TOptions): void;
+  register(reg: BackendRegistrationPoints): void;
 }
 
 // @public (undocumented)
@@ -113,32 +112,100 @@ export namespace coreServices {
 }
 
 // @public
-export function createBackendModule<TOptions extends MaybeOptions = undefined>(
-  config: BackendModuleConfig<TOptions>,
-): FactoryFunctionWithOptions<BackendFeature, TOptions>;
+export function createBackendModule<TOptions extends [options?: object] = []>(
+  config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
+): (...params: TOptions) => BackendFeature;
 
 // @public (undocumented)
-export function createBackendPlugin<TOptions extends MaybeOptions = undefined>(
-  config: BackendPluginConfig<TOptions>,
-): FactoryFunctionWithOptions<BackendFeature, TOptions>;
+export function createBackendPlugin<TOptions extends [options?: object] = []>(
+  config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
+): (...params: TOptions) => BackendFeature;
 
 // @public (undocumented)
 export function createExtensionPoint<T>(
   config: ExtensionPointConfig,
 ): ExtensionPoint<T>;
 
-// @public (undocumented)
+// @public
 export function createServiceFactory<
   TService,
-  TScope extends 'root' | 'plugin',
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
   },
-  TOpts extends MaybeOptions = undefined,
+  TOpts extends object | undefined = undefined,
 >(
-  config: ServiceFactoryConfig<TService, TScope, TImpl, TDeps, TOpts>,
-): FactoryFunctionWithOptions<ServiceFactory<TService>, TOpts>;
+  config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
+): () => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TOpts extends object | undefined = undefined,
+>(
+  config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
+): (options?: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TOpts extends object | undefined = undefined,
+>(
+  config: (options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
+): (options: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+): () => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  config: (
+    options?: TOpts,
+  ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+): (options?: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  config:
+    | PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>
+    | ((
+        options: TOpts,
+      ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
+): (options: TOpts) => ServiceFactory<TService>;
 
 // @public
 export function createServiceRef<TService>(
@@ -149,6 +216,15 @@ export function createServiceRef<TService>(
 export function createServiceRef<TService>(
   config: ServiceRefConfig<TService, 'root'>,
 ): ServiceRef<TService, 'root'>;
+
+// @public
+export function createSharedEnvironment<
+  TOptions extends [options?: object] = [],
+>(
+  config:
+    | SharedBackendEnvironmentConfig
+    | ((...params: TOptions) => SharedBackendEnvironmentConfig),
+): (...options: TOptions) => SharedBackendEnvironment;
 
 // @public
 export interface DatabaseService {
@@ -226,6 +302,30 @@ export interface PluginMetadataService {
   getId(): string;
 }
 
+// @public (undocumented)
+export interface PluginServiceFactoryConfig<
+  TService,
+  TContext,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> {
+  // (undocumented)
+  createRootContext?(
+    deps: ServiceRefsToInstances<TDeps, 'root'>,
+  ): TContext | Promise<TContext>;
+  // (undocumented)
+  deps: TDeps;
+  // (undocumented)
+  factory(
+    deps: ServiceRefsToInstances<TDeps>,
+    context: TContext,
+  ): TImpl | Promise<TImpl>;
+  // (undocumented)
+  service: ServiceRef<TService, 'plugin'>;
+}
+
 // @public
 export type ReadTreeOptions = {
   filter?(
@@ -282,6 +382,22 @@ export interface RootLifecycleService extends LifecycleService {}
 export interface RootLoggerService extends LoggerService {}
 
 // @public (undocumented)
+export interface RootServiceFactoryConfig<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> {
+  // (undocumented)
+  deps: TDeps;
+  // (undocumented)
+  factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
+  // (undocumented)
+  service: ServiceRef<TService, 'root'>;
+}
+
+// @public (undocumented)
 export interface SchedulerService extends PluginTaskScheduler {}
 
 // @public
@@ -320,37 +436,16 @@ export type ServiceFactory<TService = unknown> =
       deps: {
         [key in string]: ServiceRef<unknown>;
       };
-      factory(deps: {
+      createRootContext?(deps: {
         [key in string]: unknown;
-      }): Promise<
-        (deps: {
+      }): Promise<unknown>;
+      factory(
+        deps: {
           [key in string]: unknown;
-        }) => Promise<TService>
-      >;
+        },
+        context: unknown,
+      ): Promise<TService>;
     };
-
-// @public (undocumented)
-export interface ServiceFactoryConfig<
-  TService,
-  TScope extends 'root' | 'plugin',
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-  TOpts extends MaybeOptions = undefined,
-> {
-  // (undocumented)
-  deps: TDeps;
-  // (undocumented)
-  factory(
-    deps: ServiceRefsToInstances<TDeps, 'root'>,
-    options: TOpts,
-  ): TScope extends 'root'
-    ? Promise<TImpl>
-    : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
-  // (undocumented)
-  service: ServiceRef<TService, TScope>;
-}
 
 // @public
 export type ServiceFactoryOrFunction<TService = unknown> =
@@ -379,6 +474,18 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   id: string;
   // (undocumented)
   scope?: TScope;
+}
+
+// @public (undocumented)
+export interface SharedBackendEnvironment {
+  // (undocumented)
+  $$type: 'SharedBackendEnvironment';
+}
+
+// @public (undocumented)
+export interface SharedBackendEnvironmentConfig {
+  // (undocumented)
+  services?: ServiceFactoryOrFunction[];
 }
 
 // @public

@@ -15,4 +15,4 @@
  */
 
 export { startTestBackend } from './TestBackend';
-export type { TestBackendOptions } from './TestBackend';
+export type { TestBackend, TestBackendOptions } from './TestBackend';

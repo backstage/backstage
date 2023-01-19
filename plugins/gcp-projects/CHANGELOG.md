@@ -1,5 +1,15 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.33
+
+### Patch Changes
+
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
 ## 0.3.33-next.2
 
 ### Patch Changes

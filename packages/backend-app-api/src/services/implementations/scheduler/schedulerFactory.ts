@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
@@ -24,13 +25,15 @@ import { TaskScheduler } from '@backstage/backend-tasks';
 export const schedulerFactory = createServiceFactory({
   service: coreServices.scheduler,
   deps: {
-    config: coreServices.config,
     plugin: coreServices.pluginMetadata,
+    databaseManager: coreServices.database,
+    logger: coreServices.logger,
   },
-  async factory({ config }) {
-    const taskScheduler = TaskScheduler.fromConfig(config);
-    return async ({ plugin }) => {
-      return taskScheduler.forPlugin(plugin.getId());
-    };
+  async factory({ plugin, databaseManager, logger }) {
+    return TaskScheduler.forPlugin({
+      pluginId: plugin.getId(),
+      databaseManager,
+      logger: loggerToWinstonLogger(logger),
+    });
   },
 });

@@ -1,5 +1,34 @@
 # @backstage/backend-common
 
+## 0.18.0
+
+### Minor Changes
+
+- 5e2cebe9a3: **BREAKING**: Removed deprecated `read` method from the `UrlReader` interface. All implementations should use the `readUrl` method instead.
+
+  Migrated `UrlReader` and related types to `backend/backend-plugin-api`, types remain re-exported from `backend-common` for now.
+
+### Patch Changes
+
+- 0e63aab311: Internal refactor of the logger and configuration loading implementations.
+- 31e2309c8c: Added `legacyPlugin` and the lower level `makeLegacyPlugin` wrappers that convert legacy plugins to the new backend system. This will be used to ease the future migration to the new backend system, but we discourage use of it for now.
+- 8e06f3cf00: Added `loggerToWinstonLogger`, which was moved from `@backstage/backend-plugin-api`.
+- 2b1554cebf: Replaced dependencies on the `Logger` type from `winston` with `LoggerService` from `@backstage/backend-plugin-api`. This is not a breaking change as the `LoggerService` is a subset of the `Logger` interface.
+- 5437fe488f: Migrated types related to `TokenManagerService`, `CacheService` and `DatabaseService` into backend-plugin-api.
+- 6f02d23b01: Moved `PluginEndpointDiscovery` type from backend-common to backend-plugin-api.
+- d592ec4f51: Updated the logger created by `createRootLogger` to make it possible to override the default `service` log label.
+- b99c030f1b: Refactor to rely on `@backstage/backend-app-api` for the implementation of `createServiceBuilder`.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-app-api@0.3.0
+  - @backstage/config@1.0.6
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
 ## 0.18.0-next.1
 
 ### Patch Changes

@@ -27,10 +27,10 @@ export const cacheFactory = createServiceFactory({
     config: coreServices.config,
     plugin: coreServices.pluginMetadata,
   },
-  async factory({ config }) {
-    const cacheManager = CacheManager.fromConfig(config);
-    return async ({ plugin }) => {
-      return cacheManager.forPlugin(plugin.getId());
-    };
+  async createRootContext({ config }) {
+    return CacheManager.fromConfig(config);
+  },
+  async factory({ plugin }, manager) {
+    return manager.forPlugin(plugin.getId());
   },
 });

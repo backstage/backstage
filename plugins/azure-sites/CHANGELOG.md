@@ -1,5 +1,18 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.3
+
+### Patch Changes
+
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-azure-sites-common@0.1.0
+
 ## 0.1.3-next.2
 
 ### Patch Changes

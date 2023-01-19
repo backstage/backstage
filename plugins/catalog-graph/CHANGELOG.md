@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.26
+
+### Patch Changes
+
+- 99f05cbc70: The link from the `CatalogGraphCard` to the `CatalogGraphPage` no longer includes an explicit `maxDepth` parameter, letting the `CatalogGraphPage` choose the initial `maxDepth` instead.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/catalog-client@1.3.0
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
 ## 0.2.26-next.2
 
 ### Patch Changes

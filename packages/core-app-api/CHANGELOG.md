@@ -1,5 +1,19 @@
 # @backstage/core-app-api
 
+## 1.4.0
+
+### Minor Changes
+
+- bca8e8b393: Allow defining application level feature flags. See [Feature Flags documentation](https://backstage.io/docs/plugins/feature-flags#in-the-application) for reference.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
 ## 1.4.0-next.1
 
 ### Minor Changes

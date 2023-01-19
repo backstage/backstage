@@ -18,3 +18,4 @@ export {
   useTemplateSchema,
   type ParsedTemplateSchema,
 } from './useTemplateSchema';
+export { useTemplateParameterSchema } from './useTemplateParameterSchema';

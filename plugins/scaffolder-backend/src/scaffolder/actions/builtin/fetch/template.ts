@@ -62,6 +62,7 @@ export function createFetchTemplateAction(options: {
     copyWithoutRender?: string[];
     copyWithoutTemplating?: string[];
     cookiecutterCompat?: boolean;
+    replace?: boolean;
   }>({
     id: 'fetch:template',
     description:
@@ -117,6 +118,12 @@ export function createFetchTemplateAction(options: {
             description:
               'If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.',
             type: ['string', 'boolean'],
+          },
+          replace: {
+            title: 'Replace files',
+            description:
+              'If set, replace files in targetPath instead of skipping existing ones.',
+            type: 'boolean',
           },
         },
       },
@@ -261,7 +268,7 @@ export function createFetchTemplateAction(options: {
         }
 
         const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
-        if (fs.existsSync(outputPath)) {
+        if (fs.existsSync(outputPath) && !ctx.input.replace) {
           continue;
         }
 

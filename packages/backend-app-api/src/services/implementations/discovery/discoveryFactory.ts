@@ -27,9 +27,6 @@ export const discoveryFactory = createServiceFactory({
     config: coreServices.config,
   },
   async factory({ config }) {
-    const discovery = SingleHostDiscovery.fromConfig(config);
-    return async () => {
-      return discovery;
-    };
+    return SingleHostDiscovery.fromConfig(config);
   },
 });

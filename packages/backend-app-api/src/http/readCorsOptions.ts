@@ -36,7 +36,7 @@ export function readCorsOptions(config?: Config): CorsOptions {
     return { origin: false }; // Disable CORS
   }
 
-  return {
+  return removeUnknown({
     origin: createCorsOriginMatcher(readStringArray(cc, 'origin')),
     methods: readStringArray(cc, 'methods'),
     allowedHeaders: readStringArray(cc, 'allowedHeaders'),
@@ -45,7 +45,13 @@ export function readCorsOptions(config?: Config): CorsOptions {
     maxAge: cc.getOptionalNumber('maxAge'),
     preflightContinue: cc.getOptionalBoolean('preflightContinue'),
     optionsSuccessStatus: cc.getOptionalNumber('optionsSuccessStatus'),
-  };
+  });
+}
+
+function removeUnknown<T extends object>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined),
+  ) as T;
 }
 
 function readStringArray(config: Config, key: string): string[] | undefined {

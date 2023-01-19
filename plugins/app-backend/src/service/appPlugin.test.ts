@@ -17,18 +17,8 @@
 import mockFs from 'mock-fs';
 import { resolve as resolvePath } from 'path';
 import fetch from 'node-fetch';
-import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
-import {
-  databaseFactory,
-  httpRouterFactory,
-  rootHttpRouterFactory,
-  loggerFactory,
-  rootLoggerFactory,
-} from '@backstage/backend-app-api';
-import { ConfigReader } from '@backstage/config';
-import getPort from 'get-port';
 
 describe('appPlugin', () => {
   beforeEach(() => {
@@ -48,24 +38,7 @@ describe('appPlugin', () => {
   });
 
   it('boots', async () => {
-    const port = await getPort();
-    await startTestBackend({
-      services: [
-        [
-          coreServices.config,
-          new ConfigReader({
-            backend: {
-              listen: { port },
-              database: { client: 'better-sqlite3', connection: ':memory:' },
-            },
-          }),
-        ],
-        loggerFactory(),
-        rootLoggerFactory(),
-        databaseFactory(),
-        httpRouterFactory(),
-        rootHttpRouterFactory(),
-      ],
+    const { server } = await startTestBackend({
       features: [
         appPlugin({
           appPackageName: 'app',
@@ -75,12 +48,12 @@ describe('appPlugin', () => {
     });
 
     await expect(
-      fetch(`http://localhost:${port}/api/app/derp.html`).then(res =>
+      fetch(`http://localhost:${server.port()}/api/app/derp.html`).then(res =>
         res.text(),
       ),
     ).resolves.toBe('winning');
     await expect(
-      fetch(`http://localhost:${port}`).then(res => res.text()),
+      fetch(`http://localhost:${server.port()}`).then(res => res.text()),
     ).resolves.toBe('winning');
   });
 });

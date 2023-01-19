@@ -53,7 +53,7 @@ describe('createSpecializedBackend', () => {
           createServiceFactory({
             service: coreServices.pluginMetadata,
             deps: {},
-            factory: async () => async () => ({ getId: () => 'test' }),
+            factory: async () => ({ getId: () => 'test' }),
           }),
         ],
       }),

@@ -34,9 +34,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 }
 
 // @alpha
-export const gitlabDiscoveryEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const gitlabDiscoveryEntityProviderCatalogModule: () => BackendFeature;
 
 // @public
 export class GitLabDiscoveryProcessor implements CatalogProcessor {
