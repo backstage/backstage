@@ -15,26 +15,19 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import { stringifyError } from '@backstage/errors';
-import { EventBroker, EventPublisher } from '@backstage/plugin-events-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { PROVIDER_BASE_PATH, PROVIDER_CLEANUP, PROVIDER_HEALTH } from './paths';
 
-export class IncrementalProviderRouter implements EventPublisher {
+export class IncrementalProviderRouter {
   private manager: IncrementalIngestionDatabaseManager;
   private logger: Logger;
-  private eventBroker: EventBroker | undefined;
 
   constructor(manager: IncrementalIngestionDatabaseManager, logger: Logger) {
     this.manager = manager;
     this.logger = logger;
-  }
-
-  async setEventBroker(eventBroker: EventBroker): Promise<void> {
-    this.eventBroker = eventBroker;
   }
 
   async createRouter() {
@@ -237,43 +230,6 @@ export class IncrementalProviderRouter implements EventPublisher {
         message: `Expired marks for provider '${provider}' removed.`,
         deletions,
       });
-    });
-
-    router.post(`${PROVIDER_BASE_PATH}/event`, async (req, res) => {
-      const { provider } = req.params;
-
-      const topic = `${provider}-push`;
-
-      const eventPayload = req.body;
-
-      if (!this.eventBroker) {
-        res.status(500).json({
-          success: false,
-          provider,
-          message: `The payload could not be processed!`,
-        });
-        throw new Error('Event broker not initialized!');
-      }
-
-      try {
-        await this.eventBroker.publish({
-          topic,
-          eventPayload,
-        });
-        res.json({
-          success: true,
-          provider,
-          message: 'Payload submitted.',
-        });
-      } catch (e) {
-        res.status(500).json({
-          success: false,
-          provider,
-          message: `There was an error submitting the payload: ${stringifyError(
-            e,
-          )}`,
-        });
-      }
     });
 
     router.use(errorHandler());

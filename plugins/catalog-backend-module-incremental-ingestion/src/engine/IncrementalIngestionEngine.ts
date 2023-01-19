@@ -28,7 +28,6 @@ export class IncrementalIngestionEngine
 {
   private readonly restLength: Duration;
   private readonly backoff: DurationObjectUnits[];
-  private readonly providerEventTopic: string;
 
   private manager: IncrementalIngestionDatabaseManager;
 
@@ -41,7 +40,6 @@ export class IncrementalIngestionEngine
       { minutes: 30 },
       { hours: 3 },
     ];
-    this.providerEventTopic = `${options.provider.getProviderName()}-push`;
   }
 
   async taskFn(signal: AbortSignal) {
@@ -337,68 +335,68 @@ export class IncrementalIngestionEngine
 
   async onEvent(params: EventParams): Promise<void> {
     const { topic } = params;
-    if (topic !== this.providerEventTopic) {
+    if (!this.supportsEventTopics().includes(topic)) {
       return;
     }
 
     const { logger, provider, connection } = this.options;
     const providerName = provider.getProviderName();
-    logger.debug(
-      `incremental-engine: Received ${this.providerEventTopic} event`,
-    );
+    logger.debug(`incremental-engine: ${providerName} received ${topic} event`);
 
-    if (!provider.onEvent) {
+    if (!provider.eventHandler) {
       return;
     }
 
-    const update = provider.onEvent(params);
+    const delta = provider.eventHandler.onEvent(params);
 
-    if (update) {
-      if (update.delta) {
-        if (update.delta.added.length > 0) {
-          const ingestionRecord = await this.manager.getCurrentIngestionRecord(
-            providerName,
+    if (delta) {
+      if (delta.added.length > 0) {
+        const ingestionRecord = await this.manager.getCurrentIngestionRecord(
+          providerName,
+        );
+
+        if (!ingestionRecord) {
+          logger.debug(
+            `incremental-engine: ${providerName} skipping delta addition because incremental ingestion is restarting.`,
           );
+        } else {
+          const mark =
+            ingestionRecord.status === 'resting'
+              ? await this.manager.getLastMark(ingestionRecord.id)
+              : await this.manager.getFirstMark(ingestionRecord.id);
 
-          if (!ingestionRecord) {
-            logger.debug(
-              `incremental-engine: Skipping delta addition because incremental ingestion is restarting.`,
+          if (!mark) {
+            throw new Error(
+              `Cannot apply delta, page records are missing! Please re-run incremental ingestion for ${providerName}.`,
             );
-          } else {
-            const mark =
-              ingestionRecord.status === 'resting'
-                ? await this.manager.getLastMark(ingestionRecord.id)
-                : await this.manager.getFirstMark(ingestionRecord.id);
-
-            if (!mark) {
-              throw new Error(
-                `Cannot apply delta, page records are missing! Please re-run incremental ingestion for ${providerName}.`,
-              );
-            }
-            await this.manager.createMarkEntities(mark.id, update.delta.added);
           }
+          await this.manager.createMarkEntities(mark.id, delta.added);
         }
-
-        if (update.delta.removed.length > 0) {
-          await this.manager.deleteEntityRecordsByRef(update.delta.removed);
-        }
-
-        await connection.applyMutation({
-          type: 'delta',
-          ...update.delta,
-        });
-        logger.debug(
-          `incremental-engine: Processed ${this.providerEventTopic} event`,
-        );
-      } else {
-        logger.warn(
-          `incremental-engine: Rejected ${this.providerEventTopic} event - empty or invalid`,
-        );
       }
+
+      if (delta.removed.length > 0) {
+        await this.manager.deleteEntityRecordsByRef(delta.removed);
+      }
+
+      await connection.applyMutation({
+        type: 'delta',
+        ...delta,
+      });
+      logger.debug(
+        `incremental-engine: ${providerName} processed delta from '${topic}' event`,
+      );
+    } else {
+      logger.warn(
+        `incremental-engine: Rejected delta from '${topic}' event - empty or invalid`,
+      );
     }
   }
 
   supportsEventTopics(): string[] {
-    return [this.providerEventTopic];
+    const { provider } = this.options;
+    const topics = provider.eventHandler
+      ? provider.eventHandler.supportsEventTopics()
+      : [];
+    return topics;
   }
 }

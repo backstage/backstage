@@ -78,23 +78,35 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
 
   /**
-   * This method accepts an incoming event for the provider, and
-   * (optionally) maps the payload to an object containing a delta
-   * mutation.
+   * If set, the IncrementalEntityProvider will receive and respond to
+   * events.
    *
-   * If a valid delta is returned by this method, it will be ingested
-   * automatically by the provider.
+   * This system acts as a wrapper for the Backstage events bus, and
+   * requires the events backend to function. It does not provide its
+   * own events backend. See {@link https://github.com/backstage/backstage/tree/master/plugins/events-backend}.
    */
-  onEvent?: (params: EventParams) =>
-    | {
-        delta:
-          | {
-              added: DeferredEntity[];
-              removed: { entityRef: string }[];
-            }
-          | undefined;
-      }
-    | undefined;
+  eventHandler?: {
+    /**
+     * This method accepts an incoming event for the provider, and
+     * optionally maps the payload to an object containing a delta
+     * mutation.
+     *
+     * If a valid delta is returned by this method, it will be ingested
+     * automatically by the provider.
+     */
+    onEvent: (params: EventParams) =>
+      | undefined
+      | {
+          added: DeferredEntity[];
+          removed: { entityRef: string }[];
+        };
+
+    /**
+     * This method returns an array of topics for the IncrementalEntityProvider
+     * to respond to.
+     */
+    supportsEventTopics: () => string[];
+  };
 }
 
 /**
