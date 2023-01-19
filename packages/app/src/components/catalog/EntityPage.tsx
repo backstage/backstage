@@ -25,7 +25,7 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { EmptyState } from '@backstage/core-components';
+import { EmptyState, InfoCard } from '@backstage/core-components';
 import {
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
@@ -79,6 +79,11 @@ import {
   DynatraceTab,
   isDynatraceAvailable,
 } from '@backstage/plugin-dynatrace';
+import {
+  EntityFeedbackResponseContent,
+  EntityLikeDislikeRatingsCard,
+  LikeDislikeButtons,
+} from '@backstage/plugin-entity-feedback';
 import {
   EntityGithubActionsContent,
   EntityRecentGithubActionsRunsCard,
@@ -374,6 +379,12 @@ const overviewContent = (
       </EntitySwitch.Case>
     </EntitySwitch>
 
+    <Grid item md={2}>
+      <InfoCard title="Rate this entity">
+        <LikeDislikeButtons />
+      </InfoCard>
+    </Grid>
+
     {cicdCard}
 
     <EntitySwitch>
@@ -511,6 +522,10 @@ const serviceEntityPage = (
     >
       <DynatraceTab />
     </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -590,6 +605,10 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
     </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -605,6 +624,10 @@ const defaultEntityPage = (
 
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -642,6 +665,11 @@ const apiPage = (
             <Grid item xs={12} md={6}>
               <EntityConsumingComponentsCard />
             </Grid>
+            <Grid item md={2}>
+              <InfoCard title="Rate this entity">
+                <LikeDislikeButtons />
+              </InfoCard>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
@@ -653,6 +681,10 @@ const apiPage = (
           <EntityApiDefinitionCard />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -670,6 +702,9 @@ const userPage = (
             variant="gridItem"
             entityFilterKind={customEntityFilterKind}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityLikeDislikeRatingsCard />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -692,6 +727,9 @@ const groupPage = (
         </Grid>
         <Grid item xs={12}>
           <EntityMembersListCard />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityLikeDislikeRatingsCard />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -717,6 +755,11 @@ const systemPage = (
         </Grid>
         <Grid item md={6}>
           <EntityHasResourcesCard variant="gridItem" />
+        </Grid>
+        <Grid item md={2}>
+          <InfoCard title="Rate this entity">
+            <LikeDislikeButtons />
+          </InfoCard>
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -746,6 +789,9 @@ const systemPage = (
         unidirectional={false}
       />
     </EntityLayout.Route>
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -763,7 +809,15 @@ const domainPage = (
         <Grid item md={6}>
           <EntityHasSystemsCard variant="gridItem" />
         </Grid>
+        <Grid item md={2}>
+          <InfoCard title="Rate this entity">
+            <LikeDislikeButtons />
+          </InfoCard>
+        </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
