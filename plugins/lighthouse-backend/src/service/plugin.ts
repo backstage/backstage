@@ -25,14 +25,14 @@ import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LighthouseAuditScheduleImpl } from '../config';
 
-export interface RouterOptions {
+export interface Options {
   logger: Logger;
   config: Config;
   scheduler?: PluginTaskScheduler;
   catalogClient: CatalogClient;
 }
 
-export async function create(options: RouterOptions) {
+export async function create(options: Options) {
   const { logger, scheduler, catalogClient, config } = options;
   const lighthouseApi = LighthouseRestApi.fromConfig(config);
 
