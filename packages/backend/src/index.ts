@@ -45,6 +45,7 @@ import azureSites from './plugins/azure-sites';
 import catalog from './plugins/catalog';
 import catalogEventBasedProviders from './plugins/catalogEventBasedProviders';
 import codeCoverage from './plugins/codecoverage';
+import entityFeedback from './plugins/entityFeedback';
 import events from './plugins/events';
 import explore from './plugins/explore';
 import kubernetes from './plugins/kubernetes';
@@ -149,6 +150,9 @@ async function main() {
   );
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const playlistEnv = useHotMemoize(module, () => createEnv('playlist'));
+  const entityFeedbackEnv = useHotMemoize(module, () =>
+    createEnv('entityFeedback'),
+  );
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
   const exploreEnv = useHotMemoize(module, () => createEnv('explore'));
   const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
@@ -182,6 +186,7 @@ async function main() {
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use('/playlist', await playlist(playlistEnv));
   apiRouter.use('/explore', await explore(exploreEnv));
+  apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
   apiRouter.use('/adr', await adr(adrEnv));
   apiRouter.use(notFoundHandler());
 
