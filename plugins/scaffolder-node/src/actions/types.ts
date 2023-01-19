@@ -26,12 +26,12 @@ import { UserEntity } from '@backstage/catalog-model';
  * ActionContext is passed into scaffolder actions.
  * @public
  */
-export type ActionContext<Input extends JsonObject> = {
+export type ActionContext<TInput extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: Input;
+  input: TInput;
   output(name: string, value: JsonValue): void;
 
   /**
@@ -63,7 +63,7 @@ export type ActionContext<Input extends JsonObject> = {
 };
 
 /** @public */
-export type TemplateAction<Input extends JsonObject> = {
+export type TemplateAction<TInput extends JsonObject> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];
@@ -72,5 +72,5 @@ export type TemplateAction<Input extends JsonObject> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<Input>) => Promise<void>;
+  handler: (ctx: ActionContext<TInput>) => Promise<void>;
 };

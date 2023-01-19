@@ -15,12 +15,12 @@ import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 
 // @public
-export type ActionContext<Input extends JsonObject> = {
+export type ActionContext<TInput extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: Input;
+  input: TInput;
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
@@ -51,7 +51,7 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 // @public (undocumented)
-export type TemplateAction<Input extends JsonObject> = {
+export type TemplateAction<TInput extends JsonObject> = {
   id: string;
   description?: string;
   examples?: {
@@ -63,6 +63,6 @@ export type TemplateAction<Input extends JsonObject> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<Input>) => Promise<void>;
+  handler: (ctx: ActionContext<TInput>) => Promise<void>;
 };
 ```
