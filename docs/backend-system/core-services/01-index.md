@@ -79,7 +79,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { Router } from 'express';
 
 createBackendPlugin({
   id: 'example',
@@ -134,7 +133,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { Router } from 'express';
 
 createBackendPlugin({
   id: 'example',
@@ -164,7 +162,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { Router } from 'express';
 
 createBackendPlugin({
   id: 'example',
@@ -203,7 +200,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { Router } from 'express';
 
 createBackendPlugin({
   id: 'example',
@@ -240,7 +236,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { fetch } from 'node-fetch';
-import { Router } from 'express';
 
 createBackendPlugin({
   id: 'example',
@@ -293,10 +288,11 @@ createBackendPlugin({
         const router = Router();
         router.get('/test-me', (request, response) => {
           // use the identityService pull out the header from the request and get the user
-          const { identity: userEntityRef, ownershipEntityRefs } =
-            await identity.getIdentity({
-              request,
-            });
+          const {
+            identity: { userEntityRef, ownershipEntityRefs },
+          } = await identity.getIdentity({
+            request,
+          });
 
           // sent the decoded and validated things back to the user
           response.json({
@@ -347,7 +343,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { Router } from 'express';
 
 createBackendPlugin({
   id: 'example',
@@ -367,6 +362,91 @@ createBackendPlugin({
         lifecycle.addShutdownHook({
           fn: () => clearInterval(interval),
           logger,
+        });
+      },
+    });
+  },
+});
+```
+
+## Permissions
+
+Sometimes you want to include permissions and making sure that a user that is authorized to do some actions in your plugin. We've provide a core service out of the box for you to interact with the permissions framework. You can find out more about the permissions framework in [the documentation](https://backstage.io/docs/permissions/overview)
+
+### Using the service
+
+The following example shows how to get the `PermissionsSerice` in your `example` backend to check to see if the user has the correct permissions for `myCustomPermission`.
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { Router } from 'express';
+
+createBackendPlugin({
+  id: 'example',
+  register(env) {
+    env.registerInit({
+      deps: {
+        permissions: coreServices.permissions,
+        http: coreServices.httpRouter,
+      },
+      async init({ permissions, http }) {
+        const router = Router();
+        router.get('/test-me', (request, response) => {
+          // use the identityService pull out the header from the request and get the token
+          const { token } = await identity.getIdentity({
+            request,
+          });
+
+          // ask the permissions framework what the decision is for the permission
+          const permissionResponse = await permissions.authorize(
+            [
+              {
+                permission: myCustomPermission,
+              },
+            ],
+            { token },
+          );
+        });
+
+        http.use(router);
+      },
+    });
+  },
+});
+```
+
+## Scheduler
+
+When writing plugins, it's often that you want to have things running on a schedule, or something similar to cron jobs that are distributed through instances that your backend plugin might be running on. We supply a `TaskScheduler` that is scoped per plugin so that you can create these tasks and orchestrate the running of them.
+
+### Using the service
+
+The following example shows how to get the `SchedulerService` in your `example` backend to schedule a scheduled task that runs once across your instances at a given interval.
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { fetch } from 'node-fetch';
+
+createBackendPlugin({
+  id: 'example',
+  register(env) {
+    env.registerInit({
+      deps: {
+        scheduler: coreServices.scheduler,
+      },
+      async init({ scheduler }) {
+        await scheduler.scheduleTask({
+          frequency: Duration.fromObject({ minutes: 10 }),
+          id: 'ping-google',
+          fn: async () => {
+            await fetch('http://google.com/ping');
+          },
         });
       },
     });
