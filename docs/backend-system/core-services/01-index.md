@@ -105,7 +105,7 @@ createBackendPlugin({
 
 ### Configuring the service
 
-There's additional options that you can pass to configure the root HTTP Router serivce. These options are passed when you call `createBackend`.
+There's additional options that you can pass to configure the root HTTP Router service. These options are passed when you call `createBackend`.
 
 - `indexPath` - optional path to forward all unmatched requests to. Defaults to `/api/app` which is the `app-backend` plugin responsible for serving the frontend application through the backend.
 
@@ -229,7 +229,7 @@ createBackendPlugin({
 
 ### Root Logger
 
-The root logger is the logger that is used by other root services. It's where the implemenation lies for creating child loggers around the backstage ecosystem including child loggers for plugins with the correct metadata and annotations.
+The root logger is the logger that is used by other root services. It's where the implementation lies for creating child loggers around the backstage ecosystem including child loggers for plugins with the correct metadata and annotations.
 
 If you want to override the implementation for logging across all of the backend, this is the service that you should override.
 
