@@ -100,6 +100,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   return (
     // Material UI issue: https://github.com/mui-org/material-ui/issues/27820
     <BottomNavigationAction
+      aria-label={label}
       label={label}
       icon={icon}
       component={Link as any}
