@@ -375,7 +375,8 @@
               "backend-system/architecture/services",
               "backend-system/architecture/plugins",
               "backend-system/architecture/extension-points",
-              "backend-system/architecture/modules"
+              "backend-system/architecture/modules",
+              "backend-system/architecture/naming-patterns"
             ]
           },
           {
