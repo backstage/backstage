@@ -6,7 +6,7 @@ sidebar_label: Naming Patterns
 description: Naming patterns in the backend system
 ---
 
-These are the naming patterns to adhere to withing the backend system. They help us keep exports consistent across packages and make it easier to understand the usage and intent of exports.
+These are the naming patterns to adhere to within the backend system. They help us keep exports consistent across packages and make it easier to understand the usage and intent of exports.
 
 ### Plugins
 
