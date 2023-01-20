@@ -22,7 +22,6 @@ import { makeStyles, Tab, Tabs } from '@material-ui/core';
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   tabs: {
     borderBottom: `1px solid ${theme.palette.textVerySubtle}`,
-    padding: theme.spacing(0, 4),
   },
   tab: {
     height: '50px',
