@@ -68,6 +68,78 @@ const backend = createBackend({
 });
 ```
 
+## Root HTTP Router
+
+The root HTTP router is a service that allows you to register routes on the root of the backend service. This is useful for things like health checks, or other routes that you want to expose on the root of the backend service. It is used as the base router that backs the `httpRouter` service. Most likely you won't need to use this service directly, but rather use the `httpRouter` service.
+
+### Using the service
+
+The following example shows how to get the root HTTP router service in your `example` backend plugin to register a health check route.
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { Router } from 'express';
+
+createBackendPlugin({
+  id: 'example',
+  register(env) {
+    env.registerInit({
+      deps: {
+        rootHttpRouter: coreServices.rootHttpRouter,
+      },
+      async init({ rootHttpRouter }) {
+        const router = Router();
+        router.get('/health', (request, response) => {
+          response.send('OK');
+        });
+
+        rootHttpRouter.use(router);
+      },
+    });
+  },
+});
+```
+
+### Configuring the service
+
+There's additional options that you can pass to configure the root HTTP Router serivce. These options are passed when you call `createBackend`.
+
+- `indexPath` - optional path to forward all unmatched requests to. Defaults to `/api/app` which is the `app-backend` plugin responsible for serving the frontend application through the backend.
+
+- `configure` - this is an optional function that you can use to configure the `express` instance. This is useful if you want to add your own middleware to the root router, such as logging, or other things that you want to do before the request is handled by the backend. It's also useful to override the order in which middleware is applied.
+
+You can configure the root HTTP Router service by passing the options to the `createBackend` function.
+
+```ts
+import { rootHttpRouterFactory } from '@backstage/backend-app-api';
+
+const backend = createBackend({
+  services: [
+    rootHttpRouterFactory({
+      configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
+        // the built in middleware is provided through an option in the configure function
+        app.use(middleware.helmet());
+        app.use(middleware.cors());
+        app.use(middleware.compression());
+
+        // you can add you your own middleware in here
+        app.use(custom.logging());
+
+        // here the routes that are registered by other plugins
+        app.use(routes);
+
+        // some other middleware that comes after the other routes
+        app.use(middleware.notFound());
+        app.use(middleware.error());
+      },
+    }),
+  ],
+});
+```
+
 ## Config
 
 This service allows you to read configuration values out of your `app-config` YAML files.
@@ -152,6 +224,49 @@ createBackendPlugin({
       },
     });
   },
+});
+```
+
+### Root Logger
+
+The root logger is the logger that is used by other root services. It's where the implemenation lies for creating child loggers around the backstage ecosystem including child loggers for plugins with the correct metadata and annotations.
+
+If you want to override the implementation for logging across all of the backend, this is the service that you should override.
+
+### Configuring the service
+
+The following example is how you can override the root logger service to add additional metadata to all log lines.
+
+```ts
+import { coreServices } from '@backstage/backend-plugin-api';
+
+const backend = createBackend({
+  services: [
+    createServiceFactory({
+      service: coreServices.rootLogger,
+      deps: {
+        config: coreServices.config,
+      },
+      async factory({ config }) {
+        const logger = WinstonLogger.create({
+          meta: {
+            service: 'backstage',
+            // here's some additional information that is not part of the
+            // original implementation
+            podName: 'myk8spod',
+          },
+          level: process.env.LOG_LEVEL || 'info',
+          format:
+            process.env.NODE_ENV === 'production'
+              ? format.json()
+              : WinstonLogger.colorFormat(),
+          transports: [new transports.Console()],
+        });
+
+        return logger;
+      },
+    }),
+  ],
 });
 ```
 
@@ -371,6 +486,65 @@ createBackendPlugin({
 });
 ```
 
+## Root Lifecycle
+
+This service is the same as the lifecycle service, but should only be used by the root services. This is also where the implementation for the actual lifecycle hooks torn, so if you want to override the implementation of how the lifecycle hooks are executed, you should override this service.
+
+### Configure the service
+
+The following example shows how to override the default implementation of the lifecycle service with something that listens on different process events to the original.
+
+```ts
+class MyCustomLifecycleService implements RootLifecycleService {
+  constructor(private readonly logger: LoggerService) {
+    ['SIGKILL', 'SIGTERM'].map(signal =>
+      process.on(signal, () => this.shutdown()),
+    );
+  }
+
+  #isCalled = false;
+  #shutdownTasks: Array<LifecycleServiceShutdownHook> = [];
+
+  addShutdownHook(options: LifecycleServiceShutdownHook): void {
+    this.#shutdownTasks.push(options);
+  }
+
+  async shutdown(): Promise<void> {
+    if (this.#isCalled) {
+      return;
+    }
+    this.#isCalled = true;
+
+    this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
+    await Promise.all(
+      this.#shutdownTasks.map(async hook => {
+        const { logger = this.logger } = hook;
+        try {
+          await hook.fn();
+          logger.info(`Shutdown hook succeeded`);
+        } catch (error) {
+          logger.error(`Shutdown hook failed, ${error}`);
+        }
+      }),
+    );
+  }
+}
+
+const backend = createBackend({
+  services: [
+    createServiceFactory({
+      service: coreServices.rootLifecycle,
+      deps: {
+        logger: coreServices.rootLogger,
+      },
+      async factory({ logger }) {
+        return new MyCustomLifecycleService(logger);
+      },
+    }),
+  ],
+});
+```
+
 ## Permissions
 
 This service allows your plugins to ask [the permissions framework](https://backstage.io/docs/permissions/overview) for authorization of user actions.
@@ -495,77 +669,5 @@ createBackendPlugin({
       },
     });
   },
-});
-```
-
-## Root HTTP Router
-
-The root HTTP router is a service that allows you to register routes on the root of the backend service. This is useful for things like health checks, or other routes that you want to expose on the root of the backend service. It is used as the base router that backs the `httpRouter` service. Most likely you won't need to use this service directly, but rather use the `httpRouter` service.
-
-### Using the service
-
-The following example shows how to get the root HTTP router service in your `example` backend plugin to register a health check route.
-
-```ts
-import {
-  coreServices,
-  createBackendPlugin,
-} from '@backstage/backend-plugin-api';
-import { Router } from 'express';
-
-createBackendPlugin({
-  id: 'example',
-  register(env) {
-    env.registerInit({
-      deps: {
-        rootHttpRouter: coreServices.rootHttpRouter,
-      },
-      async init({ rootHttpRouter }) {
-        const router = Router();
-        router.get('/health', (request, response) => {
-          response.send('OK');
-        });
-
-        rootHttpRouter.use(router);
-      },
-    });
-  },
-});
-```
-
-### Configuring the service
-
-There's additional options that you can pass to configure the root HTTP Router serivce. These options are passed when you call `createBackend`.
-
-- `indexPath` - optional path to forward all unmatched requests to. Defaults to `/api/app` which is the `app-backend` plugin responsible for serving the frontend application through the backend.
-
-- `configure` - this is an optional function that you can use to configure the `express` instance. This is useful if you want to add your own middleware to the root router, such as logging, or other things that you want to do before the request is handled by the backend. It's also useful to override the order in which middleware is applied.
-
-You can configure the root HTTP Router service by passing the options to the `createBackend` function.
-
-```ts
-import { rootHttpRouterFactory } from '@backstage/backend-app-api';
-
-const backend = createBackend({
-  services: [
-    rootHttpRouterFactory({
-      configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
-        // the built in middleware is provided through an option in the configure function
-        app.use(middleware.helmet());
-        app.use(middleware.cors());
-        app.use(middleware.compression());
-
-        // you can add you your own middleware in here
-        app.use(custom.logging());
-
-        // here the routes that are registered by other plugins
-        app.use(routes);
-
-        // some other middleware that comes after the other routes
-        app.use(middleware.notFound());
-        app.use(middleware.error());
-      },
-    }),
-  ],
 });
 ```
