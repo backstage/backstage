@@ -21,13 +21,7 @@ import {
   SearchDocument,
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '../HighlightedSearchResultText';
-import {
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Box,
-  Divider,
-} from '@material-ui/core';
+import { ListItem, ListItemIcon, ListItemText, Box } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 
@@ -43,6 +37,7 @@ export type DefaultResultListItemProps = {
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;
+  toggleModal?: () => void;
 };
 
 /**
@@ -60,50 +55,47 @@ export const DefaultResultListItemComponent = ({
   if (!result) return null;
 
   return (
-    <>
-      <ListItem alignItems="center">
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        <ListItemText
-          primaryTypographyProps={{ variant: 'h6' }}
-          primary={
-            <Link noTrack to={result.location}>
-              {highlight?.fields.title ? (
-                <HighlightedSearchResultText
-                  text={highlight?.fields.title || ''}
-                  preTag={highlight?.preTag || ''}
-                  postTag={highlight?.postTag || ''}
-                />
-              ) : (
-                result.title
-              )}
-            </Link>
-          }
-          secondary={
-            <Typography
-              component="span"
-              style={{
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: lineClamp,
-                overflow: 'hidden',
-              }}
-            >
-              {highlight?.fields.text ? (
-                <HighlightedSearchResultText
-                  text={highlight.fields.text}
-                  preTag={highlight.preTag}
-                  postTag={highlight.postTag}
-                />
-              ) : (
-                result.text
-              )}
-            </Typography>
-          }
-        />
-        {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}
-      </ListItem>
-      <Divider />
-    </>
+    <ListItem alignItems="center" divider>
+      {icon && <ListItemIcon>{icon}</ListItemIcon>}
+      <ListItemText
+        primaryTypographyProps={{ variant: 'h6' }}
+        primary={
+          <Link noTrack to={result.location}>
+            {highlight?.fields.title ? (
+              <HighlightedSearchResultText
+                text={highlight?.fields.title || ''}
+                preTag={highlight?.preTag || ''}
+                postTag={highlight?.postTag || ''}
+              />
+            ) : (
+              result.title
+            )}
+          </Link>
+        }
+        secondary={
+          <Typography
+            component="span"
+            style={{
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: lineClamp,
+              overflow: 'hidden',
+            }}
+          >
+            {highlight?.fields.text ? (
+              <HighlightedSearchResultText
+                text={highlight.fields.text}
+                preTag={highlight.preTag}
+                postTag={highlight.postTag}
+              />
+            ) : (
+              result.text
+            )}
+          </Typography>
+        }
+      />
+      {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}
+    </ListItem>
   );
 };
 

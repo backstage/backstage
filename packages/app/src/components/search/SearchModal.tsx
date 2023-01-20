@@ -23,17 +23,11 @@ import {
   Grid,
   makeStyles,
   Paper,
-  useTheme,
 } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import BuildIcon from '@material-ui/icons/Build';
 import LaunchIcon from '@material-ui/icons/Launch';
-import {
-  CatalogIcon,
-  DocsIcon,
-  Link,
-  useContent,
-} from '@backstage/core-components';
+import { CatalogIcon, DocsIcon, Link } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
 import {
@@ -78,9 +72,6 @@ const rootRouteRef = searchPlugin.routes.root;
 export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const { transitions } = useTheme();
-  const { focusContent } = useContent();
-
   const catalogApi = useApi(catalogApiRef);
 
   const { term, types } = useSearch();
@@ -91,11 +82,14 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
     searchBarRef?.current?.focus();
   });
 
+<<<<<<< HEAD
   const handleSearchResultClick = useCallback(() => {
     toggleModal();
     setTimeout(focusContent, transitions.duration.leavingScreen);
   }, [toggleModal, focusContent, transitions]);
 
+=======
+>>>>>>> c224202137 (make sure result list is structured with list elements only)
   const handleSearchBarKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (e.key === 'Enter') {

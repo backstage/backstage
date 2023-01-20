@@ -16,7 +16,6 @@
 
 import React, { PropsWithChildren, ReactNode } from 'react';
 import {
-  Divider,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -156,13 +155,10 @@ export const TechDocsSearchResultListItem = (
 
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (
-      <>
-        <ListItem alignItems="flex-start">
-          {icon && <ListItemIcon>{icon}</ListItemIcon>}
-          <div className={classes.flexContainer}>{children}</div>
-        </ListItem>
-        <Divider component="li" />
-      </>
+      <ListItem alignItems="flex-start" divider>
+        {icon && <ListItemIcon>{icon}</ListItemIcon>}
+        <div className={classes.flexContainer}>{children}</div>
+      </ListItem>
     ) : (
       <>{children}</>
     );
