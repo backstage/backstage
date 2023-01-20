@@ -99,7 +99,7 @@ createBackendPlugin({
 });
 ```
 
-### Configuration of the service
+### Configuring the service
 
 There's additional configuration that you can optionally pass to setup the `config` core service.
 
@@ -314,7 +314,7 @@ createBackendPlugin({
 });
 ```
 
-### Configuration of the service
+### Configuring the service
 
 There's additional configuration that you can optionally pass to setup the `identity` core service.
 

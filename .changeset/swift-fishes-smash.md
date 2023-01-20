@@ -2,4 +2,4 @@
 '@backstage/backend-app-api': patch
 ---
 
-`getPath` should be optional as we provide a default value for it
+`HttpRouterFactoryOptions.getPath` is now optional as a default value is always provided in the factory.
