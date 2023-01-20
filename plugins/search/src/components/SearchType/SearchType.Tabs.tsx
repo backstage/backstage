@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     height: '50px',
     fontWeight: theme.typography.fontWeightBold,
     fontSize: theme.typography.pxToRem(13),
-    color: theme.palette.textSubtle,
+    color: theme.palette.text.primary,
     minWidth: '130px',
   },
 }));
