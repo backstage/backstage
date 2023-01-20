@@ -518,15 +518,15 @@ createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        rootRouter: coreServices.rootRouter,
+        rootHttpRouter: coreServices.rootHttpRouter,
       },
-      async init({ rootRouter }) {
+      async init({ rootHttpRouter }) {
         const router = Router();
         router.get('/health', (request, response) => {
           response.send('OK');
         });
 
-        rootRouter.use(router);
+        rootHttpRouter.use(router);
       },
     });
   },
