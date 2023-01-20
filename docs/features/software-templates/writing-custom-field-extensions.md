@@ -35,7 +35,7 @@ import FormControl from '@material-ui/core/FormControl';
 /*
  This is the actual component that will get rendered in the form
 */
-export const ValidateKebabCaseExtension = ({
+export const ValidateKebabCase = ({
   onChange,
   rawErrors,
   required,
@@ -94,14 +94,14 @@ import {
   createScaffolderFieldExtension,
 } from '@backstage/plugin-scaffolder';
 import {
-  ValidateKebabCaseExtension,
+  ValidateKebabCase,
   validateKebabCaseValidation,
-} from './ValidateKebabCase';
+} from './ValidateKebabCase/ValidateKebabCaseExtension';
 
 export const ValidateKebabCaseFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     name: 'ValidateKebabCase',
-    component: ValidateKebabCaseExtension,
+    component: ValidateKebabCase,
     validation: validateKebabCaseValidation,
   }),
 );
