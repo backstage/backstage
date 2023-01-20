@@ -140,7 +140,7 @@ export type FetchResponse =
   | ServiceFetchResponse
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
-  | LimitRangeFetchReponse
+  | LimitRangeFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
@@ -205,7 +205,7 @@ export interface KubernetesRequestBody {
 }
 
 // @public (undocumented)
-export interface LimitRangeFetchReponse {
+export interface LimitRangeFetchResponse {
   // (undocumented)
   resources: Array<V1LimitRange>;
   // (undocumented)
