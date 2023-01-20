@@ -15,9 +15,13 @@ the new system.
 
 ## Building Blocks
 
-This section introduces the high-level building blocks upon which this new system is built. These are all concepts that exist in our current system in one way or another, but they have all been lifted up to be first class concerns in the new system.
+This section introduces the high-level building blocks upon which this new system is built. Regardless of whether you are setting up your own backstage instance, developing plugins, or extending plugins with new features, it is important to understand these concepts.
 
-<!-- TODO: GRAPH GO HERE -->
+The diagram below provides an overview of the different building blocks, and the other blocks that each of them interact with.
+
+![backend system building blocks diagram](../../assets/backend-system/architecture-building-blocks.drawio.svg)
+
+> NOTE: These are all concepts that existed in our old backend system in one way or another, but they have now all been lifted up to be first class concerns.
 
 ### Backend
 
