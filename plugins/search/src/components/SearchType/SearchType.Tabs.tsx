@@ -72,6 +72,7 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
 
   return (
     <Tabs
+      aria-label="List of search types tabs"
       className={classes.tabs}
       indicatorColor="primary"
       value={types.length === 0 ? '' : types[0]}
@@ -81,7 +82,6 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
         <Tab
           key={idx}
           className={classes.tab}
-          disableRipple
           label={type.name}
           value={type.value}
         />
