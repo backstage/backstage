@@ -20,7 +20,7 @@ import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { TextField } from '@material-ui/core';
+import { TextField, Typography } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useMemo } from 'react';
@@ -63,11 +63,7 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
   };
 
   return (
-    <FormControl
-      margin="normal"
-      required={required}
-      error={rawErrors?.length > 0 && !formData}
-    >
+    <FormControl required={required} error={rawErrors?.length > 0 && !formData}>
       <Autocomplete
         id={idSchema?.$id}
         value={(formData as string) || ''}
@@ -80,14 +76,15 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
           <TextField
             {...params}
             label={title}
-            margin="normal"
-            helperText={description}
             variant="outlined"
             required={required}
             InputProps={params.InputProps}
           />
         )}
       />
+      <Typography variant="caption" color="textSecondary">
+        {description}
+      </Typography>
     </FormControl>
   );
 };

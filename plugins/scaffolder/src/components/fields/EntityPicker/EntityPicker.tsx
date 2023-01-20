@@ -19,7 +19,7 @@ import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { TextField } from '@material-ui/core';
+import { TextField, Typography } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
@@ -79,11 +79,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   }, [entityRefs, onChange]);
 
   return (
-    <FormControl
-      margin="normal"
-      required={required}
-      error={rawErrors?.length > 0 && !formData}
-    >
+    <FormControl required={required} error={rawErrors?.length > 0 && !formData}>
       <Autocomplete
         disabled={entityRefs?.length === 1}
         id={idSchema?.$id}
@@ -97,15 +93,15 @@ export const EntityPicker = (props: EntityPickerProps) => {
           <TextField
             {...params}
             label={title}
-            margin="dense"
-            helperText={description}
-            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
             InputProps={params.InputProps}
           />
         )}
       />
+      <Typography variant="caption" color="textSecondary">
+        {description}
+      </Typography>
     </FormControl>
   );
 };
