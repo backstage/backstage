@@ -48,7 +48,7 @@ createBackendPlugin({
 });
 ```
 
-### Configuration of the service
+### Configuring the service
 
 There's additional configuration that you can optionally pass to setup the `httpRouter` core service.
 
@@ -57,7 +57,7 @@ There's additional configuration that you can optionally pass to setup the `http
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { httpRouterFactory } from '@backstage/backend-app-api`;
+import { httpRouterFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
@@ -68,7 +68,7 @@ const backend = createBackend({
 
 ## Config
 
-You will probably want to be able to reference config that is deployed alongside your plugin that can be referenced in `app-config.yaml`.
+This service allows you to read configuration values out of your `app-config` YAML files.
 
 ### Using the service
 
@@ -103,12 +103,12 @@ createBackendPlugin({
 There's additional configuration that you can optionally pass to setup the `config` core service.
 
 - `argv` - Override the arguments that are passed to the config loader, instead of using `process.argv`
-- `remote` - Configure the `remote` config loading
+- `remote` - Configure remote configuration loading
 
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { configFactory } from '@backstage/backend-app-api`;
+import { configFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
@@ -122,11 +122,11 @@ const backend = createBackend({
 
 ## Logging
 
-It is common for your plugins to be able to use the logger. This logger is bound to your plugin, so that you will get nice messages with the plugin ID referenced in the log lines.
+This service allows plugins to output logging information. There are actually two logger services: a root logger, and a plugin logger which is bound to individual plugins, so that you will get nice messages with the plugin ID referenced in the log lines.
 
 ### Using the service
 
-The following example shows how to get config in your `example` backend plugin and create a `warn` that will be printed nicely to the console.
+The following example shows how to get the logger in your `example` backend plugin and create a warning message that will be printed nicely to the console.
 
 ```ts
 import {
@@ -142,7 +142,7 @@ createBackendPlugin({
         log: coreServices.logger,
       },
       async init({ log }) {
-        log.warn('Heres a nice log line thats a warning!');
+        log.warn("Here's a nice log line that's a warning!");
       },
     });
   },
@@ -151,11 +151,11 @@ createBackendPlugin({
 
 ## Cache
 
-There's a core service provided with the backend system that can be used to interact with a cache in your plugins. This cache is bound to your plugin too, so that you will only set and get values in your plugins namespace.
+This service lets your plugin interact with a cache. It is bound to your plugin too, so that you will only set and get values in your plugin's private namespace.
 
 ### Using the service
 
-The following example shows how to get a cache client in your `example` backend plugin and `set` and `get` values from the cache.
+The following example shows how to get a cache client in your `example` backend plugin and setting and getting values from the cache.
 
 ```ts
 import {
@@ -185,15 +185,15 @@ createBackendPlugin({
 
 ## Database
 
-Interacting with databases inside your plugin is something that is quite common, and we provide a `PluginDatabaseManager` part of the core services that you can get `knex` client hooked up to your database which is configured in `app-config.yaml`.
+This service lets your plugins get a `knex` client hooked up to a database which is configured in your `app-config` YAML files, for your persistence needs.
 
-If there's no config provided in `backend.database` then you will automatically get a simple in memory `sqlite3` client for your plugin.
+If there's no config provided in `backend.database` then you will automatically get a simple in-memory SQLite 3 database for your plugin whose contents will be lost when the service restarts.
 
-These `PluginDatabaseManager`s are scoped per plugin too, so that table names do not conflict across plugins either.
+This service is scoped per plugin too, so that table names do not conflict across plugins.
 
 ### Using the service
 
-The following example shows how to get a `PluginDatabaseManager` in your `example` backend plugin and get a `client` for interacting with the database and running some migrations from a `migrationsDir` for your plugin.
+The following example shows how to get access to the database service in your `example` backend plugin and getting a client for interacting with the database. It also runs some migrations from a certain directory for your plugin.
 
 ```ts
 import {
@@ -209,7 +209,7 @@ createBackendPlugin({
         database: coreServices.database,
       },
       async init({ database }) {
-        const client = database.getClient();
+        const client = await database.getClient();
 
         if (!database.migrations?.skip) {
           await client.migrate.latest({
@@ -224,11 +224,11 @@ createBackendPlugin({
 
 ## Discovery
 
-When building plugins, you might find that you will need to lookup where in fact another plugins `baseUrl`. This could be for example, a `http` route or some `ws` protocol URL. For this we have the `discovery` service that you can query both the internal and external `baseUrl`s given a plugin ID.
+When building plugins, you might find that you will need to look up another plugin's base URL to be able to communicate with it. This could be for example an HTTP route or some `ws` protocol URL. For this we have a discovery service which can provide both internal and external base URLs for a given a plugin ID.
 
 ### Using the service
 
-The following example shows how to get the `DiscoveryService` in your `example` backend plugin and making a request to both the internal and external `baseUrl`s for the `derp` plugin.
+The following example shows how to get the discovery service in your `example` backend plugin and making a request to both the internal and external base URLs for the `derp` plugin.
 
 ```ts
 import {
@@ -263,11 +263,11 @@ createBackendPlugin({
 
 ## Identity
 
-When working with backend plugins, you might find that you will need to interact with the `auth-backend` plugin to both authenticate backstage tokens, and get things like the `entityRef` of the authenticated user, and anything that they might claim to own through `ownershipEntityRefs`.
+When working with backend plugins, you might find that you will need to interact with the `auth-backend` plugin to both authenticate backstage tokens, and to deconstruct them to get the user's entity ref and/or ownership claims out of them.
 
 ### Using the service
 
-The following example shows how to get the `IdentityService` in your `example` backend plugin and retrieve the users `entityRef` and ownership claims for the incoming `http` request.
+The following example shows how to get the identity service in your `example` backend plugin and retrieve the user's entity ref and ownership claims for the incoming request.
 
 ```ts
 import {
@@ -287,14 +287,14 @@ createBackendPlugin({
       async init({ http, identity }) {
         const router = Router();
         router.get('/test-me', (request, response) => {
-          // use the identityService pull out the header from the request and get the user
+          // use the identity service to pull out the header from the request and get the user
           const {
             identity: { userEntityRef, ownershipEntityRefs },
           } = await identity.getIdentity({
             request,
           });
 
-          // sent the decoded and validated things back to the user
+          // send the decoded and validated things back to the user
           response.json({
             userEntityRef,
             ownershipEntityRefs,
@@ -312,13 +312,13 @@ createBackendPlugin({
 
 There's additional configuration that you can optionally pass to setup the `identity` core service.
 
-- `issuer` - Set an optional issuer for validation of the `jwt`
-- `algorithms` - `jws` `alg` header for validation of the `jwt`, defaults to `ES256`. More info on supported algorithms under [jose](https://github.com/panva/jose)
+- `issuer` - Set an optional issuer for validation of the JWT token
+- `algorithms` - `alg` header for validation of the JWT token, defaults to `ES256`. More info on supported algorithms can be found in the [`jose` library documentation](https://github.com/panva/jose)
 
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { identityFactory } from '@backstage/backend-app-api`;
+import { identityFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
@@ -332,11 +332,11 @@ const backend = createBackend({
 
 ## Lifecycle
 
-When writing plugins, it's often that you will have long running things that you might want to ensure clean shutdowns of when the plugins are torn down, or when the backend is quit (think local development). You shouldn't have to worry too much about providing shutdowns for any of the core services that you use, and should really only need to take care of anything that you create that you should stop when your plugin stops.
+This service allows your plugins to register hooks for cleaning up resources as the service is shutting down (e.g. when a pod is being torn down, or when pressing `Ctrl+C` during local development). Other core services also leverage this same mechanism internally to stop themselves cleanly.
 
 ### Using the service
 
-The following example shows how to get the `LifecycleService` in your `example` backend plugin to clean a long running interval on teardown.
+The following example shows how to get the lifecycle service in your `example` backend plugin to clean up a long running interval when the service is shutting down.
 
 ```ts
 import {
@@ -353,7 +353,7 @@ createBackendPlugin({
         logger: coreServices.logger,
       },
       async init({ lifecycle, logger }) {
-        // setup by creating an interval that does something that we want to stop after the plugin is stopped.
+        // some example work that we want to stop when shutting down
         const interval = setInterval(async () => {
           await fetch('http://google.com/keepalive').then(r => r.json());
           // do some other stuff.
@@ -371,11 +371,11 @@ createBackendPlugin({
 
 ## Permissions
 
-Sometimes you want to include permissions and making sure that a user that is authorized to do some actions in your plugin. We've provide a core service out of the box for you to interact with the permissions framework. You can find out more about the permissions framework in [the documentation](https://backstage.io/docs/permissions/overview)
+This service allows your plugins to ask [the permissions framework](https://backstage.io/docs/permissions/overview) for authorization of user actions.
 
 ### Using the service
 
-The following example shows how to get the `PermissionsSerice` in your `example` backend to check to see if the user has the correct permissions for `myCustomPermission`.
+The following example shows how to get the permissions service in your `example` backend to check to see if the user is allowed to perform a certain action with a custom permission rule.
 
 ```ts
 import {
@@ -395,7 +395,7 @@ createBackendPlugin({
       async init({ permissions, http }) {
         const router = Router();
         router.get('/test-me', (request, response) => {
-          // use the identityService pull out the header from the request and get the token
+          // use the identity service to pull out the token from request headers
           const { token } = await identity.getIdentity({
             request,
           });
@@ -420,11 +420,11 @@ createBackendPlugin({
 
 ## Scheduler
 
-When writing plugins, it's often that you want to have things running on a schedule, or something similar to cron jobs that are distributed through instances that your backend plugin might be running on. We supply a `TaskScheduler` that is scoped per plugin so that you can create these tasks and orchestrate the running of them.
+When writing plugins, you sometimes want to have things running on a schedule, or something similar to cron jobs that are distributed through instances that your backend plugin is running on. We supply a task scheduler for this purpose that is scoped per plugin so that you can create these tasks and orchestrate their execution.
 
 ### Using the service
 
-The following example shows how to get the `SchedulerService` in your `example` backend to schedule a scheduled task that runs once across your instances at a given interval.
+The following example shows how to get the scheduler service in your `example` backend to issue a scheduled task that runs across your instances at a given interval.
 
 ```ts
 import {
@@ -442,7 +442,8 @@ createBackendPlugin({
       },
       async init({ scheduler }) {
         await scheduler.scheduleTask({
-          frequency: Duration.fromObject({ minutes: 10 }),
+          frequency: { minutes: 10 },
+          timeout: { seconds: 30 },
           id: 'ping-google',
           fn: async () => {
             await fetch('http://google.com/ping');
