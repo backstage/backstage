@@ -99,6 +99,48 @@ export const MissingEventsRestEndpoint = () => (
   </CardContent>
 );
 
+const Content = ({
+  team,
+  routingKey,
+  usersHashMap,
+  readOnly,
+  showDialog,
+  refreshIncidents,
+  actions,
+}: {
+  team: Team | undefined;
+  routingKey: RoutingKey | undefined;
+  usersHashMap: any;
+  readOnly: boolean;
+  showDialog: boolean;
+  refreshIncidents: boolean;
+  actions: {
+    handleDialog: () => void;
+    handleRefresh: () => void;
+  };
+}) => {
+  const teamName = team?.name ?? '';
+
+  return (
+    <>
+      <Incidents
+        readOnly={readOnly || false}
+        team={teamName}
+        refreshIncidents={refreshIncidents}
+      />
+      {usersHashMap && team && (
+        <EscalationPolicy team={teamName} users={usersHashMap} />
+      )}
+      <TriggerDialog
+        routingKey={routingKey?.routingKey ?? teamName}
+        showDialog={showDialog}
+        handleDialog={actions.handleDialog}
+        onIncidentCreated={actions.handleRefresh}
+      />
+    </>
+  );
+};
+
 /** @public */
 export const isSplunkOnCallAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]) ||
@@ -219,37 +261,6 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
     );
   }
 
-  const Content = ({
-    team,
-    routingKey,
-    usersHashMap,
-  }: {
-    team: Team | undefined;
-    routingKey: RoutingKey | undefined;
-    usersHashMap: any;
-  }) => {
-    const teamName = team?.name ?? '';
-
-    return (
-      <>
-        <Incidents
-          readOnly={readOnly || false}
-          team={teamName}
-          refreshIncidents={refreshIncidents}
-        />
-        {usersHashMap && team && (
-          <EscalationPolicy team={teamName} users={usersHashMap} />
-        )}
-        <TriggerDialog
-          routingKey={routingKey?.routingKey ?? teamName}
-          showDialog={showDialog}
-          handleDialog={handleDialog}
-          onIncidentCreated={handleRefresh}
-        />
-      </>
-    );
-  };
-
   const triggerLink: IconLinkVerticalProps = {
     label: 'Create Incident',
     onClick: handleDialog,
@@ -287,6 +298,13 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
               team={team}
               routingKey={entityData?.foundRoutingKey}
               usersHashMap={entityData?.usersHashMap}
+              readOnly={readOnly ?? false}
+              refreshIncidents={refreshIncidents}
+              showDialog={showDialog}
+              actions={{
+                handleRefresh,
+                handleDialog,
+              }}
             />
           </CardContent>
         </Card>
