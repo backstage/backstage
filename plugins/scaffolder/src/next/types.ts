@@ -23,26 +23,7 @@
 import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
 
 /**
- * The field template from `@rjsf/core` which is a react component that gets passed `@rjsf/core` field related props.
- *
- * @alpha
- */
-export type NextLayoutTemplate<T = any> = NonNullable<
-  SchemaFormProps<T>['uiSchema']
->['ui:ObjectFieldTemplate'];
-
-/**
- * The type of layouts that is passed to the TemplateForms
- *
- * @alpha
- */
-export interface NextLayoutOptions<P = any> {
-  name: string;
-  component: NextLayoutTemplate<P>;
-}
-
-/**
- * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderpage`
+ * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderPage`
  *
  * @alpha
  * @deprecated use the import from {@link @backstage/plugin-scaffolder-react/alpha#FormProps} instead
