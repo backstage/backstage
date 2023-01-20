@@ -15,21 +15,14 @@
  */
 
 import {
-  coreServices,
-  createServiceFactory,
   LoggerService,
   LogMeta,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
+import type { mockServices } from './mockServices';
 
-interface MockLoggerOptions {
-  levels:
-    | boolean
-    | { error: boolean; warn: boolean; info: boolean; debug: boolean };
-}
-
-class MockLogger implements RootLoggerService {
-  #levels: Exclude<MockLoggerOptions['levels'], boolean>;
+export class MockRootLoggerService implements RootLoggerService {
+  #levels: Exclude<mockServices.rootLogger.Options['levels'], boolean>;
   #meta: LogMeta;
 
   error(message: string, meta?: LogMeta | Error | undefined): void {
@@ -49,10 +42,13 @@ class MockLogger implements RootLoggerService {
   }
 
   child(meta: LogMeta): LoggerService {
-    return new MockLogger(this.#levels, { ...this.#meta, ...meta });
+    return new MockRootLoggerService(this.#levels, { ...this.#meta, ...meta });
   }
 
-  constructor(levels: MockLoggerOptions['levels'], meta: LogMeta) {
+  constructor(
+    levels: mockServices.rootLogger.Options['levels'],
+    meta: LogMeta,
+  ) {
     if (typeof levels === 'boolean') {
       this.#levels = {
         error: levels,
@@ -79,12 +75,3 @@ class MockLogger implements RootLoggerService {
     }
   }
 }
-
-/** @alpha */
-export const mockRootLoggerService = createServiceFactory({
-  service: coreServices.rootLogger,
-  deps: {},
-  async factory(_deps) {
-    return new MockLogger(false, {});
-  },
-});

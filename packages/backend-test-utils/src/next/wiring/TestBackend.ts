@@ -17,15 +17,6 @@
 import {
   Backend,
   createSpecializedBackend,
-  lifecycleFactory,
-  rootLifecycleFactory,
-  loggerFactory,
-  cacheFactory,
-  permissionsFactory,
-  schedulerFactory,
-  urlReaderFactory,
-  databaseFactory,
-  httpRouterFactory,
   MiddlewareFactory,
   createHttpServer,
   ExtendedHttpServer,
@@ -40,13 +31,9 @@ import {
   ExtensionPoint,
   coreServices,
 } from '@backstage/backend-plugin-api';
-
-import { mockConfigFactory } from '../implementations/mockConfigService';
-import { mockRootLoggerService } from '../implementations/mockRootLoggerService';
-import { mockTokenManagerFactory } from '../implementations/mockTokenManagerService';
+import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
-import { mockIdentityFactory } from '../implementations/mockIdentityService';
 
 /** @alpha */
 export interface TestBackendOptions<
@@ -84,19 +71,19 @@ export interface TestBackend extends Backend {
 }
 
 const defaultServiceFactories = [
-  cacheFactory(),
-  databaseFactory(),
-  httpRouterFactory(),
-  lifecycleFactory(),
-  loggerFactory(),
-  mockConfigFactory(),
-  mockRootLoggerService(),
-  mockIdentityFactory(),
-  mockTokenManagerFactory(),
-  permissionsFactory(),
-  rootLifecycleFactory(),
-  schedulerFactory(),
-  urlReaderFactory(),
+  mockServices.cache.factory(),
+  mockServices.config.factory(),
+  mockServices.database.factory(),
+  mockServices.httpRouter.factory(),
+  mockServices.identity.factory(),
+  mockServices.lifecycle.factory(),
+  mockServices.logger.factory(),
+  mockServices.permissions.factory(),
+  mockServices.rootLifecycle.factory(),
+  mockServices.rootLogger.factory(),
+  mockServices.scheduler.factory(),
+  mockServices.tokenManager.factory(),
+  mockServices.urlReader.factory(),
 ];
 
 const backendInstancesToCleanUp = new Array<Backend>();
