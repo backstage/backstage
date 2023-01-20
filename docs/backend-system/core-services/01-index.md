@@ -61,7 +61,9 @@ import { httpRouterFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    httpRouterFactory({ getPath: (pluginId: string) => `/plugins/${pluginId}` }),
+    httpRouterFactory({
+      getPath: (pluginId: string) => `/plugins/${pluginId}`,
+    }),
   ],
 });
 ```
@@ -89,9 +91,8 @@ createBackendPlugin({
         config: coreServices.config,
       },
       async init({ log, config }) {
-        log.warn(
-          `The backend is running at ${config.getString('backend.baseUrl')}`,
-        );
+        const baseUrl = config.getString('backend.baseUrl');
+        log.warn(`The backend is running at ${baseUrl}`);
       },
     });
   },
@@ -113,8 +114,13 @@ import { configFactory } from '@backstage/backend-app-api';
 const backend = createBackend({
   services: [
     configFactory({
-      argv: ['--config', '/backstage/app-config.development.yaml', '--config', '/backstage/app-config.yaml'],
-      remote: { reloadIntervalSeconds: 60 }
+      argv: [
+        '--config',
+        '/backstage/app-config.development.yaml',
+        '--config',
+        '/backstage/app-config.yaml',
+      ],
+      remote: { reloadIntervalSeconds: 60 },
     }),
   ],
 });
@@ -324,7 +330,7 @@ const backend = createBackend({
   services: [
     identityFactory({
       issuer: 'backstage',
-      algorithms: ['ES256', 'RS256']
+      algorithms: ['ES256', 'RS256'],
     }),
   ],
 });
@@ -357,7 +363,7 @@ createBackendPlugin({
         const interval = setInterval(async () => {
           await fetch('http://google.com/keepalive').then(r => r.json());
           // do some other stuff.
-        });
+        }, 1000);
 
         lifecycle.addShutdownHook({
           fn: () => clearInterval(interval),
