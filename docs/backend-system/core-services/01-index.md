@@ -239,6 +239,7 @@ The following example is how you can override the root logger service to add add
 
 ```ts
 import { coreServices } from '@backstage/backend-plugin-api';
+import { WinstonLogger } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
@@ -488,7 +489,7 @@ createBackendPlugin({
 
 ## Root Lifecycle
 
-This service is the same as the lifecycle service, but should only be used by the root services. This is also where the implementation for the actual lifecycle hooks torn, so if you want to override the implementation of how the lifecycle hooks are executed, you should override this service.
+This service is the same as the lifecycle service, but should only be used by the root services. This is also where the implementation for the actual lifecycle hooks are collected and executed, so if you want to override the implementation of how those are processed, you should override this service.
 
 ### Configure the service
 
@@ -656,7 +657,7 @@ createBackendPlugin({
         urlReader: coreServices.urlReader,
       },
       async init({ urlReader }) {
-        const reader = await urlReader
+        const buffer = await urlReader
           .read('https://github.com/backstage/backstage/blob/master/README.md')
           .then(r => r.buffer());
 
