@@ -33,7 +33,7 @@ import { MissingApiKeyOrApiIdError } from './Errors';
 import { EscalationPolicy } from './Escalation';
 import { Incidents } from './Incident';
 import { TriggerDialog } from './TriggerDialog';
-import { RoutingKey, Team, User } from './types';
+import { RoutingKey, User } from './types';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import {
@@ -98,48 +98,6 @@ export const MissingEventsRestEndpoint = () => (
     />
   </CardContent>
 );
-
-const Content = ({
-  team,
-  routingKey,
-  usersHashMap,
-  readOnly,
-  showDialog,
-  refreshIncidents,
-  actions,
-}: {
-  team: Team | undefined;
-  routingKey: RoutingKey | undefined;
-  usersHashMap: any;
-  readOnly: boolean;
-  showDialog: boolean;
-  refreshIncidents: boolean;
-  actions: {
-    handleDialog: () => void;
-    handleRefresh: () => void;
-  };
-}) => {
-  const teamName = team?.name ?? '';
-
-  return (
-    <>
-      <Incidents
-        readOnly={readOnly || false}
-        team={teamName}
-        refreshIncidents={refreshIncidents}
-      />
-      {usersHashMap && team && (
-        <EscalationPolicy team={teamName} users={usersHashMap} />
-      )}
-      <TriggerDialog
-        routingKey={routingKey?.routingKey ?? teamName}
-        showDialog={showDialog}
-        handleDialog={actions.handleDialog}
-        onIncidentCreated={actions.handleRefresh}
-      />
-    </>
-  );
-};
 
 /** @public */
 export const isSplunkOnCallAvailable = (entity: Entity) =>
@@ -278,37 +236,45 @@ export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
 
   return (
     <>
-      {teams.map((team, i) => (
-        <Card key={i} className={classes.onCallCard}>
-          <CardHeader
-            title="Splunk On-Call"
-            subheader={[
-              <Typography key="team_name">
-                Team: {team && team.name ? team.name : ''}
-              </Typography>,
-              <HeaderIconLinkRow
-                key="incident_trigger"
-                links={!readOnly ? [serviceLink, triggerLink] : [serviceLink]}
-              />,
-            ]}
-          />
-          <Divider />
-          <CardContent>
-            <Content
-              team={team}
-              routingKey={entityData?.foundRoutingKey}
-              usersHashMap={entityData?.usersHashMap}
-              readOnly={readOnly ?? false}
-              refreshIncidents={refreshIncidents}
-              showDialog={showDialog}
-              actions={{
-                handleRefresh,
-                handleDialog,
-              }}
+      {teams.map((team, i) => {
+        const teamName = team?.name ?? '';
+        return (
+          <Card key={i} className={classes.onCallCard}>
+            <CardHeader
+              title="Splunk On-Call"
+              subheader={[
+                <Typography key="team_name">
+                  Team: {team && team.name ? team.name : ''}
+                </Typography>,
+                <HeaderIconLinkRow
+                  key="incident_trigger"
+                  links={!readOnly ? [serviceLink, triggerLink] : [serviceLink]}
+                />,
+              ]}
             />
-          </CardContent>
-        </Card>
-      ))}
+            <Divider />
+            <CardContent>
+              <Incidents
+                readOnly={readOnly || false}
+                team={teamName}
+                refreshIncidents={refreshIncidents}
+              />
+              {entityData?.usersHashMap && team && (
+                <EscalationPolicy
+                  team={teamName}
+                  users={entityData?.usersHashMap}
+                />
+              )}
+              <TriggerDialog
+                routingKey={entityData?.foundRoutingKey?.routingKey ?? teamName}
+                showDialog={showDialog}
+                handleDialog={handleDialog}
+                onIncidentCreated={handleRefresh}
+              />
+            </CardContent>
+          </Card>
+        );
+      })}
     </>
   );
 };
