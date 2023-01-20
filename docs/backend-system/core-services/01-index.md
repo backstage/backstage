@@ -456,3 +456,116 @@ createBackendPlugin({
   },
 });
 ```
+
+## URL Readers
+
+Plugins will require communication with certain integrations that users have configured. Popular integrations are things like Version Control Systems (VSC), such as GitHub, BitBucket GitLab etc. These integrations are configured in the `integrations` section of the `app-config.yaml` file.
+
+These URL readers are basically wrappers with authentication for files and folders that could be stored in these VCS repositories.
+
+### Using the service
+
+The following example shows how to get the URL Reader service in your `example` backend plugin to read a file and a directory from a GitHub repository.
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import os from 'os';
+
+createBackendPlugin({
+  id: 'example',
+  register(env) {
+    env.registerInit({
+      deps: {
+        urlReader: coreServices.urlReader,
+      },
+      async init({ urlReader }) {
+        const reader = await urlReader
+          .read('https://github.com/backstage/backstage/blob/master/README.md')
+          .then(r => r.buffer());
+
+        const tmpDir = os.tmpdir();
+        const directory = await urlReader
+          .readTree(
+            'https://github.com/backstage/backstage/tree/master/packages/backend',
+          )
+          .then(tree => tree.dir({ targetDir: tmpDir }));
+      },
+    });
+  },
+});
+```
+
+## Root HTTP Router
+
+The root HTTP router is a service that allows you to register routes on the root of the backend service. This is useful for things like health checks, or other routes that you want to expose on the root of the backend service. It is used as the base router that backs the `httpRouter` service. Most likely you won't need to use this service directly, but rather use the `httpRouter` service.
+
+### Using the service
+
+The following example shows how to get the root HTTP router service in your `example` backend plugin to register a health check route.
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { Router } from 'express';
+
+createBackendPlugin({
+  id: 'example',
+  register(env) {
+    env.registerInit({
+      deps: {
+        rootRouter: coreServices.rootRouter,
+      },
+      async init({ rootRouter }) {
+        const router = Router();
+        router.get('/health', (request, response) => {
+          response.send('OK');
+        });
+
+        rootRouter.use(router);
+      },
+    });
+  },
+});
+```
+
+### Configuring the service
+
+There's additional options that you can pass to configure the root HTTP Router serivce. These options are passed when you call `createBackend`.
+
+- `indexPath` - optional path to forward all unmatched requests to. Defaults to `/api/app` which is the `app-backend` plugin responsible for serving the frontend application through the backend.
+
+- `configure` - this is an optional function that you can use to configure the `express` instance. This is useful if you want to add your own middleware to the root router, such as logging, or other things that you want to do before the request is handled by the backend. It's also useful to override the order in which middleware is applied.
+
+You can configure the root HTTP Router service by passing the options to the `createBackend` function.
+
+```ts
+import { rootHttpRouterFactory } from '@backstage/backend-app-api';
+
+const backend = createBackend({
+  services: [
+    rootHttpRouterFactory({
+      configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
+        // the built in middleware is provided through an option in the configure function
+        app.use(middleware.helmet());
+        app.use(middleware.cors());
+        app.use(middleware.compression());
+
+        // you can add you your own middleware in here
+        app.use(custom.logging());
+
+        // here the routes that are registered by other plugins
+        app.use(routes);
+
+        // some other middleware that comes after the other routes
+        app.use(middleware.notFound());
+        app.use(middleware.error());
+      },
+    }),
+  ],
+});
+```
