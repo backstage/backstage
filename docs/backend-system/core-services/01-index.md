@@ -206,6 +206,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { resolvePackagePath } from '@backstage/backend-common';
 
 createBackendPlugin({
   id: 'example',
@@ -216,7 +217,10 @@ createBackendPlugin({
       },
       async init({ database }) {
         const client = await database.getClient();
-
+        const migrationsDir = resolvePackagePath(
+          '@internal/my-plugin',
+          'migrations',
+        );
         if (!database.migrations?.skip) {
           await client.migrate.latest({
             directory: migrationsDir,
@@ -251,16 +255,8 @@ createBackendPlugin({
         discovery: coreServices.discovery,
       },
       async init({ discovery }) {
-        const urls = await Promise.all[
-          discovery.getBaseUrl('derp'),
-          discovery.getExternalBaseUrl('derp'),
-        ];
-
-        await Promise.all(
-          urls.map(
-            (url) => fetch(url).then((r) => r.json()),
-          ),
-        );
+        const url = await discoverty.getBaseUrl('derp'); // can also use discovery.getBaseUrl to retrieve external URL
+        const response = await fetch(`${url}/hello`);
       },
     });
   },
