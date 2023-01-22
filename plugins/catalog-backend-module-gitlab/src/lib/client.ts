@@ -20,12 +20,14 @@ import {
   GitLabIntegrationConfig,
 } from '@backstage/integration';
 import { Logger } from 'winston';
+import { GitLabGroup, GitLabMembership, GitLabUser } from './types';
 
 export type ListOptions = {
   [key: string]: string | number | boolean | undefined;
   group?: string;
   per_page?: number | undefined;
   page?: number | undefined;
+  active?: boolean;
 };
 
 export type PagedResponse<T> = {
@@ -61,6 +63,40 @@ export class GitLabClient {
     }
 
     return this.pagedRequest(`/projects`, options);
+  }
+
+  async listUsers(options?: ListOptions): Promise<PagedResponse<GitLabUser>> {
+    return this.pagedRequest(`/users`, options);
+  }
+
+  async listGroups(options?: ListOptions): Promise<PagedResponse<GitLabGroup>> {
+    return this.pagedRequest(`/groups`, options);
+  }
+
+  async getUserMemberships(userId: number): Promise<GitLabMembership[]> {
+    const endpoint: string = `/users/${encodeURIComponent(userId)}/memberships`;
+    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
+    request.searchParams.append('per_page', '100');
+
+    const response = await fetch(request.toString(), {
+      headers: getGitLabRequestOptions(this.config).headers,
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      if (response.status >= 500) {
+        this.logger.debug(
+          `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
+            response.status
+          } - ${response.statusText}`,
+        );
+      }
+      return [];
+    }
+
+    return response.json().then(items => {
+      return items as GitLabMembership[];
+    });
   }
 
   /**
