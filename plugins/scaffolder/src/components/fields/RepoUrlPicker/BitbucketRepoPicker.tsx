@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 import React, { useEffect } from 'react';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import { FormControl, Grid, TextField, Typography } from '@material-ui/core';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 
@@ -61,67 +58,67 @@ export const BitbucketRepoPicker = (props: {
   return (
     <>
       {host === 'bitbucket.org' && (
-        <FormControl
-          margin="normal"
-          required
-          error={rawErrors?.length > 0 && !workspace}
-        >
-          {allowedOwners?.length ? (
-            <Select
-              native
-              label="Allowed Workspaces"
-              onChange={s =>
-                onChange({ workspace: String(Array.isArray(s) ? s[0] : s) })
-              }
-              disabled={allowedOwners.length === 1}
-              selected={workspace}
-              items={ownerItems}
-            />
-          ) : (
-            <>
-              <InputLabel htmlFor="workspaceInput">Workspace</InputLabel>
-              <Input
+        <Grid item xs={12} style={{ marginBottom: '10px' }}>
+          <FormControl
+            required
+            error={rawErrors?.length > 0 && !workspace}
+            fullWidth
+          >
+            {allowedOwners?.length ? (
+              <Select
+                native
+                label="Allowed Workspaces"
+                onChange={s =>
+                  onChange({ workspace: String(Array.isArray(s) ? s[0] : s) })
+                }
+                disabled={allowedOwners.length === 1}
+                selected={workspace}
+                items={ownerItems}
+              />
+            ) : (
+              <TextField
                 id="workspaceInput"
+                label="Workspace"
                 onChange={e => onChange({ workspace: e.target.value })}
                 value={workspace}
               />
-            </>
-          )}
-          <FormHelperText>
-            The Workspace that this repo will belong to
-          </FormHelperText>
-        </FormControl>
+            )}
+            <Typography variant="caption" color="textSecondary">
+              The Workspace that this repo will belong to
+            </Typography>
+          </FormControl>
+        </Grid>
       )}
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !project}
-      >
-        {allowedProjects?.length ? (
-          <Select
-            native
-            label="Allowed Projects"
-            onChange={s =>
-              onChange({ project: String(Array.isArray(s) ? s[0] : s) })
-            }
-            disabled={allowedProjects.length === 1}
-            selected={project}
-            items={projectItems}
-          />
-        ) : (
-          <>
-            <InputLabel htmlFor="projectInput">Project</InputLabel>
-            <Input
+      <Grid item xs={12} style={{ marginBottom: '10px' }}>
+        <FormControl
+          required
+          error={rawErrors?.length > 0 && !project}
+          fullWidth
+        >
+          {allowedProjects?.length ? (
+            <Select
+              native
+              label="Allowed Projects"
+              onChange={s =>
+                onChange({ project: String(Array.isArray(s) ? s[0] : s) })
+              }
+              disabled={allowedProjects.length === 1}
+              selected={project}
+              items={projectItems}
+            />
+          ) : (
+            <TextField
               id="projectInput"
+              label="Project"
               onChange={e => onChange({ project: e.target.value })}
               value={project}
             />
-          </>
-        )}
-        <FormHelperText>
-          The Project that this repo will belong to
-        </FormHelperText>
-      </FormControl>
+          )}
+          <Typography variant="caption" color="textSecondary">
+            The Project that this repo will belong to
+          </Typography>
+        </FormControl>
+      </Grid>
     </>
   );
 };

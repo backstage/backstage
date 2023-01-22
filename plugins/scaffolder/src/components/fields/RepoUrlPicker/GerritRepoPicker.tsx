@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import { FormControl, Grid, TextField, Typography } from '@material-ui/core';
 import { RepoUrlPickerState } from './types';
 
 export const GerritRepoPicker = (props: {
@@ -29,30 +26,36 @@ export const GerritRepoPicker = (props: {
   const { workspace, owner } = state;
   return (
     <>
-      <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
-        <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-        <Input
-          id="ownerInput"
-          onChange={e => onChange({ owner: e.target.value })}
-          value={owner}
-        />
-        <FormHelperText>The owner of the project (optional)</FormHelperText>
-      </FormControl>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !workspace}
-      >
-        <InputLabel htmlFor="parentInput">Parent</InputLabel>
-        <Input
-          id="parentInput"
-          onChange={e => onChange({ workspace: e.target.value })}
-          value={workspace}
-        />
-        <FormHelperText>
-          The project parent that the repo will belong to
-        </FormHelperText>
-      </FormControl>
+      <Grid item xs={12} style={{ marginBottom: '10px' }}>
+        <FormControl error={rawErrors?.length > 0 && !workspace} fullWidth>
+          <TextField
+            id="ownerInput"
+            label="Owner"
+            onChange={e => onChange({ owner: e.target.value })}
+            value={owner}
+          />
+          <Typography variant="caption" color="textSecondary">
+            The owner of the project (optional)
+          </Typography>
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} style={{ marginBottom: '10px' }}>
+        <FormControl
+          required
+          error={rawErrors?.length > 0 && !workspace}
+          fullWidth
+        >
+          <TextField
+            id="parentInput"
+            label="Parent"
+            onChange={e => onChange({ workspace: e.target.value })}
+            value={workspace}
+          />
+          <Typography variant="caption" color="textSecondary">
+            The project parent that the repo will belong to
+          </Typography>
+        </FormControl>
+      </Grid>
     </>
   );
 };

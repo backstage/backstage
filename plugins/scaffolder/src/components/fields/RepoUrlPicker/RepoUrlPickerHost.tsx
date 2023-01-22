@@ -15,8 +15,7 @@
  */
 import React, { useEffect } from 'react';
 import { Progress, Select, SelectItem } from '@backstage/core-components';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import { FormControl, Typography } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/lib/useAsync';
@@ -65,11 +64,7 @@ export const RepoUrlPickerHost = (props: {
 
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !host}
-      >
+      <FormControl required error={rawErrors?.length > 0 && !host} fullWidth>
         <Select
           native
           disabled={hosts?.length === 1 ?? false}
@@ -80,9 +75,9 @@ export const RepoUrlPickerHost = (props: {
           data-testid="host-select"
         />
 
-        <FormHelperText>
+        <Typography variant="caption" color="textSecondary">
           The host where the repository will be created
-        </FormHelperText>
+        </Typography>
       </FormControl>
     </>
   );

@@ -15,10 +15,7 @@
  */
 
 import React from 'react';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import { FormControl, Grid, TextField, Typography } from '@material-ui/core';
 import { RepoUrlPickerState } from './types';
 import { Select, SelectItem } from '@backstage/core-components';
 
@@ -49,66 +46,62 @@ export const AzureRepoPicker = (props: {
 
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !organization}
-      >
-        {allowedOrganizations?.length ? (
-          <Select
-            native
-            label="Organization"
-            onChange={s =>
-              onChange({ organization: String(Array.isArray(s) ? s[0] : s) })
-            }
-            disabled={allowedOrganizations.length === 1}
-            selected={organization}
-            items={organizationItems}
-          />
-        ) : (
-          <>
-            <InputLabel htmlFor="orgInput">Organization</InputLabel>
-            <Input
+      <Grid item xs={12} style={{ marginBottom: '10px' }}>
+        <FormControl
+          required
+          error={rawErrors?.length > 0 && !organization}
+          fullWidth
+        >
+          {allowedOrganizations?.length ? (
+            <Select
+              native
+              label="Organization"
+              onChange={s =>
+                onChange({ organization: String(Array.isArray(s) ? s[0] : s) })
+              }
+              disabled={allowedOrganizations.length === 1}
+              selected={organization}
+              items={organizationItems}
+            />
+          ) : (
+            <TextField
               id="orgInput"
+              label="Organization"
               onChange={e => onChange({ organization: e.target.value })}
               value={organization}
             />
-          </>
-        )}
-        <FormHelperText>
-          The Organization that this repo will belong to
-        </FormHelperText>
-      </FormControl>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !owner}
-      >
-        {allowedOwners?.length ? (
-          <Select
-            native
-            label="Owner"
-            onChange={s =>
-              onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
-            }
-            disabled={allowedOwners.length === 1}
-            selected={owner}
-            items={ownerItems}
-          />
-        ) : (
-          <>
-            <InputLabel htmlFor="ownerInput">Project</InputLabel>
-            <Input
+          )}
+          <Typography variant="caption" color="textSecondary">
+            The Organization that this repo will belong to
+          </Typography>
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} style={{ marginBottom: '10px' }}>
+        <FormControl required error={rawErrors?.length > 0 && !owner} fullWidth>
+          {allowedOwners?.length ? (
+            <Select
+              native
+              label="Owner"
+              onChange={s =>
+                onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
+              }
+              disabled={allowedOwners.length === 1}
+              selected={owner}
+              items={ownerItems}
+            />
+          ) : (
+            <TextField
               id="ownerInput"
+              label="Project"
               onChange={e => onChange({ owner: e.target.value })}
               value={owner}
             />
-          </>
-        )}
-        <FormHelperText>
-          The Project that this repo will belong to
-        </FormHelperText>
-      </FormControl>
+          )}
+          <Typography variant="caption" color="textSecondary">
+            The Project that this repo will belong to
+          </Typography>
+        </FormControl>
+      </Grid>
     </>
   );
 };

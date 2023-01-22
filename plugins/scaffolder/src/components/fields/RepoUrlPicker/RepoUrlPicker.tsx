@@ -31,6 +31,7 @@ import { RepoUrlPickerProps } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
+import { Grid } from '@material-ui/core';
 
 export { RepoUrlPickerSchema } from './schema';
 
@@ -75,7 +76,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
     onChange(serializeRepoPickerUrl(state));
   }, [state, onChange]);
 
-  /* we deal with calling the repo setting here instead of in each components for ease */
+  /* we deal with calling the repo setting here instead of in each component for ease */
   useEffect(() => {
     if (allowedOrganizations.length > 0 && !organization) {
       setState(prevState => ({
@@ -144,7 +145,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
         },
       });
 
-      // set the secret using the key provided in the the ui:options for use
+      // set the secret using the key provided in the ui:options for use
       // in the templating the manifest with ${{ secrets[secretsKey] }}
       setSecrets({ [requestUserCredentials.secretsKey]: token });
     },
@@ -157,61 +158,67 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
 
   return (
     <>
-      <RepoUrlPickerHost
-        host={state.host}
-        hosts={allowedHosts}
-        onChange={host => setState(prevState => ({ ...prevState, host }))}
-        rawErrors={rawErrors}
-      />
-      {hostType === 'github' && (
-        <GithubRepoPicker
-          allowedOwners={allowedOwners}
-          onChange={updateLocalState}
-          rawErrors={rawErrors}
-          state={state}
-        />
-      )}
-      {hostType === 'gitlab' && (
-        <GitlabRepoPicker
-          allowedOwners={allowedOwners}
-          rawErrors={rawErrors}
-          state={state}
-          onChange={updateLocalState}
-        />
-      )}
-      {hostType === 'bitbucket' && (
-        <BitbucketRepoPicker
-          allowedOwners={allowedOwners}
-          allowedProjects={allowedProjects}
-          rawErrors={rawErrors}
-          state={state}
-          onChange={updateLocalState}
-        />
-      )}
-      {hostType === 'azure' && (
-        <AzureRepoPicker
-          allowedOrganizations={allowedOrganizations}
-          allowedOwners={allowedOwners}
-          rawErrors={rawErrors}
-          state={state}
-          onChange={updateLocalState}
-        />
-      )}
-      {hostType === 'gerrit' && (
-        <GerritRepoPicker
-          rawErrors={rawErrors}
-          state={state}
-          onChange={updateLocalState}
-        />
-      )}
-      <RepoUrlPickerRepoName
-        repoName={state.repoName}
-        allowedRepos={allowedRepos}
-        onChange={repo =>
-          setState(prevState => ({ ...prevState, repoName: repo }))
-        }
-        rawErrors={rawErrors}
-      />
+      <Grid container spacing={2}>
+        <Grid item xs={12} style={{ marginBottom: '10px' }}>
+          <RepoUrlPickerHost
+            host={state.host}
+            hosts={allowedHosts}
+            onChange={host => setState(prevState => ({ ...prevState, host }))}
+            rawErrors={rawErrors}
+          />
+        </Grid>
+        {hostType === 'github' && (
+          <GithubRepoPicker
+            allowedOwners={allowedOwners}
+            onChange={updateLocalState}
+            rawErrors={rawErrors}
+            state={state}
+          />
+        )}
+        {hostType === 'gitlab' && (
+          <GitlabRepoPicker
+            allowedOwners={allowedOwners}
+            rawErrors={rawErrors}
+            state={state}
+            onChange={updateLocalState}
+          />
+        )}
+        {hostType === 'bitbucket' && (
+          <BitbucketRepoPicker
+            allowedOwners={allowedOwners}
+            allowedProjects={allowedProjects}
+            rawErrors={rawErrors}
+            state={state}
+            onChange={updateLocalState}
+          />
+        )}
+        {hostType === 'azure' && (
+          <AzureRepoPicker
+            allowedOrganizations={allowedOrganizations}
+            allowedOwners={allowedOwners}
+            rawErrors={rawErrors}
+            state={state}
+            onChange={updateLocalState}
+          />
+        )}
+        {hostType === 'gerrit' && (
+          <GerritRepoPicker
+            rawErrors={rawErrors}
+            state={state}
+            onChange={updateLocalState}
+          />
+        )}
+        <Grid item xs={12}>
+          <RepoUrlPickerRepoName
+            repoName={state.repoName}
+            allowedRepos={allowedRepos}
+            onChange={repo =>
+              setState(prevState => ({ ...prevState, repoName: repo }))
+            }
+            rawErrors={rawErrors}
+          />
+        </Grid>
+      </Grid>
     </>
   );
 };

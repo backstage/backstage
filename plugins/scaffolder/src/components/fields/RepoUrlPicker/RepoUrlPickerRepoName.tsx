@@ -15,10 +15,7 @@
  */
 import React, { useEffect } from 'react';
 import { Select, SelectItem } from '@backstage/core-components';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import { FormControl, Typography, TextField } from '@material-ui/core';
 
 export const RepoUrlPickerRepoName = (props: {
   repoName?: string;
@@ -45,9 +42,9 @@ export const RepoUrlPickerRepoName = (props: {
   return (
     <>
       <FormControl
-        margin="normal"
         required
         error={rawErrors?.length > 0 && !repoName}
+        fullWidth
       >
         {allowedRepos?.length ? (
           <Select
@@ -61,16 +58,16 @@ export const RepoUrlPickerRepoName = (props: {
             items={repoItems}
           />
         ) : (
-          <>
-            <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
-            <Input
-              id="repoNameInput"
-              onChange={e => onChange(String(e.target.value))}
-              value={repoName}
-            />
-          </>
+          <TextField
+            id="repoNameInput"
+            label="Repository"
+            onChange={e => onChange(String(e.target.value))}
+            value={repoName}
+          />
         )}
-        <FormHelperText>The name of the repository</FormHelperText>
+        <Typography variant="caption" color="textSecondary">
+          The name of the repository
+        </Typography>
       </FormControl>
     </>
   );

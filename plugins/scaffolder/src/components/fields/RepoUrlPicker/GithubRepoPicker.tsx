@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import { FormControl, Grid, TextField, Typography } from '@material-ui/core';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 
@@ -36,36 +33,32 @@ export const GithubRepoPicker = (props: {
 
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !owner}
-      >
-        {allowedOwners?.length ? (
-          <Select
-            native
-            label="Owner Available"
-            onChange={s =>
-              onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
-            }
-            disabled={allowedOwners.length === 1}
-            selected={owner}
-            items={ownerItems}
-          />
-        ) : (
-          <>
-            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-            <Input
+      <Grid item xs={12} style={{ marginBottom: '10px' }}>
+        <FormControl required error={rawErrors?.length > 0 && !owner} fullWidth>
+          {allowedOwners?.length ? (
+            <Select
+              native
+              label="Owner Available"
+              onChange={s =>
+                onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
+              }
+              disabled={allowedOwners.length === 1}
+              selected={owner}
+              items={ownerItems}
+            />
+          ) : (
+            <TextField
               id="ownerInput"
+              label="Owner"
               onChange={e => onChange({ owner: e.target.value })}
               value={owner}
             />
-          </>
-        )}
-        <FormHelperText>
-          The organization, user or project that this repo will belong to
-        </FormHelperText>
-      </FormControl>
+          )}
+          <Typography variant="caption" color="textSecondary">
+            The organization, user or project that this repo will belong to
+          </Typography>
+        </FormControl>
+      </Grid>
     </>
   );
 };
