@@ -70,7 +70,7 @@ describe('MicrosoftGraphClient', () => {
     expect(await response.json()).toEqual({ value: 'example' });
   });
 
-  it('should perform api request with filter, select and expand', async () => {
+  it('should perform api request with filter, select, expand and top', async () => {
     worker.use(
       rest.get('https://example.com/users', (req, res, ctx) =>
         res(ctx.status(200), ctx.json({ queryString: req.url.search })),
@@ -81,12 +81,13 @@ describe('MicrosoftGraphClient', () => {
       filter: 'test eq true',
       expand: 'children',
       select: ['id', 'children'],
+      top: 471,
     });
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
       queryString:
-        '?$filter=test%20eq%20true&$select=id,children&$expand=children',
+        '?$filter=test%20eq%20true&$select=id,children&$expand=children&$top=471',
     });
   });
 

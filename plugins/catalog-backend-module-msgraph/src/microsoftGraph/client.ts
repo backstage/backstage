@@ -52,6 +52,10 @@ export type ODataQuery = {
    * Retrieves the total count of matching resources.
    */
   count?: boolean;
+  /**
+   * Maximum number of records to receive in one batch.
+   */
+  top?: number;
 };
 
 /**
@@ -188,6 +192,7 @@ export class MicrosoftGraphClient {
         $select: query?.select?.join(','),
         $expand: query?.expand,
         $count: query?.count,
+        $top: query?.top,
       },
       {
         addQueryPrefix: true,
