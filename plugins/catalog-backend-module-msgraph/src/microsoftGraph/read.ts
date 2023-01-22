@@ -37,6 +37,8 @@ import {
   UserTransformer,
 } from './types';
 
+const PAGE_SIZE = 999;
+
 /**
  * The default implementation of the transformation from a graph user entry to
  * a User entity.
@@ -107,6 +109,7 @@ export async function readMicrosoftGraphUsers(
       filter: options.userFilter,
       expand: options.userExpand,
       select: options.userSelect,
+      top: PAGE_SIZE,
     },
     options.queryMode,
   )) {
@@ -172,13 +175,16 @@ export async function readMicrosoftGraphUsersInGroups(
       expand: options.groupExpand,
       search: options.userGroupMemberSearch,
       filter: options.userGroupMemberFilter,
+      top: PAGE_SIZE,
     },
     options.queryMode,
   )) {
     // Process all groups in parallel, otherwise it can take quite some time
     userGroupMemberPromises.push(
       limiter(async () => {
-        for await (const member of client.getGroupMembers(group.id!)) {
+        for await (const member of client.getGroupMembers(group.id!, {
+          top: PAGE_SIZE,
+        })) {
           if (!member.id) {
             continue;
           }
@@ -380,6 +386,7 @@ export async function readMicrosoftGraphGroups(
       search: options?.groupSearch,
       filter: options?.groupFilter,
       select: options?.groupSelect,
+      top: PAGE_SIZE,
     },
     options?.queryMode,
   )) {
@@ -401,7 +408,9 @@ export async function readMicrosoftGraphGroups(
           return;
         }
 
-        for await (const member of client.getGroupMembers(group.id!)) {
+        for await (const member of client.getGroupMembers(group.id!, {
+          top: PAGE_SIZE,
+        })) {
           if (!member.id) {
             continue;
           }

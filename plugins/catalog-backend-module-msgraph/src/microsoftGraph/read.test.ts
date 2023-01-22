@@ -140,6 +140,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: 'accountEnabled eq true',
+          top: 999,
         },
         undefined,
       );
@@ -186,6 +187,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: 'accountEnabled eq true',
+          top: 999,
         },
         'advanced',
       );
@@ -228,6 +230,7 @@ describe('read microsoft graph', () => {
         {
           expand: 'manager',
           filter: 'accountEnabled eq true',
+          top: 999,
         },
         undefined,
       );
@@ -278,11 +281,14 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq true',
+          top: 999,
         },
         undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
+        top: 999,
+      });
 
       expect(client.getUserProfile).toHaveBeenCalledTimes(1);
       expect(client.getUserProfile).toHaveBeenCalledWith('userid', {
@@ -338,11 +344,14 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq true',
+          top: 999,
         },
         'advanced',
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
+        top: 999,
+      });
 
       expect(client.getUserProfile).toHaveBeenCalledTimes(1);
       expect(client.getUserProfile).toHaveBeenCalledWith('userid', {
@@ -390,11 +399,14 @@ describe('read microsoft graph', () => {
         {
           expand: 'member',
           filter: 'securityEnabled eq true',
+          top: 999,
         },
         undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
+        top: 999,
+      });
 
       expect(client.getUserProfile).toHaveBeenCalledTimes(1);
       expect(client.getUserProfile).toHaveBeenCalledWith('userid', {
@@ -527,11 +539,14 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
+          top: 999,
         },
         undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
+        top: 999,
+      });
       // TODO: Loading groups photos doesn't work right now as Microsoft Graph
       // doesn't allows this yet
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
@@ -603,11 +618,14 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
+          top: 999,
         },
         'advanced',
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
+        top: 999,
+      });
       // TODO: Loading groups photos doesn't work right now as Microsoft Graph
       // doesn't allows this yet
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
@@ -680,11 +698,14 @@ describe('read microsoft graph', () => {
         {
           expand: 'member',
           filter: 'securityEnabled eq false',
+          top: 999,
         },
         undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
+        top: 999,
+      });
       // TODO: Loading groups photos doesn't work right now as Microsoft Graph
       // doesn't allows this yet
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
@@ -750,11 +771,14 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq true',
+          top: 999,
         },
         undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
+        top: 999,
+      });
     });
   });
 
@@ -887,6 +911,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: undefined,
+          top: 999,
         },
         undefined,
       );
@@ -894,6 +919,7 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
+          top: 999,
         },
         undefined,
       );
@@ -925,6 +951,7 @@ describe('read microsoft graph', () => {
         {
           expand: 'manager',
           filter: 'accountEnabled eq true',
+          top: 999,
         },
         undefined,
       );
@@ -932,6 +959,7 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
+          top: 999,
         },
         undefined,
       );
@@ -960,6 +988,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledWith(
         {
           select: ['mail'],
+          top: 999,
         },
         undefined,
       );
@@ -994,12 +1023,14 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'name eq backstage-group',
+          top: 999,
         },
         undefined,
       );
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
+          top: 999,
         },
         undefined,
       );

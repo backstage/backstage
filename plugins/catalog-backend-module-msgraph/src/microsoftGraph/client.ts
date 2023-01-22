@@ -348,8 +348,16 @@ export class MicrosoftGraphClient {
    * @param groupId - The unique identifier for the `Group` resource
    *
    */
-  async *getGroupMembers(groupId: string): AsyncIterable<GroupMember> {
-    yield* this.requestCollection<GroupMember>(`groups/${groupId}/members`);
+  async *getGroupMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<GroupMember> {
+    yield* this.requestCollection<GroupMember>(
+      `groups/${groupId}/members`,
+      query,
+      queryMode,
+    );
   }
 
   /**
