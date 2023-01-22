@@ -235,28 +235,6 @@ export class MicrosoftGraphClient {
   }
 
   /**
-   * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/user | User}
-   * from Graph API
-   *
-   * @public
-   * @param userId - The unique identifier for the `User` resource
-   * @param query - OData Query {@link ODataQuery}
-   *
-   */
-  async getUserProfile(
-    userId: string,
-    query?: ODataQuery,
-  ): Promise<MicrosoftGraph.User> {
-    const response = await this.requestApi(`users/${userId}`, query);
-
-    if (response.status !== 200) {
-      await this.handleError('user profile', response);
-    }
-
-    return await response.json();
-  }
-
-  /**
    * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/profilephoto | profilePhoto}
    * of `User` from Graph API with size limit
    *
@@ -355,6 +333,27 @@ export class MicrosoftGraphClient {
   ): AsyncIterable<GroupMember> {
     yield* this.requestCollection<GroupMember>(
       `groups/${groupId}/members`,
+      query,
+      queryMode,
+    );
+  }
+
+  /**
+   * Get a collection of
+   * {@link https://docs.microsoft.com/en-us/graph/api/resources/user | User}
+   * belonging to a `Group` from Graph API and return as `AsyncIterable`
+   * @public
+   * @param groupId - The unique identifier for the `Group` resource
+   * @param query - OData Query {@link ODataQuery}
+   * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
+   */
+  async *getGroupUserMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<MicrosoftGraph.User> {
+    yield* this.requestCollection<MicrosoftGraph.User>(
+      `groups/${groupId}/members/microsoft.graph.user/`,
       query,
       queryMode,
     );

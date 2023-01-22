@@ -135,33 +135,6 @@ describe('MicrosoftGraphClient', () => {
     expect(values).toEqual(['first', 'second']);
   });
 
-  it('should load user profile', async () => {
-    worker.use(
-      rest.get('https://example.com/users/user-id', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            surname: 'Example',
-          }),
-        ),
-      ),
-    );
-
-    const userProfile = await client.getUserProfile('user-id');
-
-    expect(userProfile).toEqual({ surname: 'Example' });
-  });
-
-  it('should throw exception if load user profile fails', async () => {
-    worker.use(
-      rest.get('https://example.com/users/user-id', (_, res, ctx) =>
-        res(ctx.status(404)),
-      ),
-    );
-
-    await expect(() => client.getUserProfile('user-id')).rejects.toThrow();
-  });
-
   it('should load user profile photo with max size of 120', async () => {
     worker.use(
       rest.get('https://example.com/users/user-id/photos', (_, res, ctx) =>
@@ -328,6 +301,27 @@ describe('MicrosoftGraphClient', () => {
       { '@odata.type': '#microsoft.graph.user' },
       { '@odata.type': '#microsoft.graph.group' },
     ]);
+  });
+
+  it('should load user group members', async () => {
+    worker.use(
+      rest.get(
+        'https://example.com/groups/group-id/members/microsoft.graph.user',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              value: [{ id: '12345' }, { id: '67890' }],
+            }),
+          ),
+      ),
+    );
+
+    const values = await collectAsyncIterable(
+      client.getGroupUserMembers('group-id'),
+    );
+
+    expect(values).toEqual([{ id: '12345' }, { id: '67890' }]);
   });
 
   it('should load organization', async () => {

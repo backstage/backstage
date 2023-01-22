@@ -61,9 +61,9 @@ function group(data: Partial<GroupEntity>): GroupEntity {
 describe('read microsoft graph', () => {
   const client: jest.Mocked<MicrosoftGraphClient> = {
     getUsers: jest.fn(),
-    getUserProfile: jest.fn(),
     getGroups: jest.fn(),
     getGroupMembers: jest.fn(),
+    getGroupUserMembers: jest.fn(),
     getUserPhotoWithSizeLimit: jest.fn(),
     getGroupPhotoWithSizeLimit: jest.fn(),
     getOrganization: jest.fn(),
@@ -73,13 +73,6 @@ describe('read microsoft graph', () => {
 
   async function* getExampleUsers() {
     yield {
-      id: 'userid',
-      displayName: 'User Name',
-      mail: 'user.name@example.com',
-    };
-  }
-  async function getExampleUserProfile() {
-    return {
       id: 'userid',
       displayName: 'User Name',
       mail: 'user.name@example.com',
@@ -245,9 +238,8 @@ describe('read microsoft graph', () => {
   describe('readMicrosoftGraphUsersInGroups', () => {
     it('should read users from Groups', async () => {
       client.getGroups.mockImplementation(getExampleGroups);
-      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupUserMembers.mockImplementation(getExampleUsers);
 
-      client.getUserProfile.mockResolvedValue(getExampleUserProfile());
       client.getUserPhotoWithSizeLimit.mockResolvedValue(
         'data:image/jpeg;base64,...',
       );
@@ -281,19 +273,19 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq true',
+          select: ['id', 'displayName'],
           top: 999,
         },
         undefined,
       );
-      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
-        top: 999,
-      });
 
-      expect(client.getUserProfile).toHaveBeenCalledTimes(1);
-      expect(client.getUserProfile).toHaveBeenCalledWith('userid', {
-        expand: undefined,
-      });
+      expect(client.getGroupUserMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupUserMembers).toHaveBeenCalledWith(
+        'groupid',
+        { top: 999 },
+        undefined,
+      );
+
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
         'userid',
@@ -303,13 +295,8 @@ describe('read microsoft graph', () => {
 
     it('should read users from Groups with advanced query mode', async () => {
       client.getGroups.mockImplementation(getExampleGroups);
-      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupUserMembers.mockImplementation(getExampleUsers);
 
-      client.getUserProfile.mockResolvedValue({
-        id: 'userid',
-        displayName: 'User Name',
-        mail: 'user.name@example.com',
-      });
       client.getUserPhotoWithSizeLimit.mockResolvedValue(
         'data:image/jpeg;base64,...',
       );
@@ -344,19 +331,19 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq true',
+          select: ['id', 'displayName'],
           top: 999,
         },
         'advanced',
       );
-      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
-        top: 999,
-      });
 
-      expect(client.getUserProfile).toHaveBeenCalledTimes(1);
-      expect(client.getUserProfile).toHaveBeenCalledWith('userid', {
-        expand: undefined,
-      });
+      expect(client.getGroupUserMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupUserMembers).toHaveBeenCalledWith(
+        'groupid',
+        { top: 999 },
+        'advanced',
+      );
+
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
         'userid',
@@ -366,8 +353,8 @@ describe('read microsoft graph', () => {
 
     it('should read users with userExpand, groupExpand and custom transformer', async () => {
       client.getGroups.mockImplementation(getExampleGroups);
-      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
-      client.getUserProfile.mockResolvedValue(getExampleUserProfile());
+      client.getGroupUserMembers.mockImplementation(getExampleUsers);
+
       client.getUserPhotoWithSizeLimit.mockResolvedValue(
         'data:image/jpeg;base64,...',
       );
@@ -399,19 +386,22 @@ describe('read microsoft graph', () => {
         {
           expand: 'member',
           filter: 'securityEnabled eq true',
+          select: ['id', 'displayName'],
           top: 999,
         },
         undefined,
       );
-      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
-      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
-        top: 999,
-      });
 
-      expect(client.getUserProfile).toHaveBeenCalledTimes(1);
-      expect(client.getUserProfile).toHaveBeenCalledWith('userid', {
-        expand: 'manager',
-      });
+      expect(client.getGroupUserMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupUserMembers).toHaveBeenCalledWith(
+        'groupid',
+        {
+          expand: 'manager',
+          top: 999,
+        },
+        undefined,
+      );
+
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
         'userid',
@@ -1001,13 +991,13 @@ describe('read microsoft graph', () => {
       });
 
       client.getUsers.mockImplementation(getExampleUsers);
-      client.getUserProfile.mockImplementation(getExampleUserProfile);
       client.getUserPhotoWithSizeLimit.mockResolvedValue(
         'data:image/jpeg;base64,...',
       );
 
       client.getGroups.mockImplementation(getExampleGroups);
       client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupUserMembers.mockImplementation(getExampleUsers);
       client.getGroupPhotoWithSizeLimit.mockResolvedValue(
         'data:image/jpeg;base64,...',
       );
@@ -1023,6 +1013,7 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'name eq backstage-group',
+          select: ['id', 'displayName'],
           top: 999,
         },
         undefined,
@@ -1034,7 +1025,6 @@ describe('read microsoft graph', () => {
         },
         undefined,
       );
-      expect(client.getUserProfile).toHaveBeenCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
     });
   });
