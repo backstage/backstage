@@ -6,10 +6,15 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DefaultResultListItemProps } from '@backstage/plugin-search-react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchBarBaseProps } from '@backstage/plugin-search-react';
+import { SearchResultListItemExtensionComponent } from '@backstage/plugin-search-react';
+
+// @public (undocumented)
+export const DefaultSearchResultListItem: SearchResultListItemExtensionComponent<DefaultResultListItemProps>;
 
 // @public (undocumented)
 export const HomePageSearchBar: ({

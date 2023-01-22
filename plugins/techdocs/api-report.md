@@ -19,6 +19,7 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SearchResultListItemExtensionComponent } from '@backstage/plugin-search-react';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/plugin-techdocs-react';
@@ -396,14 +397,12 @@ export type TechDocsSearchProps = {
 };
 
 // @public
-export const TechDocsSearchResultListItem: (
-  props: TechDocsSearchResultListItemProps,
-) => JSX.Element;
+export const TechDocsSearchResultListItem: SearchResultListItemExtensionComponent<TechDocsSearchResultListItemProps>;
 
 // @public
 export type TechDocsSearchResultListItemProps = {
   icon?: ReactNode;
-  result: any;
+  result?: any;
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;
