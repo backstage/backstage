@@ -1,0 +1,428 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: hello-complex-wsdl
+  description: Hello World example for complex WSDL
+spec:
+  type: wsdl
+  lifecycle: deprecated
+  owner: team-a
+  definition: <?xml version="1.0" encoding="UTF-8"?>
+    <definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://tempuri.org" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://tempuri.org">
+    <types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org">
+    <s:import namespace="http://tempuri.org/ByNameDataSet" schemaLocation="https://www.crcind.com:443/csp/samples/SOAP.ByNameDataSet.cls?XSD"/>
+    <s:import namespace="http://tempuri.org/QueryByName_DataSet" schemaLocation="https://www.crcind.com:443/csp/samples/SOAP.Demo.QueryByName.DS.cls?XSD"/>
+    <s:element name="AddInteger">
+    <s:complexType>
+    <s:sequence>
+    <s:element minOccurs="0" name="Arg1" type="s:long"/>
+    <s:element minOccurs="0" name="Arg2" type="s:long"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="AddIntegerResponse">
+    <s:complexType>
+    <s:sequence>
+    <s:element name="AddIntegerResult" type="s:long"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="DivideInteger">
+    <s:complexType>
+    <s:sequence>
+    <s:element minOccurs="0" name="Arg1" type="s:long"/>
+    <s:element minOccurs="0" name="Arg2" type="s:long"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="DivideIntegerResponse">
+    <s:complexType>
+    <s:sequence>
+    <s:element name="DivideIntegerResult" type="s:long"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="FindPerson">
+    <s:complexType>
+    <s:sequence>
+    <s:element minOccurs="0" name="id" type="s:string"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="FindPersonResponse">
+    <s:complexType>
+    <s:sequence>
+    <s:element name="FindPersonResult" type="s0:Person"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:complexType name="Employee">
+    <s:complexContent>
+    <s:extension base="s0:Person">
+    <s:sequence>
+    <s:element minOccurs="0" name="Title">
+    <s:simpleType>
+    <s:restriction base="s:string">
+    <s:maxLength value="50"/>
+    </s:restriction>
+    </s:simpleType>
+    </s:element>
+    <s:element minOccurs="0" name="Salary">
+    <s:simpleType>
+    <s:restriction base="s:long">
+    <s:maxInclusive value="100000"/>
+    <s:minInclusive value="0"/>
+    </s:restriction>
+    </s:simpleType>
+    </s:element>
+    <s:element minOccurs="0" name="Notes" type="s:string"/>
+    <s:element minOccurs="0" name="Picture" type="s:base64Binary"/>
+    </s:sequence>
+    </s:extension>
+    </s:complexContent>
+    </s:complexType>
+    <s:complexType name="Person">
+    <s:sequence>
+    <s:element name="Name" type="s:string"/>
+    <s:element name="SSN" type="s:string"/>
+    <s:element minOccurs="0" name="DOB" type="s:date"/>
+    <s:element minOccurs="0" name="Home" type="s0:Address"/>
+    <s:element minOccurs="0" name="Office" type="s0:Address"/>
+    <s:element minOccurs="0" name="Spouse" type="s0:Person"/>
+    <s:element minOccurs="0" name="FavoriteColors" type="s0:ArrayOfFavoriteColorsItemString"/>
+    <s:element minOccurs="0" name="Age" type="s:long"/>
+    </s:sequence>
+    </s:complexType>
+    <s:complexType name="Address">
+    <s:sequence>
+    <s:element minOccurs="0" name="Street">
+    <s:simpleType>
+    <s:restriction base="s:string">
+    <s:maxLength value="80"/>
+    </s:restriction>
+    </s:simpleType>
+    </s:element>
+    <s:element minOccurs="0" name="City">
+    <s:simpleType>
+    <s:restriction base="s:string">
+    <s:maxLength value="80"/>
+    </s:restriction>
+    </s:simpleType>
+    </s:element>
+    <s:element minOccurs="0" name="State">
+    <s:simpleType>
+    <s:restriction base="s:string">
+    <s:maxLength value="2"/>
+    </s:restriction>
+    </s:simpleType>
+    </s:element>
+    <s:element minOccurs="0" name="Zip">
+    <s:simpleType>
+    <s:restriction base="s:string">
+    <s:maxLength value="5"/>
+    </s:restriction>
+    </s:simpleType>
+    </s:element>
+    </s:sequence>
+    </s:complexType>
+    <s:complexType name="ArrayOfFavoriteColorsItemString">
+    <s:sequence>
+    <s:element maxOccurs="unbounded" minOccurs="0" name="FavoriteColorsItem" nillable="true" type="s:string"/>
+    </s:sequence>
+    </s:complexType>
+    <s:element name="GetByName">
+    <s:complexType>
+    <s:sequence>
+    <s:element minOccurs="0" name="name" type="s:string"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="GetByNameResponse">
+    <s:complexType>
+    <s:sequence>
+    <s:element name="GetByNameResult" type="s0:DataSet"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:complexType name="DataSet">
+    <s:sequence>
+    <s:element ref="s:schema"/>
+    <s:any/>
+    </s:sequence>
+    </s:complexType>
+    <s:element name="GetDataSetByName">
+    <s:complexType>
+    <s:sequence>
+    <s:element minOccurs="0" name="name" type="s:string"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="GetDataSetByNameResponse">
+    <s:complexType>
+    <s:sequence>
+    <s:element name="GetDataSetByNameResult" type="s0:ByNameDataSet"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:complexType name="ByNameDataSet">
+    <s:sequence>
+    <s:any namespace="http://tempuri.org/ByNameDataSet"/>
+    </s:sequence>
+    </s:complexType>
+    <s:element name="GetListByName">
+    <s:complexType>
+    <s:sequence>
+    <s:element minOccurs="0" name="name" type="s:string"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="GetListByNameResponse">
+    <s:complexType>
+    <s:sequence>
+    <s:element name="GetListByNameResult" type="s0:ArrayOfPersonIdentificationPersonIdentification"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:complexType name="ArrayOfPersonIdentificationPersonIdentification">
+    <s:sequence>
+    <s:element maxOccurs="unbounded" minOccurs="0" name="PersonIdentification" nillable="true" type="s0:PersonIdentification"/>
+    </s:sequence>
+    </s:complexType>
+    <s:complexType name="PersonIdentification">
+    <s:sequence>
+    <s:element minOccurs="0" name="ID" type="s:string"/>
+    <s:element name="Name" type="s:string"/>
+    <s:element name="SSN" type="s:string"/>
+    <s:element minOccurs="0" name="DOB" type="s:date"/>
+    </s:sequence>
+    </s:complexType>
+    <s:element name="LookupCity">
+    <s:complexType>
+    <s:sequence>
+    <s:element minOccurs="0" name="zip" type="s:string"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="LookupCityResponse">
+    <s:complexType>
+    <s:sequence>
+    <s:element name="LookupCityResult" type="s0:Address"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="Mission">
+    <s:complexType>
+    <s:sequence/>
+    </s:complexType>
+    </s:element>
+    <s:element name="MissionResponse">
+    <s:complexType>
+    <s:sequence>
+    <s:element name="MissionResult" type="s:string"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="QueryByName">
+    <s:complexType>
+    <s:sequence>
+    <s:element minOccurs="0" name="name" type="s:string"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:element name="QueryByNameResponse">
+    <s:complexType>
+    <s:sequence>
+    <s:element name="QueryByNameResult" type="s0:QueryByName_DataSet"/>
+    </s:sequence>
+    </s:complexType>
+    </s:element>
+    <s:complexType name="QueryByName_DataSet">
+    <s:sequence>
+    <s:any namespace="http://tempuri.org/QueryByName_DataSet"/>
+    </s:sequence>
+    </s:complexType>
+    </s:schema>
+    </types>
+    <message name="AddIntegerSoapIn">
+    <part name="parameters" element="s0:AddInteger"/>
+    </message>
+    <message name="AddIntegerSoapOut">
+    <part name="parameters" element="s0:AddIntegerResponse"/>
+    </message>
+    <message name="DivideIntegerSoapIn">
+    <part name="parameters" element="s0:DivideInteger"/>
+    </message>
+    <message name="DivideIntegerSoapOut">
+    <part name="parameters" element="s0:DivideIntegerResponse"/>
+    </message>
+    <message name="FindPersonSoapIn">
+    <part name="parameters" element="s0:FindPerson"/>
+    </message>
+    <message name="FindPersonSoapOut">
+    <part name="parameters" element="s0:FindPersonResponse"/>
+    </message>
+    <message name="GetByNameSoapIn">
+    <part name="parameters" element="s0:GetByName"/>
+    </message>
+    <message name="GetByNameSoapOut">
+    <part name="parameters" element="s0:GetByNameResponse"/>
+    </message>
+    <message name="GetDataSetByNameSoapIn">
+    <part name="parameters" element="s0:GetDataSetByName"/>
+    </message>
+    <message name="GetDataSetByNameSoapOut">
+    <part name="parameters" element="s0:GetDataSetByNameResponse"/>
+    </message>
+    <message name="GetListByNameSoapIn">
+    <part name="parameters" element="s0:GetListByName"/>
+    </message>
+    <message name="GetListByNameSoapOut">
+    <part name="parameters" element="s0:GetListByNameResponse"/>
+    </message>
+    <message name="LookupCitySoapIn">
+    <part name="parameters" element="s0:LookupCity"/>
+    </message>
+    <message name="LookupCitySoapOut">
+    <part name="parameters" element="s0:LookupCityResponse"/>
+    </message>
+    <message name="MissionSoapIn">
+    <part name="parameters" element="s0:Mission"/>
+    </message>
+    <message name="MissionSoapOut">
+    <part name="parameters" element="s0:MissionResponse"/>
+    </message>
+    <message name="QueryByNameSoapIn">
+    <part name="parameters" element="s0:QueryByName"/>
+    </message>
+    <message name="QueryByNameSoapOut">
+    <part name="parameters" element="s0:QueryByNameResponse"/>
+    </message>
+    <portType name="SOAPDemoSoap">
+    <operation name="AddInteger">
+    <input message="s0:AddIntegerSoapIn"/>
+    <output message="s0:AddIntegerSoapOut"/>
+    </operation>
+    <operation name="DivideInteger">
+    <input message="s0:DivideIntegerSoapIn"/>
+    <output message="s0:DivideIntegerSoapOut"/>
+    </operation>
+    <operation name="FindPerson">
+    <input message="s0:FindPersonSoapIn"/>
+    <output message="s0:FindPersonSoapOut"/>
+    </operation>
+    <operation name="GetByName">
+    <input message="s0:GetByNameSoapIn"/>
+    <output message="s0:GetByNameSoapOut"/>
+    </operation>
+    <operation name="GetDataSetByName">
+    <input message="s0:GetDataSetByNameSoapIn"/>
+    <output message="s0:GetDataSetByNameSoapOut"/>
+    </operation>
+    <operation name="GetListByName">
+    <input message="s0:GetListByNameSoapIn"/>
+    <output message="s0:GetListByNameSoapOut"/>
+    </operation>
+    <operation name="LookupCity">
+    <input message="s0:LookupCitySoapIn"/>
+    <output message="s0:LookupCitySoapOut"/>
+    </operation>
+    <operation name="Mission">
+    <input message="s0:MissionSoapIn"/>
+    <output message="s0:MissionSoapOut"/>
+    </operation>
+    <operation name="QueryByName">
+    <input message="s0:QueryByNameSoapIn"/>
+    <output message="s0:QueryByNameSoapOut"/>
+    </operation>
+    </portType>
+    <binding name="SOAPDemoSoap" type="s0:SOAPDemoSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="AddInteger">
+    <soap:operation soapAction="http://tempuri.org/SOAP.Demo.AddInteger" style="document"/>
+    <input>
+    <soap:body use="literal"/>
+    </input>
+    <output>
+    <soap:body use="literal"/>
+    </output>
+    </operation>
+    <operation name="DivideInteger">
+    <soap:operation soapAction="http://tempuri.org/SOAP.Demo.DivideInteger" style="document"/>
+    <input>
+    <soap:body use="literal"/>
+    </input>
+    <output>
+    <soap:body use="literal"/>
+    </output>
+    </operation>
+    <operation name="FindPerson">
+    <soap:operation soapAction="http://tempuri.org/SOAP.Demo.FindPerson" style="document"/>
+    <input>
+    <soap:body use="literal"/>
+    </input>
+    <output>
+    <soap:body use="literal"/>
+    </output>
+    </operation>
+    <operation name="GetByName">
+    <soap:operation soapAction="http://tempuri.org/SOAP.Demo.GetByName" style="document"/>
+    <input>
+    <soap:body use="literal"/>
+    </input>
+    <output>
+    <soap:body use="literal"/>
+    </output>
+    </operation>
+    <operation name="GetDataSetByName">
+    <soap:operation soapAction="http://tempuri.org/SOAP.Demo.GetDataSetByName" style="document"/>
+    <input>
+    <soap:body use="literal"/>
+    </input>
+    <output>
+    <soap:body use="literal"/>
+    </output>
+    </operation>
+    <operation name="GetListByName">
+    <soap:operation soapAction="http://tempuri.org/SOAP.Demo.GetListByName" style="document"/>
+    <input>
+    <soap:body use="literal"/>
+    </input>
+    <output>
+    <soap:body use="literal"/>
+    </output>
+    </operation>
+    <operation name="LookupCity">
+    <soap:operation soapAction="http://tempuri.org/SOAP.Demo.LookupCity" style="document"/>
+    <input>
+    <soap:body use="literal"/>
+    </input>
+    <output>
+    <soap:body use="literal"/>
+    </output>
+    </operation>
+    <operation name="Mission">
+    <soap:operation soapAction="http://tempuri.org/SOAP.Demo.Mission" style="document"/>
+    <input>
+    <soap:body use="literal"/>
+    </input>
+    <output>
+    <soap:body use="literal"/>
+    </output>
+    </operation>
+    <operation name="QueryByName">
+    <soap:operation soapAction="http://tempuri.org/SOAP.Demo.QueryByName" style="document"/>
+    <input>
+    <soap:body use="literal"/>
+    </input>
+    <output>
+    <soap:body use="literal"/>
+    </output>
+    </operation>
+    </binding>
+    <service name="SOAPDemo">
+    <port name="SOAPDemoSoap" binding="s0:SOAPDemoSoap">
+    <soap:address location="https://www.crcind.com:443/csp/samples/SOAP.Demo.cls"/>
+    </port>
+    </service>
+    </definitions>

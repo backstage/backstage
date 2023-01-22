@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: hello-wsdl-calculator
+  description: Hello World example for WSDL
+spec:
+  type: wsdl
+  lifecycle: deprecated
+  owner: team-a
+  definition:
+    $text: http://www.dneonline.com/calculator.asmx?wsdl

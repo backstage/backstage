@@ -1,0 +1,70 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: hello-wsdl
+  description: Hello World example for WSDL
+spec:
+  type: wsdl
+  lifecycle: deprecated
+  owner: team-a
+  definition: <definitions name = "HelloService"
+    targetNamespace = "http://www.examples.com/wsdl/HelloService.wsdl"
+    xmlns = "http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap = "http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:tns = "http://www.examples.com/wsdl/HelloService.wsdl"
+    xmlns:xsd = "http://www.w3.org/2001/XMLSchema">
+
+    <documentation>Doc definitions</documentation>
+
+    <message name = "SayHelloRequest">
+    <documentation>Say hello request documentation</documentation>
+    <part name = "firstName" type = "xsd:string"/>
+    </message>
+
+    <message name = "SayHelloResponse">
+    <part name = "greeting" type = "xsd:string"/>
+    </message>
+
+    <portType name = "Hello_PortType">
+    <documentation>Doc portType</documentation>
+    <operation name = "sayHello">
+    <documentation>Doc portType operation</documentation>
+    <input message = "tns:SayHelloRequest"/>
+    <output message = "tns:SayHelloResponse"/>
+    </operation>
+    </portType>
+
+    <binding name = "Hello_Binding" type = "tns:Hello_PortType">
+    <documentation>Doc binding</documentation>
+    <soap:binding style = "rpc"
+    transport = "http://schemas.xmlsoap.org/soap/http"/>
+    <operation name = "sayHello">
+    <documentation>Doc binding operation</documentation>
+    <soap:operation soapAction = "sayHello"/>
+    <input>
+    <documentation>Doc binding operation input</documentation>
+    <soap:body
+    encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/"
+    namespace = "urn:examples:helloservice"
+    use = "encoded"/>
+    </input>
+
+    <output>
+    <documentation>Doc binding operation output</documentation>
+    <soap:body
+    encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/"
+    namespace = "urn:examples:helloservice"
+    use = "encoded"/>
+    </output>
+    </operation>
+    </binding>
+
+    <service name = "Hello_Service">
+    <documentation>Doc service</documentation>
+    <port binding = "tns:Hello_Binding" name = "Hello_Port">
+    <documentation>Doc service port</documentation>
+    <soap:address
+    location = "http://www.examples.com/SayHello/" />
+    </port>
+    </service>
+    </definitions>
