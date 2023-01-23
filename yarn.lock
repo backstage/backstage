@@ -7125,6 +7125,7 @@ __metadata:
     msw: ^0.49.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
+    type-fest: 3.5.3
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -37269,6 +37270,13 @@ __metadata:
   version: 4.0.8
   resolution: "type-detect@npm:4.0.8"
   checksum: 62b5628bff67c0eb0b66afa371bd73e230399a8d2ad30d852716efcc4656a7516904570cd8631a49a3ce57c10225adf5d0cbdcb47f6b0255fe6557c453925a15
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:3.5.3":
+  version: 3.5.3
+  resolution: "type-fest@npm:3.5.3"
+  checksum: ac52b1a1c695cbbc5e18edf9b15b27d9135611b4be7a50a41ac07bed9687f79a8cad759aa4e17ef74f2ef5a72c503012de6f1a960a132040798ebc588f574f5c
   languageName: node
   linkType: hard
 
