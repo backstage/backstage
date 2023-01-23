@@ -1244,16 +1244,16 @@ h3.collapsible span.arrow {
   transform: translateY(-50%) translateX(500px);
 }
 
-@media only screen and (max-height: 675px){
- .Sidebar__Container {
-  top: 65%;
- }
+@media only screen and (max-height: 675px) {
+  .Sidebar__Container {
+    top: 65%;
+  }
 }
 
 @media only screen and (max-width: 650px) {
- .Sidebar__Container {
-  transform: translateY(-50%) translateX(300px);
- }
+  .Sidebar__Container {
+    transform: translateY(-50%) translateX(300px);
+  }
 }
 
 .Sidebar__Container--open {
@@ -1276,10 +1276,10 @@ h3.collapsible span.arrow {
 }
 
 @media only screen and (max-width: 650px) {
- .Sidebar__Button {
-  width: 175px;
-  font-size: 15px;
- }
+  .Sidebar__Button {
+    width: 175px;
+    font-size: 15px;
+  }
 }
 
 .Sidebar__Button:hover {
@@ -1294,15 +1294,15 @@ h3.collapsible span.arrow {
 }
 
 @media only screen and (max-width: 650px) {
- #Sidebar__HubSpotContainer {
-  width: 300px;
- }
+  #Sidebar__HubSpotContainer {
+    width: 300px;
+  }
 }
 
-#Sidebar__HubSpotContainer form{
- overflow-y: auto;
- height: 100%;
- padding: 25px 25px 0px 25px;
+#Sidebar__HubSpotContainer form {
+  overflow-y: auto;
+  height: 100%;
+  padding: 25px 25px 0px 25px;
 }
 
 #Sidebar__HubSpotContainer .hs-button {
