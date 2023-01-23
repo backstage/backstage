@@ -43,7 +43,6 @@ import {
   DatabaseTaskStore,
   TaskBroker,
   TaskWorker,
-  TemplateAction,
   TemplateActionRegistry,
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
@@ -53,6 +52,7 @@ import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 /**
  * RouterOptions

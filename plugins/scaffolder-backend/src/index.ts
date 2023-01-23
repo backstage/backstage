@@ -27,3 +27,5 @@ export * from './processor';
 export * from './extension';
 export { scaffolderPlugin } from './ScaffolderPlugin';
 export type { ScaffolderPluginOptions } from './ScaffolderPlugin';
+
+export * from './deprecated';

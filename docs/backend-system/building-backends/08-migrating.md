@@ -390,8 +390,7 @@ depends on the appropriate extension point and interacts with it.
 
 ```diff
  // packages/backend/src/index.ts
- // TODO: This might be moved to @backstage/plugin-scaffolder-node
-+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-backend/alpha';
++import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 +import { createBackendModule } from '@backstage/backend-plugin-api';
 
 +const scaffolderExtensionsModule = createBackendModule({
