@@ -28,11 +28,12 @@ import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
-import type { FormProps } from '../../types';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
-import { useFormDataFromQuery } from '../../hooks/useFormDataFromQuery';
 import validator from '@rjsf/validator-ajv6';
+import { useFormDataFromQuery } from '../../hooks';
+import type { FormProps, LayoutOptions } from '../../types';
+import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -65,6 +66,7 @@ export type StepperProps = {
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
   };
+  layouts?: LayoutOptions[];
 };
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -76,15 +78,13 @@ const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
  * The `Stepper` component is the Wizard that is rendered when a user selects a template
  * @alpha
  */
-
 export const Stepper = (stepperProps: StepperProps) => {
-  const { components = {}, ...props } = stepperProps;
+  const { layouts = [], components = {}, ...props } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
     createButtonText = 'Create',
     reviewButtonText = 'Review',
   } = components;
-
   const analytics = useAnalytics();
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
@@ -152,6 +152,8 @@ export const Stepper = (stepperProps: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
+  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
+
   return (
     <>
       <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">
@@ -171,8 +173,8 @@ export const Stepper = (stepperProps: StepperProps) => {
             extraErrors={errors as unknown as ErrorSchema}
             formData={formState}
             formContext={{ formData: formState }}
-            schema={steps[activeStep].schema}
-            uiSchema={steps[activeStep].uiSchema}
+            schema={currentStep.schema}
+            uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
             fields={extensions}
             showErrorList={false}
