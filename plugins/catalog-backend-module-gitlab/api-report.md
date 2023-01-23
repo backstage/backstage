@@ -55,4 +55,23 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 }
+
+// @public
+export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
+    },
+  ): GitlabOrgDiscoveryEntityProvider[];
+  // (undocumented)
+  getProviderName(): string;
+  // (undocumented)
+  refresh(logger: Logger): Promise<void>;
+}
 ```
