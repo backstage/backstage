@@ -24,7 +24,7 @@ import { JsonObject } from '@backstage/types';
 
 /**
  * @public
- * @deprecated Use `ActionContext` from `@backstage/plugin-scaffolder-node` instead
+ * @deprecated Import from {@link @backstage/plugin-scaffolder-node#ActionContext} instead
  */
 export type ActionContext<TInput extends JsonObject> =
   ActionContextNode<TInput>;
