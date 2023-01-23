@@ -20,7 +20,7 @@ const ondemandMetadata = fs
   .reverse()
   .map(file => yaml.load(fs.readFileSync(`./data/on-demand/${file}`, 'utf8')));
 const truncate = text =>
-  text.length > 170 ? text.substr(0, 170) + '...' : text;
+  text.length > 170 ? text.slice(0, 170) + '...' : text;
 
 const addVideoDocsLink = '/docs/overview/support';
 const defaultIconUrl = 'img/logo-gradient-on-dark.svg';
