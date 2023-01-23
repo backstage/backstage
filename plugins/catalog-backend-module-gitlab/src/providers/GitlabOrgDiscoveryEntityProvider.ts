@@ -78,6 +78,11 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
     providerConfigs.forEach(providerConfig => {
       const integration = integrations.byHost(providerConfig.host);
+
+      if (!providerConfig.orgEnabled) {
+        return;
+      }
+
       if (!integration) {
         throw new Error(
           `No gitlab integration found that matches host ${providerConfig.host}`,
@@ -88,10 +93,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         throw new Error(
           `No schedule provided neither via code nor config for GitlabOrgDiscoveryEntityProvider:${providerConfig.id}.`,
         );
-      }
-
-      if (!providerConfig.orgEnabled) {
-        return;
       }
 
       const taskRunner =
