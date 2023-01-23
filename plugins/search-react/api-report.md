@@ -37,10 +37,10 @@ export const CheckboxFilter: (props: SearchFilterComponentProps) => JSX.Element;
 
 // @public
 export const createSearchResultListItemExtension: <
-  Props extends SearchResultListItemExtensionProps,
+  Component extends (props: any) => JSX.Element | null,
 >(
-  options: SearchResultListItemExtensionOptions<Props>,
-) => Extension<SearchResultListItemExtensionComponent<Props>>;
+  options: SearchResultListItemExtensionOptions<Component>,
+) => Extension<Component>;
 
 // @public (undocumented)
 export const DefaultResultListItem: (
@@ -383,16 +383,11 @@ export type SearchResultGroupTextFilterFieldProps =
 export const SearchResultList: (props: SearchResultListProps) => JSX.Element;
 
 // @public
-export type SearchResultListItemExtensionComponent<
-  Props extends SearchResultListItemExtensionProps,
-> = (props: Props) => JSX.Element | null;
-
-// @public
 export type SearchResultListItemExtensionOptions<
-  Props extends SearchResultListItemExtensionProps = SearchResultListItemExtensionProps,
+  Component extends (props: any) => JSX.Element | null,
 > = {
   name: string;
-  component: (props: Props) => JSX.Element | null;
+  component: () => Promise<Component>;
   predicate?: (result: SearchResult_2) => boolean;
 };
 
