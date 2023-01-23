@@ -39,7 +39,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     config.getOptionalString('userPattern') ?? /[\s\S]*/,
   );
   const groupPattern = new RegExp(
-    config.getOptionalString('grupPattern') ?? /[\s\S]*/,
+    config.getOptionalString('groupPattern') ?? /[\s\S]*/,
   );
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
 
