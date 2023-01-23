@@ -27,7 +27,7 @@ export interface HttpRouterFactoryOptions {
   /**
    * A callback used to generate the path for each plugin, defaults to `/api/{pluginId}`.
    */
-  getPath(pluginId: string): string;
+  getPath?(pluginId: string): string;
 }
 
 /** @public */
