@@ -42,8 +42,8 @@ describe('myPlugin', () => {
 });
 ```
 
-This example shows how to easily access the factories for mock services and
-passing options to them, which will override the default mocks.
+This example shows how to access the mock service factories and
+pass options to them, which will override the default mock services.
 
 The returned server also has a `port()` method which returns the dynamically
 bound listening port. You can use this to perform lower level network
