@@ -24,6 +24,12 @@ import { normalizeEntityName } from './helper';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
+/**
+ * The default implementation of the transformation from a graph organization
+ * entry to a Group entity.
+ *
+ * @public
+ */
 export async function defaultOrganizationTransformer(
   organization: MicrosoftGraph.Organization,
 ): Promise<GroupEntity | undefined> {
