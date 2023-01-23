@@ -63,22 +63,20 @@ export const RepoUrlPickerHost = (props: {
   }
 
   return (
-    <>
-      <FormControl required error={rawErrors?.length > 0 && !host} fullWidth>
-        <Select
-          native
-          disabled={hosts?.length === 1 ?? false}
-          label="Host"
-          onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
-          selected={host}
-          items={hostsOptions}
-          data-testid="host-select"
-        />
+    <FormControl required error={rawErrors?.length > 0 && !host} fullWidth>
+      <Select
+        native
+        disabled={hosts?.length === 1 ?? false}
+        label="Host"
+        onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
+        selected={host}
+        items={hostsOptions}
+        data-testid="host-select"
+      />
 
-        <Typography variant="caption" color="textSecondary">
-          The host where the repository will be created
-        </Typography>
-      </FormControl>
-    </>
+      <Typography variant="caption" color="textSecondary">
+        The host where the repository will be created
+      </Typography>
+    </FormControl>
   );
 };

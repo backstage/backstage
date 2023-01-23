@@ -33,38 +33,34 @@ export const GitlabRepoPicker = (props: {
   const { owner } = state;
 
   return (
-    <>
-      <Grid item xs={12} style={{ marginBottom: '10px' }}>
-        <FormControl required error={rawErrors?.length > 0 && !owner} fullWidth>
-          {allowedOwners?.length ? (
-            <Select
-              native
-              label="Owner Available"
-              onChange={selected =>
-                onChange({
-                  owner: String(
-                    Array.isArray(selected) ? selected[0] : selected,
-                  ),
-                })
-              }
-              disabled={allowedOwners.length === 1}
-              selected={owner}
-              items={ownerItems}
-            />
-          ) : (
-            <TextField
-              id="ownerInput"
-              label="Owner"
-              onChange={e => onChange({ owner: e.target.value })}
-              value={owner}
-            />
-          )}
-          <Typography variant="caption" color="textSecondary">
-            GitLab namespace where this repository will belong to. It can be the
-            name of organization, group, subgroup, user, or the project.
-          </Typography>
-        </FormControl>
-      </Grid>
-    </>
+    <Grid item xs={12} style={{ marginBottom: '10px' }}>
+      <FormControl required error={rawErrors?.length > 0 && !owner} fullWidth>
+        {allowedOwners?.length ? (
+          <Select
+            native
+            label="Owner Available"
+            onChange={selected =>
+              onChange({
+                owner: String(Array.isArray(selected) ? selected[0] : selected),
+              })
+            }
+            disabled={allowedOwners.length === 1}
+            selected={owner}
+            items={ownerItems}
+          />
+        ) : (
+          <TextField
+            id="ownerInput"
+            label="Owner"
+            onChange={e => onChange({ owner: e.target.value })}
+            value={owner}
+          />
+        )}
+        <Typography variant="caption" color="textSecondary">
+          GitLab namespace where this repository will belong to. It can be the
+          name of organization, group, subgroup, user, or the project.
+        </Typography>
+      </FormControl>
+    </Grid>
   );
 };

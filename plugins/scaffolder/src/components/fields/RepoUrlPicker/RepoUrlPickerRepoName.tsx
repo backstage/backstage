@@ -40,35 +40,29 @@ export const RepoUrlPickerRepoName = (props: {
     : [{ label: 'Loading...', value: 'loading' }];
 
   return (
-    <>
-      <FormControl
-        required
-        error={rawErrors?.length > 0 && !repoName}
-        fullWidth
-      >
-        {allowedRepos?.length ? (
-          <Select
-            native
-            label="Repositories Available"
-            onChange={selected =>
-              String(Array.isArray(selected) ? selected[0] : selected)
-            }
-            disabled={allowedRepos.length === 1}
-            selected={repoName}
-            items={repoItems}
-          />
-        ) : (
-          <TextField
-            id="repoNameInput"
-            label="Repository"
-            onChange={e => onChange(String(e.target.value))}
-            value={repoName}
-          />
-        )}
-        <Typography variant="caption" color="textSecondary">
-          The name of the repository
-        </Typography>
-      </FormControl>
-    </>
+    <FormControl required error={rawErrors?.length > 0 && !repoName} fullWidth>
+      {allowedRepos?.length ? (
+        <Select
+          native
+          label="Repositories Available"
+          onChange={selected =>
+            String(Array.isArray(selected) ? selected[0] : selected)
+          }
+          disabled={allowedRepos.length === 1}
+          selected={repoName}
+          items={repoItems}
+        />
+      ) : (
+        <TextField
+          id="repoNameInput"
+          label="Repository"
+          onChange={e => onChange(String(e.target.value))}
+          value={repoName}
+        />
+      )}
+      <Typography variant="caption" color="textSecondary">
+        The name of the repository
+      </Typography>
+    </FormControl>
   );
 };

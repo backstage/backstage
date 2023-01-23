@@ -32,33 +32,31 @@ export const GithubRepoPicker = (props: {
   const { owner } = state;
 
   return (
-    <>
-      <Grid item xs={12} style={{ marginBottom: '10px' }}>
-        <FormControl required error={rawErrors?.length > 0 && !owner} fullWidth>
-          {allowedOwners?.length ? (
-            <Select
-              native
-              label="Owner Available"
-              onChange={s =>
-                onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
-              }
-              disabled={allowedOwners.length === 1}
-              selected={owner}
-              items={ownerItems}
-            />
-          ) : (
-            <TextField
-              id="ownerInput"
-              label="Owner"
-              onChange={e => onChange({ owner: e.target.value })}
-              value={owner}
-            />
-          )}
-          <Typography variant="caption" color="textSecondary">
-            The organization, user or project that this repo will belong to
-          </Typography>
-        </FormControl>
-      </Grid>
-    </>
+    <Grid item xs={12} style={{ marginBottom: '10px' }}>
+      <FormControl required error={rawErrors?.length > 0 && !owner} fullWidth>
+        {allowedOwners?.length ? (
+          <Select
+            native
+            label="Owner Available"
+            onChange={s =>
+              onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
+            }
+            disabled={allowedOwners.length === 1}
+            selected={owner}
+            items={ownerItems}
+          />
+        ) : (
+          <TextField
+            id="ownerInput"
+            label="Owner"
+            onChange={e => onChange({ owner: e.target.value })}
+            value={owner}
+          />
+        )}
+        <Typography variant="caption" color="textSecondary">
+          The organization, user or project that this repo will belong to
+        </Typography>
+      </FormControl>
+    </Grid>
   );
 };
