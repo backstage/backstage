@@ -9,12 +9,15 @@ description: Learn how to test your backend plugins and modules
 Utilities for testing backend plugins and modules are available in
 `@backstage/backend-test-utils`. This section describes those facilities.
 
-## Testing Backend Plugins
+## Testing Backend Plugins and Modules
 
-To facilitate testing of backend plugins, the `@backstage/backend-test-utils`
-package provides a `startTestBackend` function which starts up an entire backend
-harness, complete with a number of mock services. You can then provide overrides
-for services whose behavior you need to adjust for the test run.
+To facilitate testing of backend plugins and modules, the
+`@backstage/backend-test-utils` package provides a `startTestBackend` function
+which starts up an entire backend harness, complete with a number of mock
+services. You can then provide overrides for services whose behavior you need to
+adjust for the test run. The function also accepts a number of _features_ (a
+collective term for backend [plugins](../architecture/04-plugins.md) and
+[modules](../architecture/06-modules.md)), that are the subjects of the test.
 
 The function returns an HTTP server instance which can be used together with
 e.g. `supertest` to easily test the actual REST service surfaces of plugins who
@@ -112,20 +115,20 @@ import {
 
 describe('MyDatabaseClass', () => {
   // Change this to the set of constants that you actually actively intend to
-  // support. Make sure to create only one TestDatabases instance per file,
-  // since spinning up "physical" databases to test against is much costlier
-  // than creating the "logical" databases within them that the individual
-  // tests use.
+  // support. This create call must be made inside a describe block. Make sure
+  // to create only one TestDatabases instance per file, since spinning up
+  // "physical" databases to test against is much costlier than creating the
+  // "logical" databases within them that the individual tests use.
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
   // Just an example of how to conveniently bundle up the setup code
-  async function createSut(databaseId: TestDatabaseId) {
+  async function createSubject(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
-    const sut = new MyDatabaseClass({ database: knex });
-    await sut.runMigrations();
-    return { knex, sut };
+    const subject = new MyDatabaseClass({ database: knex });
+    await subject.runMigrations();
+    return { knex, subject };
   }
 
   describe('foo', () => {
@@ -133,11 +136,11 @@ describe('MyDatabaseClass', () => {
     it.each(databases.eachSupportedId())(
       'should run foo on %p',
       async databaseId => {
-        const { knex, sut } = await createSut(databaseId);
+        const { knex, subject } = await createSubject(databaseId);
         // raw knex is available for underlying manipulation
         await knex<FooTableRow>('foo').insert({ value: 2 });
         // drive your system under test as usual
-        await expect(sut.foos()).resolves.toEqual([{ value: 2 }]);
+        await expect(subject.foos()).resolves.toEqual([{ value: 2 }]);
       });
   });
 ```
@@ -147,7 +150,7 @@ you can supply it in the form of a mock instance of `coreServices.database` to
 your test database.
 
 ```ts
-const { knex, sut } = await createSut(databaseId);
+const { knex, subject } = await createSubject(databaseId);
 const { server } = await startTestBackend({
   features: [myPlugin()],
   services: [[coreServices.database, { getClient: async () => knex }]],
