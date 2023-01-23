@@ -21,7 +21,7 @@ import {
   createServiceRef,
   createSharedEnvironment,
 } from '@backstage/backend-plugin-api';
-import { mockConfigFactory } from '@backstage/backend-test-utils';
+import { mockServices } from '@backstage/backend-test-utils';
 import { createBackend } from './CreateBackend';
 
 const fooServiceRef = createServiceRef<string>({ id: 'foo', scope: 'root' });
@@ -112,7 +112,7 @@ describe('createBackend', () => {
               };
             },
           }),
-          mockConfigFactory({
+          mockServices.config.factory({
             data: { root: 'root-env' },
           }),
           createServiceFactory({

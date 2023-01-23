@@ -58,6 +58,7 @@
     "json-schema-library": "^7.3.9",
     "lodash": "^4.17.21",
     "qs": "^6.9.4",
+    "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
     "zod": "~3.18.0",
     "zod-to-json-schema": "~3.18.0"

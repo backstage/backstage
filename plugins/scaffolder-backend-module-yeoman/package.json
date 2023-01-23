@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
-    "@backstage/plugin-scaffolder-backend": "workspace:^",
+    "@backstage/plugin-scaffolder-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "winston": "^3.2.1",
     "yeoman-environment": "^3.9.1"

@@ -1244,12 +1244,24 @@ h3.collapsible span.arrow {
   transform: translateY(-50%) translateX(500px);
 }
 
+@media only screen and (max-height: 675px) {
+  .Sidebar__Container {
+    top: 65%;
+  }
+}
+
+@media only screen and (max-width: 650px) {
+  .Sidebar__Container {
+    transform: translateY(-50%) translateX(300px);
+  }
+}
+
 .Sidebar__Container--open {
   transform: translateY(-50%);
 }
 
 .Sidebar__Button {
-  transform: rotate(-90deg) translateY(48px);
+  transform: rotate(-90deg) translateY(49px);
   padding: 12px 16px;
   border-radius: 8px 8px 0 0;
   background-color: rgb(92, 214, 200);
@@ -1263,18 +1275,34 @@ h3.collapsible span.arrow {
   cursor: pointer;
 }
 
+@media only screen and (max-width: 650px) {
+  .Sidebar__Button {
+    width: 175px;
+    font-size: 15px;
+  }
+}
+
 .Sidebar__Button:hover {
-  transform: rotate(-90deg) translateY(48px) scale(1.01);
+  transform: rotate(-90deg) translateY(49px) scale(1.01);
 }
 
 #Sidebar__HubSpotContainer {
   width: 500px;
   background-color: white;
   border-radius: 8px 0 0 8px;
-  padding: 16px;
-  padding-bottom: 0px;
-  z-index: 10001;
-  min-height: 260px;
+  height: 500px;
+}
+
+@media only screen and (max-width: 650px) {
+  #Sidebar__HubSpotContainer {
+    width: 300px;
+  }
+}
+
+#Sidebar__HubSpotContainer form {
+  overflow-y: auto;
+  height: 100%;
+  padding: 25px 25px 0px 25px;
 }
 
 #Sidebar__HubSpotContainer .hs-button {
@@ -1284,6 +1312,7 @@ h3.collapsible span.arrow {
   color: rgb(0, 0, 0);
   border: 0;
 }
+
 #Sidebar__HubSpotContainer.submitted-message {
   min-height: 260px;
   display: flex;

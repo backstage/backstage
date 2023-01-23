@@ -141,7 +141,9 @@ export class JsonRulesEngineFactChecker
       );
     } catch (e) {
       if (isError(e)) {
-        throw new Error(`Failed to run rules engine, ${e.message}`);
+        throw new Error(`Failed to run rules engine, ${e.message}`, {
+          cause: e,
+        });
       }
       throw e;
     }

@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TokenManager } from '@backstage/backend-common';
+import { IdentityService } from '@backstage/backend-plugin-api';
 import {
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
+  IdentityApiGetIdentityRequest,
+  BackstageIdentityResponse,
+} from '@backstage/plugin-auth-node';
 
-class TokenManagerMock implements TokenManager {
-  async getToken(): Promise<{ token: string }> {
-    return { token: 'mock-token' };
-  }
-  async authenticate(token: string): Promise<void> {
-    if (token !== 'mock-token') {
-      throw new Error('Invalid token');
-    }
+export class MockIdentityService implements IdentityService {
+  getIdentity(
+    _options: IdentityApiGetIdentityRequest,
+  ): Promise<BackstageIdentityResponse | undefined> {
+    return Promise.resolve({
+      token: 'mock-token',
+      identity: {
+        type: 'user',
+        userEntityRef: 'user:default/mock-user',
+        ownershipEntityRefs: [],
+      },
+    });
   }
 }
-
-/** @alpha */
-export const mockTokenManagerFactory = createServiceFactory({
-  service: coreServices.tokenManager,
-  deps: {},
-  async factory() {
-    return new TokenManagerMock();
-  },
-});

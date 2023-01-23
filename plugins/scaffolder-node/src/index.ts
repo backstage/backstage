@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { FormProps } from '@rjsf/core';
 
 /**
- * The field template from \@rjsf/core which is a react component that gets passed \@rjsf/core field related props.
+ * The scaffolder-node module for `@backstage/plugin-scaffolder-backend`.
  *
- * @public
+ * @packageDocumentation
  */
-export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
 
-/**
- * The type of layouts that is passed to the TemplateForms
- *
- * @public
- */
-export interface LayoutOptions<P = any> {
-  name: string;
-  component: LayoutTemplate<P>;
-}
+export * from './actions';
+export * from './tasks';
+export {
+  scaffolderActionsExtensionPoint,
+  type ScaffolderActionsExtensionPoint,
+} from './extensions';

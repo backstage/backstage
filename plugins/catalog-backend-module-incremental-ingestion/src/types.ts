@@ -27,6 +27,7 @@ import type {
   DeferredEntity,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-backend';
+import { EventParams } from '@backstage/plugin-events-node';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
@@ -75,6 +76,37 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
    * @param burst - a function which performs a series of iterations
    */
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
+
+  /**
+   * If set, the IncrementalEntityProvider will receive and respond to
+   * events.
+   *
+   * This system acts as a wrapper for the Backstage events bus, and
+   * requires the events backend to function. It does not provide its
+   * own events backend. See {@link https://github.com/backstage/backstage/tree/master/plugins/events-backend}.
+   */
+  eventHandler?: {
+    /**
+     * This method accepts an incoming event for the provider, and
+     * optionally maps the payload to an object containing a delta
+     * mutation.
+     *
+     * If a valid delta is returned by this method, it will be ingested
+     * automatically by the provider.
+     */
+    onEvent: (params: EventParams) =>
+      | undefined
+      | {
+          added: DeferredEntity[];
+          removed: { entityRef: string }[];
+        };
+
+    /**
+     * This method returns an array of topics for the IncrementalEntityProvider
+     * to respond to.
+     */
+    supportsEventTopics: () => string[];
+  };
 }
 
 /**

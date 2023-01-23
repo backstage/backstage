@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
-import { TemplateAction, TemplateActionRegistry } from '../actions';
+import { TemplateActionRegistry } from '../actions';
 
 /** @internal */
 export class DecoratedActionsRegistry extends TemplateActionRegistry {
