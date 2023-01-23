@@ -5,4 +5,4 @@
 '@backstage/plugin-scaffolder-backend-module-rails': patch
 ---
 
-Internal refactor to use the new scaffolder-node package for some functionality
+Internal refactor to use the new `@backstage/plugin-scaffolder-node` package for some functionality
