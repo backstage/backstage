@@ -17,14 +17,33 @@
 import React, { useMemo } from 'react';
 import { TaskErrors } from './TaskErrors';
 import { LogViewer, Progress } from '@backstage/core-components';
-import { TaskStream } from '../hooks/useEventStream';
 
+/**
+ * The props for the Task Step Viewer in scaffolder template form.
+ * It represents the right panel on the scaffolder template execution screen.
+ *
+ * @public
+ */
 export type TaskStepViewerProps = {
   currentStepId: string | undefined;
   loadingText: string | undefined;
-  taskStream: TaskStream;
+  taskStream: {
+    error?: Error;
+    stepLogs: { [stepId in string]: string[] };
+  };
 };
 
+/**
+ * The component displaying the information about the running task step.
+ * It includes the logs and the error messages.
+ * This component can be replaced by your own custom component as well.
+ *
+ * @param currentStepId - Currently executed step in the template.
+ * @param loadingText - Shown text to the user when data is being loaded. If not specified, 'Loading...' will be shown.
+ * @param taskStream - The stream of the task, containing all information about the task including steps information.
+ *
+ * @public
+ */
 export const TaskStepViewer = ({
   currentStepId,
   loadingText,

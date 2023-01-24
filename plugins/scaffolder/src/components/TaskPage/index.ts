@@ -15,3 +15,5 @@
  */
 export { TaskPage } from './TaskPage';
 export type { TaskPageProps } from './TaskPage';
+export { TaskStepViewer } from './TaskStepViewer';
+export type { TaskStepViewerProps } from './TaskStepViewer';

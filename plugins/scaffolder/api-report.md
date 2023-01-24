@@ -511,6 +511,25 @@ export type TaskPageProps = {
   TaskStepViewerComponent?: ComponentType<TaskStepViewerProps>;
 };
 
+// @public
+export const TaskStepViewer: ({
+  currentStepId,
+  loadingText,
+  taskStream,
+}: TaskStepViewerProps) => JSX.Element;
+
+// @public
+export type TaskStepViewerProps = {
+  currentStepId: string | undefined;
+  loadingText: string | undefined;
+  taskStream: {
+    error?: Error;
+    stepLogs: {
+      [stepId in string]: string[];
+    };
+  };
+};
+
 // @alpha (undocumented)
 export type TemplateGroupFilter = {
   title?: React_2.ReactNode;
@@ -525,8 +544,4 @@ export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
-
-// Warnings were encountered during analysis:
-//
-// src/components/Router.d.ts:17:9 - (ae-forgotten-export) The symbol "TaskStepViewerProps" needs to be exported by the entry point index.d.ts
 ```
