@@ -20,6 +20,7 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 
 /**
