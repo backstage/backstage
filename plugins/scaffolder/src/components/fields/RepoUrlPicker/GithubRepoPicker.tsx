@@ -18,8 +18,10 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import { Select, SelectItem } from '@backstage/core-components';
+import { SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
 
 export const GithubRepoPicker = (props: {
   allowedOwners?: string[];
@@ -42,15 +44,31 @@ export const GithubRepoPicker = (props: {
         error={rawErrors?.length > 0 && !owner}
       >
         {allowedOwners?.length ? (
-          <Select
-            native
-            label="Owner Available"
-            onChange={s =>
-              onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
-            }
-            disabled={allowedOwners.length === 1}
-            selected={owner}
-            items={ownerItems}
+          <Autocomplete
+          aria-label="Owner Available"
+          options={ownerItems}
+          getOptionLabel={(owner) => owner.label || "error getting label"}
+          disabled={allowedOwners.length === 1}
+          data-testid="select"
+          freeSolo
+          onChange={selected =>
+            onChange({
+              owner: String(Array.isArray(selected) ? selected[0] : selected),
+            })
+          } 
+          tabIndex={0}
+          renderInput={params => (
+              <TextField
+              {...params}
+              placeholder="Owner Available"
+              margin="dense"
+              FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
+              variant="outlined"
+              InputProps={params.InputProps}
+              
+              
+            />
+          )}
           />
         ) : (
           <>

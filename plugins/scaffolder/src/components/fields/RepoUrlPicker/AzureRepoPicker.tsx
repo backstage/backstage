@@ -20,7 +20,9 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { RepoUrlPickerState } from './types';
-import { Select, SelectItem } from '@backstage/core-components';
+import { SelectItem } from '@backstage/core-components';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
 
 export const AzureRepoPicker = (props: {
   allowedOrganizations?: string[];
@@ -55,15 +57,29 @@ export const AzureRepoPicker = (props: {
         error={rawErrors?.length > 0 && !organization}
       >
         {allowedOrganizations?.length ? (
-          <Select
-            native
-            label="Organization"
-            onChange={s =>
-              onChange({ organization: String(Array.isArray(s) ? s[0] : s) })
-            }
-            disabled={allowedOrganizations.length === 1}
-            selected={organization}
-            items={organizationItems}
+          <Autocomplete
+          aria-label="Organization"
+          options={organizationItems}
+          getOptionLabel={(organization) => organization.label || "error getting label"}
+          disabled={allowedOrganizations.length === 1}
+          data-testid="select"
+          freeSolo
+          onChange={selected =>
+            onChange({
+              organization: String(Array.isArray(selected) ? selected[0] : selected),
+            })
+          } 
+          tabIndex={0}
+          renderInput={params => (
+              <TextField
+              {...params}
+              placeholder="Organization"
+              margin="dense"
+              FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
+              variant="outlined"
+              InputProps={params.InputProps}
+            />
+          )}
           />
         ) : (
           <>
@@ -85,15 +101,28 @@ export const AzureRepoPicker = (props: {
         error={rawErrors?.length > 0 && !owner}
       >
         {allowedOwners?.length ? (
-          <Select
-            native
-            label="Owner"
-            onChange={s =>
-              onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
-            }
-            disabled={allowedOwners.length === 1}
-            selected={owner}
-            items={ownerItems}
+          <Autocomplete
+          aria-label="Owner"
+          options={ownerItems}
+          getOptionLabel={(owner) => owner.label || "error getting label"}
+          disabled={allowedOwners.length === 1}
+          data-testid="select"
+          onChange={selected =>
+            onChange({
+              owner: String(Array.isArray(selected) ? selected[0] : selected),
+            })
+          }
+          tabIndex={0}
+          renderInput={ params => (
+              <TextField
+              {...params}
+              placeholder="Owner"
+              margin="dense"
+              FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
+              variant="outlined"
+              InputProps={params.InputProps}    
+            />
+          )}
           />
         ) : (
           <>
