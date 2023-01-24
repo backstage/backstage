@@ -92,7 +92,7 @@ export class PublisherConfig {
         }),
         ...(opts.awsRoleArn && { credentials: { roleArn: opts.awsRoleArn } }),
         ...(opts.awsEndpoint && { endpoint: opts.awsEndpoint }),
-        ...(opts.awsS3ForcePathStyle && { s3ForcePathStyle: true }),
+        ...(opts.awsS3ForcePathStyle && { forcePathStyle: true }),
         ...(opts.awsS3sse && { sse: opts.awsS3sse }),
       },
     };
