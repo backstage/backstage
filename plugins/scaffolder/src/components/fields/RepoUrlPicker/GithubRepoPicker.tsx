@@ -47,7 +47,7 @@ export const GithubRepoPicker = (props: {
           <Autocomplete
           aria-label="Owner Available"
           options={ownerItems}
-          getOptionLabel={(owner) => owner.label || "error getting label"}
+          getOptionLabel={(owners) => owners.label || "error getting label"}
           disabled={allowedOwners.length === 1}
           data-testid="select"
           freeSolo

@@ -53,7 +53,7 @@ export const BitbucketRepoPicker = (props: {
             <Autocomplete
             aria-label="Owner Available"
             options={ownerItems}
-            getOptionLabel={(workspace) => workspace.label || "error getting label"}
+            getOptionLabel={(workspaces) => workspaces.label || "error getting label"}
             disabled={allowedOwners.length === 1}
             data-testid="select"
             onChange={selected =>

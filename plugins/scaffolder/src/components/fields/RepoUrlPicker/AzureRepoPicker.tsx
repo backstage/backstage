@@ -60,7 +60,7 @@ export const AzureRepoPicker = (props: {
           <Autocomplete
           aria-label="Organization"
           options={organizationItems}
-          getOptionLabel={(organization) => organization.label || "error getting label"}
+          getOptionLabel={(organizations) => organizations.label || "error getting label"}
           disabled={allowedOrganizations.length === 1}
           data-testid="select"
           freeSolo
@@ -104,7 +104,7 @@ export const AzureRepoPicker = (props: {
           <Autocomplete
           aria-label="Owner"
           options={ownerItems}
-          getOptionLabel={(owner) => owner.label || "error getting label"}
+          getOptionLabel={(owners) => owners.label || "error getting label"}
           disabled={allowedOwners.length === 1}
           data-testid="select"
           onChange={selected =>
