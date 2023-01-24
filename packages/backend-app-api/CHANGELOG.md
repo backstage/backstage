@@ -1,5 +1,18 @@
 # @backstage/backend-app-api
 
+## 0.3.2-next.0
+
+### Patch Changes
+
+- a18da2f8b5: Fixed an issue were the log redaction didn't properly escape RegExp characters.
+- ed8b5967d7: `HttpRouterFactoryOptions.getPath` is now optional as a default value is always provided in the factory.
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/backend-tasks@0.4.3-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+  - @backstage/plugin-permission-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
 ## 0.3.0
 
 ### Minor Changes

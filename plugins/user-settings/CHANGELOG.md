@@ -1,5 +1,13 @@
 # @backstage/plugin-user-settings
 
+## 0.6.3-next.0
+
+### Patch Changes
+
+- c4940b6322: Added a message to advise a page reload when toggling feature flags
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+
 ## 0.6.2
 
 ### Patch Changes

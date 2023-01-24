@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-catalog-node@1.3.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-permission-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
 ## 1.7.0
 
 ### Minor Changes

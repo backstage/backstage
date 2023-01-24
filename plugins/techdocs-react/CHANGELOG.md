@@ -1,5 +1,12 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+
 ## 1.1.2
 
 ### Patch Changes

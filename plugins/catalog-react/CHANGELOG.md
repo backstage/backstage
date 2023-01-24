@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-react
 
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 929e1afe1b: Add `initialFilter` prop to EntityLifecyclePicker. This allows you to set an initial lifecycle for the catalog.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+
 ## 1.2.4
 
 ### Patch Changes

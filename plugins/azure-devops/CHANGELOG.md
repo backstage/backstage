@@ -1,5 +1,14 @@
 # @backstage/plugin-azure-devops
 
+## 0.2.6-next.0
+
+### Patch Changes
+
+- 347b16ecea: Fixed `AssignedToCurrentUsersTeams` & `CreatedByCurrentUsersTeams` filter in `AzurePullRequestsPage` component.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+
 ## 0.2.5
 
 ### Patch Changes
