@@ -1,5 +1,16 @@
 # @backstage/plugin-adr
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 496cf6aff0: Render the common `<MissingAnnotationEmptyState />` component when the `backstage.io/adr-location` annotation is missing from the component
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/plugin-adr-common@0.2.6-next.0
+  - @backstage/integration-react@1.1.9
+
 ## 0.3.0
 
 ### Minor Changes

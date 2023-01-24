@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 1ba120faa3: Added new mechanism to handle deltas in incremental providers
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-test-utils@0.1.34-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/plugin-catalog-backend@1.7.2-next.0
+  - @backstage/plugin-catalog-node@1.3.3-next.0
+  - @backstage/backend-tasks@0.4.3-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+  - @backstage/plugin-events-node@0.2.3-next.0
+
 ## 0.1.1
 
 ### Patch Changes

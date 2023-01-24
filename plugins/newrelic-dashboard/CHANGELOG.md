@@ -1,5 +1,13 @@
 # @backstage/plugin-newrelic-dashboard
 
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+
 ## 0.2.7
 
 ### Patch Changes
