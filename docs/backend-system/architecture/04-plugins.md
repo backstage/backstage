@@ -6,11 +6,11 @@ sidebar_label: Plugins
 description: Backend plugins
 ---
 
-Plugins provide the actual base features of a Backstage backend. Each plugin operates completely independently of all other plugins and they only communicate with each other through network calls. This means that there is a strong degree if isolation between plugins, and that each plugin can be considered to be a separate microservice. While a default Backstage project has all plugins installed within a single backend, it is also possible to split this setup into multiple backends, with each backend housing one or more plugins.
+Plugins provide the actual base features of a Backstage backend. Each plugin operates completely independently of all other plugins and they only communicate with each other through network calls. This means that there is a strong degree of isolation between plugins, and that each plugin can be considered a separate microservice. While a default Backstage project has all plugins installed within a single backend, it is also possible to split this setup into multiple backends, with each backend housing one or more plugins.
 
 ## Defining a Plugin
 
-Plugins are created using the `createBackendPlugin` function, and should typically be exported from a plugin package. All plugins must have an ID and a register method, where the ID matches the plugin ID in the package name, without the `-backend` suffix.
+Plugins are created using the `createBackendPlugin` function, and should typically be exported from a plugin package. All plugins must have an ID and a `register` method, where the ID matches the plugin ID in the package name, without the `-backend` suffix. See also the [dedicated section](./07-naming-patterns.md) about proper naming patterns.
 
 ```ts
 // plugins/example-backend/src/plugin.ts
@@ -86,7 +86,7 @@ An exception to these rules are made for development or test setups, where short
 
 ### Scalable
 
-Plugins must always be designed to be horizontally scalable. This means that you should not keep any state in memory, or make sure that replicating this state across multiple instances is not an issue. Plugins should either be stateless, or store their state in external service, such as a database.
+Plugins must always be designed to be horizontally scalable. This means that you should not keep any state in memory, or make sure that replicating this state across multiple instances is not an issue. Plugins should either be stateless, or store their state in an external service, such as a database.
 
 ### Isolated
 
