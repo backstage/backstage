@@ -14203,13 +14203,13 @@ __metadata:
   linkType: hard
 
 "@types/express-serve-static-core@npm:*, @types/express-serve-static-core@npm:^4.17.18, @types/express-serve-static-core@npm:^4.17.31, @types/express-serve-static-core@npm:^4.17.5":
-  version: 4.17.32
-  resolution: "@types/express-serve-static-core@npm:4.17.32"
+  version: 4.17.33
+  resolution: "@types/express-serve-static-core@npm:4.17.33"
   dependencies:
     "@types/node": "*"
     "@types/qs": "*"
     "@types/range-parser": "*"
-  checksum: 70ec1b8f386628850b315a7b9fd4240a5a70297b41ef1c39af65c8b9661d2c775cfff4686b491fd90e5b6eef43088af203700c5541aec0d063db0c6cbeff254c
+  checksum: dce580d16b85f207445af9d4053d66942b27d0c72e86153089fa00feee3e96ae336b7bedb31ed4eea9e553c99d6dd356ed6e0928f135375d9f862a1a8015adf2
   languageName: node
   linkType: hard
 
