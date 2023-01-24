@@ -42,9 +42,9 @@ export const examplePlugin = createBackendPlugin({
         httpRouter,
       }) {
         // Perform your initialization and access the services as needed
-        const router = createExampleRouter(logger);
+        const example = createExampleRouter(logger);
         logger.info('Hello from example plugin');
-        httpRouter.use(example.router());
+        httpRouter.use(example);
       },
     });
   },
@@ -137,12 +137,13 @@ the full path would then be
 The same applies for modules that perform their own migrations and interact with
 the database. They will run on the same logical database instance as the target
 plugin, so care must be taken to choose table names that do not risk colliding
-with those of the plugin. A recommended naming pattern is `<module name>__<table
-name>`, for example the `@backstage/backend-tasks` package creates tables named
-`backstage_backend_tasks__<table>`. If you use the default Knex migration
-facilities, you will also want to make sure that it uses a similarly prefixed
-lock file for its internal bookkeeping needs, so it does not collide with the
-main lock files used by the plugin itself. You can do this as follows:
+with those of the plugin. A recommended naming pattern is `<package
+name>__<table name>`, for example the `@backstage/backend-tasks` package creates
+tables named `backstage_backend_tasks__<table>`. If you use the default [`Knex`
+migration facilities](https://knexjs.org/guide/migrations.html), you will also
+want to make sure that it uses similarly prefixed migration state tables for its
+internal bookkeeping needs, so they do not collide with the main ones used by
+the plugin itself. You can do this as follows:
 
 ```ts
 await knex.migrate.latest({
