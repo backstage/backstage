@@ -20,19 +20,37 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 
+/**
+ * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
+ * field extension.
+ *
+ * @public
+ * @param allowedOwners - Allowed workspaces for the Bitbucket cloud repository
+ * @param allowedProjects - Allowed projects for the Bitbucket cloud repository
+ *
+ */
 export const BitbucketRepoPicker = (props: {
   allowedOwners?: string[];
+  allowedProjects?: string[];
   onChange: (state: RepoUrlPickerState) => void;
   state: RepoUrlPickerState;
   rawErrors: string[];
 }) => {
-  const { allowedOwners = [], onChange, rawErrors, state } = props;
+  const {
+    allowedOwners = [],
+    allowedProjects = [],
+    onChange,
+    rawErrors,
+    state,
+  } = props;
   const { host, workspace, project } = state;
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners?.map(i => ({ label: i, value: i }))
+    : [];
+  const projectItems: SelectItem[] = allowedProjects
+    ? allowedProjects?.map(i => ({ label: i, value: i }))
     : [];
 
   useEffect(() => {
@@ -51,27 +69,33 @@ export const BitbucketRepoPicker = (props: {
         >
           {allowedOwners?.length ? (
             <Autocomplete
-            aria-label="Owner Available"
-            options={ownerItems}
-            getOptionLabel={(workspaces) => workspaces.label || "error getting label"}
-            disabled={allowedOwners.length === 1}
-            data-testid="select"
-            onChange={selected =>
-              onChange({
-                workspace: String(Array.isArray(selected) ? selected[0] : selected),
-              })
-            }
-            tabIndex={0}
-            renderInput={ params => (
+              aria-label="Allowed Workspaces"
+              options={ownerItems}
+              getOptionLabel={owners => owners.label || 'error getting label'}
+              disabled={allowedOwners.length === 1}
+              data-testid="select"
+              freeSolo
+              onChange={selected =>
+                onChange({
+                  workspace: String(
+                    Array.isArray(selected) ? selected[0] : selected,
+                  ),
+                })
+              }
+              tabIndex={0}
+              renderInput={params => (
                 <TextField
-                {...params}
-                placeholder="Allowed Workspaces"
-                margin="dense"
-                FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
-                variant="outlined"
-                InputProps={params.InputProps}    
-              />
-            )}
+                  {...params}
+                  placeholder="Allowed Workspaces"
+                  margin="dense"
+                  FormHelperTextProps={{
+                    margin: 'dense',
+                    style: { marginLeft: 0 },
+                  }}
+                  variant="outlined"
+                  InputProps={params.InputProps}
+                />
+              )}
             />
           ) : (
             <>
@@ -93,12 +117,46 @@ export const BitbucketRepoPicker = (props: {
         required
         error={rawErrors?.length > 0 && !project}
       >
-        <InputLabel htmlFor="projectInput">Project</InputLabel>
-        <Input
-          id="projectInput"
-          onChange={e => onChange({ project: e.target.value })}
-          value={project}
-        />
+        {allowedProjects?.length ? (
+          <Autocomplete
+            aria-label="Allowed Projects"
+            options={projectItems}
+            getOptionLabel={projects => projects.label || 'error getting label'}
+            disabled={allowedProjects.length === 1}
+            data-testid="select"
+            freeSolo
+            onChange={selected =>
+              onChange({
+                project: String(
+                  Array.isArray(selected) ? selected[0] : selected,
+                ),
+              })
+            }
+            tabIndex={0}
+            renderInput={params => (
+              <TextField
+                {...params}
+                placeholder="Allowed Projects"
+                margin="dense"
+                FormHelperTextProps={{
+                  margin: 'dense',
+                  style: { marginLeft: 0 },
+                }}
+                variant="outlined"
+                InputProps={params.InputProps}
+              />
+            )}
+          />
+        ) : (
+          <>
+            <InputLabel htmlFor="projectInput">Project</InputLabel>
+            <Input
+              id="projectInput"
+              onChange={e => onChange({ project: e.target.value })}
+              value={project}
+            />
+          </>
+        )}
         <FormHelperText>
           The Project that this repo will belong to
         </FormHelperText>
