@@ -84,7 +84,7 @@ export const BitbucketRepoPicker = (props: {
             </>
           )}
           <FormHelperText>
-            The Organization that this repo will belong to
+            The Workspace that this repo will belong to
           </FormHelperText>
         </FormControl>
       )}
