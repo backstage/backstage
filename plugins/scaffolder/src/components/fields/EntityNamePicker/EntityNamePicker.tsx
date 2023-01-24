@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { EntityNamePickerProps } from './schema';
-import { FormControl, TextField, Typography } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 
 export { EntityNamePickerSchema } from './schema';
 
@@ -26,7 +26,7 @@ export const EntityNamePicker = (props: EntityNamePickerProps) => {
   const {
     onChange,
     required,
-    schema: { title = 'Name', description = 'Unique name of the component' },
+    schema: { title = 'Name' },
     rawErrors,
     formData,
     uiSchema: { 'ui:autofocus': autoFocus },
@@ -35,19 +35,15 @@ export const EntityNamePicker = (props: EntityNamePickerProps) => {
   } = props;
 
   return (
-    <FormControl required={required} error={rawErrors?.length > 0 && !formData}>
-      <TextField
-        id={idSchema?.$id}
-        label={title}
-        placeholder={placeholder}
-        required={required}
-        value={formData ?? ''}
-        onChange={({ target: { value } }) => onChange(value)}
-        inputProps={{ autoFocus }}
-      />
-      <Typography variant="caption" color="textSecondary">
-        {description}
-      </Typography>
-    </FormControl>
+    <TextField
+      id={idSchema?.$id}
+      label={title}
+      placeholder={placeholder}
+      required={required}
+      value={formData ?? ''}
+      onChange={({ target: { value } }) => onChange(value)}
+      error={rawErrors?.length > 0 && !formData}
+      inputProps={{ autoFocus }}
+    />
   );
 };

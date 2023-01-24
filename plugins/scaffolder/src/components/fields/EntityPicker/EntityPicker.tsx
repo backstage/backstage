@@ -19,7 +19,7 @@ import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { TextField, Typography } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
@@ -37,7 +37,7 @@ export { EntityPickerSchema } from './schema';
 export const EntityPicker = (props: EntityPickerProps) => {
   const {
     onChange,
-    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    schema: { title = 'Entity' },
     required,
     uiSchema,
     rawErrors,
@@ -99,9 +99,6 @@ export const EntityPicker = (props: EntityPickerProps) => {
           />
         )}
       />
-      <Typography variant="caption" color="textSecondary">
-        {description}
-      </Typography>
     </FormControl>
   );
 };
