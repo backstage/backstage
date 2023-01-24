@@ -67,7 +67,7 @@ The parameters available are:
 
 - **`host:`** _(optional)_ Leave empty for Cloud hosted, otherwise set to your self-hosted instance host.
 - **`organization:`** Your Organization slug (or Collection for on-premise users). Required.
-- **`project:`** Your project slug. Required. Wildcards are supported as show on the examples above. If not set, all projects will be searched.
+- **`project:`** _(optional)_ Your project slug. Wildcards are supported as show on the examples above. If not set, all projects will be searched.
 - **`repository:`** _(optional)_ The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.
 - **`path:`** _(optional)_ Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml.
 - **`schedule`** _(optional)_:
