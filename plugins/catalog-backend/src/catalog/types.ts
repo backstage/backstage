@@ -253,7 +253,7 @@ export type Cursor = {
   /**
    * The values of the fields of a specific item used for paginating the data.
    */
-  sortFieldValues: string[];
+  sortFieldValues: Array<string | null>;
   /**
    * A filter to be applied to the full list of entities.
    */
@@ -271,7 +271,7 @@ export type Cursor = {
    * The catalog uses this field internally to understand if the beginning
    * of the list has been reached when performing cursor based pagination.
    */
-  firstSortFieldValues?: string[];
+  firstSortFieldValues?: Array<string | null>;
   /**
    * The number of items that match the provided filters
    */
