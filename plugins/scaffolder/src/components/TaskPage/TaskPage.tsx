@@ -15,14 +15,7 @@
  */
 
 import { parseEntityRef } from '@backstage/catalog-model';
-import {
-  Content,
-  ErrorPage,
-  Header,
-  Page,
-  LogViewer,
-  Progress,
-} from '@backstage/core-components';
+import { Content, ErrorPage, Header, Page } from '@backstage/core-components';
 import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import {
@@ -44,7 +37,13 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import classNames from 'classnames';
 import { DateTime, Interval } from 'luxon';
 import qs from 'qs';
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, {
+  ComponentType,
+  memo,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import useInterval from 'react-use/lib/useInterval';
 import {
@@ -52,13 +51,13 @@ import {
   ScaffolderTaskOutput,
 } from '@backstage/plugin-scaffolder-react';
 import { useTaskEventStream } from '../hooks/useEventStream';
-import { TaskErrors } from './TaskErrors';
 import { TaskPageLinks } from './TaskPageLinks';
 import {
   rootRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
+import { TaskStepViewer, TaskStepViewerProps } from './TaskStepViewer';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -235,15 +234,20 @@ const hasLinks = ({ links = [] }: ScaffolderTaskOutput): boolean =>
  */
 export type TaskPageProps = {
   loadingText?: string;
+  TaskStepViewerComponent?: ComponentType<TaskStepViewerProps>;
 };
 
 /**
  * TaskPage for showing the status of the taskId provided as a param
  * @param loadingText - Optional loading text shown before a task begins executing.
+ * @param TaskStepViewerComponent - Optional custom component to replace original task step viewer (the right side panel).
  *
  * @public
  */
-export const TaskPage = ({ loadingText }: TaskPageProps) => {
+export const TaskPage = ({
+  loadingText,
+  TaskStepViewerComponent,
+}: TaskPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const rootPath = useRouteRef(rootRouteRef);
@@ -280,18 +284,6 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
 
   const currentStepId = userSelectedStepId ?? lastActiveStepId;
 
-  const logAsString = useMemo(() => {
-    if (!currentStepId) {
-      return loadingText ? loadingText : 'Loading...';
-    }
-    const log = taskStream.stepLogs[currentStepId];
-
-    if (!log?.length) {
-      return 'Waiting for logs...';
-    }
-    return log.join('\n');
-  }, [taskStream.stepLogs, currentStepId, loadingText]);
-
   const taskNotFound =
     taskStream.completed === true &&
     taskStream.loading === false &&
@@ -317,6 +309,8 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
       })}`,
     );
   };
+
+  const TaskStepViewerElement = TaskStepViewerComponent ?? TaskStepViewer;
 
   return (
     <Page themeId="home">
@@ -357,12 +351,11 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
                 </Paper>
               </Grid>
               <Grid item xs={9}>
-                {!currentStepId && <Progress />}
-
-                <div style={{ height: '80vh' }}>
-                  <TaskErrors error={taskStream.error} />
-                  <LogViewer text={logAsString} />
-                </div>
+                <TaskStepViewerElement
+                  currentStepId={currentStepId}
+                  loadingText={loadingText}
+                  taskStream={taskStream}
+                />
               </Grid>
             </Grid>
           </div>

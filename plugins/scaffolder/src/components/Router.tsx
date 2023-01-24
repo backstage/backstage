@@ -41,6 +41,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../routes';
+import { TaskStepViewerProps } from './TaskPage/TaskStepViewer';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -53,6 +54,7 @@ export type RouterProps = {
       | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;
     TaskPageComponent?: ComponentType<{}>;
+    TaskStepViewerComponent?: ComponentType<TaskStepViewerProps>;
   };
   groups?: Array<{
     title?: React.ReactNode;
@@ -83,8 +85,12 @@ export type RouterProps = {
 export const Router = (props: RouterProps) => {
   const { groups, components = {}, defaultPreviewTemplate } = props;
 
-  const { ReviewStepComponent, TemplateCardComponent, TaskPageComponent } =
-    components;
+  const {
+    ReviewStepComponent,
+    TemplateCardComponent,
+    TaskPageComponent,
+    TaskStepViewerComponent,
+  } = components;
 
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
@@ -153,7 +159,12 @@ export const Router = (props: RouterProps) => {
         path={scaffolderListTaskRouteRef.path}
         element={<ListTasksPage />}
       />
-      <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
+      <Route
+        path={scaffolderTaskRouteRef.path}
+        element={
+          <TaskPageElement TaskStepViewerComponent={TaskStepViewerComponent} />
+        }
+      />
       <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
         path={editRouteRef.path}
