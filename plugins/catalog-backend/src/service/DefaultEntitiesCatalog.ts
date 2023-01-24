@@ -338,7 +338,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const limit = request?.limit ?? 20;
 
     const cursor: Omit<Cursor, 'sortFieldValues'> & {
-      sortFieldValues?: string[];
+      sortFieldValues?: (string | null)[];
     } = {
       sortFields: [defaultSortField],
       isPrevious: false,
@@ -689,5 +689,5 @@ function invertOrder(order: EntitySortField['order']) {
 }
 
 function sortFieldsFromRow(row: DbSearchRow) {
-  return [row.value!, row.entity_id];
+  return [row.value, row.entity_id];
 }
