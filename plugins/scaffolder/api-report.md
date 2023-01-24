@@ -366,6 +366,7 @@ export type RouterProps = {
         }>
       | undefined;
     TaskPageComponent?: ComponentType<{}>;
+    TaskStepViewerComponent?: ComponentType<TaskStepViewerProps>;
   };
   groups?: Array<{
     title?: React_2.ReactNode;
@@ -499,11 +500,15 @@ export type ScaffolderTaskStatus = ScaffolderTaskStatus_2;
 export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecrets_2;
 
 // @public
-export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
+export const TaskPage: ({
+  loadingText,
+  TaskStepViewerComponent,
+}: TaskPageProps) => JSX.Element;
 
 // @public
 export type TaskPageProps = {
   loadingText?: string;
+  TaskStepViewerComponent?: ComponentType<TaskStepViewerProps>;
 };
 
 // @alpha (undocumented)
@@ -520,4 +525,8 @@ export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
+
+// Warnings were encountered during analysis:
+//
+// src/components/Router.d.ts:17:9 - (ae-forgotten-export) The symbol "TaskStepViewerProps" needs to be exported by the entry point index.d.ts
 ```
