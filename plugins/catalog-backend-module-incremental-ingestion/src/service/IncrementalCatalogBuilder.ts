@@ -118,8 +118,8 @@ export class IncrementalCatalogBuilder {
 
     return {
       onEvent: (params: EventParams) => engine.onEvent(params),
-      get supportsEventTopics() {
-        return engine.supportsEventTopics;
+      supportsEventTopics() {
+        return engine.supportsEventTopics();
       },
     };
   }
