@@ -40,6 +40,7 @@ import { ReviewStepProps } from '../types';
 import { ReviewStep } from './ReviewStep';
 import { extractSchemaFromStep } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
+import CustomFieldTemplate from '../fields/FieldTemplate/CustomFieldTemplate';
 
 const Form = withTheme(MuiTheme);
 
@@ -180,6 +181,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
                 <Form
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
+                  FieldTemplate={CustomFieldTemplate}
                   widgets={widgets}
                   noHtml5Validate
                   formData={formData}
