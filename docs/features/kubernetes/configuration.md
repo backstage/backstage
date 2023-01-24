@@ -429,12 +429,12 @@ Example:
 ---
 kubernetes:
   objectTypes:
-    - 'configmaps'
-    - 'deployments'
-    - 'limitranges'
-    - 'pods'
-    - 'services'
-    - 'statefulsets'
+    - configmaps
+    - deployments
+    - limitranges
+    - pods
+    - services
+    - statefulsets
 ```
 
 ### Role Based Access Control
