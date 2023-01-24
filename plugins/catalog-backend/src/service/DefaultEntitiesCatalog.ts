@@ -283,8 +283,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       ...cursor.sortFields[0],
     };
 
-    const [sortFieldValue, metadataSortFieldValue] =
-      cursor.sortFieldValues || [];
+    const [prevItemSortFieldValue, prevItemUid] = cursor.sortFieldValues || [];
 
     const dbQuery = db('search')
       .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
@@ -306,17 +305,17 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isOrderingDescending = sortField.order === 'desc';
 
-    if (sortFieldValue) {
+    if (prevItemSortFieldValue) {
       dbQuery.andWhere(
         'value',
         isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-        sortFieldValue,
+        prevItemSortFieldValue,
       );
       dbQuery.orWhere(function nested() {
-        this.where('value', '=', sortFieldValue).andWhere(
+        this.where('value', '=', prevItemSortFieldValue).andWhere(
           'search.entity_id',
           isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-          metadataSortFieldValue,
+          prevItemUid,
         );
       });
     }
