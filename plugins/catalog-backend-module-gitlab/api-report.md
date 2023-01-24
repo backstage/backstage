@@ -71,7 +71,5 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   ): GitlabOrgDiscoveryEntityProvider[];
   // (undocumented)
   getProviderName(): string;
-  // (undocumented)
-  refresh(logger: Logger): Promise<void>;
 }
 ```

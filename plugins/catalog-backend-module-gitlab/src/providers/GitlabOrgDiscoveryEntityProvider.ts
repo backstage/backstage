@@ -156,7 +156,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     };
   }
 
-  async refresh(logger: Logger): Promise<void> {
+  private async refresh(logger: Logger): Promise<void> {
     if (!this.connection) {
       throw new Error(
         `Gitlab discovery connection not initialized for ${this.getProviderName()}`,
