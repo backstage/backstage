@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.9.3-next.0
+
+### Patch Changes
+
+- 2518ef5b8a: Adding new Cluster detail fields to catalogClusterLocator. Replace deprecated imports with k8s annotations from plugin-kubernetes-common.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-test-utils@0.1.34-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+
 ## 0.9.1
 
 ### Patch Changes

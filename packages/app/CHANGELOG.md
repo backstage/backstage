@@ -1,5 +1,60 @@
 # example-app
 
+## 0.2.80-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-azure-devops@0.2.6-next.0
+  - @backstage/plugin-scaffolder-react@1.1.0-next.0
+  - @backstage/plugin-scaffolder@1.11.0-next.0
+  - @backstage/plugin-api-docs@0.8.15-next.0
+  - @backstage/plugin-techdocs@1.4.4-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/plugin-user-settings@0.6.3-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/plugin-kubernetes@0.7.8-next.0
+  - @backstage/plugin-airbrake@0.3.15-next.0
+  - @backstage/plugin-azure-sites@0.1.4-next.0
+  - @backstage/plugin-badges@0.2.39-next.0
+  - @internal/plugin-catalog-customized@0.0.7-next.0
+  - @backstage/plugin-catalog-graph@0.2.27-next.0
+  - @backstage/plugin-catalog-import@0.9.5-next.0
+  - @backstage/plugin-circleci@0.3.15-next.0
+  - @backstage/plugin-cloudbuild@0.3.15-next.0
+  - @backstage/plugin-code-coverage@0.2.8-next.0
+  - @backstage/plugin-cost-insights@0.12.4-next.0
+  - @backstage/plugin-dynatrace@2.0.0-next.0
+  - @backstage/plugin-explore@0.3.46-next.0
+  - @backstage/plugin-github-actions@0.5.15-next.0
+  - @backstage/plugin-gocd@0.1.21-next.0
+  - @backstage/plugin-home@0.4.31-next.0
+  - @backstage/plugin-jenkins@0.7.14-next.0
+  - @backstage/plugin-kafka@0.3.15-next.0
+  - @backstage/plugin-lighthouse@0.3.15-next.0
+  - @backstage/plugin-newrelic-dashboard@0.2.8-next.0
+  - @backstage/plugin-org@0.6.5-next.0
+  - @backstage/plugin-pagerduty@0.5.8-next.0
+  - @backstage/plugin-playlist@0.1.6-next.0
+  - @backstage/plugin-rollbar@0.4.15-next.0
+  - @backstage/plugin-search@1.0.8-next.0
+  - @backstage/plugin-sentry@0.4.8-next.0
+  - @backstage/plugin-tech-insights@0.3.7-next.0
+  - @backstage/plugin-todo@0.2.17-next.0
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-techdocs-react@1.1.3-next.0
+  - @backstage/cli@0.22.1
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.10-next.0
+  - @backstage/integration-react@1.1.9
+  - @backstage/plugin-apache-airflow@0.2.7
+  - @backstage/plugin-gcalendar@0.3.10
+  - @backstage/plugin-gcp-projects@0.3.33
+  - @backstage/plugin-graphiql@0.2.46
+  - @backstage/plugin-newrelic@0.3.32
+  - @backstage/plugin-shortcuts@0.3.6
+  - @backstage/plugin-stack-overflow@0.1.11-next.0
+  - @backstage/plugin-tech-radar@0.6.0
+
 ## 0.2.79
 
 ### Patch Changes

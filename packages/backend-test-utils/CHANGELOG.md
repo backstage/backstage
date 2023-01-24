@@ -1,5 +1,17 @@
 # @backstage/backend-test-utils
 
+## 0.1.34-next.0
+
+### Patch Changes
+
+- d0901c9ba4: All mock service factories and mock service implementations are now available via the new experimental `mockServices` export.
+- Updated dependencies
+  - @backstage/backend-app-api@0.3.2-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+  - @backstage/cli@0.22.1
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
 ## 0.1.32
 
 ### Patch Changes
