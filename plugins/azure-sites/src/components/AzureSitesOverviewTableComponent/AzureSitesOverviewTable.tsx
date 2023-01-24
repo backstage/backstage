@@ -73,9 +73,11 @@ const Kind = ({ value }: { value: Kinds }) => {
     app: <PublicIcon />,
     functionapp: <FlashOnIcon />,
   };
+  const kindArray = value.split(',');
+  const iconValue: Kinds = kindArray.includes('app') ? 'app' : 'functionapp';
   return (
     <Box display="flex" alignItems="center">
-      <Tooltip title={value}>{iconMap[value]}</Tooltip>
+      <Tooltip title={iconValue}>{iconMap[iconValue]}</Tooltip>
     </Box>
   );
 };
