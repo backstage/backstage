@@ -62,13 +62,14 @@ items.
 
 ## Modules
 
-Backend modules are used to extend [plugins](./04-plugins.md) with additional
-features or change existing behavior. They must always be installed in the same
-backend instance as the plugin that they extend, and may only extend a single
-plugin. Modules interact with their target plugin using the [extension
+Backend modules are used to extend [plugins](../architecture/04-plugins.md) with
+additional features or change existing behavior. They must always be installed
+in the same backend instance as the plugin that they extend, and may only extend
+a single plugin. Modules interact with their target plugin using the [extension
 points](./05-extension-points.md) registered by the plugin, while also being
-able to depend on the [services](./03-services.md) of that plugin. That last
-point is worth reiterating: injected `plugin` scoped services will be the exact
+able to depend on the [services](../architecture/03-services.md) of that plugin.
+That last point is worth reiterating: injected `plugin` scoped services will be
+the exact
 same ones as the target plugin will receive later, i.e. they will be scoped
 using the target `pluginId` of the module.
 
