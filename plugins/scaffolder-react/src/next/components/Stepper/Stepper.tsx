@@ -30,7 +30,7 @@ import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
-import validator from '@rjsf/validator-ajv6';
+import validator from '@rjsf/validator-ajv8';
 import { useFormDataFromQuery } from '../../hooks';
 import type { FormProps, LayoutOptions } from '../../types';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
