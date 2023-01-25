@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 8c2966536b: Embed scaffolder workflow in other components
+
+### Patch Changes
+
+- cbab8ac107: lock versions of `@rjsf/*-beta` packages
+- d2ddde2108: Add `ScaffolderLayouts` to `NextScaffolderPage`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+
 ## 1.0.0
 
 ### Major Changes

@@ -43,12 +43,12 @@ export const IngressDrawer = ({
         spacing={0}
       >
         <Grid item>
-          <Typography variant="h5">
+          <Typography variant="body1">
             {ingress.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
         <Grid item>
-          <Typography color="textSecondary" variant="body1">
+          <Typography color="textSecondary" variant="subtitle1">
             Ingress
           </Typography>
         </Grid>

@@ -24,18 +24,14 @@ import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
 import { TemplateEditorPage } from './TemplateEditorPage';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../extensions/default';
-import {
-  useElementFilter,
-  useRouteRef,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
+import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
 import {
   FieldExtensionOptions,
   SecretsContextProvider,
   useCustomFieldExtensions,
+  useCustomLayouts,
 } from '@backstage/plugin-scaffolder-react';
 import { ListTasksPage } from './ListTasksPage';
-import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
 import { ReviewStepProps } from './types';
 import {
   actionsRouteRef,
@@ -104,16 +100,7 @@ export const Router = (props: RouterProps) => {
     ),
   ] as FieldExtensionOptions[];
 
-  // todo(blam): this should also be moved to a hook in -react
-  const customLayouts = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: LAYOUTS_WRAPPER_KEY,
-      })
-      .findComponentData<LayoutOptions>({
-        key: LAYOUTS_KEY,
-      }),
-  );
+  const customLayouts = useCustomLayouts(outlet);
 
   /**
    * This component can be deleted once the older routes have been deprecated.

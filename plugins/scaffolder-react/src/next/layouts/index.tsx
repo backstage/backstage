@@ -1,5 +1,8 @@
+import { LayoutOptions } from '../types';
+import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from './keys';
+
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
-import type { LayoutOptions } from './types';
-
-export const LAYOUTS_KEY = 'scaffolder.layout.v1';
-export const LAYOUTS_WRAPPER_KEY = 'scaffolder.layouts.wrapper.v1';
 
 /**
- * The type used to wrap up the Layout and embed the input props
- *
+ * A type used to wrap up the FieldExtension to embed the ReturnValue and the InputProps
  * @public
  */
 export type LayoutComponent<_TInputProps> = () => null;
@@ -55,5 +52,3 @@ export const ScaffolderLayouts: React.ComponentType = (): JSX.Element | null =>
   null;
 
 attachComponentData(ScaffolderLayouts, LAYOUTS_WRAPPER_KEY, true);
-
-export type { LayoutOptions, LayoutTemplate } from './types';

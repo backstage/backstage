@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import { Logger } from 'winston';
 import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
-import { TaskSecrets } from '../tasks';
+import { TaskSecrets } from '../tasks/types';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 
@@ -26,12 +26,12 @@ import { UserEntity } from '@backstage/catalog-model';
  * ActionContext is passed into scaffolder actions.
  * @public
  */
-export type ActionContext<Input extends JsonObject> = {
+export type ActionContext<TInput extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: Input;
+  input: TInput;
   output(name: string, value: JsonValue): void;
 
   /**
@@ -63,7 +63,7 @@ export type ActionContext<Input extends JsonObject> = {
 };
 
 /** @public */
-export type TemplateAction<Input extends JsonObject> = {
+export type TemplateAction<TInput extends JsonObject> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];
@@ -72,5 +72,5 @@ export type TemplateAction<Input extends JsonObject> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<Input>) => Promise<void>;
+  handler: (ctx: ActionContext<TInput>) => Promise<void>;
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { FormProps } from '@rjsf/core';
+
+import { JsonObject } from '@backstage/types';
+import { TemplateAction } from './types';
 
 /**
- * The field template from \@rjsf/core which is a react component that gets passed \@rjsf/core field related props.
+ * This function is used to create new template actions to get type safety.
  *
  * @public
  */
-export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
-
-/**
- * The type of layouts that is passed to the TemplateForms
- *
- * @public
- */
-export interface LayoutOptions<P = any> {
-  name: string;
-  component: LayoutTemplate<P>;
-}
+export const createTemplateAction = <TInput extends JsonObject>(
+  templateAction: TemplateAction<TInput>,
+): TemplateAction<TInput> => {
+  // TODO(blam): Can add some more validation here to validate the action later on
+  return templateAction;
+};

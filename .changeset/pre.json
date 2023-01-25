@@ -194,7 +194,40 @@
     "@backstage/plugin-user-settings-backend": "0.1.4",
     "@backstage/plugin-vault": "0.1.8",
     "@backstage/plugin-vault-backend": "0.2.6",
-    "@backstage/plugin-xcmetrics": "0.2.34"
+    "@backstage/plugin-xcmetrics": "0.2.34",
+    "@backstage/plugin-scaffolder-node": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "bright-eagles-love",
+    "brown-islands-own",
+    "calm-avocados-exercise",
+    "cold-cycles-switch",
+    "create-app-1674561612",
+    "cyan-deers-walk",
+    "eight-falcons-explode",
+    "flat-cups-itch",
+    "friendly-scissors-shop",
+    "gold-lemons-eat",
+    "gold-masks-sleep",
+    "itchy-goats-melt",
+    "khaki-toes-care",
+    "lazy-badgers-rule",
+    "lazy-badgers-try",
+    "lemon-tables-train",
+    "lovely-ladybugs-taste",
+    "nervous-apricots-whisper",
+    "nervous-mangos-rhyme",
+    "perfect-cheetahs-serve",
+    "pink-falcons-serve",
+    "quick-ladybugs-reply",
+    "rare-melons-battle",
+    "rotten-mayflies-love",
+    "shiny-years-tap",
+    "silly-turkeys-hang",
+    "spotty-coats-clean",
+    "stale-dots-smile",
+    "swift-fishes-smash",
+    "twenty-parents-relate",
+    "young-singers-learn"
+  ]
 }

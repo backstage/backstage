@@ -13,4 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { scaffolderCatalogModule } from './ScaffolderCatalogModule';
+
+/**
+ * The scaffolder-node module for `@backstage/plugin-scaffolder-backend`.
+ *
+ * @packageDocumentation
+ */
+
+export * from './actions';
+export * from './tasks';
+export {
+  scaffolderActionsExtensionPoint,
+  type ScaffolderActionsExtensionPoint,
+} from './extensions';
