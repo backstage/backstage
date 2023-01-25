@@ -30,7 +30,7 @@ import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
-import validator from '@rjsf/validator-ajv6';
+import validator from '@rjsf/validator-ajv8';
 import { useFormDataFromQuery } from '../../hooks';
 import type { FormProps, LayoutOptions } from '../../types';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
@@ -125,9 +125,9 @@ export const Stepper = (stepperProps: StepperProps) => {
   );
 
   const handleNext = async ({
-    formData,
+    formData = {},
   }: {
-    formData: Record<string, JsonValue>;
+    formData?: Record<string, JsonValue>;
   }) => {
     // TODO(blam): What do we do about loading states, does each field extension get a chance
     // to display it's own loading? Or should we grey out the entire form.
