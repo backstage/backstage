@@ -11,7 +11,7 @@ description: Backend instances
 This is the main entry point for creating a backend. It does not have any functionality in and of itself, but is simply responsible for wiring things together.
 It is up to you to decide how many different backends you want to deploy. You can have all features in a single one, or split things out into multiple smaller deployments.
 
-Below is a simple example of a backend that installs only catalog plugin and starts it up.
+Below is a simple example of a backend that installs only the catalog plugin and starts it up.
 
 ```ts
 import { createBackend } from '@backstage/backend-defaults';
@@ -33,6 +33,6 @@ The backend instance has the ability to add features to the backend which are do
 
 At a high level, when you call `createBackend`, it will create a new backend instance, which has a registry of all the services that are currently registered, and by adding features to the backend instance and calling the `.start()` method it will ensure that all the dependencies are wired up correctly and the `registerInit` methods are called in the correct order.
 
-Underneath the hood, `createBackend` calls `createSpecializedBackend` from `@backstage/backend-app-api` which is responsible for actually creating the backend instance, but with no services or no features. You can think of `createBackend` more of a 'batteries included' approach, and `createSpecializedBackend` a little more lower level.
+Underneath the hood, `createBackend` calls `createSpecializedBackend` from `@backstage/backend-app-api` which is responsible for actually creating the backend instance, but with no services or no features. You can think of `createBackend` more of a 'batteries included' approach, and `createSpecializedBackend` a little more low level.
 
 As mentioned previously there's also the ability to create multiple of these backends in your project so that you can split apart your backend and deploy different backends that can scale independently of each other. For instance you might choose to deploy a backend with only the catalog plugin enabled, and one with just the scaffolder plugin enabled. We've provided some tools to be able to share services and defaults across your backend system, and you can find out more about that in the [shared environments docs](../building-backends/01-index.md#shared-environments).
