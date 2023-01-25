@@ -529,12 +529,12 @@ describe('helpers', () => {
       const {
         path: mkdocsPath,
         content,
-        configExists,
+        configIsTemporary,
       } = await getMkdocsYml(inputDir, siteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
-      expect(configExists).toBe(true);
+      expect(configIsTemporary).toBe(false);
     });
 
     it('returns expected contents when .yaml file is present', async () => {
@@ -543,11 +543,11 @@ describe('helpers', () => {
       const {
         path: mkdocsPath,
         content,
-        configExists,
+        configIsTemporary,
       } = await getMkdocsYml(inputDir, siteOptions);
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
-      expect(configExists).toBe(true);
+      expect(configIsTemporary).toBe(false);
     });
 
     it('returns expected contents when default file is present', async () => {
@@ -561,12 +561,12 @@ describe('helpers', () => {
       const {
         path: mkdocsPath,
         content,
-        configExists,
+        configIsTemporary,
       } = await getMkdocsYml(inputDir, defaultSiteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsDefaultYml.toString());
-      expect(configExists).toBe(false);
+      expect(configIsTemporary).toBe(true);
     });
 
     it('throws when neither .yml nor .yaml nor default file is present', async () => {
