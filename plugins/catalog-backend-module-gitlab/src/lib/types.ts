@@ -34,9 +34,9 @@ export type GitLabProject = {
 export type GitLabUser = {
   id: number;
   username: string;
-  name: string;
   email: string;
-  active: boolean;
+  name: string;
+  state: string;
   web_url: string;
   avatar_url: string;
   groups?: GitLabGroup[];

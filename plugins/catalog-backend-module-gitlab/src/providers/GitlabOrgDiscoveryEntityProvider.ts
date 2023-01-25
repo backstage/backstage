@@ -206,13 +206,13 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     }
 
     for await (const user of users) {
-      if (!this.config.userPattern.test(user.email ?? '')) {
+      if (!this.config.userPattern.test(user.email ?? user.username ?? '')) {
         continue;
       }
 
       res.scanned++;
 
-      if (user.active) {
+      if (user.state !== 'active') {
         continue;
       }
 
@@ -314,13 +314,24 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       },
       spec: {
         profile: {
-          email: user.email,
           displayName: user.name,
           picture: user.avatar_url,
         },
         memberOf: [],
       },
     };
+
+    if (user.email) {
+      if (!entity.spec) {
+        entity.spec = {};
+      }
+
+      if (!entity.spec.profile) {
+        entity.spec.profile = {};
+      }
+
+      entity.spec.profile.email = user.email;
+    }
 
     if (user.groups) {
       for (const group of user.groups) {

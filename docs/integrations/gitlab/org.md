@@ -19,6 +19,11 @@ integrations:
       token: ${GITLAB_TOKEN}
 ```
 
+This will query all users and groups from your gitlab installation. Depending on the size
+of the Gitlab Instance, this can take some time our resources.
+
+The token that is used for the Organization Integration, has to be an Admin PAT.
+
 ```yaml
 catalog:
   providers:

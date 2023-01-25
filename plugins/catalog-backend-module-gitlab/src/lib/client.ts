@@ -22,13 +22,21 @@ import {
 import { Logger } from 'winston';
 import { GitLabGroup, GitLabMembership, GitLabUser } from './types';
 
-export type ListOptions = {
+export type CommonListOptions = {
   [key: string]: string | number | boolean | undefined;
-  group?: string;
   per_page?: number | undefined;
   page?: number | undefined;
   active?: boolean;
 };
+
+interface ListProjectOptions extends CommonListOptions {
+  group?: string;
+}
+
+interface UserListOptions extends CommonListOptions {
+  without_project_bots?: boolean | undefined;
+  exclude_internal?: boolean | undefined;
+}
 
 export type PagedResponse<T> = {
   items: T[];
@@ -51,7 +59,9 @@ export class GitLabClient {
     return this.config.host !== 'gitlab.com';
   }
 
-  async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
+  async listProjects(
+    options?: ListProjectOptions,
+  ): Promise<PagedResponse<any>> {
     if (options?.group) {
       return this.pagedRequest(
         `/groups/${encodeURIComponent(options?.group)}/projects`,
@@ -65,11 +75,24 @@ export class GitLabClient {
     return this.pagedRequest(`/projects`, options);
   }
 
-  async listUsers(options?: ListOptions): Promise<PagedResponse<GitLabUser>> {
-    return this.pagedRequest(`/users`, options);
+  async listUsers(
+    options?: UserListOptions,
+  ): Promise<PagedResponse<GitLabUser>> {
+    let requestOptions = options;
+
+    if (!requestOptions) {
+      requestOptions = {};
+    }
+
+    requestOptions.without_project_bots = true;
+    requestOptions.exclude_internal = true;
+
+    return this.pagedRequest(`/users?`, requestOptions);
   }
 
-  async listGroups(options?: ListOptions): Promise<PagedResponse<GitLabGroup>> {
+  async listGroups(
+    options?: CommonListOptions,
+  ): Promise<PagedResponse<GitLabGroup>> {
     return this.pagedRequest(`/groups`, options);
   }
 
@@ -150,7 +173,7 @@ export class GitLabClient {
    */
   async pagedRequest<T = any>(
     endpoint: string,
-    options?: ListOptions,
+    options?: CommonListOptions,
   ): Promise<PagedResponse<T>> {
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
     for (const key in options) {
@@ -195,8 +218,8 @@ export class GitLabClient {
  * @param options - Initial ListOptions for the request function.
  */
 export async function* paginated<T = any>(
-  request: (options: ListOptions) => Promise<PagedResponse<T>>,
-  options: ListOptions,
+  request: (options: CommonListOptions) => Promise<PagedResponse<T>>,
+  options: CommonListOptions,
 ) {
   let res;
   do {
