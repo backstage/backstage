@@ -21,14 +21,16 @@ When you create a new project with `@backstage/create-app`, you'll get a backend
 import { createBackend } from '@backstage/backend-defaults';
 import { appPlugin } from '@backstage/plugin-app-backend';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-import { scaffolderCatalogModule } from '@backstage/plugin-scaffolder-backend';
-import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend';
+import {
+  scaffolderPlugin,
+  catalogModuleTemplateKind,
+} from '@backstage/plugin-scaffolder-backend';
 
 const backend = createBackend();
 
 backend.add(appPlugin());
 backend.add(catalogPlugin());
-backend.add(scaffolderCatalogModule());
+backend.add(catalogModuleTemplateKind());
 backend.add(scaffolderPlugin());
 
 backend.start();
@@ -129,7 +131,7 @@ const backend = createBackend();
 
 backend.add(appPlugin());
 backend.add(catalogPlugin());
-backend.add(scaffolderCatalogModule());
+backend.add(catalogModuleTemplateKind());
 backend.start();
 ```
 

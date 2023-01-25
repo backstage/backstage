@@ -37,7 +37,6 @@ schedule it:
 
 ```diff
  // packages/backend/src/plugins/catalog.ts
-+import { Duration } from 'luxon';
 +import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
 
  export default async function createPlugin(

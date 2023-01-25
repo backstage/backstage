@@ -13,4 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { scaffolderCatalogModule } from './ScaffolderCatalogModule';
+
+import { Entity } from '@backstage/catalog-model';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
+
+/** @public */
+export type CatalogCollatorEntityTransformer = (
+  entity: Entity,
+) => Omit<CatalogEntityDocument, 'location' | 'authorization'>;

@@ -38,6 +38,9 @@ import { Writable } from 'stream';
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
 
+// @alpha
+export const catalogModuleTemplateKind: () => BackendFeature;
+
 // @public
 export const createBuiltinActions: (
   options: CreateBuiltInActionsOptions,
@@ -648,9 +651,6 @@ export type RunCommandOptions = {
   options?: SpawnOptionsWithoutStdio;
   logStream?: Writable;
 };
-
-// @alpha
-export const scaffolderCatalogModule: () => BackendFeature;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {

@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend';
-import { createBackend } from '@backstage/backend-defaults';
-import { appPlugin } from '@backstage/plugin-app-backend';
-
-const backend = createBackend();
-
-backend.add(catalogPlugin());
-backend.add(catalogModuleTemplateKind());
-backend.add(appPlugin({ appPackageName: 'example-app' }));
-backend.start();
+export { catalogModuleTemplateKind } from './catalogModuleTemplateKind';

@@ -240,11 +240,11 @@ A basic installation of the catalog plugin looks as follows.
 ```diff
  // packages/backend/src/index.ts
 +import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-+import { scaffolderCatalogModule } from '@backstage/plugin-scaffolder-backend';
++import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend';
 
  const backend = createBackend();
 +backend.add(catalogPlugin());
-+backend.add(scaffolderCatalogModule());
++backend.add(catalogModuleTemplateKind());
 ```
 
 Note that this also installs a module from the scaffolder, namely the one which
@@ -265,9 +265,9 @@ depends on the appropriate extension point and interacts with it.
 +import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 +import { createBackendModule } from '@backstage/backend-plugin-api';
 
-+const catalogExtensionsModule = createBackendModule({
-+  pluginId: 'catalog',    // name of the plugin that the module is targeting
-+  moduleId: 'extensions', // you can choose this one freely
++const catalogModuleCustomExtensions = createBackendModule({
++  pluginId: 'catalog',  // name of the plugin that the module is targeting
++  moduleId: 'customExtensions',
 +  register(env) {
 +    env.registerInit({
 +      deps: {
@@ -286,8 +286,8 @@ depends on the appropriate extension point and interacts with it.
 
  const backend = createBackend();
  backend.add(catalogPlugin());
- backend.add(scaffolderCatalogModule());
-+backend.add(catalogExtensionsModule());
+ backend.add(catalogModuleTemplateKind());
++backend.add(catalogModuleCustomExtensions());
 ```
 
 This also requires that you have a dependency on the corresponding node package,
@@ -330,9 +330,9 @@ depends on the appropriate extension point and interacts with it.
 +import { eventsExtensionPoint } from '@backstage/plugin-events-node';
 +import { createBackendModule } from '@backstage/backend-plugin-api';
 
-+const eventsExtensionsModule = createBackendModule({
-+  pluginId: 'events',     // name of the plugin that the module is targeting
-+  moduleId: 'extensions', // you can choose this one freely
++const eventsModuleCustomExtensions = createBackendModule({
++  pluginId: 'events',  // name of the plugin that the module is targeting
++  moduleId: 'customExtensions',
 +  register(env) {
 +    env.registerInit({
 +      deps: {
@@ -350,7 +350,7 @@ depends on the appropriate extension point and interacts with it.
 
  const backend = createBackend();
  backend.add(eventsPlugin());
-+backend.add(eventsExtensionsModule());
++backend.add(eventsModuleCustomExtensions());
 ```
 
 This also requires that you have a dependency on the corresponding node package,
@@ -393,9 +393,9 @@ depends on the appropriate extension point and interacts with it.
 +import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 +import { createBackendModule } from '@backstage/backend-plugin-api';
 
-+const scaffolderExtensionsModule = createBackendModule({
-+  pluginId: 'scaffolder', // name of the plugin that the module is targeting
-+  moduleId: 'extensions', // you can choose this one freely
++const scaffolderModuleCustomExtensions = createBackendModule({
++  pluginId: 'scaffolder',  // name of the plugin that the module is targeting
++  moduleId: 'customExtensions',
 +  register(env) {
 +    env.registerInit({
 +      deps: {
@@ -413,7 +413,7 @@ depends on the appropriate extension point and interacts with it.
 
  const backend = createBackend();
  backend.add(scaffolderPlugin());
-+backend.add(scaffolderExtensionsModule());
++backend.add(scaffolderModuleCustomExtensions());
 ```
 
 This also requires that you have a dependency on the corresponding node package,
