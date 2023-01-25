@@ -12137,13 +12137,13 @@ __metadata:
   linkType: hard
 
 "@octokit/graphql@npm:^5.0.0":
-  version: 5.0.4
-  resolution: "@octokit/graphql@npm:5.0.4"
+  version: 5.0.5
+  resolution: "@octokit/graphql@npm:5.0.5"
   dependencies:
     "@octokit/request": ^6.0.0
-    "@octokit/types": ^8.0.0
+    "@octokit/types": ^9.0.0
     universal-user-agent: ^6.0.0
-  checksum: 8cf65cf7e6608cf3cbc96a2fa902172b4d5dc30e88ee0bae3711bf467a25b828b10cce1aaabb7f82a7580bfbcf7028b91d1dd1a894940945e38ca2deb6509754
+  checksum: eb2d1a6305a3d1f55ff0ce92fb88b677f0bb789757152d58a79ef61171fb65ecf6fe18d6c27e236c0cee6a0c2600c2cb8370f5ac7184f8e9361c085aa4555bb1
   languageName: node
   linkType: hard
 
@@ -12226,6 +12226,13 @@ __metadata:
   version: 14.0.0
   resolution: "@octokit/openapi-types@npm:14.0.0"
   checksum: 0a1f8f3be998cd82c5a640e9166d43fd183b33d5d36f5e1a9b81608e94d0da87c01ec46c9988f69cd26585d4e2ffc4d3ec99ee4f75e5fe997fc86dad0aa8293c
+  languageName: node
+  linkType: hard
+
+"@octokit/openapi-types@npm:^16.0.0":
+  version: 16.0.0
+  resolution: "@octokit/openapi-types@npm:16.0.0"
+  checksum: 844f30a545da380d63c712e0eb733366bc567d1aab34529c79fdfbec3d73810e81d83f06fdab13058a5cbc7dae786db1a9b90b5b61b1e606854ee45d5ec5f194
   languageName: node
   linkType: hard
 
@@ -12435,6 +12442,15 @@ __metadata:
   dependencies:
     "@octokit/openapi-types": ^14.0.0
   checksum: 1a0197b2c4c522ac90f145e02b3f8cb048a47f71c2c6bdbf021a03db7dd30ca92a899c0186acb401337f218efe44e60d33cc1cc68715b622bb75bc1a4e79515d
+  languageName: node
+  linkType: hard
+
+"@octokit/types@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@octokit/types@npm:9.0.0"
+  dependencies:
+    "@octokit/openapi-types": ^16.0.0
+  checksum: 5c7f5cca8f00f7c4daa0d00f4fe991c1598ec47cd6ced50b1c5fbe9721bb9dee0adc2acdee265a3a715bb984e53ef3dc7f1cfb7326f712c6d809d59fc5c6648d
   languageName: node
   linkType: hard
 
