@@ -9,6 +9,7 @@ import { Duration } from 'luxon';
 import { HumanDuration as HumanDuration_2 } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public @deprecated
 export type HumanDuration = HumanDuration_2;
@@ -89,4 +90,7 @@ export class TaskScheduler {
     },
   ): TaskScheduler;
 }
+
+// @public
+export const tasksServiceRef: ServiceRef<PluginTaskScheduler, 'plugin'>;
 ```
