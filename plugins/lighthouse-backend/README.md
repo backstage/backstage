@@ -15,7 +15,7 @@ yarn add --cwd packages/backend @backstage/lighthouse-backend
 
 ```typescript
 import { Router } from 'express';
-import { create } from '@backstage/plugin-lighthouse-backend';
+import { createScheduler } from '@backstage/plugin-lighthouse-backend';
 import { PluginEnvironment } from '../types';
 import { CatalogClient } from '@backstage/catalog-client';
 
