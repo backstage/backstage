@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Entity, isUserEntity, isGroupEntity } from '@backstage/catalog-model';
+import { Entity, isGroupEntity, isUserEntity } from '@backstage/catalog-model';
+import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
 
-export function getDocumentText(entity: Entity): string {
+const getDocumentText = (entity: Entity): string => {
   const documentTexts: string[] = [];
   documentTexts.push(entity.metadata.description || '');
 
@@ -25,5 +26,21 @@ export function getDocumentText(entity: Entity): string {
       documentTexts.push(entity.spec.profile.displayName);
     }
   }
+
   return documentTexts.join(' : ');
-}
+};
+
+/** @public */
+export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer =
+  (entity: Entity) => {
+    return {
+      title: entity.metadata.title ?? entity.metadata.name,
+      text: getDocumentText(entity),
+      componentType: entity.spec?.type?.toString() || 'other',
+      type: entity.spec?.type?.toString() || 'other',
+      namespace: entity.metadata.namespace || 'default',
+      kind: entity.kind,
+      lifecycle: (entity.spec?.lifecycle as string) || '',
+      owner: (entity.spec?.owner as string) || '',
+    };
+  };

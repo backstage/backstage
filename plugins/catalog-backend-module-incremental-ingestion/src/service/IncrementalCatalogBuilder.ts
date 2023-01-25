@@ -26,6 +26,7 @@ import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { IncrementalProviderRouter } from '../router/routes';
 import { Deferred } from '../util';
+import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
 /** @public */
 export class IncrementalCatalogBuilder {
@@ -71,12 +72,14 @@ export class IncrementalCatalogBuilder {
   addIncrementalEntityProvider<TCursor, TContext>(
     provider: IncrementalEntityProvider<TCursor, TContext>,
     options: IncrementalEntityProviderOptions,
-  ) {
+  ): EventSubscriber {
     const { burstInterval, burstLength, restLength } = options;
     const { logger: catalogLogger, scheduler } = this.env;
     const ready = this.ready;
 
     const manager = this.manager;
+
+    let engine: IncrementalIngestionEngine;
 
     this.builder.addEntityProvider({
       getProviderName: provider.getProviderName.bind(provider),
@@ -87,7 +90,7 @@ export class IncrementalCatalogBuilder {
 
         logger.info(`Connecting`);
 
-        const engine = new IncrementalIngestionEngine({
+        engine = new IncrementalIngestionEngine({
           ...options,
           ready,
           manager,
@@ -112,5 +115,12 @@ export class IncrementalCatalogBuilder {
         });
       },
     });
+
+    return {
+      onEvent: (params: EventParams) => engine.onEvent(params),
+      supportsEventTopics() {
+        return engine.supportsEventTopics();
+      },
+    };
   }
 }

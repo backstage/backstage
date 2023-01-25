@@ -20,11 +20,14 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
+import {
+  ActionContext,
+  TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
 import mockFs from 'mock-fs';
 import os from 'os';
 import { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
-import { ActionContext, TemplateAction } from '../../types';
 import {
   createPublishGithubPullRequestAction,
   OctokitWithPullRequestPluginClient,

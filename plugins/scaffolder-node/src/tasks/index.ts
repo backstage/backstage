@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
-import { TemplateAction } from './types';
-
-/**
- * This function is used to create new template actions to get type safety.
- * @public
- */
-export const createTemplateAction = <TInput extends JsonObject>(
-  templateAction: TemplateAction<TInput>,
-): TemplateAction<TInput> => {
-  // TODO(blam): Can add some more validation here to validate the action later on
-  return templateAction;
-};
+export { type TaskSecrets } from './types';

@@ -19,7 +19,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Divider,
   Grid,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -54,17 +53,15 @@ const DefaultCustomResourceSummary = ({
     <Grid
       container
       direction="row"
-      justifyContent="flex-start"
+      justifyContent="space-between"
       alignItems="center"
+      spacing={0}
     >
-      <Grid xs={3} item>
+      <Grid xs={12} item>
         <DefaultCustomResourceDrawer
           customResource={customResource}
           customResourceName={customResourceName}
         />
-      </Grid>
-      <Grid item xs={1}>
-        <Divider style={{ height: '5em' }} orientation="vertical" />
       </Grid>
     </Grid>
   );
@@ -79,6 +76,7 @@ const DefaultCustomResourceAccordion = ({
     <Accordion
       defaultExpanded={defaultExpanded}
       TransitionProps={{ unmountOnExit: true }}
+      variant="outlined"
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <DefaultCustomResourceSummary

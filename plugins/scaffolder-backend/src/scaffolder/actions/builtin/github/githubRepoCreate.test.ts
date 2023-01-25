@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TemplateAction } from '../../types';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 jest.mock('../helpers');
 

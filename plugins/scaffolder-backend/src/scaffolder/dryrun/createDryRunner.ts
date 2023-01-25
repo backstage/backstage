@@ -26,12 +26,15 @@ import {
   serializeDirectoryContents,
 } from '../../lib/files';
 import { TemplateFilter, TemplateGlobal } from '../../lib/templating';
-import { createTemplateAction, TemplateActionRegistry } from '../actions';
+import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
-import { TaskSecrets } from '../tasks/types';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import {
+  createTemplateAction,
+  TaskSecrets,
+} from '@backstage/plugin-scaffolder-node';
 
 interface DryRunInput {
   spec: TaskSpec;

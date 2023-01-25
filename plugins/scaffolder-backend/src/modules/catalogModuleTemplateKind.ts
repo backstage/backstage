@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { ScaffolderEntitiesProcessor } from '../processor';
 
 /**
+ * Registers support for the Template kind to the catalog backend plugin.
+ *
  * @alpha
- * Registers the ScaffolderEntitiesProcessor with the catalog processing extension point.
  */
-export const scaffolderCatalogModule = createBackendModule({
+export const catalogModuleTemplateKind = createBackendModule({
   moduleId: 'scaffolder',
-  pluginId: 'catalog',
+  pluginId: 'templateKind',
   register(env) {
     env.registerInit({
       deps: {

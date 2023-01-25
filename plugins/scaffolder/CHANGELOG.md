@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder
 
+## 1.11.0-next.0
+
+### Minor Changes
+
+- d6bb12a2e7: - **Deprecation** - Deprecated the following exports, please import them directly from `@backstage/plugin-scaffolder-react` instead
+
+  ```
+  createScaffolderLayout
+  ScaffolderLayouts
+  LayoutOptions
+  LayoutTemplate
+  ```
+
+- 8c2966536b: Embed scaffolder workflow in other components
+
+### Patch Changes
+
+- cbab8ac107: lock versions of `@rjsf/*-beta` packages
+- d2ddde2108: Add `ScaffolderLayouts` to `NextScaffolderPage`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.1.0-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/integration-react@1.1.9
+
 ## 1.10.0
 
 ### Minor Changes

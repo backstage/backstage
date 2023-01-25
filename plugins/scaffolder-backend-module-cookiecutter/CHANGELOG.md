@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.2.17-next.0
+
+### Patch Changes
+
+- d72866f0cc: Internal refactor to use the new `@backstage/plugin-scaffolder-node` package for some functionality
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.0-next.0
+  - @backstage/plugin-scaffolder-backend@1.11.0-next.0
+  - @backstage/backend-common@0.18.2-next.0
+
 ## 0.2.15
 
 ### Patch Changes

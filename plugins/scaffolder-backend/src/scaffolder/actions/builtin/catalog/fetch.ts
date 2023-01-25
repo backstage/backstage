@@ -15,7 +15,7 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import yaml from 'yaml';
 
 const id = 'catalog:fetch';

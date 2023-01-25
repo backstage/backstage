@@ -16,7 +16,7 @@
 
 import { readdir, stat } from 'fs-extra';
 import { relative, join } from 'path';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import yaml from 'yaml';
 
 const id = 'debug:log';

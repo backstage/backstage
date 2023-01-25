@@ -66,6 +66,11 @@ export function createScaffolderFieldExtension<
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
 
 // @public
+export function createScaffolderLayout<TInputProps = unknown>(
+  options: LayoutOptions,
+): Extension<LayoutComponent<TInputProps>>;
+
+// @public
 export type CustomFieldExtensionSchema = {
   returnValue: JSONSchema7;
   uiOptions?: JSONSchema7;
@@ -116,11 +121,27 @@ export type FieldExtensionOptions<
   schema?: CustomFieldExtensionSchema;
 };
 
-// @alpha
+// @public
 export type FormProps = Pick<
   FormProps_2,
   'transformErrors' | 'noHtml5Validate'
 >;
+
+// @public
+export type LayoutComponent<_TInputProps> = () => null;
+
+// @public
+export interface LayoutOptions<P = any> {
+  // (undocumented)
+  component: LayoutTemplate<P>;
+  // (undocumented)
+  name: string;
+}
+
+// @public
+export type LayoutTemplate<T = any> = NonNullable<
+  FormProps_2<T>['uiSchema']
+>['ui:ObjectFieldTemplate'];
 
 // @public
 export type ListActionsResponse = Array<Action>;
@@ -276,6 +297,9 @@ export interface ScaffolderGetIntegrationsListResponse {
   }[];
 }
 
+// @public
+export const ScaffolderLayouts: React.ComponentType;
+
 // @public (undocumented)
 export type ScaffolderOutputLink = {
   title?: string;
@@ -361,6 +385,7 @@ export type StepperProps = {
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
   };
+  layouts?: LayoutOptions[];
 };
 
 // @alpha
@@ -422,6 +447,11 @@ export const useCustomFieldExtensions: <
   outlet: React.ReactNode,
 ) => TComponentDataType[];
 
+// @public
+export const useCustomLayouts: <TComponentDataType = LayoutOptions<any>>(
+  outlet: React.ReactNode,
+) => TComponentDataType[];
+
 // @alpha
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
@@ -454,7 +484,12 @@ export type WorkflowProps = {
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
   StepperProps,
-  'extensions' | 'FormProps' | 'components' | 'onCreate' | 'initialState'
+  | 'extensions'
+  | 'FormProps'
+  | 'components'
+  | 'onCreate'
+  | 'initialState'
+  | 'layouts'
 >;
 
 // (No @packageDocumentation comment for this package)
