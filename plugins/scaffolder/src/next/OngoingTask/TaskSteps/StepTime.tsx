@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import useInterval from 'react-use/lib/useInterval';
 import { DateTime, Interval } from 'luxon';
 import humanizeDuration from 'humanize-duration';
@@ -31,7 +31,7 @@ export const StepTime = ({
 }) => {
   const [time, setTime] = useState('');
 
-  useInterval(() => {
+  const calculate = useCallback(() => {
     if (!step.startedAt) {
       setTime('');
       return;
@@ -47,7 +47,11 @@ export const StepTime = ({
       .valueOf();
 
     setTime(humanizeDuration(formatted, { round: true }));
-  }, 1000);
+  }, [step.endedAt, step.startedAt]);
+
+  useMemo(() => calculate(), [calculate]);
+
+  useInterval(() => !step.endedAt && calculate(), 1000);
 
   return <Typography variant="caption">{time}</Typography>;
 };

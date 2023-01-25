@@ -13,4 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { TaskPage } from './TaskPage';
+import React from 'react';
+import { LogViewer } from '@backstage/core-components';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  root: {
+    width: '100%',
+    height: '200px',
+    position: 'relative',
+  },
+});
+
+export const TaskLogStream = (opts: { logs: { [k: string]: string[] } }) => {
+  const styles = useStyles();
+  return (
+    <div className={styles.root}>
+      <LogViewer
+        text={Object.values(opts.logs)
+          .map(l => l.join('\n'))
+          .join('\n')}
+      />
+    </div>
+  );
+};
