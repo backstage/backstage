@@ -43,6 +43,16 @@ import {
 
 import { SearchContextProvider, useSearch } from '../../context';
 import { SearchTracker } from '../SearchTracker';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles({
+  showClearButton: {
+    display: 'flex',
+  },
+  hideClearButton: {
+    display: 'none',
+  },
+});
 
 function withContext<T>(Component: ComponentType<T>) {
   return forwardRef<unknown, T>((props, ref) => (
@@ -92,7 +102,8 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
 
       const configApi = useApi(configApiRef);
       const [value, setValue] = useState<string>('');
-      const [showClearButton, setShowClearButton] = useState<string>('none');
+      const [showClearButton, setShowClearButton] = useState<boolean>(false);
+      const classes = useStyles();
 
       useEffect(() => {
         setValue(prevValue =>
@@ -101,10 +112,10 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       }, [defaultValue]);
 
       useEffect(() => {
-        if (value !== '') {
-          setShowClearButton('none');
+        if (value === '') {
+          setShowClearButton(false);
         } else {
-          setShowClearButton('inline-block');
+          setShowClearButton(true);
         }
       }, [value]);
 
@@ -128,7 +139,7 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       );
 
       const handleClear = useCallback(() => {
-        setShowClearButton('none');
+        setShowClearButton(false);
         onChange('');
         if (onClear) {
           onClear();
@@ -150,7 +161,9 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       const endAdornment = (
         <InputAdornment
           aria-label="Clear search box"
-          sx={{ display: showClearButton }}
+          className={
+            showClearButton ? classes.showClearButton : classes.hideClearButton
+          }
           position="end"
         >
           <IconButton aria-label="Clear" size="small" onClick={handleClear}>
