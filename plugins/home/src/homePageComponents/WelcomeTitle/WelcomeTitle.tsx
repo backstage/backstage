@@ -19,7 +19,6 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { Tooltip } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { getTimeBasedGreeting } from './timeUtil';
@@ -44,9 +43,9 @@ export const WelcomeTitle = () => {
 
   return (
     <Tooltip title={greeting.language}>
-      <Typography component="span">{`${greeting.greeting}${
+      <>{`${greeting.greeting}${
         profile?.displayName ? `, ${profile?.displayName}` : ''
-      }!`}</Typography>
+      }!`}</>
     </Tooltip>
   );
 };
