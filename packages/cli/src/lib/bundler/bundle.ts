@@ -133,7 +133,7 @@ async function build(config: webpack.Configuration, isCi: boolean) {
     // of the same problem, but confuse the reader with noise.
     const errorWithContext = applyContextToError(
       errors[0],
-      serializedStats.errors?.[0].moduleName || '',
+      serializedStats.errors?.[0]?.moduleName ?? '',
     );
     throw new Error(errorWithContext);
   }
@@ -141,7 +141,7 @@ async function build(config: webpack.Configuration, isCi: boolean) {
     const warningsWithContext = warnings.map((warning, i) => {
       return applyContextToError(
         warning,
-        serializedStats.warnings?.[i].moduleName || '',
+        serializedStats.warnings?.[i]?.moduleName ?? '',
       );
     });
     console.log(
