@@ -19,9 +19,9 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { tasksServiceRef } from './service';
+import { taskSchedulerServiceRef } from './service';
 
-describe('tasksServiceRef', () => {
+describe('taskSchedulerServiceRef', () => {
   it('creates sidecar database features', async () => {
     expect.assertions(3);
 
@@ -29,7 +29,10 @@ describe('tasksServiceRef', () => {
       id: 'example',
       register(reg) {
         reg.registerInit({
-          deps: { tasks: tasksServiceRef, database: coreServices.database },
+          deps: {
+            tasks: taskSchedulerServiceRef,
+            database: coreServices.database,
+          },
           init: async ({ tasks, database }) => {
             await tasks.scheduleTask({
               id: 'task1',

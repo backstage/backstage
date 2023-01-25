@@ -91,6 +91,6 @@ export class TaskScheduler {
   ): TaskScheduler;
 }
 
-// @public
-export const tasksServiceRef: ServiceRef<PluginTaskScheduler, 'plugin'>;
+// @alpha
+export const taskSchedulerServiceRef: ServiceRef<PluginTaskScheduler, 'plugin'>;
 ```

@@ -25,10 +25,10 @@ import { PluginTaskScheduler, TaskScheduler } from './tasks';
 /**
  * Deals with the scheduling of distributed tasks, for a given plugin.
  *
- * @public
+ * @alpha
  */
-export const tasksServiceRef = createServiceRef<PluginTaskScheduler>({
-  id: 'plugin.tasks.service',
+export const taskSchedulerServiceRef = createServiceRef<PluginTaskScheduler>({
+  id: 'plugin.tasks.scheduler-service',
   scope: 'plugin',
   defaultFactory: async service =>
     createServiceFactory({

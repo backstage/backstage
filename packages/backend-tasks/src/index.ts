@@ -21,5 +21,5 @@
  */
 
 export * from './tasks';
-export { tasksServiceRef } from './service';
+export { taskSchedulerServiceRef } from './service';
 export * from './deprecated';
