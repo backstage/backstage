@@ -20,8 +20,9 @@ import { useParams } from 'react-router-dom';
 import { Box, Paper } from '@material-ui/core';
 import { TaskSteps } from './TaskSteps';
 import { TaskBorder } from './TaskBorder';
+import { TaskLogStream } from './TaskLogStream';
 
-export const TaskPage = () => {
+export const OngoingTask = () => {
   const { taskId } = useParams();
   // check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const taskStream = useTaskEventStream(taskId!);
@@ -44,12 +45,19 @@ export const TaskPage = () => {
     return 0;
   }, [steps]);
 
+  const templateName =
+    taskStream.task?.spec.templateInfo?.entity?.metadata.name;
+
   return (
     <Page themeId="website">
       <Header
-        pageTitleOverride="Task ID"
-        title="View Task"
-        subtitle="View the status of a task"
+        pageTitleOverride={`Run of ${templateName}`}
+        title={
+          <div>
+            Run of <code>{templateName}</code>
+          </div>
+        }
+        subtitle={`Task ${taskId}`}
       />
       <Content>
         <Paper style={{ position: 'relative', overflow: 'hidden' }}>
@@ -59,7 +67,7 @@ export const TaskPage = () => {
           />
           <Box padding={2}>
             <TaskSteps steps={steps} activeStep={activeStep} />
-            {/* <TaskLogStream logs={logs} /> */}
+            <TaskLogStream logs={taskStream.stepLogs} />
           </Box>
         </Paper>
       </Content>

@@ -15,7 +15,6 @@
  */
 
 import React, { useMemo } from 'react';
-import Typography from '@material-ui/core/Typography';
 import { AnsiChunk, AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
 import classnames from 'classnames';
@@ -159,8 +158,8 @@ export function LogLine({
   const elements = useMemo(
     () =>
       chunks.map(({ text, modifiers, highlight }, index) => (
-        <Typography
-          component="span"
+        // eslint-disable-next-line react/forbid-elements
+        <span
           key={index}
           className={classnames(
             getModifierClasses(classes, modifiers),
@@ -171,7 +170,7 @@ export function LogLine({
           )}
         >
           {text}
-        </Typography>
+        </span>
       )),
     [chunks, highlightResultIndex, classes],
   );

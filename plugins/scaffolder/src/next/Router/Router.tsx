@@ -34,7 +34,7 @@ import {
   nextSelectedTemplateRouteRef,
 } from '../routes';
 import { ErrorPage } from '@backstage/core-components';
-import { TaskPage } from '../TaskPage';
+import { OngoingTask } from '../OngoingTask';
 
 /**
  * The Props for the Scaffolder Router
@@ -97,7 +97,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           </SecretsContextProvider>
         }
       />
-      <Route path={nextScaffolderTaskRouteRef.path} element={<TaskPage />} />
+      <Route path={nextScaffolderTaskRouteRef.path} element={<OngoingTask />} />
       <Route
         path="*"
         element={<ErrorPage status="404" statusMessage="Page not found" />}
