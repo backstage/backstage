@@ -52,11 +52,10 @@ export const TaskPage = () => {
       />
       <Content>
         <Paper style={{ position: 'relative', overflow: 'hidden' }}>
-          {!taskStream.completed && (
-            <LinearProgress variant="indeterminate" value={100} />
-          )}
+          {!taskStream.completed && <LinearProgress variant="indeterminate" />}
           <Box padding={2}>
             <TaskSteps steps={steps} activeStep={activeStep} />
+            {/* <TaskLogStream logs={logs} /> */}
           </Box>
         </Paper>
       </Content>
