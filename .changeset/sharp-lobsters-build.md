@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-plugin-api': minor
+'@backstage/backend-plugin-api': patch
 ---
 
 The `register` methods passed to `createBackendPlugin` and `createBackendModule`
