@@ -50,7 +50,7 @@ type GroupResult = {
 };
 
 /**
- * Discovers entity definition files in the groups of a Gitlab instance.
+ * Discovers users and groups from a Gitlab instance.
  * @public
  */
 export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
