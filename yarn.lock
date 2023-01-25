@@ -7361,7 +7361,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
     "@rjsf/core": ^3.2.1
-    "@rjsf/core-v5": "npm:@rjsf/core@5.0.0-beta.16"
+    "@rjsf/core-v5": "npm:@rjsf/core@5.0.0-beta.18"
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.0.0-beta.16"
     "@rjsf/utils": 5.0.0-beta.16
@@ -7419,7 +7419,7 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.57
     "@react-hookz/web": ^20.0.0
     "@rjsf/core": ^3.2.1
-    "@rjsf/core-v5": "npm:@rjsf/core@5.0.0-beta.16"
+    "@rjsf/core-v5": "npm:@rjsf/core@5.0.0-beta.18"
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/utils": 5.0.0-beta.16
     "@testing-library/jest-dom": ^5.10.1
@@ -12760,9 +12760,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/core-v5@npm:@rjsf/core@5.0.0-beta.16":
-  version: 5.0.0-beta.16
-  resolution: "@rjsf/core@npm:5.0.0-beta.16"
+"@rjsf/core-v5@npm:@rjsf/core@5.0.0-beta.18":
+  version: 5.0.0-beta.18
+  resolution: "@rjsf/core@npm:5.0.0-beta.18"
   dependencies:
     lodash: ^4.17.15
     lodash-es: ^4.17.15
@@ -12771,7 +12771,7 @@ __metadata:
   peerDependencies:
     "@rjsf/utils": ^5.0.0-beta.1
     react: ^16.14.0 || >=17
-  checksum: 38b0e02cfc394958d714f1c2b29262e95c5da01fbfffd657db7af8546ae5b00d1900fd0484be07be13d354dd1e48833cabcdcdaa8e9ffa0dfba63fba7e9556c3
+  checksum: 1a2f2d43929790c20b6aeaa99b56bb02fc523edfa47eeffa29437dd80e337f9af5b4e4b274a637ac83e33b91799fda2a459e84903efe709def05018820f0fa83
   languageName: node
   linkType: hard
 
