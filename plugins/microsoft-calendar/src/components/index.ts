@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { HomePageCalendar } from './HomePageCalendar';
+export { MicrosoftCalendar } from './MicrosoftCalendar';

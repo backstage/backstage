@@ -41,6 +41,7 @@
     "@backstage/plugin-kafka": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-lighthouse": "workspace:^",
+    "@backstage/plugin-microsoft-calendar": "workspace:^",
     "@backstage/plugin-newrelic": "workspace:^",
     "@backstage/plugin-newrelic-dashboard": "workspace:^",
     "@backstage/plugin-org": "workspace:^",

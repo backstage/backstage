@@ -20,7 +20,7 @@ import { CalendarCard } from './CalendarCard';
 
 const queryClient = new QueryClient();
 
-export const HomePageCalendar = () => {
+export const MicrosoftCalendar = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <CalendarCard />

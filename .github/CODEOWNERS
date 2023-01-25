@@ -59,7 +59,7 @@
 /plugins/kafka-backend                            @backstage/reviewers @nirga @andrewthauer
 /plugins/kubernetes                               @backstage/reviewers @backstage/warpspeed
 /plugins/kubernetes-*                             @backstage/reviewers @backstage/warpspeed
-/plugins/microsoft-calendar                       abhaysoni.developer@gmail.com
+/plugins/microsoft-calendar                       @Abhay-soni-developer
 /plugins/newrelic-dashboard                       @backstage/reviewers @mufaddal7
 /plugins/playlist                                 @backstage/reviewers @kuangp
 /plugins/playlist-*                               @backstage/reviewers @kuangp

@@ -43,11 +43,11 @@ export const microsoftCalendarPlugin = createPlugin({
 });
 
 /** @public */
-export const MicrosoftCalendarPage = microsoftCalendarPlugin.provide(
+export const MicrosoftCalendar = microsoftCalendarPlugin.provide(
   createComponentExtension({
-    name: 'MicrosoftCalendarPage',
+    name: 'MicrosoftCalendar',
     component: {
-      lazy: () => import('./components').then(m => m.HomePageCalendar),
+      lazy: () => import('./components').then(m => m.MicrosoftCalendar),
     },
   }),
 );
