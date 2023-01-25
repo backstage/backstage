@@ -22,14 +22,14 @@ __metadata:
   linkType: hard
 
 "@apidevtools/json-schema-ref-parser@npm:^9.0.6":
-  version: 9.1.1
-  resolution: "@apidevtools/json-schema-ref-parser@npm:9.1.1"
+  version: 9.1.2
+  resolution: "@apidevtools/json-schema-ref-parser@npm:9.1.2"
   dependencies:
     "@jsdevtools/ono": ^7.1.3
     "@types/json-schema": ^7.0.6
     call-me-maybe: ^1.0.1
     js-yaml: ^4.1.0
-  checksum: f8fb98fec4d510ef7a135256745b7321fbc1547a83cdeb458b143d46f3d5fae1450673a9f485f77051391d052e6ec9d6ec6c0d3091d7dfe4b6ac5d85ee77e10d
+  checksum: 5bd6885db0fd6633879bb4638b7a3aead6b061cb6422083c6be505ee6873be54e3376380df164c73edd8901d4145a9bfe9bc0b008a568fd8b0626b1df96fae8f
   languageName: node
   linkType: hard
 
