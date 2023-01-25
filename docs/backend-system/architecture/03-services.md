@@ -6,13 +6,13 @@ sidebar_label: Services
 description: Services for backend plugins
 ---
 
-Backend services provide shared functionality available to all backend plugins and modules. They are made available through services references that embed a type that represents the service interface, similar to how [Utility APIs](../../api/utility-apis.md) work in the Backstage frontend system. To use a service in your plugin or module you request an implementation of that service using the service reference.
+Backend services provide shared functionality available to all backend plugins and modules. They are made available through service references that embed a type that represents the service interface, similar to how [Utility APIs](../../api/utility-apis.md) work in the Backstage frontend system. To use a service in your plugin or module you request an implementation of that service using the service reference.
 
 The system surrounding services exists to provide a level of indirection between the service interfaces and their implementation. It is an implementation of dependency injection, where each backend instance is the dependency injection container. The implementation for each service is provided by a service factory, which encapsulates the logic for how each service instance is created.
 
 ## Service Interfaces
 
-Service interfaces can be any TypeScript type, but it is best make it an object interface with a number of methods. General guidelines for interface design apply, keep them simple and lean, with few but powerful methods. Take care to avoid locking down the ways in which individual methods can evolve. Often you want to stick to a method with an options object as its only parameter, and return a result object. If there is any reason on uncertainty whether the method should be async or not, always make it async. For example, a minimal interface should often use the following pattern:
+Service interfaces can be any TypeScript type, but it is best to make it an object interface with a number of methods. General guidelines for interface design apply: keep them simple and lean, with few but powerful methods. Take care to avoid locking down the ways in which individual methods can evolve. Often you want to stick to a method with an options object as its only parameter, and return a result object. If there is any reason for uncertainty about whether the method should be async or not, always make it async. For example, a minimal interface should often use the following pattern:
 
 ```ts
 export interface FooService {
@@ -36,7 +36,7 @@ export const fooServiceRef = createServiceRef<FooService>({
 });
 ```
 
-The `fooServiceRef` that we create above should be exported, and can then be used to declare a dependency on the `FooService` interface and receive and implementation of it at runtime.
+The `fooServiceRef` that we create above should be exported, and can then be used to declare a dependency on the `FooService` interface and receive an implementation of it at runtime.
 
 When creating a service reference you need to give it an ID. This ID needs to be globally unique, and should generally be of the format `'<pluginId>.<serviceName>'`. For more naming patters surrounding services, see the [naming patterns](./07-naming-patterns.md#services) page.
 
@@ -44,7 +44,7 @@ A note on naming: the frontend and backend systems intentionally use the separat
 
 ## Service Factories
 
-In order to be able to depend on a service interface through a service reference, we of course also need to have some way of creating the concrete implementation of it. To encapsulate that logic we use service factories, which define both how service instances are created, as well as what other services they depends on for their implementation.
+In order to be able to depend on a service interface through a service reference, we of course also need to have some way of creating the concrete implementation of it. To encapsulate that logic we use service factories, which define both how service instances are created, as well as what other services they depend on for their implementation.
 
 Service factories can come from many different sources. There are built-in service factories, external ones that you can import from other packages, and you can also create your own. Specific service factories are installed within each backend instance, which acts as the dependency injection container. For any given backend instance there can only be a single designated service factory for each service.
 
@@ -84,7 +84,7 @@ export const fooFactory = createServiceFactory({
 });
 ```
 
-Note that circular dependencies among service factories are not allowed. This is verified at runtime, and your backend instance will refuse to start up it detects any conflicts. Likewise, the backend will also fail to start up if a service factory depends on a service that is not provided by any registered service factory.
+Note that circular dependencies among service factories are not allowed. This is verified at runtime, and your backend instance will refuse to start up if it detects any conflicts. Likewise, the backend will also fail to start up if a service factory depends on a service that is not provided by any registered service factory.
 
 ## Service Factory Options
 
@@ -147,7 +147,7 @@ There are only two possible scopes for services, `'plugin'` and `'root'`.
 
 ## Root Scoped Services
 
-If a service is defined as a root scoped service, the implementation created by the factory will be shared across all plugins and services. One other differentiating factory for root scoped services is that they are always initialized, regardless of whether any plugin depend on them or not. This makes them suitable for implementing backend-wide concerns that are not specific to any individual plugin.
+If a service is defined as a root scoped service, the implementation created by the factory will be shared across all plugins and services. One other differentiating factory for root scoped services is that they are always initialized, regardless of whether any plugins depend on them or not. This makes them suitable for implementing backend-wide concerns that are not specific to any individual plugin.
 
 There is a limitation in the usage of root scoped services, which is that their implementation can only depend on other root scoped services. Plugin scoped services on the other hand can depend on both root and plugin scoped services. Because of this limitation, one of the main reasons to define a root scoped services is to make it possible for other root scoped services to depend on it.
 
@@ -157,7 +157,7 @@ Some services come in pairs of a plugin and a root scoped service definition. Fo
 
 ## Plugin Metadata
 
-Plugins scoped services have access to a plugin metadata service, which is a special service provided by the backend system that is not possible to override. The plugin metadata service provides information about the plugin that a service instance is being created for. It is itself a plugin scoped service, and can be depended on like any other service through the `coreServices.pluginMetadata` reference.
+Plugin scoped services have access to a plugin metadata service, which is a special service provided by the backend system that is not possible to override. The plugin metadata service provides information about the plugin that a service instance is being created for. It is itself a plugin scoped service, and can be depended on like any other service through the `coreServices.pluginMetadata` reference.
 
 The plugin metadata service is the base for all plugin specific customizations for services. For example, the default implementation of the plugin scoped logger service uses the plugin metadata service to attach the plugin ID as a field in all log messages:
 
@@ -176,7 +176,7 @@ export const loggerFactory = createServiceFactory({
 
 ## Root Context for Service Factories
 
-Some service may benefit from having a context that is shared across all instances of a service. This of course only applies to plugin scoped services, as root scoped services only ever have a single instance. The root context could for example be used for sharing a common connection pool for database access, generated secrets for development, or any other kind of shared facility. Note that you should not use this to share state between plugins in production, as that would be a violation of the [plugin isolation rule](./04-plugins.md#rules-of-plugins).
+Some services may benefit from having a context that is shared across all instances of a service. This of course only applies to plugin scoped services, as root scoped services only ever have a single instance. The root context could for example be used for sharing a common connection pool for database access, generated secrets for development, or any other kind of shared facility. Note that you should not use this to share state between plugins in production, as that would be a violation of the [plugin isolation rule](./04-plugins.md#rules-of-plugins).
 
 The root context is defined as part of the service factory by passing the `createRootContext` option:
 
@@ -197,7 +197,7 @@ Whatever value is returned by the `createRootContext` function will shared and p
 
 ## Default Service Factories
 
-There are a lot of services that are installed in any standard Backstage backend instance by default. You can expect on these services to always exist, and do not need to take any additional steps to make them available. This is not necessarily true for services that you import from external packages, as the user of your plugin or module might not have installed a factory for that service in their backend. In order to avoid having to ask integrators of your plugin to install a service factory for a service that you depend on, it is possible to define a default factory for a service.
+There are a lot of services that are installed in any standard Backstage backend instance by default. You can expect these services to always exist, and do not need to take any additional steps to make them available. This is not necessarily true for services that you import from external packages, as the user of your plugin or module might not have installed a factory for that service in their backend. In order to avoid having to ask integrators of your plugin to install a service factory for a service that you depend on, it is possible to define a default factory for a service.
 
 Default service factories are defined as part of the service reference by passing the `defaultFactory` option to `createServiceRef`:
 
