@@ -154,6 +154,7 @@ nav:
       - Included providers:
           - Auth0: 'auth/auth0/provider.md'
           - Azure: 'auth/microsoft/provider.md'
+          - Azure EasyAuth: 'auth/microsoft/azure-easyauth.md'
           - GitHub: 'auth/github/provider.md'
           - GitLab: 'auth/gitlab/provider.md'
           - Google: 'auth/google/provider.md'
