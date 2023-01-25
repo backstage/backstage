@@ -27601,8 +27601,8 @@ __metadata:
   linkType: hard
 
 "knex@npm:^2.0.0":
-  version: 2.4.0
-  resolution: "knex@npm:2.4.0"
+  version: 2.4.2
+  resolution: "knex@npm:2.4.2"
   dependencies:
     colorette: 2.0.19
     commander: ^9.1.0
@@ -27635,7 +27635,7 @@ __metadata:
       optional: true
   bin:
     knex: bin/cli.js
-  checksum: 66b4ae8412c61125b78512a66d924af95116628e16026efce4d03b80b2ced6b63208b37bb49fb52a499761da5e8981e136b48fcefcd48c3fe9fc72d9d17c5661
+  checksum: cfb6436c0e3df3cd1f55d3637e4f222d1acbc7b6ec3757e52c92cbf0a7da4055d40156d707ffede57dc155af75d7f5739a49d1b31d8755bc77bc0e4e2a570748
   languageName: node
   linkType: hard
 
