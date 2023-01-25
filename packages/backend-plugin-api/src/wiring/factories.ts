@@ -20,12 +20,28 @@ import {
   ExtensionPoint,
 } from './types';
 
-/** @public */
+/**
+ * The configuration options passed to {@link createExtensionPoint}.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/extension-points | The architecture of extension points}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+ */
 export interface ExtensionPointConfig {
+  /**
+   * The ID of this extension point.
+   *
+   * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+   */
   id: string;
 }
 
-/** @public */
+/**
+ * Creates a new backend extension point.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/extension-points | The architecture of extension points}
+ */
 export function createExtensionPoint<T>(
   config: ExtensionPointConfig,
 ): ExtensionPoint<T> {
@@ -41,13 +57,30 @@ export function createExtensionPoint<T>(
   };
 }
 
-/** @public */
+/**
+ * The configuration options passed to {@link createBackendPlugin}.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/plugins | The architecture of plugins}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+ */
 export interface BackendPluginConfig {
+  /**
+   * The ID of this plugin.
+   *
+   * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+   */
   id: string;
   register(reg: BackendRegistrationPoints): void;
 }
 
-/** @public */
+/**
+ * Creates a new backend plugin.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/plugins | The architecture of plugins}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+ */
 export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
 ): (...params: TOptions) => BackendFeature {
@@ -58,9 +91,23 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
   return () => config;
 }
 
-/** @public */
+/**
+ * The configuration options passed to {@link createBackendModule}.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/modules | The architecture of modules}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+ */
 export interface BackendModuleConfig {
+  /**
+   * The ID of this plugin.
+   *
+   * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+   */
   pluginId: string;
+  /**
+   * Should exactly match the `id` of the plugin that the module extends.
+   */
   moduleId: string;
   register(
     reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
@@ -71,15 +118,8 @@ export interface BackendModuleConfig {
  * Creates a new backend module for a given plugin.
  *
  * @public
- *
- * @remarks
- *
- * The `moduleId` should be equal to the module-specific suffix of the exported name, such
- * that the full name is `pluginId + "Module" + ModuleId`. For example, a GitHub entity
- * provider module for the `catalog` plugin might have the module ID `'githubEntityProvider'`,
- * and the full exported name would be `catalogModuleGithubEntityProvider`.
- *
- * The `pluginId` should exactly match the `id` of the plugin that the module extends.
+ * @see {@link https://backstage.io/docs/backend-system/architecture/modules | The architecture of modules}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
  */
 export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),

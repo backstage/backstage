@@ -22,11 +22,9 @@ export interface BackendFeature {
   register(reg: BackendRegistrationPoints): void;
 }
 
-// @public (undocumented)
+// @public
 export interface BackendModuleConfig {
-  // (undocumented)
   moduleId: string;
-  // (undocumented)
   pluginId: string;
   // (undocumented)
   register(
@@ -34,9 +32,8 @@ export interface BackendModuleConfig {
   ): void;
 }
 
-// @public (undocumented)
+// @public
 export interface BackendPluginConfig {
-  // (undocumented)
   id: string;
   // (undocumented)
   register(reg: BackendRegistrationPoints): void;
@@ -116,12 +113,12 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
 ): (...params: TOptions) => BackendFeature;
 
-// @public (undocumented)
+// @public
 export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
 ): (...params: TOptions) => BackendFeature;
 
-// @public (undocumented)
+// @public
 export function createExtensionPoint<T>(
   config: ExtensionPointConfig,
 ): ExtensionPoint<T>;
@@ -248,9 +245,8 @@ export type ExtensionPoint<T> = {
   $$ref: 'extension-point';
 };
 
-// @public (undocumented)
+// @public
 export interface ExtensionPointConfig {
-  // (undocumented)
   id: string;
 }
 
@@ -476,13 +472,13 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   scope?: TScope;
 }
 
-// @public (undocumented)
+// @public
 export interface SharedBackendEnvironment {
   // (undocumented)
   $$type: 'SharedBackendEnvironment';
 }
 
-// @public (undocumented)
+// @public
 export interface SharedBackendEnvironmentConfig {
   // (undocumented)
   services?: ServiceFactoryOrFunction[];
