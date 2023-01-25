@@ -107,11 +107,7 @@ The base setup for such a test could look as follows:
 ```ts
 // MyDatabaseClass.test.ts
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import {
-  MyDatabaseClass,
-  applyDatabaseMigrations,
-  type FooTableRow,
-} from './MyDatabaseClass';
+import { MyDatabaseClass, type FooTableRow } from './MyDatabaseClass';
 
 describe('MyDatabaseClass', () => {
   // Change this to the set of constants that you actually actively intend to
