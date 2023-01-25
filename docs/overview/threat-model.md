@@ -28,6 +28,8 @@ Other responsibilities include protecting the integrity of configuration files a
 
 The integrator is ultimately responsible for auditing usage of internal and external plugins as these run on the host system and have access to configuration and secrets. When installing plugins from sources like NPM, you should vet these in the same way that you would vet any other package installed from that source.
 
+Transitive dependencies that are installed by both the Backstage core and plugins themselves should also be kept up to date seperately of Backstage. We encourage the use of tools like [Dependabot](https://dependabot.com/), [Snyk](https://snyk.io/), and [Renovate](https://docs.renovatebot.com/) to keep these dependencies up to date and track vulnerabilities in dependencies.
+
 ## Common Backend Configuration
 
 There are many common facilities that are configured centrally and available to all Backstage backend plugins. For example there is a `DatabaseManager` that provides access to a SQL database, `TaskScheduler` for scheduling long-running tasks, `Logger` as a general logging facility, and `UrlReader` for reading content from external sources. These are all configured either directly in code, or within the `backend` block of the static configuration. The appropriate care needs to be taken to ensure that any secrets remain confidential and no malicious configuration is injected.
