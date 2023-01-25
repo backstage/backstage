@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-export { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
-export type { DefaultCatalogCollatorFactoryOptions } from './DefaultCatalogCollatorFactory';
-export type { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
-export type { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
+import { Entity } from '@backstage/catalog-model';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 
-/**
- * todo(backstage/techdocs-core): stop exporting this in a future release.
- */
-export { DefaultCatalogCollator } from './DefaultCatalogCollator';
+/** @public */
+export type CatalogCollatorEntityTransformer = (
+  entity: Entity,
+) => Omit<CatalogEntityDocument, 'location' | 'authorization'>;
