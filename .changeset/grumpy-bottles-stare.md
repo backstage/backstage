@@ -3,4 +3,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Upgrade @rjsf v5 dependencies to beta.17
+Upgrade `@rjsf-v5` dependencies to `beta.17`
