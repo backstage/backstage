@@ -8,15 +8,8 @@ import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
-// Warning: (ae-missing-release-tag) "create" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export function create(options: Options): Promise<void>;
-
-// Warning: (ae-missing-release-tag) "Options" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface Options {
+export interface CreateLighthouseSchedulerOptions {
   // (undocumented)
   catalogClient: CatalogClient;
   // (undocumented)
@@ -26,6 +19,11 @@ export interface Options {
   // (undocumented)
   scheduler?: PluginTaskScheduler;
 }
+
+// @public (undocumented)
+export function createScheduler(
+  options: CreateLighthouseSchedulerOptions,
+): Promise<void>;
 
 // (No @packageDocumentation comment for this package)
 ```

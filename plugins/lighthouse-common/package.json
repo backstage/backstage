@@ -42,10 +42,5 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  },
-  "jest": {
-    "roots": [
-      ".."
-    ]
   }
 }
