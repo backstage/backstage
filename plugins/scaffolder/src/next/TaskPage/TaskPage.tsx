@@ -17,8 +17,9 @@ import React, { useMemo } from 'react';
 import { Page, Header, Content } from '@backstage/core-components';
 import { useTaskEventStream } from '../../components/hooks/useEventStream';
 import { useParams } from 'react-router-dom';
-import { Box, LinearProgress, Paper } from '@material-ui/core';
+import { Box, Paper } from '@material-ui/core';
 import { TaskSteps } from './TaskSteps';
+import { TaskBorder } from './TaskBorder';
 
 export const TaskPage = () => {
   const { taskId } = useParams();
@@ -52,7 +53,10 @@ export const TaskPage = () => {
       />
       <Content>
         <Paper style={{ position: 'relative', overflow: 'hidden' }}>
-          {!taskStream.completed && <LinearProgress variant="indeterminate" />}
+          <TaskBorder
+            isComplete={taskStream.completed}
+            isError={Boolean(taskStream.error)}
+          />
           <Box padding={2}>
             <TaskSteps steps={steps} activeStep={activeStep} />
             {/* <TaskLogStream logs={logs} /> */}
