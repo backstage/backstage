@@ -1,0 +1,81 @@
+.communityPage {
+  // --ifm-spacing-horizontal: 2rem;
+
+  font-size: 1.25rem;
+
+  h1 {
+    font-size: 54px;
+    line-height: 56px;
+    word-break: break-word;
+  }
+}
+
+.banner,
+.officialInitiatives,
+.communityInitiatives,
+.trainingNCertifications,
+.commercialPartners {
+  :global(.row .col) {
+    max-width: 50%;
+
+    display: flex;
+    flex-direction: column;
+
+    :global(.bulletLine) {
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(
+        89.75deg,
+        #9bf0e1 -1.5%,
+        rgba(155, 240, 225, 0) 111.48%
+      );
+    }
+
+    p {
+      flex: 1;
+    }
+  }
+}
+
+.banner,
+.communityInitiatives,
+.commercialPartners {
+  background: linear-gradient(90.49deg, #121212 15.36%, #282828 70.44%);
+  // clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2vw - 10px), 0 100%);
+}
+
+.banner {
+  ul {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+.officialInitiatives {
+  background: linear-gradient(
+      178.64deg,
+      hsla(0, 0%, 100%, 0) 57.61%,
+      hsla(0, 0%, 100%, 0.17) 127.71%
+    ),
+    linear-gradient(
+      144.35deg,
+      rgba(98, 197, 179, 0) 56.68%,
+      rgba(98, 197, 179, 0.59) 109.25%
+    ),
+    linear-gradient(
+      192.29deg,
+      rgba(155, 240, 225, 0) 54.17%,
+      rgba(155, 240, 225, 0.67) 137.34%
+    );
+}
+
+.communityInitiatives {
+}
+
+.trainingNCertifications {
+}
+
+.partners {
+}
