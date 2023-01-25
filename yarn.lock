@@ -3443,7 +3443,7 @@ __metadata:
     "@google-cloud/storage": ^6.0.0
     "@keyv/memcache": ^1.3.5
     "@keyv/redis": ^2.5.3
-    "@kubernetes/client-node": 0.18.0
+    "@kubernetes/client-node": 0.18.1
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
     "@types/archiver": ^5.1.0
@@ -6610,7 +6610,7 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@google-cloud/container": ^4.0.0
     "@jest-mock/express": ^2.0.1
-    "@kubernetes/client-node": 0.18.0
+    "@kubernetes/client-node": 0.18.1
     "@types/aws4": ^1.5.1
     "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^0.19.3
@@ -6644,7 +6644,7 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@kubernetes/client-node": 0.18.0
+    "@kubernetes/client-node": 0.18.1
   languageName: unknown
   linkType: soft
 
@@ -6663,7 +6663,7 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@kubernetes/client-node": 0.18.0
+    "@kubernetes/client-node": 0.18.1
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
@@ -11210,33 +11210,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes/client-node@npm:0.18.0":
-  version: 0.18.0
-  resolution: "@kubernetes/client-node@npm:0.18.0"
+"@kubernetes/client-node@npm:0.18.1":
+  version: 0.18.1
+  resolution: "@kubernetes/client-node@npm:0.18.1"
   dependencies:
     "@types/js-yaml": ^4.0.1
-    "@types/node": ^10.12.0
+    "@types/node": ^18.11.17
     "@types/request": ^2.47.1
-    "@types/ws": ^6.0.1
+    "@types/ws": ^8.5.3
     byline: ^5.0.0
-    execa: 5.0.0
-    isomorphic-ws: ^4.0.1
+    isomorphic-ws: ^5.0.0
     js-yaml: ^4.1.0
-    jsonpath-plus: ^0.19.0
+    jsonpath-plus: ^7.2.0
     openid-client: ^5.3.0
     request: ^2.88.0
     rfc4648: ^1.3.0
-    shelljs: ^0.8.5
     stream-buffers: ^3.0.2
     tar: ^6.1.11
     tmp-promise: ^3.0.2
     tslib: ^2.4.1
     underscore: ^1.13.6
-    ws: ^7.3.1
+    ws: ^8.11.0
   dependenciesMeta:
     openid-client:
       optional: true
-  checksum: ea973ddf793b7351da5e1beaac461b8f2ae581cb6d65b62669f248f8cb345f0d54d4b888820fb49f471bc60bace37e706120f46d10d3726a63ccaed8b6cb401b
+  checksum: 7205f10256f182a0292d483195fab7f4d9b500b3a47e6861dcf2fa8851c0bfd554e4f9a9f832ff76500efefb0422df2ecf2e378c5c3a4290e86abd8bc69ef11d
   languageName: node
   linkType: hard
 
@@ -14919,7 +14917,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:^18.11.17":
   version: 18.11.18
   resolution: "@types/node@npm:18.11.18"
   checksum: 03f17f9480f8d775c8a72da5ea7e9383db5f6d85aa5fefde90dd953a1449bd5e4ffde376f139da4f3744b4c83942166d2a7603969a6f8ea826edfb16e6e3b49d
@@ -14933,7 +14931,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^10.1.0, @types/node@npm:^10.12.0":
+"@types/node@npm:^10.1.0":
   version: 10.17.60
   resolution: "@types/node@npm:10.17.60"
   checksum: 2cdb3a77d071ba8513e5e8306fa64bf50e3c3302390feeaeff1fd325dd25c8441369715dfc8e3701011a72fed5958c7dfa94eb9239a81b3c286caa4d97db6eef
@@ -15619,21 +15617,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^6.0.1":
-  version: 6.0.4
-  resolution: "@types/ws@npm:6.0.4"
+"@types/ws@npm:^8.0.0, @types/ws@npm:^8.5.1, @types/ws@npm:^8.5.3":
+  version: 8.5.4
+  resolution: "@types/ws@npm:8.5.4"
   dependencies:
     "@types/node": "*"
-  checksum: b2656a76bfad0c17bb1e3fc237ba7122431c1373669977ed8edef45934c82f71c75d8c71f0a576dc6d98b0954fd94cae0166c6b4ccb40f7e0ee29cc92673519c
-  languageName: node
-  linkType: hard
-
-"@types/ws@npm:^8.0.0, @types/ws@npm:^8.5.1":
-  version: 8.5.3
-  resolution: "@types/ws@npm:8.5.3"
-  dependencies:
-    "@types/node": "*"
-  checksum: 0ce46f850d41383fcdc2149bcacc86d7232fa7a233f903d2246dff86e31701a02f8566f40af5f8b56d1834779255c04ec6ec78660fe0f9b2a69cf3d71937e4ae
+  checksum: fefbad20d211929bb996285c4e6f699b12192548afedbe4930ab4384f8a94577c9cd421acaad163cacd36b88649509970a05a0b8f20615b30c501ed5269038d1
   languageName: node
   linkType: hard
 
@@ -22509,23 +22498,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:5.0.0":
-  version: 5.0.0
-  resolution: "execa@npm:5.0.0"
-  dependencies:
-    cross-spawn: ^7.0.3
-    get-stream: ^6.0.0
-    human-signals: ^2.1.0
-    is-stream: ^2.0.0
-    merge-stream: ^2.0.0
-    npm-run-path: ^4.0.1
-    onetime: ^5.1.2
-    signal-exit: ^3.0.3
-    strip-final-newline: ^2.0.0
-  checksum: a044367ebdcc68ca019810cb134510fc77bbc55c799122258ee0e00e289c132941ab48c2a331a036699c42bc8d479d451ae67c105fce5ce5cc813e7dd92d642b
-  languageName: node
-  linkType: hard
-
 "execa@npm:5.1.1, execa@npm:^5.0.0":
   version: 5.1.1
   resolution: "execa@npm:5.1.1"
@@ -26076,21 +26048,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isomorphic-ws@npm:5.0.0":
+"isomorphic-ws@npm:5.0.0, isomorphic-ws@npm:^5.0.0":
   version: 5.0.0
   resolution: "isomorphic-ws@npm:5.0.0"
   peerDependencies:
     ws: "*"
   checksum: e20eb2aee09ba96247465fda40c6d22c1153394c0144fa34fe6609f341af4c8c564f60ea3ba762335a7a9c306809349f9b863c8beedf2beea09b299834ad5398
-  languageName: node
-  linkType: hard
-
-"isomorphic-ws@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "isomorphic-ws@npm:4.0.1"
-  peerDependencies:
-    ws: "*"
-  checksum: d7190eadefdc28bdb93d67b5f0c603385aaf87724fa2974abb382ac1ec9756ed2cfb27065cbe76122879c2d452e2982bc4314317f3d6c737ddda6c047328771a
   languageName: node
   linkType: hard
 
@@ -27339,17 +27302,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonpath-plus@npm:^0.19.0":
-  version: 0.19.0
-  resolution: "jsonpath-plus@npm:0.19.0"
-  checksum: defd19990df6e45cb45c4c1c5185139995a5ead40967acc373b32375ace83d329bb96c0b69c0ae9a8c581b6c4bdb82f8b56766053c9251d4d9158161f1ba8d70
-  languageName: node
-  linkType: hard
-
 "jsonpath-plus@npm:^5.0.7":
   version: 5.1.0
   resolution: "jsonpath-plus@npm:5.1.0"
   checksum: 0ebb56b4b079e5aae574df1feff043de0fe3d00a9eafb9a258cdff7df29f2d3b4dea9c6095c2d9176ec3417a3847e3aba8268a05e5f0a90c78cf0d7297b7a3bc
+  languageName: node
+  linkType: hard
+
+"jsonpath-plus@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "jsonpath-plus@npm:7.2.0"
+  checksum: 05f447339d29be861e307d6e812aec1b9b88a3ba6bba286966a4e8bed3e752bee3d715eabfc21dce968be85ccb48bf79d2c1af78da7b9b74cd1b446d4d5d02f5
   languageName: node
   linkType: hard
 
@@ -38808,7 +38771,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:8.11.0, ws@npm:^8.4.2, ws@npm:^8.8.0":
+"ws@npm:8.11.0":
   version: 8.11.0
   resolution: "ws@npm:8.11.0"
   peerDependencies:
@@ -38838,7 +38801,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^5.2.0 || ^6.0.0 || ^7.0.0, ws@npm:^7.3.1, ws@npm:^7.4.6":
+"ws@npm:^5.2.0 || ^6.0.0 || ^7.0.0, ws@npm:^7.4.6":
   version: 7.5.9
   resolution: "ws@npm:7.5.9"
   peerDependencies:
@@ -38850,6 +38813,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: c3c100a181b731f40b7f2fddf004aa023f79d64f489706a28bc23ff88e87f6a64b3c6651fbec3a84a53960b75159574d7a7385709847a62ddb7ad6af76f49138
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.11.0, ws@npm:^8.4.2, ws@npm:^8.8.0":
+  version: 8.12.0
+  resolution: "ws@npm:8.12.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 818ff3f8749c172a95a114cceb8b89cedd27e43a82d65c7ad0f7882b1e96a2ee6709e3746a903c3fa88beec0c8bae9a9fcd75f20858b32a166dfb7519316a5d7
   languageName: node
   linkType: hard
 
