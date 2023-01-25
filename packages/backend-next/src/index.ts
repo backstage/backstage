@@ -15,13 +15,13 @@
  */
 
 import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-import { scaffolderCatalogModule } from '@backstage/plugin-scaffolder-backend';
+import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend';
 import { createBackend } from '@backstage/backend-defaults';
 import { appPlugin } from '@backstage/plugin-app-backend';
 
 const backend = createBackend();
 
 backend.add(catalogPlugin());
-backend.add(scaffolderCatalogModule());
+backend.add(catalogModuleTemplateKind());
 backend.add(appPlugin({ appPackageName: 'example-app' }));
 backend.start();

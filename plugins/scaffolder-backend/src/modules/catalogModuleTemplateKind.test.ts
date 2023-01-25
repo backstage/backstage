@@ -16,15 +16,15 @@
 
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { ScaffolderEntitiesProcessor } from '../processor';
-import { scaffolderCatalogModule } from './ScaffolderCatalogModule';
+import { catalogModuleTemplateKind } from './catalogModuleTemplateKind';
 import { startTestBackend } from '@backstage/backend-test-utils';
 
-describe('ScaffolderCatalogModule', () => {
+describe('catalogModuleTemplateKind', () => {
   it('should register the extension point', async () => {
     const extensionPoint = { addProcessor: jest.fn() };
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
-      features: [scaffolderCatalogModule()],
+      features: [catalogModuleTemplateKind()],
     });
 
     expect(extensionPoint.addProcessor).toHaveBeenCalledWith(
