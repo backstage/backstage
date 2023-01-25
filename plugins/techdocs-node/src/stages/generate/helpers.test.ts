@@ -25,7 +25,7 @@ import { ParsedLocationAnnotation } from '../../helpers';
 import {
   createOrUpdateMetadata,
   getGeneratorKey,
-  getMkdocsYml,
+  getMkDocsYml,
   getRepoUrlFromLocationAnnotation,
   patchIndexPreBuild,
   storeEtagMetadata,
@@ -517,7 +517,7 @@ describe('helpers', () => {
     });
   });
 
-  describe('getMkdocsYml', () => {
+  describe('getMkDocsYml', () => {
     const inputDir = resolvePath(__filename, '../__fixtures__/');
     const siteOptions = {
       name: mockEntity.metadata.title,
@@ -530,7 +530,7 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(inputDir, siteOptions);
+      } = await getMkDocsYml(inputDir, siteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
@@ -544,7 +544,7 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(inputDir, siteOptions);
+      } = await getMkDocsYml(inputDir, siteOptions);
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
       expect(configIsTemporary).toBe(false);
@@ -562,7 +562,7 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(inputDir, defaultSiteOptions);
+      } = await getMkDocsYml(inputDir, defaultSiteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsDefaultYml.toString());
@@ -571,7 +571,7 @@ describe('helpers', () => {
 
     it('throws when neither .yml nor .yaml nor default file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
-      await expect(getMkdocsYml(invalidInputDir, siteOptions)).rejects.toThrow(
+      await expect(getMkDocsYml(invalidInputDir, siteOptions)).rejects.toThrow(
         /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation/,
       );
     });
