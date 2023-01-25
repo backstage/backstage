@@ -12555,8 +12555,8 @@ __metadata:
   linkType: hard
 
 "@oriflame/backstage-plugin-score-card@npm:^0.6.0":
-  version: 0.6.1
-  resolution: "@oriflame/backstage-plugin-score-card@npm:0.6.1"
+  version: 0.6.2
+  resolution: "@oriflame/backstage-plugin-score-card@npm:0.6.2"
   dependencies:
     "@backstage/catalog-model": ^1.1.3
     "@backstage/config": ^1.0.4
@@ -12574,7 +12574,7 @@ __metadata:
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: 745e90ece212759f8d3c018b2ebe282e38529c11b13f1b8446ebc548b3a1c2a4a5d1219b8476f79e93ad0e9a919f6efcd372a27f1c3bab61e8e3165921abe8f0
+  checksum: 6c8ca85981fde5af8e3951f0f5fc9c3873c890d286fd29067215246e9b8e9022ceea308c9caa8b0ccfe5380fe5640aaede48c9963a57c3c98f5c3b5feade9aae
   languageName: node
   linkType: hard
 
