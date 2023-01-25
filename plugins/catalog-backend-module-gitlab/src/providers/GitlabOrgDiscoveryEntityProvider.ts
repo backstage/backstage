@@ -50,7 +50,7 @@ type GroupResult = {
 };
 
 /**
- * Discovers entity definition files in the groups of a Gitlab instance.
+ * Discovers users and groups from a Gitlab instance.
  * @public
  */
 export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
@@ -170,7 +170,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
     const users = paginated<GitLabUser>(options => client.listUsers(options), {
       page: 1,
-      per_page: 50,
+      per_page: 100,
       active: true,
     });
 
@@ -178,7 +178,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       options => client.listGroups(options),
       {
         page: 1,
-        per_page: 50,
+        per_page: 100,
       },
     );
 
