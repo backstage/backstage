@@ -15,6 +15,8 @@
  */
 
 import {
+  BackendModuleRegistrationPoints,
+  BackendPluginRegistrationPoints,
   BackendRegistrationPoints,
   BackendFeature,
   ExtensionPoint,
@@ -71,7 +73,7 @@ export interface BackendPluginConfig {
    * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
    */
   id: string;
-  register(reg: BackendRegistrationPoints): void;
+  register(reg: BackendPluginRegistrationPoints): void;
 }
 
 /**
@@ -109,9 +111,7 @@ export interface BackendModuleConfig {
    * Should exactly match the `id` of the plugin that the module extends.
    */
   moduleId: string;
-  register(
-    reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
-  ): void;
+  register(reg: BackendModuleRegistrationPoints): void;
 }
 
 /**
@@ -136,8 +136,9 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
   return () => ({
     id: `${config.pluginId}.${config.moduleId}`,
     register(register: BackendRegistrationPoints) {
-      // TODO: Hide registerExtensionPoint
-      return config.register(register);
+      return config.register({
+        registerInit: register.registerInit.bind(register),
+      });
     },
   });
 }

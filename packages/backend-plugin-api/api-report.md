@@ -27,19 +27,52 @@ export interface BackendModuleConfig {
   moduleId: string;
   pluginId: string;
   // (undocumented)
-  register(
-    reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
-  ): void;
+  register(reg: BackendModuleRegistrationPoints): void;
+}
+
+// @public
+export interface BackendModuleRegistrationPoints {
+  // (undocumented)
+  registerInit<
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
 }
 
 // @public
 export interface BackendPluginConfig {
   id: string;
   // (undocumented)
-  register(reg: BackendRegistrationPoints): void;
+  register(reg: BackendPluginRegistrationPoints): void;
 }
 
-// @public (undocumented)
+// @public
+export interface BackendPluginRegistrationPoints {
+  // (undocumented)
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
+  // (undocumented)
+  registerInit<
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
+}
+
+// @public
 export interface BackendRegistrationPoints {
   // (undocumented)
   registerExtensionPoint<TExtensionPoint>(

@@ -35,12 +35,50 @@ export type ExtensionPoint<T> = {
   $$ref: 'extension-point';
 };
 
-/** @public */
+/**
+ * The callbacks passed to the `register` method of a backend feature; this is
+ * essentially a superset of {@link BackendPluginRegistrationPoints} and
+ * {@link BackendModuleRegistrationPoints}.
+ *
+ * @public
+ */
 export interface BackendRegistrationPoints {
   registerExtensionPoint<TExtensionPoint>(
     ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
   ): void;
+  registerInit<Deps extends { [name in string]: unknown }>(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
+}
+
+/**
+ * The callbacks passed to the `register` method of a backend plugin.
+ *
+ * @public
+ */
+export interface BackendPluginRegistrationPoints {
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
+  registerInit<Deps extends { [name in string]: unknown }>(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
+}
+
+/**
+ * The callbacks passed to the `register` method of a backend module.
+ *
+ * @public
+ */
+export interface BackendModuleRegistrationPoints {
   registerInit<Deps extends { [name in string]: unknown }>(options: {
     deps: {
       [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
