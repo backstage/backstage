@@ -15,6 +15,8 @@
  */
 
 import {
+  BackendModuleRegistrationPoints,
+  BackendPluginRegistrationPoints,
   BackendRegistrationPoints,
   BackendFeature,
   ExtensionPoint,
@@ -44,7 +46,7 @@ export function createExtensionPoint<T>(
 /** @public */
 export interface BackendPluginConfig {
   id: string;
-  register(reg: BackendRegistrationPoints): void;
+  register(reg: BackendPluginRegistrationPoints): void;
 }
 
 /** @public */
@@ -62,9 +64,7 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
 export interface BackendModuleConfig {
   pluginId: string;
   moduleId: string;
-  register(
-    reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
-  ): void;
+  register(reg: BackendModuleRegistrationPoints): void;
 }
 
 /**
@@ -96,8 +96,9 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
   return () => ({
     id: `${config.pluginId}.${config.moduleId}`,
     register(register: BackendRegistrationPoints) {
-      // TODO: Hide registerExtensionPoint
-      return config.register(register);
+      return config.register({
+        registerInit: register.registerInit.bind(register),
+      });
     },
   });
 }
