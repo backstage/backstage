@@ -278,3 +278,17 @@ describe('replaceReadme', () => {
     expect(expected).toBe(result);
   });
 });
+
+describe('buildEncodedUrl', () => {
+  it('should not encode the colon between host and port', async () => {
+	const result = await buildEncodedUrl(
+      'tfs.myorg.com:8443',
+      'org',
+      'project',
+      'repo',
+      'path'
+    );
+	
+    expect(result).toBe('https://tfs.myorg.com:8443/org/project/_git/repo?path=path');
+  });
+});
