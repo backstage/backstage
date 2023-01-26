@@ -58,28 +58,27 @@ export const AzureRepoPicker = (props: {
       >
         {allowedOrganizations?.length ? (
           <Autocomplete
-          aria-label="Organization"
-          options={organizationItems}
-          getOptionLabel={(organizations) => organizations.label || "error getting label"}
-          disabled={allowedOrganizations.length === 1}
-          data-testid="select"
-          freeSolo
-          onChange={selected =>
-            onChange({
-              organization: String(Array.isArray(selected) ? selected[0] : selected),
-            })
-          } 
-          tabIndex={0}
-          renderInput={params => (
+            aria-label="Choose an Organization"
+            options={organizationItems}
+            defaultValue={organizationItems[0]}
+            getOptionLabel={organizations =>
+              organizations.label || 'error getting label'
+            }
+            disabled={allowedOrganizations.length === 1}
+            data-testid="select"
+            renderInput={params => (
               <TextField
-              {...params}
-              placeholder="Organization"
-              margin="dense"
-              FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
-              variant="outlined"
-              InputProps={params.InputProps}
-            />
-          )}
+                {...params}
+                placeholder="Choose an Organization"
+                margin="dense"
+                FormHelperTextProps={{
+                  margin: 'dense',
+                  style: { marginLeft: 0 },
+                }}
+                variant="outlined"
+                InputProps={params.InputProps}
+              />
+            )}
           />
         ) : (
           <>
@@ -102,27 +101,25 @@ export const AzureRepoPicker = (props: {
       >
         {allowedOwners?.length ? (
           <Autocomplete
-          aria-label="Owner"
-          options={ownerItems}
-          getOptionLabel={(owners) => owners.label || "error getting label"}
-          disabled={allowedOwners.length === 1}
-          data-testid="select"
-          onChange={selected =>
-            onChange({
-              owner: String(Array.isArray(selected) ? selected[0] : selected),
-            })
-          }
-          tabIndex={0}
-          renderInput={ params => (
+            aria-label="Choose an Owner"
+            options={ownerItems}
+            defaultValue={ownerItems[0]}
+            getOptionLabel={owners => owners.label || 'error getting label'}
+            disabled={allowedOwners.length === 1}
+            data-testid="select"
+            renderInput={params => (
               <TextField
-              {...params}
-              placeholder="Owner"
-              margin="dense"
-              FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
-              variant="outlined"
-              InputProps={params.InputProps}    
-            />
-          )}
+                {...params}
+                placeholder="Choose an Owner"
+                margin="dense"
+                FormHelperTextProps={{
+                  margin: 'dense',
+                  style: { marginLeft: 0 },
+                }}
+                variant="outlined"
+                InputProps={params.InputProps}
+              />
+            )}
           />
         ) : (
           <>

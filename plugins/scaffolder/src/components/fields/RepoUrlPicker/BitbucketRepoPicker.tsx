@@ -72,18 +72,10 @@ export const BitbucketRepoPicker = (props: {
             <Autocomplete
               aria-label="Allowed Workspaces"
               options={ownerItems}
+              defaultValue={ownerItems[0]}
               getOptionLabel={owners => owners.label || 'error getting label'}
               disabled={allowedOwners.length === 1}
               data-testid="select"
-              freeSolo
-              onChange={selected =>
-                onChange({
-                  workspace: String(
-                    Array.isArray(selected) ? selected[0] : selected,
-                  ),
-                })
-              }
-              tabIndex={0}
               renderInput={params => (
                 <TextField
                   {...params}
@@ -122,18 +114,10 @@ export const BitbucketRepoPicker = (props: {
           <Autocomplete
             aria-label="Allowed Projects"
             options={projectItems}
+            defaultValue={projectItems[0]}
             getOptionLabel={projects => projects.label || 'error getting label'}
             disabled={allowedProjects.length === 1}
             data-testid="select"
-            freeSolo
-            onChange={selected =>
-              onChange({
-                project: String(
-                  Array.isArray(selected) ? selected[0] : selected,
-                ),
-              })
-            }
-            tabIndex={0}
             renderInput={params => (
               <TextField
                 {...params}

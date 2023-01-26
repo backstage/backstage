@@ -46,28 +46,26 @@ export const GitlabRepoPicker = (props: {
       >
         {allowedOwners?.length ? (
           <Autocomplete
-          aria-label="Owner Available"
-          options={ownerItems}
-          getOptionLabel={(owners) => owners.label || "error getting label"}
-          disabled={allowedOwners.length === 1}
-          data-testid="select"
-          freeSolo
-          onChange={selected =>
-            onChange({
-              owner: String(Array.isArray(selected) ? selected[0] : selected),
-            })
-          }
-          tabIndex={0}
-          renderInput={params => (
+            aria-label="Select Owner"
+            options={ownerItems}
+            defaultValue={ownerItems[0]}
+            getOptionLabel={owners => owners.label || 'error getting label'}
+            disabled={allowedOwners.length === 1}
+            data-testid="select"
+            autoSelect
+            renderInput={params => (
               <TextField
-              {...params}
-              placeholder="Owner Available"
-              margin="dense"
-              FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
-              variant="outlined"
-              InputProps={params.InputProps}
-            />
-          )}
+                {...params}
+                placeholder="Select Owner"
+                margin="dense"
+                FormHelperTextProps={{
+                  margin: 'dense',
+                  style: { marginLeft: 0 },
+                }}
+                variant="outlined"
+                InputProps={params.InputProps}
+              />
+            )}
           />
         ) : (
           <>
