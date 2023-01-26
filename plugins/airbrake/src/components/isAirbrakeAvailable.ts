@@ -17,5 +17,9 @@
 import { Entity } from '@backstage/catalog-model';
 import { AIRBRAKE_PROJECT_ID_ANNOTATION } from './useProjectId';
 
+/**
+ * Utility function to determine if the given entity has an Airbrake ID set in the repos catalog-info.yml .
+ * @public
+ */
 export const isAirbrakeAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[AIRBRAKE_PROJECT_ID_ANNOTATION]);
