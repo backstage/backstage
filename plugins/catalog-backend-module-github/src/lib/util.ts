@@ -17,7 +17,7 @@
 import { GithubTopicFilters } from '../providers/GithubEntityProviderConfig';
 
 export function parseGithubOrgUrl(urlString: string): { org: string } {
-  const path = new URL(urlString).pathname.substr(1).split('/');
+  const path = new URL(urlString).pathname.slice(1).split('/');
 
   // /backstage
   if (path.length === 1 && path[0].length) {

@@ -176,7 +176,7 @@ export function parseUrl(urlString: string): {
   host: string;
 } {
   const url = new URL(urlString);
-  const path = url.pathname.substr(1).split('/');
+  const path = url.pathname.slice(1).split('/');
 
   // /backstage/techdocs-*/blob/master/catalog-info.yaml
   // can also be
