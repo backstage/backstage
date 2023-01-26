@@ -27,6 +27,7 @@ import {
   getAvatarUrl,
   getPullRequestLink,
   replaceReadme,
+  buildEncodedUrl,
 } from './azure-devops-utils';
 import { GitPullRequest } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { UrlReader } from '@backstage/backend-common';
