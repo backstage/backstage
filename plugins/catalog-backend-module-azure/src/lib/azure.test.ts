@@ -29,7 +29,7 @@ describe('azure', () => {
 
       server.use(
         rest.post(
-          `https://almsearch.dev.azure.com/shopify/engineering/_apis/search/codesearchresults`,
+          `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
           (req, res, ctx) => {
             expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
             expect(req.body).toEqual({
@@ -83,7 +83,7 @@ describe('azure', () => {
 
     server.use(
       rest.post(
-        `https://almsearch.dev.azure.com/shopify/engineering/_apis/search/codesearchresults`,
+        `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
@@ -126,7 +126,7 @@ describe('azure', () => {
 
     server.use(
       rest.post(
-        `https://almsearch.dev.azure.com/shopify/engineering/_apis/search/codesearchresults`,
+        `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
@@ -170,7 +170,7 @@ describe('azure', () => {
 
     server.use(
       rest.post(
-        `https://azuredevops.mycompany.com/shopify/engineering/_apis/search/codesearchresults`,
+        `https://azuredevops.mycompany.com/shopify/_apis/search/codesearchresults`,
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
@@ -204,19 +204,19 @@ describe('azure', () => {
           name: 'backstage',
         },
         project: {
-          name: '*',
+          name: 'engineering',
         },
       }));
     };
 
     server.use(
       rest.post(
-        `https://almsearch.dev.azure.com/shopify/engineering/_apis/search/codesearchresults`,
+        `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toMatchObject({
             searchText:
-              'proj:engineering path:/catalog-info.yaml repo:backstage',
+              'path:/catalog-info.yaml repo:backstage proj:engineering',
             $top: 1000,
           });
 
