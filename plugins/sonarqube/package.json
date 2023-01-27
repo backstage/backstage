@@ -8,7 +8,8 @@
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts"
   },
   "backstage": {
     "role": "frontend-plugin"
@@ -25,7 +26,7 @@
     "sonarcloud"
   ],
   "scripts": {
-    "build": "backstage-cli package build",
+    "build": "backstage-cli package build --experimental-type-build",
     "start": "backstage-cli package start",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
@@ -64,6 +65,7 @@
   },
   "files": [
     "dist",
+    "alpha",
     "config.d.ts"
   ],
   "configSchema": "config.d.ts"
