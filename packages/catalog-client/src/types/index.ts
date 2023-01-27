@@ -26,7 +26,6 @@ export type {
   GetEntitiesByRefsRequest,
   GetEntitiesByRefsResponse,
   EntitiesFilter,
-  EntitySortField,
   GetEntitiesRequest,
   GetEntitiesResponse,
   GetEntityAncestorsRequest,

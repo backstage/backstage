@@ -189,12 +189,6 @@ export type EntityOrderQuery =
     }>;
 
 // @public
-export type EntitySortField = {
-  field: string;
-  order: 'asc' | 'desc';
-};
-
-// @public
 export interface GetEntitiesByRefsRequest {
   entityRefs: string[];
   fields?: EntityFieldsQuery | undefined;
@@ -268,7 +262,7 @@ export type GetPaginatedEntitiesInitialRequest =
       fields?: string[];
       limit?: number;
       filter?: EntitiesFilter;
-      sortFields?: EntitySortField[];
+      sortFields?: EntityOrderQuery;
       query?: string;
     }
   | undefined;
