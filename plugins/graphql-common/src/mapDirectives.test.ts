@@ -18,7 +18,6 @@
 /* eslint-disable jest/no-standalone-expect */
 
 import { describe, it } from '@effection/jest';
-import { loadFilesSync } from '@graphql-tools/load-files';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import DataLoader from 'dataloader';
 import {
@@ -29,14 +28,14 @@ import {
   validateSchema,
 } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
+import { coreSchema } from './core';
 import { mapDirectives } from './mapDirectives';
 import { createGraphQLAPI } from './setupTests';
 
 describe('mapDirectives', () => {
-  const graphqlHeader = loadFilesSync(require.resolve('./core/core.graphql'));
   const transformSchema = (source: DocumentNode) => {
     const schema = mapDirectives(
-      buildASTSchema(mergeTypeDefs([source, graphqlHeader])),
+      buildASTSchema(mergeTypeDefs([source, coreSchema])),
     );
     const errors = validateSchema(schema);
     if (errors.length > 0) {

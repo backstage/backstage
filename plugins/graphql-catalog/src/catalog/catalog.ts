@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolvePackagePath } from '@backstage/backend-common';
 import { createModule } from 'graphql-modules';
-import { loadFilesSync } from '@graphql-tools/load-files';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
+import { catalogSchema } from './schema';
 
 /** @public */
 export const Catalog = createModule({
   id: 'catalog',
-  typeDefs: loadFilesSync(
-    resolvePackagePath(
-      '@backstage/plugin-graphql-catalog',
-      'src/catalog/catalog.graphql',
-    ),
-  ),
+  typeDefs: catalogSchema,
   resolvers: {
     Lifecycle: {
       EXPERIMENTAL: 'experimental',
