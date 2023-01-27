@@ -767,7 +767,7 @@ describe('DefaultEntitiesCatalog', () => {
         const request1: PaginatedEntitiesInitialRequest = {
           filter,
           limit,
-          sortFields: [{ field: 'metadata.name' }],
+          sortFields: [{ field: 'metadata.name', order: 'asc' }],
         };
         const response1 = await catalog.paginatedEntities(request1);
         expect(response1.entities).toEqual([entityFrom('A'), entityFrom('B')]);
@@ -1056,7 +1056,7 @@ describe('DefaultEntitiesCatalog', () => {
           filter,
           limit: 100,
 
-          sortFields: [{ field: 'metadata.name' }],
+          sortFields: [{ field: 'metadata.name', order: 'asc' }],
           query: 'cAt ',
         };
         const response = await catalog.paginatedEntities(request);
@@ -1127,7 +1127,7 @@ describe('DefaultEntitiesCatalog', () => {
         // initial request
         const request1: PaginatedEntitiesInitialRequest = {
           limit,
-          sortFields: [{ field: 'metadata.name' }],
+          sortFields: [{ field: 'metadata.name', order: 'asc' }],
         };
         const response1 = await catalog.paginatedEntities(request1);
         expect(response1.entities).toMatchObject([

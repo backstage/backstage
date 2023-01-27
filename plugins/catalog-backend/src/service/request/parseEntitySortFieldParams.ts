@@ -15,12 +15,12 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { EntitySortField } from '../../catalog/types';
+import { EntityOrder } from '../../catalog/types';
 import { parseStringsParam } from './common';
 
 export function parseEntitySortFieldParams(
   params: Record<string, unknown>,
-): EntitySortField[] | undefined {
+): EntityOrder[] | undefined {
   const sortFieldStrings = parseStringsParam(params.sortField, 'sortField');
   if (!sortFieldStrings) {
     return undefined;
