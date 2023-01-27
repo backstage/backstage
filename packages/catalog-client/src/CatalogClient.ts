@@ -224,8 +224,8 @@ export class CatalogClient implements CatalogApi {
         params.push(`limit=${limit}`);
       }
       if (sortFields !== undefined) {
-        sortFields.forEach(({ field, order }) =>
-          params.push(`sortField=${field},${order}`),
+        (Array.isArray(sortFields) ? sortFields : [sortFields]).forEach(
+          ({ field, order }) => params.push(`sortField=${field},${order}`),
         );
       }
       if (fields.length) {
