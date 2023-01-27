@@ -287,7 +287,7 @@ export interface GetEntityFacetsRequest {
    * (exported from this package), which means that you assert on the existence
    * of that key, no matter what its value is.
    */
-  filter?: EntitiesFilter;
+  filter?: EntityFilterQuery;
   /**
    * Dot separated paths for the facets to extract from each entity.
    *
@@ -357,16 +357,6 @@ export type AddLocationRequest = {
 };
 
 /**
- * Used for filtering entities that match the given patterns.
- *
- * @public
- */
-export type EntitiesFilter =
-  | Record<string, string | symbol | (string | symbol)[]>[]
-  | Record<string, string | symbol | (string | symbol)[]>
-  | undefined;
-
-/**
  * The response type for {@link CatalogClient.addLocation}.
  *
  * @public
@@ -410,7 +400,7 @@ export type GetPaginatedEntitiesInitialRequest =
   | {
       fields?: string[];
       limit?: number;
-      filter?: EntitiesFilter;
+      filter?: EntityFilterQuery;
       sortFields?: EntityOrderQuery;
       query?: string;
     }

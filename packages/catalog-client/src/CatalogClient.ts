@@ -41,7 +41,7 @@ import {
   GetEntitiesByRefsResponse,
   GetPaginatedEntitiesRequest,
   GetPaginatedEntitiesResponse,
-  EntitiesFilter,
+  EntityFilterQuery,
   GetPaginatedEntitiesCursorRequest,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
@@ -522,7 +522,7 @@ export class CatalogClient implements CatalogApi {
     return await response.json();
   }
 
-  private getParams(filter: EntitiesFilter = []) {
+  private getParams(filter: EntityFilterQuery = []) {
     const params: string[] = [];
     // filter param can occur multiple times, for example
     // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
