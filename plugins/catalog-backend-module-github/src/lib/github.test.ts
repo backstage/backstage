@@ -488,6 +488,7 @@ describe('github', () => {
                 name: 'backstage',
                 url: 'https://github.com/backstage/backstage',
                 isArchived: false,
+                isFork: false,
                 repositoryTopics: {
                   nodes: [{ topic: { name: 'blah' } }],
                 },
@@ -500,6 +501,7 @@ describe('github', () => {
                 name: 'demo',
                 url: 'https://github.com/backstage/demo',
                 isArchived: true,
+                isFork: true,
                 repositoryTopics: { nodes: [] },
                 defaultBranchRef: {
                   name: 'main',
@@ -524,6 +526,7 @@ describe('github', () => {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
             isArchived: false,
+            isFork: false,
             repositoryTopics: {
               nodes: [{ topic: { name: 'blah' } }],
             },
@@ -536,6 +539,7 @@ describe('github', () => {
             name: 'demo',
             url: 'https://github.com/backstage/demo',
             isArchived: true,
+            isFork: true,
             repositoryTopics: { nodes: [] },
             defaultBranchRef: {
               name: 'main',

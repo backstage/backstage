@@ -89,6 +89,7 @@ export type RepositoryResponse = {
   name: string;
   url: string;
   isArchived: boolean;
+  isFork: boolean;
   repositoryTopics: RepositoryTopics;
   defaultBranchRef: {
     name: string;
@@ -435,6 +436,7 @@ export async function getOrganizationRepositories(
             }
             url
             isArchived
+            isFork
             repositoryTopics(first: 100) {
               nodes {
                 ... on RepositoryTopic {

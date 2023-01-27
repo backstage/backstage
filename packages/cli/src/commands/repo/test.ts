@@ -84,6 +84,13 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     }
   }
 
+  // When running tests from the repo root in large repos you can easily hit the heap limit.
+  // This is because Jest workers leak a lot of memory, and the workaround is to limit worker memory.
+  // We set a default memory limit, but if an explicit one is supplied it will be used instead
+  if (!args.some(arg => arg.match(/^--workerIdleMemoryLimit/))) {
+    args.push('--workerIdleMemoryLimit=1000M');
+  }
+
   if (opts.since) {
     removeOptionArg(args, '--since');
   }
