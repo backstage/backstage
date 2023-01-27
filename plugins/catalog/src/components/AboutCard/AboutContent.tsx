@@ -25,7 +25,8 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { JsonArray } from '@backstage/types';
-import { Chip, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Chip, Grid, makeStyles } from '@material-ui/core';
+import { MarkdownContent } from '@backstage/core-components';
 import React from 'react';
 import { AboutField } from './AboutField';
 import { LinksGridList } from '../EntityLinksCard/LinksGridList';
@@ -111,9 +112,10 @@ export function AboutContent(props: AboutContentProps) {
   return (
     <Grid container>
       <AboutField label="Description" gridSizes={{ xs: 12 }}>
-        <Typography variant="body2" paragraph className={classes.description}>
-          {entity?.metadata?.description || 'No description'}
-        </Typography>
+        <MarkdownContent
+          className={classes.description}
+          content={entity?.metadata?.description || 'No description'}
+        />
       </AboutField>
       <AboutField
         label="Owner"
