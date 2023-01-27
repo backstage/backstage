@@ -13,18 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import DataLoader from 'dataloader';
+import { CodegenConfig } from '@graphql-codegen/cli';
 
-export type PromiseOrValue<T> = T | Promise<T>;
+const config: CodegenConfig = {
+  schema: 'src/schema.ts',
+  generates: {
+    './src/modules/': {
+      preset: 'graphql-modules',
+      presetConfig: {
+        baseTypesPath: '../__generated__/graphql.ts',
+        filename: '__generated__/types.ts',
+      },
+      plugins: [
+        { add: { content: '/* eslint-disable */' } },
+        'typescript',
+        'typescript-resolvers',
+      ],
+    },
+    './__generated__/schema.graphql': {
+      plugins: ['schema-ast'],
+    },
+  },
+};
 
-/** @public */
-export type EntityLoader = DataLoader<string, Entity>;
-
-/** @public */
-export interface ResolverContext<
-  TLoader extends DataLoader<any, any> = EntityLoader,
-> {
-  loader: TLoader;
-  refToId?: (ref: CompoundEntityRef | string) => string;
-}
+export default config;
