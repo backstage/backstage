@@ -26,3 +26,5 @@ yarn workspace example-backend start
 ```
 
 This will launch the full example backend.
+
+Add modules/plugins/loader
