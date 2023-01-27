@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createModule } from 'graphql-modules';
-import { defaultRefToId, ResolverContext } from '../types';
+import { ResolverContext } from '../types';
 import { coreSchema } from './schema';
 
 /** @public */
@@ -28,22 +28,13 @@ export const Core = createModule({
         _: never,
         { loader }: ResolverContext,
       ): Promise<string | null> => {
-        const entity = await loader.load(id);
-        if (!entity) return null;
+        const node = await loader.load(id);
+        if (!node) return null;
         return id;
       },
     },
     Query: {
       node: (_: any, { id }: { id: string }): { id: string } => ({ id }),
-      entity: (
-        _: any,
-        {
-          name,
-          kind,
-          namespace = 'default',
-        }: { name: string; kind: string; namespace: string },
-        { refToId = defaultRefToId }: ResolverContext,
-      ): { id: string } => ({ id: refToId({ name, kind, namespace }) }),
     },
   },
 });

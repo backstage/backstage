@@ -29,6 +29,9 @@ export type createGraphQLAppOptions = {
 export type EntityLoader = DataLoader<string, Entity>;
 
 // @public (undocumented)
+export const refToId: (ref: CompoundEntityRef | string) => string;
+
+// @public (undocumented)
 export interface ResolverContext<
   TLoader extends DataLoader<any, any> = EntityLoader,
 > {

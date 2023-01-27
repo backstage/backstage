@@ -48,7 +48,8 @@ import {
   isNonNullType,
   isUnionType,
 } from 'graphql';
-import { defaultRefToId, ResolverContext } from './types';
+import { refToId as defaultRefToId } from './refToId';
+import { ResolverContext } from './types';
 
 function getObjectTypeName(
   iface: GraphQLInterfaceType,

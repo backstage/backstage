@@ -18,10 +18,12 @@ import type { Operation } from 'effection';
 
 import { createGraphQLApp } from './createGraphQLApp';
 
+import * as graphql from 'graphql';
 import DataLoader from 'dataloader';
 import { Module } from 'graphql-modules';
 import { PromiseOrValue } from './types';
-import { envelop, useExtendContext } from '@envelop/core';
+import { envelop, useEngine } from '@envelop/core';
+import { useDataLoader } from '@envelop/dataloader';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 
 export function createGraphQLAPI(
@@ -34,8 +36,9 @@ export function createGraphQLAPI(
 
   const run = envelop({
     plugins: [
+      useEngine(graphql),
       useGraphQLModules(application),
-      useExtendContext(() => ({ loader })),
+      useDataLoader('loader', loader),
     ],
   });
 
