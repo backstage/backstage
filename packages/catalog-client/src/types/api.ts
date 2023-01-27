@@ -396,15 +396,13 @@ export type GetPaginatedEntitiesRequest =
  *
  * @alpha
  */
-export type GetPaginatedEntitiesInitialRequest =
-  | {
-      fields?: string[];
-      limit?: number;
-      filter?: EntityFilterQuery;
-      sortFields?: EntityOrderQuery;
-      query?: string;
-    }
-  | undefined;
+export type GetPaginatedEntitiesInitialRequest = {
+  fields?: string[];
+  limit?: number;
+  filter?: EntityFilterQuery;
+  sortFields?: EntityOrderQuery;
+  query?: string;
+};
 
 /**
  * A request type for {@link CatalogClient.getPaginatedEntities}.
