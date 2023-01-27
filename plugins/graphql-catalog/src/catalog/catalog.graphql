@@ -11,6 +11,22 @@ union Ownable = IAPI | IComponent | IDomain | IResource | ISystem | ITemplate
 union Dependency = IComponent | IResource
 union Owner = IUser | IGroup
 
+interface IEntity @extend(interface: "Node") {
+  name: String! @field(at: "metadata.name")
+  kind: String! @field(at: "kind")
+  namespace: String! @field(at: "metadata.namespace", default: "default")
+  title: String! @field(at: "metadata.title", default: "")
+  description: String! @field(at: "metadata.description", default: "")
+  tags: [String] @field(at: "metadata.tags")
+  links: [EntityLink] @field(at: "metadata.links")
+}
+
+type EntityLink {
+  url: String!
+  title: String
+  icon: String
+}
+
 interface ILocation
   @extend(interface: "IEntity", when: "kind", is: "Location") {
   type: String @field(at: "spec.type")
@@ -93,4 +109,8 @@ interface IUser @extend(interface: "IEntity", when: "kind", is: "User") {
   picture: String @field(at: "spec.profile.picture")
   memberOf: Connection @relation(name: "memberOf", nodeType: "IGroup")
   ownerOf: Connection @relation(name: "ownerOf", nodeType: "Ownable")
+}
+
+extend type Query {
+  entity(kind: String!, name: String!, namespace: String): IEntity
 }
