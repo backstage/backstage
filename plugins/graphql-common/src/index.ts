@@ -15,10 +15,6 @@
  */
 
 export * from './createGraphQLApp';
-export * from './createLoader';
+export * from './core';
 export { transformSchema } from './transformSchema';
-export type {
-  EnvelopPlugins,
-  Loader as EntityLoader,
-  ResolverContext,
-} from './types';
+export type { ResolverContext, EntityLoader } from './types';

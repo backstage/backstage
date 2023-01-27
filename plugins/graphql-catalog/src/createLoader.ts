@@ -16,13 +16,12 @@
 import type { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import DataLoader from 'dataloader';
-import { EnvelopError } from '@envelop/core';
-import type { Loader } from './types';
+import { GraphQLError } from 'graphql';
 
 /** @public */
 export function createLoader(
   catalog: Pick<CatalogClient, 'getEntitiesByRefs'>,
-): Loader {
+) {
   return new DataLoader<string, Entity>(
     async (entityRefs): Promise<Array<Entity | Error>> => {
       const result = await catalog.getEntitiesByRefs({
@@ -31,7 +30,7 @@ export function createLoader(
       return result.items.map(
         (entity, index) =>
           entity ??
-          new EnvelopError(`no such node with ref: '${entityRefs[index]}'`),
+          new GraphQLError(`no such node with ref: '${entityRefs[index]}'`),
       );
     },
   );

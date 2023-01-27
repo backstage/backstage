@@ -4,23 +4,36 @@
 
 ```ts
 import { CatalogClient } from '@backstage/catalog-client';
-import { EnvelopPlugins } from '@backstage/plugin-graphql-common';
+import { CompoundEntityRef } from '@backstage/catalog-model';
+import DataLoader from 'dataloader';
 import express from 'express';
 import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
+import { Plugin as Plugin_2 } from 'graphql-yoga';
 
 // @public (undocumented)
-export function createRouter(options: RouterOptions): Promise<express.Router>;
+export function createRouter({
+  logger,
+  catalog,
+  modules,
+  plugins,
+  loader,
+  refToId,
+}: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
   catalog: CatalogClient;
   // (undocumented)
+  loader?: () => DataLoader<string, any>;
+  // (undocumented)
   logger: Logger;
   // (undocumented)
   modules?: Module[];
   // (undocumented)
-  plugins?: EnvelopPlugins;
+  plugins?: Plugin_2[];
+  // (undocumented)
+  refToId?: (ref: CompoundEntityRef | string) => string;
 }
 ```
