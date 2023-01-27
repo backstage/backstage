@@ -90,7 +90,8 @@ describe('DefaultEntitiesCatalog', () => {
     return id;
   }
 
-  async function addEntityToSearch(entity: Entity, id = uuid()) {
+  async function addEntityToSearch(entity: Entity) {
+    const id = entity.metadata.uid || v4();
     const entityRef = stringifyEntityRef(entity);
     const entityJson = JSON.stringify(entity);
 
@@ -728,17 +729,8 @@ describe('DefaultEntitiesCatalog', () => {
       async databaseId => {
         await createDatabase(databaseId);
 
-        function entityFrom(name: string) {
-          return {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name },
-            spec: { should_include_this: 'yes' },
-          };
-        }
-
         const names = ['B', 'F', 'A', 'G', 'D', 'C', 'E'];
-        const entities: Entity[] = names.map(entityFrom);
+        const entities: Entity[] = names.map(name => entityFrom(name));
 
         const notFoundEntities: Entity[] = [
           {
@@ -882,17 +874,8 @@ describe('DefaultEntitiesCatalog', () => {
       async databaseId => {
         await createDatabase(databaseId);
 
-        function entityFrom(name: string) {
-          return {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name },
-            spec: { should_include_this: 'yes' },
-          };
-        }
-
         const names = ['B', 'F', 'A', 'G', 'D', 'C', 'E'];
-        const entities: Entity[] = names.map(entityFrom);
+        const entities: Entity[] = names.map(name => entityFrom(name));
 
         const notFoundEntities: Entity[] = [
           {
@@ -1037,17 +1020,8 @@ describe('DefaultEntitiesCatalog', () => {
       async databaseId => {
         await createDatabase(databaseId);
 
-        function entityFrom(name: string) {
-          return {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name },
-            spec: { should_include_this: 'yes' },
-          };
-        }
-
         const names = ['lion', 'cat', 'atcatss', 'dog', 'dogcat', 'aa', 's'];
-        const entities: Entity[] = names.map(entityFrom);
+        const entities: Entity[] = names.map(name => entityFrom(name));
 
         const notFoundEntities: Entity[] = [
           {
@@ -1133,20 +1107,11 @@ describe('DefaultEntitiesCatalog', () => {
       async databaseId => {
         await createDatabase(databaseId);
 
-        function entityFrom(name: string, namespace?: string) {
-          return {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name, ...(!!namespace && { namespace }) },
-            spec: { should_include_this: 'yes' },
-          };
-        }
-
         await Promise.all([
           addEntityToSearch(entityFrom('AA')),
-          addEntityToSearch(entityFrom('AA', 'namespace2')),
-          addEntityToSearch(entityFrom('AA', 'namespace3')),
-          addEntityToSearch(entityFrom('AA', 'namespace4')),
+          addEntityToSearch(entityFrom('AA', { namespace: 'namespace2' })),
+          addEntityToSearch(entityFrom('AA', { namespace: 'namespace3' })),
+          addEntityToSearch(entityFrom('AA', { namespace: 'namespace4' })),
           addEntityToSearch(entityFrom('CC')),
           addEntityToSearch(entityFrom('DD')),
         ]);
@@ -1236,22 +1201,19 @@ describe('DefaultEntitiesCatalog', () => {
       async databaseId => {
         await createDatabase(databaseId);
 
-        function entityFrom(name: string, namespace?: string) {
-          return {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name, ...(!!namespace && { namespace }) },
-            spec: { should_include_this: 'yes' },
-          };
-        }
-
         await Promise.all([
-          addEntityToSearch(entityFrom('AA'), 'id1'),
-          addEntityToSearch(entityFrom('CC'), 'id2'),
-          addEntityToSearch(entityFrom('AA', 'namespace2'), 'id4'),
-          addEntityToSearch(entityFrom('AA', 'namespace3'), 'id5'),
-          addEntityToSearch(entityFrom('AA', 'namespace4'), 'id6'),
-          addEntityToSearch(entityFrom('DD'), 'id3'),
+          addEntityToSearch(entityFrom('AA', { uid: 'id1' })),
+          addEntityToSearch(entityFrom('CC', { uid: 'id2' })),
+          addEntityToSearch(
+            entityFrom('AA', { namespace: 'namespace2', uid: 'id4' }),
+          ),
+          addEntityToSearch(
+            entityFrom('AA', { namespace: 'namespace3', uid: 'id5' }),
+          ),
+          addEntityToSearch(
+            entityFrom('AA', { namespace: 'namespace4', uid: 'id6' }),
+          ),
+          addEntityToSearch(entityFrom('DD', { uid: 'id3' })),
         ]);
 
         const catalog = new DefaultEntitiesCatalog({
@@ -1283,7 +1245,7 @@ describe('DefaultEntitiesCatalog', () => {
         const response2 = await catalog.paginatedEntities(request2);
         expect(response2.entities).toMatchObject([
           entityFrom('DD'),
-          entityFrom('AA', 'namespace2'),
+          entityFrom('AA', { namespace: 'namespace2' }),
         ]);
         expect(response2.nextCursor).toBeDefined();
         expect(response2.prevCursor).toBeDefined();
@@ -1295,9 +1257,9 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response3 = await catalog.paginatedEntities(request3);
-        expect(response3.entities).toEqual([
-          entityFrom('AA', 'namespace3'),
-          entityFrom('AA', 'namespace4'),
+        expect(response3.entities).toMatchObject([
+          entityFrom('AA', { namespace: 'namespace3' }),
+          entityFrom('AA', { namespace: 'namespace4' }),
         ]);
         expect(response3.nextCursor).toBeUndefined();
         expect(response3.prevCursor).toBeDefined();
@@ -1311,7 +1273,7 @@ describe('DefaultEntitiesCatalog', () => {
         const response4 = await catalog.paginatedEntities(request4);
         expect(response4.entities).toMatchObject([
           entityFrom('DD'),
-          entityFrom('AA', 'namespace2'),
+          entityFrom('AA', { namespace: 'namespace2' }),
         ]);
         expect(response4.nextCursor).toBeDefined();
         expect(response4.prevCursor).toBeDefined();
@@ -1387,20 +1349,18 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntity(unrelated1, []);
         await addEntity(unrelated2, []);
         await knex('refresh_state').update({ result_hash: 'not-changed' });
-
-        // TODO(vinzscam): check whether this is needed
-        // await knex('relations').insert({
-        //   originating_entity_id: uid,
-        //   type: 't',
-        //   source_entity_ref: 'k:default/root',
-        //   target_entity_ref: 'k:default/unrelated1',
-        // });
-        // await knex('relations').insert({
-        //   originating_entity_id: uid,
-        //   type: 't',
-        //   source_entity_ref: 'k:default/unrelated2',
-        //   target_entity_ref: 'k:default/root',
-        // });
+        await knex('relations').insert({
+          originating_entity_id: uid,
+          type: 't',
+          source_entity_ref: 'k:default/root',
+          target_entity_ref: 'k:default/unrelated1',
+        });
+        await knex('relations').insert({
+          originating_entity_id: uid,
+          type: 't',
+          source_entity_ref: 'k:default/unrelated2',
+          target_entity_ref: 'k:default/root',
+        });
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
@@ -1645,3 +1605,19 @@ describe('DefaultEntitiesCatalog', () => {
     );
   });
 });
+
+function entityFrom(
+  name: string,
+  { uid, namespace }: { uid?: string; namespace?: string } = {},
+) {
+  return {
+    apiVersion: 'a',
+    kind: 'k',
+    metadata: {
+      name,
+      ...(!!namespace && { namespace }),
+      ...(!!uid && { uid }),
+    },
+    spec: { should_include_this: 'yes' },
+  };
+}

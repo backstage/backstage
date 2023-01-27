@@ -113,7 +113,7 @@ function addCondition(
   // make a lot of sense. However, it had abysmal performance on sqlite
   // when datasets grew large, so we're using IN instead.
   const matchQuery = db<DbSearchRow>('search')
-    .select(entityIdField)
+    .select('search.entity_id')
     .where({ key: filter.key.toLowerCase() })
     .andWhere(function keyFilter() {
       if (filter.values) {
