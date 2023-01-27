@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  TokenManager,
+  UrlReader,
+} from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -82,6 +86,7 @@ export interface RouterOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   identity?: IdentityApi;
+  tokenManager?: TokenManager;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -96,13 +101,14 @@ function isSupportedTemplate(entity: TemplateEntityV1beta3) {
  * are using the IdentityApi, we can remove this function.
  */
 function buildDefaultIdentityClient({
-  logger,
+  options,
 }: {
-  logger: Logger;
+  options: RouterOptions;
 }): IdentityApi {
   return {
     getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
       const header = request.headers.authorization;
+      const { logger, tokenManager } = options;
 
       if (!header) {
         return undefined;
@@ -132,8 +138,15 @@ function buildDefaultIdentityClient({
           throw new TypeError('Expected string sub claim');
         }
 
-        // Check that it's a valid ref, otherwise this will throw.
-        parseEntityRef(sub);
+        try {
+          // Check that it's a valid ref, otherwise this will throw.
+          parseEntityRef(sub);
+        } catch (e) {
+          if (sub !== 'backstage-server' || !options.tokenManager) {
+            throw e;
+          }
+          await tokenManager?.authenticate(token);
+        }
 
         return {
           identity: {
@@ -179,8 +192,7 @@ export async function createRouter(
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
   const identity: IdentityApi =
-    options.identity || buildDefaultIdentityClient({ logger });
-
+    options.identity || buildDefaultIdentityClient({ options });
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
 
