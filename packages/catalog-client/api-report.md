@@ -251,15 +251,13 @@ export type GetPaginatedEntitiesCursorRequest = {
 };
 
 // @alpha
-export type GetPaginatedEntitiesInitialRequest =
-  | {
-      fields?: string[];
-      limit?: number;
-      filter?: EntityFilterQuery;
-      sortFields?: EntityOrderQuery;
-      query?: string;
-    }
-  | undefined;
+export type GetPaginatedEntitiesInitialRequest = {
+  fields?: string[];
+  limit?: number;
+  filter?: EntityFilterQuery;
+  sortFields?: EntityOrderQuery;
+  query?: string;
+};
 
 // @alpha
 export type GetPaginatedEntitiesRequest =

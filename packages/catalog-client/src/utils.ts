@@ -23,9 +23,6 @@ import {
 export function isPaginatedEntitiesInitialRequest(
   request: GetPaginatedEntitiesInitialRequest,
 ): request is GetPaginatedEntitiesInitialRequest {
-  if (!request) {
-    return true;
-  }
   return !(request as GetPaginatedEntitiesCursorRequest).cursor;
 }
 

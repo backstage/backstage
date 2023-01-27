@@ -211,13 +211,13 @@ export class CatalogClient implements CatalogApi {
    * @alpha
    */
   async getPaginatedEntities?(
-    request?: GetPaginatedEntitiesRequest,
+    request: GetPaginatedEntitiesRequest = {},
     options?: CatalogRequestOptions,
   ): Promise<GetPaginatedEntitiesResponse> {
     const params: string[] = [];
 
     if (isPaginatedEntitiesInitialRequest(request)) {
-      const { fields = [], filter, limit, sortFields, query } = request ?? {};
+      const { fields = [], filter, limit, sortFields, query } = request;
       params.push(...this.getParams(filter));
 
       if (limit !== undefined) {
