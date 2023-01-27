@@ -9854,15 +9854,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:8.3.15, @graphql-tools/merge@npm:^8.2.6":
-  version: 8.3.15
-  resolution: "@graphql-tools/merge@npm:8.3.15"
+"@graphql-tools/merge@npm:8.3.16, @graphql-tools/merge@npm:^8.2.6":
+  version: 8.3.16
+  resolution: "@graphql-tools/merge@npm:8.3.16"
   dependencies:
     "@graphql-tools/utils": 9.1.4
     tslib: ^2.4.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 7823d3b3a2bb7a661826eb8fce8a4fcb17439224818aa08ca814d7b25324b66b790cf8e7fa083dfa9f41b2213355fb1f0db88d1e7334788347a6d69c8f5555e9
+  checksum: 4d7fa594e0d97b6d596c85619a8203cb9c88452b75efac4191697de00db5d043639ed47f6bf0a3ccc11e8638714d92a4a8bc37e77b61b46790ddf4a1e5d4bb87
   languageName: node
   linkType: hard
 
@@ -10002,16 +10002,16 @@ __metadata:
   linkType: hard
 
 "@graphql-tools/schema@npm:^9.0.0":
-  version: 9.0.13
-  resolution: "@graphql-tools/schema@npm:9.0.13"
+  version: 9.0.14
+  resolution: "@graphql-tools/schema@npm:9.0.14"
   dependencies:
-    "@graphql-tools/merge": 8.3.15
+    "@graphql-tools/merge": 8.3.16
     "@graphql-tools/utils": 9.1.4
     tslib: ^2.4.0
     value-or-promise: 1.0.12
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: fa5c5033c79e3ab210207c68bf80729448f0ae0bf071e029a218043d952dec8352b0d4ad467ca789a08e292d60c1ee111d266a2193bd50759c9eb82e8f9ad586
+  checksum: ae958892363fe8b1715a9fd3c4bdb56d0d5d429693dbb9774ce930d104ed5a7c94db3c41c12d91fd930bf90ab186337d3ba660e765a99a98bde892f0d2dcf40e
   languageName: node
   linkType: hard
 
