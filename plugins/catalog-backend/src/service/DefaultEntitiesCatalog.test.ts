@@ -571,7 +571,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'can order and combine with filtering, %p',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        await createDatabase(databaseId);
 
         const entity1: Entity = {
           apiVersion: 'a',
@@ -597,12 +597,16 @@ describe('DefaultEntitiesCatalog', () => {
           metadata: { name: 'n4' },
           spec: { a: 'baz', b: 'only' },
         };
-        await addEntityToSearch(knex, entity1);
-        await addEntityToSearch(knex, entity2);
-        await addEntityToSearch(knex, entity3);
-        await addEntityToSearch(knex, entity4);
+        await addEntityToSearch(entity1);
+        await addEntityToSearch(entity2);
+        await addEntityToSearch(entity3);
+        await addEntityToSearch(entity4);
 
-        const catalog = new DefaultEntitiesCatalog(knex, stitcher);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
 
         function f(request: EntitiesRequest): Promise<string[]> {
           return catalog
@@ -665,10 +669,9 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'queries for entities by ref, including duplicates, and gracefully returns null for missing entities, %p',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        await createDatabase(databaseId);
 
         await addEntity(
-          knex,
           {
             apiVersion: 'a',
             kind: 'k',
@@ -679,7 +682,6 @@ describe('DefaultEntitiesCatalog', () => {
           [],
         );
         await addEntity(
-          knex,
           {
             apiVersion: 'a',
             kind: 'k',
@@ -690,7 +692,11 @@ describe('DefaultEntitiesCatalog', () => {
           [],
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex, stitcher);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
 
         const { items } = await catalog.entitiesBatch({
           entityRefs: [
@@ -1148,6 +1154,7 @@ describe('DefaultEntitiesCatalog', () => {
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
           logger: getVoidLogger(),
+          stitcher,
         });
 
         const limit = 2;
@@ -1250,6 +1257,7 @@ describe('DefaultEntitiesCatalog', () => {
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
           logger: getVoidLogger(),
+          stitcher,
         });
 
         const limit = 2;
@@ -1563,9 +1571,9 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'can match relations',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        await createDatabase(databaseId);
 
-        await addEntityToSearch(knex, {
+        await addEntityToSearch({
           apiVersion: 'a',
           kind: 'k',
           metadata: {
@@ -1580,7 +1588,7 @@ describe('DefaultEntitiesCatalog', () => {
             },
           ],
         });
-        await addEntityToSearch(knex, {
+        await addEntityToSearch({
           apiVersion: 'a',
           kind: 'k',
           metadata: {
@@ -1599,7 +1607,7 @@ describe('DefaultEntitiesCatalog', () => {
             },
           ],
         });
-        await addEntityToSearch(knex, {
+        await addEntityToSearch({
           apiVersion: 'a',
           kind: 'k',
           metadata: {
@@ -1615,7 +1623,11 @@ describe('DefaultEntitiesCatalog', () => {
           ],
         });
 
-        const catalog = new DefaultEntitiesCatalog(knex, stitcher);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
 
         await expect(
           catalog.facets({
