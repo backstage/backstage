@@ -32,6 +32,7 @@ export type GithubEntityProviderConfig = {
     repository?: RegExp;
     branch?: string;
     topic?: GithubTopicFilters;
+    allowForks?: boolean;
   };
   validateLocationsExist: boolean;
   schedule?: TaskScheduleDefinition;
@@ -72,6 +73,7 @@ function readProviderConfig(
   const host = config.getOptionalString('host') ?? 'github.com';
   const repositoryPattern = config.getOptionalString('filters.repository');
   const branchPattern = config.getOptionalString('filters.branch');
+  const allowForks = config.getOptionalBoolean('filters.allowForks') ?? true;
   const topicFilterInclude = config?.getOptionalStringArray(
     'filters.topic.include',
   );
@@ -103,6 +105,7 @@ function readProviderConfig(
         ? compileRegExp(repositoryPattern)
         : undefined,
       branch: branchPattern || undefined,
+      allowForks: allowForks,
       topic: {
         include: topicFilterInclude,
         exclude: topicFilterExclude,

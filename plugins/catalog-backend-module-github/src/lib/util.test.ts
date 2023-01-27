@@ -15,7 +15,11 @@
  */
 
 import { GithubTopicFilters } from '../providers/GithubEntityProviderConfig';
-import { parseGithubOrgUrl, satisfiesTopicFilter } from './util';
+import {
+  parseGithubOrgUrl,
+  satisfiesTopicFilter,
+  satisfiesForkFilter,
+} from './util';
 
 describe('parseGithubOrgUrl', () => {
   it('only supports clean org urls, and decodes them', () => {
@@ -85,5 +89,23 @@ describe('satisfiesTopicFilter', () => {
     expect(
       satisfiesTopicFilter(['backstage-include', 'backstage-exclude'], filter),
     ).toEqual(false);
+  });
+});
+
+describe('satisfiesForkFilter', () => {
+  it('handles cases where forks are not allowed and a fork is evaluated', () => {
+    expect(satisfiesForkFilter(false, true)).toEqual(false);
+  });
+
+  it('handles cases where forks are not allowed and a fork is not evaluated', () => {
+    expect(satisfiesForkFilter(false, false)).toEqual(true);
+  });
+
+  it('handles cases where forks are allowed and a fork is evaluated', () => {
+    expect(satisfiesForkFilter(true, true)).toEqual(true);
+  });
+
+  it('handles cases where forks are allowed and a fork is not evaluated', () => {
+    expect(satisfiesForkFilter(true, false)).toEqual(true);
   });
 });

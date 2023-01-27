@@ -79,9 +79,9 @@ export function parseListPlaylistsFilterString(
     const equalsIndex = statement.indexOf('=');
 
     const key =
-      equalsIndex === -1 ? statement : statement.substr(0, equalsIndex).trim();
+      equalsIndex === -1 ? statement : statement.slice(0, equalsIndex).trim();
     const value =
-      equalsIndex === -1 ? undefined : statement.substr(equalsIndex + 1).trim();
+      equalsIndex === -1 ? undefined : statement.slice(equalsIndex + 1).trim();
 
     if (!key || !value) {
       throw new InputError(

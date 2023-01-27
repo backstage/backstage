@@ -434,7 +434,7 @@ export function mappedRepoBuild(build: Build): RepoBuild {
     queueTime: build.queueTime?.toISOString(),
     startTime: build.startTime?.toISOString(),
     finishTime: build.finishTime?.toISOString(),
-    source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
+    source: `${build.sourceBranch} (${build.sourceVersion?.slice(0, 8)})`,
     uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
   };
 }
@@ -489,7 +489,7 @@ export function mappedBuildRun(build: Build): BuildRun {
     queueTime: build.queueTime?.toISOString(),
     startTime: build.startTime?.toISOString(),
     finishTime: build.finishTime?.toISOString(),
-    source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
+    source: `${build.sourceBranch} (${build.sourceVersion?.slice(0, 8)})`,
     uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
   };
 }
