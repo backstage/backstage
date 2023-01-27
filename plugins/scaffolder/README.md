@@ -79,6 +79,27 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     </Sidebar>
 ```
 
+### Customisation
+
+It's possible to customise the certain parts of the ScaffolderPage.
+You can do it as
+
+```jsx
+<Route
+  path="/create"
+  element={
+    <ScaffolderPage
+      components={{
+        TaskStepViewerComponent: CustomTaskStepViewer,
+      }}
+    />
+  }
+></Route>
+```
+
+There are four components which you can customise so far: `ReviewStepComponent`,
+`TemplateCardComponent`, `TaskPageComponent` and `TaskStepViewerComponent`.
+
 ### Troubleshooting
 
 If you encounter the [issue of closing EventStream](https://github.com/backstage/backstage/issues/5535)
@@ -107,7 +128,7 @@ export const apis: AnyApiFactory[] = [
       scmIntegrationsApi: scmIntegrationsApiRef,
       fetchApi: fetchApiRef,
     },
-    factory: ({ scmIntegrationsApi, discoveryApi, identityApi, fetchApi }) =>
+    factory: ({scmIntegrationsApi, discoveryApi, identityApi, fetchApi}) =>
       new ScaffolderClient({
         discoveryApi,
         identityApi,
@@ -116,7 +137,7 @@ export const apis: AnyApiFactory[] = [
         useLongPollingLogs: true,
       }),
   }),
-  // ... other factories
+// ... other factories
 ```
 
 This replaces the default implementation of the `scaffolderApiRef`.
