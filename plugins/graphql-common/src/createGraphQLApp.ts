@@ -13,55 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { envelop, useExtendContext } from '@envelop/core';
-import { useGraphQLModules } from '@envelop/graphql-modules';
 import { createApplication, Module } from 'graphql-modules';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { Core } from './core/core';
 import { mapDirectives } from './mapDirectives';
-import { EnvelopPlugins } from './types';
-import { useDataLoader } from '@envelop/dataloader';
-import DataLoader from 'dataloader';
-import {
-  CompoundEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 
 /** @public */
-export type createGraphQLAppOptions<
-  Plugins extends EnvelopPlugins,
-  Loader extends DataLoader<any, any>,
-> = {
-  loader: () => Loader;
-  plugins?: Plugins;
+export type createGraphQLAppOptions = {
   modules?: Module[];
-  refToId?: (ref: CompoundEntityRef | string) => string;
-};
-
-const defaultRefToId = (ref: CompoundEntityRef | string) => {
-  return typeof ref === 'string' ? ref : stringifyEntityRef(ref);
 };
 
 /** @public */
-export function createGraphQLApp<
-  Plugins extends EnvelopPlugins,
-  Loader extends DataLoader<any, any>,
->(options: createGraphQLAppOptions<Plugins, Loader>) {
-  const { modules, plugins, loader, refToId = defaultRefToId } = options;
-  const application = createApplication({
-    schemaBuilder: ({ typeDefs, resolvers }) =>
-      mapDirectives(makeExecutableSchema({ typeDefs, resolvers })),
+export function createGraphQLApp(options: createGraphQLAppOptions) {
+  const { modules } = options;
+  return createApplication({
+    schemaBuilder: input => mapDirectives(makeExecutableSchema(input)),
     modules: [Core, ...(modules ?? [])],
   });
-
-  const run = envelop({
-    plugins: [
-      useGraphQLModules(application),
-      useDataLoader('loader', loader),
-      useExtendContext(() => ({ refToId })),
-      ...(plugins ?? []),
-    ],
-  });
-
-  return { run, application };
 }

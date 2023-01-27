@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { envelop } from '@envelop/core';
+import {
+  CompoundEntityRef,
+  Entity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import DataLoader from 'dataloader';
 
+export type PromiseOrValue<T> = T | Promise<T>;
+
 /** @public */
-export type Loader = DataLoader<string, Entity>;
+export type EntityLoader = DataLoader<string, Entity>;
 
 /** @public */
 export interface ResolverContext<
-  TLoader extends DataLoader<any, any> = Loader,
+  TLoader extends DataLoader<any, any> = EntityLoader,
 > {
   loader: TLoader;
-  refToId: (ref: CompoundEntityRef | string) => string;
+  refToId?: (ref: CompoundEntityRef | string) => string;
 }
 
-/** @public */
-export type EnvelopPlugins = Parameters<typeof envelop>[0]['plugins'];
+export const defaultRefToId = (ref: CompoundEntityRef | string) => {
+  return typeof ref === 'string' ? ref : stringifyEntityRef(ref);
+};

@@ -19,54 +19,43 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
-import { ApolloServer } from 'apollo-server-express';
-import {
-  createGraphQLApp,
-  createLoader,
-  EnvelopPlugins,
-} from '@backstage/plugin-graphql-common';
+import { createGraphQLApp } from '@backstage/plugin-graphql-common';
+import { createLoader } from '@backstage/plugin-graphql-catalog';
 import helmet from 'helmet';
+import DataLoader from 'dataloader';
 import { CatalogClient } from '@backstage/catalog-client';
+import {
+  createYoga,
+  Plugin,
+  useExtendContext,
+  YogaServerInstance,
+} from 'graphql-yoga';
+import { useGraphQLModules } from '@envelop/graphql-modules';
+import { useDataLoader } from '@envelop/dataloader';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 /** @public */
 export interface RouterOptions {
   logger: Logger;
   catalog: CatalogClient;
   modules?: Module[];
-  plugins?: EnvelopPlugins;
+  plugins?: Plugin[];
+  loader?: () => DataLoader<string, any>;
+  refToId?: (ref: CompoundEntityRef | string) => string;
 }
 
 /** @public */
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { run, application } = createGraphQLApp({
-    modules: options.modules,
-    loader: () => createLoader(options.catalog),
-    plugins: options.plugins,
-  });
+export async function createRouter({
+  logger,
+  catalog,
+  modules,
+  plugins,
+  loader,
+  refToId,
+}: RouterOptions): Promise<express.Router> {
+  let yoga: YogaServerInstance<any, any> | null = null;
 
-  // TODO Switch to yoga
-  const server = new ApolloServer({
-    schema: application.schema,
-    executor: async requestContext => {
-      const { schema, execute, contextFactory } = run({
-        req: requestContext.request.http,
-      });
-
-      return execute({
-        schema,
-        document: requestContext.document,
-        contextValue: await contextFactory(),
-        variableValues: requestContext.request.variables,
-        operationName: requestContext.operationName,
-      });
-    },
-    logger: options.logger,
-    introspection: true,
-  });
-
-  await server.start();
+  const application = createGraphQLApp({ modules });
 
   const router = Router();
 
@@ -74,18 +63,32 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  const apolloMiddleware = server.getMiddleware({ path: '/' });
-
   if (process.env.NODE_ENV === 'development')
     router.use(
       helmet.contentSecurityPolicy({
         directives: {
           defaultSrc: ["'self'", "'unsafe-inline'", 'http://*'],
+          scriptSrc: ["'self'", "'unsafe-inline'", 'https://*'],
+          imgSrc: ["'self'", 'https: data:'],
         },
       }),
     );
 
-  router.use(apolloMiddleware);
+  router.use((req, res, next) => {
+    if (!yoga) {
+      yoga = createYoga({
+        plugins: [
+          useGraphQLModules(application),
+          useDataLoader('loader', loader ?? (() => createLoader(catalog))),
+          useExtendContext(() => ({ refToId })),
+          ...(plugins ?? []),
+        ],
+        logging: logger,
+        graphqlEndpoint: req.baseUrl,
+      });
+    }
+    return yoga(req, res, next);
+  });
   router.use(errorHandler());
 
   return router;

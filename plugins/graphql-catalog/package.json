@@ -40,11 +40,14 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-graphql-common": "workspace:^",
-    "@graphql-tools/load-files": "^6.5.3",
-    "@graphql-tools/utils": "^8.6.5",
-    "graphql": "^16.0.0",
-    "graphql-modules": "^2.0.0",
+    "@graphql-tools/load-files": "^6.6.1",
+    "@graphql-tools/utils": "^9.1.4",
+    "dataloader": "^2.1.0",
+    "graphql": "^16.6.0",
+    "graphql-modules": "^2.1.0",
     "graphql-type-json": "^0.3.2"
   },
   "devDependencies": {

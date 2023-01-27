@@ -13,5 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './catalog';
-export * from './createLoader';
+import { resolvePackagePath } from '@backstage/backend-common';
+import { loadFilesSync } from '@graphql-tools/load-files';
+
+/** @public */
+export const coreSchema = loadFilesSync(
+  resolvePackagePath(
+    '@backstage/plugin-graphql-common',
+    'src/core/core.graphql',
+  ),
+);

@@ -48,7 +48,7 @@ import {
   isNonNullType,
   isUnionType,
 } from 'graphql';
-import type { ResolverContext } from './types';
+import { defaultRefToId, ResolverContext } from './types';
 
 function getObjectTypeName(
   iface: GraphQLInterfaceType,
@@ -230,7 +230,11 @@ export function mapDirectives(sourceSchema: GraphQLSchema) {
       });
       field.args = fieldArgs;
 
-      field.resolve = async ({ id }, args, { loader, refToId }) => {
+      field.resolve = async (
+        { id },
+        args,
+        { loader, refToId = defaultRefToId },
+      ) => {
         const ids = filterEntityRefs(
           await loader.load(id),
           directive.name,
@@ -242,7 +246,11 @@ export function mapDirectives(sourceSchema: GraphQLSchema) {
         };
       };
     } else {
-      field.resolve = async ({ id }, _, { loader, refToId }) => {
+      field.resolve = async (
+        { id },
+        _,
+        { loader, refToId = defaultRefToId },
+      ) => {
         const ids = filterEntityRefs(
           await loader.load(id),
           directive.name,

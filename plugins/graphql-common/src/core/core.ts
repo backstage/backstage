@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolvePackagePath } from '@backstage/backend-common';
-import { loadFilesSync } from '@graphql-tools/load-files';
 import { createModule } from 'graphql-modules';
-import type { ResolverContext } from '../types';
+import { defaultRefToId, ResolverContext } from '../types';
+import { coreSchema } from './schema';
 
+/** @public */
 export const Core = createModule({
   id: 'core',
-  typeDefs: loadFilesSync(
-    resolvePackagePath(
-      '@backstage/plugin-graphql-common',
-      'src/core/core.graphql',
-    ),
-  ),
+  typeDefs: coreSchema,
   resolvers: {
     Node: {
       id: async (
@@ -47,7 +42,7 @@ export const Core = createModule({
           kind,
           namespace = 'default',
         }: { name: string; kind: string; namespace: string },
-        { refToId }: ResolverContext,
+        { refToId = defaultRefToId }: ResolverContext,
       ): { id: string } => ({ id: refToId({ name, kind, namespace }) }),
     },
   },

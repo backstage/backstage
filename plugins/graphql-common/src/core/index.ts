@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './catalog';
-export * from './createLoader';
+export * from './core';
+export * from './schema';

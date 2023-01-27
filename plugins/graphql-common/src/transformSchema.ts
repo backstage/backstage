@@ -13,27 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolvePackagePath } from '@backstage/backend-common';
-import { loadFilesSync } from '@graphql-tools/load-files';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import { TypeSource } from '@graphql-tools/utils';
 import { buildASTSchema, validateSchema } from 'graphql';
+import { coreSchema } from './core';
 import { mapDirectives } from './mapDirectives';
 
 /** @public */
 export function transformSchema(source: TypeSource) {
   const schema = mapDirectives(
-    buildASTSchema(
-      mergeTypeDefs([
-        loadFilesSync(
-          resolvePackagePath(
-            '@backstage/plugin-graphql-common',
-            'src/**/*.graphql',
-          ),
-        ),
-        source,
-      ]),
-    ),
+    buildASTSchema(mergeTypeDefs([coreSchema, source])),
   );
   const errors = validateSchema(schema);
 

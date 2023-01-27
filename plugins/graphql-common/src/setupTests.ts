@@ -16,19 +16,27 @@
 import type { JsonObject } from '@backstage/types';
 import type { Operation } from 'effection';
 
-import { PromiseOrValue } from '@envelop/core';
 import { createGraphQLApp } from './createGraphQLApp';
 
 import DataLoader from 'dataloader';
 import { Module } from 'graphql-modules';
+import { PromiseOrValue } from './types';
+import { envelop, useExtendContext } from '@envelop/core';
+import { useGraphQLModules } from '@envelop/graphql-modules';
 
 export function createGraphQLAPI(
   TestModule: Module,
   loader: () => DataLoader<any, any>,
 ) {
-  const { run, application } = createGraphQLApp({
+  const application = createGraphQLApp({
     modules: [TestModule],
-    loader,
+  });
+
+  const run = envelop({
+    plugins: [
+      useGraphQLModules(application),
+      useExtendContext(() => ({ loader })),
+    ],
   });
 
   return (query: string): Operation<JsonObject> => {

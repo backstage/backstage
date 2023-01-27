@@ -4,52 +4,29 @@
 
 ```ts
 import { Application } from 'graphql-modules';
-import type { CatalogClient } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import DataLoader from 'dataloader';
-import type { Entity } from '@backstage/catalog-model';
-import { envelop } from '@envelop/core';
-import { GetEnvelopedFn } from '@envelop/core';
+import { Entity } from '@backstage/catalog-model';
 import { GraphQLSchema } from 'graphql';
 import { Module } from 'graphql-modules';
 import { TypeSource } from '@graphql-tools/utils';
 
 // @public (undocumented)
-export function createGraphQLApp<
-  Plugins extends EnvelopPlugins,
-  Loader extends DataLoader<any, any>,
->(
-  options: createGraphQLAppOptions<Plugins, Loader>,
-): {
-  run: GetEnvelopedFn<{
-    [x: string]: any;
-    [x: number]: any;
-    [x: symbol]: any;
-  }>;
-  application: Application;
-};
+export const Core: Module;
 
 // @public (undocumented)
-export type createGraphQLAppOptions<
-  Plugins extends EnvelopPlugins,
-  Loader extends DataLoader<any, any>,
-> = {
-  loader: () => Loader;
-  plugins?: Plugins;
+export const coreSchema: any[];
+
+// @public (undocumented)
+export function createGraphQLApp(options: createGraphQLAppOptions): Application;
+
+// @public (undocumented)
+export type createGraphQLAppOptions = {
   modules?: Module[];
-  refToId?: (ref: CompoundEntityRef | string) => string;
 };
-
-// @public (undocumented)
-export function createLoader(
-  catalog: Pick<CatalogClient, 'getEntitiesByRefs'>,
-): EntityLoader;
 
 // @public (undocumented)
 export type EntityLoader = DataLoader<string, Entity>;
-
-// @public (undocumented)
-export type EnvelopPlugins = Parameters<typeof envelop>[0]['plugins'];
 
 // @public (undocumented)
 export interface ResolverContext<
@@ -58,7 +35,7 @@ export interface ResolverContext<
   // (undocumented)
   loader: TLoader;
   // (undocumented)
-  refToId: (ref: CompoundEntityRef | string) => string;
+  refToId?: (ref: CompoundEntityRef | string) => string;
 }
 
 // @public (undocumented)
