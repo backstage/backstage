@@ -98,7 +98,12 @@ export const ReviewStep = (props: ReviewStepProps) => {
         <Typography variant="h6">Review and create</Typography>
         <StructuredMetadataTable
           dense
-          metadata={getReviewData(formData, getUiSchemasFromSteps(steps))}
+          metadata={getReviewData(
+            formData,
+            getUiSchemasFromSteps(
+              steps.map(({ mergedSchema }) => ({ schema: mergedSchema })),
+            ),
+          )}
         />
         <Box mb={4} />
         <Button onClick={handleBack} disabled={disableButtons}>
