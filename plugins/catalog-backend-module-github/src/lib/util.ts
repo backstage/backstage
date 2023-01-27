@@ -77,3 +77,14 @@ export function satisfiesTopicFilter(
   // not configured at all.
   return true;
 }
+
+export function satisfiesForkFilter(
+  allowForks: boolean | true,
+  isFork: boolean | false,
+): Boolean {
+  // we don't want to include forks if forks are not allowed
+  if (!allowForks && isFork) return false;
+
+  // if forks are allowed, allow all repos through
+  return true;
+}
