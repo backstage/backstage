@@ -160,12 +160,6 @@ export interface CatalogRequestOptions {
 }
 
 // @public
-export type EntitiesFilter =
-  | Record<string, string | symbol | (string | symbol)[]>[]
-  | Record<string, string | symbol | (string | symbol)[]>
-  | undefined;
-
-// @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
 
@@ -235,7 +229,7 @@ export interface GetEntityAncestorsResponse {
 // @public
 export interface GetEntityFacetsRequest {
   facets: string[];
-  filter?: EntitiesFilter;
+  filter?: EntityFilterQuery;
 }
 
 // @public
@@ -261,7 +255,7 @@ export type GetPaginatedEntitiesInitialRequest =
   | {
       fields?: string[];
       limit?: number;
-      filter?: EntitiesFilter;
+      filter?: EntityFilterQuery;
       sortFields?: EntityOrderQuery;
       query?: string;
     }
