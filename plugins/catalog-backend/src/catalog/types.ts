@@ -46,12 +46,6 @@ export type EntityOrder = {
   order: 'asc' | 'desc';
 };
 
-// TODO(vinzscam): remove this type in favor of EntityOrder
-export type EntitySortField = {
-  field: string;
-  order?: 'asc' | 'desc' | undefined;
-};
-
 /**
  * Matches rows in the search table.
  * @public
@@ -240,7 +234,7 @@ export interface PaginatedEntitiesInitialRequest {
   fields?: (entity: Entity) => Entity;
   limit?: number;
   filter?: EntityFilter;
-  sortFields?: EntitySortField[];
+  sortFields?: EntityOrder[];
   query?: string;
 }
 
@@ -291,7 +285,7 @@ export type Cursor = {
    * An array of fields used for sorting the data.
    * For example, [ { field: 'metadata.name', order: 'asc' } ]
    */
-  sortFields: EntitySortField[];
+  sortFields: EntityOrder[];
   /**
    * The values of the fields of a specific item used for paginating the data.
    */

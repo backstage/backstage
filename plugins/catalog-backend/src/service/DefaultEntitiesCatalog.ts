@@ -36,9 +36,9 @@ import {
   EntityFacetsResponse,
   EntityFilter,
   EntityPagination,
-  EntitySortField,
   PaginatedEntitiesRequest,
   PaginatedEntitiesResponse,
+  EntityOrder,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -56,7 +56,7 @@ import {
   isPaginatedEntitiesInitialRequest,
 } from './util';
 
-const defaultSortField: EntitySortField = {
+const defaultSortField: EntityOrder = {
   field: 'metadata.uid',
   order: 'asc',
 };
@@ -351,7 +351,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       this.logger.warn(`Only one sort field is supported, ignoring the rest`);
     }
 
-    const sortField: EntitySortField = {
+    const sortField: EntityOrder = {
       ...defaultSortField,
       ...cursor.sortFields[0],
     };
@@ -683,7 +683,7 @@ function parseCursorFromRequest(
   return {};
 }
 
-function invertOrder(order: EntitySortField['order']) {
+function invertOrder(order: EntityOrder['order']) {
   return order === 'asc' ? 'desc' : 'asc';
 }
 
