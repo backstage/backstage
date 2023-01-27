@@ -15,12 +15,12 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { microsoftCalendarPlugin, MicrosoftCalendarPage } from '../src/plugin';
+import { microsoftCalendarPlugin, MicrosoftCalendar } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(microsoftCalendarPlugin)
   .addPage({
-    element: <MicrosoftCalendarPage />,
+    element: <MicrosoftCalendar />,
     title: 'Root Page',
     path: '/microsoft-calendar',
   })
