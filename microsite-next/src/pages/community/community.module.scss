@@ -23,12 +23,6 @@
 
     :global(.bulletLine) {
       width: 50px;
-      height: 3px;
-      background: linear-gradient(
-        89.75deg,
-        #9bf0e1 -1.5%,
-        rgba(155, 240, 225, 0) 111.48%
-      );
     }
 
     p {
@@ -69,13 +63,4 @@
       rgba(155, 240, 225, 0) 54.17%,
       rgba(155, 240, 225, 0.67) 137.34%
     );
-}
-
-.communityInitiatives {
-}
-
-.trainingNCertifications {
-}
-
-.partners {
 }

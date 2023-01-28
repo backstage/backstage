@@ -25,7 +25,7 @@
   background-color: white;
 }
 
-/* Utility API Styling */
+/* #region Utility API Styling */
 .textGreen {
   color: #82b366;
 }
@@ -44,4 +44,15 @@
 .textAlignCenter {
   text-align: center;
 }
-/* End of Utility API Styling */
+/* #endregion */
+
+/* #region Utility component styles */
+.bulletLine {
+  height: 3px;
+  background: linear-gradient(
+    89.75deg,
+    #9bf0e1 -1.5%,
+    rgba(155, 240, 225, 0) 111.48%
+  );
+}
+/* #endregion */
