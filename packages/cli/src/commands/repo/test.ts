@@ -20,13 +20,30 @@ import { PackageGraph } from '../../lib/monorepo';
 import { paths } from '../../lib/paths';
 import { runCheck } from '../../lib/run';
 
-function includesAnyOf(hayStack: string[], ...needles: string[]) {
-  for (const needle of needles) {
-    if (hayStack.includes(needle)) {
-      return true;
+export function createFlagFinder(args: string[]) {
+  const flags = new Set<string>();
+
+  for (const arg of args) {
+    if (arg.startsWith('--no-')) {
+      flags.add(`--${arg.slice('--no-'.length)}`);
+    } else if (arg.startsWith('--')) {
+      flags.add(arg.split('=')[0]);
+    } else if (arg.startsWith('-')) {
+      const shortFlags = arg.slice(1).split('');
+      for (const shortFlag of shortFlags) {
+        flags.add(`-${shortFlag}`);
+      }
     }
   }
-  return false;
+
+  return (...findFlags: string[]) => {
+    for (const flag of findFlags) {
+      if (flags.has(flag)) {
+        return true;
+      }
+    }
+    return false;
+  };
 }
 
 function removeOptionArg(args: string[], option: string) {
@@ -56,24 +73,19 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   const allArgs = parent.args as string[];
   const args = allArgs.slice(allArgs.indexOf('test') + 1);
 
+  const hasFlags = createFlagFinder(args);
+
   // Only include our config if caller isn't passing their own config
-  if (!includesAnyOf(args, '-c', '--config')) {
+  if (!hasFlags('-c', '--config')) {
     args.push('--config', paths.resolveOwn('config/jest.js'));
   }
 
-  if (!includesAnyOf(args, '--no-passWithNoTests', '--passWithNoTests=false')) {
+  if (!hasFlags('--passWithNoTests')) {
     args.push('--passWithNoTests');
   }
 
   // Run in watch mode unless in CI, coverage mode, or running all tests
-  if (
-    !process.env.CI &&
-    !args.includes('--coverage') &&
-    // explicitly no watching
-    !includesAnyOf(args, '--no-watch', '--watch=false', '--watchAll=false') &&
-    // already watching
-    !includesAnyOf(args, '--watch', '--watchAll')
-  ) {
+  if (!process.env.CI && !hasFlags('--coverage', '--watch', '--watchAll')) {
     const isGitRepo = () =>
       runCheck('git', 'rev-parse', '--is-inside-work-tree');
     const isMercurialRepo = () => runCheck('hg', '--cwd', '.', 'root');
@@ -88,7 +100,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   // When running tests from the repo root in large repos you can easily hit the heap limit.
   // This is because Jest workers leak a lot of memory, and the workaround is to limit worker memory.
   // We set a default memory limit, but if an explicit one is supplied it will be used instead
-  if (!args.some(arg => arg.match(/^--workerIdleMemoryLimit/))) {
+  if (!hasFlags('--workerIdleMemoryLimit')) {
     args.push('--workerIdleMemoryLimit=1000M');
   }
 
@@ -99,8 +111,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   // otherwise we need to set the worker count explicitly unless already done.
   if (
     os.cpus().length <= 3 &&
-    !includesAnyOf(args, '-i', '--runInBand') &&
-    !args.some(arg => arg.match(/^(--maxWorkers|-w)/))
+    !hasFlags('-i', '--runInBand', '-w', '--maxWorkers')
   ) {
     args.push('--maxWorkers=2');
   }
@@ -109,7 +120,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     removeOptionArg(args, '--since');
   }
 
-  if (opts.since && !args.some(arg => arg.startsWith('--selectProjects'))) {
+  if (opts.since && !hasFlags('--selectProjects')) {
     const packages = await PackageGraph.listTargetPackages();
     const graph = PackageGraph.fromPackages(packages);
     const changedPackages = await graph.listChangedPackages({
