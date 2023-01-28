@@ -15,14 +15,13 @@
  */
 
 import React, { ComponentType } from 'react';
-import { MemoryRouter } from 'react-router-dom';
 
 import { List, ListItem } from '@material-ui/core';
 import DefaultIcon from '@material-ui/icons/InsertDriveFile';
 import CustomIcon from '@material-ui/icons/NoteAdd';
 
 import { Link } from '@backstage/core-components';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { createPlugin } from '@backstage/core-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
 
@@ -71,15 +70,14 @@ export default {
   title: 'Plugins/Search/SearchResult',
   component: SearchResult,
   decorators: [
-    (Story: ComponentType<{}>) => (
-      <MemoryRouter>
+    (Story: ComponentType<{}>) =>
+      wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
           <SearchContextProvider>
             <Story />
           </SearchContextProvider>
-        </TestApiProvider>
-      </MemoryRouter>
-    ),
+        </TestApiProvider>,
+      ),
   ],
 };
 
