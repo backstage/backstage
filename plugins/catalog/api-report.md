@@ -107,9 +107,9 @@ export const catalogPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export function CatalogSearchResultListItem(
+export const CatalogSearchResultListItem: (
   props: CatalogSearchResultListItemProps,
-): JSX.Element;
+) => JSX.Element | null;
 
 // @public
 export interface CatalogSearchResultListItemProps {
@@ -120,7 +120,7 @@ export interface CatalogSearchResultListItemProps {
   // (undocumented)
   rank?: number;
   // (undocumented)
-  result: IndexableDocument;
+  result?: IndexableDocument;
 }
 
 // @public (undocumented)

@@ -25,7 +25,6 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   IndexableDocument,
   ResultHighlight,
@@ -50,7 +49,7 @@ const useStyles = makeStyles({
  */
 export interface CatalogSearchResultListItemProps {
   icon?: ReactNode;
-  result: IndexableDocument;
+  result?: IndexableDocument;
   highlight?: ResultHighlight;
   rank?: number;
 }
@@ -63,13 +62,8 @@ export function CatalogSearchResultListItem(
   const highlight = props.highlight as ResultHighlight;
 
   const classes = useStyles();
-  const analytics = useAnalytics();
-  const handleClick = () => {
-    analytics.captureEvent('discover', result.title, {
-      attributes: { to: result.location },
-      value: props.rank,
-    });
-  };
+
+  if (!result) return null;
 
   return (
     <>
@@ -80,7 +74,7 @@ export function CatalogSearchResultListItem(
             className={classes.itemText}
             primaryTypographyProps={{ variant: 'h6' }}
             primary={
-              <Link noTrack to={result.location} onClick={handleClick}>
+              <Link noTrack to={result.location}>
                 {highlight?.fields.title ? (
                   <HighlightedSearchResultText
                     text={highlight.fields.title}

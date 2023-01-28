@@ -27,9 +27,8 @@ import {
   makeStyles,
   Theme,
   List,
-  ListSubheader,
-  ListItem,
   ListProps,
+  ListSubheader,
   Menu,
   MenuItem,
   InputBase,
@@ -43,17 +42,19 @@ import ArrowRightIcon from '@material-ui/icons/ArrowForwardIos';
 
 import { JsonValue } from '@backstage/types';
 import {
-  EmptyState,
   Link,
   LinkProps,
   Progress,
+  EmptyState,
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { AnalyticsContext } from '@backstage/core-plugin-api';
-import { SearchQuery, SearchResult } from '@backstage/plugin-search-common';
+import { SearchResult } from '@backstage/plugin-search-common';
+
+import { useSearchResultListItemExtensions } from '../../extensions';
 
 import { DefaultResultListItem } from '../DefaultResultListItem';
-import { SearchResultState } from '../SearchResult';
+import { SearchResultState, SearchResultStateProps } from '../SearchResult';
 
 const useStyles = makeStyles((theme: Theme) => ({
   listSubheader: {
@@ -279,6 +280,14 @@ export const SearchResultGroupSelectFilterField = (
  */
 export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
   /**
+   * If defined, will render a default error panel.
+   */
+  error?: Error;
+  /**
+   * If defined, will render a default loading progress.
+   */
+  loading?: boolean;
+  /**
    * Icon that representing a result group.
    */
   icon: JSX.Element;
@@ -332,17 +341,13 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
     array: SearchResult[],
   ) => JSX.Element | null;
   /**
-   * If defined, will render a default error panel.
-   */
-  error?: Error;
-  /**
-   * If defined, will render a default loading progress.
-   */
-  loading?: boolean;
-  /**
    * Optional component to render when no results. Default to <EmptyState /> component.
    */
   noResultsComponent?: ReactNode;
+  /**
+   * Optional property to provide if component should not render the component when no results are found.
+   */
+  disableRenderingWithNoResults?: boolean;
 };
 
 /**
@@ -357,8 +362,8 @@ export function SearchResultGroupLayout<FilterOption>(
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const {
-    loading,
     error,
+    loading,
     icon,
     title,
     titleProps = {},
@@ -384,7 +389,8 @@ export function SearchResultGroupLayout<FilterOption>(
         result={resultItem.document}
       />
     ),
-    noResultsComponent = (
+    disableRenderingWithNoResults,
+    noResultsComponent = disableRenderingWithNoResults ? null : (
       <EmptyState missing="data" title="Sorry, no results were found" />
     ),
     ...rest
@@ -397,6 +403,23 @@ export function SearchResultGroupLayout<FilterOption>(
   const handleClose = useCallback(() => {
     setAnchorEl(null);
   }, []);
+
+  if (loading) {
+    return <Progress />;
+  }
+
+  if (error) {
+    return (
+      <ResponseErrorPanel
+        title="Error encountered while fetching search results"
+        error={error}
+      />
+    );
+  }
+
+  if (!resultItems?.length) {
+    return <>{noResultsComponent}</>;
+  }
 
   return (
     <List {...rest}>
@@ -440,19 +463,7 @@ export function SearchResultGroupLayout<FilterOption>(
           {link}
         </Link>
       </ListSubheader>
-      {loading ? <Progress /> : null}
-      {!loading && error ? (
-        <ResponseErrorPanel
-          title="Error encountered while fetching search results"
-          error={error}
-        />
-      ) : null}
-      {!loading && !error && resultItems?.length
-        ? resultItems.map(renderResultItem)
-        : null}
-      {!loading && !error && !resultItems?.length ? (
-        <ListItem>{noResultsComponent}</ListItem>
-      ) : null}
+      {resultItems.map(renderResultItem)}
     </List>
   );
 }
@@ -461,19 +472,14 @@ export function SearchResultGroupLayout<FilterOption>(
  * Props for {@link SearchResultGroup}.
  * @public
  */
-export type SearchResultGroupProps<FilterOption> = Omit<
-  SearchResultGroupLayoutProps<FilterOption>,
-  'loading' | 'error' | 'resultItems' | 'filterFields'
-> & {
-  /**
-   * A search query used for requesting the results to be grouped.
-   */
-  query: Partial<SearchQuery>;
-  /**
-   * Optional property to provide if component should not render the group when no results are found.
-   */
-  disableRenderingWithNoResults?: boolean;
-};
+export type SearchResultGroupProps<FilterOption> = Pick<
+  SearchResultStateProps,
+  'query'
+> &
+  Omit<
+    SearchResultGroupLayoutProps<FilterOption>,
+    'loading' | 'error' | 'resultItems' | 'filterFields'
+  >;
 
 /**
  * Given a query, search for results and render them as a group.
@@ -483,22 +489,9 @@ export type SearchResultGroupProps<FilterOption> = Omit<
 export function SearchResultGroup<FilterOption>(
   props: SearchResultGroupProps<FilterOption>,
 ) {
-  const {
-    query,
-    linkProps = {},
-    disableRenderingWithNoResults,
-    ...rest
-  } = props;
+  const { query, children, renderResultItem, linkProps = {}, ...rest } = props;
 
-  const to = `/search?${qs.stringify(
-    {
-      query: query.term,
-      types: query.types,
-      filters: query.filters,
-      pageCursor: query.pageCursor,
-    },
-    { arrayFormat: 'brackets' },
-  )}`;
+  const defaultRenderResultItem = useSearchResultListItemExtensions(children);
 
   return (
     <AnalyticsContext
@@ -508,19 +501,24 @@ export function SearchResultGroup<FilterOption>(
       }}
     >
       <SearchResultState query={query}>
-        {({ loading, error, value }) => {
-          if (!value?.results?.length && disableRenderingWithNoResults) {
-            return null;
-          }
+        {(
+          { loading, error, value },
+          { term, types, pageCursor, filters = {} },
+        ) => {
+          const to = `/search?${qs.stringify(
+            { term, types, filters, pageCursor, query: term },
+            { arrayFormat: 'brackets' },
+          )}`;
 
           return (
             <SearchResultGroupLayout
               {...rest}
-              loading={loading}
               error={error}
+              loading={loading}
               linkProps={{ to, ...linkProps }}
+              filterFields={Object.keys(filters)}
               resultItems={value?.results}
-              filterFields={Object.keys(query.filters ?? {})}
+              renderResultItem={renderResultItem ?? defaultRenderResultItem}
             />
           );
         }}

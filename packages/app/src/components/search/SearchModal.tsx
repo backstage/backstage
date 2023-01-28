@@ -21,7 +21,6 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  List,
   makeStyles,
   Paper,
   useTheme,
@@ -44,9 +43,8 @@ import {
 import { ToolSearchResultListItem } from '@backstage/plugin-explore';
 import { searchPlugin, SearchType } from '@backstage/plugin-search';
 import {
-  DefaultResultListItem,
-  SearchFilter,
   SearchBar,
+  SearchFilter,
   SearchResult,
   SearchResultPager,
   useSearch,
@@ -93,7 +91,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
     searchBarRef?.current?.focus();
   });
 
-  const handleSearchResulClick = useCallback(() => {
+  const handleSearchResultClick = useCallback(() => {
     toggleModal();
     setTimeout(focusContent, transitions.duration.leavingScreen);
   }, [toggleModal, focusContent, transitions]);
@@ -101,11 +99,11 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
   const handleSearchBarKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (e.key === 'Enter') {
+        handleSearchResultClick();
         navigate(searchPagePath);
-        toggleModal();
       }
     },
-    [navigate, toggleModal, searchPagePath],
+    [navigate, searchPagePath, handleSearchResultClick],
   );
 
   return (
@@ -189,7 +187,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
               alignItems="center"
             >
               <Grid item>
-                <Link to={searchPagePath} onClick={handleSearchResulClick}>
+                <Link to={searchPagePath} onClick={handleSearchResultClick}>
                   <Typography
                     component="span"
                     className={classes.viewResultsLink}
@@ -202,69 +200,13 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
             </Grid>
           </Grid>
           <Grid item xs>
-            <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(({ type, document, highlight, rank }) => {
-                    let resultItem;
-                    switch (type) {
-                      case 'software-catalog':
-                        resultItem = (
-                          <CatalogSearchResultListItem
-                            icon={<CatalogIcon />}
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                        break;
-                      case 'techdocs':
-                        resultItem = (
-                          <TechDocsSearchResultListItem
-                            icon={<DocsIcon />}
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                        break;
-                      case 'tools':
-                        resultItem = (
-                          <ToolSearchResultListItem
-                            icon={<BuildIcon />}
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                        break;
-                      default:
-                        resultItem = (
-                          <DefaultResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                    }
-                    return (
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        key={`${document.location}-btn`}
-                        onClick={handleSearchResulClick}
-                        onKeyDown={handleSearchResulClick}
-                      >
-                        {resultItem}
-                      </div>
-                    );
-                  })}
-                </List>
-              )}
+            <SearchResult
+              onClick={handleSearchResultClick}
+              onKeyDown={handleSearchResultClick}
+            >
+              <CatalogSearchResultListItem icon={<CatalogIcon />} />
+              <TechDocsSearchResultListItem icon={<DocsIcon />} />
+              <ToolSearchResultListItem icon={<BuildIcon />} />
             </SearchResult>
           </Grid>
         </Grid>
