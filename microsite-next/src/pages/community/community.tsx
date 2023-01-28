@@ -13,9 +13,10 @@ interface ICollectionItem {
   link: string;
 }
 
-export default function Community() {
+export function Community() {
   const { siteConfig } = useDocusaurusContext();
 
+  //#region Collection Data
   const communityListItems: ICollectionItem[] = [
     {
       content: 'Chat and get support on our',
@@ -122,6 +123,7 @@ export default function Community() {
       logo: 'img/partner-logo-vmware.png',
     },
   ];
+  //#endregion
 
   return (
     <Layout>
@@ -140,10 +142,10 @@ export default function Community() {
                   Join the vibrant community around Backstage through social
                   media and different meetups. To ensure that you have a
                   welcoming environment, we follow the
-                  <a href="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
+                  <Link to="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
                     {' '}
                     CNCF Code of Conduct{' '}
-                  </a>
+                  </Link>
                   in everything we do.
                 </p>
               </div>
@@ -158,7 +160,7 @@ export default function Community() {
                     ({ content: text, link, label }, index) => (
                       <li key={index}>
                         <p className="margin-bottom--none">
-                          {text} <a href={link}>{label}</a>
+                          {text} <Link to={link}>{label}</Link>
                         </p>
                       </li>
                     ),
