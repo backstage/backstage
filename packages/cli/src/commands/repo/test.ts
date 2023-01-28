@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import { Command, OptionValues } from 'commander';
 import { PackageGraph } from '../../lib/monorepo';
 import { paths } from '../../lib/paths';
@@ -89,6 +90,19 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   // We set a default memory limit, but if an explicit one is supplied it will be used instead
   if (!args.some(arg => arg.match(/^--workerIdleMemoryLimit/))) {
     args.push('--workerIdleMemoryLimit=1000M');
+  }
+
+  // In order for the above worker memory limit to work we need to make sure the worker
+  // count is set to at least 2, as the tests will otherwise run in-band.
+  // Depending on the mode tests are run with the default count is either cpus-1, or cpus/2.
+  // This means that if we've got at 4 or more cores we'll always get at least 2 workers, but
+  // otherwise we need to set the worker count explicitly unless already done.
+  if (
+    os.cpus().length <= 3 &&
+    !includesAnyOf(args, '-i', '--runInBand') &&
+    !args.some(arg => arg.match(/^(--maxWorkers|-w)/))
+  ) {
+    args.push('--maxWorkers=2');
   }
 
   if (opts.since) {
