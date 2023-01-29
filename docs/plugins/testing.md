@@ -368,29 +368,3 @@ functions:
 
 Note: wrapping in the test application **requires** you to do a `find()` or
 `dive()` since the wrapped component is now the application.
-
-# Debugging Jest Tests
-
-To configure the debugging of your tests in IntelliJ, you have to:
-
-1. Enable in the root `tsconfig.json`
-
-```json
-{
-  ...
-  "compilerOptions": {
-    "sourceMap": true
-  }
-}
-```
-
-2. Create a Jest configuration and fill in the next fields as:
-
-- Jest package: ~/proj/backstage/node_modules/jest
-- Working directory: (it depends on where is your test located, i.e. ~/proj/backstage/packages/core-plugin-api)
-- Jest config: --config ../../packages/cli/config/jest.js --runInBand
-
-In most cases, we have found that using `console.log` works well.
-
-Note: if your console.logs are not being displayed, focus your specific unit
-test from the command line by running them like so `yarn test MyTest`.

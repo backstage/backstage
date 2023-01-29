@@ -595,6 +595,33 @@ If you also want to enable source maps when debugging tests, you can do so by se
 }
 ```
 
+### Debugging Jest Tests
+
+To configure the debugging of your tests in IntelliJ, you have to:
+
+1. Enable in the root `tsconfig.json`
+
+```json
+{
+  ...
+  "compilerOptions": {
+    "sourceMap": true
+  }
+}
+```
+
+2. Create a Jest configuration by:
+
+- Click on "Edit Configurations" on top panel
+- Click "+"
+- And choose there "Jest"
+
+3. Fill in the next fields as:
+
+- Jest package: ~/proj/backstage/node_modules/jest
+- Working directory: (it depends on where is your test located, i.e. ~/proj/backstage/packages/core-plugin-api)
+- Jest config: --config ../../packages/cli/config/jest.js --runInBand
+
 ## Publishing
 
 Package publishing is an optional part of the Backstage build system and not

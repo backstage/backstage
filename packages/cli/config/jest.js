@@ -152,7 +152,6 @@ async function getProjectConfig(targetPath, extraConfig) {
           },
         },
       ],
-      '^.+\\.tsx?$': 'ts-jest',
       '\\.ts$': [
         require.resolve('./jestSwcTransform'),
         {
