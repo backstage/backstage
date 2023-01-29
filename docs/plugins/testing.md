@@ -371,7 +371,7 @@ Note: wrapping in the test application **requires** you to do a `find()` or
 
 # Debugging Jest Tests
 
-To configure the debugging of your tests in Intellij Idea, you have to:
+To configure the debugging of your tests in IntelliJ, you have to:
 
 1. Enable in the root `tsconfig.json`
 
