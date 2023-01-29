@@ -219,8 +219,6 @@ async function getProjectConfig(targetPath, extraConfig) {
     config.id = `backstage_cli_${configHash}`;
   }
 
-  console.log(JSON.stringify(config));
-
   return config;
 }
 
