@@ -368,3 +368,7 @@ functions:
 
 Note: wrapping in the test application **requires** you to do a `find()` or
 `dive()` since the wrapped component is now the application.
+
+# Debugging Jest Tests
+
+You can find it [here](https://backstage.io/docs/local-dev/cli-build-system#debugging-jest-tests)
