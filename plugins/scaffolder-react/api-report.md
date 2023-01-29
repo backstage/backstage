@@ -121,7 +121,7 @@ export type FieldExtensionOptions<
   schema?: CustomFieldExtensionSchema;
 };
 
-// @alpha
+// @public
 export type FormProps = Pick<
   FormProps_2,
   'transformErrors' | 'noHtml5Validate'
