@@ -155,6 +155,7 @@ async function getProjectConfig(targetPath, extraConfig) {
           },
         },
       ],
+      '^.+\\.tsx?$': 'ts-jest',
       '\\.ts$': [
         require.resolve('./jestSwcTransform'),
         {
@@ -217,6 +218,8 @@ async function getProjectConfig(targetPath, extraConfig) {
       .digest('hex');
     config.id = `backstage_cli_${configHash}`;
   }
+
+  console.log(JSON.stringify(config));
 
   return config;
 }

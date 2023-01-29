@@ -371,12 +371,24 @@ Note: wrapping in the test application **requires** you to do a `find()` or
 
 # Debugging Jest Tests
 
-Currently, debugging Jest tests using IntelliJ or `node-debugger` is possible
-but can be
-[problematic to set up.](https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000634564-Debugging-Jest-unit-tests)
+To configure the debugging of your tests in Intellij Idea, you have to:
 
-It is possible, but you might spend a decent amount of time configuring your
-IDE.
+1. Enable in the root `tsconfig.json`
+
+```json
+{
+  ...
+  "compilerOptions": {
+    "sourceMap": true
+  }
+}
+```
+
+2. Create a Jest configuration and fill in the next fields as:
+
+- Jest package: ~/proj/backstage/node_modules/jest
+- Working directory: (it depends on where is your test located, i.e. ~/proj/backstage/packages/core-plugin-api)
+- Jest config: --config ../../packages/cli/config/jest.js --runInBand
 
 In most cases, we have found that using `console.log` works well.
 
