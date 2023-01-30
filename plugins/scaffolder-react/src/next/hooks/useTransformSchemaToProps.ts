@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ParsedTemplateSchema } from './useTemplateSchema';
-import { type LayoutOptions } from '../types';
+import { type LayoutOptions } from '../../layouts';
 
 interface Options {
   layouts?: LayoutOptions[];
