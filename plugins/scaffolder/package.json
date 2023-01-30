@@ -57,7 +57,7 @@
     "@react-hookz/web": "^20.0.0",
     "@rjsf/core": "^3.2.1",
     "@rjsf/material-ui": "^3.2.1",
-    "@rjsf/utils": "5.0.0-beta.18",
+    "@rjsf/utils": "5.0.0-beta.20",
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",
     "git-url-parse": "^13.0.0",
