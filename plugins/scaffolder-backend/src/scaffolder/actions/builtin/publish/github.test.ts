@@ -518,6 +518,31 @@ describe('publish:github', () => {
     });
   });
 
+  it('should provide an adequate failure message when adding access', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mockRejectedValue({
+      status: 404,
+      data: {
+        message: 'Not Found',
+        documentation_url:
+          'https://docs.github.com/en/rest/teams/teams#add-or-update-team-repository-permissions',
+      },
+    });
+    await expect(action.handler(mockContext)).rejects.toThrow(
+      "Received 'Not Found' from the API;",
+    );
+  });
+
   it('should add outside collaborators when provided', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
