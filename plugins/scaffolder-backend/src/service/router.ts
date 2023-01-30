@@ -574,80 +574,31 @@ export async function createRouter(
       );
     }
 
-    const [parameterDecision, propertyDecision, stepDecision] =
+    const [parameterDecision, stepDecision] =
       await permissionApi.authorizeConditional(
         [
           { permission: templateParameterReadPermission },
-          { permission: templatePropertyReadPermission },
           { permission: templateStepReadPermission },
         ],
         { token },
       );
 
-    // authorize parameters
-    if (parameterDecision.result === AuthorizeResult.DENY) {
-      template.spec.parameters = [];
-    } else if (parameterDecision.result === AuthorizeResult.CONDITIONAL) {
-      if (Array.isArray(template.spec.parameters)) {
-        template.spec.parameters = template.spec.parameters.filter(step =>
-          isAuthorized(parameterDecision.conditions, step),
-        );
-      } else {
-        if (
-          template.spec.parameters &&
-          !isAuthorized(parameterDecision.conditions, template.spec.parameters)
-        ) {
-          template.spec.parameters = undefined;
-        }
-      }
-    }
-
-    // authorize properties
-    if (propertyDecision.result === AuthorizeResult.DENY) {
-      if (Array.isArray(template.spec.parameters)) {
-        template.spec.parameters.forEach(parameter => {
-          parameter.properties = {};
-        });
-      } else {
-        if (template.spec.parameters) {
-          template.spec.parameters.properties = {};
-        }
-      }
-    } else if (propertyDecision.result === AuthorizeResult.CONDITIONAL) {
-      if (Array.isArray(template.spec.parameters)) {
-        template.spec.parameters.forEach(parameter => {
-          parameter.properties = Object.entries(
-            parameter.properties || {},
-          ).reduce<Record<string, TemplateProperty>>((acc, [key, value]) => {
-            if (isAuthorized(propertyDecision.conditions, value)) {
-              acc[key] = value;
-            }
-            return acc;
-          }, {});
-        });
-      } else {
-        // TODO extract this to a generic method and use it in the above if block
-        if (template.spec.parameters) {
-          template.spec.parameters.properties = Object.entries(
-            template.spec.parameters.properties || {},
-          ).reduce<Record<string, TemplateProperty>>((acc, [key, value]) => {
-            if (isAuthorized(propertyDecision.conditions, value)) {
-              acc[key] = value;
-            }
-            return acc;
-          }, {});
-        }
-      }
-    }
-
-    // authorize steps
-    if (stepDecision.result === AuthorizeResult.DENY) {
-      template.spec.steps = [];
-    } else if (stepDecision.result === AuthorizeResult.CONDITIONAL) {
-      template.spec.steps = template.spec.steps.filter(step =>
-        isAuthorized(stepDecision.conditions, step),
+    // Authorize parameters
+    if (Array.isArray(template.spec.parameters)) {
+      template.spec.parameters = template.spec.parameters.filter(step =>
+        isAuthorized(parameterDecision, step),
       );
+    } else if (
+      template.spec.parameters &&
+      !isAuthorized(parameterDecision, template.spec.parameters)
+    ) {
+      template.spec.parameters = undefined;
     }
+
+    // Authorize steps
+    template.spec.steps = template.spec.steps.filter(step =>
+      isAuthorized(stepDecision, step),
+    );
 
     return template;
   }
