@@ -201,7 +201,8 @@
         "label": "GitLab",
         "ids": [
           "integrations/gitlab/locations",
-          "integrations/gitlab/discovery"
+          "integrations/gitlab/discovery",
+          "integrations/gitlab/org"
         ]
       },
       {

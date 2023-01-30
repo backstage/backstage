@@ -1,6 +1,6 @@
 ---
 id: org
-title: GitLab Org
+title: GitLab Organizational Data
 sidebar_label: Org Data
 description: Importing users and groups from a GitLab organization into Backstage
 ---
