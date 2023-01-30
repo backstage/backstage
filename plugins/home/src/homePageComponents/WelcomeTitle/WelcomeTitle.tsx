@@ -43,7 +43,7 @@ export const WelcomeTitle = () => {
 
   return (
     <Tooltip title={greeting.language}>
-      <Typography variant="h3">{`${greeting.greeting}${
+      <Typography component="span" variant="inherit">{`${greeting.greeting}${
         profile?.displayName ? `, ${profile?.displayName}` : ''
       }!`}</Typography>
     </Tooltip>
