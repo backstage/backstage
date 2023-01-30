@@ -3398,7 +3398,7 @@ __metadata:
     "@manypkg/get-packages": ^1.1.3
     "@types/compression": ^1.7.0
     "@types/cors": ^2.8.6
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.3
     "@types/http-errors": ^2.0.0
     "@types/minimist": ^1.2.0
@@ -3452,7 +3452,7 @@ __metadata:
     "@types/concat-stream": ^2.0.0
     "@types/cors": ^2.8.6
     "@types/dockerode": ^3.3.0
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.3
     "@types/http-errors": ^2.0.0
     "@types/luxon": ^3.0.0
@@ -3537,7 +3537,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     express: ^4.17.1
     knex: ^2.0.0
   languageName: unknown
@@ -3691,7 +3691,7 @@ __metadata:
     "@swc/helpers": ^0.4.7
     "@swc/jest": ^0.2.22
     "@types/diff": ^5.0.0
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.1
     "@types/http-proxy": ^1.17.4
     "@types/inquirer": ^8.1.3
@@ -4201,7 +4201,7 @@ __metadata:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": "*"
     "@types/http-proxy-middleware": ^0.19.3
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -4417,7 +4417,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -4453,7 +4453,7 @@ __metadata:
     "@google-cloud/firestore": ^6.0.0
     "@types/body-parser": ^1.19.0
     "@types/cookie-parser": ^1.4.2
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/express-session": ^1.17.2
     "@types/jwt-decode": ^3.1.0
     "@types/passport": ^1.0.3
@@ -4509,7 +4509,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": "*"
     express: ^4.17.1
     jose: ^4.6.0
     lodash: ^4.17.21
@@ -4528,7 +4528,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-azure-devops-common": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     azure-devops-node-api: ^11.0.1
     express: ^4.17.1
@@ -4594,7 +4594,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-azure-sites-common": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -4653,7 +4653,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     badge-maker: ^3.3.0
     cors: ^2.8.5
@@ -4705,7 +4705,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^2.0.0
@@ -5017,7 +5017,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/luxon": ^3.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -5120,7 +5120,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@opentelemetry/api": ^1.3.0
     "@types/core-js": ^2.5.4
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/git-url-parse": ^9.0.0
     "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
@@ -5562,7 +5562,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/express-xml-bodyparser": ^0.3.2
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -5872,7 +5872,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
     supertest: ^6.1.3
@@ -5898,7 +5898,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-explore-common": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": "*"
     "@types/supertest": ^2.0.8
     express: ^4.18.1
     express-promise-router: ^4.1.0
@@ -6364,7 +6364,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-catalog-graphql": "workspace:^"
     "@graphql-tools/schema": ^9.0.0
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     apollo-server: ^3.0.0
     apollo-server-express: ^3.0.0
@@ -6484,7 +6484,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-jenkins-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/jenkins": ^0.23.1
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -6549,7 +6549,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/jest-when": ^3.5.0
     "@types/lodash": ^4.14.151
     express: ^4.17.1
@@ -6612,7 +6612,7 @@ __metadata:
     "@jest-mock/express": ^2.0.1
     "@kubernetes/client-node": 0.18.1
     "@types/aws4": ^1.5.1
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^0.19.3
     "@types/luxon": ^3.0.0
     aws-sdk: ^2.840.0
@@ -6869,7 +6869,7 @@ __metadata:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": "*"
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -6924,7 +6924,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": "*"
     "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
     dataloader: ^2.0.0
@@ -6966,7 +6966,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -7013,7 +7013,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-playlist-common": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": "*"
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -7084,7 +7084,7 @@ __metadata:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^0.19.3
     "@types/supertest": ^2.0.8
     "@types/uuid": ^8.0.0
@@ -7111,7 +7111,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     camelcase-keys: ^7.0.1
     compression: ^1.7.4
@@ -7270,7 +7270,7 @@ __metadata:
     "@gitbeaker/node": ^35.1.0
     "@octokit/webhooks": ^10.0.0
     "@types/command-exists": ^1.2.0
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.1
     "@types/git-url-parse": ^9.0.0
     "@types/mock-fs": ^4.13.0
@@ -7529,7 +7529,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     dataloader: ^2.0.0
     express: ^4.17.1
@@ -7696,7 +7696,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": "*"
     "@types/supertest": ^2.0.12
     express: ^4.18.1
     express-promise-router: ^4.1.0
@@ -7890,7 +7890,7 @@ __metadata:
     "@backstage/plugin-tech-insights-common": "workspace:^"
     "@backstage/plugin-tech-insights-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/luxon": ^3.0.0
     "@types/semver": ^7.3.8
     "@types/supertest": ^2.0.8
@@ -8054,7 +8054,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
     "@types/dockerode": ^3.3.0
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     dockerode: ^3.3.1
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -8122,7 +8122,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@google-cloud/storage": ^6.0.0
     "@trendyol-js/openstack-swift-sdk": ^0.0.5
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.5
     "@types/js-yaml": ^4.0.0
     "@types/mime-types": ^2.1.0
@@ -8234,7 +8234,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -8287,7 +8287,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -8341,7 +8341,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@types/compression": ^1.7.2
-    "@types/express": ^4.17.15
+    "@types/express": "*"
     "@types/supertest": ^2.0.8
     compression: ^1.7.4
     cors: ^2.8.5
@@ -10275,7 +10275,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     "@types/uuid": ^8.0.0
     express: ^4.17.1
@@ -14390,7 +14390,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.13, @types/express@npm:^4.17.15":
+"@types/express@npm:*, @types/express@npm:^4.17.13, @types/express@npm:^4.17.15, @types/express@npm:^4.17.6":
   version: 4.17.16
   resolution: "@types/express@npm:4.17.16"
   dependencies:
@@ -22463,7 +22463,7 @@ __metadata:
     "@gitbeaker/node": ^35.1.0
     "@octokit/rest": ^19.0.3
     "@types/dockerode": ^3.3.0
-    "@types/express": ^4.17.15
+    "@types/express": ^4.17.6
     "@types/express-serve-static-core": ^4.17.5
     "@types/luxon": ^3.0.0
     azure-devops-node-api: ^11.0.1
