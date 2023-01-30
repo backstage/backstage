@@ -3507,6 +3507,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/backend-dev-utils@workspace:packages/backend-dev-utils":
+  version: 0.0.0-use.local
+  resolution: "@backstage/backend-dev-utils@workspace:packages/backend-dev-utils"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/backend-plugin-api@workspace:^, @backstage/backend-plugin-api@workspace:packages/backend-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-plugin-api@workspace:packages/backend-plugin-api"
