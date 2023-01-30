@@ -82,6 +82,17 @@ type CompatiblePlugin =
       output(): Array<{ type: 'feature-flag'; name: string }>;
     });
 
+/**
+ * Creates a base URL that uses to the current document origin.
+ */
+function createLocalBaseUrl(fullUrl: string): string {
+  const url = new URL(fullUrl);
+  url.protocol = document.location.protocol;
+  url.hostname = document.location.hostname;
+  url.port = document.location.port;
+  return url.toString().replace(/\/$/, '');
+}
+
 function useConfigLoader(
   configLoader: AppConfigLoader | undefined,
   components: AppComponents,
@@ -122,27 +133,6 @@ function useConfigLoader(
     const urlConfigReader = ConfigReader.fromConfigs(config.value);
 
     /**
-     * Return the origin of the given URL.
-     * @param url An absolute URL.
-     * @returns The given URL's origin.
-     * @throws If fullUrl is not a correctly formatted absolute URL.
-     */
-    const getOrigin = (url: string) => new URL(url).origin;
-
-    /**
-     * Resolve an absolute URL as relative to the current document.
-     * @param fullUrl URL to resolve.
-     * @returns Absolute URL with origin as the current document origin.
-     * @throws If fullUrl is not a correctly formatted absolute URL.
-     */
-    const overrideOrigin = (fullUrl: string) => {
-      return new URL(
-        fullUrl.replace(getOrigin(fullUrl), ''),
-        document.location.origin,
-      ).href.replace(/\/$/, '');
-    };
-
-    /**
      * Test configs may not define `app.baseUrl` or `backend.baseUrl` and we
      *  don't want to enforce here.
      */
@@ -155,18 +145,18 @@ function useConfigLoader(
       context: 'relative-resolver',
     };
     if (appBaseUrl && backendBaseUrl) {
-      const appOrigin = getOrigin(appBaseUrl);
-      const backendOrigin = getOrigin(backendBaseUrl);
+      const appOrigin = new URL(appBaseUrl).origin;
+      const backendOrigin = new URL(backendBaseUrl).origin;
 
       if (appOrigin === backendOrigin) {
-        const newBackendBaseUrl = overrideOrigin(backendBaseUrl);
+        const newBackendBaseUrl = createLocalBaseUrl(backendBaseUrl);
         if (backendBaseUrl !== newBackendBaseUrl) {
           relativeResolverConfig.data.backend = { baseUrl: newBackendBaseUrl };
         }
       }
     }
     if (appBaseUrl) {
-      const newAppBaseUrl = overrideOrigin(appBaseUrl);
+      const newAppBaseUrl = createLocalBaseUrl(appBaseUrl);
       if (appBaseUrl !== newAppBaseUrl) {
         relativeResolverConfig.data.app = { baseUrl: newAppBaseUrl };
       }
