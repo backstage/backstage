@@ -5,7 +5,7 @@ sidebar_label: Proxy
 description: Interacting with the Kubernetes API in Backstage plugins
 ---
 
-[Contributors](../../overview/glossary#backstage-user-profiles) wanting to
+[Contributors](https://backstage.io/docs/overview/glossary#backstage-user-profiles) wanting to
 create developer portal experiences based on data from Kubernetes (e.g. for
 interacting with [Custom
 Resources](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)
@@ -15,7 +15,7 @@ requests to the [REST
 API](https://kubernetes.io/docs/reference/using-api/api-concepts/).
 
 Here is a snippet fetching namespaces from a cluster configured with the
-`google` [auth provider](./configuration#clustersauthprovider):
+`google` [auth provider](https://backstage.io/docs/features/kubernetes/configuration#clustersauthprovider):
 
 ```typescript
 import {
@@ -50,11 +50,11 @@ await fetch(`${kubernetesProxyEndpoint}/api/v1/namespaces`, {
 
 The proxy will interpret the
 [`X-Kubernetes-Cluster`
-header](../../reference/plugin-kubernetes-backend.header_kubernetes_cluster)
+header](https://backstage.io/docs/reference/plugin-kubernetes-backend.header_kubernetes_cluster)
 as the name of the cluster to target. This name will be compared to each cluster
 returned by all the configured [cluster
-locators](./kubernetes/configuration#clusterlocatormethods)
--- the first cluster whose [`name` field](./configuration#clustersname) matches
+locators](https://backstage.io/docs/features/kubernetes/configuration#clusterlocatormethods)
+-- the first cluster whose [`name` field](https://backstage.io/docs/features/kubernetes/configuration#clustersname) matches
 the value in the header will be targeted.
 
 Then the request will be forwarded verbatim (but with the endpoint's base URL
@@ -68,7 +68,7 @@ for context), contributors consuming the proxy endpoint in their plugin code are
 responsible for negotiating their own bearer token out-of-band. This requires
 knowing some auth details about the cluster being contacted -- in practice, only
 clusters with [client side auth
-providers](./authentication#client-side-providers) can reasonably be reached.
+providers](https://backstage.io/docs/features/kubernetes/authentication#client-side-providers) can reasonably be reached.
 
 The proxy has no provisions for mTLS, so it cannot be used to connect to
 clusters using the [x509 Client
