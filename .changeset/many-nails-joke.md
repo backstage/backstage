@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog': patch
+'@backstage/plugin-catalog': minor
 ---
 
-Added Markdown support in the About card description section
+Added Markdown support in the `AboutCard` description section
