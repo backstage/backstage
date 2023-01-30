@@ -30,8 +30,12 @@ export const TaskLogStream = (opts: { logs: { [k: string]: string[] } }) => {
   return (
     <div className={styles.root}>
       <LogViewer
+        tail
         text={Object.values(opts.logs)
+
           .map(l => l.join('\n'))
+          .filter(Boolean)
+
           .join('\n')}
       />
     </div>
