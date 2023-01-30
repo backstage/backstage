@@ -141,7 +141,7 @@ export class GoogleServiceAccountAuthTranslator
   ): Promise<GKEClusterDetails>;
 }
 
-// @alpha
+// @public
 export const HEADER_KUBERNETES_CLUSTER: string;
 
 // @alpha (undocumented)
