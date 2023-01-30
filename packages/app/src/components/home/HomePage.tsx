@@ -29,6 +29,7 @@ import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
+import { MicrosoftCalendar } from '@backstage/plugin-microsoft-calendar'
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -113,6 +114,9 @@ export const homePage = (
         </Grid>
         <Grid item xs={12} md={4}>
           <HomePageCalendar />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <MicrosoftCalendar/>
         </Grid>
         <Grid item xs={12} md={4}>
           <HomePageStarredEntities />
