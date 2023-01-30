@@ -190,13 +190,22 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
 
   if (access?.startsWith(`${owner}/`)) {
     const [, team] = access.split('/');
-    await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
-      org: owner,
-      team_slug: team,
-      owner,
-      repo,
-      permission: 'admin',
-    });
+    try {
+      await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+        org: owner,
+        team_slug: team,
+        owner,
+        repo,
+        permission: 'admin',
+      });
+    } catch (e) {
+      if (e.data.message === 'Not Found') {
+        const message = `Received 'Not Found' from the API; one of org:
+        ${owner}, team: ${team} or repo: ${repo} was not found within GitHub.`;
+        logger.warn(message);
+        throw new Error(message, { cause: e });
+      }
+    }
     // No need to add access if it's the person who owns the personal account
   } else if (access && access !== owner) {
     await client.rest.repos.addCollaborator({
