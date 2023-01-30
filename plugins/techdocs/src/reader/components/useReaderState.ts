@@ -238,6 +238,14 @@ export type ReaderState = {
   buildLog: string[];
 };
 
+/**
+ * @public get shared reader state for current entity and article
+ *
+ * @param kind - The entity kind
+ * @param namespace - The entity namespace
+ * @param name - The entity name
+ * @param path - The document path
+ */
 export function useReaderState(
   kind: string,
   namespace: string,

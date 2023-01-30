@@ -473,4 +473,12 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
 }
+
+// @public
+export function useReaderState(
+  kind: string,
+  namespace: string,
+  name: string,
+  path: string,
+): ReaderState;
 ```
