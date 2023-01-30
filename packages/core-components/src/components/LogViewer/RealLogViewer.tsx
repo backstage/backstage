@@ -32,6 +32,7 @@ import { useLogViewerSelection } from './useLogViewerSelection';
 export interface RealLogViewerProps {
   text: string;
   classes?: { root?: string };
+  tail?: boolean;
 }
 
 export function RealLogViewer(props: RealLogViewerProps) {
@@ -51,6 +52,12 @@ export function RealLogViewer(props: RealLogViewerProps) {
       listRef.current.scrollToItem(search.resultLine - 1, 'center');
     }
   }, [search.resultLine]);
+
+  useEffect(() => {
+    if (props.tail && listRef.current) {
+      listRef.current.scrollToItem(lines.length - 1, 'center');
+    }
+  }, [lines.length, props.tail]);
 
   useEffect(() => {
     if (location.hash) {
