@@ -27,4 +27,5 @@ export { TechDocsReaderLayout } from './TechDocsReaderPage';
 export * from './TechDocsReaderPageHeader';
 export * from './TechDocsReaderPageContent';
 export * from './TechDocsReaderPageSubheader';
+export { useReaderState } from './useReaderState';
 export type { ReaderState, ContentStateTypes } from './useReaderState';
