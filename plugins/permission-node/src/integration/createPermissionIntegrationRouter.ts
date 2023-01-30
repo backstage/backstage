@@ -27,6 +27,7 @@ import {
   Permission,
   PermissionCondition,
   PermissionCriteria,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 import {
@@ -167,18 +168,21 @@ const applyConditions = <TResourceType extends string, TResource>(
  *
  * @public
  */
-export const createIsAuthorized = <
-  TResourceType extends string,
-  TResource,
-  TQuery,
->(
+export const createIsAuthorized = <TResource, TQuery>(
   rules: PermissionRule<TResource, TQuery, string>[],
 ) => {
   const getRule = createGetRule(rules);
+
   return (
-    criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
+    decision: PolicyDecision,
     resource: TResource | undefined,
-  ) => applyConditions(criteria, resource, getRule);
+  ): boolean => {
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      return applyConditions(decision.conditions, resource, getRule);
+    }
+
+    return decision.result === AuthorizeResult.ALLOW;
+  };
 };
 
 /**
