@@ -31,6 +31,7 @@ import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
 import { Options } from 'react-markdown';
+import { Options as Options_2 } from '@material-table/core';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -1391,6 +1392,11 @@ export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
 //
 // @public (undocumented)
 export type TableHeaderClassKey = 'header';
+
+// Warning: (ae-missing-release-tag) "TableOptions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface TableOptions<T extends object = {}> extends Options_2<T> {}
 
 // Warning: (ae-missing-release-tag) "TableProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

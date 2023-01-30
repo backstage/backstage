@@ -37,10 +37,13 @@ export {
   TechDocsIndexPage,
   TechdocsPage,
   TechDocsReaderPage,
+  TechDocsSearchResultListItem,
   techdocsPlugin as plugin,
   techdocsPlugin,
 } from './plugin';
 export * from './Router';
+
+export type { TechDocsSearchResultListItemProps } from './search/components/TechDocsSearchResultListItem';
 
 /**
  * @deprecated Import from `@backstage/plugin-techdocs-react` instead
