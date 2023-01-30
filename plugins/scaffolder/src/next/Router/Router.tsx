@@ -18,19 +18,17 @@ import { Routes, Route, useOutlet } from 'react-router-dom';
 import { TemplateListPage } from '../TemplateListPage';
 import { TemplateWizardPage } from '../TemplateWizardPage';
 import {
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FIELD_EXTENSION_KEY,
-  DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
   NextFieldExtensionOptions,
-  FieldExtensionOptions,
-} from '../../extensions';
+  SecretsContextProvider,
+  useCustomFieldExtensions,
+  useCustomLayouts,
+  type FormProps,
+} from '@backstage/plugin-scaffolder-react';
 
-import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
-import { nextSelectedTemplateRouteRef } from '../../routes';
-import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
-import type { FormProps } from '../types';
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
+import { nextSelectedTemplateRouteRef } from '../routes';
 
 /**
  * The Props for the Scaffolder Router
@@ -55,19 +53,9 @@ export type NextRouterProps = {
  */
 export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   const { components: { TemplateCardComponent } = {} } = props;
-
   const outlet = useOutlet() || props.children;
-
-  const customFieldExtensions = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: FIELD_EXTENSION_WRAPPER_KEY,
-      })
-      .findComponentData<FieldExtensionOptions | NextFieldExtensionOptions>({
-        key: FIELD_EXTENSION_KEY,
-      }),
-  );
-
+  const customFieldExtensions =
+    useCustomFieldExtensions<NextFieldExtensionOptions>(outlet);
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
@@ -77,6 +65,8 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         ),
     ),
   ] as NextFieldExtensionOptions[];
+
+  const customLayouts = useCustomLayouts(outlet);
 
   return (
     <Routes>
@@ -95,6 +85,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           <SecretsContextProvider>
             <TemplateWizardPage
               customFieldExtensions={fieldExtensions}
+              layouts={customLayouts}
               FormProps={props.FormProps}
             />
           </SecretsContextProvider>

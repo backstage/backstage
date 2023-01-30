@@ -69,10 +69,11 @@ const Component: ProviderComponent = ({ onSignInSuccess }) => {
 
   const { errors } = formState;
 
-  const handleResult = ({ userId }: Data) => {
+  const handleResult = ({ userId, idToken }: Data) => {
     onSignInSuccess(
       UserIdentity.fromLegacy({
         userId,
+        getIdToken: idToken !== undefined ? async () => idToken : undefined,
         profile: {
           email: `${userId}@example.com`,
         },

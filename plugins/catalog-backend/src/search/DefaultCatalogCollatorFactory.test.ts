@@ -95,11 +95,6 @@ describe('DefaultCatalogCollatorFactory', () => {
     );
   });
 
-  it('has expected type', () => {
-    const factory = DefaultCatalogCollatorFactory.fromConfig(config, options);
-    expect(factory.type).toBe('software-catalog');
-  });
-
   describe('getCollator', () => {
     let factory: DefaultCatalogCollatorFactory;
     let collator: Readable;
@@ -124,26 +119,85 @@ describe('DefaultCatalogCollatorFactory', () => {
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
-      expect(documents[0]).toMatchObject({
+      expect(documents[0]).toEqual({
         title: expectedEntities[0].metadata.name,
         location: '/catalog/default/component/test-entity',
         text: expectedEntities[0].metadata.description,
         namespace: 'default',
         componentType: expectedEntities[0]!.spec!.type,
+        kind: expectedEntities[0]!.kind,
+        type: expectedEntities[0]!.spec!.type,
         lifecycle: expectedEntities[0]!.spec!.lifecycle,
         owner: expectedEntities[0]!.spec!.owner,
         authorization: {
           resourceRef: 'component:default/test-entity',
         },
       });
-      expect(documents[1]).toMatchObject({
+      expect(documents[1]).toEqual({
         title: expectedEntities[1].metadata.title,
         location: '/catalog/default/component/test-entity-2',
         text: expectedEntities[1].metadata.description,
         namespace: 'default',
         componentType: expectedEntities[1]!.spec!.type,
+        kind: expectedEntities[1]!.kind,
+        type: expectedEntities[1]!.spec!.type,
         lifecycle: expectedEntities[1]!.spec!.lifecycle,
         owner: expectedEntities[1]!.spec!.owner,
+        authorization: {
+          resourceRef: 'component:default/test-entity-2',
+        },
+      });
+    });
+
+    it('maps a returned entity to an expected CatalogEntityDocument with custom transformer', async () => {
+      const customFactory = DefaultCatalogCollatorFactory.fromConfig(config, {
+        ...options,
+        entityTransformer: entity => ({
+          title: `custom-title-${
+            entity.metadata.title ?? entity.metadata.name
+          }`,
+          namespace: 'custom/namespace',
+          text: 'custom-text',
+          type: 'custom-type',
+          componentType: 'custom-component-type',
+          kind: 'custom-kind',
+          lifecycle: 'custom-lifecycle',
+          owner: 'custom-owner',
+          authorization: {
+            resourceRef: 'custom:resource/ref',
+          },
+          location: '/custom/location',
+        }),
+      });
+      const customCollator = await customFactory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(customCollator);
+      const { documents } = await pipeline.execute();
+
+      expect(documents[0]).toEqual({
+        title: 'custom-title-test-entity',
+        location: '/catalog/default/component/test-entity',
+        text: 'custom-text',
+        namespace: 'custom/namespace',
+        componentType: 'custom-component-type',
+        kind: 'custom-kind',
+        type: 'custom-type',
+        lifecycle: 'custom-lifecycle',
+        owner: 'custom-owner',
+        authorization: {
+          resourceRef: 'component:default/test-entity',
+        },
+      });
+      expect(documents[1]).toEqual({
+        title: 'custom-title-Test Entity',
+        location: '/catalog/default/component/test-entity-2',
+        text: 'custom-text',
+        namespace: 'custom/namespace',
+        componentType: 'custom-component-type',
+        kind: 'custom-kind',
+        type: 'custom-type',
+        lifecycle: 'custom-lifecycle',
+        owner: 'custom-owner',
         authorization: {
           resourceRef: 'component:default/test-entity-2',
         },

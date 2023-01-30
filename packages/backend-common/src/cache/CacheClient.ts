@@ -14,56 +14,22 @@
  * limitations under the License.
  */
 
+import {
+  CacheClient,
+  CacheClientSetOptions,
+} from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { createHash } from 'crypto';
 import Keyv from 'keyv';
 
+export type {
+  CacheClient,
+  CacheClientSetOptions,
+} from '@backstage/backend-plugin-api';
+
 type CacheClientArgs = {
   client: Keyv;
 };
-
-/**
- * Options passed to {@link CacheClient.set}.
- *
- * @public
- */
-export type CacheClientSetOptions = {
-  /**
-   * Optional TTL in milliseconds. Defaults to the TTL provided when the client
-   * was set up (or no TTL if none are provided).
-   */
-  ttl?: number;
-};
-
-/**
- * A pre-configured, storage agnostic cache client suitable for use by
- * Backstage plugins.
- *
- * @public
- */
-export interface CacheClient {
-  /**
-   * Reads data from a cache store for the given key. If no data was found,
-   * returns undefined.
-   */
-  get(key: string): Promise<JsonValue | undefined>;
-
-  /**
-   * Writes the given data to a cache store, associated with the given key. An
-   * optional TTL may also be provided, otherwise it defaults to the TTL that
-   * was provided when the client was instantiated.
-   */
-  set(
-    key: string,
-    value: JsonValue,
-    options?: CacheClientSetOptions,
-  ): Promise<void>;
-
-  /**
-   * Removes the given key from the cache store.
-   */
-  delete(key: string): Promise<void>;
-}
 
 /**
  * A basic, concrete implementation of the CacheClient, suitable for almost

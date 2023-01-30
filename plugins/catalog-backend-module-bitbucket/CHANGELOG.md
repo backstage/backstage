@@ -1,5 +1,56 @@
 # @backstage/plugin-catalog-backend-module-bitbucket
 
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/plugin-catalog-backend@1.7.2-next.0
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-backend@1.7.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.3
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.2.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/plugin-catalog-backend@1.7.0-next.2
+  - @backstage/plugin-bitbucket-cloud-common@0.2.3-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-catalog-backend@1.7.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-bitbucket-cloud-common@0.2.3-next.0
+
 ## 0.2.7-next.0
 
 ### Patch Changes

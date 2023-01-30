@@ -194,7 +194,9 @@ export class EntityLifecycleFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityLifecyclePicker: () => JSX.Element | null;
+export const EntityLifecyclePicker: (props: {
+  initialFilter?: string[];
+}) => JSX.Element | null;
 
 // @public
 export const EntityListContext: React_2.Context<
@@ -253,6 +255,17 @@ export class EntityOwnerFilter implements EntityFilter {
 
 // @public (undocumented)
 export const EntityOwnerPicker: () => JSX.Element | null;
+
+// @public
+export const EntityPeekAheadPopover: (
+  props: EntityPeekAheadPopoverProps,
+) => JSX.Element;
+
+// @public
+export type EntityPeekAheadPopoverProps = PropsWithChildren<{
+  entityRef: string;
+  delayTime?: number;
+}>;
 
 // @public (undocumented)
 export const EntityProcessingStatusPicker: () => JSX.Element;

@@ -24,6 +24,7 @@ import React from 'react';
 import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
 import { ApiProvider } from '@backstage/core-app-api';
 import { identityApiRef } from '@backstage/core-plugin-api';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 const apiRegistry = TestApiRegistry.from([
   identityApiRef,
@@ -32,7 +33,7 @@ const apiRegistry = TestApiRegistry.from([
     getBackstageIdentity: jest.fn(async () => ({
       type: 'user' as const,
       userEntityRef: 'foo:bar/foobar',
-      ownershipEntityRefs: ['test-ownership'],
+      ownershipEntityRefs: ['user:default/test-ownership'],
     })),
   },
 ]);
@@ -44,10 +45,13 @@ describe('<UserSettingsIdentityCard />', () => {
         <ApiProvider apis={apiRegistry}>
           <UserSettingsIdentityCard />
         </ApiProvider>,
+        {
+          mountedRoutes: { '/catalog/:namespace/:kind/:name': entityRouteRef },
+        },
       ),
     );
 
-    expect(screen.getByText('test-ownership')).toBeInTheDocument();
+    expect(screen.getByText('user:default/test-ownership')).toBeInTheDocument();
     expect(screen.getByText('foo:bar/foobar')).toBeInTheDocument();
   });
 });

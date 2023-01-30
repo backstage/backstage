@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.79-next.0",
+  "version": "0.2.80-next.0",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -49,6 +49,7 @@
     "@backstage/plugin-playlist": "workspace:^",
     "@backstage/plugin-rollbar": "workspace:^",
     "@backstage/plugin-scaffolder": "workspace:^",
+    "@backstage/plugin-scaffolder-react": "workspace:^",
     "@backstage/plugin-search": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
@@ -68,7 +69,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@octokit/rest": "^19.0.3",
-    "@oriflame/backstage-plugin-score-card": "^0.5.1",
+    "@oriflame/backstage-plugin-score-card": "^0.6.0",
     "@roadiehq/backstage-plugin-buildkite": "^2.0.8",
     "@roadiehq/backstage-plugin-github-insights": "^2.0.5",
     "@roadiehq/backstage-plugin-github-pull-requests": "^2.2.7",
@@ -83,7 +84,7 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/cypress": "^8.0.2",
+    "@testing-library/cypress": "^9.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",

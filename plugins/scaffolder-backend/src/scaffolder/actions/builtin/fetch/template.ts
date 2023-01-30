@@ -19,7 +19,7 @@ import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
@@ -62,10 +62,11 @@ export function createFetchTemplateAction(options: {
     copyWithoutRender?: string[];
     copyWithoutTemplating?: string[];
     cookiecutterCompat?: boolean;
+    replace?: boolean;
   }>({
     id: 'fetch:template',
     description:
-      "Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
+      'Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.',
     schema: {
       input: {
         type: 'object',
@@ -117,6 +118,12 @@ export function createFetchTemplateAction(options: {
             description:
               'If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.',
             type: ['string', 'boolean'],
+          },
+          replace: {
+            title: 'Replace files',
+            description:
+              'If set, replace files in targetPath instead of skipping existing ones.',
+            type: 'boolean',
           },
         },
       },
@@ -261,7 +268,7 @@ export function createFetchTemplateAction(options: {
         }
 
         const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
-        if (fs.existsSync(outputPath)) {
+        if (fs.existsSync(outputPath) && !ctx.input.replace) {
           continue;
         }
 

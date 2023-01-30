@@ -28,7 +28,7 @@ import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   ReaderFactory,
   ReadTreeOptions,
@@ -70,7 +70,7 @@ export class BitbucketUrlReader implements UrlReader {
 
   constructor(
     private readonly integration: BitbucketIntegration,
-    logger: Logger,
+    logger: LoggerService,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
     const { host, token, username, appPassword } = integration.config;

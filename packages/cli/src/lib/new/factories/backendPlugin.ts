@@ -38,17 +38,18 @@ export const backendPlugin = createFactory<Options>({
   }),
   optionsPrompts: [pluginIdPrompt(), ownerPrompt()],
   async create(options: Options, ctx: CreateContext) {
-    const id = `${options.id}-backend`;
+    const { id } = options;
+    const pluginId = `${id}-backend`;
     const name = ctx.scope
-      ? `@${ctx.scope}/plugin-${id}`
-      : `backstage-plugin-${id}`;
+      ? `@${ctx.scope}/plugin-${pluginId}`
+      : `backstage-plugin-${pluginId}`;
 
     Task.log();
     Task.log(`Creating backend plugin ${chalk.cyan(name)}`);
 
     const targetDir = ctx.isMonoRepo
-      ? paths.resolveTargetRoot('plugins', id)
-      : paths.resolveTargetRoot(`backstage-plugin-${id}`);
+      ? paths.resolveTargetRoot('plugins', pluginId)
+      : paths.resolveTargetRoot(`backstage-plugin-${pluginId}`);
 
     await executePluginPackageTemplate(ctx, {
       targetDir,

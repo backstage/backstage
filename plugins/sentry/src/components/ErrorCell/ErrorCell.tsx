@@ -22,7 +22,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { Link } from '@backstage/core-components';
 
 function stripText(text: string, maxLength: number) {
-  return text.length > maxLength ? `${text.substr(0, maxLength)}...` : text;
+  return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 }
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {

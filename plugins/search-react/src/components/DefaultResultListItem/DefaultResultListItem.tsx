@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
+import { AnalyticsContext } from '@backstage/core-plugin-api';
 import {
   ResultHighlight,
   SearchDocument,
@@ -28,6 +28,7 @@ import {
   Box,
   Divider,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 
 /**
@@ -38,7 +39,7 @@ import { Link } from '@backstage/core-components';
 export type DefaultResultListItemProps = {
   icon?: ReactNode;
   secondaryAction?: ReactNode;
-  result: SearchDocument;
+  result?: SearchDocument;
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;
@@ -52,18 +53,11 @@ export type DefaultResultListItemProps = {
 export const DefaultResultListItemComponent = ({
   result,
   highlight,
-  rank,
   icon,
   secondaryAction,
   lineClamp = 5,
 }: DefaultResultListItemProps) => {
-  const analytics = useAnalytics();
-  const handleClick = () => {
-    analytics.captureEvent('discover', result.title, {
-      attributes: { to: result.location },
-      value: rank,
-    });
-  };
+  if (!result) return null;
 
   return (
     <>
@@ -72,7 +66,7 @@ export const DefaultResultListItemComponent = ({
         <ListItemText
           primaryTypographyProps={{ variant: 'h6' }}
           primary={
-            <Link noTrack to={result.location} onClick={handleClick}>
+            <Link noTrack to={result.location}>
               {highlight?.fields.title ? (
                 <HighlightedSearchResultText
                   text={highlight?.fields.title || ''}
@@ -85,7 +79,8 @@ export const DefaultResultListItemComponent = ({
             </Link>
           }
           secondary={
-            <span
+            <Typography
+              component="span"
               style={{
                 display: '-webkit-box',
                 WebkitBoxOrient: 'vertical',
@@ -102,7 +97,7 @@ export const DefaultResultListItemComponent = ({
               ) : (
                 result.text
               )}
-            </span>
+            </Typography>
           }
         />
         {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}

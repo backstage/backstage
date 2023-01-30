@@ -19,4 +19,4 @@ export type {
   CreateSpecializedBackendOptions,
   ServiceOrExtensionPoint,
 } from './types';
-export { createSpecializedBackend } from './types';
+export { createSpecializedBackend } from './createSpecializedBackend';

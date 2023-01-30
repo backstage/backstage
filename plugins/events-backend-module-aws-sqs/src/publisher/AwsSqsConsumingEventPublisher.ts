@@ -100,7 +100,7 @@ export class AwsSqsConsumingEventPublisher implements EventPublisher {
             await this.sleep(this.waitTimeAfterEmptyReceiveMs);
           }
         } catch (error) {
-          logger.error(error);
+          logger.error('Failed to consume AWS SQS messages', error);
         }
       },
     });

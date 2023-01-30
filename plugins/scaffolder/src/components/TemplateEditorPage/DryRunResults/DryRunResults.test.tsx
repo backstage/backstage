@@ -18,7 +18,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useEffect } from 'react';
-import { scaffolderApiRef } from '../../../api';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { DryRunProvider, useDryRun } from '../DryRunContext';
 import { DryRunResults } from './DryRunResults';
 

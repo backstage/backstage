@@ -22,8 +22,8 @@ import {
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
-import { useAnalytics } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
@@ -44,7 +44,7 @@ const useStyles = makeStyles({
  */
 export type TechDocsSearchResultListItemProps = {
   icon?: ReactNode;
-  result: any;
+  result?: any;
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;
@@ -64,7 +64,6 @@ export const TechDocsSearchResultListItem = (
   const {
     result,
     highlight,
-    rank,
     lineClamp = 5,
     asListItem = true,
     asLink = true,
@@ -73,17 +72,9 @@ export const TechDocsSearchResultListItem = (
   } = props;
   const classes = useStyles();
 
-  const analytics = useAnalytics();
-  const handleClick = () => {
-    analytics.captureEvent('discover', result.title, {
-      attributes: { to: result.location },
-      value: rank,
-    });
-  };
-
   const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
     asLink ? (
-      <Link noTrack to={result.location} onClick={handleClick}>
+      <Link noTrack to={result.location}>
         {children}
       </Link>
     ) : (
@@ -121,6 +112,8 @@ export const TechDocsSearchResultListItem = (
       result.name
     );
 
+    if (!result) return null;
+
     return (
       <ListItemText
         className={classes.itemText}
@@ -137,7 +130,8 @@ export const TechDocsSearchResultListItem = (
           </LinkWrapper>
         }
         secondary={
-          <span
+          <Typography
+            component="span"
             style={{
               display: '-webkit-box',
               WebkitBoxOrient: 'vertical',
@@ -154,7 +148,7 @@ export const TechDocsSearchResultListItem = (
             ) : (
               result.text
             )}
-          </span>
+          </Typography>
         }
       />
     );

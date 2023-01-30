@@ -271,6 +271,14 @@ export async function initRepoPushAndProtect(
         apps?: string[];
       }
     | undefined,
+  requiredApprovingReviewCount: number,
+  restrictions:
+    | {
+        users: string[];
+        teams: string[];
+        apps?: string[];
+      }
+    | undefined,
   requiredStatusCheckContexts: string[],
   requireBranchesToBeUpToDate: boolean,
   requiredConversationResolution: boolean,
@@ -280,6 +288,7 @@ export async function initRepoPushAndProtect(
   gitAuthorName?: string,
   gitAuthorEmail?: string,
   dismissStaleReviews?: boolean,
+  requiredCommitSigning?: boolean,
 ) {
   const gitAuthorInfo = {
     name: gitAuthorName
@@ -316,12 +325,15 @@ export async function initRepoPushAndProtect(
         logger,
         defaultBranch,
         bypassPullRequestAllowances,
+        requiredApprovingReviewCount,
+        restrictions,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
         requiredConversationResolution,
         enforceAdmins: protectEnforceAdmins,
         dismissStaleReviews: dismissStaleReviews,
+        requiredCommitSigning: requiredCommitSigning,
       });
     } catch (e) {
       assertError(e);

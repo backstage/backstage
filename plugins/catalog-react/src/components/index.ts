@@ -19,6 +19,7 @@ export * from './EntityKindPicker';
 export * from './EntityLifecyclePicker';
 export * from './EntityOwnerPicker';
 export * from './EntityRefLink';
+export * from './EntityPeekAheadPopover';
 export * from './EntitySearchBar';
 export * from './EntityTable';
 export * from './EntityTagPicker';

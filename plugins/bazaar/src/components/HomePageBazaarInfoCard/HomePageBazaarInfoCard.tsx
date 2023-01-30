@@ -22,6 +22,7 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
@@ -256,9 +257,9 @@ export const HomePageBazaarInfoCard = ({
 
         <CardHeader
           title={
-            <p className={classes.wordBreak}>
+            <Typography paragraph className={classes.wordBreak}>
               {bazaarProject.value?.title || initProject.title}
-            </p>
+            </Typography>
           }
           action={
             <div>

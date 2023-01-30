@@ -23,13 +23,14 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
   createCatalogRegisterAction,
   createCatalogWriteAction,
+  createFetchCatalogEntityAction,
 } from './catalog';
 
 import { TemplateFilter, TemplateGlobal } from '../../../lib';
-import { TemplateAction } from '../types';
 import { createDebugLogAction } from './debug';
 import { createFetchPlainAction, createFetchTemplateAction } from './fetch';
 import {
@@ -160,6 +161,7 @@ export const createBuiltinActions = (
     }),
     createDebugLogAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),
+    createFetchCatalogEntityAction({ catalogClient }),
     createCatalogWriteAction(),
     createFilesystemDeleteAction(),
     createFilesystemRenameAction(),

@@ -15,8 +15,10 @@
  */
 import { makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
-import { FieldExtensionOptions } from '../../extensions';
-import type { LayoutOptions } from '../../layouts';
+import type {
+  FieldExtensionOptions,
+  LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 import { TemplateDirectoryAccess } from '../../lib/filesystem';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import { DryRunProvider } from './DryRunContext';

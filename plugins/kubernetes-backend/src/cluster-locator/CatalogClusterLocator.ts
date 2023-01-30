@@ -20,7 +20,12 @@ import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-} from '@backstage/catalog-model';
+  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP,
+  ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY,
+  ANNOTATION_KUBERNETES_DASHBOARD_URL,
+  ANNOTATION_KUBERNETES_DASHBOARD_APP,
+} from '@backstage/plugin-kubernetes-common';
 
 export class CatalogClusterLocator implements KubernetesClustersSupplier {
   private catalogClient: CatalogApi;
@@ -57,6 +62,26 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
           entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER_CA]!,
         authProvider:
           entity.metadata.annotations![ANNOTATION_KUBERNETES_AUTH_PROVIDER]!,
+        oidcTokenProvider:
+          entity.metadata.annotations![
+            ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER
+          ]!,
+        skipMetricsLookup:
+          entity.metadata.annotations![
+            ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP
+          ]! === 'true'
+            ? true
+            : false,
+        skipTLSVerify:
+          entity.metadata.annotations![
+            ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY
+          ]! === 'true'
+            ? true
+            : false,
+        dashboardUrl:
+          entity.metadata.annotations![ANNOTATION_KUBERNETES_DASHBOARD_URL]!,
+        dashboardApp:
+          entity.metadata.annotations![ANNOTATION_KUBERNETES_DASHBOARD_APP]!,
       };
 
       return clusterDetails;

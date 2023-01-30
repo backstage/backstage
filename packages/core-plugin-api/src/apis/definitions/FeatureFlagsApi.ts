@@ -24,6 +24,7 @@ import { ApiRef, createApiRef } from '../system';
 export type FeatureFlag = {
   name: string;
   pluginId: string;
+  description?: string;
 };
 
 /**

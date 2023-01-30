@@ -398,12 +398,12 @@ export type TechDocsSearchProps = {
 // @public
 export const TechDocsSearchResultListItem: (
   props: TechDocsSearchResultListItemProps,
-) => JSX.Element;
+) => JSX.Element | null;
 
 // @public
 export type TechDocsSearchResultListItemProps = {
   icon?: ReactNode;
-  result: any;
+  result?: any;
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;

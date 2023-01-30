@@ -25,7 +25,7 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import React from 'react';
-import { nextRouteRef } from '../../routes';
+import { nextRouteRef } from '../routes';
 import { TemplateListPage } from './TemplateListPage';
 
 describe('TemplateListPage', () => {

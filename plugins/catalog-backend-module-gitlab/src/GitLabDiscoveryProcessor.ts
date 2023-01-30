@@ -193,7 +193,7 @@ export function parseUrl(urlString: string): {
   catalogPath: string;
 } {
   const url = new URL(urlString);
-  const path = url.pathname.substr(1).split('/');
+  const path = url.pathname.slice(1).split('/');
 
   // (/group/subgroup)/blob/branch|*/filepath
   const blobIndex = path.findIndex(p => p === 'blob');

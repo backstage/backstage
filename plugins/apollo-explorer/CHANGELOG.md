@@ -1,5 +1,34 @@
 # @backstage/plugin-apollo-explorer
 
+## 0.1.7
+
+### Patch Changes
+
+- e8269bca15: Updated dependency `@apollo/explorer` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
+## 0.1.7-next.2
+
+### Patch Changes
+
+- e8269bca15: Updated dependency `@apollo/explorer` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/theme@0.2.16
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.1.7-next.0
 
 ### Patch Changes

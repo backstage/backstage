@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
@@ -24,38 +25,26 @@ import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
+import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { UrlReader } from '@backstage/backend-common';
-import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 
-// @public
-export type ActionContext<Input extends JsonObject> = {
-  logger: Logger;
-  logStream: Writable;
-  secrets?: TaskSecrets;
-  workspacePath: string;
-  input: Input;
-  output(name: string, value: JsonValue): void;
-  createTemporaryDirectory(): Promise<string>;
-  templateInfo?: TemplateInfo;
-  isDryRun?: boolean;
-  user?: {
-    entity?: UserEntity;
-    ref?: string;
-  };
-};
+// @public @deprecated (undocumented)
+export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
+
+// @alpha
+export const catalogModuleTemplateKind: () => BackendFeature;
 
 // @public
 export const createBuiltinActions: (
   options: CreateBuiltInActionsOptions,
-) => TemplateAction<JsonObject>[];
+) => TemplateAction_2<JsonObject>[];
 
 // @public
 export interface CreateBuiltInActionsOptions {
@@ -72,7 +61,7 @@ export interface CreateBuiltInActionsOptions {
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
   integrations: ScmIntegrations;
-}): TemplateAction<
+}): TemplateAction_2<
   | {
       catalogInfoUrl: string;
       optional?: boolean | undefined;
@@ -85,22 +74,30 @@ export function createCatalogRegisterAction(options: {
 >;
 
 // @public
-export function createCatalogWriteAction(): TemplateAction<{
+export function createCatalogWriteAction(): TemplateAction_2<{
   filePath?: string | undefined;
   entity: Entity;
 }>;
 
 // @public
-export function createDebugLogAction(): TemplateAction<{
+export function createDebugLogAction(): TemplateAction_2<{
   message?: string | undefined;
   listWorkspace?: boolean | undefined;
+}>;
+
+// @public
+export function createFetchCatalogEntityAction(options: {
+  catalogClient: CatalogApi;
+}): TemplateAction_2<{
+  entityRef: string;
+  optional?: boolean | undefined;
 }>;
 
 // @public
 export function createFetchPlainAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-}): TemplateAction<{
+}): TemplateAction_2<{
   url: string;
   targetPath?: string | undefined;
 }>;
@@ -111,7 +108,7 @@ export function createFetchTemplateAction(options: {
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-}): TemplateAction<{
+}): TemplateAction_2<{
   url: string;
   targetPath?: string | undefined;
   values: any;
@@ -119,15 +116,16 @@ export function createFetchTemplateAction(options: {
   copyWithoutRender?: string[] | undefined;
   copyWithoutTemplating?: string[] | undefined;
   cookiecutterCompat?: boolean | undefined;
+  replace?: boolean | undefined;
 }>;
 
 // @public
-export const createFilesystemDeleteAction: () => TemplateAction<{
+export const createFilesystemDeleteAction: () => TemplateAction_2<{
   files: string[];
 }>;
 
 // @public
-export const createFilesystemRenameAction: () => TemplateAction<{
+export const createFilesystemRenameAction: () => TemplateAction_2<{
   files: Array<{
     from: string;
     to: string;
@@ -139,7 +137,7 @@ export const createFilesystemRenameAction: () => TemplateAction<{
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrations;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   workflowId: string;
   branchOrTagName: string;
@@ -155,7 +153,7 @@ export function createGithubActionsDispatchAction(options: {
 export function createGithubIssuesLabelAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   number: number;
   labels: string[];
@@ -185,7 +183,7 @@ export type CreateGithubPullRequestClientFactoryInput = {
 export function createGithubRepoCreateAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   description?: string | undefined;
   homepage?: string | undefined;
@@ -208,6 +206,14 @@ export function createGithubRepoCreateAction(options: {
     | {
         users?: string[] | undefined;
         teams?: string[] | undefined;
+        apps?: string[] | undefined;
+      }
+    | undefined;
+  requiredApprovingReviewCount?: number | undefined;
+  restrictions?:
+    | {
+        users: string[];
+        teams: string[];
         apps?: string[] | undefined;
       }
     | undefined;
@@ -236,6 +242,7 @@ export function createGithubRepoCreateAction(options: {
   hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
+  requireCommitSigning?: boolean | undefined;
 }>;
 
 // @public
@@ -243,7 +250,7 @@ export function createGithubRepoPushAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
@@ -261,11 +268,20 @@ export function createGithubRepoPushAction(options: {
         apps?: string[];
       }
     | undefined;
+  requiredApprovingReviewCount?: number | undefined;
+  restrictions?:
+    | {
+        users: string[];
+        teams: string[];
+        apps?: string[];
+      }
+    | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
   requiredConversationResolution?: boolean | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
+  requiredCommitSigning?: boolean | undefined;
 }>;
 
 // @public
@@ -273,7 +289,7 @@ export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   webhookUrl: string;
   webhookSecret?: string | undefined;
@@ -288,7 +304,7 @@ export function createGithubWebhookAction(options: {
 export function createPublishAzureAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
@@ -303,7 +319,7 @@ export function createPublishAzureAction(options: {
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
@@ -320,7 +336,7 @@ export function createPublishBitbucketAction(options: {
 export function createPublishBitbucketCloudAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
@@ -333,7 +349,7 @@ export function createPublishBitbucketCloudAction(options: {
 export function createPublishBitbucketServerAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
@@ -341,13 +357,16 @@ export function createPublishBitbucketServerAction(options: {
   sourcePath?: string | undefined;
   enableLFS?: boolean | undefined;
   token?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
 }>;
 
 // @public
 export function createPublishGerritAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   description: string;
   defaultBranch?: string | undefined;
@@ -361,7 +380,7 @@ export function createPublishGerritAction(options: {
 export function createPublishGerritReviewAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   branch?: string | undefined;
   sourcePath?: string | undefined;
@@ -375,7 +394,7 @@ export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   description?: string | undefined;
   homepage?: string | undefined;
@@ -402,6 +421,14 @@ export function createPublishGithubAction(options: {
     | {
         users?: string[];
         teams?: string[];
+        apps?: string[];
+      }
+    | undefined;
+  requiredApprovingReviewCount?: number | undefined;
+  restrictions?:
+    | {
+        users: string[];
+        teams: string[];
         apps?: string[];
       }
     | undefined;
@@ -432,6 +459,7 @@ export function createPublishGithubAction(options: {
   hasIssues?: boolean | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
+  requiredCommitSigning?: boolean | undefined;
 }>;
 
 // @public
@@ -439,7 +467,7 @@ export const createPublishGithubPullRequestAction: ({
   integrations,
   githubCredentialsProvider,
   clientFactory,
-}: CreateGithubPullRequestActionOptions) => TemplateAction<{
+}: CreateGithubPullRequestActionOptions) => TemplateAction_2<{
   title: string;
   branchName: string;
   description: string;
@@ -456,7 +484,7 @@ export const createPublishGithubPullRequestAction: ({
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction<{
+}): TemplateAction_2<{
   repoUrl: string;
   defaultBranch?: string | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
@@ -472,7 +500,7 @@ export function createPublishGitlabAction(options: {
 // @public
 export const createPublishGitlabMergeRequestAction: (options: {
   integrations: ScmIntegrationRegistry;
-}) => TemplateAction<{
+}) => TemplateAction_2<{
   repoUrl: string;
   title: string;
   description: string;
@@ -489,10 +517,10 @@ export const createPublishGitlabMergeRequestAction: (options: {
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public
+// @public @deprecated (undocumented)
 export const createTemplateAction: <TInput extends JsonObject>(
-  templateAction: TemplateAction<TInput>,
-) => TemplateAction<TInput>;
+  templateAction: TemplateAction_2<TInput>,
+) => TemplateAction_2<TInput>;
 
 // @public
 export type CreateWorkerOptions = {
@@ -509,7 +537,7 @@ export type CreateWorkerOptions = {
 // @public
 export interface CurrentClaimedTask {
   createdBy?: string;
-  secrets?: TaskSecrets;
+  secrets?: TaskSecrets_2;
   spec: TaskSpec;
   taskId: string;
 }
@@ -590,7 +618,7 @@ export type OctokitWithPullRequestPluginClient = Octokit & {
 // @public
 export interface RouterOptions {
   // (undocumented)
-  actions?: TemplateAction<any>[];
+  actions?: TemplateAction_2<any>[];
   // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   // (undocumented)
@@ -624,9 +652,6 @@ export type RunCommandOptions = {
   logStream?: Writable;
 };
 
-// @alpha
-export const scaffolderCatalogModule: (options?: undefined) => BackendFeature;
-
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   // (undocumented)
@@ -648,7 +673,7 @@ export const scaffolderPlugin: (
 
 // @alpha
 export type ScaffolderPluginOptions = {
-  actions?: TemplateAction<any>[];
+  actions?: TemplateAction_2<any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
@@ -663,7 +688,7 @@ export type SerializedTask = {
   createdAt: string;
   lastHeartbeatAt?: string;
   createdBy?: string;
-  secrets?: TaskSecrets;
+  secrets?: TaskSecrets_2;
 };
 
 // @public
@@ -700,7 +725,7 @@ export interface TaskBroker {
 // @public
 export type TaskBrokerDispatchOptions = {
   spec: TaskSpec;
-  secrets?: TaskSecrets;
+  secrets?: TaskSecrets_2;
   createdBy?: string;
 };
 
@@ -727,7 +752,7 @@ export interface TaskContext {
   // (undocumented)
   isDryRun?: boolean;
   // (undocumented)
-  secrets?: TaskSecrets;
+  secrets?: TaskSecrets_2;
   // (undocumented)
   spec: TaskSpec;
 }
@@ -754,15 +779,13 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
-  get secrets(): TaskSecrets | undefined;
+  get secrets(): TaskSecrets_2 | undefined;
   // (undocumented)
   get spec(): TaskSpecV1beta3;
 }
 
-// @public
-export type TaskSecrets = Record<string, string> & {
-  backstageToken?: string;
-};
+// @public @deprecated (undocumented)
+export type TaskSecrets = TaskSecrets_2;
 
 // @public
 export type TaskStatus =
@@ -814,7 +837,7 @@ export interface TaskStore {
 export type TaskStoreCreateTaskOptions = {
   spec: TaskSpec;
   createdBy?: string;
-  secrets?: TaskSecrets;
+  secrets?: TaskSecrets_2;
 };
 
 // @public
@@ -851,26 +874,18 @@ export class TaskWorker {
   start(): void;
 }
 
-// @public (undocumented)
-export type TemplateAction<Input extends JsonObject> = {
-  id: string;
-  description?: string;
-  supportsDryRun?: boolean;
-  schema?: {
-    input?: Schema;
-    output?: Schema;
-  };
-  handler: (ctx: ActionContext<Input>) => Promise<void>;
-};
+// @public @deprecated (undocumented)
+export type TemplateAction<TInput extends JsonObject> =
+  TemplateAction_2<TInput>;
 
 // @public
 export class TemplateActionRegistry {
   // (undocumented)
-  get(actionId: string): TemplateAction<JsonObject>;
+  get(actionId: string): TemplateAction_2<JsonObject>;
   // (undocumented)
-  list(): TemplateAction<JsonObject>[];
+  list(): TemplateAction_2<JsonObject>[];
   // (undocumented)
-  register<TInput extends JsonObject>(action: TemplateAction<TInput>): void;
+  register<TInput extends JsonObject>(action: TemplateAction_2<TInput>): void;
 }
 
 // @public (undocumented)

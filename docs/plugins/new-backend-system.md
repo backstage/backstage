@@ -8,13 +8,13 @@ description: Details of the upcoming backend system
 
 ## Status
 
-The new backend system is under active development, and only a small number of plugins and services have been migrated so far. It is possible to try it out, but it is not recommended to use this new system in production yet.
+The new backend system is under active development, and only a small number of plugins have been migrated so far. It is possible to try it out, but it is not recommended to use this new system in production yet.
 
-You can find an example backend setup at https://github.com/backstage/backstage/tree/master/packages/backend-next.
+You can find an example backend setup in [the backend-next package](https://github.com/backstage/backstage/tree/master/packages/backend-next).
 
 ## Overview
 
-The new Backstage backend system is being built to help make it simpler to install backend plugins and keep projects up to date. It also changes the foundation to one that makes it a lot easier to evolve plugins and the system itself. You can read more about the reasoning in the [original RFC](https://github.com/backstage/backstage/issues/11611).
+The new Backstage backend system is being built to help make it simpler to install backend plugins and to keep projects up to date. It also changes the foundation to one that makes it a lot easier to evolve plugins and the system itself with minimal disruption or cause for breaking changes. You can read more about the reasoning in the [original RFC](https://github.com/backstage/backstage/issues/11611).
 
 One of the goals of the new system was to reduce the code needed for setting up a Backstage backend and installing plugins. This is an example of how you create, add features, and start up your backend in the new system:
 
@@ -32,21 +32,21 @@ backend.add(catalogPlugin());
 await backend.start();
 ```
 
-One notable change that helped achieve this much slimmer backend setup is the introduction of dependency injection, with a system that is very similar to the one in the Backstage frontend.
+One notable change that helped achieve this much slimmer backend setup is the introduction of a system for dependency injection, which is very similar to the one in the Backstage frontend.
 
 ## Building Blocks
 
-This section introduces the high-level building blocks upon which this new system is built. These are all concepts that exist in our current system in one way or another, but the have all been lifted up to be first class concerns in the new system.
+This section introduces the high-level building blocks upon which this new system is built. These are all concepts that exist in our current system in one way or another, but they have all been lifted up to be first class concerns in the new system.
 
 ### Backend
 
-This is the backend instance itself, which you can think of as the unit of deployment. It does not have any functionality in itself, but is simply responsible for wiring things together.
+This is the backend instance itself, which you can think of as the unit of deployment. It does not have any functionality in and of itself, but is simply responsible for wiring things together.
 
 It is up to you to decide how many different backends you want to deploy. You can have all features in a single one, or split things out into multiple smaller deployments. All depending on your need to scale and isolate individual features.
 
 ### Plugins
 
-Plugins provide the actual features, just like in our existing system. They operate completely independently of each other. If plugins what to communicate with each other, they must do so over the wire. There can be no direct communication between plugins through code. Because of this constraints, each plugins can be considered to be its own microservice.
+Plugins provide the actual features, just like in our existing system. They operate completely independently of each other. If plugins want to communicate with each other, they must do so over the wire. There can be no direct communication between plugins through code. Because of this constraint, each plugin can be considered to be its own microservice.
 
 ### Services
 
@@ -77,6 +77,7 @@ Plugins are created using the `createBackendPlugin` function. All plugins must h
 ```ts
 import {
   configServiceRef,
+  coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 
@@ -89,7 +90,7 @@ export const examplePlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        logger: loggerServiceRef,
+        logger: coreServices.logger,
       },
       // logger is provided by the backend based on the dependency on loggerServiceRef above.
       async init({ logger }) {
@@ -113,7 +114,7 @@ export const examplePlugin = createBackendPlugin({
   id: 'example',
   register(env, options?: { silent?: boolean }) {
     env.registerInit({
-      deps: { logger: loggerServiceRef },
+      deps: { logger: coreServices.logger },
       async init({ logger }) {
         if (!options?.silent) {
           logger.info('Hello from example plugin');
@@ -188,7 +189,7 @@ Extension points are registered by a plugin and extended by modules.
 
 ## Backend Services
 
-The default backend provides several _services_ out of the box which includes access to configuration, logging, databases and more.
+The default backend provides several [core services](https://github.com/backstage/backstage/blob/master/packages/backend-plugin-api/src/services/definitions/coreServices.ts) out of the box which includes access to configuration, logging, databases and more.
 Service dependencies are declared using their `ServiceRef`s in the `deps` section of the plugin or module, and the implementations are then forwarded to the `init` method of the plugin or module.
 
 ### Service References
@@ -204,8 +205,7 @@ ServiceRefs contain a scope which is used to determine if the serviceFactory cre
 ```ts
 import {
   createServiceFactory,
-  pluginMetadataServiceRef,
-  loggerServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { ExampleImpl } from './ExampleImpl';
 
@@ -223,11 +223,11 @@ export const exampleServiceRef = createServiceRef<ExampleApi>({
     createServiceFactory({
       service,
       deps: {
-        logger: loggerServiceRef,
-        plugin: pluginMetadataServiceRef,
+        logger: coreServices.logger,
+        plugin: coreServices.pluginMetadata,
       },
       // Logger is available directly in the factory as it's a root scoped service and will be created once per backend instance.
-      async factory({ logger }) {
+      async factory({ logger, plugin }) {
         // plugin is available as it's a plugin scoped service and will be created once per plugin.
         return async ({ plugin }) => {
           // This block will be executed once for every plugin that depends on this service
@@ -277,20 +277,20 @@ const backend = createBackend({
 ## Testing
 
 Utilities for testing backend plugins and modules are available in `@backstage/backend-test-utils`.
+`startTestBackend` returns the HTTP which can be used together with `supertest` to test the plugin.
 
 ```ts
 import { startTestBackend } from '@backstage/backend-test-utils';
+import request from 'supertest';
 
-describe('Example', () => {
-  it('should do something', async () => {
-    await startTestBackend({
-      // mock services can be provided to the backend
-      services: [someServiceFactory],
-      // plugins and modules for testing
-      features: [testModule()],
+describe('My plugin tests', () => {
+  it('should return 200', async () => {
+    const { server } = await startTestBackend({
+      features: [myPlugin()],
     });
 
-    // assertions
+    const response = await request(server).get('/api/example/hello');
+    expect(response.status).toBe(200);
   });
 });
 ```

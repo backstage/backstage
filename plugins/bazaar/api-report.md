@@ -24,7 +24,13 @@ export type BazaarOverviewCardProps = {
 };
 
 // @public (undocumented)
-export const BazaarPage: () => JSX.Element;
+export const BazaarPage: (props: BazaarPageProps) => JSX.Element;
+
+// @public (undocumented)
+export type BazaarPageProps = {
+  title?: string;
+  subtitle?: string;
+};
 
 // @public (undocumented)
 export const bazaarPlugin: BackstagePlugin<

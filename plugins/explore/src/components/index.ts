@@ -16,4 +16,3 @@
 
 export * from './EntityExplorerContent';
 export * from './ExploreLayout';
-export * from './ToolSearchResultListItem';

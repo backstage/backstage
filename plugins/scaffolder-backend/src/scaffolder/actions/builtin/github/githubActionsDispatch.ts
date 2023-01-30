@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
-import { createTemplateAction } from '../../createTemplateAction';
 import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
 

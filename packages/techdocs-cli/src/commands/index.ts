@@ -18,6 +18,7 @@ import { Command } from 'commander';
 import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
+const defaultPreviewAppPort = '3000';
 
 export function registerCommands(program: Command) {
   program
@@ -101,10 +102,6 @@ export function registerCommands(program: Command) {
       'Optional AWS S3 option to force path style.',
     )
     .option(
-      '--awsBucketRootPath',
-      'Optional sub-directory to store files in Amazon S3',
-    )
-    .option(
       '--osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>',
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
     )
@@ -177,6 +174,10 @@ export function registerCommands(program: Command) {
       'Optional AWS S3 option to force path style.',
     )
     .option(
+      '--awsBucketRootPath <AWS BUCKET ROOT PATH>',
+      'Optional sub-directory to store files in Amazon S3',
+    )
+    .option(
       '--osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>',
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
     )
@@ -193,7 +194,7 @@ export function registerCommands(program: Command) {
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
     )
     .option(
-      '--gcsBucketRootPath',
+      '--gcsBucketRootPath <GCS BUCKET ROOT PATH>',
       'Optional sub-directory to store files in Google cloud storage',
     )
     .option(
@@ -251,6 +252,25 @@ export function registerCommands(program: Command) {
     )
     .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)
+    .option(
+      '--preview-app-bundle-path <PATH_TO_BUNDLE>',
+      'Preview documentation using another web app',
+    )
+    .option(
+      '--preview-app-port <PORT>',
+      'Port for the preview app to be served on',
+      defaultPreviewAppPort,
+    )
+    .hook('preAction', command => {
+      if (
+        command.opts().previewAppPort !== defaultPreviewAppPort &&
+        !command.opts().previewAppBundlePath
+      ) {
+        command.error(
+          '--preview-app-port can only be used together with --preview-app-bundle-path',
+        );
+      }
+    })
     .action(lazy(() => import('./serve/serve').then(m => m.default)));
 }
 

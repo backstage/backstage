@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import {
@@ -20,7 +21,7 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from 'octokit';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
   createGithubRepoWithCollaboratorsAndTopics,
   getOctokitOptions,
@@ -69,6 +70,14 @@ export function createPublishGithubAction(options: {
           apps?: string[];
         }
       | undefined;
+    requiredApprovingReviewCount?: number;
+    restrictions?:
+      | {
+          users: string[];
+          teams: string[];
+          apps?: string[];
+        }
+      | undefined;
     requireCodeOwnerReviews?: boolean;
     dismissStaleReviews?: boolean;
     requiredStatusCheckContexts?: string[];
@@ -95,6 +104,7 @@ export function createPublishGithubAction(options: {
     hasIssues?: boolean | undefined;
     token?: string;
     topics?: string[];
+    requiredCommitSigning?: boolean;
   }>({
     id: 'publish:github',
     description:
@@ -109,6 +119,8 @@ export function createPublishGithubAction(options: {
           homepage: inputProps.homepage,
           access: inputProps.access,
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+          restrictions: inputProps.restrictions,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           dismissStaleReviews: inputProps.dismissStaleReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
@@ -136,6 +148,7 @@ export function createPublishGithubAction(options: {
           hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
+          requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
       output: {
@@ -155,6 +168,8 @@ export function createPublishGithubAction(options: {
         requireCodeOwnerReviews = false,
         dismissStaleReviews = false,
         bypassPullRequestAllowances,
+        requiredApprovingReviewCount = 1,
+        restrictions,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
         requiredConversationResolution = false,
@@ -178,6 +193,7 @@ export function createPublishGithubAction(options: {
         hasIssues = undefined,
         topics,
         token: providedToken,
+        requiredCommitSigning = false,
       } = ctx.input;
 
       const octokitOptions = await getOctokitOptions({
@@ -233,6 +249,8 @@ export function createPublishGithubAction(options: {
         repo,
         requireCodeOwnerReviews,
         bypassPullRequestAllowances,
+        requiredApprovingReviewCount,
+        restrictions,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
         requiredConversationResolution,
@@ -242,6 +260,7 @@ export function createPublishGithubAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         dismissStaleReviews,
+        requiredCommitSigning,
       );
 
       ctx.output('remoteUrl', remoteUrl);

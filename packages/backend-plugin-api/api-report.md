@@ -7,15 +7,12 @@
 
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
-import { Logger } from 'winston';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { IdentityApi } from '@backstage/plugin-auth-node';
+import { JsonValue } from '@backstage/types';
+import { Knex } from 'knex';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { PluginCacheManager } from '@backstage/backend-common';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Readable } from 'stream';
-import { TokenManager } from '@backstage/backend-common';
-import { TransportStreamOptions } from 'winston-transport';
 
 // @public (undocumented)
 export interface BackendFeature {
@@ -25,28 +22,57 @@ export interface BackendFeature {
   register(reg: BackendRegistrationPoints): void;
 }
 
-// @public (undocumented)
-export interface BackendModuleConfig<TOptions> {
-  // (undocumented)
+// @public
+export interface BackendModuleConfig {
   moduleId: string;
-  // (undocumented)
   pluginId: string;
   // (undocumented)
-  register(
-    reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
-    options: TOptions,
-  ): void;
+  register(reg: BackendModuleRegistrationPoints): void;
 }
 
-// @public (undocumented)
-export interface BackendPluginConfig<TOptions> {
+// @public
+export interface BackendModuleRegistrationPoints {
   // (undocumented)
+  registerInit<
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
+}
+
+// @public
+export interface BackendPluginConfig {
   id: string;
   // (undocumented)
-  register(reg: BackendRegistrationPoints, options: TOptions): void;
+  register(reg: BackendPluginRegistrationPoints): void;
 }
 
-// @public (undocumented)
+// @public
+export interface BackendPluginRegistrationPoints {
+  // (undocumented)
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
+  // (undocumented)
+  registerInit<
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
+}
+
+// @public
 export interface BackendRegistrationPoints {
   // (undocumented)
   registerExtensionPoint<TExtensionPoint>(
@@ -66,116 +92,183 @@ export interface BackendRegistrationPoints {
   }): void;
 }
 
-// @public (undocumented)
-export type CacheService = PluginCacheManager;
-
-// @public (undocumented)
-const cacheServiceRef: ServiceRef<PluginCacheManager, 'plugin'>;
-
-// @public (undocumented)
-export type ConfigService = Config;
-
-// @public (undocumented)
-const configServiceRef: ServiceRef<Config, 'root'>;
-
-declare namespace coreServices {
-  export {
-    configServiceRef as config,
-    httpRouterServiceRef as httpRouter,
-    loggerServiceRef as logger,
-    urlReaderServiceRef as urlReader,
-    cacheServiceRef as cache,
-    databaseServiceRef as database,
-    discoveryServiceRef as discovery,
-    tokenManagerServiceRef as tokenManager,
-    permissionsServiceRef as permissions,
-    schedulerServiceRef as scheduler,
-    rootLifecycleServiceRef as rootLifecycle,
-    rootLoggerServiceRef as rootLogger,
-    pluginMetadataServiceRef as pluginMetadata,
-    lifecycleServiceRef as lifecycle,
-  };
+// @public
+export interface CacheClient {
+  delete(key: string): Promise<void>;
+  get(key: string): Promise<JsonValue | undefined>;
+  set(
+    key: string,
+    value: JsonValue,
+    options?: CacheClientSetOptions,
+  ): Promise<void>;
 }
-export { coreServices };
 
 // @public
-export function createBackendModule<
-  TOptions extends object | undefined = undefined,
->(
-  config: BackendModuleConfig<TOptions>,
-): undefined extends TOptions
-  ? (options?: TOptions) => BackendFeature
-  : (options: TOptions) => BackendFeature;
+export type CacheClientOptions = {
+  defaultTtl?: number;
+};
+
+// @public
+export type CacheClientSetOptions = {
+  ttl?: number;
+};
+
+// @public
+export interface CacheService {
+  getClient: (options?: CacheClientOptions) => CacheClient;
+}
 
 // @public (undocumented)
-export function createBackendPlugin<
-  TOptions extends object | undefined = undefined,
->(config: {
-  id: string;
-  register(reg: BackendRegistrationPoints, options: TOptions): void;
-}): undefined extends TOptions
-  ? (options?: TOptions) => BackendFeature
-  : (options: TOptions) => BackendFeature;
+export interface ConfigService extends Config {}
 
-// @public (undocumented)
-export function createExtensionPoint<T>(options: {
-  id: string;
-}): ExtensionPoint<T>;
+// @public
+export namespace coreServices {
+  const cache: ServiceRef<CacheService, 'plugin'>;
+  const config: ServiceRef<ConfigService, 'root'>;
+  const database: ServiceRef<DatabaseService, 'plugin'>;
+  const discovery: ServiceRef<DiscoveryService, 'plugin'>;
+  const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
+  const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
+  const logger: ServiceRef<LoggerService, 'plugin'>;
+  const permissions: ServiceRef<PermissionsService, 'plugin'>;
+  const pluginMetadata: ServiceRef<PluginMetadataService, 'plugin'>;
+  const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root'>;
+  const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
+  const rootLogger: ServiceRef<RootLoggerService, 'root'>;
+  const scheduler: ServiceRef<SchedulerService, 'plugin'>;
+  const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
+  const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
+  const identity: ServiceRef<IdentityService, 'plugin'>;
+}
 
-// @public (undocumented)
+// @public
+export function createBackendModule<TOptions extends [options?: object] = []>(
+  config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
+): (...params: TOptions) => BackendFeature;
+
+// @public
+export function createBackendPlugin<TOptions extends [options?: object] = []>(
+  config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
+): (...params: TOptions) => BackendFeature;
+
+// @public
+export function createExtensionPoint<T>(
+  config: ExtensionPointConfig,
+): ExtensionPoint<T>;
+
+// @public
 export function createServiceFactory<
   TService,
-  TScope extends 'root' | 'plugin',
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
   },
   TOpts extends object | undefined = undefined,
->(config: {
-  service: ServiceRef<TService, TScope>;
-  deps: TDeps;
-  factory(
-    deps: ServiceRefsToInstances<TDeps, 'root'>,
-    options: TOpts,
-  ): TScope extends 'root'
-    ? Promise<TImpl>
-    : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
-}): undefined extends TOpts
-  ? (options?: TOpts) => ServiceFactory<TService>
-  : (options: TOpts) => ServiceFactory<TService>;
-
-// @public (undocumented)
-export function createServiceRef<T>(options: {
-  id: string;
-  scope?: 'plugin';
-  defaultFactory?: (
-    service: ServiceRef<T, 'plugin'>,
-  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T, 'plugin'>;
-
-// @public (undocumented)
-export function createServiceRef<T>(options: {
-  id: string;
-  scope: 'root';
-  defaultFactory?: (
-    service: ServiceRef<T, 'root'>,
-  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T, 'root'>;
-
-// @public (undocumented)
-export type DatabaseService = PluginDatabaseManager;
-
-// @public (undocumented)
-const databaseServiceRef: ServiceRef<PluginDatabaseManager, 'plugin'>;
+>(
+  config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
+): () => ServiceFactory<TService>;
 
 // @public
-export type DiscoveryService = {
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TOpts extends object | undefined = undefined,
+>(
+  config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
+): (options?: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TOpts extends object | undefined = undefined,
+>(
+  config: (options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
+): (options: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+): () => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  config: (
+    options?: TOpts,
+  ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+): (options?: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  config:
+    | PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>
+    | ((
+        options: TOpts,
+      ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
+): (options: TOpts) => ServiceFactory<TService>;
+
+// @public
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, 'plugin'>,
+): ServiceRef<TService, 'plugin'>;
+
+// @public
+export function createServiceRef<TService>(
+  config: ServiceRefConfig<TService, 'root'>,
+): ServiceRef<TService, 'root'>;
+
+// @public
+export function createSharedEnvironment<
+  TOptions extends [options?: object] = [],
+>(
+  config:
+    | SharedBackendEnvironmentConfig
+    | ((...params: TOptions) => SharedBackendEnvironmentConfig),
+): (...options: TOptions) => SharedBackendEnvironment;
+
+// @public
+export interface DatabaseService {
+  getClient(): Promise<Knex>;
+  migrations?: {
+    skip?: boolean;
+  };
+}
+
+// @public
+export interface DiscoveryService {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
-};
-
-// @public (undocumented)
-const discoveryServiceRef: ServiceRef<DiscoveryService, 'plugin'>;
+}
 
 // @public
 export type ExtensionPoint<T> = {
@@ -185,6 +278,11 @@ export type ExtensionPoint<T> = {
   $$ref: 'extension-point';
 };
 
+// @public
+export interface ExtensionPointConfig {
+  id: string;
+}
+
 // @public (undocumented)
 export interface HttpRouterService {
   // (undocumented)
@@ -192,7 +290,7 @@ export interface HttpRouterService {
 }
 
 // @public (undocumented)
-const httpRouterServiceRef: ServiceRef<HttpRouterService, 'plugin'>;
+export interface IdentityService extends IdentityApi {}
 
 // @public (undocumented)
 export interface LifecycleService {
@@ -200,15 +298,12 @@ export interface LifecycleService {
 }
 
 // @public (undocumented)
-const lifecycleServiceRef: ServiceRef<LifecycleService, 'plugin'>;
-
-// @public (undocumented)
 export type LifecycleServiceShutdownHook = {
   fn: () => void | Promise<void>;
-  labels?: Record<string, string>;
+  logger?: LoggerService;
 };
 
-// @public (undocumented)
+// @public
 export interface LoggerService {
   // (undocumented)
   child(meta: LogMeta): LoggerService;
@@ -223,24 +318,12 @@ export interface LoggerService {
 }
 
 // @public (undocumented)
-const loggerServiceRef: ServiceRef<LoggerService, 'plugin'>;
-
-// @public (undocumented)
-export function loggerToWinstonLogger(
-  logger: LoggerService,
-  opts?: TransportStreamOptions,
-): Logger;
-
-// @public (undocumented)
 export type LogMeta = {
   [name: string]: unknown;
 };
 
 // @public (undocumented)
-export type PermissionsService = PermissionEvaluator | PermissionAuthorizer;
-
-// @public (undocumented)
-const permissionsServiceRef: ServiceRef<PermissionsService, 'plugin'>;
+export interface PermissionsService extends PermissionEvaluator {}
 
 // @public (undocumented)
 export interface PluginMetadataService {
@@ -249,7 +332,28 @@ export interface PluginMetadataService {
 }
 
 // @public (undocumented)
-const pluginMetadataServiceRef: ServiceRef<PluginMetadataService, 'plugin'>;
+export interface PluginServiceFactoryConfig<
+  TService,
+  TContext,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> {
+  // (undocumented)
+  createRootContext?(
+    deps: ServiceRefsToInstances<TDeps, 'root'>,
+  ): TContext | Promise<TContext>;
+  // (undocumented)
+  deps: TDeps;
+  // (undocumented)
+  factory(
+    deps: ServiceRefsToInstances<TDeps>,
+    context: TContext,
+  ): TImpl | Promise<TImpl>;
+  // (undocumented)
+  service: ServiceRef<TService, 'plugin'>;
+}
 
 // @public
 export type ReadTreeOptions = {
@@ -296,22 +400,34 @@ export type ReadUrlResponse = {
 };
 
 // @public (undocumented)
-export type RootLifecycleService = LifecycleService;
+export interface RootHttpRouterService {
+  use(path: string, handler: Handler): void;
+}
 
 // @public (undocumented)
-const rootLifecycleServiceRef: ServiceRef<LifecycleService, 'root'>;
+export interface RootLifecycleService extends LifecycleService {}
 
 // @public (undocumented)
-export type RootLoggerService = LoggerService;
+export interface RootLoggerService extends LoggerService {}
 
 // @public (undocumented)
-const rootLoggerServiceRef: ServiceRef<LoggerService, 'root'>;
+export interface RootServiceFactoryConfig<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> {
+  // (undocumented)
+  deps: TDeps;
+  // (undocumented)
+  factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
+  // (undocumented)
+  service: ServiceRef<TService, 'root'>;
+}
 
 // @public (undocumented)
-export type SchedulerService = PluginTaskScheduler;
-
-// @public (undocumented)
-const schedulerServiceRef: ServiceRef<PluginTaskScheduler, 'plugin'>;
+export interface SchedulerService extends PluginTaskScheduler {}
 
 // @public
 export type SearchOptions = {
@@ -349,14 +465,21 @@ export type ServiceFactory<TService = unknown> =
       deps: {
         [key in string]: ServiceRef<unknown>;
       };
-      factory(deps: {
+      createRootContext?(deps: {
         [key in string]: unknown;
-      }): Promise<
-        (deps: {
+      }): Promise<unknown>;
+      factory(
+        deps: {
           [key in string]: unknown;
-        }) => Promise<TService>
-      >;
+        },
+        context: unknown,
+      ): Promise<TService>;
     };
+
+// @public
+export type ServiceFactoryOrFunction<TService = unknown> =
+  | ServiceFactory<TService>
+  | (() => ServiceFactory<TService>);
 
 // @public
 export type ServiceRef<
@@ -371,10 +494,36 @@ export type ServiceRef<
 };
 
 // @public (undocumented)
-export type TokenManagerService = TokenManager;
+export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
+  // (undocumented)
+  defaultFactory?: (
+    service: ServiceRef<TService, TScope>,
+  ) => Promise<ServiceFactoryOrFunction<TService>>;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  scope?: TScope;
+}
 
-// @public (undocumented)
-const tokenManagerServiceRef: ServiceRef<TokenManager, 'plugin'>;
+// @public
+export interface SharedBackendEnvironment {
+  // (undocumented)
+  $$type: 'SharedBackendEnvironment';
+}
+
+// @public
+export interface SharedBackendEnvironmentConfig {
+  // (undocumented)
+  services?: ServiceFactoryOrFunction[];
+}
+
+// @public
+export interface TokenManagerService {
+  authenticate(token: string): Promise<void>;
+  getToken(): Promise<{
+    token: string;
+  }>;
+}
 
 // @public (undocumented)
 export type TypesToServiceRef<T> = {
@@ -382,12 +531,9 @@ export type TypesToServiceRef<T> = {
 };
 
 // @public
-export type UrlReaderService = {
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+export interface UrlReaderService {
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-};
-
-// @public (undocumented)
-const urlReaderServiceRef: ServiceRef<UrlReaderService, 'plugin'>;
+}
 ```

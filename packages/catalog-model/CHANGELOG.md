@@ -1,5 +1,30 @@
 # @backstage/catalog-model
 
+## 1.1.6-next.0
+
+### Patch Changes
+
+- 2518ef5b8a: Add deprecation tag to kubernetes constants in catalog, constants are now defined in plugin-kubernetes-common
+
+## 1.1.5
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
 ## 1.1.5-next.0
 
 ### Patch Changes

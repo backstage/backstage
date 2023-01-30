@@ -23,6 +23,7 @@ import {
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
 import { useAnalytics } from '@backstage/core-plugin-api';
@@ -83,7 +84,8 @@ export function AdrSearchResultListItem(props: {
             </Link>
           }
           secondary={
-            <span
+            <Typography
+              component="span"
               style={{
                 display: '-webkit-box',
                 WebkitBoxOrient: 'vertical',
@@ -100,7 +102,7 @@ export function AdrSearchResultListItem(props: {
               ) : (
                 result.text
               )}
-            </span>
+            </Typography>
           }
         />
         <Box>

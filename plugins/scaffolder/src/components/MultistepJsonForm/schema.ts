@@ -16,7 +16,7 @@
 
 import { JsonObject } from '@backstage/types';
 import { FormProps, UiSchema } from '@rjsf/core';
-import { LayoutOptions } from '../../layouts';
+import type { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -120,7 +120,8 @@ export function transformSchemaToProps(
     )?.component;
 
     if (Layout) {
-      uiSchema['ui:ObjectFieldTemplate'] = Layout;
+      uiSchema['ui:ObjectFieldTemplate'] =
+        Layout as unknown as FormProps<any>['ObjectFieldTemplate'];
     }
   }
 

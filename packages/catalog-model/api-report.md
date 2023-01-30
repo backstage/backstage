@@ -14,14 +14,14 @@ export interface AlphaEntity extends Entity {
 // @public
 export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
 
-// @public
+// @public @deprecated
 export const ANNOTATION_KUBERNETES_API_SERVER = 'kubernetes.io/api-server';
 
-// @public
+// @public @deprecated
 export const ANNOTATION_KUBERNETES_API_SERVER_CA =
   'kubernetes.io/api-server-certificate-authority';
 
-// @public
+// @public @deprecated
 export const ANNOTATION_KUBERNETES_AUTH_PROVIDER =
   'kubernetes.io/auth-provider';
 
