@@ -39,6 +39,10 @@ export interface LogViewerProps {
   classes?: {
     root?: string;
   };
+  /**
+   * Whether the LogViewer should automatically scroll to the bottom of the log.
+   */
+  tail?: boolean;
 }
 
 /**
