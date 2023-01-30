@@ -50,7 +50,7 @@ describe('util', () => {
       'should get postgres major version, %p',
       async databaseId => {
         const knex = await databases.init(databaseId);
-        const expectedVersion = +databaseId.substr(9);
+        const expectedVersion = +databaseId.slice(9);
 
         await expect(queryPostgresMajorVersion(knex)).resolves.toBe(
           expectedVersion,

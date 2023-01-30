@@ -402,6 +402,41 @@ view the Kubernetes API docs for your Kubernetes version (e.g.
 [API Groups for v1.22](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#-strong-api-groups-strong-)
 )
 
+### `objectTypes` (optional)
+
+Overrides for the Kubernetes object types fetched from the cluster. The default object types are:
+
+- pods
+- services
+- configmaps
+- limitranges
+- deployments
+- replicasets
+- horizontalpodautoscalers
+- jobs
+- cronjobs
+- ingresses
+- statefulsets
+- daemonsets
+
+You may use this config to override the default object types if you only want a subset of
+the default ones. However, it's currently not supported to fetch object types other
+than the ones specified in the default types.
+
+Example:
+
+```yaml
+---
+kubernetes:
+  objectTypes:
+    - configmaps
+    - deployments
+    - limitranges
+    - pods
+    - services
+    - statefulsets
+```
+
 ### Role Based Access Control
 
 The current RBAC permissions required are read-only cluster wide, the below
@@ -441,6 +476,13 @@ rules:
       - get
       - list
       - watch
+  - apiGroups:
+      - metrics.k8s.io
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
 ```
 
 ## Surfacing your Kubernetes components as part of an entity

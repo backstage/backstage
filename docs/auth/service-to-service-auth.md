@@ -110,6 +110,9 @@ value of the configured key as the secret. It must also have the following paylo
 - `sub`: "backstage-server" (only this value supported currently)
 - `exp`: one hour from the time it was generated, in epoch seconds
 
+> NOTE: The JWT must encode the `alg` header as a protected header, such as with
+> [setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
+
 ## Granular Access Control
 
 We plan to build out the service-to-service auth to be much more powerful in the

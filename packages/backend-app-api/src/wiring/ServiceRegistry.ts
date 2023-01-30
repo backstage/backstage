@@ -37,12 +37,14 @@ export class ServiceRegistry implements EnumerableServiceHolder {
   readonly #implementations: Map<
     ServiceFactory,
     {
-      factoryFunc: Promise<
-        (deps: { [name in string]: unknown }) => Promise<unknown>
-      >;
+      context: Promise<unknown>;
       byPlugin: Map<string, Promise<unknown>>;
     }
   >;
+  readonly #rootServiceImplementations = new Map<
+    ServiceFactory,
+    Promise<unknown>
+  >();
 
   constructor(factories: Array<ServiceFactory<unknown>>) {
     this.#providedFactories = new Map(factories.map(f => [f.service.id, f]));
@@ -56,15 +58,13 @@ export class ServiceRegistry implements EnumerableServiceHolder {
   ): Promise<ServiceFactory> | undefined {
     // Special case handling of the plugin metadata service, generating a custom factory for it each time
     if (ref.id === coreServices.pluginMetadata.id) {
-      return Promise.resolve({
+      return Promise.resolve<
+        ServiceFactory<typeof coreServices.pluginMetadata.T>
+      >({
         scope: 'plugin',
         service: coreServices.pluginMetadata,
         deps: {},
-        factory: async () => async () => ({
-          getId() {
-            return pluginId;
-          },
-        }),
+        factory: async () => ({ getId: () => pluginId }),
       });
     }
 
@@ -100,8 +100,6 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     return Promise.resolve(resolvedFactory);
   }
 
-  #separateMapForTheRootService = new Map<ServiceFactory, Promise<unknown>>();
-
   #checkForMissingDeps(factory: ServiceFactory, pluginId: string) {
     const missingDeps = Object.values(factory.deps).filter(ref => {
       if (ref.id === coreServices.pluginMetadata.id) {
@@ -129,7 +127,7 @@ export class ServiceRegistry implements EnumerableServiceHolder {
   get<T>(ref: ServiceRef<T>, pluginId: string): Promise<T> | undefined {
     return this.#resolveFactory(ref, pluginId)?.then(factory => {
       if (factory.scope === 'root') {
-        let existing = this.#separateMapForTheRootService.get(factory);
+        let existing = this.#rootServiceImplementations.get(factory);
         if (!existing) {
           this.#checkForMissingDeps(factory, pluginId);
           const rootDeps = new Array<Promise<[name: string, impl: unknown]>>();
@@ -147,7 +145,7 @@ export class ServiceRegistry implements EnumerableServiceHolder {
           existing = Promise.all(rootDeps).then(entries =>
             factory.factory(Object.fromEntries(entries)),
           );
-          this.#separateMapForTheRootService.set(factory, existing);
+          this.#rootServiceImplementations.set(factory, existing);
         }
         return existing as Promise<T>;
       }
@@ -165,12 +163,14 @@ export class ServiceRegistry implements EnumerableServiceHolder {
         }
 
         implementation = {
-          factoryFunc: Promise.all(rootDeps)
-            .then(entries => factory.factory(Object.fromEntries(entries)))
+          context: Promise.all(rootDeps)
+            .then(entries =>
+              factory.createRootContext?.(Object.fromEntries(entries)),
+            )
             .catch(error => {
               const cause = stringifyError(error);
               throw new Error(
-                `Failed to instantiate service '${ref.id}' because the top-level factory function threw an error, ${cause}`,
+                `Failed to instantiate service '${ref.id}' because createRootContext threw an error, ${cause}`,
               );
             }),
           byPlugin: new Map(),
@@ -188,10 +188,10 @@ export class ServiceRegistry implements EnumerableServiceHolder {
           allDeps.push(target.then(impl => [name, impl]));
         }
 
-        result = implementation.factoryFunc
-          .then(func =>
+        result = implementation.context
+          .then(context =>
             Promise.all(allDeps).then(entries =>
-              func(Object.fromEntries(entries)),
+              factory.factory(Object.fromEntries(entries), context),
             ),
           )
           .catch(error => {

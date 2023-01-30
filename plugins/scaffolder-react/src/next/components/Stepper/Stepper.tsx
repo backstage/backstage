@@ -24,16 +24,17 @@ import {
 } from '@material-ui/core';
 import { type IChangeEvent, withTheme } from '@rjsf/core-v5';
 import { ErrorSchema, FieldValidation } from '@rjsf/utils';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
+import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
-import { ReviewState } from '../ReviewState';
-import validator from '@rjsf/validator-ajv6';
-
+import validator from '@rjsf/validator-ajv8';
 import { useFormDataFromQuery } from '../../hooks';
 import { FormProps } from '../../types';
+import { LayoutOptions } from '../../../layouts';
+import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -60,8 +61,13 @@ export type StepperProps = {
   templateName?: string;
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
-
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
+  components?: {
+    ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
+    createButtonText?: ReactNode;
+    reviewButtonText?: ReactNode;
+  };
+  layouts?: LayoutOptions[];
 };
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -73,7 +79,13 @@ const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
  * The `Stepper` component is the Wizard that is rendered when a user selects a template
  * @alpha
  */
-export const Stepper = (props: StepperProps) => {
+export const Stepper = (stepperProps: StepperProps) => {
+  const { layouts = [], components = {}, ...props } = stepperProps;
+  const {
+    ReviewStateComponent = ReviewState,
+    createButtonText = 'Create',
+    reviewButtonText = 'Review',
+  } = components;
   const analytics = useAnalytics();
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
@@ -114,9 +126,9 @@ export const Stepper = (props: StepperProps) => {
   );
 
   const handleNext = async ({
-    formData,
+    formData = {},
   }: {
-    formData: Record<string, JsonValue>;
+    formData?: Record<string, JsonValue>;
   }) => {
     // TODO(blam): What do we do about loading states, does each field extension get a chance
     // to display it's own loading? Or should we grey out the entire form.
@@ -141,6 +153,8 @@ export const Stepper = (props: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
+  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
+
   return (
     <>
       <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">
@@ -160,8 +174,8 @@ export const Stepper = (props: StepperProps) => {
             extraErrors={errors as unknown as ErrorSchema}
             formData={formState}
             formContext={{ formData: formState }}
-            schema={steps[activeStep].schema}
-            uiSchema={steps[activeStep].uiSchema}
+            schema={currentStep.schema}
+            uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
             fields={extensions}
             showErrorList={false}
@@ -177,13 +191,13 @@ export const Stepper = (props: StepperProps) => {
                 Back
               </Button>
               <Button variant="contained" color="primary" type="submit">
-                {activeStep === steps.length - 1 ? 'Review' : 'Next'}
+                {activeStep === steps.length - 1 ? reviewButtonText : 'Next'}
               </Button>
             </div>
           </Form>
         ) : (
           <>
-            <ReviewState formState={formState} schemas={steps} />
+            <ReviewStateComponent formState={formState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}
@@ -195,7 +209,7 @@ export const Stepper = (props: StepperProps) => {
               <Button
                 variant="contained"
                 onClick={() => {
-                  props.onComplete(formState);
+                  props.onCreate(formState);
                   const name =
                     typeof formState.name === 'string'
                       ? formState.name
@@ -206,7 +220,7 @@ export const Stepper = (props: StepperProps) => {
                   );
                 }}
               >
-                Create
+                {createButtonText}
               </Button>
             </div>
           </>

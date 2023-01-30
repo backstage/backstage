@@ -22,14 +22,6 @@
 export { ScaffolderClient } from './api';
 
 export {
-  createScaffolderLayout,
-  ScaffolderLayouts,
-  type LayoutOptions,
-  type LayoutTemplate,
-  type LayoutComponent,
-} from './layouts';
-
-export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,
   EntityTagsPickerFieldExtension,

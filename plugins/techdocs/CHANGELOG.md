@@ -1,5 +1,38 @@
 # @backstage/plugin-techdocs
 
+## 1.4.4-next.0
+
+### Patch Changes
+
+- c8e09cc383: Fixed bug in Techdocs reader where a techdocs page with a hash in the URL did not always jump to the document anchor.
+- cad5607411: Improve view: remove footer overlay on large screen
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/plugin-techdocs-react@1.1.3-next.0
+  - @backstage/integration-react@1.1.9
+
+## 1.4.3
+
+### Patch Changes
+
+- a74dd61534: Fix sizing of build log component to render all lines
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- 7115c7389b: Updated dependency `jss` to `~10.9.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-search-react@1.4.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/plugin-techdocs-react@1.1.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.9
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.4.3-next.2
 
 ### Patch Changes

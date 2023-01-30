@@ -18,8 +18,8 @@ export {
   SearchResult,
   SearchResultApi,
   SearchResultContext,
-  SearchResultState,
   SearchResultComponent,
+  SearchResultState,
 } from './SearchResult';
 
 export type {

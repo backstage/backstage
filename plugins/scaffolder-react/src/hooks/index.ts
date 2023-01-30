@@ -15,3 +15,4 @@
  */
 
 export { useCustomFieldExtensions } from './useCustomFieldExtensions';
+export { useCustomLayouts } from './useCustomLayouts';

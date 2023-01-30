@@ -375,7 +375,11 @@ describe('publish:bitbucketServer', () => {
       defaultBranch: 'master',
       auth: { token: 'thing' },
       logger: mockContext.logger,
-      gitAuthorInfo: {},
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -429,7 +433,11 @@ describe('publish:bitbucketServer', () => {
       defaultBranch: 'master',
       auth: { username: 'test-user', password: 'test-password' },
       logger: mockContext.logger,
-      gitAuthorInfo: {},
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -481,7 +489,11 @@ describe('publish:bitbucketServer', () => {
       defaultBranch: 'main',
       auth: { token: 'thing' },
       logger: mockContext.logger,
-      gitAuthorInfo: {},
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -555,6 +567,7 @@ describe('publish:bitbucketServer', () => {
       auth: { token: 'thing' },
       logger: mockContext.logger,
       defaultBranch: 'master',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -574,7 +587,7 @@ describe('publish:bitbucketServer', () => {
         ],
       },
       scaffolder: {
-        defaultCommitMessage: 'Test commit message',
+        defaultCommitMessage: 'initial commit',
       },
     });
 
@@ -626,7 +639,7 @@ describe('publish:bitbucketServer', () => {
       auth: { token: 'thing' },
       logger: mockContext.logger,
       defaultBranch: 'master',
-      commitMessage: 'Test commit message',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
   });

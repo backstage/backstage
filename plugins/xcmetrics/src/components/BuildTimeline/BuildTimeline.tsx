@@ -15,6 +15,7 @@
  */
 
 import { createStyles, makeStyles, useTheme } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import {
   Bar,
@@ -91,7 +92,7 @@ export const BuildTimeline = ({
   width,
 }: BuildTimelineProps) => {
   const theme = useTheme();
-  if (!targets.length) return <p>No Targets</p>;
+  if (!targets.length) return <Typography paragraph>No Targets</Typography>;
 
   const data = getTimelineData(targets);
 

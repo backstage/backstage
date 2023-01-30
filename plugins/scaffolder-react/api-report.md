@@ -21,6 +21,7 @@ import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { SetStateAction } from 'react';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
@@ -65,6 +66,11 @@ export function createScaffolderFieldExtension<
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
 
 // @public
+export function createScaffolderLayout<TInputProps = unknown>(
+  options: LayoutOptions,
+): Extension<LayoutComponent<TInputProps>>;
+
+// @public
 export type CustomFieldExtensionSchema = {
   returnValue: JSONSchema7;
   uiOptions?: JSONSchema7;
@@ -78,6 +84,9 @@ export type CustomFieldValidator<TFieldReturnValue> = (
     apiHolder: ApiHolder;
   },
 ) => void | Promise<void>;
+
+// @alpha (undocumented)
+export const EmbeddableWorkflow: (props: WorkflowProps) => JSX.Element;
 
 // @alpha
 export const extractSchemaFromStep: (inputStep: JsonObject) => {
@@ -112,11 +121,27 @@ export type FieldExtensionOptions<
   schema?: CustomFieldExtensionSchema;
 };
 
-// @alpha
+// @public
 export type FormProps = Pick<
   FormProps_2,
   'transformErrors' | 'noHtml5Validate'
 >;
+
+// @public
+export type LayoutComponent<_TInputProps> = () => null;
+
+// @public
+export interface LayoutOptions<P = any> {
+  // (undocumented)
+  component: LayoutTemplate<P>;
+  // (undocumented)
+  name: string;
+}
+
+// @public
+export type LayoutTemplate<T = any> = NonNullable<
+  FormProps_2<T>['uiSchema']
+>['ui:ObjectFieldTemplate'];
 
 // @public
 export type ListActionsResponse = Array<Action>;
@@ -272,6 +297,9 @@ export interface ScaffolderGetIntegrationsListResponse {
   }[];
 }
 
+// @public
+export const ScaffolderLayouts: React.ComponentType;
+
 // @public (undocumented)
 export type ScaffolderOutputLink = {
   title?: string;
@@ -342,7 +370,7 @@ export const SecretsContextProvider: ({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @alpha
-export const Stepper: (props: StepperProps) => JSX.Element;
+export const Stepper: (stepperProps: StepperProps) => JSX.Element;
 
 // @alpha
 export type StepperProps = {
@@ -351,7 +379,13 @@ export type StepperProps = {
   templateName?: string;
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
-  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
+  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
+  components?: {
+    ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
+    createButtonText?: ReactNode;
+    reviewButtonText?: ReactNode;
+  };
+  layouts?: LayoutOptions[];
 };
 
 // @alpha
@@ -413,10 +447,22 @@ export const useCustomFieldExtensions: <
   outlet: React.ReactNode,
 ) => TComponentDataType[];
 
+// @public
+export const useCustomLayouts: <TComponentDataType = LayoutOptions<any>>(
+  outlet: React.ReactNode,
+) => TComponentDataType[];
+
 // @alpha
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
+
+// @alpha (undocumented)
+export const useTemplateParameterSchema: (templateRef: string) => {
+  manifest: TemplateParameterSchema | undefined;
+  loading: boolean;
+  error: Error | undefined;
+};
 
 // @alpha
 export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
@@ -425,6 +471,26 @@ export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
+
+// @alpha (undocumented)
+export const Workflow: (workflowProps: WorkflowProps) => JSX.Element | null;
+
+// @alpha (undocumented)
+export type WorkflowProps = {
+  title?: string;
+  description?: string;
+  namespace: string;
+  templateName: string;
+  onError(error: Error | undefined): JSX.Element | null;
+} & Pick<
+  StepperProps,
+  | 'extensions'
+  | 'FormProps'
+  | 'components'
+  | 'onCreate'
+  | 'initialState'
+  | 'layouts'
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

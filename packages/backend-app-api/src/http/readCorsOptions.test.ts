@@ -84,4 +84,42 @@ describe('readCorsOptions', () => {
     expect(cors).toEqual(expect.objectContaining({}));
     expect(cors?.origin).toBeUndefined();
   });
+
+  it("get's undefined properties removed", () => {
+    const config = new ConfigReader({
+      cors: {
+        methods: ['get'],
+        maxAge: 100,
+      },
+    });
+    const cors = readCorsOptions(config);
+    expect(cors?.hasOwnProperty('origin')).toBeFalsy();
+    expect(cors?.hasOwnProperty('methods')).toBeTruthy();
+    expect(cors?.hasOwnProperty('allowedHeaders')).toBeFalsy();
+    expect(cors?.hasOwnProperty('exposedHeaders')).toBeFalsy();
+    expect(cors?.hasOwnProperty('credentials')).toBeFalsy();
+    expect(cors?.hasOwnProperty('maxAge')).toBeTruthy();
+    expect(cors?.hasOwnProperty('preflightContinue')).toBeFalsy();
+    expect(cors?.hasOwnProperty('optionsSuccessStatus')).toBeFalsy();
+  });
+
+  it('does not have undefined optionsSuccessStatus', () => {
+    const config = new ConfigReader({
+      cors: {
+        optionsSuccessStatus: undefined,
+      },
+    });
+    const cors = readCorsOptions(config);
+    expect(cors?.hasOwnProperty('optionsSuccessStatus')).toBeFalsy();
+  });
+
+  it('does have defined optionsSuccessStatus', () => {
+    const config = new ConfigReader({
+      cors: {
+        optionsSuccessStatus: 200,
+      },
+    });
+    const cors = readCorsOptions(config);
+    expect(cors?.optionsSuccessStatus).toBe(200);
+  });
 });

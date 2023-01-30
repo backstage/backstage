@@ -19,7 +19,8 @@ export type {
   ServiceRefConfig,
   TypesToServiceRef,
   ServiceFactory,
-  ServiceFactoryConfig,
+  PluginServiceFactoryConfig,
+  RootServiceFactoryConfig,
   ServiceFactoryOrFunction,
 } from './types';
 export { createServiceRef, createServiceFactory } from './types';

@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.10.0",
       "releases/v1.9.0",
       "releases/v1.8.0",
       "releases/v1.7.0",
@@ -200,7 +201,8 @@
         "label": "GitLab",
         "ids": [
           "integrations/gitlab/locations",
-          "integrations/gitlab/discovery"
+          "integrations/gitlab/discovery",
+          "integrations/gitlab/org"
         ]
       },
       {
@@ -238,8 +240,7 @@
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
-          "plugins/url-reader",
-          "plugins/new-backend-system"
+          "plugins/url-reader"
         ]
       },
       {
@@ -362,6 +363,47 @@
       "architecture-decisions/adrs-adr012",
       "architecture-decisions/adrs-adr013"
     ],
-    "FAQ": ["FAQ"]
+    "FAQ": ["FAQ"],
+    "Experimental Backend System": [
+      {
+        "_hidden_": [
+          "backend-system/index",
+          {
+            "type": "subcategory",
+            "label": "Architecture",
+            "ids": [
+              "backend-system/architecture/index",
+              "backend-system/architecture/services",
+              "backend-system/architecture/plugins",
+              "backend-system/architecture/extension-points",
+              "backend-system/architecture/modules",
+              "backend-system/architecture/naming-patterns"
+            ]
+          },
+          {
+            "type": "subcategory",
+            "label": "Building Backends",
+            "ids": [
+              "backend-system/building-backends/index",
+              "backend-system/building-backends/migrating"
+            ]
+          },
+          {
+            "type": "subcategory",
+            "label": "Building Plugins & Modules",
+            "ids": [
+              "backend-system/building-plugins-and-modules/index",
+              "backend-system/building-plugins-and-modules/testing",
+              "backend-system/building-plugins-and-modules/migrating"
+            ]
+          },
+          {
+            "type": "subcategory",
+            "label": "Core Services",
+            "ids": ["backend-system/core-services/index"]
+          }
+        ]
+      }
+    ]
   }
 }

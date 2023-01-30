@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { EmailCardAction } from './EmailCardAction';
 import React from 'react';
 import { GroupEntity } from '@backstage/catalog-model';
@@ -22,12 +23,7 @@ import { GroupEntity } from '@backstage/catalog-model';
  *
  * @private
  */
-export const GroupCardActions = ({ entity }: { entity: GroupEntity }) => {
-  return (
-    <>
-      {entity.spec.profile?.email && (
-        <EmailCardAction email={entity.spec.profile.email} />
-      )}
-    </>
-  );
+export const GroupCardActions = (props: { entity: GroupEntity }) => {
+  const email = props.entity.spec.profile?.email;
+  return email ? <EmailCardAction email={email} /> : null;
 };

@@ -15,46 +15,104 @@
  */
 
 import { scrollIntoAnchor } from '../transformers';
-
-jest.useFakeTimers();
+import { createTestShadowDom } from '../../test-utils';
+import { Transformer } from './transformer';
+import mkdocsIndex from '../../test-utils/fixtures/mkdocs-index';
+import { SHADOW_DOM_STYLE_LOAD_EVENT } from '@backstage/plugin-techdocs-react';
 
 describe('scrollIntoAnchor', () => {
-  const transformer = scrollIntoAnchor();
-  const dom = { querySelector: jest.fn() };
+  const scrollIntoView = jest.fn();
+  let querySelectorSpy: jest.SpyInstance;
+  let addEventListenerSpy: jest.SpyInstance;
+  let removeEventListenerSpy: jest.SpyInstance;
+  const applySpies: Transformer = dom => {
+    querySelectorSpy = jest.spyOn(dom, 'querySelector');
+    querySelectorSpy.mockReturnValue({ scrollIntoView });
+    addEventListenerSpy = jest.spyOn(dom, 'addEventListener');
+    removeEventListenerSpy = jest.spyOn(dom, 'removeEventListener');
+    return dom;
+  };
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('does nothing if there is no anchor element', async () => {
-    transformer(dom as unknown as Element);
-    jest.advanceTimersByTime(200);
-    expect(dom.querySelector).not.toHaveBeenCalled();
+    await createTestShadowDom(mkdocsIndex, {
+      preTransformers: [],
+      postTransformers: [applySpies, scrollIntoAnchor()],
+    });
+    expect(querySelectorSpy).not.toHaveBeenCalled();
+    expect(addEventListenerSpy).toHaveBeenCalled();
+    expect(removeEventListenerSpy).toHaveBeenCalled();
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      SHADOW_DOM_STYLE_LOAD_EVENT,
+      expect.any(Function),
+    );
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      SHADOW_DOM_STYLE_LOAD_EVENT,
+      expect.any(Function),
+    );
+    // check that the same function is passed to both addEventListener and removeEventListener
+    expect(addEventListenerSpy.mock.calls[0][1]).toBe(
+      removeEventListenerSpy.mock.calls[0][1],
+    );
   });
 
   it('scroll to the hash anchor element', async () => {
-    const scrollIntoView = jest.fn();
-    dom.querySelector.mockReturnValue({ scrollIntoView });
     window.location.hash = '#hash';
-    transformer(dom as unknown as Element);
-    jest.advanceTimersByTime(200);
-    expect(dom.querySelector).toHaveBeenCalledWith(
+    await createTestShadowDom(mkdocsIndex, {
+      preTransformers: [],
+      postTransformers: [applySpies, scrollIntoAnchor()],
+    });
+    expect(querySelectorSpy).toHaveBeenCalledWith(
       expect.stringMatching('[id="hash"]'),
     );
     expect(scrollIntoView).toHaveBeenCalledWith();
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      SHADOW_DOM_STYLE_LOAD_EVENT,
+      expect.any(Function),
+    );
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      SHADOW_DOM_STYLE_LOAD_EVENT,
+      expect.any(Function),
+    );
+    // check that the same function is passed to both addEventListener and removeEventListener
+    expect(addEventListenerSpy.mock.calls[0][1]).toBe(
+      removeEventListenerSpy.mock.calls[0][1],
+    );
     window.location.hash = '';
   });
 
   it('works for anchor starting with number', async () => {
-    const scrollIntoView = jest.fn();
-    dom.querySelector.mockReturnValue({ scrollIntoView });
+    querySelectorSpy.mockReturnValue({ scrollIntoView });
     window.location.hash = '#1-hash';
-    transformer(dom as unknown as Element);
-    jest.advanceTimersByTime(200);
-    expect(dom.querySelector).toHaveBeenCalledWith(
+    await createTestShadowDom(mkdocsIndex, {
+      preTransformers: [],
+      postTransformers: [applySpies, scrollIntoAnchor()],
+    });
+    expect(querySelectorSpy).toHaveBeenCalledWith(
       expect.stringMatching('[id="1-hash"]'),
     );
     expect(scrollIntoView).toHaveBeenCalledWith();
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      SHADOW_DOM_STYLE_LOAD_EVENT,
+      expect.any(Function),
+    );
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      SHADOW_DOM_STYLE_LOAD_EVENT,
+      expect.any(Function),
+    );
+    // check that the same function is passed to both addEventListener and removeEventListener
+    expect(addEventListenerSpy.mock.calls[0][1]).toBe(
+      removeEventListenerSpy.mock.calls[0][1],
+    );
     window.location.hash = '';
   });
 });

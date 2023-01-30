@@ -34,9 +34,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 }
 
 // @alpha
-export const gitlabDiscoveryEntityProviderCatalogModule: (
-  options?: undefined,
-) => BackendFeature;
+export const gitlabDiscoveryEntityProviderCatalogModule: () => BackendFeature;
 
 // @public
 export class GitLabDiscoveryProcessor implements CatalogProcessor {
@@ -56,5 +54,22 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
+}
+
+// @public
+export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
+    },
+  ): GitlabOrgDiscoveryEntityProvider[];
+  // (undocumented)
+  getProviderName(): string;
 }
 ```

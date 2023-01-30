@@ -156,4 +156,13 @@ export namespace coreServices {
   export const urlReader = createServiceRef<
     import('./UrlReaderService').UrlReaderService
   >({ id: 'core.urlReader' });
+
+  /**
+   * The service reference for the plugin scoped {@link IdentityService}.
+   *
+   * @public
+   */
+  export const identity = createServiceRef<
+    import('./IdentityService').IdentityService
+  >({ id: 'core.identity' });
 }

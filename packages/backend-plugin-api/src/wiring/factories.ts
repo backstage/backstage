@@ -14,19 +14,36 @@
  * limitations under the License.
  */
 
-import { FactoryFunctionWithOptions, MaybeOptions } from '../types';
 import {
+  BackendModuleRegistrationPoints,
+  BackendPluginRegistrationPoints,
   BackendRegistrationPoints,
   BackendFeature,
   ExtensionPoint,
 } from './types';
 
-/** @public */
+/**
+ * The configuration options passed to {@link createExtensionPoint}.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/extension-points | The architecture of extension points}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+ */
 export interface ExtensionPointConfig {
+  /**
+   * The ID of this extension point.
+   *
+   * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+   */
   id: string;
 }
 
-/** @public */
+/**
+ * Creates a new backend extension point.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/extension-points | The architecture of extension points}
+ */
 export function createExtensionPoint<T>(
   config: ExtensionPointConfig,
 ): ExtensionPoint<T> {
@@ -42,56 +59,86 @@ export function createExtensionPoint<T>(
   };
 }
 
-/** @public */
-export interface BackendPluginConfig<TOptions> {
+/**
+ * The configuration options passed to {@link createBackendPlugin}.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/plugins | The architecture of plugins}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+ */
+export interface BackendPluginConfig {
+  /**
+   * The ID of this plugin.
+   *
+   * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+   */
   id: string;
-  register(reg: BackendRegistrationPoints, options: TOptions): void;
+  register(reg: BackendPluginRegistrationPoints): void;
 }
 
-/** @public */
-export function createBackendPlugin<TOptions extends MaybeOptions = undefined>(
-  config: BackendPluginConfig<TOptions>,
-): FactoryFunctionWithOptions<BackendFeature, TOptions> {
-  return (options?: TOptions) => ({
-    id: config.id,
-    register(register: BackendRegistrationPoints) {
-      return config.register(register, options!);
-    },
-  });
+/**
+ * Creates a new backend plugin.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/plugins | The architecture of plugins}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+ */
+export function createBackendPlugin<TOptions extends [options?: object] = []>(
+  config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
+): (...params: TOptions) => BackendFeature {
+  if (typeof config === 'function') {
+    return config;
+  }
+
+  return () => config;
 }
 
-/** @public */
-export interface BackendModuleConfig<TOptions> {
+/**
+ * The configuration options passed to {@link createBackendModule}.
+ *
+ * @public
+ * @see {@link https://backstage.io/docs/backend-system/architecture/modules | The architecture of modules}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+ */
+export interface BackendModuleConfig {
+  /**
+   * The ID of this plugin.
+   *
+   * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
+   */
   pluginId: string;
+  /**
+   * Should exactly match the `id` of the plugin that the module extends.
+   */
   moduleId: string;
-  register(
-    reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
-    options: TOptions,
-  ): void;
+  register(reg: BackendModuleRegistrationPoints): void;
 }
 
 /**
  * Creates a new backend module for a given plugin.
  *
  * @public
- *
- * @remarks
- *
- * The `moduleId` should be equal to the module-specific prefix of the exported name, such
- * that the full name is `moduleId + PluginId + "Module"`. For example, a GitHub entity
- * provider module for the `catalog` plugin might have the module ID `'githubEntityProvider'`,
- * and the full exported name would be `githubEntityProviderCatalogModule`.
- *
- * The `pluginId` should exactly match the `id` of the plugin that the module extends.
+ * @see {@link https://backstage.io/docs/backend-system/architecture/modules | The architecture of modules}
+ * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
  */
-export function createBackendModule<TOptions extends MaybeOptions = undefined>(
-  config: BackendModuleConfig<TOptions>,
-): FactoryFunctionWithOptions<BackendFeature, TOptions> {
-  return (options?: TOptions) => ({
+export function createBackendModule<TOptions extends [options?: object] = []>(
+  config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
+): (...params: TOptions) => BackendFeature {
+  if (typeof config === 'function') {
+    return (...options: TOptions) => {
+      const c = config(...options);
+      return {
+        id: `${c.pluginId}.${c.moduleId}`,
+        register: c.register,
+      };
+    };
+  }
+  return () => ({
     id: `${config.pluginId}.${config.moduleId}`,
     register(register: BackendRegistrationPoints) {
-      // TODO: Hide registerExtensionPoint
-      return config.register(register, options!);
+      return config.register({
+        registerInit: register.registerInit.bind(register),
+      });
     },
   });
 }

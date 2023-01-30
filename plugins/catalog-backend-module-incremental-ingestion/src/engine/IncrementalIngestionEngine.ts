@@ -21,8 +21,11 @@ import { performance } from 'perf_hooks';
 import { Duration, DurationObjectUnits } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
+import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
-export class IncrementalIngestionEngine implements IterationEngine {
+export class IncrementalIngestionEngine
+  implements IterationEngine, EventSubscriber
+{
   private readonly restLength: Duration;
   private readonly backoff: DurationObjectUnits[];
 
@@ -328,5 +331,72 @@ export class IncrementalIngestionEngine implements IterationEngine {
       added,
       removed,
     });
+  }
+
+  async onEvent(params: EventParams): Promise<void> {
+    const { topic } = params;
+    if (!this.supportsEventTopics().includes(topic)) {
+      return;
+    }
+
+    const { logger, provider, connection } = this.options;
+    const providerName = provider.getProviderName();
+    logger.debug(`incremental-engine: ${providerName} received ${topic} event`);
+
+    if (!provider.eventHandler) {
+      return;
+    }
+
+    const delta = provider.eventHandler.onEvent(params);
+
+    if (delta) {
+      if (delta.added.length > 0) {
+        const ingestionRecord = await this.manager.getCurrentIngestionRecord(
+          providerName,
+        );
+
+        if (!ingestionRecord) {
+          logger.debug(
+            `incremental-engine: ${providerName} skipping delta addition because incremental ingestion is restarting.`,
+          );
+        } else {
+          const mark =
+            ingestionRecord.status === 'resting'
+              ? await this.manager.getLastMark(ingestionRecord.id)
+              : await this.manager.getFirstMark(ingestionRecord.id);
+
+          if (!mark) {
+            throw new Error(
+              `Cannot apply delta, page records are missing! Please re-run incremental ingestion for ${providerName}.`,
+            );
+          }
+          await this.manager.createMarkEntities(mark.id, delta.added);
+        }
+      }
+
+      if (delta.removed.length > 0) {
+        await this.manager.deleteEntityRecordsByRef(delta.removed);
+      }
+
+      await connection.applyMutation({
+        type: 'delta',
+        ...delta,
+      });
+      logger.debug(
+        `incremental-engine: ${providerName} processed delta from '${topic}' event`,
+      );
+    } else {
+      logger.warn(
+        `incremental-engine: Rejected delta from '${topic}' event - empty or invalid`,
+      );
+    }
+  }
+
+  supportsEventTopics(): string[] {
+    const { provider } = this.options;
+    const topics = provider.eventHandler
+      ? provider.eventHandler.supportsEventTopics()
+      : [];
+    return topics;
   }
 }

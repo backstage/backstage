@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import crypto from 'crypto';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
@@ -21,7 +22,7 @@ import {
   getGerritRequestOptions,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import fetch, { Response, RequestInit } from 'node-fetch';
 import { initRepoAndPush } from '../helpers';

@@ -23,7 +23,7 @@
 import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
 
 /**
- * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderpage`
+ * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderPage`
  *
  * @alpha
  * @deprecated use the import from {@link @backstage/plugin-scaffolder-react/alpha#FormProps} instead

@@ -1,5 +1,32 @@
 # @techdocs/cli
 
+## 1.3.2-next.0
+
+### Patch Changes
+
+- 6e0b6a0d50: Fixed publish command missing awsBucketRootPath option.
+  Fixed publish command having the gcsBucketRootPath option misconfigured, previously returning a boolean vs a string.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.4.6-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- bc18c902a2: Add `--preview-app-bundle-path` and `--preview-app-port` options to the `serve` command enabling previewing with apps other than the provided one
+
+### Patch Changes
+
+- 9f2b786fc9: Provide context for logged errors.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/config@1.0.6
+  - @backstage/cli-common@0.1.11
+  - @backstage/plugin-techdocs-node@1.4.4
+
 ## 1.3.0-next.2
 
 ### Minor Changes

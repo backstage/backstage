@@ -25,7 +25,8 @@ import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { FIELD_EXTENSION_KEY, FIELD_EXTENSION_WRAPPER_KEY } from './keys';
 
 /**
- * A type used to wrap up the FieldExtension to embed the ReturnValue and the InputProps
+ * The type used to wrap up the Layout and embed the input props
+ *
  * @public
  */
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;

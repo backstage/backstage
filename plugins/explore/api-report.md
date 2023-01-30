@@ -125,9 +125,9 @@ export const ToolExplorerContent: (props: {
 }) => JSX.Element;
 
 // @public (undocumented)
-export function ToolSearchResultListItem(
+export const ToolSearchResultListItem: (
   props: ToolSearchResultListItemProps,
-): JSX.Element;
+) => JSX.Element | null;
 
 // @public
 export interface ToolSearchResultListItemProps {
@@ -138,6 +138,6 @@ export interface ToolSearchResultListItemProps {
   // (undocumented)
   rank?: number;
   // (undocumented)
-  result: IndexableDocument;
+  result?: IndexableDocument;
 }
 ```

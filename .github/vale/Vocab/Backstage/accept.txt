@@ -70,6 +70,7 @@ cron
 cronjobs
 crontab
 css
+daemonsets
 Datadog
 dataflow
 dayjs
@@ -177,6 +178,7 @@ learnings
 Leasot
 lerna
 Lerna
+limitranges
 LocalStack
 lockdown
 lockfile

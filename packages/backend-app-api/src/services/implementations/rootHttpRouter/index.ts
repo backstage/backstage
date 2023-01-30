@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-export { rootHttpRouterFactory } from './rootHttpRouterFactory';
-export type {
-  RootHttpRouterFactoryOptions,
-  RootHttpRouterConfigureOptions,
+export {
+  rootHttpRouterFactory,
+  type RootHttpRouterFactoryOptions,
+  type RootHttpRouterConfigureOptions,
 } from './rootHttpRouterFactory';
+export {
+  DefaultRootHttpRouter,
+  type DefaultRootHttpRouterOptions,
+} from './DefaultRootHttpRouter';

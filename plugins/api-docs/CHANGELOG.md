@@ -1,5 +1,28 @@
 # @backstage/plugin-api-docs
 
+## 0.8.15-next.0
+
+### Patch Changes
+
+- 60996f8aba: Updating the readme with better `csp` instructions
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/plugin-catalog@1.7.3-next.0
+
+## 0.8.14
+
+### Patch Changes
+
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-catalog@1.7.2
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
 ## 0.8.14-next.2
 
 ### Patch Changes

@@ -27,10 +27,10 @@ import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
 import {
-  createTemplateAction,
   fetchContents,
   executeShellCommand,
 } from '@backstage/plugin-scaffolder-backend';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 
 export class CookiecutterRunner {
   private readonly containerRunner: ContainerRunner;

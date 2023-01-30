@@ -27,6 +27,7 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { Tooltip } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import * as React from 'react';
@@ -140,11 +141,11 @@ const columns: TableColumn<FossaRow>[] = [
               DateTime.DATETIME_MED,
             )}
           >
-            <span>
+            <Typography component="span">
               {DateTime.fromISO(details.timestamp).toRelative({
                 locale: 'en',
               })}
-            </span>
+            </Typography>
           </Tooltip>
         )
       );

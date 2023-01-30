@@ -16,7 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import * as jose from 'jose';
-import { getVoidLogger } from '../logging/voidLogger';
+import { getVoidLogger } from '../logging';
 import { ServerTokenManager } from './ServerTokenManager';
 import { TokenManager } from './types';
 
