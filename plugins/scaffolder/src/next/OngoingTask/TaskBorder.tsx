@@ -39,13 +39,11 @@ export const TaskBorder = ({
     return <LinearProgress variant="indeterminate" />;
   }
 
-  if (isError) {
-    return (
-      <LinearProgress variant="determinate" classes={{ bar: styles.failed }} />
-    );
-  }
-
   return (
-    <LinearProgress variant="determinate" classes={{ bar: styles.success }} />
+    <LinearProgress
+      variant="determinate"
+      classes={{ bar: isError ? styles.failed : styles.success }}
+      value={100}
+    />
   );
 };
