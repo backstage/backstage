@@ -26,14 +26,6 @@ export const templateParameterReadPermission = createPermission({
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
 });
 
-export const templatePropertyReadPermission = createPermission({
-  name: 'scaffolder.template.property.read',
-  attributes: {
-    action: 'read',
-  },
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-});
-
 export const templateStepReadPermission = createPermission({
   name: 'scaffolder.template.step.read',
   attributes: {
@@ -43,7 +35,6 @@ export const templateStepReadPermission = createPermission({
 });
 
 export const scaffolderPermissions = [
-  templatePropertyReadPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
 ];

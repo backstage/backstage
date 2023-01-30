@@ -33,8 +33,6 @@ import {
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
   templateParameterReadPermission,
-  TemplateProperty,
-  templatePropertyReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
