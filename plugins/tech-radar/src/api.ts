@@ -90,6 +90,22 @@ export interface RadarQuadrant {
 }
 
 /**
+ * Single link in {@link RadarEntry}
+ *
+ * @public
+ */
+export interface RadarEntryLink {
+  /**
+   * URL of the link
+   */
+  url: string;
+  /**
+   * Display name of the link
+   */
+  title: string;
+}
+
+/**
  * Single Entry in Tech Radar
  *
  * @public
@@ -127,6 +143,10 @@ export interface RadarEntry {
    * Description of the Entry
    */
   description?: string;
+  /**
+   * User-clickable links to provide more information about the Entry
+   */
+  links?: Array<RadarEntryLink>;
 }
 
 /**
