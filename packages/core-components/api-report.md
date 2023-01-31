@@ -129,13 +129,9 @@ export type BreadcrumbsStyledBoxClassKey = 'root';
 // @public
 export function BrokenImageIcon(props: IconComponentProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Button" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
 export const Button: (props: ButtonProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ButtonProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
 export type ButtonProps = LinkButtonProps;
 
