@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-export * from './ApiExplorerPage';
-export * from './ApiDefinitionCard';
-export * from './ApisCards';
-export * from './AsyncApiDefinitionWidget';
-export * from './ComponentsCards';
-export * from './GraphQlDefinitionWidget';
-export * from './OpenApiDefinitionWidget';
-export * from './PlainApiDefinitionWidget';
-export * from './TrpcDefinitionWidget';
+import { renderInTestApp } from '@backstage/test-utils';
+import React from 'react';
+import { TrpcApiDefinitionWidget } from './TrpcApiDefinitionWidget';
+
+describe('<TrpcApiDefinitionWidget />', () => {
+  it('renders plain text', async () => {
+    const { getAllByText } = await renderInTestApp(
+      <TrpcApiDefinitionWidget definition="Hello World" />,
+    );
+
+    expect(
+      getAllByText((_text, element) => element?.textContent === 'Hello World')
+        .length,
+    ).toBeGreaterThan(0);
+  });
+});

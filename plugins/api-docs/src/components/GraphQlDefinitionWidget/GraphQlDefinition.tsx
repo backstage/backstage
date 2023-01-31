@@ -44,7 +44,7 @@ type Props = {
   definition: string;
 };
 
-export const GraphQlDefinition = ({ definition }: Props) => {
+export const GraphQlDefinition: React.FC<Props> = ({ definition }: Props) => {
   const classes = useStyles();
   const schema = buildSchema(definition);
 
