@@ -1,5 +1,26 @@
 # @backstage/plugin-search
 
+## 1.1.0-next.1
+
+### Minor Changes
+
+- 0eaa579f89: Update `SearchModal` component to use `SearchResult` extensions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-search-react@1.5.0-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.0.8-next.0
 
 ### Patch Changes

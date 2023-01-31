@@ -1,5 +1,19 @@
 # @backstage/plugin-airbrake
 
+## 0.3.15-next.1
+
+### Patch Changes
+
+- 41377156d0: Adds a boolean helper function to airbrake plugin for use on the EntityPage to show/hide airbrake tab depending on whether the entity's catalog-info.yml has an airbrake id set in the metadata
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/dev-utils@1.0.12-next.1
+  - @backstage/test-utils@1.2.5-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.3.15-next.0
 
 ### Patch Changes

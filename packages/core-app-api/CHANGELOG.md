@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.4.1-next.0
+
+### Patch Changes
+
+- dff4d8ddb1: Fixed an issue where an explicit port the frontend base URL could break the app.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
 ## 1.4.0
 
 ### Minor Changes
