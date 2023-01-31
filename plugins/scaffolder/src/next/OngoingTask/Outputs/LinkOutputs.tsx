@@ -16,7 +16,7 @@
 import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
-import { Box, Button, makeStyles, Link } from '@material-ui/core';
+import { Button, makeStyles, Link } from '@material-ui/core';
 import React from 'react';
 import WebIcon from '@material-ui/icons/Web';
 import { parseEntityRef } from '@backstage/catalog-model';
