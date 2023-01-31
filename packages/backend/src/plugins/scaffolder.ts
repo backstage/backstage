@@ -15,12 +15,7 @@
  */
 
 import { CatalogClient } from '@backstage/catalog-client';
-import { ScmIntegrations } from '@backstage/integration';
-import {
-  createRouter,
-  createTemplateAction,
-  createBuiltinActions,
-} from '@backstage/plugin-scaffolder-backend';
+import { createRouter } from '@backstage/plugin-scaffolder-backend';
 import { Router } from 'express';
 import type { PluginEnvironment } from '../types';
 
@@ -31,26 +26,6 @@ export default async function createPlugin(
     discoveryApi: env.discovery,
   });
 
-  const defaultActions = createBuiltinActions({
-    catalogClient,
-    reader: env.reader,
-    config: env.config,
-    integrations: ScmIntegrations.fromConfig(env.config),
-  });
-
-  const delayAction = createTemplateAction({
-    id: 'mock:delay',
-    async handler(ctx) {
-      const interval = setInterval(
-        () => ctx.logger.info('Writing something', new Date().toISOString()),
-        1000,
-      );
-
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      clearTimeout(interval);
-    },
-  });
-
   return await createRouter({
     logger: env.logger,
     config: env.config,
@@ -59,6 +34,5 @@ export default async function createPlugin(
     reader: env.reader,
     identity: env.identity,
     scheduler: env.scheduler,
-    actions: [...defaultActions, delayAction],
   });
 }
