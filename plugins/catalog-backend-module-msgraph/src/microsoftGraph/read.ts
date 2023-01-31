@@ -38,6 +38,7 @@ import {
   defaultOrganizationTransformer,
   defaultUserTransformer,
 } from './defaultTransformers';
+import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
 const PAGE_SIZE = 999;
 
