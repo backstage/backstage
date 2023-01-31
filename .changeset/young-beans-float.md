@@ -4,7 +4,7 @@
 
 Require @backstage/plugin-lighthouse-common package where API implementation moved to.
 
-Following types have been moved to @backstage/plugin-lighthouse-common:
+**BREAKING**: the following types have been moved to @backstage/plugin-lighthouse-common:
 
 - `Audit`
 - `AuditBase`
