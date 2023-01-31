@@ -18,7 +18,6 @@ import React, { ReactNode } from 'react';
 import {
   Box,
   Chip,
-  ListItem,
   ListItemIcon,
   ListItemText,
   makeStyles,
@@ -63,7 +62,7 @@ export function ToolSearchResultListItem(props: ToolSearchResultListItemProps) {
   if (!result) return null;
 
   return (
-    <ListItem alignItems="flex-start" divider>
+    <>
       {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
       <div className={classes.flexContainer}>
         <ListItemText
@@ -99,6 +98,6 @@ export function ToolSearchResultListItem(props: ToolSearchResultListItemProps) {
             result.tags.map((tag: string) => <Chip label={tag} size="small" />)}
         </Box>
       </div>
-    </ListItem>
+    </>
   );
 }

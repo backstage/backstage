@@ -21,12 +21,12 @@ import {
   SearchDocument,
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '../HighlightedSearchResultText';
-import { ListItem, ListItemIcon, ListItemText, Box } from '@material-ui/core';
+import { ListItemIcon, ListItemText, Box } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 
 /**
- * Props for {@link DefaultResultListItem}
+ * Props for {@link DefaultResultListItemComponent}
  *
  * @public
  */
@@ -55,7 +55,7 @@ export const DefaultResultListItemComponent = ({
   if (!result) return null;
 
   return (
-    <ListItem alignItems="center" divider>
+    <>
       {icon && <ListItemIcon>{icon}</ListItemIcon>}
       <ListItemText
         primaryTypographyProps={{ variant: 'h6' }}
@@ -95,7 +95,7 @@ export const DefaultResultListItemComponent = ({
         }
       />
       {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}
-    </ListItem>
+    </>
   );
 };
 

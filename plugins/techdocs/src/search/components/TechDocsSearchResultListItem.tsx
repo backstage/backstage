@@ -15,12 +15,7 @@
  */
 
 import React, { PropsWithChildren, ReactNode } from 'react';
-import {
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
+import { ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 import { ResultHighlight } from '@backstage/plugin-search-common';
@@ -155,10 +150,10 @@ export const TechDocsSearchResultListItem = (
 
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (
-      <ListItem alignItems="flex-start" divider>
+      <>
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <div className={classes.flexContainer}>{children}</div>
-      </ListItem>
+      </>
     ) : (
       <>{children}</>
     );

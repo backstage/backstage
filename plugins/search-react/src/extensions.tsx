@@ -33,7 +33,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
 
-import { Box, List, ListProps } from '@material-ui/core';
+import { ListItem, List, ListProps } from '@material-ui/core';
 
 import { DefaultResultListItem } from './components';
 
@@ -105,9 +105,13 @@ const SearchResultListItemExtension = ({
   }, [rank, result, noTrack, analytics]);
 
   return (
-    <Box role="button" tabIndex={0} onClickCapture={handleClickCapture}>
+    <ListItem
+      divider
+      alignItems="flex-start"
+      onClickCapture={handleClickCapture}
+    >
       {children}
-    </Box>
+    </ListItem>
   );
 };
 

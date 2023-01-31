@@ -226,8 +226,7 @@ describe('SearchResultList', () => {
     }).provide(
       createSearchResultListItemExtension({
         name: 'SearchResultListItemExtension',
-        component: async () => props =>
-          <ListItem>Result: {props.result?.title}</ListItem>,
+        component: async () => props => <>Result: {props.result?.title}</>,
       }),
     );
 

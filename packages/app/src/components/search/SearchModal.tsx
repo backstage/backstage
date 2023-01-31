@@ -82,22 +82,14 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
     searchBarRef?.current?.focus();
   });
 
-<<<<<<< HEAD
-  const handleSearchResultClick = useCallback(() => {
-    toggleModal();
-    setTimeout(focusContent, transitions.duration.leavingScreen);
-  }, [toggleModal, focusContent, transitions]);
-
-=======
->>>>>>> c224202137 (make sure result list is structured with list elements only)
   const handleSearchBarKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (e.key === 'Enter') {
-        handleSearchResultClick();
+        toggleModal();
         navigate(searchPagePath);
       }
     },
-    [navigate, searchPagePath, handleSearchResultClick],
+    [navigate, searchPagePath, toggleModal],
   );
 
   return (
@@ -181,7 +173,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
               alignItems="center"
             >
               <Grid item>
-                <Link to={searchPagePath} onClick={handleSearchResultClick}>
+                <Link to={searchPagePath} onClick={toggleModal}>
                   <Typography
                     component="span"
                     className={classes.viewResultsLink}
@@ -194,10 +186,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
             </Grid>
           </Grid>
           <Grid item xs>
-            <SearchResult
-              onClick={handleSearchResultClick}
-              onKeyDown={handleSearchResultClick}
-            >
+            <SearchResult onClick={toggleModal}>
               <CatalogSearchResultListItem icon={<CatalogIcon />} />
               <TechDocsSearchResultListItem icon={<DocsIcon />} />
               <ToolSearchResultListItem icon={<BuildIcon />} />

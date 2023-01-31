@@ -18,7 +18,6 @@ import React, { ReactNode } from 'react';
 import {
   Box,
   Chip,
-  ListItem,
   ListItemIcon,
   ListItemText,
   makeStyles,
@@ -51,7 +50,6 @@ export interface CatalogSearchResultListItemProps {
   result?: IndexableDocument;
   highlight?: ResultHighlight;
   rank?: number;
-  toggleModal?: () => void;
 }
 
 /** @public */
@@ -66,7 +64,7 @@ export function CatalogSearchResultListItem(
   if (!result) return null;
 
   return (
-    <ListItem alignItems="flex-start" divider>
+    <>
       {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
       <div className={classes.flexContainer}>
         <ListItemText
@@ -88,12 +86,12 @@ export function CatalogSearchResultListItem(
           secondary={
             highlight?.fields.text ? (
               <HighlightedSearchResultText
-                text={highlight.fields.title}
+                text={highlight.fields.text}
                 preTag={highlight.preTag}
                 postTag={highlight.postTag}
               />
             ) : (
-              result.title
+              result.text
             )
           }
         />
@@ -104,6 +102,6 @@ export function CatalogSearchResultListItem(
           )}
         </Box>
       </div>
-    </ListItem>
+    </>
   );
 }
