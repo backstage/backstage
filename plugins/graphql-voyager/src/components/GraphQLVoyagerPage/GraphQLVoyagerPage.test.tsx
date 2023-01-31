@@ -38,11 +38,7 @@ describe('GraphQLVoyagerPage', () => {
     );
 
     expect(rendered.getByText('Welcome to Voyager!')).toBeInTheDocument();
-    expect(
-      rendered.getByText(
-        'Failed to load GraphQL endpoints, Error: No endpoints',
-      ),
-    ).toBeInTheDocument();
+    expect(rendered.getByText('Error: No endpoints')).toBeInTheDocument();
   });
 
   it('should show GraphQLVoyagerBrowser', async () => {

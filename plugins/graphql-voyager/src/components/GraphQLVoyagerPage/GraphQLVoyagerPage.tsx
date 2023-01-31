@@ -14,49 +14,48 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Header, Page, Content, Progress } from '@backstage/core-components';
+import {
+  Header,
+  Page,
+  Content,
+  Progress,
+  ErrorPanel,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import 'graphql-voyager/dist/voyager.css';
 import { graphQlVoyagerApiRef } from '../../lib/api';
 import useAsync from 'react-use/lib/useAsync';
-import { Typography } from '@material-ui/core';
 import { GraphQLVoyagerBrowser } from '../GraphQLVoyagerBrowser';
 
-/** @public */
-export const GraphQLVoyagerPage = () => {
+type GraphQLVoyagerPageProps = {
+  title?: string;
+};
+
+const VoyagerContent = () => {
   const graphQLVoyagerApi = useApi(graphQlVoyagerApiRef);
+
   const { value, loading, error } = useAsync(() =>
     graphQLVoyagerApi.getEndpoints(),
   );
 
-  let content: JSX.Element;
-
   if (loading) {
-    content = (
-      <Content>
-        <Progress />
-      </Content>
-    );
+    return <Progress />;
   } else if (error) {
-    content = (
-      <Content>
-        <Typography variant="h4" color="error">
-          Failed to load GraphQL endpoints, {String(error)}
-        </Typography>
-      </Content>
-    );
-  } else {
-    content = (
-      <Content noPadding>
-        <GraphQLVoyagerBrowser endpoints={value!} />
-      </Content>
-    );
+    return <ErrorPanel error={error} />;
   }
+  return <GraphQLVoyagerBrowser endpoints={value!} />;
+};
+
+/** @public */
+export const GraphQLVoyagerPage = (props: GraphQLVoyagerPageProps) => {
+  const { title = 'Welcome to Voyager!' } = props;
 
   return (
     <Page themeId="tool">
-      <Header title="Welcome to Voyager!" />
-      {content}
+      <Header title={title} />
+      <Content>
+        <VoyagerContent />
+      </Content>
     </Page>
   );
 };

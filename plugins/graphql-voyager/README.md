@@ -22,11 +22,11 @@ In order to be able to navigate to the graphQL voyager page, a new route needs t
 ```tsx
 // packages/app/App.tsx
 
-  import { GraphQLVoyagerPage } from "@backstage/plugin-graphql-voyager";
+  import { GraphQLVoyagerPage } from '@backstage/plugin-graphql-voyager';
 
   const routes = (
     <FlatRoutes>
-      <Route path="/graphql-voyager" element={<GraphqlVoyagerPage/>}/>
+      <Route path="/graphql-voyager" element={<GraphqlVoyagerPage title="This is Voyager!"/>}/>
 ```
 
 ### Configuration
@@ -36,15 +36,15 @@ In order for the plugin to function correctly. GraphQL endpoints need to be adde
 Add your own configuration to the `packages/app/src/apis.ts` file the following way:
 
 ```ts
-import { identityApiRef } from './IdentityApi';
-import { GraphQLVoyagerEndpoints } from './GraphQLVoyagerEndpoints';
+import { identityApiRef } from '@backstage/core-plugin-api';
+import { GraphQLVoyagerEndpoints } from '@backstage/plugin-graphql-voyager';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
     api: graphQlVoyagerApiRef,
     deps: { identityApi: identityApiRef },
     factory: ({ identityApiRef }) => {
-      GraphQLVoyagerEndpoints.from([
+      return GraphQLVoyagerEndpoints.from([
         {
           id: `graphql-voyager-endpoint-id`,
           title: 'endpoint-title',

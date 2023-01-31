@@ -17,21 +17,19 @@ import {
   GraphQLVoyagerEndpoint,
   introspectionQuery,
 } from '../../lib/api/types';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Divider, makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
+import { useState } from 'react';
+import { makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
 import React, { Suspense } from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { Content, Progress } from '@backstage/core-components';
+import { Content, ErrorPanel, Progress } from '@backstage/core-components';
 import { Voyager } from 'graphql-voyager';
+import useAsync from 'react-use/lib/useAsync';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>(() => ({
   root: {
     height: '100%',
     display: 'flex',
     flexFlow: 'column nowrap',
-  },
-  tabs: {
-    background: theme.palette.background.paper,
   },
 }));
 
@@ -39,78 +37,56 @@ type GraphQLVoyagerBrowserProps = {
   endpoints: GraphQLVoyagerEndpoint[];
 };
 
-type IntrospectionResult = {
-  data?: Object;
-};
-
 const NoEndpoints = () => {
   return <Typography variant="h4">No endpoints available</Typography>;
+};
+
+const VoyagerBrowserContent = ({
+  endpoint,
+}: {
+  endpoint: GraphQLVoyagerEndpoint;
+}) => {
+  const { id, introspection, introspectionErrorMessage, voyagerProps } =
+    endpoint;
+  const { value, loading, error } = useAsync(
+    () => introspection(introspectionQuery),
+    [endpoint],
+  );
+
+  if (loading) {
+    return <Progress />;
+  } else if (error) {
+    return <ErrorPanel error={error} />;
+  }
+  return value.data ? (
+    <Voyager key={id} introspection={value} {...voyagerProps} />
+  ) : (
+    <Typography variant="h4" color="error">
+      {introspectionErrorMessage}
+    </Typography>
+  );
 };
 
 const VoyagerBrowser = (props: GraphQLVoyagerBrowserProps) => {
   const { endpoints } = props;
   const [tabIndex, setTabIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [introspectionResult, setIntrospectionResult]: [
-    IntrospectionResult,
-    Dispatch<SetStateAction<IntrospectionResult>>,
-  ] = useState({});
   const classes = useStyles();
-
-  const {
-    voyagerProps = {},
-    introspectionErrorMessage,
-    introspection,
-  } = endpoints[tabIndex];
-
-  useEffect(() => {
-    const fetchIntrospection = async () => {
-      setIsLoading(true);
-
-      const data = await introspection(introspectionQuery);
-      setIntrospectionResult(data);
-
-      setIsLoading(false);
-    };
-
-    fetchIntrospection();
-  }, [tabIndex, introspection]);
-
-  let voyagerContent: JSX.Element;
-
-  if (isLoading) {
-    voyagerContent = <Typography variant="body1">Loading...</Typography>;
-  } else if (!introspectionResult.data) {
-    voyagerContent = (
-      <Typography variant="h4" color="error">
-        {introspectionErrorMessage}
-      </Typography>
-    );
-  } else {
-    voyagerContent = (
-      <Voyager
-        key={tabIndex}
-        introspection={introspectionResult}
-        {...voyagerProps}
-      />
-    );
-  }
 
   return (
     <div className={classes.root}>
       <Suspense fallback={<Progress />}>
         <Tabs
-          classes={{ root: classes.tabs }}
           value={tabIndex}
           onChange={(_, value) => setTabIndex(value)}
           indicatorColor="primary"
         >
-          {endpoints.map(({ title }, index) => (
-            <Tab key={index} label={title} value={index} />
+          {endpoints.map(({ title, id }, index) => (
+            <Tab key={id} label={title} value={index} />
           ))}
         </Tabs>
-        <Divider />
-        <Content>{voyagerContent}</Content>
+        <Content>
+          <VoyagerBrowserContent endpoint={endpoints[tabIndex]} />
+        </Content>
       </Suspense>
     </div>
   );
