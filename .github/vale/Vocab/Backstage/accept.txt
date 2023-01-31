@@ -417,3 +417,5 @@ allowlisted
 Dominik
 Henneke
 Kuang
+Frontside
+Kaswell
