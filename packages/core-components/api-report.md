@@ -693,6 +693,7 @@ export interface LogViewerProps {
   classes?: {
     root?: string;
   };
+  tail?: boolean;
   text: string;
 }
 
