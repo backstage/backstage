@@ -49,7 +49,7 @@ import {
   isUnionType,
 } from 'graphql';
 import { refToId as defaultRefToId } from './refToId';
-import { ResolverContext } from './types';
+import { Logger, ResolverContext } from './types';
 
 function getObjectTypeName(
   iface: GraphQLInterfaceType,
@@ -123,7 +123,10 @@ function createConnectionType(
   });
 }
 
-export function mapDirectives(sourceSchema: GraphQLSchema) {
+export function mapDirectives(
+  sourceSchema: GraphQLSchema,
+  { logger = console }: { logger?: Logger } = {},
+) {
   const extendsWithoutArgs = new Set<string>();
   const resolversMap: Record<string, GraphQLTypeResolver<any, any>> = {};
   const typesToAdd = new Map<string, GraphQLNamedType>();
@@ -185,12 +188,18 @@ export function mapDirectives(sourceSchema: GraphQLSchema) {
           );
         }
         if (isUnionType(nodeType)) {
+          const resolveType = nodeType.resolveType;
+          if (resolveType)
+            logger.warn(
+              `The "resolveType" function has already been implemented for "${nodeType.name}" union which may lead to undefined behavior`,
+            );
           const iface = (typesToAdd.get(directive.nodeType) ??
             new GraphQLInterfaceType({
               name: directive.nodeType,
               interfaces: [schema.getType('Node') as GraphQLInterfaceType],
               fields: { id: { type: new GraphQLNonNull(GraphQLID) } },
-              resolveType: (...args) => resolversMap.Node(...args),
+              resolveType: (...args) =>
+                resolveType?.(...args) ?? resolversMap.Node(...args),
             })) as GraphQLInterfaceType;
           typesToAdd.set(directive.nodeType, iface);
           nodeType.getTypes().forEach(type => {
@@ -404,13 +413,10 @@ export function mapDirectives(sourceSchema: GraphQLSchema) {
     interfaceType: GraphQLInterfaceType,
     schema: GraphQLSchema,
   ) {
-    if (interfaceType.name === 'Node') {
-      interfaceType.resolveType = (...args) =>
-        resolversMap.Node?.(...args) ?? undefined;
-    }
     const [extendDirective] =
       getDirective(schema, interfaceType, 'extend') ?? [];
     if (!extendDirective) return interfaceType;
+
     validateExtendDirective(interfaceType, extendDirective, schema);
     defineResolver(interfaceType, extendDirective, schema);
 
@@ -436,20 +442,19 @@ export function mapDirectives(sourceSchema: GraphQLSchema) {
 
     const { astNode, extensionASTNodes, ...typeConfig } =
       interfaceType.toConfig();
+    typeConfig.fields = fields;
 
     typesToAdd.set(
       objectType,
       new GraphQLObjectType({
         ...typeConfig,
         name: objectType,
-        fields,
         interfaces,
       }),
     );
 
     return new GraphQLInterfaceType({
       ...typeConfig,
-      fields,
       resolveType: (...args) => resolversMap[interfaceType.name](...args),
       interfaces: interfaces.filter(iface => iface.name !== interfaceType.name),
     });
@@ -457,17 +462,14 @@ export function mapDirectives(sourceSchema: GraphQLSchema) {
 
   function mapUnionType(unionType: GraphQLUnionType, schema: GraphQLSchema) {
     const typeConfig = unionType.toConfig();
-    if (
-      !typeConfig.types.some(
-        type =>
-          isInterfaceType(type) &&
-          (type as GraphQLInterfaceType).name in resolversMap,
-      )
-    )
-      return unionType;
+    let hasInterfacesFromResolversMap = false;
 
     typeConfig.types = typeConfig.types.flatMap(type => {
-      if (isInterfaceType(type)) {
+      if (
+        isInterfaceType(type) &&
+        (type as GraphQLInterfaceType).name in resolversMap
+      ) {
+        hasInterfacesFromResolversMap = true;
         return getImplementingTypes(
           (type as GraphQLInterfaceType).name,
           schema,
@@ -475,7 +477,16 @@ export function mapDirectives(sourceSchema: GraphQLSchema) {
       }
       return [type];
     });
-    typeConfig.resolveType = (...args) => resolversMap.Node(...args);
+
+    if (!hasInterfacesFromResolversMap) return unionType;
+
+    const resolveType = typeConfig.resolveType;
+    if (resolveType)
+      logger.warn(
+        `The "resolveType" function has already been implemented for "${unionType.name}" union which may lead to undefined behavior`,
+      );
+    typeConfig.resolveType = (...args) =>
+      resolveType?.(...args) ?? resolversMap.Node(...args);
     return new GraphQLUnionType(typeConfig);
   }
 
@@ -491,6 +502,17 @@ export function mapDirectives(sourceSchema: GraphQLSchema) {
     ),
     { [MapperKind.UNION_TYPE]: mapUnionType },
   );
+
+  if ('Node' in resolversMap) {
+    const nodeType = finalSchema.getType('Node') as GraphQLInterfaceType;
+    const resolveType = nodeType.resolveType;
+    if (resolveType)
+      logger.warn(
+        `The "resolveType" function has already been implemented for "Node" interface which may lead to undefined behavior`,
+      );
+    nodeType.resolveType = (...args) =>
+      resolveType?.(...args) ?? resolversMap.Node(...args);
+  }
 
   return finalSchema;
 }

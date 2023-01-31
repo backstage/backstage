@@ -6848,11 +6848,7 @@ __metadata:
     graphql-modules: ^2.1.0
     graphql-relay: ^0.10.0
     lodash: ^4.17.21
-  peerDependencies:
-    graphql: ">15.0.0"
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
