@@ -22,11 +22,8 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 
-const CALLBACKS = ['SIGTERM', 'SIGINT', 'beforeExit'];
 export class BackendLifecycleImpl implements RootLifecycleService {
-  constructor(private readonly logger: LoggerService) {
-    CALLBACKS.map(signal => process.on(signal, () => this.shutdown()));
-  }
+  constructor(private readonly logger: LoggerService) {}
 
   #isCalled = false;
   #shutdownTasks: Array<LifecycleServiceShutdownHook> = [];

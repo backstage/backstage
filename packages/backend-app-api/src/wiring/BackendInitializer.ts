@@ -87,6 +87,18 @@ export class BackendInitializer {
     }
     this.#started = true;
 
+    for (const event of ['SIGTERM', 'SIGINT', 'beforeExit']) {
+      process.on(event, async () => {
+        try {
+          await this.stop();
+          process.exit(0);
+        } catch (error) {
+          console.error(error);
+          process.exit(1);
+        }
+      });
+    }
+
     // Initialize all root scoped services
     for (const ref of this.#serviceHolder.getServiceRefs()) {
       if (ref.scope === 'root') {
