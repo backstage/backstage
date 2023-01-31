@@ -276,6 +276,21 @@ describe('KubernetesBuilder', () => {
     const worker = setupServer();
     setupRequestMockHandlers(worker);
 
+    beforeEach(() => {
+      worker.use(
+        rest.post('https://localhost:1234/api/v1/namespaces', (req, res, ctx) =>
+          req
+            .arrayBuffer()
+            .then(body =>
+              res(
+                ctx.set('content-type', `${req.headers.get('content-type')}`),
+                ctx.body(body),
+              ),
+            ),
+        ),
+      );
+    });
+
     it('returns the given request body', async () => {
       const requestBody = {
         kind: 'Namespace',
@@ -290,21 +305,7 @@ describe('KubernetesBuilder', () => {
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
         .send(requestBody);
 
-      worker.use(
-        rest.post('https://localhost:1234/api/v1/namespaces', (req, res, ctx) =>
-          req
-            .arrayBuffer()
-            .then(body =>
-              res(
-                ctx.set('content-type', `${req.headers.get('content-type')}`),
-                ctx.body(body),
-              ),
-            ),
-        ),
-        rest.all(proxyEndpointRequest.url, (req, _res, _ctx) =>
-          req.passthrough(),
-        ),
-      );
+      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
 
       const response = await proxyEndpointRequest;
 
@@ -325,21 +326,7 @@ metadata:
         .set('content-type', 'application/yaml')
         .send(requestBody);
 
-      worker.use(
-        rest.post('https://localhost:1234/api/v1/namespaces', (req, res, ctx) =>
-          req
-            .arrayBuffer()
-            .then(body =>
-              res(
-                ctx.set('content-type', `${req.headers.get('content-type')}`),
-                ctx.body(body),
-              ),
-            ),
-        ),
-        rest.all(proxyEndpointRequest.url, (req, _res, _ctx) =>
-          req.passthrough(),
-        ),
-      );
+      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
 
       const response = await proxyEndpointRequest;
       expect(response.text).toEqual(requestBody);
