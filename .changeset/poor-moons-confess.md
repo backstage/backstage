@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-incremental-ingestion': minor
+'@backstage/plugin-catalog-backend-module-incremental-ingestion': patch
 ---
 
-Return EventSubscriber from addIncrementalEntityProvider to hook up to EventsBackend
+Return `EventSubscriber` from `addIncrementalEntityProvider` to hook up to `EventsBackend`
