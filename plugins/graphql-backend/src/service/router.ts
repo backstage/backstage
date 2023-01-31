@@ -55,7 +55,7 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   let yoga: YogaServerInstance<any, any> | null = null;
 
-  const application = createGraphQLApp({ modules });
+  const application = createGraphQLApp({ modules, logger });
 
   const router = Router();
 

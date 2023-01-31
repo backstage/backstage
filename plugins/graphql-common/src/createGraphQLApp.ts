@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Logger } from 'winston';
 import { createApplication, Module } from 'graphql-modules';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { Core } from './core/core';
@@ -21,13 +22,14 @@ import { mapDirectives } from './mapDirectives';
 /** @public */
 export type createGraphQLAppOptions = {
   modules?: Module[];
+  logger?: Logger;
 };
 
 /** @public */
 export function createGraphQLApp(options: createGraphQLAppOptions) {
   const { modules } = options;
   return createApplication({
-    schemaBuilder: input => mapDirectives(makeExecutableSchema(input)),
+    schemaBuilder: input => mapDirectives(makeExecutableSchema(input), options),
     modules: [Core, ...(modules ?? [])],
   });
 }

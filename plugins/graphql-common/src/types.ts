@@ -28,3 +28,6 @@ export interface ResolverContext<
   loader: TLoader;
   refToId?: (ref: CompoundEntityRef | string) => string;
 }
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+export type Logger = Record<LogLevel, (...args: any[]) => void>;
