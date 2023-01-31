@@ -5,4 +5,6 @@
 '@backstage/plugin-search-react': patch
 ---
 
-`*SearchResultListItems` now accept optional ´toggleModal´ prop that is used to toggle the search modal on result click.
+`ListItem` wrapper component moved to `SearchResultListItemExtension` for all `*SearchResultListItems`. This is to make sure the list only contains list elements.
+
+Note: If you have implemented a custom result list item, you can remove the list item wrapper to avoid duplicated `<li>` elements.
