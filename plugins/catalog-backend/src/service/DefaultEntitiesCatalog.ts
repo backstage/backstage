@@ -368,8 +368,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const normalizedQueryByName = cursor.query?.trim();
     if (normalizedQueryByName) {
-      dbQuery.andWhereLike(
-        'value',
+      dbQuery.andWhereRaw(
+        'value like ?',
         `%${normalizedQueryByName.toLocaleLowerCase('en-US')}%`,
       );
     }
