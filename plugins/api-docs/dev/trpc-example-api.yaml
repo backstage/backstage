@@ -1,7 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: hello-world
+  name: hello-world-trpc
   description: Hello World example for tRPC
 spec:
   type: trpc
