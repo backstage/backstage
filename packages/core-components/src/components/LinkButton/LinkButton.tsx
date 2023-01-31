@@ -49,11 +49,13 @@ export const LinkButton = React.forwardRef<any, ButtonProps>((props, ref) => (
 )) as (props: ButtonProps) => JSX.Element;
 
 /**
+ * @public
  * @deprecated use LinkButton instead
  */
 export const Button = LinkButton;
 
 /**
+ * @public
  * @deprecated use LinkButtonProps instead
  */
 export type ButtonProps = LinkButtonProps;
