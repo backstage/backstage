@@ -26,23 +26,20 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-export const TaskBorder = ({
-  isComplete,
-  isError,
-}: {
+export const TaskBorder = (props: {
   isComplete: boolean;
   isError: boolean;
 }) => {
   const styles = useStyles();
 
-  if (!isComplete) {
+  if (!props.isComplete) {
     return <LinearProgress variant="indeterminate" />;
   }
 
   return (
     <LinearProgress
       variant="determinate"
-      classes={{ bar: isError ? styles.failed : styles.success }}
+      classes={{ bar: props.isError ? styles.failed : styles.success }}
       value={100}
     />
   );
