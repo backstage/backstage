@@ -1,6 +1,3 @@
-import { LayoutOptions } from '../types';
-import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from './keys';
-
 /*
  * Copyright 2023 The Backstage Authors
  *
@@ -16,7 +13,29 @@ import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from './keys';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from './keys';
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
+import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
+
+/**
+ * The field template from `@rjsf/core` which is a react component that gets passed `@rjsf/core` field related props.
+ *
+ * @public
+ */
+export type LayoutTemplate<T = any> = NonNullable<
+  SchemaFormProps<T>['uiSchema']
+>['ui:ObjectFieldTemplate'];
+
+/**
+ * The type of layouts that is passed to the TemplateForms
+ *
+ * @public
+ */
+export interface LayoutOptions<P = any> {
+  name: string;
+  component: LayoutTemplate<P>;
+}
 
 /**
  * A type used to wrap up the FieldExtension to embed the ReturnValue and the InputProps

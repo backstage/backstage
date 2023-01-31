@@ -40,7 +40,7 @@ import {
   GithubEntityProviderConfig,
 } from './GithubEntityProviderConfig';
 import { getOrganizationRepositories } from '../lib/github';
-import { satisfiesTopicFilter } from '../lib/util';
+import { satisfiesTopicFilter, satisfiesForkFilter } from '../lib/util';
 
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { PushEvent, Commit } from '@octokit/webhooks-types';
@@ -52,6 +52,7 @@ type Repository = {
   name: string;
   url: string;
   isArchived: boolean;
+  isFork: boolean;
   repositoryTopics: string[];
   defaultBranchRef?: string;
   isCatalogInfoFilePresent: boolean;
@@ -216,6 +217,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         defaultBranchRef: r.defaultBranchRef?.name,
         repositoryTopics: r.repositoryTopics.nodes.map(t => t.topic.name),
         isArchived: r.isArchived,
+        isFork: r.isFork,
         isCatalogInfoFilePresent:
           r.catalogInfoFile?.__typename === 'Blob' &&
           r.catalogInfoFile.text !== '',
@@ -234,6 +236,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   private matchesFilters(repositories: Repository[]) {
     const repositoryFilter = this.config.filters?.repository;
     const topicFilters = this.config.filters?.topic;
+    const allowForks = this.config.filters?.allowForks ?? true;
 
     const matchingRepositories = repositories.filter(r => {
       const repoTopics: string[] = r.repositoryTopics;
@@ -241,6 +244,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         !r.isArchived &&
         (!repositoryFilter || repositoryFilter.test(r.name)) &&
         satisfiesTopicFilter(repoTopics, topicFilters) &&
+        satisfiesForkFilter(allowForks, r.isFork) &&
         r.defaultBranchRef
       );
     });
@@ -302,6 +306,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       defaultBranchRef: event.repository.default_branch,
       repositoryTopics: event.repository.topics,
       isArchived: event.repository.archived,
+      isFork: event.repository.fork,
       // we can consider this file present because
       // only the catalog file will be recovered from the commits
       isCatalogInfoFilePresent: true,
@@ -423,7 +428,7 @@ export function parseUrl(urlString: string): {
   host: string;
 } {
   const url = new URL(urlString);
-  const path = url.pathname.substr(1).split('/');
+  const path = url.pathname.slice(1).split('/');
 
   // /backstage/techdocs-*/blob/master/catalog-info.yaml
   // can also be

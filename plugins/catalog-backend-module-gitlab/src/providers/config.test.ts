@@ -54,6 +54,9 @@ describe('config', () => {
         host: 'host',
         catalogFile: 'catalog-info.yaml',
         projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
         schedule: undefined,
       }),
     );
@@ -85,6 +88,9 @@ describe('config', () => {
         host: 'host',
         catalogFile: 'custom-file.yaml',
         projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
         schedule: undefined,
       }),
     );
@@ -120,6 +126,9 @@ describe('config', () => {
         host: 'host',
         catalogFile: 'catalog-info.yaml',
         projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
         schedule: {
           frequency: Duration.fromISO('PT30M'),
           timeout: {

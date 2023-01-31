@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import {
-  FactSchema,
   TechInsightFact,
   FlatTechInsightFact,
   FactSchemaDefinition,
   FactLifecycle,
 } from './facts';
 import { DateTime } from 'luxon';
+import { FactSchema } from '@backstage/plugin-tech-insights-common';
 
 /**
  * TechInsights Database

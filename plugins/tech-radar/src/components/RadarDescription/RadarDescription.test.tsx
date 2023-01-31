@@ -24,6 +24,7 @@ const minProps: Props = {
   open: true,
   title: 'example-title',
   description: 'example-description',
+  links: [{ url: 'https://example.com/docs', title: 'example-link' }],
   onClose: () => {},
 };
 
@@ -34,5 +35,6 @@ describe('RadarDescription', () => {
     const radarDescription = screen.getByTestId('radar-description');
     expect(radarDescription).toBeInTheDocument();
     expect(screen.getByText(String(minProps.description))).toBeInTheDocument();
+    expect(screen.getByText(String('example-link'))).toBeInTheDocument();
   });
 });

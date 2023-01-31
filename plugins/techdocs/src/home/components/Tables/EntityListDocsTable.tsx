@@ -20,6 +20,7 @@ import { capitalize } from 'lodash';
 import {
   CodeSnippet,
   TableColumn,
+  TableOptions,
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
@@ -40,6 +41,7 @@ import { DocsTableRow } from './types';
 export type EntityListDocsTableProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
+  options?: TableOptions<DocsTableRow>;
 };
 
 /**
@@ -48,7 +50,7 @@ export type EntityListDocsTableProps = {
  * @public
  */
 export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
-  const { columns, actions } = props;
+  const { columns, actions, options } = props;
   const { loading, error, entities, filters } = useEntityList();
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const [, copyToClipboard] = useCopyToClipboard();
@@ -81,6 +83,7 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
       loading={loading}
       actions={actions || defaultActions}
       columns={columns}
+      options={options}
     />
   );
 };

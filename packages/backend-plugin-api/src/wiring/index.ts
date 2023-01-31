@@ -30,6 +30,8 @@ export {
   createExtensionPoint,
 } from './factories';
 export type {
+  BackendModuleRegistrationPoints,
+  BackendPluginRegistrationPoints,
   BackendRegistrationPoints,
   BackendFeature,
   ExtensionPoint,

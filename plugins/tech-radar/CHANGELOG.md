@@ -1,5 +1,15 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.1-next.0
+
+### Patch Changes
+
+- 18024a231c: Allow to set additional links to the entry description.
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
 ## 0.6.0
 
 ### Minor Changes

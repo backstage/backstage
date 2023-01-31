@@ -32,7 +32,8 @@ import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv8';
 import { useFormDataFromQuery } from '../../hooks';
-import type { FormProps, LayoutOptions } from '../../types';
+import { FormProps } from '../../types';
+import { LayoutOptions } from '../../../layouts';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 
 const useStyles = makeStyles(theme => ({
