@@ -45,7 +45,8 @@
     "graphql": "^16.6.0",
     "graphql-modules": "^2.1.0",
     "graphql-relay": "^0.10.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

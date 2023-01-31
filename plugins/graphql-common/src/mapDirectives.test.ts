@@ -508,6 +508,39 @@ describe('mapDirectives', () => {
     });
   });
 
+  it('should add resolver for @field directive to a field of object type', function* () {
+    const TestModule = createModule({
+      id: 'test',
+      typeDefs: gql`
+        type Component {
+          name: String! @field(at: "metadata.name")
+        }
+
+        extend type Query {
+          component(id: ID!): Component
+        }
+      `,
+      resolvers: {
+        Query: {
+          component: (_: any, { id }: { id: string }) => ({ id }),
+        },
+      },
+    });
+    const entity = {
+      metadata: { name: 'hello world' },
+    };
+    const loader = () => new DataLoader(async () => [entity]);
+    const query = createGraphQLAPI(TestModule, loader);
+    const result = yield query(/* GraphQL */ `
+      component(id: "test") { name }
+    `);
+    expect(result).toEqual({
+      component: {
+        name: 'hello world',
+      },
+    });
+  });
+
   it('should add resolver for @relation directive with single item', function* () {
     const TestModule = createModule({
       id: 'test',
