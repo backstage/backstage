@@ -1,5 +1,15 @@
 # @backstage/plugin-cicd-statistics
 
+## 0.1.17-next.1
+
+### Patch Changes
+
+- d950d3e217: Depend on `@material-ui/core` version `^4.12.2` like all other in-repo packages
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+
 ## 0.1.17-next.0
 
 ### Patch Changes

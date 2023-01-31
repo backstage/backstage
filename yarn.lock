@@ -3887,7 +3887,57 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-components@^0.12.0, @backstage/core-components@^0.12.3, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
+"@backstage/core-components@npm:^0.12.0, @backstage/core-components@npm:^0.12.3":
+  version: 0.12.3
+  resolution: "@backstage/core-components@npm:0.12.3"
+  dependencies:
+    "@backstage/config": ^1.0.6
+    "@backstage/core-plugin-api": ^1.3.0
+    "@backstage/errors": ^1.1.4
+    "@backstage/theme": ^0.2.16
+    "@backstage/version-bridge": ^1.0.3
+    "@material-table/core": ^3.1.0
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": 4.0.0-alpha.57
+    "@react-hookz/web": ^20.0.0
+    "@types/react-sparklines": ^1.7.0
+    "@types/react-text-truncate": ^0.14.0
+    ansi-regex: ^6.0.1
+    classnames: ^2.2.6
+    d3-selection: ^3.0.0
+    d3-shape: ^3.0.0
+    d3-zoom: ^3.0.0
+    dagre: ^0.8.5
+    history: ^5.0.0
+    immer: ^9.0.1
+    lodash: ^4.17.21
+    pluralize: ^8.0.0
+    prop-types: ^15.7.2
+    qs: ^6.9.4
+    rc-progress: 3.4.1
+    react-helmet: 6.1.0
+    react-hook-form: ^7.12.2
+    react-markdown: ^8.0.0
+    react-sparklines: ^1.7.0
+    react-syntax-highlighter: ^15.4.5
+    react-text-truncate: ^0.19.0
+    react-use: ^17.3.2
+    react-virtualized-auto-sizer: ^1.0.6
+    react-window: ^1.8.6
+    remark-gfm: ^3.0.1
+    zen-observable: ^0.10.0
+    zod: ~3.18.0
+  peerDependencies:
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: f9c242af07b500f0de738591848776ad3864fb52e30f1979e547d6d607a0eb96df5c1464c8dadb4f5c1d7dd6c10ae74e4c2f60eba5380b704f4b01ac6711131c
+  languageName: node
+  linkType: hard
+
+"@backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
   version: 0.0.0-use.local
   resolution: "@backstage/core-components@workspace:packages/core-components"
   dependencies:
@@ -4073,7 +4123,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@^1.1.9, @backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
+"@backstage/integration-react@npm:^1.1.9":
+  version: 1.1.9
+  resolution: "@backstage/integration-react@npm:1.1.9"
+  dependencies:
+    "@backstage/config": ^1.0.6
+    "@backstage/core-components": ^0.12.3
+    "@backstage/core-plugin-api": ^1.3.0
+    "@backstage/integration": ^1.4.2
+    "@backstage/theme": ^0.2.16
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": 4.0.0-alpha.57
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  checksum: 28d94f05e65944308ac6b0709e22336e6e745fe6143f7c3851ccf200725066fc73f53d238e559599d003818c764a86645e3d3f3178e2e5fd0d7cc968d7cc6375
+  languageName: node
+  linkType: hard
+
+"@backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-react@workspace:packages/integration-react"
   dependencies:
@@ -7540,7 +7609,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-react@^1.4.0, @backstage/plugin-search-react@workspace:^, @backstage/plugin-search-react@workspace:plugins/search-react":
+"@backstage/plugin-search-react@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@backstage/plugin-search-react@npm:1.4.0"
+  dependencies:
+    "@backstage/core-components": ^0.12.3
+    "@backstage/core-plugin-api": ^1.3.0
+    "@backstage/plugin-search-common": ^1.2.1
+    "@backstage/theme": ^0.2.16
+    "@backstage/types": ^1.0.2
+    "@backstage/version-bridge": ^1.0.3
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": 4.0.0-alpha.57
+    lodash: ^4.17.21
+    qs: ^6.9.4
+    react-use: ^17.3.2
+  peerDependencies:
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 0fe18ee991bea12ba4b525b1ed4934f53a2cb2172851762c67d844405206ef8ed335ce8ad6412b4c4f133ae2b1f654b5086cf9997521e2e2cb2ef9cad6891e0a
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-search-react@workspace:^, @backstage/plugin-search-react@workspace:plugins/search-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-react@workspace:plugins/search-react"
   dependencies:

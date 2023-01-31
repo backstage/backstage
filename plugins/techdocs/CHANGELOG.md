@@ -1,5 +1,28 @@
 # @backstage/plugin-techdocs
 
+## 1.5.0-next.1
+
+### Minor Changes
+
+- 20840b36b4: Update DocsTable and EntityListDocsTable to accept overrides for Material Table options.
+- 0eaa579f89: The `TechDocsSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-search-react@1.5.0-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.10-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.1
+  - @backstage/plugin-techdocs-react@1.1.3-next.1
+
 ## 1.4.4-next.0
 
 ### Patch Changes

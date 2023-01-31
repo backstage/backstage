@@ -1,5 +1,18 @@
 # @backstage/plugin-sonarqube
 
+## 0.6.3-next.1
+
+### Patch Changes
+
+- 6310eacc11: Additional export added in order to bind SonarQubeClient to its apiref
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-sonarqube-react@0.1.2-next.0
+
 ## 0.6.3-next.0
 
 ### Patch Changes

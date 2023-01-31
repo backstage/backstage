@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.4.8-next.1
+
+### Patch Changes
+
+- 4c86436fdf: Fix MS Graph provider to use target URL for fetching access token
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2-next.1
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-catalog-node@1.3.3-next.1
+
 ## 0.4.8-next.0
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.6.0-next.1
+
+### Patch Changes
+
+- 628e2bd89a: Updated dependency `@kubernetes/client-node` to `0.18.1`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+
 ## 0.6.0-next.0
 
 ### Minor Changes

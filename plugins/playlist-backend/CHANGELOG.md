@@ -1,5 +1,22 @@
 # @backstage/plugin-playlist-backend
 
+## 0.2.5-next.1
+
+### Patch Changes
+
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-test-utils@0.1.34-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5-next.1
+  - @backstage/plugin-playlist-common@0.1.4
+
 ## 0.2.5-next.0
 
 ### Patch Changes

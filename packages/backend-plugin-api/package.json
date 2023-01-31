@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-plugin-api",
   "description": "Core API used by Backstage backend plugins",
-  "version": "0.3.2-next.0",
+  "version": "0.3.2-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
