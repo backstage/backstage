@@ -42,29 +42,11 @@ export class LighthouseAuditScheduleImpl implements LighthouseAuditSchedule {
       const timeoutConfig = lighthouse.getOptionalConfig('timeout');
 
       if (scheduleConfig) {
-        schedule = {
-          milliseconds: scheduleConfig.getOptionalNumber('milliseconds'),
-          seconds: scheduleConfig.getOptionalNumber('seconds'),
-          minutes: scheduleConfig.getOptionalNumber('minutes'),
-          hours: scheduleConfig.getOptionalNumber('hours'),
-          days: scheduleConfig.getOptionalNumber('days'),
-          weeks: scheduleConfig.getOptionalNumber('weeks'),
-          months: scheduleConfig.getOptionalNumber('months'),
-          years: scheduleConfig.getOptionalNumber('years'),
-        };
+        schedule = scheduleConfig as HumanDuration;
       }
 
       if (timeoutConfig) {
-        timeout = {
-          milliseconds: timeoutConfig.getOptionalNumber('milliseconds'),
-          seconds: timeoutConfig.getOptionalNumber('seconds'),
-          minutes: timeoutConfig.getOptionalNumber('minutes'),
-          hours: timeoutConfig.getOptionalNumber('hours'),
-          days: timeoutConfig.getOptionalNumber('days'),
-          weeks: timeoutConfig.getOptionalNumber('weeks'),
-          months: timeoutConfig.getOptionalNumber('months'),
-          years: timeoutConfig.getOptionalNumber('years'),
-        };
+        timeout = timeoutConfig as HumanDuration;
       }
     }
 
