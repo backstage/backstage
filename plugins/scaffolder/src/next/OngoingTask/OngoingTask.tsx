@@ -24,6 +24,7 @@ import { TaskLogStream } from './TaskLogStream';
 import { nextSelectedTemplateRouteRef } from '../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
+import { DefaultOutputs } from './Outputs';
 
 export const OngoingTask = () => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
@@ -108,7 +109,7 @@ export const OngoingTask = () => {
             </Box>
           </Paper>
         </Box>
-
+        <DefaultOutputs output={taskStream.output} />
         <Box paddingBottom={2}>
           <Paper>
             <Box
@@ -130,7 +131,6 @@ export const OngoingTask = () => {
             </Box>
           </Paper>
         </Box>
-
         {logsVisible ? (
           <Box paddingBottom={2} height="100%">
             <Paper style={{ height: '100%' }}>
