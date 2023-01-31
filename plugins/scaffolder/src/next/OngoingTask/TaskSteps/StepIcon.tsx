@@ -18,10 +18,10 @@ import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { CircularProgress, makeStyles, StepIconProps } from '@material-ui/core';
 import RemoveCircleOutline from '@material-ui/icons/RemoveCircleOutline';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import PanoramaFishEyeIcon from '@material-ui/icons/PanoramaFishEye';
 import classNames from 'classnames';
 import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import ErrorOutline from '@material-ui/icons/ErrorOutline';
 
 const useStepIconStyles = makeStyles((theme: BackstageTheme) => ({
   root: {
@@ -48,14 +48,14 @@ export const StepIcon = (props: StepIconProps & { skipped: boolean }) => {
     }
 
     if (error) {
-      return <DeleteOutline />;
+      return <ErrorOutline />;
     }
 
     if (skipped) {
       return <RemoveCircleOutline />;
     }
 
-    return <FiberManualRecordIcon />;
+    return <PanoramaFishEyeIcon />;
   };
 
   return (

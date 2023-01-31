@@ -20,7 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles({
   root: {
     width: '100%',
-    height: '200px',
+    height: '100%',
     position: 'relative',
   },
 });
@@ -32,10 +32,8 @@ export const TaskLogStream = (opts: { logs: { [k: string]: string[] } }) => {
       <LogViewer
         tail
         text={Object.values(opts.logs)
-
           .map(l => l.join('\n'))
           .filter(Boolean)
-
           .join('\n')}
       />
     </div>
