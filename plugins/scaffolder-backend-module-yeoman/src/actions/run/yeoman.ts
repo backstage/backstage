@@ -15,7 +15,7 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-backend';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { yeomanRun } from './yeomanRun';
 
 /**

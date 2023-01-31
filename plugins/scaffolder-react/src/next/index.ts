@@ -15,6 +15,6 @@
  */
 export * from './components';
 export * from './extensions';
-export type { FormProps } from './types';
+export * from './types';
 export * from './lib';
 export * from './hooks';

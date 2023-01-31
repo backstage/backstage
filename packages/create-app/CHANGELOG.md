@@ -1,5 +1,20 @@
 # @backstage/create-app
 
+## 0.4.37-next.1
+
+### Patch Changes
+
+- 86a8dfd7b0: Added a check to ensure that Yarn v1 is used when creating new projects.
+- 0eaa579f89: Update `SearchPage` template to use `SearchResult` extensions.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.37-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
 ## 0.4.36
 
 ### Patch Changes

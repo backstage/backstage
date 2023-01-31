@@ -17,7 +17,7 @@
 import { GithubTopicFilters } from '../providers/GithubEntityProviderConfig';
 
 export function parseGithubOrgUrl(urlString: string): { org: string } {
-  const path = new URL(urlString).pathname.substr(1).split('/');
+  const path = new URL(urlString).pathname.slice(1).split('/');
 
   // /backstage
   if (path.length === 1 && path[0].length) {
@@ -75,5 +75,16 @@ export function satisfiesTopicFilter(
   // If the topic filter is somehow ever in a state that is not covered here, we
   // will fail "open" so that Backstage is still usable as if the filter was
   // not configured at all.
+  return true;
+}
+
+export function satisfiesForkFilter(
+  allowForks: boolean | true,
+  isFork: boolean | false,
+): Boolean {
+  // we don't want to include forks if forks are not allowed
+  if (!allowForks && isFork) return false;
+
+  // if forks are allowed, allow all repos through
   return true;
 }

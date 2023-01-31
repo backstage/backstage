@@ -15,14 +15,7 @@
  */
 
 export * from './conditions';
-export {
-  DEFAULT_NAMESPACE,
-  ANNOTATION_EDIT_URL,
-  ANNOTATION_VIEW_URL,
-  ANNOTATION_KUBERNETES_API_SERVER,
-  ANNOTATION_KUBERNETES_API_SERVER_CA,
-  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-} from './constants';
+export * from './constants';
 export type {
   AlphaEntity,
   Entity,

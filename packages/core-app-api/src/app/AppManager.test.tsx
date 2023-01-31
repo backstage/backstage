@@ -635,6 +635,28 @@ describe('Integration Test', () => {
         },
       ],
       [
+        ['http://localhost', 'http://localhost'],
+        {
+          backend: {
+            baseUrl: 'http://localhost:80',
+          },
+          app: {
+            baseUrl: 'http://localhost:80',
+          },
+        },
+      ],
+      [
+        ['http://localhost', 'http://localhost'],
+        {
+          backend: {
+            baseUrl: 'http://localhost',
+          },
+          app: {
+            baseUrl: 'http://localhost',
+          },
+        },
+      ],
+      [
         ['http://localhost/backstage', 'http://localhost/backstage'],
         {
           backend: {
@@ -674,7 +696,7 @@ describe('Integration Test', () => {
         },
       ],
     ])(
-      'should be %p when %p',
+      'should be %p when %p (%#)',
       async ([expectedAppUrl, expectedBackendUrl], data) => {
         const app = new AppManager({
           apis: [],

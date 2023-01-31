@@ -25,36 +25,38 @@ export function getReviewData(
   uiSchemas: UiSchema[],
 ) {
   const reviewData: Record<string, any> = {};
-  for (const key in formData) {
-    if (formData.hasOwnProperty(key)) {
-      const uiSchema = uiSchemas.find(us => us.name === key);
+  const orderedReviewProperties = new Set(
+    uiSchemas.map(us => us.name).concat(Object.getOwnPropertyNames(formData)),
+  );
 
-      if (!uiSchema) {
-        reviewData[key] = formData[key];
-        continue;
-      }
+  for (const key of orderedReviewProperties) {
+    const uiSchema = uiSchemas.find(us => us.name === key);
 
-      if (uiSchema['ui:widget'] === 'password') {
-        reviewData[key] = '******';
-        continue;
-      }
-
-      if (!uiSchema['ui:backstage'] || !uiSchema['ui:backstage'].review) {
-        reviewData[key] = formData[key];
-        continue;
-      }
-
-      const review = uiSchema['ui:backstage'].review as JsonObject;
-      if (review.mask) {
-        reviewData[key] = review.mask;
-        continue;
-      }
-
-      if (!review.show) {
-        continue;
-      }
+    if (!uiSchema) {
       reviewData[key] = formData[key];
+      continue;
     }
+
+    if (uiSchema['ui:widget'] === 'password') {
+      reviewData[key] = '******';
+      continue;
+    }
+
+    if (!uiSchema['ui:backstage'] || !uiSchema['ui:backstage'].review) {
+      reviewData[key] = formData[key];
+      continue;
+    }
+
+    const review = uiSchema['ui:backstage'].review as JsonObject;
+    if (review.mask) {
+      reviewData[key] = review.mask;
+      continue;
+    }
+
+    if (!review.show) {
+      continue;
+    }
+    reviewData[key] = formData[key];
   }
 
   return reviewData;
@@ -98,7 +100,12 @@ export const ReviewStep = (props: ReviewStepProps) => {
         <Typography variant="h6">Review and create</Typography>
         <StructuredMetadataTable
           dense
-          metadata={getReviewData(formData, getUiSchemasFromSteps(steps))}
+          metadata={getReviewData(
+            formData,
+            getUiSchemasFromSteps(
+              steps.map(({ mergedSchema }) => ({ schema: mergedSchema })),
+            ),
+          )}
         />
         <Box mb={4} />
         <Button onClick={handleBack} disabled={disableButtons}>

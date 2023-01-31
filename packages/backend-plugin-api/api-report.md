@@ -22,27 +22,57 @@ export interface BackendFeature {
   register(reg: BackendRegistrationPoints): void;
 }
 
-// @public (undocumented)
+// @public
 export interface BackendModuleConfig {
-  // (undocumented)
   moduleId: string;
-  // (undocumented)
   pluginId: string;
   // (undocumented)
-  register(
-    reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
-  ): void;
+  register(reg: BackendModuleRegistrationPoints): void;
 }
 
-// @public (undocumented)
-export interface BackendPluginConfig {
+// @public
+export interface BackendModuleRegistrationPoints {
   // (undocumented)
+  registerInit<
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
+}
+
+// @public
+export interface BackendPluginConfig {
   id: string;
   // (undocumented)
-  register(reg: BackendRegistrationPoints): void;
+  register(reg: BackendPluginRegistrationPoints): void;
 }
 
-// @public (undocumented)
+// @public
+export interface BackendPluginRegistrationPoints {
+  // (undocumented)
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
+  // (undocumented)
+  registerInit<
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
+}
+
+// @public
 export interface BackendRegistrationPoints {
   // (undocumented)
   registerExtensionPoint<TExtensionPoint>(
@@ -116,12 +146,12 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
 ): (...params: TOptions) => BackendFeature;
 
-// @public (undocumented)
+// @public
 export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
 ): (...params: TOptions) => BackendFeature;
 
-// @public (undocumented)
+// @public
 export function createExtensionPoint<T>(
   config: ExtensionPointConfig,
 ): ExtensionPoint<T>;
@@ -248,9 +278,8 @@ export type ExtensionPoint<T> = {
   $$ref: 'extension-point';
 };
 
-// @public (undocumented)
+// @public
 export interface ExtensionPointConfig {
-  // (undocumented)
   id: string;
 }
 
@@ -476,13 +505,13 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   scope?: TScope;
 }
 
-// @public (undocumented)
+// @public
 export interface SharedBackendEnvironment {
   // (undocumented)
   $$type: 'SharedBackendEnvironment';
 }
 
-// @public (undocumented)
+// @public
 export interface SharedBackendEnvironmentConfig {
   // (undocumented)
   services?: ServiceFactoryOrFunction[];

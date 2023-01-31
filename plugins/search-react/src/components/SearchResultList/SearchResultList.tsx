@@ -16,24 +16,34 @@
 
 import React, { ReactNode } from 'react';
 
-import { List, ListItem, ListProps } from '@material-ui/core';
+import { List, ListProps } from '@material-ui/core';
 
 import {
-  EmptyState,
   Progress,
+  EmptyState,
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { AnalyticsContext } from '@backstage/core-plugin-api';
-import { SearchQuery, SearchResult } from '@backstage/plugin-search-common';
+import { SearchResult } from '@backstage/plugin-search-common';
+
+import { useSearchResultListItemExtensions } from '../../extensions';
 
 import { DefaultResultListItem } from '../DefaultResultListItem';
-import { SearchResultState } from '../SearchResult';
+import { SearchResultState, SearchResultStateProps } from '../SearchResult';
 
 /**
  * Props for {@link SearchResultListLayout}
  * @public
  */
 export type SearchResultListLayoutProps = ListProps & {
+  /**
+   * If defined, will render a default error panel.
+   */
+  error?: Error;
+  /**
+   * If defined, will render a default loading progress.
+   */
+  loading?: boolean;
   /**
    * Search results to be rendered as a list.
    */
@@ -47,17 +57,13 @@ export type SearchResultListLayoutProps = ListProps & {
     array: SearchResult[],
   ) => JSX.Element | null;
   /**
-   * If defined, will render a default error panel.
-   */
-  error?: Error;
-  /**
-   * If defined, will render a default loading progress.
-   */
-  loading?: boolean;
-  /**
    * Optional component to render when no results. Default to <EmptyState /> component.
    */
   noResultsComponent?: ReactNode;
+  /**
+   * Optional property to provide if component should not render the component when no results are found.
+   */
+  disableRenderingWithNoResults?: boolean;
 };
 
 /**
@@ -67,8 +73,8 @@ export type SearchResultListLayoutProps = ListProps & {
  */
 export const SearchResultListLayout = (props: SearchResultListLayoutProps) => {
   const {
-    loading,
     error,
+    loading,
     resultItems,
     renderResultItem = resultItem => (
       <DefaultResultListItem
@@ -76,48 +82,39 @@ export const SearchResultListLayout = (props: SearchResultListLayoutProps) => {
         result={resultItem.document}
       />
     ),
-    noResultsComponent = (
+    disableRenderingWithNoResults,
+    noResultsComponent = disableRenderingWithNoResults ? null : (
       <EmptyState missing="data" title="Sorry, no results were found" />
     ),
     ...rest
   } = props;
 
-  return (
-    <List {...rest}>
-      {loading ? <Progress /> : null}
-      {!loading && error ? (
-        <ResponseErrorPanel
-          title="Error encountered while fetching search results"
-          error={error}
-        />
-      ) : null}
-      {!loading && !error && resultItems?.length
-        ? resultItems.map(renderResultItem)
-        : null}
-      {!loading && !error && !resultItems?.length ? (
-        <ListItem>{noResultsComponent}</ListItem>
-      ) : null}
-    </List>
-  );
+  if (loading) {
+    return <Progress />;
+  }
+
+  if (error) {
+    return (
+      <ResponseErrorPanel
+        title="Error encountered while fetching search results"
+        error={error}
+      />
+    );
+  }
+
+  if (!resultItems?.length) {
+    return <>{noResultsComponent}</>;
+  }
+
+  return <List {...rest}>{resultItems.map(renderResultItem)}</List>;
 };
 
 /**
  * Props for {@link SearchResultList}.
  * @public
  */
-export type SearchResultListProps = Omit<
-  SearchResultListLayoutProps,
-  'loading' | 'error' | 'resultItems'
-> & {
-  /**
-   * A search query used for requesting the results to be listed.
-   */
-  query: Partial<SearchQuery>;
-  /**
-   * Optional property to provide if component should not render the component when no results are found.
-   */
-  disableRenderingWithNoResults?: boolean;
-};
+export type SearchResultListProps = Pick<SearchResultStateProps, 'query'> &
+  Omit<SearchResultListLayoutProps, 'loading' | 'error' | 'resultItems'>;
 
 /**
  * Given a query, search for results and render them as a list.
@@ -125,7 +122,9 @@ export type SearchResultListProps = Omit<
  * @public
  */
 export const SearchResultList = (props: SearchResultListProps) => {
-  const { query, disableRenderingWithNoResults, ...rest } = props;
+  const { query, renderResultItem, children, ...rest } = props;
+
+  const defaultRenderResultItem = useSearchResultListItemExtensions(children);
 
   return (
     <AnalyticsContext
@@ -135,20 +134,15 @@ export const SearchResultList = (props: SearchResultListProps) => {
       }}
     >
       <SearchResultState query={query}>
-        {({ loading, error, value }) => {
-          if (!value?.results?.length && disableRenderingWithNoResults) {
-            return null;
-          }
-
-          return (
-            <SearchResultListLayout
-              {...rest}
-              loading={loading}
-              error={error}
-              resultItems={value?.results}
-            />
-          );
-        }}
+        {({ loading, error, value }) => (
+          <SearchResultListLayout
+            {...rest}
+            error={error}
+            loading={loading}
+            resultItems={value?.results}
+            renderResultItem={renderResultItem ?? defaultRenderResultItem}
+          />
+        )}
       </SearchResultState>
     </AnalyticsContext>
   );

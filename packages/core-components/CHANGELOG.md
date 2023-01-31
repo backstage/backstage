@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.12.4-next.0
+
+### Patch Changes
+
+- 910015f5b7: The Button component has been deprecated in favor of the LinkButton component
+- 20840b36b4: Adds new type, TableOptions, extending Material Table Options.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
 ## 0.12.3
 
 ### Patch Changes

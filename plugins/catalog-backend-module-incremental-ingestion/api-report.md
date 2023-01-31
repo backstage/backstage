@@ -10,6 +10,8 @@ import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
 import type { DurationObjectUnits } from 'luxon';
+import { EventParams } from '@backstage/plugin-events-node';
+import { EventSubscriber } from '@backstage/plugin-events-node';
 import type { Logger } from 'winston';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { PluginDatabaseManager } from '@backstage/backend-common';
@@ -36,7 +38,7 @@ export class IncrementalCatalogBuilder {
   addIncrementalEntityProvider<TCursor, TContext>(
     provider: IncrementalEntityProvider<TCursor, TContext>,
     options: IncrementalEntityProviderOptions,
-  ): void;
+  ): EventSubscriber;
   // (undocumented)
   build(): Promise<{
     incrementalAdminRouter: Router;
@@ -50,6 +52,17 @@ export class IncrementalCatalogBuilder {
 // @public
 export interface IncrementalEntityProvider<TCursor, TContext> {
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
+  eventHandler?: {
+    onEvent: (params: EventParams) =>
+      | undefined
+      | {
+          added: DeferredEntity[];
+          removed: {
+            entityRef: string;
+          }[];
+        };
+    supportsEventTopics: () => string[];
+  };
   getProviderName(): string;
   next(
     context: TContext,

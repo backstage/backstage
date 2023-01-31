@@ -86,6 +86,10 @@ export interface Config {
               /**
                * (Optional) GitHub topic-based filters.
                */
+              allowForks?: boolean;
+              /**
+               * (Optional) Allow Forks to be evaluated.
+               */
               topic?: {
                 /**
                  * (Optional) An array of strings used to filter in results based on their associated GitHub topics.
@@ -142,6 +146,10 @@ export interface Config {
                 repository?: string;
                 /**
                  * (Optional) GitHub topic-based filters.
+                 */
+                allowForks?: boolean;
+                /**
+                 * (Optional) Allow Forks to be evaluated.
                  */
                 topic?: {
                   /**

@@ -125,7 +125,7 @@ export const httpRouterFactory: (
 
 // @public (undocumented)
 export interface HttpRouterFactoryOptions {
-  getPath(pluginId: string): string;
+  getPath?(pluginId: string): string;
 }
 
 // @public

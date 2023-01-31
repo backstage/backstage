@@ -1,5 +1,27 @@
 # @backstage/plugin-techdocs-node
 
+## 1.4.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-aws-node@0.1.1
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.4.6-next.0
+
+### Patch Changes
+
+- 87ab76e55c: Fixed bug caused by recent migration to AWS SDK V3 for techdocs-node. Instead of s3ForcePathStyle, forcePathStyle should be passed.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+
 ## 1.4.4
 
 ### Patch Changes

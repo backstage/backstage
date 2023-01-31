@@ -81,7 +81,7 @@ const renderSource = (build: BitriseBuildResult): React.ReactNode => {
       rel="noreferrer"
       startIcon={<GitHubIcon />}
     >
-      {build.commitHash.substr(0, 6)}
+      {build.commitHash.slice(0, 6)}
     </Button>
   ) : null;
 };

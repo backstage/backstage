@@ -21,6 +21,7 @@ import { act, fireEvent } from '@testing-library/react';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { JsonValue } from '@backstage/types';
 import { NextFieldExtensionComponentProps } from '../../extensions';
+import { LayoutTemplate } from '../../../layouts';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -390,6 +391,49 @@ describe('Stepper', () => {
 
     await act(async () => {
       await fireEvent.click(getByRole('button', { name: 'Make' }));
+    });
+  });
+
+  describe('Scaffolder Layouts', () => {
+    it('should render the step in the scaffolder layout', async () => {
+      const ScaffolderLayout: LayoutTemplate = ({ properties }) => (
+        <>
+          <h1>A Scaffolder Layout</h1>
+          {properties.map((prop, i) => (
+            <div key={i}>{prop.content}</div>
+          ))}
+        </>
+      );
+
+      const manifest: TemplateParameterSchema = {
+        steps: [
+          {
+            title: 'Step 1',
+            schema: {
+              type: 'object',
+              'ui:ObjectFieldTemplate': 'Layout',
+              properties: {
+                field1: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        ],
+        title: 'scaffolder layouts',
+      };
+
+      const { getByText, getByRole } = await renderInTestApp(
+        <Stepper
+          manifest={manifest}
+          extensions={[]}
+          onCreate={jest.fn()}
+          layouts={[{ name: 'Layout', component: ScaffolderLayout }]}
+        />,
+      );
+
+      expect(getByText('A Scaffolder Layout')).toBeInTheDocument();
+      expect(getByRole('textbox', { name: 'field1' })).toBeInTheDocument();
     });
   });
 });

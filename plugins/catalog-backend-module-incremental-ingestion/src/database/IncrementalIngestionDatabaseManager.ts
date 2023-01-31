@@ -270,6 +270,17 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
+   * This method is used to remove entity records from the ingestion_mark_entities
+   * table by their entity reference.
+   */
+  async deleteEntityRecordsByRef(entities: { entityRef: string }[]) {
+    const refs = entities.map(e => e.entityRef);
+    await this.client.transaction(async tx => {
+      await tx('ingestion_mark_entities').delete().whereIn('ref', refs);
+    });
+  }
+
+  /**
    * Creates a new ingestion record.
    * @param provider - string
    * @returns A new ingestion record
@@ -530,6 +541,21 @@ export class IncrementalIngestionDatabaseManager {
       const mark = await tx<MarkRecord>('ingestion_marks')
         .where('ingestion_id', ingestionId)
         .orderBy('sequence', 'desc')
+        .first();
+      return mark;
+    });
+  }
+
+  /**
+   * Returns the first record from `ingestion_marks` for the supplied ingestionId.
+   * @param ingestionId - string
+   * @returns MarkRecord | undefined
+   */
+  async getFirstMark(ingestionId: string) {
+    return await this.client.transaction(async tx => {
+      const mark = await tx<MarkRecord>('ingestion_marks')
+        .where('ingestion_id', ingestionId)
+        .orderBy('sequence', 'asc')
         .first();
       return mark;
     });

@@ -244,6 +244,9 @@ const routes = (
       <ScaffolderFieldExtensions>
         <DelayingComponentFieldExtension />
       </ScaffolderFieldExtensions>
+      <ScaffolderLayouts>
+        <TwoColumnLayout />
+      </ScaffolderLayouts>
     </Route>
     <Route path="/explore" element={<ExplorePage />} />
     <Route

@@ -201,7 +201,8 @@
         "label": "GitLab",
         "ids": [
           "integrations/gitlab/locations",
-          "integrations/gitlab/discovery"
+          "integrations/gitlab/discovery",
+          "integrations/gitlab/org"
         ]
       },
       {
@@ -375,7 +376,8 @@
               "backend-system/architecture/services",
               "backend-system/architecture/plugins",
               "backend-system/architecture/extension-points",
-              "backend-system/architecture/modules"
+              "backend-system/architecture/modules",
+              "backend-system/architecture/naming-patterns"
             ]
           },
           {

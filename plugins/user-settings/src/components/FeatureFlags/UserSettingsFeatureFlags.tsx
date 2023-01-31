@@ -82,6 +82,9 @@ export const UserSettingsFeatureFlags = () => {
     <Grid container style={{ justifyContent: 'space-between' }}>
       <Grid item xs={6} md={8}>
         <Typography variant="h5">Feature Flags</Typography>
+        <Typography variant="subtitle1">
+          Please refresh the page when toggling feature flags
+        </Typography>
       </Grid>
       {featureFlags.length >= 10 && (
         <Grid item xs={6} md={4}>
