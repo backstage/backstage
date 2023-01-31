@@ -25,13 +25,13 @@ const useStyles = makeStyles({
   },
 });
 
-export const TaskLogStream = (opts: { logs: { [k: string]: string[] } }) => {
+export const TaskLogStream = (props: { logs: { [k: string]: string[] } }) => {
   const styles = useStyles();
   return (
     <div className={styles.root}>
       <LogViewer
         tail
-        text={Object.values(opts.logs)
+        text={Object.values(props.logs)
           .map(l => l.join('\n'))
           .filter(Boolean)
           .join('\n')}

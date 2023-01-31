@@ -19,9 +19,7 @@ import { DateTime, Interval } from 'luxon';
 import humanizeDuration from 'humanize-duration';
 import { Typography } from '@material-ui/core';
 
-export const StepTime = ({
-  step,
-}: {
+export const StepTime = (props: {
   step: {
     id: string;
     name: string;
@@ -30,6 +28,7 @@ export const StepTime = ({
   };
 }) => {
   const [time, setTime] = useState('');
+  const { step } = props;
 
   const calculate = useCallback(() => {
     if (!step.startedAt) {
