@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useElementFilter } from '@backstage/core-plugin-api';
-import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts/keys';
-import { LayoutOptions } from '../layouts';
 
-/**
- * Hook that returns all custom field extensions from the current outlet.
- * @public
- */
-export const useCustomLayouts = <TComponentDataType = LayoutOptions>(
-  outlet: React.ReactNode,
-) => {
-  return useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: LAYOUTS_WRAPPER_KEY,
-      })
-      .findComponentData<TComponentDataType>({
-        key: LAYOUTS_KEY,
-      }),
-  );
+import { Header } from '@backstage/core-components';
+import { wrapInTestApp } from '@backstage/test-utils';
+import React, { ComponentType } from 'react';
+import { WelcomeTitle } from './WelcomeTitle';
+
+export default {
+  title: 'Plugins/Home/Components/WelcomeTitle',
+  decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+};
+
+export const Default = () => {
+  return <Header title={<WelcomeTitle />} pageTitleOverride="Home" />;
 };

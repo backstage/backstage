@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { ComponentType } from 'react';
-import { Button } from './Button';
+import { LinkButton } from './LinkButton';
 import { useLocation } from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
 import Divider from '@material-ui/core/Divider';
@@ -37,7 +37,7 @@ const Location = () => {
 
 export default {
   title: 'Inputs/Button',
-  component: Button,
+  component: LinkButton,
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
@@ -80,9 +80,9 @@ export const Default = () => {
           <pre>color="primary" variant="contained"</pre>
         </ListItemText>
 
-        <Button to={link()} color="primary" variant="contained">
+        <LinkButton to={link()} color="primary" variant="contained">
           Register Component
-        </Button>
+        </LinkButton>
       </ListItem>
       <ListItem>
         <ListItemText>
@@ -93,9 +93,9 @@ export const Default = () => {
           <pre>color="secondary" variant="contained"</pre>
         </ListItemText>
 
-        <Button to={link()} color="secondary" variant="contained">
+        <LinkButton to={link()} color="secondary" variant="contained">
           Cancel
-        </Button>
+        </LinkButton>
       </ListItem>
       <ListItem>
         <ListItemText>
@@ -106,9 +106,9 @@ export const Default = () => {
           <pre>color="default" variant="outlined"</pre>
         </ListItemText>
 
-        <Button to={link()} color="default" variant="outlined">
+        <LinkButton to={link()} color="default" variant="outlined">
           View Details
-        </Button>
+        </LinkButton>
       </ListItem>
     </List>
   );
@@ -128,17 +128,17 @@ export const ButtonLinks = () => {
           // TODO: Refactor to use new routing mechanisms
         }
         <ListItem>
-          <Button to={link()} color="default" variant="outlined">
+          <LinkButton to={link()} color="default" variant="outlined">
             Route Ref
-          </Button>
+          </LinkButton>
           &nbsp; has props for both Material-UI's component as well as for
           react-router-dom's Route object.
         </ListItem>
 
         <ListItem>
-          <Button to="/staticpath" color="default" variant="outlined">
+          <LinkButton to="/staticpath" color="default" variant="outlined">
             Static Path
-          </Button>
+          </LinkButton>
           &nbsp; links to a statically defined route. In general, this should be
           avoided.
         </ListItem>
