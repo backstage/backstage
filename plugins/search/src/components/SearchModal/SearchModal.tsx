@@ -42,7 +42,7 @@ import { rootRouteRef } from '../../plugin';
 
 /**
  * @public
- **/
+ */
 export interface SearchModalChildrenProps {
   /**
    * A function that should be invoked when navigating away from the modal.
@@ -52,7 +52,7 @@ export interface SearchModalChildrenProps {
 
 /**
  * @public
- **/
+ */
 export interface SearchModalProps {
   /**
    * If true, it renders the modal.

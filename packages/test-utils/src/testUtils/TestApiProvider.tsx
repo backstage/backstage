@@ -119,7 +119,7 @@ export class TestApiRegistry implements ApiHolder {
  * implements a subset of the `IdentityApi`.
  *
  * @public
- **/
+ */
 export const TestApiProvider = <T extends any[]>(
   props: TestApiProviderProps<T>,
 ) => {

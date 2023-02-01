@@ -162,7 +162,7 @@ export interface FactRetriever {
  * \{ timeToLive: 1209600000 \}
  * \{ timeToLive: \{ weeks: 4 \} \}
  *
- **/
+ */
 export type TTL = { timeToLive: DurationLike };
 
 /**
@@ -172,7 +172,7 @@ export type TTL = { timeToLive: DurationLike };
  * @example
  * \{ maxItems: 10 \}
  *
- **/
+ */
 export type MaxItems = { maxItems: number };
 
 /**

@@ -32,7 +32,7 @@ export type SubmenuOptions = {
   drawerWidthOpen?: number;
 };
 
-/** @internal **/
+/** @internal */
 export type SidebarConfig = {
   drawerWidthClosed: number;
   drawerWidthOpen: number;
@@ -78,7 +78,7 @@ export const makeSidebarConfig = (
     sidebarConfig.drawerWidthClosed - sidebarConfig.userBadgePadding * 2,
 });
 
-/** @internal **/
+/** @internal */
 export type SubmenuConfig = {
   drawerWidthClosed: number;
   drawerWidthOpen: number;
