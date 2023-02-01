@@ -58,7 +58,9 @@ export class BackendLifecycleImpl implements RootLifecycleService {
 
 /**
  * Allows plugins to register shutdown hooks that are run when the process is about to exit.
- * @public */
+ *
+ * @public
+ */
 export const rootLifecycleFactory = createServiceFactory({
   service: coreServices.rootLifecycle,
   deps: {

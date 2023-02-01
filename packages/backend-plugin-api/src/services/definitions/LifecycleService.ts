@@ -18,7 +18,7 @@ import { LoggerService } from './LoggerService';
 
 /**
  * @public
- **/
+ */
 export type LifecycleServiceShutdownHook = {
   fn: () => void | Promise<void>;
 
@@ -30,7 +30,7 @@ export type LifecycleServiceShutdownHook = {
 
 /**
  * @public
- **/
+ */
 export interface LifecycleService {
   /**
    * Register a function to be called when the backend is shutting down.
