@@ -22,16 +22,16 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 import { z } from 'zod';
 
-export const createScaffolderStepPermissionRule = makeCreatePermissionRule<
+export const createScaffolderPermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParameter,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
 >();
 
-const hasTag = createScaffolderStepPermissionRule({
+export const hasTag = createScaffolderPermissionRule({
   name: 'HAS_TAG',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  description: 'Match a scaffolder step with the given tag',
+  description: `Match parameters or steps with the given tag`,
   paramsSchema: z.object({
     tag: z.string().describe('Name of the tag to match on'),
   }),
