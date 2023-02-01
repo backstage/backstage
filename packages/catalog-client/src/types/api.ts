@@ -479,8 +479,7 @@ export interface CatalogApi {
    *   filter: [{ kind: 'group' }],
    *   limit: 20,
    *   query: 'A',
-   *   sortField: 'metadata.name',
-   *   sortFieldOrder: 'asc'
+   *   sortFields: { field: 'metadata.name' order: 'asc' },
    * });
    * ```
    *
@@ -488,16 +487,16 @@ export interface CatalogApi {
    * with 'A', ordered by name ascending.
    *
    * The response will contain a maximum of 20 entities. In case
-   * more than 20 entities exist, the response will contain a next function, invocable
-   * using:
+   * more than 20 entities exist, the response will contain a nextCursor
+   * property that can be used to fetch the next batch of entities.
    *
    * ```
-   * const secondBatchResponse = await response.next({ limit: 20 });
+   * const secondBatchResponse = await catalogClient
+   *  .getPaginatedEntities({ cursor: response.nextCursor });
    * ```
    *
-   * secondBatchResponse will contain the next batch of maximum 20 entities, together
-   * with a prev function useful for navigating backwards and a next function
-   * in case more entities matching the filters of the first request are present in the catalog.
+   * secondBatchResponse will contain the next batch of (maximum) 20 entities,
+   * together with a prevCursor property, useful to fetch the previous batch.
    *
    * @public
    *
