@@ -177,7 +177,6 @@ export interface EntitiesCatalog {
   /**
    * Fetch entities and scroll back and forth between entities.
    *
-   * @alpha
    * @param request
    */
   paginatedEntities(
@@ -215,8 +214,6 @@ export interface EntitiesCatalog {
 
 /**
  * The request shape for {@link EntitiesCatalog.paginatedEntities}.
- *
- * @alpha
  */
 export type PaginatedEntitiesRequest =
   | PaginatedEntitiesInitialRequest
@@ -226,8 +223,6 @@ export type PaginatedEntitiesRequest =
  * The initial request for {@link EntitiesCatalog.paginatedEntities}.
  * The request take immutable properties that are going to be bound
  * for the current and the next pagination requests.
- *
- * @alpha
  */
 export interface PaginatedEntitiesInitialRequest {
   authorizationToken?: string;
@@ -241,8 +236,6 @@ export interface PaginatedEntitiesInitialRequest {
 /**
  * Request for {@link EntitiesCatalog.paginatedEntities} used to
  * move forward or backward on the data.
- *
- * @alpha
  */
 export interface PaginatedEntitiesCursorRequest {
   authorizationToken?: string;
@@ -253,8 +246,6 @@ export interface PaginatedEntitiesCursorRequest {
 
 /**
  * The response shape for {@link EntitiesCatalog.paginatedEntities}.
- *
- * @alpha
  */
 export interface PaginatedEntitiesResponse {
   /**
@@ -277,8 +268,6 @@ export interface PaginatedEntitiesResponse {
 
 /**
  * The Cursor used internally by the catalog.
- *
- * @alpha
  */
 export type Cursor = {
   /**
