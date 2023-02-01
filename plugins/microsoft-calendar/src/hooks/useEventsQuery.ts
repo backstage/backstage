@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// import { compact, unescape } from 'lodash';
-// import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { useApi } from '@backstage/core-plugin-api';

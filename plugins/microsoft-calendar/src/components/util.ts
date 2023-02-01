@@ -65,10 +65,6 @@ export function isPassed(event: MicrosoftCalendarEvent) {
 }
 
 export function isAllDay(event: MicrosoftCalendarEvent) {
-  // if('isAllDay' in event) {
-  //   return event.isAllDay;
-  // }
-
   const startTime = DateTime.fromISO(event.start?.dateTime || '');
   const endTime = DateTime.fromISO(event.end?.dateTime || '');
 
