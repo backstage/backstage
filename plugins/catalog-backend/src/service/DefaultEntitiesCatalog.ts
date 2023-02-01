@@ -23,6 +23,7 @@ import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { isEqual, chunk as lodashChunk } from 'lodash';
 import { Logger } from 'winston';
+import { z } from 'zod';
 import {
   EntitiesBatchRequest,
   EntitiesBatchResponse,
@@ -658,9 +659,37 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   }
 }
 
+const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
+  z
+    .object({
+      key: z.string(),
+      values: z.array(z.string()).optional(),
+    })
+    .or(z.object({ not: entityFilterParser }))
+    .or(z.object({ anyOf: z.array(entityFilterParser) }))
+    .or(z.object({ allOf: z.array(entityFilterParser) })),
+);
+
+export const cursorParser: z.ZodSchema<Cursor> = z.object({
+  sortFields: z.array(
+    z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
+  ),
+  sortFieldValues: z.array(z.string().or(z.null())),
+  filter: entityFilterParser.optional(),
+  isPrevious: z.boolean(),
+  query: z.string().optional(),
+  firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
+  totalItems: z.number().optional(),
+});
+
 function encodeCursor(cursor: Cursor) {
   const json = JSON.stringify(cursor);
   return Buffer.from(json, 'utf8').toString('base64');
+}
+
+function decodeCursor(encodedCursor: string) {
+  const json = Buffer.from(encodedCursor, 'base64').toString('utf8');
+  return cursorParser.parse(JSON.parse(json));
 }
 
 function parseCursorFromRequest(
@@ -672,10 +701,7 @@ function parseCursorFromRequest(
   }
   if (isPaginatedEntitiesCursorRequest(request)) {
     try {
-      const json = Buffer.from(request.cursor, 'base64').toString('utf8');
-      const cursor = JSON.parse(json);
-      // TODO(vinzscam): validate the shit
-      return cursor as unknown as Cursor;
+      return decodeCursor(request.cursor);
     } catch {
       throw new InputError('Malformed cursor, could not be parsed');
     }
