@@ -16,7 +16,6 @@
 import MaterialAvatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import grey from '@material-ui/core/colors/grey';
 import React, { CSSProperties } from 'react';
 
 import { extractInitials, stringToColor } from './utils';
@@ -30,7 +29,7 @@ const useStyles = makeStyles(
       avatar: {
         width: '4rem',
         height: '4rem',
-        color: grey[50],
+        color: theme.palette.common.white,
       },
       avatarText: {
         fontWeight: theme.typography.fontWeightBold,

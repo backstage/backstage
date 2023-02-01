@@ -15,23 +15,22 @@
  */
 import React from 'react';
 import { makeStyles, TextField } from '@material-ui/core';
-import grey from '@material-ui/core/colors/grey';
 import { Context } from '../ContextProvider';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     gap: '1em',
     flexWrap: 'wrap',
   },
   label: {
-    color: `${grey[50]} !important`,
+    color: `${theme.palette.common.white} !important`,
   },
   outline: {
-    color: `${grey[50]} !important`,
-    borderColor: `${grey[50]} !important`,
+    color: `${theme.palette.common.white} !important`,
+    borderColor: `${theme.palette.common.white} !important`,
   },
-});
+}));
 
 export const ApiBar = () => {
   const classes = useStyles();

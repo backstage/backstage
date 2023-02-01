@@ -53,7 +53,7 @@ const useStyles = makeStyles<BackstageTheme>(
     },
     selected: {
       background: grey[600],
-      color: grey[50],
+      color: theme.palette.common.white,
     },
     label: {
       margin: theme.spacing(1.75),

@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
-import grey from '@material-ui/core/colors/grey';
 import { WithLink } from '../../utils/components';
 import { RadarDescription } from '../RadarDescription';
 
@@ -34,12 +33,12 @@ export type Props = {
   onClick?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
 };
 
-const useStyles = makeStyles<Theme>(() => ({
+const useStyles = makeStyles<Theme>(theme => ({
   text: {
     pointerEvents: 'none',
     userSelect: 'none',
     fontSize: '9px',
-    fill: grey[50],
+    fill: theme.palette.common.white,
     textAnchor: 'middle',
   },
 

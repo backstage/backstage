@@ -60,7 +60,6 @@ import {
 } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
 import WarningIcon from '@material-ui/icons/Warning';
-import grey from '@material-ui/core/colors/grey';
 import React from 'react';
 import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
@@ -103,7 +102,7 @@ const useStyles = makeStyles(theme => ({
     top: theme.spacing(0.5),
     right: theme.spacing(0.5),
     padding: '0.25rem',
-    color: grey[50],
+    color: theme.palette.common.white,
   },
 }));
 

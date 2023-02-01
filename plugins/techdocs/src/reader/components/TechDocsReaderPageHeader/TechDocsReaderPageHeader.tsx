@@ -17,10 +17,9 @@
 import React, { PropsWithChildren, useEffect } from 'react';
 import Helmet from 'react-helmet';
 
-import { Grid } from '@material-ui/core';
+import { Grid, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import CodeIcon from '@material-ui/icons/Code';
-import grey from '@material-ui/core/colors/grey';
 
 import {
   TechDocsAddonLocations as locations,
@@ -65,6 +64,8 @@ export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
 export const TechDocsReaderPageHeader = (
   props: TechDocsReaderPageHeaderProps,
 ) => {
+  const { palette } = useTheme();
+
   const { children } = props;
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
@@ -139,7 +140,7 @@ export const TechDocsReaderPageHeader = (
               container
               direction="column"
               alignItems="center"
-              style={{ color: grey[50] }}
+              style={{ color: palette.common.white }}
             >
               <Grid style={{ padding: 0 }} item>
                 <CodeIcon style={{ marginTop: '-25px' }} />

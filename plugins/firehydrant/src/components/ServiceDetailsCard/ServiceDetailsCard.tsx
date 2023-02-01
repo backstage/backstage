@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
   },
   buttonLink: {
     backgroundColor: deepPurple[900],
-    color: grey[50],
+    color: theme.palette.common.white,
     textTransform: 'none',
     '&:hover': {
       backgroundColor: deepPurple[500],
