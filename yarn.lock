@@ -5647,7 +5647,7 @@ __metadata:
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    humanize-duration: ^3.27.0
+    humanize-duration: ^3.27.1
     luxon: ^3.0.0
     msw: ^0.49.0
     react-use: ^17.2.4
@@ -6697,7 +6697,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    humanize-duration: ^3.27.0
+    humanize-duration: ^3.26.0
     luxon: ^3.0.0
     msw: ^0.49.0
     react-use: ^17.2.4
@@ -7808,7 +7808,7 @@ __metadata:
     cross-fetch: ^3.1.5
     event-source-polyfill: 1.0.25
     git-url-parse: ^13.0.0
-    humanize-duration: ^3.27.0
+    humanize-duration: ^3.25.1
     immer: ^9.0.1
     json-schema: ^0.4.0
     json-schema-library: ^7.3.9
