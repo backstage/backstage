@@ -35,7 +35,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
   }
 
   async stop(request: AzureSiteStartStopRequest): Promise<void> {
-    const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/${
+    const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/${
       request.subscription
     }/${request.resourceGroup}/${request.name}/stop`;
     const { token: accessToken } = await this.identityApi.getCredentials();
@@ -48,7 +48,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
     });
   }
   async start(request: AzureSiteStartStopRequest): Promise<void> {
-    const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/${
+    const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/${
       request.subscription
     }/${request.resourceGroup}/${request.name}/start`;
     const { token: accessToken } = await this.identityApi.getCredentials();
