@@ -8,6 +8,10 @@ You can use this plugin by import MicrosoftCalendar from "@internal/plugin-micro
 
 > import { MicrosoftCalendar } from "@internal/plugin-microsoft-calendar"
 
+>        <Grid item xs={12} md={4}>
+>          <MicrosoftCalendar />
+>        </Grid>
+
 ![MicrosoftCalendar plugin screenshot](./docs/microsoft-calendar-plugin.png)
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
