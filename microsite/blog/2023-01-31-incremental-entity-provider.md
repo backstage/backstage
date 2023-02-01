@@ -8,7 +8,7 @@ authorURL: https://frontside.com/
 
 At the heart of [Backstage](https://backstage.io/) is the [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview), which is a data store that allows an organization to centralize and visualize its many software services and components. Backstage inspects and transforms an organization's disparate software services and parts into a centralized data store.
 
-![catalog pipeline](./assets/2023-01-31/catalog-pipeline.png)
+![catalog pipeline](assets/2023-01-31/catalog-pipeline.png)
 
 A common use case is for an organization to want to surface ownership and metadata about repositories. Backstage provides a mechanism for discovering and transforming repository information into a standard data structure and persisting it into the Backstage [Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview). This process is known as ingestion, where all data is transformed into a standard Backstage data structure known as an entity. Entities in the Catalog’s data store are accessible to the Backstage App via the REST API.
 
@@ -28,9 +28,9 @@ A large organization typically deals with massive datasets. Until recently, inge
 
 This is a problem that [DevEx team at HP](http://hp.com) faced when building their software catalog with Backstage. [Damon Kaswell](https://github.com/dekoding), Senior Application Developer on the DevEx team at HP, shared their experience at [BackstageCon 2022](https://www.youtube.com/watch?v=5qHyZntKXRU&list=PLj6h78yzYM2OKySsTuiip3BqmdYZQRnSf&index=13), detailing the problem and the solution that [Frontside](https://frontside.com/) created in collaboration with developers on HP’s DevEx team.
 
-![Damon Kaswell](./assets/2023-01-31/damon.jpg)
+![Damon Kaswell](assets/2023-01-31/damon.jpg)
 
-The solution HP and [Frontside](https://frontside.com/) arrived at was to implement an incremental entity provider. An incremental entity provider effectively performs a full mutation using a series of delta mutations combined with a mark and sweep mechanism. It paginates through the dataset, tracking entities retrieved from each page and the cursor of the next page, pausing ingestion every few minutes to give the processing loop time to process existing entities. Once it reaches the end of the dataset, it determines which entities were not ingested during this ingestion cycle and emits a delta mutation to delete unmarked entities.
+The solution HP and [Frontside](https://frontside.com/) arrived at was to implement an incremental entity provider. An incremental entity provider effectively performs a full mutation using a series of delta mutations combined with a mark and sweep mechanism. It paginates through the dataset, tracking entities retrieved from each page and the cursor of the next page, pausing ingestion every few seconds to give the processing loop time to process existing entities. Once it reaches the end of the dataset, it determines which entities were not ingested during this ingestion cycle and emits a delta mutation to delete unmarked entities.
 
 Simply by adding a few new tables to the database schema, the incremental ingestion entity provider converts any existing entity provider into an incremental entity provider. These tables allow the incremental entity provider to be long-lived and keep track of its current location in the dataset by persisting a cursor that it uses to page through any large dataset. The larger the dataset, the more pages of data or bursts of work the incremental entity provider will ingest—but there will be no out-of-memory errors, effectively removing scalability problems.
 
