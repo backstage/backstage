@@ -11,11 +11,12 @@
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts"
   },
   "scripts": {
     "start": "backstage-cli package start",
-    "build": "backstage-cli package build",
+    "build": "backstage-cli package build --experimental-type-build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@types/express": "*",
     "express": "^4.17.1",
@@ -39,6 +41,7 @@
     "supertest": "^6.1.6"
   },
   "files": [
-    "dist"
+    "dist",
+    "alpha"
   ]
 }
