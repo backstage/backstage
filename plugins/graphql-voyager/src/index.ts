@@ -15,4 +15,5 @@
  */
 export { graphqlVoyagerPlugin, GraphqlVoyagerPage } from './plugin';
 export { GraphQLVoyagerPage as Router } from './components';
+export type { GraphQLVoyagerPageProps } from './components';
 export * from './lib/api';
