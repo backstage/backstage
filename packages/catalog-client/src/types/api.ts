@@ -427,14 +427,10 @@ export type GetPaginatedEntitiesResponse = {
   entities: Entity[];
   /* The number of entities among all the requests */
   totalItems: number;
-  /* A method returning a promise containing the next batch of entities. */
-  next?(
-    request?: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'>,
-  ): Promise<GetPaginatedEntitiesResponse>;
-  /* A method returning a promise containing the previous batch of entities. */
-  prev?(
-    request?: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'>,
-  ): Promise<GetPaginatedEntitiesResponse>;
+  /* The cursor for the next batch of entities */
+  nextCursor?: string;
+  /* The cursor for the previous batch of entities */
+  prevCursor?: string;
 };
 
 /**

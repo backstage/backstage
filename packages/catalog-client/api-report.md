@@ -128,7 +128,6 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // @alpha
   getPaginatedEntities?(
     request?: GetPaginatedEntitiesRequest,
     options?: CatalogRequestOptions,
@@ -267,12 +266,8 @@ export type GetPaginatedEntitiesRequest =
 export type GetPaginatedEntitiesResponse = {
   entities: Entity[];
   totalItems: number;
-  next?(
-    request?: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'>,
-  ): Promise<GetPaginatedEntitiesResponse>;
-  prev?(
-    request?: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'>,
-  ): Promise<GetPaginatedEntitiesResponse>;
+  nextCursor?: string;
+  prevCursor?: string;
 };
 
 // @public

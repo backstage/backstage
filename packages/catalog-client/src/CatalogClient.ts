@@ -42,7 +42,6 @@ import {
   GetPaginatedEntitiesRequest,
   GetPaginatedEntitiesResponse,
   EntityFilterQuery,
-  GetPaginatedEntitiesCursorRequest,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { FetchApi } from './types/fetch';
@@ -247,18 +246,12 @@ export class CatalogClient implements CatalogApi {
     }
 
     const query = params.length ? `?${params.join('&')}` : '';
-    const { entities, totalItems, nextCursor, prevCursor } =
-      await this.requestRequired<{
-        entities: Entity[];
-        totalItems: number;
-        nextCursor?: string;
-        prevCursor?: string;
-      }>('GET', `/v2beta1/entities${query}`, options);
-
-    const next = this.getEntitiesFromCursor(nextCursor, options);
-    const prev = this.getEntitiesFromCursor(prevCursor, options);
-
-    return { entities, totalItems, next, prev };
+    return this.requestRequired<{
+      entities: Entity[];
+      totalItems: number;
+      nextCursor?: string;
+      prevCursor?: string;
+    }>('GET', `/v2beta1/entities${query}`, options);
   }
 
   /**
@@ -545,16 +538,5 @@ export class CatalogClient implements CatalogApi {
       }
     }
     return params;
-  }
-
-  private getEntitiesFromCursor(
-    cursor: string | undefined,
-    options?: CatalogRequestOptions,
-  ) {
-    if (!cursor) {
-      return undefined;
-    }
-    return (request: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'> = {}) =>
-      this.getPaginatedEntities!({ ...request, cursor }, options);
   }
 }
