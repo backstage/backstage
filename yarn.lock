@@ -3725,7 +3725,7 @@ __metadata:
     express: ^4.17.1
     fork-ts-checker-webpack-plugin: ^7.0.0-alpha.8
     fs-extra: 10.1.0
-    glob: ^8.0.3
+    glob: ^7.1.7
     global-agent: ^3.0.0
     handlebars: ^4.7.3
     html-webpack-plugin: ^5.3.1
@@ -5191,7 +5191,7 @@ __metadata:
     fast-json-stable-stringify: ^2.1.0
     fs-extra: 10.1.0
     git-url-parse: ^13.0.0
-    glob: ^8.0.3
+    glob: ^7.1.6
     knex: ^2.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
