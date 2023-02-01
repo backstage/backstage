@@ -22,7 +22,10 @@ import {
 import express, { Express, Router } from 'express';
 import request, { Response } from 'supertest';
 import { z } from 'zod';
-import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
+import {
+  createIsAuthorized,
+  createPermissionIntegrationRouter,
+} from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
 
 const mockGetResources: jest.MockedFunction<
@@ -36,6 +39,9 @@ const testPermission: Permission = createPermission({
   attributes: {},
 });
 
+const mockTestRule1Apply = jest
+  .fn()
+  .mockImplementation((_resource: any, _params) => true);
 const testRule1 = createPermissionRule({
   name: 'test-rule-1',
   description: 'Test rule 1',
@@ -44,15 +50,18 @@ const testRule1 = createPermissionRule({
     foo: z.string(),
     bar: z.number().describe('bar'),
   }),
-  apply: (_resource: any, _params) => true,
+  apply: mockTestRule1Apply,
   toQuery: _params => ({}),
 });
 
+const mockTestRule2Apply = jest
+  .fn()
+  .mockImplementation((_resource: any) => false);
 const testRule2 = createPermissionRule({
   name: 'test-rule-2',
   description: 'Test rule 2',
   resourceType: 'test-resource',
-  apply: (_resource: any) => false,
+  apply: mockTestRule2Apply,
   toQuery: () => ({}),
 });
 
@@ -601,5 +610,74 @@ describe('createPermissionIntegrationRouter', () => {
         ],
       });
     });
+  });
+});
+
+describe('createIsAuthorized', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return true in case of allowed decision', () => {
+    const isAuthorized = createIsAuthorized([testRule1, testRule2]);
+    expect(
+      isAuthorized(
+        {
+          result: AuthorizeResult.ALLOW,
+        },
+        {},
+      ),
+    ).toBe(true);
+
+    expect(mockTestRule1Apply).not.toHaveBeenCalled();
+    expect(mockTestRule2Apply).not.toHaveBeenCalled();
+  });
+  it('should return false in case of denied decision', () => {
+    const isAuthorized = createIsAuthorized([testRule1, testRule2]);
+    expect(
+      isAuthorized(
+        {
+          result: AuthorizeResult.DENY,
+        },
+        {},
+      ),
+    ).toBe(false);
+
+    expect(mockTestRule1Apply).not.toHaveBeenCalled();
+    expect(mockTestRule2Apply).not.toHaveBeenCalled();
+  });
+
+  it('should apply conditions to a resource in case of conditional decision', () => {
+    const isAuthorized = createIsAuthorized([testRule1, testRule2]);
+    expect(
+      isAuthorized(
+        {
+          pluginId: 'plugin',
+          resourceType: 'test-resource',
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            allOf: [
+              {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
+              },
+              {
+                rule: 'test-rule-2',
+                resourceType: 'test-resource',
+                params: {},
+              },
+            ],
+          },
+        },
+        {},
+      ),
+    ).toBe(false);
+
+    expect(mockTestRule1Apply).toHaveBeenCalledTimes(1);
+    expect(mockTestRule2Apply).toHaveBeenCalledTimes(1);
   });
 });
