@@ -36,8 +36,8 @@ import {
   Direction,
   EntityNode,
   EntityRelationsGraph,
-  RelationPairs,
 } from '../EntityRelationsGraph';
+import { EntityRelationsGraphProps } from '../EntityRelationsGraph/EntityRelationsGraph';
 
 const useStyles = makeStyles<Theme, { height: number | undefined }>(
   {
@@ -55,27 +55,19 @@ const useStyles = makeStyles<Theme, { height: number | undefined }>(
   { name: 'PluginCatalogGraphCatalogGraphCard' },
 );
 
-export const CatalogGraphCard = (props: {
-  variant?: InfoCardVariants;
-  relationPairs?: RelationPairs;
-  maxDepth?: number;
-  unidirectional?: boolean;
-  mergeRelations?: boolean;
-  kinds?: string[];
-  relations?: string[];
-  direction?: Direction;
-  height?: number;
-  title?: string;
-  zoom?: 'enabled' | 'disabled' | 'enable-on-click';
-}) => {
+export const CatalogGraphCard = (
+  props: Omit<EntityRelationsGraphProps, 'rootEntityNames'> & {
+    variant?: InfoCardVariants;
+    height?: number;
+    title?: string;
+  },
+) => {
   const {
     variant = 'gridItem',
     relationPairs = ALL_RELATION_PAIRS,
     maxDepth = 1,
     unidirectional = true,
     mergeRelations = true,
-    kinds,
-    relations,
     direction = Direction.LEFT_RIGHT,
     height,
     title = 'Relations',
@@ -133,12 +125,11 @@ export const CatalogGraphCard = (props: {
       }}
     >
       <EntityRelationsGraph
+        {...props}
         rootEntityNames={entityName}
         maxDepth={maxDepth}
         unidirectional={unidirectional}
         mergeRelations={mergeRelations}
-        kinds={kinds}
-        relations={relations}
         direction={direction}
         onNodeClick={onNodeClick}
         className={classes.graph}
