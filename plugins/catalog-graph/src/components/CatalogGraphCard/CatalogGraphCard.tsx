@@ -56,7 +56,10 @@ const useStyles = makeStyles<Theme, { height: number | undefined }>(
 );
 
 export const CatalogGraphCard = (
-  props: Omit<EntityRelationsGraphProps, 'rootEntityNames'> & {
+  props: Omit<
+    EntityRelationsGraphProps,
+    'rootEntityNames' | 'onNodeClick' | 'className'
+  > & {
     variant?: InfoCardVariants;
     height?: number;
     title?: string;
