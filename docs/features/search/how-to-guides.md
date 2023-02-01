@@ -235,6 +235,20 @@ export const YourSearchResultListItemExtension = plugin.provide(
 );
 ```
 
+If your list item accept props, you can extend the `SearchResultListItemExtensionProps` with your component specific props:
+
+```tsx
+export const YourSearchResultListItemExtension: (
+  props: SearchResultListItemExtensionProps<YourSearchResultListItemProps>,
+) => JSX.Element | null = plugin.provide(
+  createSearchResultListItemExtension({
+    name: 'YourSearchResultListItem',
+    component: () =>
+      import('./components').then(m => m.YourSearchResultListItem),
+  }),
+);
+```
+
 Additionally, you can define a predicate function that receives a result and returns whether your extension should be used to render it or not:
 
 ```tsx
