@@ -173,4 +173,12 @@ export const ProvidedApisCard: (props: {
 export const ProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
 }) => JSX.Element;
+
+// @public (undocumented)
+export const TrpcApiDefinitionWidget: React_2.FC<TrpcApiDefinitionWidgetProps>;
+
+// @public (undocumented)
+export type TrpcApiDefinitionWidgetProps = {
+  definition: string;
+};
 ```
