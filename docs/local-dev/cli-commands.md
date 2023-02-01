@@ -237,15 +237,15 @@ Options:
   -h, --help               display help for command
 ```
 
-These are the available `--select` options supported by the `create` command:
+These are the available `--select` options supported by the `new` command:
 
-| Create Option     | Description                                             | Example                        | Related                                                              |
-| ----------------- | ------------------------------------------------------- | ------------------------------ | -------------------------------------------------------------------- |
-| plugin            | Used to generate a default frontend plugin              | `packages/app`                 | [Create a Plugin](https://backstage.io/docs/plugins/create-a-plugin) |
-| backend-plugin    | Used to generate a backend-specific plugin              | `packages/backend`             | [Backend Plugin](https://backstage.io/docs/plugins/backend-plugin)   |
-| plugin-common     | Generates a plugin specific package to be shared amongst backend and frontend plugins | `@backstage/plugin-adr-common` |                                                                      |
-| web-library       | Placeholder                                             | `@backstage/version-bridge`    |                                                                      |
-| scaffolder-module | Placeholder                                             | Placeholder                    |                                                                      |
+| Create Option     | Description                                                                                                                                                              | Example                        | Related                                                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ | -------------------------------------------------------------------- |
+| plugin            | Generates a default frontend plugin                                                                                                                                      | `@backstage/plugin-catalog`    | [Create a Plugin](https://backstage.io/docs/plugins/create-a-plugin) |
+| backend-plugin    | Generates a backend-specific plugin                                                                                                                                      | `packages/catalog-backend`     | [Backend Plugin](https://backstage.io/docs/plugins/backend-plugin)   |
+| plugin-common     | Generates a plugin specific package to be shared amongst backend and frontend plugins                                                                                    | `@backstage/plugin-adr-common` |                                                                      |
+| web-library       | Generates a non-plugin specific library that other plugins can leverage. This is useful when you do not need a plugin as it reduces the amount of boiler code generated. | `@backstage/version-bridge`    |                                                                      |
+| scaffolder-module | Creates a new module that will contain custom actions for `@backstage/plugin-scaffolder-backend`                                                                         |                                |                                                                      |
 
 You may reference [Package Roles](http://localhost:3000/docs/local-dev/cli-build-system#package-roles) to understand how these align with role definitions.
 
