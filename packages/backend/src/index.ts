@@ -73,7 +73,6 @@ import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api';
-import { CatalogClient } from '@backstage/catalog-client';
 
 // Expose opentelemetry metrics using a Prometheus exporter on
 // http://localhost:9464/metrics . See prometheus.yml in packages/backend for
@@ -98,7 +97,6 @@ function makeCreateEnv(config: Config) {
   const identity = DefaultIdentityClient.create({
     discovery,
   });
-  const client = new CatalogClient({ discoveryApi: discovery });
 
   const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
 
@@ -114,7 +112,6 @@ function makeCreateEnv(config: Config) {
       logger,
       cache,
       database,
-      client,
       config,
       reader,
       eventBroker,
