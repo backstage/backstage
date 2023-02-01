@@ -27,7 +27,8 @@ import { graphQlVoyagerApiRef } from '../../lib/api';
 import useAsync from 'react-use/lib/useAsync';
 import { GraphQLVoyagerBrowser } from '../GraphQLVoyagerBrowser';
 
-type GraphQLVoyagerPageProps = {
+/** @public */
+export type GraphQLVoyagerPageProps = {
   title?: string;
 };
 

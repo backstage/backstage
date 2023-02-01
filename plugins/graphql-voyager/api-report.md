@@ -43,7 +43,14 @@ export class GraphQLVoyagerEndpoints implements GraphQLVoyagerApi {
 }
 
 // @public (undocumented)
-export const GraphqlVoyagerPage: () => JSX.Element;
+export const GraphqlVoyagerPage: (
+  props: GraphQLVoyagerPageProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export type GraphQLVoyagerPageProps = {
+  title?: string;
+};
 
 // @public (undocumented)
 export const graphqlVoyagerPlugin: BackstagePlugin<
@@ -58,7 +65,7 @@ export const graphqlVoyagerPlugin: BackstagePlugin<
 export const introspectionQuery: string;
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: (props: GraphQLVoyagerPageProps) => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
