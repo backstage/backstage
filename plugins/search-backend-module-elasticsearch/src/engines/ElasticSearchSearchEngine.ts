@@ -408,6 +408,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   }
 }
 
+/**
+ * @public
+ */
 export function decodePageCursor(pageCursor?: string): { page: number } {
   if (!pageCursor) {
     return { page: 0 };
