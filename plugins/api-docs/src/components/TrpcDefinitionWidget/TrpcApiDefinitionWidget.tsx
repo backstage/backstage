@@ -33,7 +33,7 @@ export const TrpcApiDefinitionWidget: React.FC<TrpcApiDefinitionWidgetProps> = (
     <CodeSnippet
       customStyle={{ backgroundColor: theme.palette.background.default }}
       text={definition}
-      language="ts"
+      language="typescript"
       showCopyCodeButton
     />
   );
