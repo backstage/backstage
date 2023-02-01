@@ -8225,6 +8225,7 @@ __metadata:
     cross-fetch: ^3.1.5
     git-url-parse: ^13.0.0
     msw: ^0.49.0
+    photoswipe: ^5.3.5
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -31427,6 +31428,13 @@ __metadata:
     createdbjs: createdb.js
     dropdbjs: dropdb.js
   checksum: 764644cde13431070e4e3558ed08b67fe73cb92d5573d0c0017f76b76cd85b25aecdf3fa948e6d50ceabf315f50ed2cfe52275d04321c274f1a00c26fe8485b4
+  languageName: node
+  linkType: hard
+
+"photoswipe@npm:^5.3.5":
+  version: 5.3.5
+  resolution: "photoswipe@npm:5.3.5"
+  checksum: bd3eafebffc114210b8e5403746b48a9bfe436cca05a65f8d5efd6eacea785a51f0f124d7326c8f651d754d76124c9768a920383843c4a619da582a86e535b27
   languageName: node
   linkType: hard
 
