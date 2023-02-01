@@ -131,7 +131,7 @@ export async function createRouter(
         // TODO(freben): encode the pageInfo in the response
         res.json(entities);
       })
-      .get('/v2beta1/entities', async (req, res) => {
+      .get('/v2/entities', async (req, res) => {
         const response = await entitiesCatalog.paginatedEntities({
           ...parsePaginatedEntitiesParams(req.query),
           authorizationToken: getBearerToken(req.header('authorization')),
