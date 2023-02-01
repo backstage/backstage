@@ -50,7 +50,6 @@ export interface ToolSearchResultListItemProps {
   result?: IndexableDocument;
   highlight?: ResultHighlight;
   rank?: number;
-  toggleModal?: () => void;
 }
 
 /**  @public */
@@ -94,8 +93,9 @@ export function ToolSearchResultListItem(props: ToolSearchResultListItemProps) {
           }
         />
         <Box>
-          {result.tags &&
-            result.tags.map((tag: string) => <Chip label={tag} size="small" />)}
+          {result.tags?.map((tag: string) => (
+            <Chip label={tag} size="small" />
+          ))}
         </Box>
       </div>
     </>

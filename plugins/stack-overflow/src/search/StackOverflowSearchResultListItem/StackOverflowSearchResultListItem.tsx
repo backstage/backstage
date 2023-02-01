@@ -17,7 +17,14 @@
 import React from 'react';
 import _unescape from 'lodash/unescape';
 import { Link } from '@backstage/core-components';
-import { ListItemText, ListItemIcon, Box, Chip } from '@material-ui/core';
+import {
+  Divider,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Box,
+  Chip,
+} from '@material-ui/core';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
@@ -45,44 +52,47 @@ export const StackOverflowSearchResultListItem = (
 
   return (
     <>
-      {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
-      <Box flexWrap="wrap">
-        <ListItemText
-          primaryTypographyProps={{ variant: 'h6' }}
-          primary={
-            <Link to={location} noTrack onClick={handleClick}>
-              {highlight?.fields?.title ? (
-                <HighlightedSearchResultText
-                  text={highlight.fields.title}
-                  preTag={highlight.preTag}
-                  postTag={highlight.postTag}
-                />
+      <ListItem alignItems="center">
+        {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
+        <Box flexWrap="wrap">
+          <ListItemText
+            primaryTypographyProps={{ variant: 'h6' }}
+            primary={
+              <Link to={location} noTrack onClick={handleClick}>
+                {highlight?.fields?.title ? (
+                  <HighlightedSearchResultText
+                    text={highlight.fields.title}
+                    preTag={highlight.preTag}
+                    postTag={highlight.postTag}
+                  />
+                ) : (
+                  _unescape(title)
+                )}
+              </Link>
+            }
+            secondary={
+              highlight?.fields?.text ? (
+                <>
+                  Author:{' '}
+                  <HighlightedSearchResultText
+                    text={highlight.fields.text}
+                    preTag={highlight.preTag}
+                    postTag={highlight.postTag}
+                  />
+                </>
               ) : (
-                _unescape(title)
-              )}
-            </Link>
-          }
-          secondary={
-            highlight?.fields?.text ? (
-              <>
-                Author:{' '}
-                <HighlightedSearchResultText
-                  text={highlight.fields.text}
-                  preTag={highlight.preTag}
-                  postTag={highlight.postTag}
-                />
-              </>
-            ) : (
-              `Author: ${text}`
-            )
-          }
-        />
-        <Chip label={`Answer(s): ${answers}`} size="small" />
-        {tags &&
-          tags.map((tag: string) => (
-            <Chip key={tag} label={`Tag: ${tag}`} size="small" />
-          ))}
-      </Box>
+                `Author: ${text}`
+              )
+            }
+          />
+          <Chip label={`Answer(s): ${answers}`} size="small" />
+          {tags &&
+            tags.map((tag: string) => (
+              <Chip key={tag} label={`Tag: ${tag}`} size="small" />
+            ))}
+        </Box>
+      </ListItem>
+      <Divider />
     </>
   );
 };
