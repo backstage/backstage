@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import { createDevApp } from '@backstage/dev-utils';
-import { lighthousePlugin } from '../src/plugin';
-import { lighthouseApiRef } from '../src';
-import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
+import {
+  CatalogClient,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/catalog-client';
 
-createDevApp()
-  .registerPlugin(lighthousePlugin)
-  .registerApi({
-    api: lighthouseApiRef,
-    deps: {},
-    factory: () => new LighthouseRestApi('http://localhost:3003'),
-  })
-  .render();
+export async function loadLighthouseEntities(catalogClient: CatalogClient) {
+  const filter: Record<string, symbol | string> = {
+    kind: 'Component',
+    'spec.type': 'website',
+    ['lighthouse.com/website-url']: CATALOG_FILTER_EXISTS,
+  };
+
+  return await catalogClient.getEntities({
+    filter: [filter],
+  });
+}

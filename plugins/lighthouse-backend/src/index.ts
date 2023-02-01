@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-import { createDevApp } from '@backstage/dev-utils';
-import { lighthousePlugin } from '../src/plugin';
-import { lighthouseApiRef } from '../src';
-import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
-
-createDevApp()
-  .registerPlugin(lighthousePlugin)
-  .registerApi({
-    api: lighthouseApiRef,
-    deps: {},
-    factory: () => new LighthouseRestApi('http://localhost:3003'),
-  })
-  .render();
+export * from './service/plugin';

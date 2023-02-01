@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { createDevApp } from '@backstage/dev-utils';
-import { lighthousePlugin } from '../src/plugin';
-import { lighthouseApiRef } from '../src';
-import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
+import { createScheduler } from '@backstage/plugin-lighthouse-backend';
+import { PluginEnvironment } from '../types';
+import { CatalogClient } from '@backstage/catalog-client';
 
-createDevApp()
-  .registerPlugin(lighthousePlugin)
-  .registerApi({
-    api: lighthouseApiRef,
-    deps: {},
-    factory: () => new LighthouseRestApi('http://localhost:3003'),
-  })
-  .render();
+export default async function createPlugin(env: PluginEnvironment) {
+  const { logger, scheduler, config } = env;
+
+  const catalogClient = new CatalogClient({
+    discoveryApi: env.discovery,
+  });
+
+  await createScheduler({ logger, scheduler, config, catalogClient });
+}

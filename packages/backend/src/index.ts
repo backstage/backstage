@@ -62,6 +62,7 @@ import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
 import playlist from './plugins/playlist';
 import adr from './plugins/adr';
+import lighthouse from './plugins/lighthouse';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -148,6 +149,7 @@ async function main() {
   const playlistEnv = useHotMemoize(module, () => createEnv('playlist'));
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
   const exploreEnv = useHotMemoize(module, () => createEnv('explore'));
+  const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
 
   const eventBasedEntityProviders = await catalogEventBasedProviders(
     catalogEnv,
@@ -179,6 +181,8 @@ async function main() {
   apiRouter.use('/explore', await explore(exploreEnv));
   apiRouter.use('/adr', await adr(adrEnv));
   apiRouter.use(notFoundHandler());
+
+  await lighthouse(lighthouseEnv);
 
   const service = createServiceBuilder(module)
     .loadConfig(config)

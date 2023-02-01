@@ -49,6 +49,7 @@
     "@backstage/plugin-jenkins-backend": "workspace:^",
     "@backstage/plugin-kafka-backend": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
+    "@backstage/plugin-lighthouse-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",

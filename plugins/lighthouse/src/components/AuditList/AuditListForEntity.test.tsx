@@ -19,10 +19,10 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import {
-  lighthouseApiRef,
   LighthouseRestApi,
   WebsiteListResponse,
-} from '../../api';
+} from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import * as data from '../../__fixtures__/website-list-response.json';
 import { AuditListForEntity } from './AuditListForEntity';
