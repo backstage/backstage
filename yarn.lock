@@ -12577,9 +12577,9 @@ __metadata:
   linkType: hard
 
 "@opentelemetry/api@npm:^1.0.1, @opentelemetry/api@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@opentelemetry/api@npm:1.3.0"
-  checksum: 33d284b67b6fab20ff72961d289c6487d3cb27caf7489f0231d7030551f82871e081e744b0390751d8aef3bf1614bd79f854788901a354e15274f552581fb374
+  version: 1.4.0
+  resolution: "@opentelemetry/api@npm:1.4.0"
+  checksum: 8dc522194e20d2e8aa6cac155dbce19d3fc9cfac59e953ece1064158c6348ccd9560ee99d2f2381e82c2f8c9a129b57fa7b640027383315504de1fa712b6d7f1
   languageName: node
   linkType: hard
 
