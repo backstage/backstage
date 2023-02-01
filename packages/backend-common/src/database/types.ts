@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
+import {
+  LifecycleService,
+  PluginMetadataService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { Knex } from 'knex';
 
 export type { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
+
+/**
+ * Service dependencies for `PluginDatabaseManager`.
+ *
+ * @public
+ */
+export type PluginDatabaseDependencies = {
+  lifecycle: LifecycleService;
+  pluginMetadata: PluginMetadataService;
+};
 
 /**
  * DatabaseConnector manages an underlying Knex database driver.
@@ -26,7 +40,11 @@ export interface DatabaseConnector {
   /**
    * createClient provides an instance of a knex database connector.
    */
-  createClient(dbConfig: Config, overrides?: Partial<Knex.Config>): Knex;
+  createClient(
+    dbConfig: Config,
+    overrides?: Partial<Knex.Config>,
+    deps?: PluginDatabaseDependencies,
+  ): Knex;
   /**
    * createNameOverride provides a partial knex config sufficient to override a
    * database name.

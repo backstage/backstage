@@ -3411,6 +3411,7 @@ __metadata:
   resolution: "@backstage/backend-common@workspace:packages/backend-common"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-dev-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -3507,7 +3508,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-dev-utils@workspace:packages/backend-dev-utils":
+"@backstage/backend-dev-utils@workspace:^, @backstage/backend-dev-utils@workspace:packages/backend-dev-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-dev-utils@workspace:packages/backend-dev-utils"
   dependencies:
