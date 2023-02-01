@@ -20,11 +20,10 @@ import {
   TemplateEntityStepV1beta3,
   TemplateParameter,
 } from '@backstage/plugin-scaffolder-common';
-import { TemplateProperty } from '@backstage/plugin-scaffolder-common';
 import { z } from 'zod';
 
 export const createScaffolderStepPermissionRule = makeCreatePermissionRule<
-  TemplateEntityStepV1beta3 | TemplateProperty | TemplateParameter,
+  TemplateEntityStepV1beta3 | TemplateParameter,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
 >();
@@ -37,7 +36,7 @@ const hasTag = createScaffolderStepPermissionRule({
     tag: z.string().describe('Name of the tag to match on'),
   }),
   apply: (resource, { tag }) => {
-    return resource.metadata?.tags?.includes(tag) ?? false;
+    return resource['backstage:accessControl']?.tags?.includes(tag) ?? false;
   },
   toQuery: () => ({}),
 });

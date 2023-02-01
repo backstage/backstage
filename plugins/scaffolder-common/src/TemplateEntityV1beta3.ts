@@ -76,13 +76,13 @@ export interface TemplateEntityStepV1beta3 extends JsonObject {
   action: string;
   input?: JsonObject;
   if?: string | boolean;
-  metadata?: TemplateSpecValuesMetadata;
+  'backstage:accessControl'?: TemplateAccessControl;
 }
 
 /**
  * TODO
  */
-export interface TemplateSpecValuesMetadata extends JsonObject {
+export interface TemplateAccessControl extends JsonObject {
   tags?: string[];
 }
 
@@ -90,15 +90,8 @@ export interface TemplateSpecValuesMetadata extends JsonObject {
  * TODO
  */
 export interface TemplateParameter extends JsonObject {
-  metadata?: TemplateSpecValuesMetadata;
-  properties?: { [name: string]: TemplateProperty };
-}
-
-/**
- * TODO
- */
-export interface TemplateProperty extends JsonObject {
-  metadata?: TemplateSpecValuesMetadata;
+  'backstage:accessControl'?: TemplateAccessControl;
+  properties?: { [name: string]: JsonObject };
 }
 
 const validator = entityKindSchemaValidator(schema);
