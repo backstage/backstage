@@ -17,7 +17,6 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 
-import { ListItem } from '@material-ui/core';
 import {
   TestApiProvider,
   renderWithEffects,

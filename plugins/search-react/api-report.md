@@ -55,6 +55,7 @@ export type DefaultResultListItemProps = {
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;
+  toggleModal?: () => void;
 };
 
 // @public (undocumented)

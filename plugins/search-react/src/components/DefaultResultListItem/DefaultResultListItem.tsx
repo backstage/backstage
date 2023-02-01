@@ -26,7 +26,7 @@ import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 
 /**
- * Props for {@link DefaultResultListItemComponent}
+ * Props for {@link DefaultResultListItem}
  *
  * @public
  */

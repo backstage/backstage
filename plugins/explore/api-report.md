@@ -139,5 +139,7 @@ export interface ToolSearchResultListItemProps {
   rank?: number;
   // (undocumented)
   result?: IndexableDocument;
+  // (undocumented)
+  toggleModal?: () => void;
 }
 ```
