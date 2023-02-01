@@ -503,7 +503,7 @@ export interface CatalogApi {
    * @param request - Request parameters
    * @param options - Additional options
    */
-  getPaginatedEntities?(
+  getPaginatedEntities(
     request?: GetPaginatedEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetPaginatedEntitiesResponse>;
