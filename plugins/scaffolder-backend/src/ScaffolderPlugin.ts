@@ -94,6 +94,7 @@ export const scaffolderPlugin = createBackendPlugin(
           database,
           httpRouter,
           catalogClient,
+          permissions,
         }) {
           const {
             additionalTemplateFilters,
@@ -131,6 +132,7 @@ export const scaffolderPlugin = createBackendPlugin(
             taskWorkers,
             additionalTemplateFilters,
             additionalTemplateGlobals,
+            permissionApi: permissions,
           });
           httpRouter.use(router);
         },
