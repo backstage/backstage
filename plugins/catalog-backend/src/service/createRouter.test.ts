@@ -136,7 +136,7 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
-  describe('GET /v2beta1/entities', () => {
+  describe('GET /v2/entities', () => {
     it('happy path: lists entities', async () => {
       const entities: Entity[] = [
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
@@ -148,7 +148,7 @@ describe('createRouter readonly disabled', () => {
         nextCursor: 'something',
       });
 
-      const response = await request(app).get('/v2beta1/entities');
+      const response = await request(app).get('/v2/entities');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         entities,
@@ -163,7 +163,7 @@ describe('createRouter readonly disabled', () => {
         totalItems: 0,
       });
       const response = await request(app).get(
-        '/v2beta1/entities?filter=a=1,a=2,b=3&filter=c=4&sortField=metadata.name,asc&sortField=metadata.uid,desc',
+        '/v2/entities?filter=a=1,a=2,b=3&filter=c=4&sortField=metadata.name,asc&sortField=metadata.uid,desc',
       );
 
       expect(response.status).toEqual(200);
@@ -198,9 +198,7 @@ describe('createRouter readonly disabled', () => {
         nextCursor: 'next',
       });
 
-      const response = await request(app).get(
-        '/v2beta1/entities?cursor=something',
-      );
+      const response = await request(app).get('/v2/entities?cursor=something');
       expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledWith({
         cursor: 'something',
