@@ -12564,15 +12564,15 @@ __metadata:
   linkType: hard
 
 "@opensearch-project/opensearch@npm:^2.0.0":
-  version: 2.1.0
-  resolution: "@opensearch-project/opensearch@npm:2.1.0"
+  version: 2.2.0
+  resolution: "@opensearch-project/opensearch@npm:2.2.0"
   dependencies:
     aws4: ^1.11.0
     debug: ^4.3.1
-    hpagent: ^0.1.1
+    hpagent: ^1.2.0
     ms: ^2.1.3
     secure-json-parse: ^2.4.0
-  checksum: 900b90f35d5b960fe60979168e21e9e5b6089a8e3dd9341b5d86c7f7aa7671cbfd937fbec311a6cfe195c113db755e699d3678ee0cbf454e9a9de1189d8cc935
+  checksum: cceb5bb2c194a7d4bfab3c1b4a3230ea1457ae8976f39bb9e0c5e0067dc450a418a4649536988f0d48a746d7d3ed2002c32d9fde48dfc3112158e964bafa6e76
   languageName: node
   linkType: hard
 
@@ -24644,6 +24644,13 @@ __metadata:
   version: 0.1.2
   resolution: "hpagent@npm:0.1.2"
   checksum: 1918518ab937d9fa615a47b94489e23662547bc1edf27069ee9bf40bfefb94da65eb142b6f42336b4b0752fce87f66c284d92b97340fd2a90b24aa3616b5450d
+  languageName: node
+  linkType: hard
+
+"hpagent@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "hpagent@npm:1.2.0"
+  checksum: b029da695edae438cee4da2a437386f9db4ac27b3ceb7306d02e1b586c9c194741ed2e943c8a222e0cfefaf27ee3f863aca7ba1721b0950a2a19bf25bc0d85e2
   languageName: node
   linkType: hard
 
