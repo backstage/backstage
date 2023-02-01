@@ -17,17 +17,17 @@
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { Button } from './Button';
+import { LinkButton } from './LinkButton';
 import { Route, Routes } from 'react-router-dom';
 
-describe('<Button />', () => {
+describe('<LinkButton />', () => {
   it('navigates using react-router', async () => {
     const testString = 'This is test string';
-    const buttonLabel = 'Navigate!';
+    const linkButtonLabel = 'Navigate!';
     const { getByText } = render(
       wrapInTestApp(
         <>
-          <Button to="/test">{buttonLabel}</Button>
+          <LinkButton to="/test">{linkButtonLabel}</LinkButton>
           <Routes>
             <Route path="/test" element={<p>{testString}</p>} />
           </Routes>
@@ -37,7 +37,7 @@ describe('<Button />', () => {
 
     expect(() => getByText(testString)).toThrow();
     await act(async () => {
-      fireEvent.click(getByText(buttonLabel));
+      fireEvent.click(getByText(linkButtonLabel));
     });
     expect(getByText(testString)).toBeInTheDocument();
   });

@@ -45,11 +45,17 @@ entries.push({
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
     },
   ],
-  url: '#',
+  url: 'https://www.javascript.com/',
   key: 'javascript',
   id: 'javascript',
   title: 'JavaScript',
   quadrant: 'languages',
+  links: [
+    {
+      url: 'https://www.typescriptlang.org/',
+      title: 'TypeScript',
+    },
+  ],
   description:
     'Excepteur **sint** occaecat *cupidatat* non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n```ts\nconst x = "3";\n```\n',
 });

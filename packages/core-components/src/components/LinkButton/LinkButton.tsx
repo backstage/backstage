@@ -21,14 +21,14 @@ import React from 'react';
 import { Link, LinkProps } from '../Link';
 
 /**
- * Properties for {@link Button}
+ * Properties for {@link LinkButton}
  *
  * @public
  * @remarks
  *
  * See {@link https://v4.mui.com/api/button/#props | Material-UI Button Props} for all properties
  */
-export type ButtonProps = MaterialButtonProps &
+export type LinkButtonProps = MaterialButtonProps &
   Omit<LinkProps, 'variant' | 'color'>;
 
 /**
@@ -43,9 +43,19 @@ const LinkWrapper = React.forwardRef<any, LinkProps>((props, ref) => (
  *
  * @public
  * @remarks
- *
- * Makes the Button to utilize react-router
  */
-export const Button = React.forwardRef<any, ButtonProps>((props, ref) => (
+export const LinkButton = React.forwardRef<any, ButtonProps>((props, ref) => (
   <MaterialButton ref={ref} component={LinkWrapper} {...props} />
 )) as (props: ButtonProps) => JSX.Element;
+
+/**
+ * @public
+ * @deprecated use LinkButton instead
+ */
+export const Button = LinkButton;
+
+/**
+ * @public
+ * @deprecated use LinkButtonProps instead
+ */
+export type ButtonProps = LinkButtonProps;

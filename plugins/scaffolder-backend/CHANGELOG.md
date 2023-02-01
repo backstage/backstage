@@ -1,5 +1,30 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.11.0-next.1
+
+### Minor Changes
+
+- 127154930f: Renamed the export `scaffolderCatalogModule` to `catalogModuleTemplateKind` in order to follow the new recommended naming patterns of backend system items. This is technically a breaking change but in an alpha export, so take care to change your imports if you have already migrated to the new backend system.
+
+### Patch Changes
+
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2-next.1
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.1
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-scaffolder-node@0.1.0-next.1
+
 ## 1.11.0-next.0
 
 ### Minor Changes

@@ -16,7 +16,7 @@
 
 import Typography from '@material-ui/core/Typography';
 import React, { ComponentClass, Component, ErrorInfo } from 'react';
-import { Button } from '../../components/Button';
+import { Button } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
 
 type SlackChannel = {

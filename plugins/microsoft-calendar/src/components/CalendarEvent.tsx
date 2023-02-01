@@ -136,7 +136,12 @@ export const CalendarEvent = ({ event }: { event: MicrosoftCalendarEvent }) => {
               noTrack
             >
               {/* we can use onlineMeetingProvider to show icon accordingly */}
-              <img height={32} width={32} src={webcamIcon} alt="Online Meeting link" />
+              <img
+                height={32}
+                width={32}
+                src={webcamIcon}
+                alt="Online Meeting link"
+              />
             </Link>
           </Tooltip>
         )}

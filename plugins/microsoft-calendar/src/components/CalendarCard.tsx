@@ -24,7 +24,7 @@ import PrevIcon from '@material-ui/icons/NavigateBefore';
 import NextIcon from '@material-ui/icons/NavigateNext';
 
 import { useCalendarsQuery, useEventsQuery, useSignIn } from '../hooks';
-import calendarIcon from '../icons/calendar.svg'
+import calendarIcon from '../icons/calendar.svg';
 import { CalendarEvent } from './CalendarEvent';
 import { CalendarSelect } from './CalendarSelect';
 import { SignInContent } from './SignInContent';

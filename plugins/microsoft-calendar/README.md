@@ -4,9 +4,11 @@ Welcome to the microsoft-calendar plugin!
 
 _This plugin was created through the Backstage CLI_
 
-## Getting started
+You can use this plugin by import MicrosoftCalendar from "@internal/plugin-microsoft-calendar"
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/microsoft-calendar](http://localhost:3000/microsoft-calendar).
+> import { MicrosoftCalendar } from "@internal/plugin-microsoft-calendar"
+
+![MicrosoftCalendar plugin screenshot](./docs/microsoft-calendar-plugin.png)
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.

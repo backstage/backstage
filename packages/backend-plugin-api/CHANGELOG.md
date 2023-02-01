@@ -1,5 +1,22 @@
 # @backstage/backend-plugin-api
 
+## 0.3.2-next.1
+
+### Patch Changes
+
+- ae88f61e00: The `register` methods passed to `createBackendPlugin` and `createBackendModule`
+  now have dedicated `BackendPluginRegistrationPoints` and
+  `BackendModuleRegistrationPoints` arguments, respectively. This lets us make it
+  clear on a type level that it's not possible to pass in extension points as
+  dependencies to plugins (should only ever be done for modules). This has no
+  practical effect on code that was already well behaved.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.3.2-next.0
 
 ### Patch Changes

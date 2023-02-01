@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.1.0-next.1
+
+### Patch Changes
+
+- 04f717a8e1: `scaffolder/next`: bump `react-jsonschema-form` libraries to `v5-stable`
+- 346d6b6630: Upgrade `@rjsf` version 5 dependencies to `beta.18`
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+
 ## 1.1.0-next.0
 
 ### Minor Changes
