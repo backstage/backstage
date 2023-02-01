@@ -58,7 +58,7 @@ export interface CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  getPaginatedEntities?(
+  getPaginatedEntities(
     request?: GetPaginatedEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetPaginatedEntitiesResponse>;
@@ -128,7 +128,7 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  getPaginatedEntities?(
+  getPaginatedEntities(
     request?: GetPaginatedEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetPaginatedEntitiesResponse>;

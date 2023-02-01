@@ -207,7 +207,7 @@ export class CatalogClient implements CatalogApi {
   /**
    * {@inheritdoc CatalogApi.getPaginatedEntities}
    */
-  async getPaginatedEntities?(
+  async getPaginatedEntities(
     request: GetPaginatedEntitiesRequest = {},
     options?: CatalogRequestOptions,
   ): Promise<GetPaginatedEntitiesResponse> {
