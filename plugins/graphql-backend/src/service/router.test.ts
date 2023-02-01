@@ -17,18 +17,18 @@ import { createRouter } from './router';
 import supertest from 'supertest';
 import { createLogger } from 'winston';
 import express from 'express';
-import { CatalogClient } from '@backstage/catalog-client';
+import { ConfigReader } from '@backstage/config';
 
 describe('Router', () => {
   describe('/health', () => {
     it('should return ok', async () => {
-      const catalog = new CatalogClient({
-        discoveryApi: { getBaseUrl: async () => 'lol' },
+      const config = new ConfigReader({
+        backend: { baseUrl: 'http://localhost:7007' },
       });
 
       const router = await createRouter({
         logger: createLogger(),
-        catalog,
+        config,
       });
       const app = express().use(router);
 

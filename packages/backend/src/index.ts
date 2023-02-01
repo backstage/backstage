@@ -68,7 +68,6 @@ import linguist from './plugins/linguist';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import { CatalogClient } from '@backstage/catalog-client';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -85,7 +84,6 @@ function makeCreateEnv(config: Config) {
   const identity = DefaultIdentityClient.create({
     discovery,
   });
-  const client = new CatalogClient({ discoveryApi: discovery });
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -99,7 +97,6 @@ function makeCreateEnv(config: Config) {
       logger,
       cache,
       database,
-      client,
       config,
       reader,
       discovery,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, SingleHostDiscovery } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -33,11 +33,12 @@ import {
 import { useGraphQLModules } from '@envelop/graphql-modules';
 import { useDataLoader } from '@envelop/dataloader';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 
 /** @public */
 export interface RouterOptions {
+  config: Config;
   logger: Logger;
-  catalog: CatalogClient;
   modules?: Module[];
   plugins?: Plugin[];
   loader?: () => DataLoader<string, any>;
@@ -46,16 +47,23 @@ export interface RouterOptions {
 
 /** @public */
 export async function createRouter({
+  config,
   logger,
-  catalog,
   modules,
   plugins,
-  loader,
+  loader: customLoader,
   refToId,
 }: RouterOptions): Promise<express.Router> {
   let yoga: YogaServerInstance<any, any> | null = null;
 
   const application = createGraphQLApp({ modules, logger });
+  const loader =
+    customLoader ??
+    (() => {
+      const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalog = new CatalogClient({ discoveryApi: discovery });
+      return () => createLoader(catalog);
+    })();
 
   const router = Router();
 
@@ -79,7 +87,7 @@ export async function createRouter({
       yoga = createYoga({
         plugins: [
           useGraphQLModules(application),
-          useDataLoader('loader', loader ?? (() => createLoader(catalog))),
+          useDataLoader('loader', loader),
           useExtendContext(() => ({ refToId })),
           ...(plugins ?? []),
         ],

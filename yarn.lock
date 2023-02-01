@@ -6466,6 +6466,7 @@ __metadata:
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/plugin-graphql-catalog": "workspace:^"
     "@backstage/plugin-graphql-common": "workspace:^"
     "@envelop/dataloader": ^4.0.4
@@ -10720,18 +10721,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:8.3.15, @graphql-tools/merge@npm:^8.3.15":
-  version: 8.3.15
-  resolution: "@graphql-tools/merge@npm:8.3.15"
-  dependencies:
-    "@graphql-tools/utils": 9.1.4
-    tslib: ^2.4.0
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 7823d3b3a2bb7a661826eb8fce8a4fcb17439224818aa08ca814d7b25324b66b790cf8e7fa083dfa9f41b2213355fb1f0db88d1e7334788347a6d69c8f5555e9
-  languageName: node
-  linkType: hard
-
 "@graphql-tools/merge@npm:8.3.6":
   version: 8.3.6
   resolution: "@graphql-tools/merge@npm:8.3.6"
@@ -10744,7 +10733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:^8.2.6":
+"@graphql-tools/merge@npm:^8.2.6, @graphql-tools/merge@npm:^8.3.15":
   version: 8.3.16
   resolution: "@graphql-tools/merge@npm:8.3.16"
   dependencies:
@@ -10837,7 +10826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:9.0.14":
+"@graphql-tools/schema@npm:9.0.14, @graphql-tools/schema@npm:^9.0.0, @graphql-tools/schema@npm:^9.0.13":
   version: 9.0.14
   resolution: "@graphql-tools/schema@npm:9.0.14"
   dependencies:
@@ -10848,20 +10837,6 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: ae958892363fe8b1715a9fd3c4bdb56d0d5d429693dbb9774ce930d104ed5a7c94db3c41c12d91fd930bf90ab186337d3ba660e765a99a98bde892f0d2dcf40e
-  languageName: node
-  linkType: hard
-
-"@graphql-tools/schema@npm:^9.0.0, @graphql-tools/schema@npm:^9.0.13":
-  version: 9.0.13
-  resolution: "@graphql-tools/schema@npm:9.0.13"
-  dependencies:
-    "@graphql-tools/merge": 8.3.15
-    "@graphql-tools/utils": 9.1.4
-    tslib: ^2.4.0
-    value-or-promise: 1.0.12
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: fa5c5033c79e3ab210207c68bf80729448f0ae0bf071e029a218043d952dec8352b0d4ad467ca789a08e292d60c1ee111d266a2193bd50759c9eb82e8f9ad586
   languageName: node
   linkType: hard
 
@@ -38412,7 +38387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"value-or-promise@npm:1.0.12, value-or-promise@npm:^1.0.11":
+"value-or-promise@npm:^1.0.11":
   version: 1.0.12
   resolution: "value-or-promise@npm:1.0.12"
   checksum: f53a66c75b7447c90bbaf946a757ca09c094629cb80ba742f59c980ec3a69be0a385a0e75505dedb4e757862f1a994ca4beaf083a831f24d3ffb3d4bb18cd1e1

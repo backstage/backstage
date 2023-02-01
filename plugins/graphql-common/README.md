@@ -24,29 +24,38 @@ It includes the following features,
 
 ## Getting started
 
-The simplest way to start is use [`@backstage/plugin-graphql-backend`](https://github.com/backstage/backstage/tree/master/plugins/graphql-backend) instead.
+The simplest way to start is just use [`@backstage/plugin-graphql-backend`](https://github.com/backstage/backstage/tree/master/plugins/graphql-backend) instead.
 
 Otherwise you'll need to create a router with GraphQL server. The minimal setup might be:
 
 ```ts
 // packages/backend/src/plugins/graphql.ts
 import * as graphql from 'graphql';
-import DataLoader from 'dataloader';
 import { graphqlHTTP } from 'express-graphql';
+import { Config } from '@backstage/config';
+import { CatalogClient } from '@backstage/catalog-client';
+import { SingleHostDiscovery } from '@backstage/backend-common';
 import { createGraphQLApp } from '@backstage/plugin-graphql-common';
+import { createLoader } from '@backstage/plugin-graphql-catalog';
 import { envelop, useEngine } from '@envelop/core';
 import { useDataLoader } from '@envelop/dataloader';
 import { useGraphQLModules } from '@envelop/graphql-modules';
-import { Module } from 'graphql-modules';
 import { Router } from 'express';
 
 interface PluginEnvironment {
-  loader: () => DataLoader<any, any>;
-  modules?: Module[];
+  config: Config;
 }
 
 export default function createRouter(env: PluginEnvironment): Router {
-  const application = createGraphQLApp({ modules: env.modules });
+  const discovery = SingleHostDiscovery.fromConfig(config);
+  const catalog = new CatalogClient({ discoveryApi: discovery });
+  const loader = () => createLoader(catalog);
+
+  const application = createGraphQLApp({
+    modules: [
+      /* ... Your GraphQL modules ... */
+    ],
+  });
   const run = envelop({
     plugins: [
       useEngine(graphql),
@@ -133,7 +142,6 @@ export const myModule = createModule({
 ```ts
 // packages/backend/src/plugins/graphql.ts
 import { createRouter } from '@backstage/plugin-graphql-backend';
-import { Catalog } from '@backstage/plugin-graphql-catalog';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { MyModule } from '../modules/my-module/my-module';
@@ -143,8 +151,8 @@ export default async function createPlugin(
 ): Promise<Router> {
   return await createRouter({
     logger: env.logger,
-    catalog: env.client,
-    modules: [Catalog, MyModule],
+    config: env.config,
+    modules: [MyModule],
   });
 }
 ```

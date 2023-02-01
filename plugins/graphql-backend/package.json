@@ -36,6 +36,7 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/plugin-graphql-catalog": "workspace:^",
     "@backstage/plugin-graphql-common": "workspace:^",
     "@envelop/dataloader": "^4.0.4",
