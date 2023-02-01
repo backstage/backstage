@@ -31,5 +31,5 @@ export type {
   TemplateEntityStepV1beta3,
   TemplateParameter,
   TemplateProperty,
-  TemplateSpecValuesMetadata,
+  TemplateAccessControl as TemplateSpecValuesMetadata,
 } from './TemplateEntityV1beta3';
