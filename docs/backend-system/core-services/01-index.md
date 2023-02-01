@@ -6,6 +6,8 @@ sidebar_label: Core Services
 description: Core backend service APIs
 ---
 
+> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+
 The default backend provides several [core services](https://github.com/backstage/backstage/blob/master/packages/backend-plugin-api/src/services/definitions/coreServices.ts) out of the box which includes access to configuration, logging, URL Readers, databases and more.
 
 All core services are available through the `coreServices` namespace in the `@backstage/backend-plugin-api` package.
