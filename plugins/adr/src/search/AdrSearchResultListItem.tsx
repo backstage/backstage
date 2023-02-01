@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   Box,
   Chip,
   Divider,
   ListItem,
+  ListItemIcon,
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
-import { useAnalytics } from '@backstage/core-plugin-api';
 import { AdrDocument } from '@backstage/plugin-adr-common';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
@@ -44,34 +44,35 @@ const useStyles = makeStyles({
 });
 
 /**
+ * @public
+ */
+export type AdrSearchResultListItemProps = {
+  lineClamp?: number;
+  highlight?: ResultHighlight;
+  icon?: ReactNode;
+  rank?: number;
+  result?: AdrDocument;
+};
+
+/**
  * A component to display an ADR search result.
  * @public
  */
-export function AdrSearchResultListItem(props: {
-  lineClamp?: number;
-  highlight?: ResultHighlight;
-  rank?: number;
-  result: AdrDocument;
-}) {
-  const { lineClamp = 5, highlight, rank, result } = props;
+export function AdrSearchResultListItem(props: AdrSearchResultListItemProps) {
+  const { lineClamp = 5, highlight, icon, result } = props;
   const classes = useStyles();
-  const analytics = useAnalytics();
 
-  const handleClick = () => {
-    analytics.captureEvent('discover', result.title, {
-      attributes: { to: result.location },
-      value: rank,
-    });
-  };
+  if (!result) return null;
 
   return (
     <>
       <ListItem alignItems="flex-start" className={classes.flexContainer}>
+        {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText
           className={classes.itemText}
           primaryTypographyProps={{ variant: 'h6' }}
           primary={
-            <Link noTrack to={result.location} onClick={handleClick}>
+            <Link noTrack to={result.location}>
               {highlight?.fields.title ? (
                 <HighlightedSearchResultText
                   text={highlight?.fields.title || ''}

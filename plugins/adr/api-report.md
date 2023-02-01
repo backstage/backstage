@@ -11,6 +11,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { isAdrAvailable } from '@backstage/plugin-adr-common';
+import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -82,12 +83,18 @@ export type AdrReadResult = {
 };
 
 // @public
-export function AdrSearchResultListItem(props: {
+export const AdrSearchResultListItem: (
+  props: AdrSearchResultListItemProps,
+) => JSX.Element | null;
+
+// @public (undocumented)
+export type AdrSearchResultListItemProps = {
   lineClamp?: number;
   highlight?: ResultHighlight;
+  icon?: ReactNode;
   rank?: number;
-  result: AdrDocument;
-}): JSX.Element;
+  result?: AdrDocument;
+};
 
 // @public
 export const EntityAdrContent: (props: {
