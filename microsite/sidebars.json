@@ -365,44 +365,40 @@
     ],
     "FAQ": ["FAQ"],
     "Experimental Backend System": [
+      "backend-system/index",
       {
-        "_hidden_": [
-          "backend-system/index",
-          {
-            "type": "subcategory",
-            "label": "Architecture",
-            "ids": [
-              "backend-system/architecture/index",
-              "backend-system/architecture/services",
-              "backend-system/architecture/plugins",
-              "backend-system/architecture/extension-points",
-              "backend-system/architecture/modules",
-              "backend-system/architecture/naming-patterns"
-            ]
-          },
-          {
-            "type": "subcategory",
-            "label": "Building Backends",
-            "ids": [
-              "backend-system/building-backends/index",
-              "backend-system/building-backends/migrating"
-            ]
-          },
-          {
-            "type": "subcategory",
-            "label": "Building Plugins & Modules",
-            "ids": [
-              "backend-system/building-plugins-and-modules/index",
-              "backend-system/building-plugins-and-modules/testing",
-              "backend-system/building-plugins-and-modules/migrating"
-            ]
-          },
-          {
-            "type": "subcategory",
-            "label": "Core Services",
-            "ids": ["backend-system/core-services/index"]
-          }
+        "type": "subcategory",
+        "label": "Architecture",
+        "ids": [
+          "backend-system/architecture/index",
+          "backend-system/architecture/services",
+          "backend-system/architecture/plugins",
+          "backend-system/architecture/extension-points",
+          "backend-system/architecture/modules",
+          "backend-system/architecture/naming-patterns"
         ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Building Backends",
+        "ids": [
+          "backend-system/building-backends/index",
+          "backend-system/building-backends/migrating"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Building Plugins & Modules",
+        "ids": [
+          "backend-system/building-plugins-and-modules/index",
+          "backend-system/building-plugins-and-modules/testing",
+          "backend-system/building-plugins-and-modules/migrating"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Core Services",
+        "ids": ["backend-system/core-services/index"]
       }
     ]
   }

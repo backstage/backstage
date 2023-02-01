@@ -6,6 +6,8 @@ sidebar_label: Overview
 description: Building backends using the new backend system
 ---
 
+> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+
 > NOTE: If you have an existing backend that is not yet using the new backend
 > system, see [migrating](./08-migrating.md).
 
