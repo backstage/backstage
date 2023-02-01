@@ -4,7 +4,7 @@ Welcome to the microsoft-calendar plugin!
 
 _This plugin was created through the Backstage CLI_
 
-You can use this plugin by import MicrosoftCalendar from "@internal/plugin-microsoft-calendar"
+You can use this plugin by import MicrosoftCalendar from "@backstage/plugin-microsoft-calendar"
 
 > import { MicrosoftCalendar } from "@internal/plugin-microsoft-calendar"
 
