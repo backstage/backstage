@@ -58,7 +58,6 @@ export interface CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // @alpha
   getPaginatedEntities?(
     request?: GetPaginatedEntitiesRequest,
     options?: CatalogRequestOptions,
@@ -243,14 +242,14 @@ export interface GetEntityFacetsResponse {
   >;
 }
 
-// @alpha
+// @public
 export type GetPaginatedEntitiesCursorRequest = {
   fields?: string[];
   limit?: number;
   cursor: string;
 };
 
-// @alpha
+// @public
 export type GetPaginatedEntitiesInitialRequest = {
   fields?: string[];
   limit?: number;
@@ -259,12 +258,12 @@ export type GetPaginatedEntitiesInitialRequest = {
   query?: string;
 };
 
-// @alpha
+// @public
 export type GetPaginatedEntitiesRequest =
   | GetPaginatedEntitiesInitialRequest
   | GetPaginatedEntitiesCursorRequest;
 
-// @alpha
+// @public
 export type GetPaginatedEntitiesResponse = {
   entities: Entity[];
   totalItems: number;

@@ -380,7 +380,7 @@ export type ValidateEntityResponse =
 /**
  * The request type for {@link CatalogClient.getPaginatedEntities}.
  *
- * @alpha
+ * @public
  */
 export type GetPaginatedEntitiesRequest =
   | GetPaginatedEntitiesInitialRequest
@@ -394,7 +394,7 @@ export type GetPaginatedEntitiesRequest =
  * The properties filter, sortField, query and sortFieldOrder, are going
  * to be immutable for the entire lifecycle of the following requests.
  *
- * @alpha
+ * @public
  */
 export type GetPaginatedEntitiesInitialRequest = {
   fields?: string[];
@@ -409,7 +409,7 @@ export type GetPaginatedEntitiesInitialRequest = {
  * The method takes this type in a pagination request, following
  * the initial request.
  *
- * @alpha
+ * @public
  */
 export type GetPaginatedEntitiesCursorRequest = {
   fields?: string[];
@@ -420,7 +420,7 @@ export type GetPaginatedEntitiesCursorRequest = {
 /**
  * The response type for {@link CatalogClient.getPaginatedEntities}.
  *
- * @alpha
+ * @public
  */
 export type GetPaginatedEntitiesResponse = {
   /* The list of entities for the current request */
@@ -503,7 +503,7 @@ export interface CatalogApi {
    * with a prev function useful for navigating backwards and a next function
    * in case more entities matching the filters of the first request are present in the catalog.
    *
-   * @alpha
+   * @public
    *
    * @param request - Request parameters
    * @param options - Additional options
