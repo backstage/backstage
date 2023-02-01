@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import teal from '@material-ui/core/colors/teal';
 
 const useStyles = makeStyles({
   svg: {
@@ -24,7 +23,7 @@ const useStyles = makeStyles({
     height: 28,
   },
   path: {
-    fill: teal.A200,
+    fill: '#7df3e1',
   },
 });
 

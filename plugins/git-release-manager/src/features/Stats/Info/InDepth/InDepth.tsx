@@ -20,9 +20,9 @@ import {
   Button,
   Tooltip as MaterialTooltip,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import green from '@material-ui/core/colors/green';
-import grey from '@material-ui/core/colors/grey';
 import { BarChart, Bar, XAxis, YAxis, Legend, Tooltip } from 'recharts';
 
 import { AverageReleaseTime } from './AverageReleaseTime';
@@ -32,6 +32,7 @@ import { useGetReleaseTimes } from '../hooks/useGetReleaseTimes';
 import { useReleaseStatsContext } from '../../contexts/ReleaseStatsContext';
 
 export function InDepth() {
+  const { palette } = useTheme();
   const { releaseStats } = useReleaseStatsContext();
   const { averageReleaseTime, progress, releaseCommitPairs, run } =
     useGetReleaseTimes();
@@ -114,7 +115,9 @@ export function InDepth() {
         >
           <XAxis type="number" />
           <YAxis dataKey="version" type="category" />
-          <Tooltip labelStyle={{ color: grey[900], fontWeight: 'bold' }} />
+          <Tooltip
+            labelStyle={{ color: palette.common.black, fontWeight: 'bold' }}
+          />
           <Legend />
           <Bar dataKey="days" fill={green[300]} />
         </BarChart>
