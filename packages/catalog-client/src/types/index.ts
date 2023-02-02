@@ -33,9 +33,9 @@ export type {
   GetEntityFacetsResponse,
   Location,
   ValidateEntityResponse,
-  GetPaginatedEntitiesCursorRequest,
-  GetPaginatedEntitiesInitialRequest,
-  GetPaginatedEntitiesRequest,
-  GetPaginatedEntitiesResponse,
+  QueryEntitiesCursorRequest,
+  QueryEntitiesInitialRequest,
+  QueryEntitiesRequest,
+  QueryEntitiesResponse,
 } from './api';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';
