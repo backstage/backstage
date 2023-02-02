@@ -58,10 +58,10 @@ export interface CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  getPaginatedEntities(
-    request?: GetPaginatedEntitiesRequest,
+  queryEntities(
+    request?: QueryEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<GetPaginatedEntitiesResponse>;
+  ): Promise<QueryEntitiesResponse>;
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
@@ -128,10 +128,10 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  getPaginatedEntities(
-    request?: GetPaginatedEntitiesRequest,
+  queryEntities(
+    request?: QueryEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<GetPaginatedEntitiesResponse>;
+  ): Promise<QueryEntitiesResponse>;
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
@@ -242,14 +242,22 @@ export interface GetEntityFacetsResponse {
 }
 
 // @public
-export type GetPaginatedEntitiesCursorRequest = {
+type Location_2 = {
+  id: string;
+  type: string;
+  target: string;
+};
+export { Location_2 as Location };
+
+// @public
+export type QueryEntitiesCursorRequest = {
   fields?: string[];
   limit?: number;
   cursor: string;
 };
 
 // @public
-export type GetPaginatedEntitiesInitialRequest = {
+export type QueryEntitiesInitialRequest = {
   fields?: string[];
   limit?: number;
   filter?: EntityFilterQuery;
@@ -258,25 +266,17 @@ export type GetPaginatedEntitiesInitialRequest = {
 };
 
 // @public
-export type GetPaginatedEntitiesRequest =
-  | GetPaginatedEntitiesInitialRequest
-  | GetPaginatedEntitiesCursorRequest;
+export type QueryEntitiesRequest =
+  | QueryEntitiesInitialRequest
+  | QueryEntitiesCursorRequest;
 
 // @public
-export type GetPaginatedEntitiesResponse = {
+export type QueryEntitiesResponse = {
   entities: Entity[];
   totalItems: number;
   nextCursor?: string;
   prevCursor?: string;
 };
-
-// @public
-type Location_2 = {
-  id: string;
-  type: string;
-  target: string;
-};
-export { Location_2 as Location };
 
 // @public
 export type ValidateEntityResponse =

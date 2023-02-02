@@ -249,7 +249,7 @@ describe('CatalogClient', () => {
     });
   });
 
-  describe('getPaginatedEntities', () => {
+  describe('queryEntities', () => {
     const defaultServiceResponse = {
       entities: [
         {
@@ -307,7 +307,7 @@ describe('CatalogClient', () => {
     });
 
     it('should fetch entities from correct endpoint', async () => {
-      const response = await client.getPaginatedEntities({}, { token });
+      const response = await client.queryEntities({}, { token });
       expect(response?.entities).toEqual(defaultClientResponse.entities);
       expect(response?.totalItems).toEqual(defaultClientResponse.totalItems);
       expect(response?.nextCursor).toBeDefined();
@@ -323,7 +323,7 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
-      const response = await client.getPaginatedEntities(
+      const response = await client.queryEntities(
         {
           filter: [
             {
@@ -358,7 +358,7 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
-      await client.getPaginatedEntities({
+      await client.queryEntities({
         fields: ['a', 'b'],
         limit: 100,
         query: 'query',
@@ -381,7 +381,7 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
-      await client.getPaginatedEntities({
+      await client.queryEntities({
         fields: ['a', 'b'],
         limit: 100,
         query: 'query',
@@ -424,7 +424,7 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
-      const response = await client.getPaginatedEntities({
+      const response = await client.queryEntities({
         limit: 2,
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe('?limit=2');
@@ -432,12 +432,12 @@ describe('CatalogClient', () => {
       expect(response?.nextCursor).toBeDefined();
       expect(response?.prevCursor).toBeDefined();
 
-      await client.getPaginatedEntities({ cursor: response!.nextCursor! });
+      await client.queryEntities({ cursor: response!.nextCursor! });
       expect(mockedEndpoint.mock.calls[1][0].url.search).toBe(
         '?cursor=nextcursor',
       );
 
-      await client.getPaginatedEntities({ cursor: response!.prevCursor! });
+      await client.queryEntities({ cursor: response!.prevCursor! });
       expect(mockedEndpoint.mock.calls[2][0].url.search).toBe(
         '?cursor=prevcursor',
       );

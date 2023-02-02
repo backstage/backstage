@@ -15,19 +15,19 @@
  */
 
 import {
-  GetPaginatedEntitiesCursorRequest,
-  GetPaginatedEntitiesInitialRequest,
-  GetPaginatedEntitiesRequest,
+  QueryEntitiesCursorRequest,
+  QueryEntitiesInitialRequest,
+  QueryEntitiesRequest,
 } from './types/api';
 
 export function isPaginatedEntitiesInitialRequest(
-  request: GetPaginatedEntitiesInitialRequest,
-): request is GetPaginatedEntitiesInitialRequest {
-  return !(request as GetPaginatedEntitiesCursorRequest).cursor;
+  request: QueryEntitiesInitialRequest,
+): request is QueryEntitiesInitialRequest {
+  return !(request as QueryEntitiesCursorRequest).cursor;
 }
 
 export function isPaginatedEntitiesCursorRequest(
-  request: GetPaginatedEntitiesRequest,
-): request is GetPaginatedEntitiesCursorRequest {
+  request: QueryEntitiesRequest,
+): request is QueryEntitiesCursorRequest {
   return !isPaginatedEntitiesInitialRequest(request);
 }
