@@ -300,9 +300,13 @@ function logApiReportInstructions() {
   console.log('');
 }
 
-async function findPackageEntryPoints(
-  packageDirs: string[],
-): Promise<Array<{ packageDir: string; name: string }>> {
+async function findPackageEntryPoints(packageDirs: string[]): Promise<
+  Array<{
+    packageDir: string;
+    name: string;
+    usesExperimentalTypeBuild?: boolean;
+  }>
+> {
   return Promise.all(
     packageDirs.map(async packageDir => {
       const pkg = await fs.readJson(
@@ -326,7 +330,13 @@ async function findPackageEntryPoints(
         });
       }
 
-      return { packageDir, name: 'index' };
+      return {
+        packageDir,
+        name: 'index',
+        usesExperimentalTypeBuild: pkg.scripts?.build?.includes(
+          '--experimental-type-build',
+        ),
+      };
     }),
   ).then(results => results.flat());
 }
@@ -372,7 +382,11 @@ export async function runApiExtraction({
   }
   const warnings = new Array<string>();
 
-  for (const { packageDir, name } of packageEntryPoints) {
+  for (const {
+    packageDir,
+    name,
+    usesExperimentalTypeBuild,
+  } of packageEntryPoints) {
     console.log(`## Processing ${packageDir}`);
     const noBail = Array.isArray(allowWarnings)
       ? allowWarnings.some(aw => aw === packageDir || minimatch(packageDir, aw))
@@ -505,7 +519,7 @@ export async function runApiExtraction({
 
     // This release tag validation makes sure that the release tag of known entry points match expectations.
     // The root index entrypoint is only allowed @public exports, while /alpha and /beta only allow @alpha and @beta.
-    if (validateReleaseTags) {
+    if (validateReleaseTags && !usesExperimentalTypeBuild) {
       if (['index', 'alpha', 'beta'].includes(name)) {
         const report = await fs.readFile(
           extractorConfig.reportFilePath,
