@@ -31,8 +31,7 @@ auth:
 
 The full `audience` value can be obtained by visiting your [Identity-Aware Proxy Google Cloud console](https://console.cloud.google.com/security/iap), selecting your project, finding your Backend Service to proxy, clicking the 3 vertical dots then "Get JWT Audience Code", and copying from the resulting popup, which will look similar to the following:
 
-<img width="444" alt="Screenshot 2023-02-02 at 10 58 10 AM" src="https://user-images.githubusercontent.com/4237425/216376626-88a0fb85-654b-4e94-ab07-8dd59764b1b8.png">
-
+![Identity-Aware Proxy JWT Audience Code popup](../../assets/auth/gcp-iap-jwt-audience-code-popup.png)
 
 This config section must be in place for the provider to load at all. Now let's
 add the provider itself.
