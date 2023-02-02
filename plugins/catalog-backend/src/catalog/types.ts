@@ -179,9 +179,7 @@ export interface EntitiesCatalog {
    *
    * @param request
    */
-  paginatedEntities(
-    request?: PaginatedEntitiesRequest,
-  ): Promise<PaginatedEntitiesResponse>;
+  queryEntities(request?: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
 
   /**
    * Removes a single entity.
@@ -213,18 +211,18 @@ export interface EntitiesCatalog {
 }
 
 /**
- * The request shape for {@link EntitiesCatalog.paginatedEntities}.
+ * The request shape for {@link EntitiesCatalog.queryEntities}.
  */
-export type PaginatedEntitiesRequest =
-  | PaginatedEntitiesInitialRequest
-  | PaginatedEntitiesCursorRequest;
+export type QueryEntitiesRequest =
+  | QueryEntitiesInitialRequest
+  | QueryEntitiesCursorRequest;
 
 /**
- * The initial request for {@link EntitiesCatalog.paginatedEntities}.
+ * The initial request for {@link EntitiesCatalog.queryEntities}.
  * The request take immutable properties that are going to be bound
  * for the current and the next pagination requests.
  */
-export interface PaginatedEntitiesInitialRequest {
+export interface QueryEntitiesInitialRequest {
   authorizationToken?: string;
   fields?: (entity: Entity) => Entity;
   limit?: number;
@@ -234,10 +232,10 @@ export interface PaginatedEntitiesInitialRequest {
 }
 
 /**
- * Request for {@link EntitiesCatalog.paginatedEntities} used to
+ * Request for {@link EntitiesCatalog.queryEntities} used to
  * move forward or backward on the data.
  */
-export interface PaginatedEntitiesCursorRequest {
+export interface QueryEntitiesCursorRequest {
   authorizationToken?: string;
   fields?: (entity: Entity) => Entity;
   limit?: number;
@@ -245,9 +243,9 @@ export interface PaginatedEntitiesCursorRequest {
 }
 
 /**
- * The response shape for {@link EntitiesCatalog.paginatedEntities}.
+ * The response shape for {@link EntitiesCatalog.queryEntities}.
  */
-export interface PaginatedEntitiesResponse {
+export interface QueryEntitiesResponse {
   /**
    * The entities for the current pagination request
    */

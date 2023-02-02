@@ -39,7 +39,7 @@ import {
   parseEntityFilterParams,
   parseEntityPaginationParams,
   parseEntityTransformParams,
-  parsePaginatedEntitiesParams,
+  parseQueryEntitiesParams,
 } from './request';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
@@ -132,8 +132,8 @@ export async function createRouter(
         res.json(entities);
       })
       .get('/entities/by-query', async (req, res) => {
-        const response = await entitiesCatalog.paginatedEntities({
-          ...parsePaginatedEntitiesParams(req.query),
+        const response = await entitiesCatalog.queryEntities({
+          ...parseQueryEntitiesParams(req.query),
           authorizationToken: getBearerToken(req.header('authorization')),
         });
 
