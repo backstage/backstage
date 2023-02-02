@@ -7,7 +7,6 @@
 *                                                   @backstage/maintainers
 yarn.lock                                           @backstage/maintainers @backstage-service
 */yarn.lock                                         @backstage/maintainers @backstage-service
-/.changeset/cost-insights-*                         @backstage/maintainers @backstage/silver-lining
 /.changeset                                         @backstage/owners
 /cypress/src/integration/plugins/techdocs.spec.ts   @backstage/techdocs-core
 /docs/assets/search                                 @backstage/techdocs-core
