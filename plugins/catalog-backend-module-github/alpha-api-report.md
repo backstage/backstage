@@ -5,8 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-github" does not have an export "GithubEntityProvider"
-//
 // @alpha
 export const githubEntityProviderCatalogModule: () => BackendFeature;
 

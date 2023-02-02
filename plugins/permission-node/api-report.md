@@ -137,17 +137,17 @@ export const createPermissionRule: <
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
 
-// @alpha
+// @public
 export const isAndCriteria: <T>(
   criteria: PermissionCriteria<T>,
 ) => criteria is AllOfCriteria<T>;
 
-// @alpha
+// @public
 export const isNotCriteria: <T>(
   criteria: PermissionCriteria<T>,
 ) => criteria is NotCriteria<T>;
 
-// @alpha
+// @public
 export const isOrCriteria: <T>(
   criteria: PermissionCriteria<T>,
 ) => criteria is AnyOfCriteria<T>;

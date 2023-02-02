@@ -5,8 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-events-backend-module-azure" does not have an export "AzureDevOpsEventRouter"
-//
 // @alpha
 export const azureDevOpsEventRouterEventsModule: () => BackendFeature;
 

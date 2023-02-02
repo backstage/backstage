@@ -22,7 +22,7 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/
 import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
-} from '../types';
+} from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 import { WrapperProviders } from './WrapperProviders';
 
 /**

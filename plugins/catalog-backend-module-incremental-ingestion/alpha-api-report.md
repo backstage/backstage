@@ -4,8 +4,8 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
-import type { DurationObjectUnits } from 'luxon';
+import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
+import { IncrementalEntityProviderOptions } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 
 // @alpha
 export const incrementalIngestionEntityProviderCatalogModule: (options: {
@@ -14,11 +14,6 @@ export const incrementalIngestionEntityProviderCatalogModule: (options: {
     options: IncrementalEntityProviderOptions;
   }[];
 }) => BackendFeature;
-
-// Warnings were encountered during analysis:
-//
-// src/module/incrementalIngestionEntityProviderCatalogModule.d.ts:9:9 - (ae-forgotten-export) The symbol "IncrementalEntityProvider" needs to be exported by the entry point alpha.d.ts
-// src/module/incrementalIngestionEntityProviderCatalogModule.d.ts:10:9 - (ae-forgotten-export) The symbol "IncrementalEntityProviderOptions" needs to be exported by the entry point alpha.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```
