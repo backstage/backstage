@@ -39,7 +39,7 @@ export const HEADER_KUBERNETES_CLUSTER: string = 'X-Kubernetes-Cluster';
 /**
  * A proxy that routes requests to the Kubernetes API.
  *
- * @alpha
+ * @public
  */
 export class KubernetesProxy {
   private readonly middlewareForClusterName = new Map<string, RequestHandler>();

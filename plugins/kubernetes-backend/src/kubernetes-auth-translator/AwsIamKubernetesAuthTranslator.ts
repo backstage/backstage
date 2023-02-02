@@ -20,7 +20,7 @@ import { KubernetesAuthTranslator } from './types';
 
 /**
  *
- * @alpha
+ * @public
  */
 export type SigningCreds = {
   accessKeyId: string | undefined;
@@ -30,7 +30,7 @@ export type SigningCreds = {
 
 /**
  *
- * @alpha
+ * @public
  */
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
