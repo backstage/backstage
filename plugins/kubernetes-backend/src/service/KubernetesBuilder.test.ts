@@ -31,6 +31,10 @@ import {
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { CatalogApi } from '@backstage/catalog-client';
+import { HEADER_KUBERNETES_CLUSTER } from './KubernetesProxy';
+import { setupServer } from 'msw/node';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { rest } from 'msw';
 
 describe('KubernetesBuilder', () => {
   let app: express.Express;
@@ -265,6 +269,67 @@ describe('KubernetesBuilder', () => {
 
       expect(response.body).toEqual(result);
       expect(response.status).toEqual(200);
+    });
+  });
+
+  describe('post /proxy', () => {
+    const worker = setupServer();
+    setupRequestMockHandlers(worker);
+
+    beforeEach(() => {
+      worker.use(
+        rest.post('https://localhost:1234/api/v1/namespaces', (req, res, ctx) =>
+          req
+            .arrayBuffer()
+            .then(body =>
+              res(
+                ctx.set('content-type', `${req.headers.get('content-type')}`),
+                ctx.body(body),
+              ),
+            ),
+        ),
+      );
+    });
+
+    it('returns the given request body', async () => {
+      const requestBody = {
+        kind: 'Namespace',
+        apiVersion: 'v1',
+        metadata: {
+          name: 'new-ns',
+        },
+      };
+
+      const proxyEndpointRequest = request(app)
+        .post('/proxy/api/v1/namespaces')
+        .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
+        .send(requestBody);
+
+      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+
+      const response = await proxyEndpointRequest;
+
+      expect(response.body).toStrictEqual(requestBody);
+    });
+
+    it('supports yaml content type', async () => {
+      const requestBody = `---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: new-ns
+`;
+
+      const proxyEndpointRequest = request(app)
+        .post('/proxy/api/v1/namespaces')
+        .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
+        .set('content-type', 'application/yaml')
+        .send(requestBody);
+
+      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+
+      const response = await proxyEndpointRequest;
+      expect(response.text).toEqual(requestBody);
     });
   });
 });
