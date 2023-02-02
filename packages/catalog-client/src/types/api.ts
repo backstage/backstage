@@ -378,16 +378,16 @@ export type ValidateEntityResponse =
   | { valid: false; errors: SerializedError[] };
 
 /**
- * The request type for {@link CatalogClient.getPaginatedEntities}.
+ * The request type for {@link CatalogClient.queryEntities}.
  *
  * @public
  */
-export type GetPaginatedEntitiesRequest =
-  | GetPaginatedEntitiesInitialRequest
-  | GetPaginatedEntitiesCursorRequest;
+export type QueryEntitiesRequest =
+  | QueryEntitiesInitialRequest
+  | QueryEntitiesCursorRequest;
 
 /**
- * A request type for {@link CatalogClient.getPaginatedEntities}.
+ * A request type for {@link CatalogClient.queryEntities}.
  * The method takes this type in an initial pagination request,
  * when requesting the first batch of entities.
  *
@@ -396,7 +396,7 @@ export type GetPaginatedEntitiesRequest =
  *
  * @public
  */
-export type GetPaginatedEntitiesInitialRequest = {
+export type QueryEntitiesInitialRequest = {
   fields?: string[];
   limit?: number;
   filter?: EntityFilterQuery;
@@ -405,24 +405,24 @@ export type GetPaginatedEntitiesInitialRequest = {
 };
 
 /**
- * A request type for {@link CatalogClient.getPaginatedEntities}.
+ * A request type for {@link CatalogClient.queryEntities}.
  * The method takes this type in a pagination request, following
  * the initial request.
  *
  * @public
  */
-export type GetPaginatedEntitiesCursorRequest = {
+export type QueryEntitiesCursorRequest = {
   fields?: string[];
   limit?: number;
   cursor: string;
 };
 
 /**
- * The response type for {@link CatalogClient.getPaginatedEntities}.
+ * The response type for {@link CatalogClient.queryEntities}.
  *
  * @public
  */
-export type GetPaginatedEntitiesResponse = {
+export type QueryEntitiesResponse = {
   /* The list of entities for the current request */
   entities: Entity[];
   /* The number of entities among all the requests */
@@ -475,7 +475,7 @@ export interface CatalogApi {
    * Example:
    *
    * ```
-   * const response = await catalogClient.getPaginatedEntities({
+   * const response = await catalogClient.queryEntities({
    *   filter: [{ kind: 'group' }],
    *   limit: 20,
    *   query: 'A',
@@ -492,7 +492,7 @@ export interface CatalogApi {
    *
    * ```
    * const secondBatchResponse = await catalogClient
-   *  .getPaginatedEntities({ cursor: response.nextCursor });
+   *  .queryEntities({ cursor: response.nextCursor });
    * ```
    *
    * secondBatchResponse will contain the next batch of (maximum) 20 entities,
@@ -503,10 +503,10 @@ export interface CatalogApi {
    * @param request - Request parameters
    * @param options - Additional options
    */
-  getPaginatedEntities(
-    request?: GetPaginatedEntitiesRequest,
+  queryEntities(
+    request?: QueryEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<GetPaginatedEntitiesResponse>;
+  ): Promise<QueryEntitiesResponse>;
 
   /**
    * Gets entity ancestor information, i.e. the hierarchy of parent entities

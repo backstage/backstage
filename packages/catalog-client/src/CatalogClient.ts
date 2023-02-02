@@ -39,8 +39,8 @@ import {
   ValidateEntityResponse,
   GetEntitiesByRefsRequest,
   GetEntitiesByRefsResponse,
-  GetPaginatedEntitiesRequest,
-  GetPaginatedEntitiesResponse,
+  QueryEntitiesRequest,
+  QueryEntitiesResponse,
   EntityFilterQuery,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
@@ -205,12 +205,12 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * {@inheritdoc CatalogApi.getPaginatedEntities}
+   * {@inheritdoc CatalogApi.queryEntities}
    */
-  async getPaginatedEntities(
-    request: GetPaginatedEntitiesRequest = {},
+  async queryEntities(
+    request: QueryEntitiesRequest = {},
     options?: CatalogRequestOptions,
-  ): Promise<GetPaginatedEntitiesResponse> {
+  ): Promise<QueryEntitiesResponse> {
     const params: string[] = [];
 
     if (isPaginatedEntitiesInitialRequest(request)) {
