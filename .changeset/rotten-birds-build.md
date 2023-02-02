@@ -1,5 +1,4 @@
 ---
-'example-app': minor
 '@backstage/plugin-microsoft-calendar': patch
 ---
 
