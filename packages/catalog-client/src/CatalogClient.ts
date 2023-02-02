@@ -251,7 +251,7 @@ export class CatalogClient implements CatalogApi {
       totalItems: number;
       nextCursor?: string;
       prevCursor?: string;
-    }>('GET', `/v2/entities${query}`, options);
+    }>('GET', `/entities/by-query${query}`, options);
   }
 
   /**

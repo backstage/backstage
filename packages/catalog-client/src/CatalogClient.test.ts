@@ -300,7 +300,7 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/v2/entities`, (_, res, ctx) => {
+        rest.get(`${mockBaseUrl}/entities/by-query`, (_, res, ctx) => {
           return res(ctx.json(defaultServiceResponse));
         }),
       );
@@ -321,7 +321,7 @@ describe('CatalogClient', () => {
           res(ctx.json({ entities: [], totalItems: 0 })),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/v2/entities`, mockedEndpoint));
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.getPaginatedEntities(
         {
@@ -356,7 +356,7 @@ describe('CatalogClient', () => {
           res(ctx.json({ entities: [], totalItems: 0 })),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/v2/entities`, mockedEndpoint));
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.getPaginatedEntities({
         fields: ['a', 'b'],
@@ -379,7 +379,7 @@ describe('CatalogClient', () => {
           res(ctx.json({ entities: [], totalItems: 0 })),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/v2/entities`, mockedEndpoint));
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.getPaginatedEntities({
         fields: ['a', 'b'],
@@ -422,7 +422,7 @@ describe('CatalogClient', () => {
         ),
       );
 
-      server.use(rest.get(`${mockBaseUrl}/v2/entities`, mockedEndpoint));
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.getPaginatedEntities({
         limit: 2,
