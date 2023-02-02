@@ -20,14 +20,14 @@ import {
   QueryEntitiesRequest,
 } from './types/api';
 
-export function isPaginatedEntitiesInitialRequest(
+export function isQueryEntitiesInitialRequest(
   request: QueryEntitiesInitialRequest,
 ): request is QueryEntitiesInitialRequest {
   return !(request as QueryEntitiesCursorRequest).cursor;
 }
 
-export function isPaginatedEntitiesCursorRequest(
+export function isQueryEntitiesCursorRequest(
   request: QueryEntitiesRequest,
 ): request is QueryEntitiesCursorRequest {
-  return !isPaginatedEntitiesInitialRequest(request);
+  return !isQueryEntitiesInitialRequest(request);
 }

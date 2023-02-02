@@ -45,7 +45,7 @@ import {
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { FetchApi } from './types/fetch';
-import { isPaginatedEntitiesInitialRequest } from './utils';
+import { isQueryEntitiesInitialRequest } from './utils';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -213,7 +213,7 @@ export class CatalogClient implements CatalogApi {
   ): Promise<QueryEntitiesResponse> {
     const params: string[] = [];
 
-    if (isPaginatedEntitiesInitialRequest(request)) {
+    if (isQueryEntitiesInitialRequest(request)) {
       const { fields = [], filter, limit, sortFields, query } = request;
       params.push(...this.getParams(filter));
 
