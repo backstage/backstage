@@ -2,7 +2,8 @@
 
 Welcome to the graphql-voyager plugin!
 
-_This plugin was created through the Backstage CLI_
+Presents a graph structure of your entire GraphQL API, with tabs for multiple API urls:
+![](./src/assets/plugin.png)
 
 ## Getting started
 
