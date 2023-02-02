@@ -13,8 +13,6 @@ import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 
-// Warning: (ae-forgotten-export) The symbol "PagerDutyCardProps" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export const EntityPagerDutyCard: (props: PagerDutyCardProps) => JSX.Element;
 
@@ -48,6 +46,11 @@ export type PagerDutyAssignee = {
 
 // @public (undocumented)
 export const PagerDutyCard: (props: PagerDutyCardProps) => JSX.Element;
+
+// @public (undocumented)
+export type PagerDutyCardProps = {
+  readOnly?: boolean;
+};
 
 // @public (undocumented)
 export type PagerDutyChangeEvent = {
