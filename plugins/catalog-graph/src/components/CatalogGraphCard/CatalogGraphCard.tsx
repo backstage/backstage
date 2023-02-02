@@ -72,6 +72,8 @@ export const CatalogGraphCard = (
     unidirectional = true,
     mergeRelations = true,
     direction = Direction.LEFT_RIGHT,
+    kinds,
+    relations,
     height,
     title = 'Relations',
     zoom = 'enable-on-click',
