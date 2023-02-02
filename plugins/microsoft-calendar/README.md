@@ -6,7 +6,7 @@ _This plugin was created through the Backstage CLI_
 
 You can use this plugin by import MicrosoftCalendar from "@backstage/plugin-microsoft-calendar"
 
-> import { MicrosoftCalendar } from "@internal/plugin-microsoft-calendar"
+> import { MicrosoftCalendar } from "@backstage/plugin-microsoft-calendar"
 
 >        <Grid item xs={12} md={4}>
 >          <MicrosoftCalendar />
