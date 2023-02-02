@@ -35,9 +35,10 @@ describe('DefaultResultListItem', () => {
 
   it('Includes primary/secondary text (title / text)', async () => {
     await renderInTestApp(<DefaultResultListItem result={result} />);
-    expect(screen.getByRole('listitem')).toHaveTextContent(
-      result.title + result.text,
-    );
+    expect(
+      screen.getByRole('link', { name: result.title }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(result.text)).toBeInTheDocument();
   });
 
   it('should render icon if prop is specified', async () => {
