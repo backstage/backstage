@@ -82,7 +82,7 @@ export const catalogPlugin = createPlugin({
     options?: CatalogInputPluginOptions,
   ): CatalogPluginOptions {
     const defaultOptions = {
-      createButtonTitle: 'Create',
+      createButtonTitle: 'Create component',
     };
     return { ...defaultOptions, ...options };
   },
