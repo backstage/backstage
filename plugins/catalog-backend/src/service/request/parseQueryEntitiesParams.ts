@@ -15,28 +15,27 @@
  */
 
 import {
-  PaginatedEntitiesCursorRequest,
-  PaginatedEntitiesInitialRequest,
-  PaginatedEntitiesRequest,
+  QueryEntitiesCursorRequest,
+  QueryEntitiesInitialRequest,
+  QueryEntitiesRequest,
 } from '../../catalog/types';
 import { parseIntegerParam, parseStringParam } from './common';
 import { parseEntityFilterParams } from './parseEntityFilterParams';
 import { parseEntitySortFieldParams } from './parseEntitySortFieldParams';
 import { parseEntityTransformParams } from './parseEntityTransformParams';
 
-export function parsePaginatedEntitiesParams(
+export function parseQueryEntitiesParams(
   params: Record<string, unknown>,
-): Omit<PaginatedEntitiesRequest, 'authorizationToken'> {
+): Omit<QueryEntitiesRequest, 'authorizationToken'> {
   const fields = parseEntityTransformParams(params);
   const limit = parseIntegerParam(params.limit, 'limit');
   const cursor = parseStringParam(params.cursor, 'cursor');
   if (cursor) {
-    const response: Omit<PaginatedEntitiesCursorRequest, 'authorizationToken'> =
-      {
-        cursor,
-        fields,
-        limit,
-      };
+    const response: Omit<QueryEntitiesCursorRequest, 'authorizationToken'> = {
+      cursor,
+      fields,
+      limit,
+    };
     return response;
   }
 
@@ -44,14 +43,13 @@ export function parsePaginatedEntitiesParams(
   const query = parseStringParam(params.query, 'query');
   const sortFields = parseEntitySortFieldParams(params);
 
-  const response: Omit<PaginatedEntitiesInitialRequest, 'authorizationToken'> =
-    {
-      fields,
-      filter,
-      limit,
-      sortFields,
-      query,
-    };
+  const response: Omit<QueryEntitiesInitialRequest, 'authorizationToken'> = {
+    fields,
+    filter,
+    limit,
+    sortFields,
+    query,
+  };
 
   return response;
 }

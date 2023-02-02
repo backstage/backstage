@@ -15,12 +15,12 @@
  */
 
 import {
-  PaginatedEntitiesCursorRequest,
-  PaginatedEntitiesInitialRequest,
+  QueryEntitiesCursorRequest,
+  QueryEntitiesInitialRequest,
 } from '../../catalog/types';
-import { parsePaginatedEntitiesParams } from './parsePaginatedEntitiesParams';
+import { parseQueryEntitiesParams } from './parseQueryEntitiesParams';
 
-describe('parsePaginatedEntitiesParams', () => {
+describe('parseQueryEntitiesParams', () => {
   describe('initial request', () => {
     it('should parse all the defined params', () => {
       const validRequest = {
@@ -31,9 +31,9 @@ describe('parsePaginatedEntitiesParams', () => {
         sortField: ['metadata.name,desc'],
         query: 'query',
       };
-      const parsedObj = parsePaginatedEntitiesParams(
+      const parsedObj = parseQueryEntitiesParams(
         validRequest,
-      ) as PaginatedEntitiesInitialRequest;
+      ) as QueryEntitiesInitialRequest;
       expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
       expect(parsedObj.sortFields).toEqual([
@@ -45,9 +45,9 @@ describe('parsePaginatedEntitiesParams', () => {
       expect(parsedObj).not.toHaveProperty('cursor');
     });
     it('should ignore optional params', () => {
-      const parsedObj = parsePaginatedEntitiesParams(
+      const parsedObj = parseQueryEntitiesParams(
         {},
-      ) as PaginatedEntitiesInitialRequest;
+      ) as QueryEntitiesInitialRequest;
       expect(parsedObj.limit).toBeUndefined();
       expect(parsedObj.fields).toBeUndefined();
       expect(parsedObj.sortFields).toBeUndefined();
@@ -66,7 +66,7 @@ describe('parsePaginatedEntitiesParams', () => {
       { fields: [4] },
       { query: [] },
     ])('should throw if some parameter is not valid %p', params => {
-      expect(() => parsePaginatedEntitiesParams(params)).toThrow();
+      expect(() => parseQueryEntitiesParams(params)).toThrow();
     });
   });
 
@@ -78,9 +78,9 @@ describe('parsePaginatedEntitiesParams', () => {
         limit: '3',
         cursor: 'cursor',
       };
-      const parsedObj = parsePaginatedEntitiesParams(
+      const parsedObj = parseQueryEntitiesParams(
         validRequest,
-      ) as PaginatedEntitiesCursorRequest;
+      ) as QueryEntitiesCursorRequest;
       expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
       expect(parsedObj.cursor).toBe('cursor');
@@ -97,9 +97,9 @@ describe('parsePaginatedEntitiesParams', () => {
         sortFieldOrder: 'desc',
         query: 'query',
       };
-      const parsedObj = parsePaginatedEntitiesParams(
+      const parsedObj = parseQueryEntitiesParams(
         validRequest,
-      ) as PaginatedEntitiesCursorRequest;
+      ) as QueryEntitiesCursorRequest;
       expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
       expect(parsedObj.cursor).toBe('cursor');
@@ -110,9 +110,9 @@ describe('parsePaginatedEntitiesParams', () => {
     });
 
     it('should ignore optional params', () => {
-      const parsedObj = parsePaginatedEntitiesParams(
+      const parsedObj = parseQueryEntitiesParams(
         {},
-      ) as PaginatedEntitiesCursorRequest;
+      ) as QueryEntitiesCursorRequest;
       expect(parsedObj.limit).toBeUndefined();
       expect(parsedObj.fields).toBeUndefined();
     });
@@ -124,7 +124,7 @@ describe('parsePaginatedEntitiesParams', () => {
       { cursor: [] },
       { fields: [4] },
     ])('should throw if some parameter is not valid %p', params => {
-      expect(() => parsePaginatedEntitiesParams(params)).toThrow();
+      expect(() => parseQueryEntitiesParams(params)).toThrow();
     });
   });
 });

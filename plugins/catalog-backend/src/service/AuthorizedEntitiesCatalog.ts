@@ -35,11 +35,11 @@ import {
   EntityFacetsRequest,
   EntityFacetsResponse,
   EntityFilter,
-  PaginatedEntitiesRequest,
-  PaginatedEntitiesResponse,
+  QueryEntitiesRequest,
+  QueryEntitiesResponse,
 } from '../catalog/types';
 import { basicEntityFilter } from './request/basicEntityFilter';
-import { isPaginatedEntitiesInitialRequest } from './util';
+import { isQueryEntitiesInitialRequest } from './util';
 
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   constructor(
@@ -109,9 +109,9 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     return this.entitiesCatalog.entitiesBatch(request);
   }
 
-  async paginatedEntities(
-    request?: PaginatedEntitiesRequest,
-  ): Promise<PaginatedEntitiesResponse> {
+  async queryEntities(
+    request?: QueryEntitiesRequest,
+  ): Promise<QueryEntitiesResponse> {
     const authorizeDecision = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
@@ -131,9 +131,9 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
         authorizeDecision.conditions,
       );
 
-      return this.entitiesCatalog.paginatedEntities({
+      return this.entitiesCatalog.queryEntities({
         ...request,
-        ...(isPaginatedEntitiesInitialRequest(request) && {
+        ...(isQueryEntitiesInitialRequest(request) && {
           filter: request?.filter
             ? { allOf: [permissionFilter, request.filter] }
             : permissionFilter,
@@ -141,7 +141,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
       });
     }
 
-    return this.entitiesCatalog.paginatedEntities(request);
+    return this.entitiesCatalog.queryEntities(request);
   }
 
   async removeEntityByUid(
