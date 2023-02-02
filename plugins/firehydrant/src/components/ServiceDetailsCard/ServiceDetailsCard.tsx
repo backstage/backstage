@@ -28,7 +28,6 @@ import WhatshotIcon from '@material-ui/icons/Whatshot';
 import WarningIcon from '@material-ui/icons/Warning';
 import AddIcon from '@material-ui/icons/Add';
 import deepPurple from '@material-ui/core/colors/deepPurple';
-import grey from '@material-ui/core/colors/grey';
 import purple from '@material-ui/core/colors/purple';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Incident } from '../types';

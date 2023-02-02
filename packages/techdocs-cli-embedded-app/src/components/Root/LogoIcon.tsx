@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import teal from '@material-ui/core/colors/teal';
 
 const useStyles = makeStyles({
   svg: {
