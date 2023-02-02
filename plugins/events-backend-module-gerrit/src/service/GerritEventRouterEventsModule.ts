@@ -21,7 +21,7 @@ import { GerritEventRouter } from '../router/GerritEventRouter';
 /**
  * Module for the events-backend plugin, adding an event router for Gerrit.
  *
- * Registers the {@link GerritEventRouter}.
+ * Registers the `GerritEventRouter`.
  *
  * @alpha
  */

@@ -6,7 +6,7 @@
 /// <reference types="react" />
 
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { ApiRef } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/core-plugin-api/*';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { createScaffolderFieldExtension as createScaffolderFieldExtension_2 } from '@backstage/plugin-scaffolder-react';
@@ -32,6 +32,7 @@ import { PathParams } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api/*';
 import { ScaffolderApi as ScaffolderApi_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderDryRunOptions as ScaffolderDryRunOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderDryRunResponse as ScaffolderDryRunResponse_2 } from '@backstage/plugin-scaffolder-react';
@@ -109,9 +110,9 @@ export type EntityPickerUiOptions =
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
   string[],
   {
-    helperText?: string | undefined;
-    kinds?: string[] | undefined;
     showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
   }
 >;
 
@@ -119,9 +120,9 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
-    helperText?: string | undefined;
-    kinds?: string[] | undefined;
     showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
   }
 >;
 
@@ -259,8 +260,8 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                bitbucket?: string[] | undefined;
                 gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
               }
             | undefined;
@@ -285,8 +286,8 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                bitbucket?: string[] | undefined;
                 gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
               }
             | undefined;
@@ -315,7 +316,7 @@ export type ReviewStepProps = {
 };
 
 // @public @deprecated (undocumented)
-export const rootRouteRef: RouteRef<undefined>;
+export const rootRouteRef: RouteRef_2<undefined>;
 
 // @public
 export type RouterProps = {

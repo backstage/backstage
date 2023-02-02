@@ -21,7 +21,7 @@ import { AzureDevOpsEventRouter } from '../router/AzureDevOpsEventRouter';
 /**
  * Module for the events-backend plugin, adding an event router for Azure DevOps.
  *
- * Registers the {@link AzureDevOpsEventRouter}.
+ * Registers the `AzureDevOpsEventRouter`.
  *
  * @alpha
  */
