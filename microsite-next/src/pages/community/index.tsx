@@ -1,3 +1,3 @@
-import { Community } from './community';
+import { Community } from './_community';
 
 export default Community;

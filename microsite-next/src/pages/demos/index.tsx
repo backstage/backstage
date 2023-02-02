@@ -1,3 +1,3 @@
-import { Demos } from './demos';
+import { Demos } from './_demos';
 
 export default Demos;
