@@ -65,7 +65,11 @@ import {
   getOrganizationTeam,
   getOrganizationTeamsFromUsers,
 } from '../lib/github';
-import { ANNOTATION_GITHUB_USER_LOGIN } from '../lib/annotation';
+import {
+  ANNOTATION_GITHUB_TEAM_SLUG,
+  ANNOTATION_GITHUB_USER_LOGIN,
+} from '../lib/annotation';
+import { splitTeamSlug } from '../lib/util';
 
 /**
  * Options for {@link GithubOrgEntityProvider}.
@@ -604,11 +608,19 @@ export function withLocations(
   entity: Entity,
 ): Entity {
   const login =
-    entity.metadata.annotations[ANNOTATION_GITHUB_USER_LOGIN] ||
+    entity.metadata.annotations?.[ANNOTATION_GITHUB_USER_LOGIN] ||
     entity.metadata.name;
+
+  let team = entity.metadata.name;
+  const slug = entity.metadata.annotations?.[ANNOTATION_GITHUB_TEAM_SLUG];
+  if (slug) {
+    const [_, slugTeam] = splitTeamSlug(slug);
+    team = slugTeam;
+  }
+
   const location =
     entity.kind === 'Group'
-      ? `url:${baseUrl}/orgs/${org}/teams/${login}`
+      ? `url:${baseUrl}/orgs/${org}/teams/${team}`
       : `url:${baseUrl}/${login}`;
   return merge(
     {
