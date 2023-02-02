@@ -14,8 +14,8 @@ export interface EventBroker {
 }
 
 // @public (undocumented)
-export interface EventParams<PayloadType = unknown> {
-  eventPayload: PayloadType;
+export interface EventParams<TPayload = unknown> {
+  eventPayload: TPayload;
   metadata?: Record<string, string | string[] | undefined>;
   topic: string;
 }
