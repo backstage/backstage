@@ -16,12 +16,48 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { microsoftCalendarPlugin, MicrosoftCalendar } from '../src/plugin';
+import { microsoftCalendarApiRef } from '../src';
+import responseMock from './mock.json';
+import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
+import { Content, Page } from '@backstage/core-components';
+import { Grid } from '@material-ui/core';
 
 createDevApp()
   .registerPlugin(microsoftCalendarPlugin)
+  .registerApi({
+    api: microsoftAuthApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        async getAccessToken() {
+          return Promise.resolve('token');
+        },
+      } as unknown as typeof microsoftAuthApiRef.T),
+  })
+  .registerApi({
+    api: microsoftCalendarApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        async getCalendars() {
+          return Promise.resolve(responseMock.calendars);
+        },
+        async getEvents() {
+          return Promise.resolve(responseMock.events);
+        },
+      } as unknown as typeof microsoftCalendarApiRef.T),
+  })
   .addPage({
-    element: <MicrosoftCalendar />,
-    title: 'Root Page',
+    element: (
+      <Page themeId="home">
+        <Content>
+          <Grid item xs={12} md={6}>
+            <MicrosoftCalendar />
+          </Grid>
+        </Content>
+      </Page>
+    ),
+    title: 'Microsoft-Calendar Plugin Demo',
     path: '/microsoft-calendar',
   })
   .render();
