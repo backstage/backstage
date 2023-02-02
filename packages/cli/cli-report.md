@@ -127,9 +127,19 @@ Options:
 Commands:
   package-roles
   package-scripts
+  package-exports
   package-lint-configs
   react-router-deps
   help [command]
+```
+
+### `backstage-cli migrate package-exports`
+
+```
+Usage: backstage-cli migrate package-exports [options]
+
+Options:
+  -h, --help
 ```
 
 ### `backstage-cli migrate package-lint-configs`
