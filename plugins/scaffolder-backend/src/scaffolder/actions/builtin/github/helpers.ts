@@ -135,6 +135,10 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     username: owner,
   });
 
+  if (access?.startsWith(`${owner}/`)) {
+    await validateAccessTeam(client, access);
+  }
+
   const repoCreationPromise =
     user.data.type === 'Organization'
       ? client.rest.repos.createInOrg({
@@ -190,22 +194,13 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
 
   if (access?.startsWith(`${owner}/`)) {
     const [, team] = access.split('/');
-    try {
-      await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
-        org: owner,
-        team_slug: team,
-        owner,
-        repo,
-        permission: 'admin',
-      });
-    } catch (e) {
-      if (e.data.message === 'Not Found') {
-        const message = `Received 'Not Found' from the API; one of org:
-        ${owner}, team: ${team} or repo: ${repo} was not found within GitHub.`;
-        logger.warn(message);
-        throw new Error(message, { cause: e });
-      }
-    }
+    await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+      org: owner,
+      team_slug: team,
+      owner,
+      repo,
+      permission: 'admin',
+    });
     // No need to add access if it's the person who owns the personal account
   } else if (access && access !== owner) {
     await client.rest.repos.addCollaborator({
@@ -359,4 +354,23 @@ function extractCollaboratorName(
   if ('username' in collaborator) return collaborator.username;
   if ('user' in collaborator) return collaborator.user;
   return collaborator.team;
+}
+
+async function validateAccessTeam(client: Octokit, access: string) {
+  const [org, team_slug] = access.split('/');
+  try {
+    // Below rule disabled because of a 'getByName' check for a different library
+    // incorrectly triggers here.
+    // eslint-disable-next-line testing-library/no-await-sync-query
+    await client.rest.teams.getByName({
+      org,
+      team_slug,
+    });
+  } catch (e) {
+    if (e.response.data.message === 'Not Found') {
+      const message = `Received 'Not Found' from the API; one of org:
+        ${org} or team: ${team_slug} was not found within GitHub.`;
+      throw new Error(message, { cause: e });
+    }
+  }
 }
