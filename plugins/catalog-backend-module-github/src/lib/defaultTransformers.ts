@@ -16,6 +16,7 @@
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { graphql } from '@octokit/graphql';
+import { ANNOTATION_GITHUB_USER_LOGIN } from './annotation';
 import { GithubTeam, GithubUser } from './github';
 
 /**
@@ -63,7 +64,7 @@ export const defaultUserTransformer: UserTransformer = async (
     metadata: {
       name: item.login,
       annotations: {
-        'github.com/user-login': item.login,
+        [ANNOTATION_GITHUB_USER_LOGIN]: item.login,
       },
     },
     spec: {
