@@ -531,6 +531,11 @@ export async function runApiExtraction({
           const line = lines[i];
           const match = line.match(/^\/\/ @(alpha|beta|public)/);
           if (match && match[1] !== expectedTag) {
+            // Because of limitations in the type script rollup logic we need to allow public exports from the other release stages
+            // TODO(Rugvip): Try to work around the need for this exception
+            if (expectedTag !== 'public' && match[1] === 'public') {
+              continue;
+            }
             throw new Error(
               `Unexpected release tag ${match[1]} in ${
                 extractorConfig.reportFilePath
