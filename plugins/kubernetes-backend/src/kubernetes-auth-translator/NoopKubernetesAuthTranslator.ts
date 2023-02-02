@@ -19,7 +19,7 @@ import { ServiceAccountClusterDetails } from '../types/types';
 
 /**
  *
- * @alpha
+ * @public
  */
 export class NoopKubernetesAuthTranslator implements KubernetesAuthTranslator {
   async decorateClusterDetailsWithAuth(
