@@ -24,7 +24,7 @@ export type TrpcApiDefinitionWidgetProps = {
 };
 
 /** @public */
-export const TrpcApiDefinitionWidget: React.FC<TrpcApiDefinitionWidgetProps> = (
+export const TrpcApiDefinitionWidget = (
   props: TrpcApiDefinitionWidgetProps,
 ) => {
   const { definition } = props;
