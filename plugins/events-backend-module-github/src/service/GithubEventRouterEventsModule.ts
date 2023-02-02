@@ -21,7 +21,7 @@ import { GithubEventRouter } from '../router/GithubEventRouter';
 /**
  * Module for the events-backend plugin, adding an event router for GitHub.
  *
- * Registers the {@link GithubEventRouter}.
+ * Registers the `GithubEventRouter`.
  *
  * @alpha
  */

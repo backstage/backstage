@@ -21,7 +21,7 @@ import { BitbucketCloudEventRouter } from '../router/BitbucketCloudEventRouter';
 /**
  * Module for the events-backend plugin, adding an event router for Bitbucket Cloud.
  *
- * Registers the {@link BitbucketCloudEventRouter}.
+ * Registers the `BitbucketCloudEventRouter`.
  *
  * @alpha
  */

@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
+// TODO(Rugvip): Re-exported for alpha types as the API report will otherwise
+//               produce warnings due to the indirect dependency. We be nice to avoid.
+import type { EntitiesSearchFilter } from './catalog/types';
+
+export type { /** @alpha */ EntitiesSearchFilter };
+
 export * from './permissions';
 export { catalogPlugin } from './service/CatalogPlugin';

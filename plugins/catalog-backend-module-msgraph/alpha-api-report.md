@@ -4,22 +4,19 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { GroupEntity } from '@backstage/catalog-model';
-import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
-import { UserEntity } from '@backstage/catalog-model';
+import { GroupTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
+import { OrganizationTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
+import { UserTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 
 // @alpha
 export const microsoftGraphOrgEntityProviderCatalogModule: () => BackendFeature;
 
 // @alpha
 export interface MicrosoftGraphOrgEntityProviderCatalogModuleOptions {
-  // Warning: (ae-forgotten-export) The symbol "GroupTransformer" needs to be exported by the entry point alpha.d.ts
   groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
-  // Warning: (ae-forgotten-export) The symbol "OrganizationTransformer" needs to be exported by the entry point alpha.d.ts
   organizationTransformer?:
     | OrganizationTransformer
     | Record<string, OrganizationTransformer>;
-  // Warning: (ae-forgotten-export) The symbol "UserTransformer" needs to be exported by the entry point alpha.d.ts
   userTransformer?: UserTransformer | Record<string, UserTransformer>;
 }
 

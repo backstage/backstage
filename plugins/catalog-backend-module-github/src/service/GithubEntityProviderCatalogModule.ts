@@ -23,7 +23,7 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/
 import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 
 /**
- * Registers the {@link GithubEntityProvider} with the catalog processing extension point.
+ * Registers the `GithubEntityProvider` with the catalog processing extension point.
  *
  * @alpha
  */
