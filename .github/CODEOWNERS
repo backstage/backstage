@@ -35,8 +35,8 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/cloudbuild                                 @backstage/maintainers @trivago/ebarrios
 /plugins/code-coverage                              @backstage/maintainers @alde @nissayeva
 /plugins/code-coverage-backend                      @backstage/maintainers @alde @nissayeva
-/plugins/cost-insights                              @backstage/silver-lining
-/plugins/cost-insights-*                            @backstage/silver-lining
+/plugins/cost-insights                              @backstage/maintainers @backstage/silver-lining
+/plugins/cost-insights-*                            @backstage/maintainers @backstage/silver-lining
 /plugins/events-backend                             @backstage/maintainers @pjungermann
 /plugins/events-backend-module-aws-sqs              @backstage/maintainers @pjungermann
 /plugins/events-backend-module-azure                @backstage/maintainers @pjungermann
