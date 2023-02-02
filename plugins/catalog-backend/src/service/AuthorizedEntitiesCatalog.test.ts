@@ -30,7 +30,7 @@ describe('AuthorizedEntitiesCatalog', () => {
     facets: jest.fn(),
     refresh: jest.fn(),
     listAncestors: jest.fn(),
-    paginatedEntities: jest.fn(),
+    queryEntities: jest.fn(),
   };
   const fakePermissionApi = {
     authorize: jest.fn(),

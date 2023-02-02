@@ -19,9 +19,9 @@ import { Request } from 'express';
 import lodash from 'lodash';
 import { z } from 'zod';
 import {
-  PaginatedEntitiesCursorRequest,
-  PaginatedEntitiesInitialRequest,
-  PaginatedEntitiesRequest,
+  QueryEntitiesCursorRequest,
+  QueryEntitiesInitialRequest,
+  QueryEntitiesRequest,
 } from '../catalog/types';
 
 export async function requireRequestBody(req: Request): Promise<unknown> {
@@ -71,20 +71,20 @@ export function disallowReadonlyMode(readonly: boolean) {
   }
 }
 
-export function isPaginatedEntitiesInitialRequest(
-  input: PaginatedEntitiesRequest | undefined,
-): input is PaginatedEntitiesInitialRequest {
+export function isQueryEntitiesInitialRequest(
+  input: QueryEntitiesRequest | undefined,
+): input is QueryEntitiesInitialRequest {
   if (!input) {
     return false;
   }
-  return !isPaginatedEntitiesCursorRequest(input);
+  return !isQueryEntitiesCursorRequest(input);
 }
 
-export function isPaginatedEntitiesCursorRequest(
-  input: PaginatedEntitiesRequest | undefined,
-): input is PaginatedEntitiesCursorRequest {
+export function isQueryEntitiesCursorRequest(
+  input: QueryEntitiesRequest | undefined,
+): input is QueryEntitiesCursorRequest {
   if (!input) {
     return false;
   }
-  return !!(input as PaginatedEntitiesCursorRequest).cursor;
+  return !!(input as QueryEntitiesCursorRequest).cursor;
 }

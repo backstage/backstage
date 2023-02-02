@@ -37,8 +37,8 @@ import {
   EntityFacetsResponse,
   EntityFilter,
   EntityPagination,
-  PaginatedEntitiesRequest,
-  PaginatedEntitiesResponse,
+  QueryEntitiesRequest,
+  QueryEntitiesResponse,
   EntityOrder,
 } from '../catalog/types';
 import {
@@ -53,8 +53,8 @@ import {
 import { Stitcher } from '../stitching/Stitcher';
 
 import {
-  isPaginatedEntitiesCursorRequest,
-  isPaginatedEntitiesInitialRequest,
+  isQueryEntitiesCursorRequest,
+  isQueryEntitiesInitialRequest,
 } from './util';
 
 const defaultSortField: EntityOrder = {
@@ -332,9 +332,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     return { items };
   }
 
-  async paginatedEntities(
-    request?: PaginatedEntitiesRequest,
-  ): Promise<PaginatedEntitiesResponse> {
+  async queryEntities(
+    request?: QueryEntitiesRequest,
+  ): Promise<QueryEntitiesResponse> {
     const db = this.database;
     const limit = request?.limit ?? 20;
 
@@ -693,13 +693,13 @@ function decodeCursor(encodedCursor: string) {
 }
 
 function parseCursorFromRequest(
-  request?: PaginatedEntitiesRequest,
+  request?: QueryEntitiesRequest,
 ): Partial<Cursor> {
-  if (isPaginatedEntitiesInitialRequest(request)) {
+  if (isQueryEntitiesInitialRequest(request)) {
     const { filter, sortFields = [defaultSortField], query } = request;
     return { filter, sortFields, query };
   }
-  if (isPaginatedEntitiesCursorRequest(request)) {
+  if (isQueryEntitiesCursorRequest(request)) {
     try {
       return decodeCursor(request.cursor);
     } catch {

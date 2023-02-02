@@ -52,7 +52,7 @@ describe('createRouter readonly disabled', () => {
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),
-      paginatedEntities: jest.fn(),
+      queryEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -142,7 +142,7 @@ describe('createRouter readonly disabled', () => {
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
-      entitiesCatalog.paginatedEntities.mockResolvedValueOnce({
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
         entities,
         totalItems: 100,
         nextCursor: 'something',
@@ -158,7 +158,7 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('parses initial request', async () => {
-      entitiesCatalog.paginatedEntities.mockResolvedValueOnce({
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
         entities: [],
         totalItems: 0,
       });
@@ -167,8 +167,8 @@ describe('createRouter readonly disabled', () => {
       );
 
       expect(response.status).toEqual(200);
-      expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledWith({
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
         filter: {
           anyOf: [
             {
@@ -192,7 +192,7 @@ describe('createRouter readonly disabled', () => {
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
-      entitiesCatalog.paginatedEntities.mockResolvedValueOnce({
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
         entities,
         totalItems: 100,
         nextCursor: 'next',
@@ -201,8 +201,8 @@ describe('createRouter readonly disabled', () => {
       const response = await request(app).get(
         '/entities/by-query?cursor=something',
       );
-      expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledWith({
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
         cursor: 'something',
       });
       expect(response.status).toEqual(200);
@@ -639,7 +639,7 @@ describe('createRouter readonly enabled', () => {
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),
-      paginatedEntities: jest.fn(),
+      queryEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -830,7 +830,7 @@ describe('NextRouter permissioning', () => {
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),
-      paginatedEntities: jest.fn(),
+      queryEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
