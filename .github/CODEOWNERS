@@ -7,7 +7,7 @@
 *                                                   @backstage/maintainers
 yarn.lock                                           @backstage/maintainers @backstage-service
 */yarn.lock                                         @backstage/maintainers @backstage-service
-/.changeset                                        
+/.changeset/*.md                                        
 /cypress/src/integration/plugins/techdocs.spec.ts   @backstage/techdocs-core
 /docs/assets/search                                 @backstage/techdocs-core
 /docs/features/search                               @backstage/techdocs-core
