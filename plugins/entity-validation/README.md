@@ -2,6 +2,8 @@
 
 This plugin creates a new page in Backstage where the user can validate the entities.
 
+![Entity Validation](./docs/entity-validation.png)
+
 ## Getting started
 
 First of all, install the package in the `app` package by running the following command:
