@@ -44,7 +44,10 @@ import {
   IdentityApiGetIdentityRequest,
   BackstageIdentityResponse,
 } from '@backstage/plugin-auth-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 
 const mockAccess = jest.fn();
 
@@ -142,7 +145,14 @@ describe('createRouter', () => {
 
       const permissionApi: PermissionEvaluator = {
         authorize: jest.fn(),
-        authorizeConditional: jest.fn(),
+        authorizeConditional: jest.fn().mockResolvedValue([
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]),
       };
 
       jest.spyOn(taskBroker, 'dispatch');
@@ -753,7 +763,14 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
       const permissionApi: PermissionEvaluator = {
         authorize: jest.fn(),
-        authorizeConditional: jest.fn(),
+        authorizeConditional: jest.fn().mockResolvedValue([
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]),
       };
 
       const router = await createRouter({
