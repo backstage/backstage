@@ -16,7 +16,7 @@
 
 // @ts-check
 
-/** @type {import('@manypkg/get-packages')} */
+const path = require('path');
 const manypkg = require('@manypkg/get-packages');
 
 /**
@@ -31,6 +31,7 @@ const manypkg = require('@manypkg/get-packages');
  * @property {ExtendedPackage} root
  * @property {ExtendedPackage[]} list
  * @property {Map<string, ExtendedPackage>} map
+ * @property {(path: string) => ExtendedPackage | undefined} byPath
  */
 
 // Loads all packages in the monorepo once, and caches the result
@@ -56,6 +57,13 @@ module.exports = (function () {
       map: new Map(packages.packages.map(pkg => [pkg.packageJson.name, pkg])),
       list: packages.packages,
       root: packages.root,
+      byPath(filePath) {
+        return packages.packages.find(pkg => {
+          if (!path.relative(pkg.dir, filePath).startsWith('..')) {
+            return pkg;
+          }
+        });
+      },
     };
     lastLoadAt = Date.now();
     return result;
