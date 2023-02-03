@@ -79,7 +79,7 @@ export type BadgeSpec = {
 };
 
 // @public (undocumented)
-export type BadgeStyle = typeof BADGE_STYLES[number];
+export type BadgeStyle = (typeof BADGE_STYLES)[number];
 
 // @public (undocumented)
 export const createDefaultBadgeFactories: () => BadgeFactories;
