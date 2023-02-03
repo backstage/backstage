@@ -338,26 +338,27 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const db = this.database;
     const limit = request?.limit ?? 20;
 
-    const cursor: Omit<Cursor, 'sortFieldValues'> & {
-      sortFieldValues?: (string | null)[];
+    const cursor: Omit<Cursor, 'orderFieldValues'> & {
+      orderFieldValues?: (string | null)[];
     } = {
-      sortFields: [defaultSortField],
+      orderFields: [defaultSortField],
       isPrevious: false,
       ...parseCursorFromRequest(request),
     };
 
     const isFetchingBackwards = cursor.isPrevious;
 
-    if (cursor.sortFields.length > 1) {
+    if (cursor.orderFields.length > 1) {
       this.logger.warn(`Only one sort field is supported, ignoring the rest`);
     }
 
     const sortField: EntityOrder = {
       ...defaultSortField,
-      ...cursor.sortFields[0],
+      ...cursor.orderFields[0],
     };
 
-    const [prevItemSortFieldValue, prevItemUid] = cursor.sortFieldValues || [];
+    const [prevItemOrderFieldValue, prevItemUid] =
+      cursor.orderFieldValues || [];
 
     const dbQuery = db('search')
       .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
@@ -379,14 +380,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isOrderingDescending = sortField.order === 'desc';
 
-    if (prevItemSortFieldValue) {
+    if (prevItemOrderFieldValue) {
       dbQuery.andWhere(
         'value',
         isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-        prevItemSortFieldValue,
+        prevItemOrderFieldValue,
       );
       dbQuery.orWhere(function nested() {
-        this.where('value', '=', prevItemSortFieldValue).andWhere(
+        this.where('value', '=', prevItemOrderFieldValue).andWhere(
           'search.entity_id',
           isFetchingBackwards !== isOrderingDescending ? '<' : '>',
           prevItemUid,
@@ -451,7 +452,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const nextCursor = hasMoreResults
       ? encodeCursor({
           ...cursor,
-          sortFieldValues: sortFieldsFromRow(lastRow),
+          orderFieldValues: sortFieldsFromRow(lastRow),
           firstSortFieldValues,
           isPrevious: false,
           totalItems,
@@ -464,7 +465,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       !isEqual(sortFieldsFromRow(firstRow), cursor.firstSortFieldValues)
         ? encodeCursor({
             ...cursor,
-            sortFieldValues: sortFieldsFromRow(firstRow),
+            orderFieldValues: sortFieldsFromRow(firstRow),
             firstSortFieldValues: cursor.firstSortFieldValues,
             isPrevious: true,
             totalItems,
@@ -475,7 +476,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .map(e => JSON.parse(e.final_entity!))
       .map(e => (request?.fields ? request.fields(e) : e));
 
-    return { items, pageInfo: { prevCursor, nextCursor }, totalItems };
+    return {
+      items,
+      pageInfo: {
+        ...(!!prevCursor && { prevCursor }),
+        ...(!!nextCursor && { nextCursor }),
+      },
+      totalItems,
+    };
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
@@ -671,10 +679,10 @@ const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
 );
 
 export const cursorParser: z.ZodSchema<Cursor> = z.object({
-  sortFields: z.array(
+  orderFields: z.array(
     z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
   ),
-  sortFieldValues: z.array(z.string().or(z.null())),
+  orderFieldValues: z.array(z.string().or(z.null())),
   filter: entityFilterParser.optional(),
   isPrevious: z.boolean(),
   query: z.string().optional(),
@@ -696,8 +704,12 @@ function parseCursorFromRequest(
   request?: QueryEntitiesRequest,
 ): Partial<Cursor> {
   if (isQueryEntitiesInitialRequest(request)) {
-    const { filter, sortFields = [defaultSortField], query } = request;
-    return { filter, sortFields, query };
+    const {
+      filter,
+      orderFields: sortFields = [defaultSortField],
+      query,
+    } = request;
+    return { filter, orderFields: sortFields, query };
   }
   if (isQueryEntitiesCursorRequest(request)) {
     try {
