@@ -41,6 +41,20 @@ module.exports = {
       if (exp && (exp[imp.path] || exp['./' + imp.path])) {
         return;
       }
+      if (!exp) {
+        // If there's no exports field, we allow anything listed in files, except dist
+        const files = imp.package.packageJson.files;
+        if (
+          !files ||
+          files.some(f => !f.startsWith('dist') && imp.path.startsWith(f))
+        ) {
+          return;
+        }
+        // And also package.json
+        if (imp.path === 'package.json') {
+          return;
+        }
+      }
 
       context.report({
         node: node,
