@@ -214,7 +214,14 @@ const generatedColumns: TableColumn[] = [
     field: 'workflow.name',
     highlight: true,
     render: (row: Partial<CITableBuildInfo>) => (
-      <Link to={row?.workflow?.url ?? ''}>{row?.workflow?.name}</Link>
+      <Link
+        to={
+          `https://app.circleci.com/pipelines/workflows/${row?.workflow?.id}` ??
+          ''
+        }
+      >
+        {row?.workflow?.name}
+      </Link>
     ),
   },
   {
