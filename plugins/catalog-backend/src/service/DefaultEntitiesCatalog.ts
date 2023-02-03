@@ -475,7 +475,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .map(e => JSON.parse(e.final_entity!))
       .map(e => (request?.fields ? request.fields(e) : e));
 
-    return { entities, prevCursor, nextCursor, totalItems };
+    return { entities, pageInfo: { prevCursor, nextCursor }, totalItems };
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
