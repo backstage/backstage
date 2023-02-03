@@ -343,14 +343,16 @@ describe('CatalogClient', () => {
       await client.queryEntities({
         fields: ['a', 'b'],
         limit: 100,
-        query: 'query',
+        fullTextFilter: {
+          term: 'query',
+        },
         orderFields: [
           { field: 'metadata.name', order: 'asc' },
           { field: 'metadata.uid', order: 'desc' },
         ],
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?limit=100&sortField=metadata.name,asc&sortField=metadata.uid,desc&fields=a,b&query=query',
+        '?limit=100&sortField=metadata.name,asc&sortField=metadata.uid,desc&fields=a,b&fullTextFilterTerm=query',
       );
     });
 
@@ -366,7 +368,9 @@ describe('CatalogClient', () => {
       await client.queryEntities({
         fields: ['a', 'b'],
         limit: 100,
-        query: 'query',
+        fullTextFilter: {
+          term: 'query',
+        },
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
         cursor: 'cursor',
       });

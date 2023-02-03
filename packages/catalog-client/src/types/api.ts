@@ -401,7 +401,10 @@ export type QueryEntitiesInitialRequest = {
   limit?: number;
   filter?: EntityFilterQuery;
   orderFields?: EntityOrderQuery;
-  query?: string;
+  fullTextFilter?: {
+    term: string;
+    fields?: string[];
+  };
 };
 
 /**
