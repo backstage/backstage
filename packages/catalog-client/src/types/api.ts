@@ -424,7 +424,7 @@ export type QueryEntitiesCursorRequest = {
  */
 export type QueryEntitiesResponse = {
   /* The list of entities for the current request */
-  entities: Entity[];
+  items: Entity[];
   /* The number of entities among all the requests */
   totalItems: number;
   pageInfo: {
