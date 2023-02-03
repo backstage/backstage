@@ -15,9 +15,11 @@
  */
 
 import {
+  Cursor,
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
 } from '../../catalog/types';
+import { encodeCursor } from '../util';
 import { parseQueryEntitiesParams } from './parseQueryEntitiesParams';
 
 describe('parseQueryEntitiesParams', () => {
@@ -77,29 +79,40 @@ describe('parseQueryEntitiesParams', () => {
 
   describe('cursor request', () => {
     it('should parse all the defined params', () => {
+      const cursor: Cursor = {
+        totalItems: 100,
+        orderFields: [],
+        orderFieldValues: [],
+        isPrevious: false,
+      };
       const validRequest = {
         authorizationToken: 'to_not_be_returned',
         fields: ['kind'],
         limit: '3',
-        cursor: 'cursor',
+        cursor: encodeCursor(cursor),
       };
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
       ) as QueryEntitiesCursorRequest;
       expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
-      expect(parsedObj.cursor).toBe('cursor');
+      expect(parsedObj.cursor).toEqual(cursor);
     });
 
     it('should ignore unknown params', () => {
+      const cursor: Cursor = {
+        totalItems: 100,
+        orderFields: [],
+        orderFieldValues: [],
+        isPrevious: false,
+      };
       const validRequest = {
         authorizationToken: 'to_not_be_returned',
         fields: ['kind'],
         limit: '3',
-        cursor: 'cursor',
+        cursor: encodeCursor(cursor),
         filter: ['a=1', 'b=2'],
-        sortField: 'sortField',
-        sortFieldOrder: 'desc',
+        orderField: 'orderField,desc',
         query: 'query',
       };
       const parsedObj = parseQueryEntitiesParams(
@@ -107,10 +120,9 @@ describe('parseQueryEntitiesParams', () => {
       ) as QueryEntitiesCursorRequest;
       expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
-      expect(parsedObj.cursor).toBe('cursor');
+      expect(parsedObj.cursor).toEqual(cursor);
       expect(parsedObj).not.toHaveProperty('filter');
-      expect(parsedObj).not.toHaveProperty('sortField');
-      expect(parsedObj).not.toHaveProperty('sortFieldOrder');
+      expect(parsedObj).not.toHaveProperty('orderField');
       expect(parsedObj).not.toHaveProperty('query');
     });
 

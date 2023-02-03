@@ -26,6 +26,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import {
+  Cursor,
   EntitiesBatchRequest,
   EntitiesBatchResponse,
   EntitiesCatalog,
@@ -39,7 +40,7 @@ import {
   QueryEntitiesResponse,
 } from '../catalog/types';
 import { basicEntityFilter } from './request/basicEntityFilter';
-import { isQueryEntitiesInitialRequest } from './util';
+import { isQueryEntitiesCursorRequest } from './util';
 
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   constructor(
@@ -110,12 +111,12 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   }
 
   async queryEntities(
-    request?: QueryEntitiesRequest,
+    request: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
     const authorizeDecision = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
-        { token: request?.authorizationToken },
+        { token: request.authorizationToken },
       )
     )[0];
 
@@ -132,14 +133,52 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
         authorizeDecision.conditions,
       );
 
-      return this.entitiesCatalog.queryEntities({
-        ...request,
-        ...(isQueryEntitiesInitialRequest(request) && {
-          filter: request?.filter
+      let permissionedRequest: QueryEntitiesRequest;
+      let requestFilter: EntityFilter | undefined;
+
+      if (isQueryEntitiesCursorRequest(request)) {
+        requestFilter = request.cursor.filter;
+
+        permissionedRequest = {
+          ...request,
+          cursor: {
+            ...request.cursor,
+            filter: request.cursor.filter
+              ? { allOf: [permissionFilter, request.cursor.filter] }
+              : permissionFilter,
+          },
+        };
+      } else {
+        permissionedRequest = {
+          ...request,
+          filter: request.filter
             ? { allOf: [permissionFilter, request.filter] }
             : permissionFilter,
-        }),
-      });
+        };
+        requestFilter = request.filter;
+      }
+
+      const response = await this.entitiesCatalog.queryEntities(
+        permissionedRequest,
+      );
+
+      const prevCursor: Cursor | undefined = response.pageInfo.prevCursor && {
+        ...response.pageInfo.prevCursor,
+        filter: requestFilter,
+      };
+
+      const nextCursor: Cursor | undefined = response.pageInfo.nextCursor && {
+        ...response.pageInfo.nextCursor,
+        filter: requestFilter,
+      };
+
+      return {
+        ...response,
+        pageInfo: {
+          prevCursor,
+          nextCursor,
+        },
+      };
     }
 
     return this.entitiesCatalog.queryEntities(request);

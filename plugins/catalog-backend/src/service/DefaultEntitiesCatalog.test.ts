@@ -1291,26 +1291,6 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response5.totalItems).toBe(6);
       },
     );
-
-    it('should throw in case of malformed cursor', async () => {
-      const catalog = new DefaultEntitiesCatalog({
-        database: knex,
-        logger: getVoidLogger(),
-        stitcher,
-      });
-
-      const cursor = Buffer.from(
-        JSON.stringify({ filter: 'notavalidfilter' }),
-        'utf8',
-      ).toString('base64');
-      const request: QueryEntitiesCursorRequest = {
-        cursor,
-      };
-
-      await expect(catalog.queryEntities(request)).rejects.toThrow(
-        Error('Malformed cursor, could not be parsed'),
-      );
-    });
   });
 
   describe('removeEntityByUid', () => {

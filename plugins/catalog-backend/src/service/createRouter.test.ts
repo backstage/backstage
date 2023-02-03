@@ -25,7 +25,7 @@ import {
 } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
-import { EntitiesCatalog } from '../catalog/types';
+import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { LocationInput, LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
 import { createRouter } from './createRouter';
@@ -37,6 +37,7 @@ import {
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { z } from 'zod';
+import { encodeCursor } from './util';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -145,7 +146,7 @@ describe('createRouter readonly disabled', () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         items,
         totalItems: 100,
-        pageInfo: { nextCursor: 'something' },
+        pageInfo: { nextCursor: mockCursor() },
       });
 
       const response = await request(app).get('/entities/by-query');
@@ -154,7 +155,7 @@ describe('createRouter readonly disabled', () => {
         items,
         totalItems: 100,
         pageInfo: {
-          nextCursor: 'something',
+          nextCursor: expect.any(String),
         },
       });
     });
@@ -202,22 +203,49 @@ describe('createRouter readonly disabled', () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         items,
         totalItems: 100,
-        pageInfo: { nextCursor: 'next' },
+        pageInfo: { nextCursor: mockCursor() },
       });
 
+      const cursor = mockCursor({ totalItems: 100, isPrevious: false });
+
       const response = await request(app).get(
-        '/entities/by-query?cursor=something',
+        `/entities/by-query?cursor=${encodeCursor(cursor)}`,
       );
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
-        cursor: 'something',
+        cursor,
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         items,
         totalItems: 100,
-        pageInfo: { nextCursor: 'next' },
+        pageInfo: { nextCursor: expect.any(String) },
       });
+    });
+
+    it('should throw in case of malformed cursor', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items,
+        totalItems: 100,
+        pageInfo: { nextCursor: mockCursor() },
+      });
+
+      let response = await request(app).get(
+        `/entities/by-query?cursor=${Buffer.from(
+          JSON.stringify({ bad: 'cursor' }),
+          'utf8',
+        ).toString('base64')}`,
+      );
+      expect(response.status).toEqual(400);
+      expect(response.body.error.message).toMatch(/Malformed cursor/);
+
+      response = await request(app).get(`/entities/by-query?cursor=badcursor`);
+      expect(response.status).toEqual(400);
+      expect(response.body.error.message).toMatch(/Malformed cursor/);
     });
   });
 
@@ -908,3 +936,12 @@ describe('NextRouter permissioning', () => {
     });
   });
 });
+
+function mockCursor(partialCursor?: Partial<Cursor>): Cursor {
+  return {
+    orderFields: [],
+    orderFieldValues: [],
+    isPrevious: false,
+    ...partialCursor,
+  };
+}

@@ -179,7 +179,7 @@ export interface EntitiesCatalog {
    *
    * @param request
    */
-  queryEntities(request?: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
+  queryEntities(request: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
 
   /**
    * Removes a single entity.
@@ -242,7 +242,7 @@ export interface QueryEntitiesCursorRequest {
   authorizationToken?: string;
   fields?: (entity: Entity) => Entity;
   limit?: number;
-  cursor: string;
+  cursor: Cursor;
 }
 
 /**
@@ -258,11 +258,11 @@ export interface QueryEntitiesResponse {
     /**
      * The cursor of the next pagination request.
      */
-    nextCursor?: string;
+    nextCursor?: Cursor;
     /**
      * The cursor of the previous pagination request.
      */
-    prevCursor?: string;
+    prevCursor?: Cursor;
   };
   /**
    * the total number of entities matching the current filters.
