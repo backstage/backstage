@@ -17,5 +17,6 @@ export default async function createPlugin(
     reader: env.reader,
     catalogClient,
     identity: env.identity,
+    permissionApi: env.permissions,
   });
 }
