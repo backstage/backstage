@@ -227,7 +227,7 @@ export interface QueryEntitiesInitialRequest {
   fields?: (entity: Entity) => Entity;
   limit?: number;
   filter?: EntityFilter;
-  sortFields?: EntityOrder[];
+  orderFields?: EntityOrder[];
   query?: string;
 }
 
@@ -275,11 +275,11 @@ export type Cursor = {
    * An array of fields used for sorting the data.
    * For example, [ { field: 'metadata.name', order: 'asc' } ]
    */
-  sortFields: EntityOrder[];
+  orderFields: EntityOrder[];
   /**
    * The values of the fields of a specific item used for paginating the data.
    */
-  sortFieldValues: Array<string | null>;
+  orderFieldValues: Array<string | null>;
   /**
    * A filter to be applied to the full list of entities.
    */

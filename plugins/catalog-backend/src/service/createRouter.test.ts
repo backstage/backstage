@@ -153,7 +153,9 @@ describe('createRouter readonly disabled', () => {
       expect(response.body).toEqual({
         items,
         totalItems: 100,
-        nextCursor: 'something',
+        pageInfo: {
+          nextCursor: 'something',
+        },
       });
     });
 
@@ -181,7 +183,7 @@ describe('createRouter readonly disabled', () => {
             { allOf: [{ key: 'c', values: ['4'] }] },
           ],
         },
-        sortFields: [
+        orderFields: [
           { field: 'metadata.name', order: 'asc' },
           { field: 'metadata.uid', order: 'desc' },
         ],
@@ -210,7 +212,7 @@ describe('createRouter readonly disabled', () => {
       expect(response.body).toEqual({
         items,
         totalItems: 100,
-        nextCursor: 'next',
+        pageInfo: { nextCursor: 'next' },
       });
     });
   });

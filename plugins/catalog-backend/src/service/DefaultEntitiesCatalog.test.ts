@@ -767,7 +767,7 @@ describe('DefaultEntitiesCatalog', () => {
         const request1: QueryEntitiesInitialRequest = {
           filter,
           limit,
-          sortFields: [{ field: 'metadata.name', order: 'asc' }],
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
         };
         const response1 = await catalog.queryEntities(request1);
         expect(response1.items).toEqual([entityFrom('A'), entityFrom('B')]);
@@ -912,7 +912,7 @@ describe('DefaultEntitiesCatalog', () => {
         const request1: QueryEntitiesInitialRequest = {
           filter,
           limit,
-          sortFields: [{ field: 'metadata.name', order: 'desc' }],
+          orderFields: [{ field: 'metadata.name', order: 'desc' }],
         };
         const response1 = await catalog.queryEntities(request1);
         expect(response1.items).toEqual([entityFrom('G'), entityFrom('F')]);
@@ -1056,7 +1056,7 @@ describe('DefaultEntitiesCatalog', () => {
           filter,
           limit: 100,
 
-          sortFields: [{ field: 'metadata.name', order: 'asc' }],
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
           query: 'cAt ',
         };
         const response = await catalog.queryEntities(request);
@@ -1098,7 +1098,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit: 0,
         };
         const response = await catalog.queryEntities(request);
-        expect(response).toEqual({ totalItems: 20, entities: [] });
+        expect(response).toEqual({ totalItems: 20, items: [], pageInfo: {} });
       },
     );
 
@@ -1127,7 +1127,7 @@ describe('DefaultEntitiesCatalog', () => {
         // initial request
         const request1: QueryEntitiesInitialRequest = {
           limit,
-          sortFields: [{ field: 'metadata.name', order: 'asc' }],
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
         };
         const response1 = await catalog.queryEntities(request1);
         expect(response1.items).toMatchObject([
