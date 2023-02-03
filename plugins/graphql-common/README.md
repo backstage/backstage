@@ -9,7 +9,7 @@ types and how to resolve them.
   - [Directives API](#directives-api)
     - [`@field`](#field)
     - [`@relation`](#relation)
-    - [`@extend`](#extend)
+    - [`@inherit`](#inherit)
 - [Integrations](#integrations)
   - [Codegen/TypeScript](#codegen-typescript)
 - [Questions](#questions)
@@ -172,13 +172,13 @@ type System {
 }
 ```
 
-#### `@extend`
+#### `@inherit`
 
-The `@extend` directive allows you to inherit fields from another
+The `@inherit` directive allows you to inherit fields from another
 entity. We created this directive to make it easier to implement
-interfaces that extend from other interfaces. It makes GraphQL types
+interfaces that inherit from other interfaces. It makes GraphQL types
 similar to extending types in TypeScript. In TypeScript, when a class
-extends another class, the child class automatically inherits
+inherits another class, the child class automatically inherits
 properties and methods of the parent class. This functionality doesn't
 have an equivalent in GraphQL. Without this directive, the `IService`
 interface in GraphQL would need to reimplement many fields that are
@@ -192,7 +192,7 @@ defined on implemented interfaces which leads to lots of duplication.
    includes all of the properties of the parent.
 
 ```graphql
-interface IService @extend(interface: "IComponent") {
+interface IService @inherit(interface: "IComponent") {
   endpoint: String! @field(at: "spec.endpoint")
 }
 ```
@@ -215,18 +215,18 @@ type Service implements IService & IComponent & IEntity & Node {
 }
 ```
 
-2. In order to extend multiple levels of inheritance, you must define
+2. In order to inherit multiple levels of inheritance, you must define
    a discriminator by using `when/is` arguments. The structure of
    `when` is the same as the `at` argument for the [`@field`](#field)
    directive. The `is` argument is a value which is used to compare
    with the value found at the `when` path. So in this example we are
-   extending `IRepository` from the `IEntity` interface and we presume
+   inheriting `IRepository` from the `IEntity` interface and we presume
    if an entity from a data source has the `kind` field which is equal
    to `Repository`, the entity will be `Repository` type.
 
 ```graphql
 interface IRepository
-  @extend(interface: "IEntity", when: "kind", is: "Repository") {
+  @inherit(interface: "IEntity", when: "kind", is: "Repository") {
   languages: [String] @field(at: "spec.languages")
 }
 ```
@@ -281,7 +281,7 @@ You might notice that if you have a `union` type which is used in
 union Owner = IUser | IGroup
 
 interface IResource
-  @extend(interface: "IEntity", when: "kind", is: "Resource") {
+  @inherit(interface: "IEntity", when: "kind", is: "Resource") {
   owners: Connection! @relation(name: "ownedBy", nodeType: "Owner")
 }
 ```
