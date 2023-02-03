@@ -70,7 +70,11 @@ export const MICROSOFT_GRAPH_USER_ID_ANNOTATION = 'graph.microsoft.com/user-id';
 export class MicrosoftGraphClient {
   constructor(baseUrl: string, tokenCredential: TokenCredential);
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient;
-  getGroupMembers(groupId: string): AsyncIterable<GroupMember>;
+  getGroupMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<GroupMember>;
   // (undocumented)
   getGroupPhoto(groupId: string, sizeId?: string): Promise<string | undefined>;
   getGroupPhotoWithSizeLimit(
@@ -81,6 +85,11 @@ export class MicrosoftGraphClient {
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
   ): AsyncIterable<MicrosoftGraph.Group>;
+  getGroupUserMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<MicrosoftGraph.User>;
   getOrganization(tenantId: string): Promise<MicrosoftGraph.Organization>;
   // (undocumented)
   getUserPhoto(userId: string, sizeId?: string): Promise<string | undefined>;
@@ -88,10 +97,6 @@ export class MicrosoftGraphClient {
     userId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  getUserProfile(
-    userId: string,
-    query?: ODataQuery,
-  ): Promise<MicrosoftGraph.User>;
   getUsers(
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
@@ -231,6 +236,7 @@ export type ODataQuery = {
   expand?: string;
   select?: string[];
   count?: boolean;
+  top?: number;
 };
 
 // @public
