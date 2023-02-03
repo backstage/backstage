@@ -17,7 +17,7 @@
 // This is a bit of a hack that we use to avoid having to redeclare these types
 // within this package or have an explicit dependency on core-app-api.
 // These types end up being inlined and duplicated into this package at build time.
-// eslint-disable-next-line no-restricted-imports
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 export type {
   BootErrorPageProps,
   SignInPageProps,

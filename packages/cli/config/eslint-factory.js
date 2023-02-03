@@ -64,7 +64,7 @@ function createConfig(dir, extraConfig = {}) {
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
-    plugins: ['import', 'monorepo', ...(plugins ?? [])],
+    plugins: ['import', ...(plugins ?? [])],
     env: {
       jest: true,
       ...env,
@@ -87,7 +87,6 @@ function createConfig(dir, extraConfig = {}) {
       '@typescript-eslint/no-shadow': 'error',
       '@typescript-eslint/no-redeclare': 'error',
       'no-undef': 'off',
-      'monorepo/no-relative-import': 'error',
       'import/newline-after-import': 'error',
       'no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-expressions': 'error',
@@ -110,9 +109,6 @@ function createConfig(dir, extraConfig = {}) {
             ...(restrictedSrcImports ?? []),
           ],
           patterns: [
-            // Avoid cross-package imports
-            '**/../../**/*/src/**',
-            '**/../../**/*/src',
             // Prevent imports of stories or tests
             '*.stories*',
             '*.test*',
@@ -162,8 +158,6 @@ function createConfig(dir, extraConfig = {}) {
                 ...(restrictedImports ?? []),
                 ...(restrictedTestImports ?? []),
               ],
-              // Avoid cross-package imports
-              patterns: ['**/../../**/*/src/**', '**/../../**/*/src'],
             },
           ],
         },
