@@ -533,6 +533,14 @@ export const createPublishGitlabMergeRequestAction: (options: {
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
+// @alpha
+export const createScaffolderConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-template'>,
+  conditions: PermissionCriteria<
+    PermissionCondition<'scaffolder-template', PermissionRuleParams>
+  >,
+) => ConditionalPolicyDecision;
+
 // @public @deprecated (undocumented)
 export const createTemplateAction: <
   TParams,
@@ -691,6 +699,18 @@ export type RunCommandOptions = {
   options?: SpawnOptionsWithoutStdio;
   logStream?: Writable;
 };
+
+// @alpha
+export const scaffolderConditions: Conditions<{
+  hasTag: PermissionRule<
+    TemplateParameter | TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-template',
+    {
+      tag: string;
+    }
+  >;
+}>;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
