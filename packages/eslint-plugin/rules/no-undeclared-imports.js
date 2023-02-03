@@ -135,9 +135,7 @@ module.exports = {
       ? context.getPhysicalFilename()
       : context.getFilename();
 
-    const localPkg = packages.list.find(p =>
-      filePath.startsWith(p.dir + path.sep),
-    );
+    const localPkg = packages.byPath(filePath);
     if (!localPkg) {
       return {};
     }

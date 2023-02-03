@@ -20,12 +20,14 @@ module.exports = {
       plugins: ['@backstage'],
       rules: {
         '@backstage/no-forbidden-package-imports': 'error',
+        '@backstage/no-relative-monorepo-imports': 'error',
         '@backstage/no-undeclared-imports': 'error',
       },
     },
   },
   rules: {
     'no-forbidden-package-imports': require('./rules/no-forbidden-package-imports'),
+    'no-relative-monorepo-imports': require('./rules/no-relative-monorepo-imports'),
     'no-undeclared-imports': require('./rules/no-undeclared-imports'),
   },
 };
