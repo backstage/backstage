@@ -214,7 +214,13 @@ export class CatalogClient implements CatalogApi {
     const params: string[] = [];
 
     if (isQueryEntitiesInitialRequest(request)) {
-      const { fields = [], filter, limit, orderFields, query } = request;
+      const {
+        fields = [],
+        filter,
+        limit,
+        orderFields,
+        fullTextFilter,
+      } = request;
       params.push(...this.getParams(filter));
 
       if (limit !== undefined) {
@@ -229,9 +235,12 @@ export class CatalogClient implements CatalogApi {
         params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
       }
 
-      const normalizedQuery = query?.trim();
-      if (normalizedQuery) {
-        params.push(`query=${normalizedQuery}`);
+      const normalizedFullTextFilterTerm = fullTextFilter?.term?.trim();
+      if (normalizedFullTextFilterTerm) {
+        params.push(`fullTextFilterTerm=${normalizedFullTextFilterTerm}`);
+      }
+      if (fullTextFilter?.fields?.length) {
+        params.push(`fullTextFilterFields=${fullTextFilter.fields.join(',')}`);
       }
     } else {
       const { fields = [], limit, cursor } = request;
