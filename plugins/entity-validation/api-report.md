@@ -9,12 +9,9 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const EntityValidationPage: ({
-  defaultPreviewCatalog,
-  locationPlaceholder,
-}: {
-  defaultPreviewCatalog?: string | undefined;
-  locationPlaceholder?: string | undefined;
+export const EntityValidationPage: (props: {
+  defaultYaml?: string | undefined;
+  defaultLocation?: string | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)

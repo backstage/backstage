@@ -17,10 +17,8 @@ import { Entity, stringifyLocationRef } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import {
-  CatalogProcessorResult,
-  processingResult,
-} from '@backstage/plugin-catalog-node';
+import { CatalogProcessorResult } from './types';
+import { processingResult } from './processingResult';
 
 // Copy from: https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/modules/util/parse.ts
 export function* parseEntityYaml(

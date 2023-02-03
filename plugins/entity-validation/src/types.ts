@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 export type ValidationOutputError = {
   type: 'error';
@@ -28,3 +29,54 @@ export type ValidationOutputOk = {
 };
 
 export type ValidationOutput = ValidationOutputOk | ValidationOutputError;
+
+export type EntityRelationSpec = {
+  /**
+   * The source entity of this relation.
+   */
+  source: CompoundEntityRef;
+
+  /**
+   * The type of the relation.
+   */
+  type: string;
+
+  /**
+   * The target entity of this relation.
+   */
+  target: CompoundEntityRef;
+};
+
+type CatalogProcessorLocationResult = {
+  type: 'location';
+  location: LocationSpec;
+};
+
+type CatalogProcessorEntityResult = {
+  type: 'entity';
+  entity: Entity;
+  location: LocationSpec;
+};
+
+type CatalogProcessorRelationResult = {
+  type: 'relation';
+  relation: EntityRelationSpec;
+};
+
+type CatalogProcessorErrorResult = {
+  type: 'error';
+  error: Error;
+  location: LocationSpec;
+};
+
+type CatalogProcessorRefreshKeysResult = {
+  type: 'refresh';
+  key: string;
+};
+
+export type CatalogProcessorResult =
+  | CatalogProcessorLocationResult
+  | CatalogProcessorEntityResult
+  | CatalogProcessorRelationResult
+  | CatalogProcessorErrorResult
+  | CatalogProcessorRefreshKeysResult;
