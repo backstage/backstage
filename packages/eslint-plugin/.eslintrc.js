@@ -16,21 +16,13 @@
 
 // Custom lint config here since source is ES5
 module.exports = {
-  plugins: ['import'],
+  plugins: ['@backstage'],
   env: {
     node: true,
     es2021: true,
   },
   rules: {
-    'import/no-extraneous-dependencies': [
-      'error',
-      {
-        devDependencies: false,
-        optionalDependencies: true,
-        peerDependencies: true,
-        bundledDependencies: true,
-      },
-    ],
-    // 'no-unused-expressions': 'off',
+    '@backstage/no-undeclared-imports': ['error'],
+    'no-unused-expressions': 'off',
   },
 };
