@@ -20,10 +20,12 @@ module.exports = {
       plugins: ['@backstage'],
       rules: {
         '@backstage/no-forbidden-package-imports': 'error',
+        '@backstage/no-undeclared-imports': 'error',
       },
     },
   },
   rules: {
     'no-forbidden-package-imports': require('./rules/no-forbidden-package-imports'),
+    'no-undeclared-imports': require('./rules/no-undeclared-imports'),
   },
 };
