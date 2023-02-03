@@ -325,6 +325,7 @@ export async function createRouter(
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(values, parameters);
+
         if (!result.valid) {
           res.status(400).json({ errors: result.errors });
           return;

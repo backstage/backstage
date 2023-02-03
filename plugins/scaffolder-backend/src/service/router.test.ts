@@ -89,8 +89,12 @@ describe('createRouter', () => {
   let loggerSpy: jest.SpyInstance;
   let taskBroker: TaskBroker;
   const catalogClient = { getEntityByRef: jest.fn() } as unknown as CatalogApi;
+  const permissionApi = {
+    authorize: jest.fn(),
+    authorizeConditional: jest.fn(),
+  } as unknown as PermissionEvaluator;
 
-  const mockTemplate: TemplateEntityV1beta3 = {
+  const getMockTemplate = (): TemplateEntityV1beta3 => ({
     apiVersion: 'scaffolder.backstage.io/v1beta3',
     kind: 'Template',
     metadata: {
@@ -117,7 +121,7 @@ describe('createRouter', () => {
         },
       },
     },
-  };
+  });
 
   const mockUser: UserEntity = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -143,18 +147,6 @@ describe('createRouter', () => {
       });
       taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
 
-      const permissionApi: PermissionEvaluator = {
-        authorize: jest.fn(),
-        authorizeConditional: jest.fn().mockResolvedValue([
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-        ]),
-      };
-
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');
       jest.spyOn(taskBroker, 'list');
@@ -177,15 +169,27 @@ describe('createRouter', () => {
         .mockImplementation(async ref => {
           const { kind } = parseEntityRef(ref);
 
-          if (kind === 'template') {
-            return mockTemplate;
+          if (kind.toLocaleLowerCase() === 'template') {
+            return getMockTemplate();
           }
 
-          if (kind === 'user') {
+          if (kind.toLocaleLowerCase() === 'user') {
             return mockUser;
           }
+
           throw new Error(`no mock found for kind: ${kind}`);
         });
+
+      jest
+        .spyOn(permissionApi, 'authorizeConditional')
+        .mockImplementation(async () => [
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]);
     });
 
     afterEach(() => {
@@ -246,6 +250,7 @@ describe('createRouter', () => {
           taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
         const mockToken =
           'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+        const mockTemplate = getMockTemplate();
 
         await request(app)
           .post('/v2/tasks')
@@ -301,6 +306,7 @@ describe('createRouter', () => {
         const broker =
           taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
         const mockToken = 'blob.eyJzdWIiOiIiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+        const mockTemplate = getMockTemplate();
 
         await request(app)
           .post('/v2/tasks')
@@ -730,6 +736,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
     });
   });
+
   describe('providing an identity api', () => {
     beforeEach(async () => {
       const logger = getVoidLogger();
@@ -761,18 +768,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         },
       );
 
-      const permissionApi: PermissionEvaluator = {
-        authorize: jest.fn(),
-        authorizeConditional: jest.fn().mockResolvedValue([
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-        ]),
-      };
-
       const router = await createRouter({
         logger: logger,
         config: new ConfigReader({}),
@@ -790,15 +785,26 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         .mockImplementation(async ref => {
           const { kind } = parseEntityRef(ref);
 
-          if (kind === 'template') {
-            return mockTemplate;
+          if (kind.toLocaleLowerCase() === 'template') {
+            return getMockTemplate();
           }
 
-          if (kind === 'user') {
+          if (kind.toLocaleLowerCase() === 'user') {
             return mockUser;
           }
           throw new Error(`no mock found for kind: ${kind}`);
         });
+
+      jest
+        .spyOn(permissionApi, 'authorizeConditional')
+        .mockImplementation(async () => [
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]);
     });
 
     afterEach(() => {
@@ -811,6 +817,62 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(response.status).toEqual(200);
         expect(response.body[0].id).toBeDefined();
         expect(response.body.length).toBeGreaterThan(8);
+      });
+    });
+
+    describe('GET /v2/templates/:namespace/:kind/:name/parameter-schema', () => {
+      it('returns the parameter schema', async () => {
+        const response = await request(app)
+          .get(
+            '/v2/templates/default/Template/create-react-app-template/parameter-schema',
+          )
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({
+          title: 'Create React App Template',
+          description: 'Create a new CRA website project',
+          steps: [
+            {
+              title: 'Please enter the following information',
+              schema: {
+                required: ['required'],
+                type: 'object',
+                properties: {
+                  required: {
+                    description: 'Required parameter',
+                    type: 'string',
+                  },
+                },
+              },
+            },
+          ],
+        });
+      });
+
+      it('filters parameters that the user is not authorized to see', async () => {
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.DENY,
+            },
+            {
+              result: AuthorizeResult.ALLOW,
+            },
+          ]);
+        const response = await request(app)
+          .get(
+            '/v2/templates/default/Template/create-react-app-template/parameter-schema',
+          )
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({
+          title: 'Create React App Template',
+          description: 'Create a new CRA website project',
+          steps: [],
+        });
       });
     });
 
@@ -829,6 +891,67 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           });
 
         expect(response.status).toEqual(400);
+      });
+
+      it('filters steps that the user is not authorized to see', async () => {
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementation(async () => [
+            {
+              result: AuthorizeResult.ALLOW,
+            },
+            {
+              result: AuthorizeResult.DENY,
+            },
+          ]);
+
+        const broker =
+          taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+        const mockTemplate = getMockTemplate();
+
+        await request(app)
+          .post('/v2/tasks')
+          .send({
+            templateRef: stringifyEntityRef({
+              kind: 'template',
+              name: 'create-react-app-template',
+            }),
+            values: {
+              required: 'required-value',
+            },
+          });
+        expect(broker).toHaveBeenCalledWith(
+          expect.objectContaining({
+            createdBy: 'user:default/guest',
+            secrets: {
+              backstageToken: 'token',
+            },
+
+            spec: {
+              apiVersion: mockTemplate.apiVersion,
+              steps: [],
+              output: mockTemplate.spec.output ?? {},
+              parameters: {
+                required: 'required-value',
+              },
+              user: {
+                entity: mockUser,
+                ref: 'user:default/guest',
+              },
+              templateInfo: {
+                entityRef: stringifyEntityRef({
+                  kind: 'Template',
+                  namespace: 'Default',
+                  name: mockTemplate.metadata?.name,
+                }),
+                baseUrl: 'https://dev.azure.com',
+                entity: {
+                  metadata: mockTemplate.metadata,
+                },
+              },
+            },
+          }),
+        );
       });
 
       it('return the template id', async () => {
@@ -857,6 +980,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       it('should call the broker with a correct spec', async () => {
         const broker =
           taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+        const mockTemplate = getMockTemplate();
 
         await request(app)
           .post('/v2/tasks')
