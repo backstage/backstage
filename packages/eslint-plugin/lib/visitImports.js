@@ -57,6 +57,36 @@ const getPackages = require('./getPackages');
  */
 
 /**
+ * @param {import('estree').ImportDeclaration | import('estree').ExportAllDeclaration | import('estree').ExportNamedDeclaration | import('estree').ImportExpression | import('estree').SimpleCallExpression} node
+ * @returns {string | undefined}
+ */
+function getImportPath(node) {
+  /** @type {import('estree').Expression | import('estree').SpreadElement | undefined | null} */
+  let pathNode;
+
+  if (node.type === 'CallExpression') {
+    if (
+      node.callee.type === 'Identifier' &&
+      node.callee.name == 'require' &&
+      node.arguments.length === 1
+    ) {
+      pathNode = node.arguments[0];
+    }
+  } else {
+    pathNode = node.source;
+  }
+
+  if (pathNode?.type !== 'Literal') {
+    return undefined;
+  }
+  if (typeof pathNode.value !== 'string') {
+    return undefined;
+  }
+
+  return pathNode.value;
+}
+
+/**
  * @param visitor - Visitor callback
  * @param {import('eslint').Rule.RuleContext} context
  * @param {ImportVisitor} visitor
@@ -68,10 +98,11 @@ module.exports = function visitImports(context, visitor) {
   }
 
   function visit(node) {
-    if (!node.source) {
+    const importPath = getImportPath(node);
+    if (!importPath) {
       return;
     }
-    const importPath = node.source.value;
+
     if (importPath[0] === '.') {
       return visitor(node, { type: 'local', path: importPath });
     }
@@ -112,5 +143,6 @@ module.exports = function visitImports(context, visitor) {
     ExportAllDeclaration: visit,
     ExportNamedDeclaration: visit,
     ImportExpression: visit,
+    CallExpression: visit,
   };
 };
