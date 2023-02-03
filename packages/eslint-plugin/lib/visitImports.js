@@ -23,6 +23,7 @@ const getPackages = require('./getPackages');
  * @typedef LocalImport
  * @type {object}
  * @property {'local'} type
+ * @property {'value' | 'type'} kind
  * @property {string} path
  */
 
@@ -30,6 +31,7 @@ const getPackages = require('./getPackages');
  * @typedef InternalImport
  * @type {object}
  * @property {'internal'} type
+ * @property {'value' | 'type'} kind
  * @property {string} path
  * @property {import('./getPackages').ExtendedPackage} package
  */
@@ -38,6 +40,7 @@ const getPackages = require('./getPackages');
  * @typedef ExternalImport
  * @type {object}
  * @property {'external'} type
+ * @property {'value' | 'type'} kind
  * @property {string} path
  * @property {string} packageName
  */
@@ -46,6 +49,7 @@ const getPackages = require('./getPackages');
  * @typedef BuiltinImport
  * @type {object}
  * @property {'builtin'} type
+ * @property {'value' | 'type'} kind
  * @property {string} path
  * @property {string} packageName
  */
@@ -58,9 +62,9 @@ const getPackages = require('./getPackages');
 
 /**
  * @param {import('estree').ImportDeclaration | import('estree').ExportAllDeclaration | import('estree').ExportNamedDeclaration | import('estree').ImportExpression | import('estree').SimpleCallExpression} node
- * @returns {string | undefined}
+ * @returns {undefined | {path: string, kind: 'type' | 'value'}}
  */
-function getImportPath(node) {
+function getImportInfo(node) {
   /** @type {import('estree').Expression | import('estree').SpreadElement | undefined | null} */
   let pathNode;
 
@@ -83,7 +87,9 @@ function getImportPath(node) {
     return undefined;
   }
 
-  return pathNode.value;
+  /** @type {any} */
+  const anyNode = node;
+  return { path: pathNode.value, kind: anyNode.importKind ?? 'value' };
 }
 
 /**
@@ -98,21 +104,21 @@ module.exports = function visitImports(context, visitor) {
   }
 
   function visit(node) {
-    const importPath = getImportPath(node);
-    if (!importPath) {
+    const info = getImportInfo(node);
+    if (!info) {
       return;
     }
 
-    if (importPath[0] === '.') {
-      return visitor(node, { type: 'local', path: importPath });
+    if (info.path[0] === '.') {
+      return visitor(node, { type: 'local', ...info });
     }
 
-    const pathParts = importPath.split('/');
+    const pathParts = info.path.split('/');
 
     // Check for match with plain name, then namespaced name
     let packageName;
     let subPath;
-    if (importPath[0] === '@') {
+    if (info.path[0] === '@') {
       packageName = pathParts.slice(0, 2).join('/');
       subPath = pathParts.slice(2).join('/');
     } else {
@@ -125,17 +131,28 @@ module.exports = function visitImports(context, visitor) {
         packageName.startsWith('node:') ||
         builtinModules.includes(packageName)
       ) {
-        return visitor(node, { type: 'builtin', path: subPath, packageName });
+        return visitor(node, {
+          type: 'builtin',
+          kind: info.kind,
+          path: subPath,
+          packageName,
+        });
       }
 
       return visitor(node, {
         type: 'external',
+        kind: info.kind,
         path: subPath,
         packageName,
       });
     }
 
-    return visitor(node, { type: 'internal', path: subPath, package: pkg });
+    return visitor(node, {
+      type: 'internal',
+      kind: info.kind,
+      path: subPath,
+      package: pkg,
+    });
   }
 
   return {
