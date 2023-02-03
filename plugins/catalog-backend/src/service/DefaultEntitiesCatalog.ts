@@ -471,11 +471,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           })
         : undefined;
 
-    const entities = rows
+    const items = rows
       .map(e => JSON.parse(e.final_entity!))
       .map(e => (request?.fields ? request.fields(e) : e));
 
-    return { entities, pageInfo: { prevCursor, nextCursor }, totalItems };
+    return { items, pageInfo: { prevCursor, nextCursor }, totalItems };
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
