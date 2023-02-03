@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-import { parseEntitySortFieldParams } from './parseEntitySortFieldParams';
+import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 
-describe('parseEntitySortFieldParams', () => {
-  it('supports no sort fields', () => {
-    const result = parseEntitySortFieldParams({});
+describe('parseEntityOrderFieldParams', () => {
+  it('supports no order fields', () => {
+    const result = parseEntityOrderFieldParams({});
     expect(result).toEqual(undefined);
   });
 
-  it('supports single sortField', () => {
-    const result = parseEntitySortFieldParams({
-      sortField: ['metadata.name,desc'],
+  it('supports single orderField', () => {
+    const result = parseEntityOrderFieldParams({
+      orderField: ['metadata.name,desc'],
     })!;
     expect(result).toEqual([{ field: 'metadata.name', order: 'desc' }]);
   });
 
-  it('supports single sortField without order', () => {
-    const result = parseEntitySortFieldParams({
-      sortField: ['metadata.name'],
+  it('supports single orderField without order', () => {
+    const result = parseEntityOrderFieldParams({
+      orderField: ['metadata.name'],
     })!;
     expect(result).toEqual([{ field: 'metadata.name' }]);
   });
 
-  it('supports multiple sort fields', () => {
-    const result = parseEntitySortFieldParams({
-      sortField: ['metadata.name,desc', 'metadata.uid,asc'],
+  it('supports multiple order fields', () => {
+    const result = parseEntityOrderFieldParams({
+      orderField: ['metadata.name,desc', 'metadata.uid,asc'],
     });
 
     expect(result).toEqual([
@@ -47,11 +47,11 @@ describe('parseEntitySortFieldParams', () => {
     ]);
   });
 
-  it('throws if sortField order is not valid', () => {
+  it('throws if orderField order is not valid', () => {
     expect(() =>
-      parseEntitySortFieldParams({
-        sortField: ['metadata.name,desc', 'metadata.uid,invalid'],
+      parseEntityOrderFieldParams({
+        orderField: ['metadata.name,desc', 'metadata.uid,invalid'],
       }),
-    ).toThrow(/Invalid sort field order/);
+    ).toThrow(/Invalid order field order/);
   });
 });

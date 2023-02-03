@@ -21,8 +21,9 @@ import {
 } from '../../catalog/types';
 import { parseIntegerParam, parseStringParam } from './common';
 import { parseEntityFilterParams } from './parseEntityFilterParams';
-import { parseEntitySortFieldParams } from './parseEntitySortFieldParams';
+import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { parseEntityTransformParams } from './parseEntityTransformParams';
+import { parseFullTextFilterFields } from './parseFullTextFilterFields';
 
 export function parseQueryEntitiesParams(
   params: Record<string, unknown>,
@@ -40,15 +41,23 @@ export function parseQueryEntitiesParams(
   }
 
   const filter = parseEntityFilterParams(params);
-  const query = parseStringParam(params.query, 'query');
-  const sortFields = parseEntitySortFieldParams(params);
+  const fullTextFilterTerm = parseStringParam(
+    params.fullTextFilterTerm,
+    'fullTextFilterTerm',
+  );
+  const fullTextFilterFields = parseFullTextFilterFields(params);
+
+  const orderFields = parseEntityOrderFieldParams(params);
 
   const response: Omit<QueryEntitiesInitialRequest, 'authorizationToken'> = {
     fields,
     filter,
     limit,
-    orderFields: sortFields,
-    query,
+    orderFields,
+    fullTextFilter: {
+      term: fullTextFilterTerm || '',
+      fields: fullTextFilterFields,
+    },
   };
 
   return response;

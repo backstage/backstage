@@ -28,8 +28,9 @@ describe('parseQueryEntitiesParams', () => {
         fields: ['kind'],
         limit: '3',
         filter: ['a=1', 'b=2'],
-        sortField: ['metadata.name,desc'],
-        query: 'query',
+        orderField: ['metadata.name,desc'],
+        fullTextFilterTerm: 'query',
+        fullTextFilterFields: 'metadata.name,metadata.namespace',
       };
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
@@ -40,7 +41,10 @@ describe('parseQueryEntitiesParams', () => {
         { field: 'metadata.name', order: 'desc' },
       ]);
       expect(parsedObj.filter).toBeDefined();
-      expect(parsedObj.query).toBe('query');
+      expect(parsedObj.fullTextFilter).toEqual({
+        term: 'query',
+        fields: ['metadata.name', 'metadata.namespace'],
+      });
       expect(parsedObj).not.toHaveProperty('authorizationToken');
       expect(parsedObj).not.toHaveProperty('cursor');
     });
@@ -52,7 +56,7 @@ describe('parseQueryEntitiesParams', () => {
       expect(parsedObj.fields).toBeUndefined();
       expect(parsedObj.orderFields).toBeUndefined();
       expect(parsedObj.filter).toBeUndefined();
-      expect(parsedObj.query).toBeUndefined();
+      expect(parsedObj.fullTextFilter).toEqual({ term: '', fields: undefined });
       expect(parsedObj).not.toHaveProperty('authorizationToken');
       expect(parsedObj).not.toHaveProperty('cursor');
     });
@@ -62,9 +66,10 @@ describe('parseQueryEntitiesParams', () => {
         limit: 'asd',
       },
       { filter: 3 },
-      { sortField: ['metadata.uid,diagonal'] },
+      { orderField: ['metadata.uid,diagonal'] },
       { fields: [4] },
-      { query: [] },
+      { fullTextFilterTerm: [] },
+      { fullTextFilterFields: 3 },
     ])('should throw if some parameter is not valid %p', params => {
       expect(() => parseQueryEntitiesParams(params)).toThrow();
     });
