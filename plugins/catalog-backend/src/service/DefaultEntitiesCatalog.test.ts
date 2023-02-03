@@ -770,7 +770,7 @@ describe('DefaultEntitiesCatalog', () => {
           sortFields: [{ field: 'metadata.name', order: 'asc' }],
         };
         const response1 = await catalog.queryEntities(request1);
-        expect(response1.entities).toEqual([entityFrom('A'), entityFrom('B')]);
+        expect(response1.items).toEqual([entityFrom('A'), entityFrom('B')]);
         expect(response1.pageInfo.nextCursor).toBeDefined();
         expect(response1.pageInfo.prevCursor).toBeUndefined();
         expect(response1.totalItems).toBe(names.length);
@@ -781,7 +781,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response2 = await catalog.queryEntities(request2);
-        expect(response2.entities).toEqual([entityFrom('C'), entityFrom('D')]);
+        expect(response2.items).toEqual([entityFrom('C'), entityFrom('D')]);
         expect(response2.pageInfo.nextCursor).toBeDefined();
         expect(response2.pageInfo.prevCursor).toBeDefined();
         expect(response2.totalItems).toBe(names.length);
@@ -792,7 +792,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response3 = await catalog.queryEntities(request3);
-        expect(response3.entities).toEqual([entityFrom('E'), entityFrom('F')]);
+        expect(response3.items).toEqual([entityFrom('E'), entityFrom('F')]);
         expect(response3.pageInfo.nextCursor).toBeDefined();
         expect(response3.pageInfo.prevCursor).toBeDefined();
         expect(response3.totalItems).toBe(names.length);
@@ -803,7 +803,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response4 = await catalog.queryEntities(request4);
-        expect(response4.entities).toEqual([entityFrom('C'), entityFrom('D')]);
+        expect(response4.items).toEqual([entityFrom('C'), entityFrom('D')]);
         expect(response4.pageInfo.nextCursor).toBeDefined();
         expect(response4.pageInfo.prevCursor).toBeDefined();
         expect(response4.totalItems).toBe(names.length);
@@ -814,7 +814,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response5 = await catalog.queryEntities(request5);
-        expect(response5.entities).toEqual([entityFrom('A'), entityFrom('B')]);
+        expect(response5.items).toEqual([entityFrom('A'), entityFrom('B')]);
         expect(response5.pageInfo.nextCursor).toBeDefined();
         expect(response5.pageInfo.prevCursor).toBeUndefined();
         expect(response5.totalItems).toBe(names.length);
@@ -825,7 +825,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response6 = await catalog.queryEntities(request6);
-        expect(response6.entities).toEqual([entityFrom('C'), entityFrom('D')]);
+        expect(response6.items).toEqual([entityFrom('C'), entityFrom('D')]);
         expect(response6.pageInfo.nextCursor).toBeDefined();
         expect(response6.pageInfo.prevCursor).toBeDefined();
         expect(response6.totalItems).toBe(names.length);
@@ -836,7 +836,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response7 = await catalog.queryEntities(request7);
-        expect(response7.entities).toEqual([entityFrom('E'), entityFrom('F')]);
+        expect(response7.items).toEqual([entityFrom('E'), entityFrom('F')]);
         expect(response7.pageInfo.nextCursor).toBeDefined();
         expect(response7.pageInfo.prevCursor).toBeDefined();
         expect(response7.totalItems).toBe(names.length);
@@ -847,7 +847,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit: limit + 1,
         };
         const response7bis = await catalog.queryEntities(request7bis);
-        expect(response7bis.entities).toEqual([
+        expect(response7bis.items).toEqual([
           entityFrom('E'),
           entityFrom('F'),
           entityFrom('G'),
@@ -862,7 +862,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response8 = await catalog.queryEntities(request8);
-        expect(response8.entities).toEqual([entityFrom('G')]);
+        expect(response8.items).toEqual([entityFrom('G')]);
         expect(response8.pageInfo.nextCursor).toBeUndefined();
         expect(response8.pageInfo.prevCursor).toBeDefined();
         expect(response8.totalItems).toBe(names.length);
@@ -915,7 +915,7 @@ describe('DefaultEntitiesCatalog', () => {
           sortFields: [{ field: 'metadata.name', order: 'desc' }],
         };
         const response1 = await catalog.queryEntities(request1);
-        expect(response1.entities).toEqual([entityFrom('G'), entityFrom('F')]);
+        expect(response1.items).toEqual([entityFrom('G'), entityFrom('F')]);
         expect(response1.pageInfo.nextCursor).toBeDefined();
         expect(response1.pageInfo.prevCursor).toBeUndefined();
         expect(response1.totalItems).toBe(names.length);
@@ -926,7 +926,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response2 = await catalog.queryEntities(request2);
-        expect(response2.entities).toEqual([entityFrom('E'), entityFrom('D')]);
+        expect(response2.items).toEqual([entityFrom('E'), entityFrom('D')]);
         expect(response2.pageInfo.nextCursor).toBeDefined();
         expect(response2.pageInfo.prevCursor).toBeDefined();
         expect(response2.totalItems).toBe(names.length);
@@ -937,7 +937,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response3 = await catalog.queryEntities(request3);
-        expect(response3.entities).toEqual([entityFrom('C'), entityFrom('B')]);
+        expect(response3.items).toEqual([entityFrom('C'), entityFrom('B')]);
         expect(response3.pageInfo.nextCursor).toBeDefined();
         expect(response3.pageInfo.prevCursor).toBeDefined();
         expect(response3.totalItems).toBe(names.length);
@@ -949,7 +949,7 @@ describe('DefaultEntitiesCatalog', () => {
         };
         const response4 = await catalog.queryEntities(request4);
 
-        expect(response4.entities).toEqual([entityFrom('E'), entityFrom('D')]);
+        expect(response4.items).toEqual([entityFrom('E'), entityFrom('D')]);
         expect(response4.pageInfo.nextCursor).toBeDefined();
         expect(response4.pageInfo.prevCursor).toBeDefined();
         expect(response4.totalItems).toBe(names.length);
@@ -960,7 +960,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response5 = await catalog.queryEntities(request5);
-        expect(response5.entities).toEqual([entityFrom('G'), entityFrom('F')]);
+        expect(response5.items).toEqual([entityFrom('G'), entityFrom('F')]);
         expect(response5.pageInfo.nextCursor).toBeDefined();
         expect(response5.pageInfo.prevCursor).toBeUndefined();
         expect(response5.totalItems).toBe(names.length);
@@ -971,7 +971,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response6 = await catalog.queryEntities(request6);
-        expect(response6.entities).toEqual([entityFrom('E'), entityFrom('D')]);
+        expect(response6.items).toEqual([entityFrom('E'), entityFrom('D')]);
         expect(response6.pageInfo.nextCursor).toBeDefined();
         expect(response6.pageInfo.prevCursor).toBeDefined();
         expect(response6.totalItems).toBe(names.length);
@@ -982,7 +982,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response7 = await catalog.queryEntities(request7);
-        expect(response7.entities).toEqual([entityFrom('C'), entityFrom('B')]);
+        expect(response7.items).toEqual([entityFrom('C'), entityFrom('B')]);
         expect(response7.pageInfo.nextCursor).toBeDefined();
         expect(response7.pageInfo.prevCursor).toBeDefined();
         expect(response7.totalItems).toBe(names.length);
@@ -993,7 +993,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit: limit + 1,
         };
         const response7bis = await catalog.queryEntities(request7bis);
-        expect(response7bis.entities).toEqual([
+        expect(response7bis.items).toEqual([
           entityFrom('C'),
           entityFrom('B'),
           entityFrom('A'),
@@ -1008,7 +1008,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response8 = await catalog.queryEntities(request8);
-        expect(response8.entities).toEqual([entityFrom('A')]);
+        expect(response8.items).toEqual([entityFrom('A')]);
         expect(response8.pageInfo.nextCursor).toBeUndefined();
         expect(response8.pageInfo.prevCursor).toBeDefined();
         expect(response8.totalItems).toBe(names.length);
@@ -1060,7 +1060,7 @@ describe('DefaultEntitiesCatalog', () => {
           query: 'cAt ',
         };
         const response = await catalog.queryEntities(request);
-        expect(response.entities).toEqual([
+        expect(response.items).toEqual([
           entityFrom('atcatss'),
           entityFrom('cat'),
           entityFrom('dogcat'),
@@ -1130,7 +1130,7 @@ describe('DefaultEntitiesCatalog', () => {
           sortFields: [{ field: 'metadata.name', order: 'asc' }],
         };
         const response1 = await catalog.queryEntities(request1);
-        expect(response1.entities).toMatchObject([
+        expect(response1.items).toMatchObject([
           entityFrom('AA'),
           entityFrom('AA'),
         ]);
@@ -1144,7 +1144,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response2 = await catalog.queryEntities(request2);
-        expect(response2.entities).toMatchObject([
+        expect(response2.items).toMatchObject([
           entityFrom('AA'),
           entityFrom('AA'),
         ]);
@@ -1158,10 +1158,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response3 = await catalog.queryEntities(request3);
-        expect(response3.entities).toEqual([
-          entityFrom('CC'),
-          entityFrom('DD'),
-        ]);
+        expect(response3.items).toEqual([entityFrom('CC'), entityFrom('DD')]);
         expect(response3.pageInfo.nextCursor).toBeUndefined();
         expect(response3.pageInfo.prevCursor).toBeDefined();
         expect(response3.totalItems).toBe(6);
@@ -1172,7 +1169,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response4 = await catalog.queryEntities(request4);
-        expect(response4.entities).toMatchObject([
+        expect(response4.items).toMatchObject([
           entityFrom('AA'),
           entityFrom('AA'),
         ]);
@@ -1186,7 +1183,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response5 = await catalog.queryEntities(request5);
-        expect(response5.entities).toMatchObject([
+        expect(response5.items).toMatchObject([
           entityFrom('AA'),
           entityFrom('AA'),
         ]);
@@ -1229,7 +1226,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response1 = await catalog.queryEntities(request1);
-        expect(response1.entities).toMatchObject([
+        expect(response1.items).toMatchObject([
           entityFrom('AA'),
           entityFrom('CC'),
         ]);
@@ -1243,7 +1240,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response2 = await catalog.queryEntities(request2);
-        expect(response2.entities).toMatchObject([
+        expect(response2.items).toMatchObject([
           entityFrom('DD'),
           entityFrom('AA', { namespace: 'namespace2' }),
         ]);
@@ -1257,7 +1254,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response3 = await catalog.queryEntities(request3);
-        expect(response3.entities).toMatchObject([
+        expect(response3.items).toMatchObject([
           entityFrom('AA', { namespace: 'namespace3' }),
           entityFrom('AA', { namespace: 'namespace4' }),
         ]);
@@ -1271,7 +1268,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response4 = await catalog.queryEntities(request4);
-        expect(response4.entities).toMatchObject([
+        expect(response4.items).toMatchObject([
           entityFrom('DD'),
           entityFrom('AA', { namespace: 'namespace2' }),
         ]);
@@ -1285,7 +1282,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit,
         };
         const response5 = await catalog.queryEntities(request5);
-        expect(response5.entities).toMatchObject([
+        expect(response5.items).toMatchObject([
           entityFrom('AA'),
           entityFrom('CC'),
         ]);
