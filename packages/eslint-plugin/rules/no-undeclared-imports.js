@@ -146,6 +146,10 @@ module.exports = {
       if (imp.type !== 'external') {
         return;
       }
+      // We leave checking of type imports to the repo-tools check
+      if (imp.kind === 'type') {
+        return;
+      }
 
       const modulePath = path.relative(localPkg.dir, filePath);
       const expectedType = getExpectedDepType(
@@ -161,6 +165,18 @@ module.exports = {
       );
 
       if (conflict) {
+        try {
+          const fullImport = imp.path
+            ? `${imp.packageName}/${imp.path}`
+            : imp.packageName;
+          require.resolve(fullImport, {
+            paths: [localPkg.dir],
+          });
+        } catch {
+          // If the dependency doesn't resolve then it's likely a type import, ignore
+          return;
+        }
+
         const packagePath = path.relative(packages.root.dir, localPkg.dir);
         const packageJsonPath = path.join(packagePath, 'package.json');
 
