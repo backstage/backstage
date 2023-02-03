@@ -30,5 +30,5 @@ export type {
 } from './api';
 export { isAdrAvailable } from '@backstage/plugin-adr-common';
 export * from './components/AdrReader';
-export { adrPlugin, EntityAdrContent } from './plugin';
-export * from './search';
+export { adrPlugin, AdrSearchResultListItem, EntityAdrContent } from './plugin';
+export type { AdrSearchResultListItemProps } from './search';
