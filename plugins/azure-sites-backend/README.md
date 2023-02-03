@@ -40,7 +40,7 @@ Here's how to get the backend plugin up and running:
    yarn add --cwd packages/backend @backstage/plugin-azure-sites-backend
    ```
 
-2. Then we will create a new file named `packages/backend/src/plugins/azure.ts`, and add the following to it:
+2. Then we will create a new file named `packages/backend/src/plugins/azure-sites.ts`, and add the following to it:
 
    ```ts
    import {
@@ -56,6 +56,7 @@ Here's how to get the backend plugin up and running:
      return await createRouter({
        logger: env.logger,
        azureSitesApi: AzureSitesApi.fromConfig(env.config),
+       permissions: env.permissions,
      });
    }
    ```
@@ -63,7 +64,7 @@ Here's how to get the backend plugin up and running:
 3. Next we wire this into the overall backend router, edit `packages/backend/src/index.ts`:
 
    ```ts
-   import azure from './plugins/azure';
+   import azureSites from './plugins/azure-sites';
 
    // Removed for clairty...
 
@@ -76,10 +77,29 @@ Here's how to get the backend plugin up and running:
 
      // ...
      // Insert this line under the other lines that add their routers to apiRouter in the same way
-     apiRouter.use('/azure-sites', await azure(azureSitesEnv));
+     apiRouter.use('/azure-sites', await azureSites(azureSitesEnv));
    }
    ```
 
-4. Now run `yarn start-backend` from the repo root.
+4. Setup plugin permissions, if you need to control you action(start/stop), edit you `packages/backend/src/plugins/permission.ts`
+   ```diff
+   // packages/backend/src/plugins/permission.ts
+   + import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
+   ...
+   class TestPermissionPolicy implements PermissionPolicy {
+   - async handle(): Promise<PolicyDecision> {
+   + async handle(request: PolicyQuery, user?: BackstageIdentityResponse): Promise<PolicyDecision> {
+       if (isPermission(request.permission, azureSitesActionPermission)) {
+         return {
+           result: AuthorizeResult.DENY,
+         };
+       }
+       ...
+       return {
+         result: AuthorizeResult.ALLOW,
+       };
+   }
+   ```
+5. Now run `yarn start-backend` from the repo root.
 
-5. Finally, open `http://localhost:7007/api/azure/health` in a browser, it should return `{"status":"ok"}`.
+6. Finally, open `http://localhost:7007/api/azure/health` in a browser, it should return `{"status":"ok"}`.

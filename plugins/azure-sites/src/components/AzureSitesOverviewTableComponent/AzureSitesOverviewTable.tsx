@@ -26,7 +26,10 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import { default as MuiAlert } from '@material-ui/lab/Alert';
-import { AzureSite } from '@backstage/plugin-azure-sites-common';
+import {
+  AzureSite,
+  azureSitesActionPermission,
+} from '@backstage/plugin-azure-sites-common';
 import { Table, TableColumn, Link } from '@backstage/core-components';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PublicIcon from '@material-ui/icons/Public';
@@ -37,6 +40,7 @@ import Typography from '@material-ui/core/Typography';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core-plugin-api';
+import { usePermission } from '@backstage/plugin-permission-react';
 import { azureSiteApiRef } from '../../api';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed' | 'Stopped';
@@ -124,6 +128,10 @@ const ActionButtons = ({
     handleClose();
   };
 
+  const { loading: loadingPermission, allowed: canDoAction } = usePermission({
+    permission: azureSitesActionPermission,
+  });
+
   return (
     <div>
       <IconButton
@@ -151,14 +159,14 @@ const ActionButtons = ({
           },
         }}
       >
-        {value.state !== 'Running' && (
-          <MenuItem key="start" onClick={start}>
+        {value.state !== 'Running' && !loadingPermission && (
+          <MenuItem key="start" onClick={start} disabled={!canDoAction}>
             <StartIcon />
             &nbsp;Start
           </MenuItem>
         )}
-        {value.state !== 'Stopped' && (
-          <MenuItem key="stop" onClick={stop}>
+        {value.state !== 'Stopped' && !loadingPermission && (
+          <MenuItem key="stop" onClick={stop} disabled={!canDoAction}>
             <StopIcon />
             &nbsp;Stop
           </MenuItem>

@@ -19,19 +19,31 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 
+import { NotAllowedError } from '@backstage/errors';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import {
+  PermissionEvaluator,
+  AuthorizeResult,
+} from '@backstage/plugin-permission-common';
+import {
+  azureSitesReadPermission,
+  azureSitesActionPermission,
+} from '@backstage/plugin-azure-sites-common';
+
 import { AzureSitesApi } from '../api';
 
 /** @public */
 export interface RouterOptions {
   logger: Logger;
   azureSitesApi: AzureSitesApi;
+  permissions: PermissionEvaluator;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, azureSitesApi } = options;
+  const { logger, azureSitesApi, permissions } = options;
 
   const router = Router();
   router.use(express.json());
@@ -41,6 +53,18 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
   router.get('/list/:name', async (request, response) => {
+    const token = getBearerTokenFromAuthorizationHeader(
+      request.header('authorization'),
+    );
+    const decision = (
+      await permissions.authorize([{ permission: azureSitesReadPermission }], {
+        token,
+      })
+    )[0];
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
+
     const { name } = request.params;
     response.json(
       await azureSitesApi.list({
@@ -51,6 +75,21 @@ export async function createRouter(
   router.post(
     '/:subscription/:resourceGroup/:name/start',
     async (request, response) => {
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
+      const decision = (
+        await permissions.authorize(
+          [{ permission: azureSitesActionPermission }],
+          {
+            token,
+          },
+        )
+      )[0];
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError('Unauthorized');
+      }
+
       const { subscription, resourceGroup, name } = request.params;
       console.log('starting...');
       response.json(
@@ -65,6 +104,21 @@ export async function createRouter(
   router.post(
     '/:subscription/:resourceGroup/:name/stop',
     async (request, response) => {
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
+      const decision = (
+        await permissions.authorize(
+          [{ permission: azureSitesActionPermission }],
+          {
+            token,
+          },
+        )
+      )[0];
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError('Unauthorized');
+      }
+
       const { subscription, resourceGroup, name } = request.params;
       console.log('stopping...');
       response.json(

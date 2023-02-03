@@ -41,6 +41,7 @@ import healthcheck from './plugins/healthcheck';
 import { metricsInit, metricsHandler } from './metrics';
 import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
+import azureSites from './plugins/azure-sites';
 import catalog from './plugins/catalog';
 import catalogEventBasedProviders from './plugins/catalogEventBasedProviders';
 import codeCoverage from './plugins/codecoverage';
@@ -130,6 +131,7 @@ async function main() {
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
+  const azureSitesEnv = useHotMemoize(module, () => createEnv('azure-sites'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
@@ -167,6 +169,7 @@ async function main() {
   apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
   apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
+  apiRouter.use('/azure-sites', await azureSites(azureSitesEnv));
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/todo', await todo(todoEnv));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createPermission } from '@backstage/plugin-permission-common';
 
-export * from './types';
-export * from './permissions';
+export const azureSitesReadPermission = createPermission({
+  name: 'azure.sites.read',
+  attributes: { action: 'read' },
+});
+
+export const azureSitesActionPermission = createPermission({
+  name: 'azure.sites.update',
+  attributes: { action: 'update' },
+});
+
+export const azureSitesPermissions = [
+  azureSitesReadPermission,
+  azureSitesActionPermission,
+];

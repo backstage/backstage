@@ -4655,7 +4655,10 @@ __metadata:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-azure-sites-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -4672,6 +4675,7 @@ __metadata:
   resolution: "@backstage/plugin-azure-sites-common@workspace:plugins/azure-sites-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -4687,6 +4691,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-azure-sites-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
