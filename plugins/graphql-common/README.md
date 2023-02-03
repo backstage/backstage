@@ -1,18 +1,10 @@
 # Common GraphQL Plugin
 
-Welcome to the Common GraphQL plugin!
+By itself, the [graphql-backend][] plugin does nothing more than
+provide an empty Schema. The way to add functionality to it, however,
+is to augment it with [GraphQL modules][graphql-modules] defining new
+types and how to resolve them.
 
-The plugin provides very basic functionality to simplify your routine work with GraphQL.
-
-It includes the following features,
-
-1. **Core schema** - good starting point for extending with your own types.
-1. **Schema-based resolvers** - add field resolvers using directives without requiring JavaScript.
-1. **Modular schema definition** - allows organizing related schema into [graphql-modules](https://www.graphql-modules.com/docs)
-1. [**Connection**](https://relay.dev/docs/guides/graphql-server-specification/#connections) - based on [GraphQL Cursor Connections Specification](https://relay.dev/graphql/connections.htm).
-1. **Strives to support** - [GraphQL Server Specification](http://spec.graphql.org)
-
-- [Getting started](#getting-started)
 - [Extending Schema](#extending-schema)
   - [Directives API](#directives-api)
     - [`@field`](#field)
@@ -22,93 +14,20 @@ It includes the following features,
   - [Codegen/TypeScript](#codegen-typescript)
 - [Questions](#questions)
 
-## Getting started
+## Extending your schema with a custom module
 
-The simplest way to start is just use [`@backstage/plugin-graphql-backend`](../graphql-backend/README.md) instead.
+> 💡If you have not already, you should start by installing the
+> [`@backstage/plugin-graphql-catalog`](../graphql-catalog/README.md).
+> This plugin provide as GraphQL module that allows you to access the
+> software catalog over GraphQL.
 
-Otherwise you'll need to create a router with GraphQL server. The minimal setup might be:
-
-```ts
-// packages/backend/src/plugins/graphql.ts
-import * as graphql from 'graphql';
-import { graphqlHTTP } from 'express-graphql';
-import { Config } from '@backstage/config';
-import { CatalogClient } from '@backstage/catalog-client';
-import { SingleHostDiscovery } from '@backstage/backend-common';
-import { createGraphQLApp } from '@backstage/plugin-graphql-common';
-import { createLoader } from '@backstage/plugin-graphql-catalog';
-import { envelop, useEngine } from '@envelop/core';
-import { useDataLoader } from '@envelop/dataloader';
-import { useGraphQLModules } from '@envelop/graphql-modules';
-import { Router } from 'express';
-
-interface PluginEnvironment {
-  config: Config;
-}
-
-export default function createRouter(env: PluginEnvironment): Router {
-  const discovery = SingleHostDiscovery.fromConfig(config);
-  const catalog = new CatalogClient({ discoveryApi: discovery });
-
-  const application = createGraphQLApp({
-    modules: [
-      /* ... Your GraphQL modules ... */
-    ],
-  });
-  const run = envelop({
-    plugins: [
-      useEngine(graphql),
-      useGraphQLModules(application),
-      useDataLoader('loader', createLoader),
-      useExtendContext(() => ({ application, catalog })),
-    ],
-  });
-  const { parse, validate, contextFactory, execute } = run();
-
-  const router = Router();
-
-  const server = graphqlHTTP({
-    schema: application.schema,
-    graphiql: true,
-    customParseFn: parse,
-    customValidateFn: validate,
-    customExecuteFn: async args =>
-      execute({
-        ...args,
-        contextValue: await contextFactory(),
-      }),
-  });
-
-  router.use(server);
-
-  return router;
-}
-```
-
-Then add the router to your backend API router:
-
-```ts
-// packages/backend/src/index.ts
-import graphql from './plugins/graphql';
-
-/* ... */
-
-const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
-
-/* ... */
-
-apiRouter.use('/graphql', await graphql(graphqlEnv));
-```
-
-See [`packages/backend/src/index.ts`](../../packages/backend/src/index.ts) for an example.
-
-## Extending Schema
-
-This plugin has minimal core schema which isn't useful. So you might be interested in installing [`@backstage/plugin-graphql-catalog`](../graphql-catalog/README.md) plugin that provides a GraphQL module with basic Backstage Catalog types. And you also can add your types/fields. This section will tell how to do it by writing custom GraphQL module.
+To extend your schema, you will define it using the GraphQL Schema Definiition
+Language, and then (optionally) write resolvers to handle the various types
+which you defined.
 
 1. Create modules directory where you'll store all your GraphQL modules, for example in `packages/backend/src/modules`
 1. Create a module directory `my-module` there
-1. Create a GraphQL schema file `my-module.graphql` in module's directory
+1. Create a GraphQL schema file `my-module.graphql` in the module directory
 
 ```graphql
 extend type Query {
@@ -116,7 +35,10 @@ extend type Query {
 }
 ```
 
-4. Create a GraphQL module file `my-module.ts` in module's directory
+This code adds a `hello` field to the global `Query` type. Next, we are going to
+write a module containing this schema and its resolvers.
+
+4. Create a GraphQL module file `my-module.ts` in the module directory
 
 ```ts
 import { resolvePackagePath } from '@backstage/backend-common';
@@ -137,11 +59,13 @@ export const myModule = createModule({
 });
 ```
 
-5. Pass your module to `createRouter` function of GraphQL backend plugin
+5. Now we can Pass your the module to `createRouter` function of GraphQL backend
+   plugin
 
 ```ts
 // packages/backend/src/plugins/graphql.ts
 import { createRouter } from '@backstage/plugin-graphql-backend';
+import { Catalog } from '@backstage/plugin-graphql-catalog;
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { MyModule } from '../modules/my-module/my-module';
@@ -152,20 +76,32 @@ export default async function createPlugin(
   return await createRouter({
     logger: env.logger,
     config: env.config,
-    modules: [MyModule],
+    modules: [Catalog, MyModule],
   });
 }
 ```
 
-6. Start your backend and you should be able to query your API with `{ hello }` query to get `{ data: { hello: 'world' } }`
-
 ### Directives API
 
-Every GraphQL API consists of two things - a schema and resolvers. The schema describes relationships and fields that you can retrieve from the API. The resolvers describe how you retrieve the data described in the schema. The Backstage GraphQL Plugin provides several directives to help write a GraphQL schema and resolvers for Backstage. These directives take into account some specificities for Backstage APIs to make it easier to write schema and implement resolvers. This section will explain each directive and the assumptions they make about the developer's intention.
+The above example shows how to write a resolver using TypeScript code. However,
+one of the most important advantages of the GraphQL backend is that most of the
+time you don't need to write any TypeScript at all. Instead, you can tell
+GraphQL what it should do just by adding hints directly to the Schema about
+which fields map to what. These hints are called `directives`.
+
+The following directives will tell Backstage how to write resolvers
+automatically, so that you don't have to.
 
 #### `@field`
 
-`@field` directive allows you to access properties on the object using a given path. It allows you to specify a resolver for a field from the schema without actually writing a real resolver. Under the hood, it's creating the resolver for you. It's used extensively in the [`catalog.graphql`](../graphql-catalog/src/catalog/catalog.graphql) module to retrieve properties like `namespace`, `title` and others.
+The @field directive allows you to access properties on an object
+using a given path. It allows you to specify a resolver for a field
+from the schema without actually writing a real resolver at all. Under
+the hood, it's creating the resolver for you. To see this in action,
+check out the
+[`catalog.graphql`](../graphql-catalog/src/catalog/catalog.graphql)
+which uses the `@field` directive extensively module to retrieve
+properties like `namespace`, `title` and others.
 
 1. Mapping `namespace.name` field from source data to `Entity#name` field:
 
@@ -183,7 +119,7 @@ type Entity {
 }
 ```
 
-3. You can specify default value as a fallback if the field is not found:
+3. You can specify a default value as a fallback if the field is not found:
 
 ```graphql
 type Entity {
@@ -193,9 +129,14 @@ type Entity {
 
 #### `@relation`
 
-`@relation` directive allows you to resolve relationships between entities. Similar to `@field` directive, it provides the resolver from the schema so you do not have to write a resolver yourself. It assumes that relationships are defined as standard `Entity` relationships. The `name` argument allows you to specify the type of the relationship. It will automatically look up the entity in the catalog.
+`@relation` directive allows you to resolve relationships between
+entities. Similar to `@field` directive, it writes a resolver for you
+so you do not have to write a resolver yourself. It assumes that
+relationships are defined as standard `Entity` relationships. The
+`name` argument allows you to specify the type of the relationship. It
+will automatically look up the entity in the catalog.
 
-1. Defining an user owner of an Component:
+1. To define a `User` that is the `owner` of a `Component`:
 
 ```graphql
 type Component {
@@ -203,7 +144,12 @@ type Component {
 }
 ```
 
-2. If you have more than one relationship of specific type you might want to use a [relay connection](https://relay.dev/graphql/connections.htm). In that case you specify the `Connection` type as a field type and use `nodeType` argument to specify which connection type you would like to resolve to.
+2. The GraphQL server has baked in support for [Relay][relay]. By
+   default, collections defined by a `@relation` directive are modeled as
+   arrays. However, if the relationship is large, and should be
+   paginated, you can specify it with `Connection` as the field type and
+   use the `nodeType` argument to specify what the target of the
+   collection should be.
 
 ```graphql
 type Repository {
@@ -214,7 +160,8 @@ type Repository {
 }
 ```
 
-3. If you have different kinds of relationships with the same type you can filter them by `kind` argument:
+3. If you have different kinds of relationships with the same type you
+   can filter them by `kind` argument:
 
 ```graphql
 type System {
@@ -227,9 +174,22 @@ type System {
 
 #### `@extend`
 
-`@extend` directive allows you to inherit fields from another entity. We created this directive to make it easier to implement interfaces that extend from other interfaces. It makes GraphQL types similar to extending types in TypeScript. In TypeScript, when a class extends another class, the child class automatically inherits properties and methods of the parent class. This functionality doesn't have an equivalent in GraphQL. Without this directive, the `IService` interface in GraphQL would need to reimplement many fields that are defined on implemented interfaces which leads to lots of duplication.
+The `@extend` directive allows you to inherit fields from another
+entity. We created this directive to make it easier to implement
+interfaces that extend from other interfaces. It makes GraphQL types
+similar to extending types in TypeScript. In TypeScript, when a class
+extends another class, the child class automatically inherits
+properties and methods of the parent class. This functionality doesn't
+have an equivalent in GraphQL. Without this directive, the `IService`
+interface in GraphQL would need to reimplement many fields that are
+defined on implemented interfaces which leads to lots of duplication.
 
-1. Using this directive, you can easily create a new interface that includes all of the properties of the parent. To use the directive **your interface must be prefixed with `I` letter**, it's done to avoid naming collisions because for each interface we generate an object type,
+> 💡Heads up! your interface must be prefixed with `I` letter\*\*. This is done to
+> avoid naming collisions because for each interface we generate an
+> object type.
+
+1. Use this directive to define a new interface that
+   includes all of the properties of the parent.
 
 ```graphql
 interface IService @extend(interface: "IComponent") {
@@ -237,7 +197,7 @@ interface IService @extend(interface: "IComponent") {
 }
 ```
 
-In output schema it becomes:
+In the output schema it is transformed into:
 
 ```graphql
 interface IService implements IComponent & IEntity & Node {
@@ -255,7 +215,14 @@ type Service implements IService & IComponent & IEntity & Node {
 }
 ```
 
-2. For extending multiple interfaces from one you have to define a condition by using `when/is` arguments. Where `when` is the same as the `at` argument for the [`@field`](#field) directive and `is` is a value which is used to compare with a value from `when` path. So like in this example we are extending `IRepository` from the `IEntity` interface and we presume if an entity from a data source has the `kind` field which is equal to `Repository`, the entity will be `Repository` type
+2. In order to extend multiple levels of inheritance, you must define
+   a discriminator by using `when/is` arguments. The structure of
+   `when` is the same as the `at` argument for the [`@field`](#field)
+   directive. The `is` argument is a value which is used to compare
+   with the value found at the `when` path. So in this example we are
+   extending `IRepository` from the `IEntity` interface and we presume
+   if an entity from a data source has the `kind` field which is equal
+   to `Repository`, the entity will be `Repository` type.
 
 ```graphql
 interface IRepository
@@ -268,9 +235,12 @@ interface IRepository
 
 ### Codegen/TypeScript
 
-If you use Codegen to generate an output schema to use it for validating frontend queries and/or TypeScript to have type checking in GraphQL modules resolvers. You'll need modify your codegen config.
+If you use Codegen to generate an output schema to use it for
+validating frontend queries and/or TypeScript to have type checking in
+GraphQL modules resolvers, you'll need modify your codegen config.
 
-1. First of all create a `schema.ts` file with `transformSchema` function and pass all your GraphQL files
+1. First of all create a `schema.ts` file with `transformSchema`
+   function and pass all your GraphQL files
 
 ```ts
 import { resolvePackagePath } from '@backstage/backend-common';
@@ -302,9 +272,10 @@ export default config;
 
 ## Questions
 
-### Why my union type was transformed to an interface in output schema?
+### Why was my `union` type transformed to an interface in output schema?
 
-You might notice that if you have a union type which is used in `@relation` directive with `Connection` type, like this:
+You might notice that if you have a `union` type which is used in
+`@relation` directive with `Connection` type, like this:
 
 ```graphql
 union Owner = IUser | IGroup
@@ -342,4 +313,19 @@ interface IGroup implements IEntity & Node & Owner {
 }
 ```
 
-The reason why we do that, is because `Edge` interface has a `node` field with `Node` type. So it forces that any object types that implement `Edge` interface must have the `node` field with the type that implements `Node` interface. And unions can't implement interfaces yet ([graphql/graphql-spec#518](https://github.com/graphql/graphql-spec/issues/518)) So you just simply can't use unions in such case. As a workaround we change a union to an interface that implements `Node` and each type that was used in the union, now implements the new interface. To an end user there is no difference between a union and interface approach, both variants work similar.
+The reason why we do that, is because `Edge` interface has a `node`
+field with `Node` type. So it forces that any object types that
+implement `Edge` interface must have the `node` field with the type
+that implements `Node` interface. And unions can't implement
+interfaces yet
+([graphql/graphql-spec#518](https://github.com/graphql/graphql-spec/issues/518))
+So you just simply can't use unions in such case. As a workaround we
+change a union to an interface that implements `Node` and each type
+that was used in the union, now implements the new interface. To an
+end user there is no difference between a union and interface
+approach, both variants work similar.
+
+[graphql-backend]: ../graphql-backend/README.md
+[graphql-modules]: https://the-guild.dev/graphql/modules
+[relay]: https://relay.dev/docs/guides/graphql-server-specification
+[relay connection]: https://relay.dev/docs/guides/graphql-server-specification/#connections
