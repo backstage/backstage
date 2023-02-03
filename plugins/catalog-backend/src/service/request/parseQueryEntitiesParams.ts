@@ -19,6 +19,7 @@ import {
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
 } from '../../catalog/types';
+import { decodeCursor } from '../util';
 import { parseIntegerParam, parseStringParam } from './common';
 import { parseEntityFilterParams } from './parseEntityFilterParams';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
@@ -32,8 +33,9 @@ export function parseQueryEntitiesParams(
   const limit = parseIntegerParam(params.limit, 'limit');
   const cursor = parseStringParam(params.cursor, 'cursor');
   if (cursor) {
+    const decodedCursor = decodeCursor(cursor);
     const response: Omit<QueryEntitiesCursorRequest, 'authorizationToken'> = {
-      cursor,
+      cursor: decodedCursor,
       fields,
       limit,
     };

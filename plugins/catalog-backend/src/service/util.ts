@@ -19,6 +19,8 @@ import { Request } from 'express';
 import lodash from 'lodash';
 import { z } from 'zod';
 import {
+  Cursor,
+  EntityFilter,
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
@@ -87,4 +89,46 @@ export function isQueryEntitiesCursorRequest(
     return false;
   }
   return !!(input as QueryEntitiesCursorRequest).cursor;
+}
+
+const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
+  z
+    .object({
+      key: z.string(),
+      values: z.array(z.string()).optional(),
+    })
+    .or(z.object({ not: entityFilterParser }))
+    .or(z.object({ anyOf: z.array(entityFilterParser) }))
+    .or(z.object({ allOf: z.array(entityFilterParser) })),
+);
+
+export const cursorParser: z.ZodSchema<Cursor> = z.object({
+  orderFields: z.array(
+    z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
+  ),
+  orderFieldValues: z.array(z.string().or(z.null())),
+  filter: entityFilterParser.optional(),
+  isPrevious: z.boolean(),
+  query: z.string().optional(),
+  firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
+  totalItems: z.number().optional(),
+});
+
+export function encodeCursor(cursor: Cursor) {
+  const json = JSON.stringify(cursor);
+  return Buffer.from(json, 'utf8').toString('base64');
+}
+
+export function decodeCursor(encodedCursor: string) {
+  try {
+    const data = Buffer.from(encodedCursor, 'base64').toString('utf8');
+    const result = cursorParser.safeParse(JSON.parse(data));
+
+    if (!result.success) {
+      throw new InputError(`Malformed cursor: ${result.error}`);
+    }
+    return result.data;
+  } catch (e) {
+    throw new InputError(`Malformed cursor: ${e}`);
+  }
 }

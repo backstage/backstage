@@ -333,10 +333,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   }
 
   async queryEntities(
-    request?: QueryEntitiesRequest,
+    request: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
     const db = this.database;
-    const limit = request?.limit ?? 20;
+    const limit = request.limit ?? 20;
 
     const cursor: Omit<Cursor, 'orderFieldValues'> & {
       orderFieldValues?: (string | null)[];
@@ -449,32 +449,32 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       firstRow?.entity_id,
     ];
 
-    const nextCursor = hasMoreResults
-      ? encodeCursor({
+    const nextCursor: Cursor | undefined = hasMoreResults
+      ? {
           ...cursor,
           orderFieldValues: sortFieldsFromRow(lastRow),
           firstSortFieldValues,
           isPrevious: false,
           totalItems,
-        })
+        }
       : undefined;
 
-    const prevCursor =
+    const prevCursor: Cursor | undefined =
       !isInitialRequest &&
       rows.length > 0 &&
       !isEqual(sortFieldsFromRow(firstRow), cursor.firstSortFieldValues)
-        ? encodeCursor({
+        ? {
             ...cursor,
             orderFieldValues: sortFieldsFromRow(firstRow),
             firstSortFieldValues: cursor.firstSortFieldValues,
             isPrevious: true,
             totalItems,
-          })
+          }
         : undefined;
 
     const items = rows
       .map(e => JSON.parse(e.final_entity!))
-      .map(e => (request?.fields ? request.fields(e) : e));
+      .map(e => (request.fields ? request.fields(e) : e));
 
     return {
       items,
@@ -690,16 +690,6 @@ export const cursorParser: z.ZodSchema<Cursor> = z.object({
   totalItems: z.number().optional(),
 });
 
-function encodeCursor(cursor: Cursor) {
-  const json = JSON.stringify(cursor);
-  return Buffer.from(json, 'utf8').toString('base64');
-}
-
-function decodeCursor(encodedCursor: string) {
-  const json = Buffer.from(encodedCursor, 'base64').toString('utf8');
-  return cursorParser.parse(JSON.parse(json));
-}
-
 function parseCursorFromRequest(
   request?: QueryEntitiesRequest,
 ): Partial<Cursor> {
@@ -712,11 +702,7 @@ function parseCursorFromRequest(
     return { filter, orderFields: sortFields, fullTextFilter };
   }
   if (isQueryEntitiesCursorRequest(request)) {
-    try {
-      return decodeCursor(request.cursor);
-    } catch {
-      throw new InputError('Malformed cursor, could not be parsed');
-    }
+    return request.cursor;
   }
   return {};
 }
