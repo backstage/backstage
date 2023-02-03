@@ -17,18 +17,56 @@
 import { ApiEntity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Alert } from '@material-ui/lab';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
 
 import { CardTab, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { DefaultApiEntityWidgetCustomizer } from './DefaultApiEntityWidgetCustomizer';
 
 /** @public */
-export const ApiDefinitionCard = () => {
+export type ApiDefinitionWidgetCustomization = {
+  props: Record<string, any>;
+};
+
+/** @public */
+export type ApiDefinitionWidgetCustomizer = (
+  entity: ApiEntity,
+  current: ApiDefinitionWidgetCustomization,
+) => ApiDefinitionWidgetCustomization;
+
+/** @public */
+export type ApiDefinitionCardProps = {
+  customizers?: ApiDefinitionWidgetCustomizer[];
+};
+
+/** @public */
+export const ApiDefinitionCard = ({ customizers }: ApiDefinitionCardProps) => {
   const { entity } = useEntity<ApiEntity>();
   const config = useApi(apiDocsConfigRef);
   const { getApiDefinitionWidget } = config;
+  const [customProps, setCustomProps] = useState({});
+
+  useEffect(() => {
+    const start: ApiDefinitionWidgetCustomization = {
+      props: {
+        // this is primarily to workaround the current state of Swagger UI where some props (specifically plugins)
+        // are only respected on mount. See https://github.com/swagger-api/swagger-ui/tree/master/flavors/swagger-ui-react
+        key: `${entity.metadata.uid || 'default'}_${
+          entity.metadata.etag || 'default'
+        }`,
+      },
+    };
+    const reducedCustomizations = [
+      DefaultApiEntityWidgetCustomizer,
+      ...(customizers || []),
+    ].reduce((acc, current) => {
+      return current(entity, acc);
+    }, start);
+
+    setCustomProps(reducedCustomizations.props);
+  }, [entity, customizers]);
 
   if (!entity) {
     return <Alert severity="error">Could not fetch the API</Alert>;
@@ -41,7 +79,7 @@ export const ApiDefinitionCard = () => {
     return (
       <TabbedCard title={entityTitle}>
         <CardTab label={definitionWidget.title} key="widget">
-          {definitionWidget.component(entity.spec.definition)}
+          {definitionWidget.component(entity.spec.definition, customProps)}
         </CardTab>
         <CardTab label="Raw" key="raw">
           <PlainApiDefinitionWidget

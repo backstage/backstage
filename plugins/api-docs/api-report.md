@@ -18,15 +18,33 @@ import { TableProps } from '@backstage/core-components';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public (undocumented)
-export const ApiDefinitionCard: () => JSX.Element;
+export const ApiDefinitionCard: ({
+  customizers,
+}: ApiDefinitionCardProps) => JSX.Element;
+
+// @public (undocumented)
+export type ApiDefinitionCardProps = {
+  customizers?: ApiDefinitionWidgetCustomizer[];
+};
 
 // @public (undocumented)
 export type ApiDefinitionWidget = {
   type: string;
   title: string;
-  component: (definition: string) => React_2.ReactElement;
+  component: (definition: string, customProps?: any) => React_2.ReactElement;
   rawLanguage?: string;
 };
+
+// @public (undocumented)
+export type ApiDefinitionWidgetCustomization = {
+  props: Record<string, any>;
+};
+
+// @public (undocumented)
+export type ApiDefinitionWidgetCustomizer = (
+  entity: ApiEntity,
+  current: ApiDefinitionWidgetCustomization,
+) => ApiDefinitionWidgetCustomization;
 
 // @public (undocumented)
 export interface ApiDocsConfig {
@@ -101,7 +119,9 @@ export type DefaultApiExplorerPageProps = {
 export function defaultDefinitionWidgets(): ApiDefinitionWidget[];
 
 // @public (undocumented)
-export const EntityApiDefinitionCard: () => JSX.Element;
+export const EntityApiDefinitionCard: ({
+  customizers,
+}: ApiDefinitionCardProps) => JSX.Element;
 
 // @public (undocumented)
 export const EntityConsumedApisCard: (props: {
@@ -136,6 +156,7 @@ export const GraphQlDefinitionWidget: (
 // @public (undocumented)
 export type GraphQlDefinitionWidgetProps = {
   definition: string;
+  customProps?: any;
 };
 
 // @public (undocumented)
@@ -151,6 +172,7 @@ export const OpenApiDefinitionWidget: (
 // @public (undocumented)
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
+  customProps?: any;
 };
 
 // @public (undocumented)

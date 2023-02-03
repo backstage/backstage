@@ -42,9 +42,10 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
 
 type Props = {
   definition: string;
+  customProps?: any;
 };
 
-export const GraphQlDefinition = ({ definition }: Props) => {
+export const GraphQlDefinition = ({ definition, customProps = {} }: Props) => {
   const classes = useStyles();
   const schema = buildSchema(definition);
 
@@ -56,6 +57,7 @@ export const GraphQlDefinition = ({ definition }: Props) => {
           schema={schema}
           docExplorerOpen
           defaultSecondaryEditorOpen={false}
+          {...customProps}
         />
       </div>
     </div>

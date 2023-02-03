@@ -384,6 +384,25 @@ This annotation allowed to load the API definition from another location. Use
 [substitution](./descriptor-format.md#substitutions-in-the-descriptor-format)
 instead.
 
+### backstage.io/disableTryItOut, backstage.io/disableAuthorizeButton
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/disableTryItOut: 'true'
+    backstage.io/disableAuthorizeButton: 'true'
+```
+
+These annotations allow customizing some of the Swagger options from an API Entity.
+Certain API's have the need to disable some of the options that the Swagger page offers,
+and these annotations provide the API the full flexibility of having the choice of whether
+or not to disable the try-it button (which normally allows predefined calls to the API
+from the Swagger page) and disabling the Authorize button (which provides the authorization
+needed to call the API). This can be especially useful for API's that hold production data.
+
+These annotations are only needed when their values should be true, as the default is false.
+
 ### jenkins.io/github-folder
 
 Use the `jenkins.io/job-full-name` instead.

@@ -3,10 +3,12 @@ kind: API
 metadata:
   name: petstore
   description: The petstore API
-  uid: '1'
+  uid: '2'
   tags:
     - store
     - rest
+  annotations:
+    backstage.io/disableTryItOut: 'true'
 spec:
   type: openapi
   lifecycle: experimental

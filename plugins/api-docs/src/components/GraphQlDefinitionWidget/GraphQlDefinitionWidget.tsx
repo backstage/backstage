@@ -28,6 +28,7 @@ const LazyGraphQlDefinition = React.lazy(() =>
 /** @public */
 export type GraphQlDefinitionWidgetProps = {
   definition: string;
+  customProps?: any;
 };
 
 /** @public */

@@ -24,7 +24,7 @@ import { TrpcApiDefinitionWidget } from '../TrpcDefinitionWidget';
 export type ApiDefinitionWidget = {
   type: string;
   title: string;
-  component: (definition: string) => React.ReactElement;
+  component: (definition: string, customProps?: any) => React.ReactElement;
   rawLanguage?: string;
 };
 
@@ -35,8 +35,11 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       type: 'openapi',
       title: 'OpenAPI',
       rawLanguage: 'yaml',
-      component: definition => (
-        <OpenApiDefinitionWidget definition={definition} />
+      component: (definition, customProps = {}) => (
+        <OpenApiDefinitionWidget
+          definition={definition}
+          customProps={customProps}
+        />
       ),
     },
     {
@@ -51,8 +54,11 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       type: 'graphql',
       title: 'GraphQL',
       rawLanguage: 'graphql',
-      component: definition => (
-        <GraphQlDefinitionWidget definition={definition} />
+      component: (definition, customProps = {}) => (
+        <GraphQlDefinitionWidget
+          definition={definition}
+          customProps={customProps}
+        />
       ),
     },
     {

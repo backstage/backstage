@@ -21,10 +21,21 @@ import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
-import { ApiDefinitionCard } from './ApiDefinitionCard';
+import {
+  ApiDefinitionCard,
+  ApiDefinitionWidgetCustomizer,
+} from './ApiDefinitionCard';
 
 // Make sure this is in the require cache before the async rendering happens
 import '../OpenApiDefinitionWidget/OpenApiDefinition';
+
+const TestApiDefinitionWidgetCustomizer: ApiDefinitionWidgetCustomizer = () => {
+  return {
+    props: {
+      foo: 'value from prop',
+    },
+  };
+};
 
 describe('<ApiDefinitionCard />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
@@ -130,5 +141,61 @@ paths:
         (_text, element) => element?.textContent === 'Custom Definition',
       ).length,
     ).toBeGreaterThan(0);
+  });
+
+  it('accepts configuration', async () => {
+    const definition = `
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Artist API
+  license:
+    name: MIT
+servers:
+  - url: http://artist.spotify.net/v1
+paths:
+  /artists:
+    get:
+      summary: List all artists
+      responses:
+        "200":
+          description: Success
+        `;
+    const apiEntity: ApiEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'API',
+      metadata: {
+        name: 'my-name',
+        title: 'My Name',
+      },
+      spec: {
+        type: 'openapi',
+        lifecycle: '...',
+        owner: '...',
+        definition,
+      },
+    };
+    apiDocsConfig.getApiDefinitionWidget.mockReturnValue({
+      type: 'openapi',
+      title: 'OpenAPI',
+      rawLanguage: 'yaml',
+      component: (_definitionString, customProps) => {
+        return <div>{JSON.stringify(customProps)}</div>;
+      },
+    });
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <EntityProvider entity={apiEntity}>
+          <ApiDefinitionCard
+            customizers={[TestApiDefinitionWidgetCustomizer]}
+          />
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(getByText(/value from prop/i)).toBeInTheDocument();
+    });
   });
 });

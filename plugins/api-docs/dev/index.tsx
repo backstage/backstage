@@ -21,6 +21,7 @@ import { CatalogEntityPage } from '@backstage/plugin-catalog';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import {
+  ApiDefinitionWidgetCustomizer,
   apiDocsConfigRef,
   apiDocsPlugin,
   ApiExplorerPage,
@@ -31,17 +32,44 @@ import asyncapiApiEntity from './asyncapi-example-api.yaml';
 import graphqlApiEntity from './graphql-example-api.yaml';
 import invalidLanguageApiEntity from './invalid-language-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
+import openapiApiEntityDisabledTryItOut from './openapi-example-api-disabled-try-it-out.yaml';
 import otherApiEntity from './other-example-api.yaml';
 import trpcApiEntity from './trpc-example-api.yaml';
 
 const mockEntities = [
   openapiApiEntity,
+  openapiApiEntityDisabledTryItOut,
   asyncapiApiEntity,
   graphqlApiEntity,
   invalidLanguageApiEntity,
   otherApiEntity,
   trpcApiEntity,
 ] as unknown as Entity[];
+
+const SwaggerInfoCustomizer: ApiDefinitionWidgetCustomizer = (
+  entity,
+  current,
+) => {
+  if (entity.spec.type === 'openapi') {
+    if (!current.props.plugins) {
+      current.props.plugins = [];
+    }
+    current.props.plugins.push({
+      wrapComponents: {
+        info: (Original: any) => (props: any) => {
+          return (
+            <div>
+              <h3>Hello world! I am above the Info component.</h3>
+              <Original {...props} />
+            </div>
+          );
+        },
+      },
+    });
+  }
+
+  return current;
+};
 
 createDevApp()
   .registerPlugin(apiDocsPlugin)
@@ -81,6 +109,21 @@ createDevApp()
         <Header title="OpenAPI" />
         <Content>
           <EntityProvider entity={openapiApiEntity as any as Entity}>
+            <EntityApiDefinitionCard customizers={[SwaggerInfoCustomizer]} />
+          </EntityProvider>
+        </Content>
+      </Page>
+    ),
+  })
+  .addPage({
+    title: 'OpenAPI -- Disabled Try It Out',
+    element: (
+      <Page themeId="home">
+        <Header title="OpenAPI" />
+        <Content>
+          <EntityProvider
+            entity={openapiApiEntityDisabledTryItOut as any as Entity}
+          >
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>

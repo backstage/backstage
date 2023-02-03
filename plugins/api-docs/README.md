@@ -99,6 +99,90 @@ There are other components to discover in [`./src/components`](./src/components)
 
 ## Customizations
 
+### Customizing Standard API Rendering
+
+The components used to render OpenAPI ([Swagger UI](https://github.com/swagger-api/swagger-ui)) and GraphQL ([GraphiQL](https://github.com/graphql/graphiql)) support additional configuration options. This plugin supports providing those additional configuration options by registering functions in the `customizers` prop of `EntityApiDefinitionCard`.
+
+Each customization function needs to accept two arguments:
+
+1. The current entity.
+2. An object representing the current customizations, in the form of a `props` entry.
+
+And must return an object representing the _new_ customizations.
+
+For example, adding a [Swagger UI plugin](https://github.com/swagger-api/swagger-ui/blob/master/docs/customization/plugin-api.md) would be done like this:
+
+```tsx
+// packages/app/src/components/apidocs/SwaggerInfoCustomizer.tsx
+
+import { ApiDefinitionWidgetCustomizer } from '@backstage/plugin-api-docs';
+
+export const SwaggerInfoCustomizer: ApiDefinitionWidgetCustomizer = (
+  entity,
+  current,
+) => {
+  if (entity.spec.type === 'openapi') {
+    if (!current.props.plugins) {
+      current.props.plugins = [];
+    }
+    current.props.plugins.push({
+      wrapComponents: {
+        info: (Original, system) => props => {
+          return (
+            <div>
+              <h3>Hello world! I am above the Info component.</h3>
+              <Original {...props} />
+            </div>
+          );
+        },
+      },
+    });
+  }
+
+  return current;
+};
+
+// packages/app/src/components/catalog/EntityPage.tsx
+
+import {
+  EntityAboutCard,
+  EntityApiDefinitionCard,
+  EntityConsumingComponentsCard,
+  EntityProvidingComponentsCard,
+} from '@backstage/plugin-api-docs';
+import { SwaggerInfoCustomizer } from '../../apidocs/SwaggerInfoCustomizer';
+
+const apiPage = (
+  <EntityLayout>
+    <EntityLayout.Route path="/" title="Overview">
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <EntityAboutCard />
+        </Grid>
+        <Grid container>
+          <Grid item md={12}>
+            <Grid item xs={12} md={6}>
+              <EntityProvidingComponentsCard />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <EntityConsumingComponentsCard />
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/definition" title="Definition">
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityApiDefinitionCard customizers={[SwaggerInfoCustomizer]} />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+  </EntityLayout>
+);
+```
+
 ### Custom API Renderings
 
 You can add support for additional API types by providing a custom implementation for the `apiDocsConfigRef`.
