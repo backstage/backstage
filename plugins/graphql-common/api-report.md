@@ -4,10 +4,11 @@
 
 ```ts
 import { Application } from 'graphql-modules';
+import type { CatalogClient } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import DataLoader from 'dataloader';
-import { Entity } from '@backstage/catalog-model';
 import { GraphQLSchema } from 'graphql';
+import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
 import { TypeSource } from '@graphql-tools/utils';
 
@@ -23,20 +24,20 @@ export function createGraphQLApp(options: createGraphQLAppOptions): Application;
 // @public (undocumented)
 export type createGraphQLAppOptions = {
   modules?: Module[];
+  logger?: Logger;
 };
-
-// @public (undocumented)
-export type EntityLoader = DataLoader<string, Entity>;
 
 // @public (undocumented)
 export const refToId: (ref: CompoundEntityRef | string) => string;
 
 // @public (undocumented)
-export interface ResolverContext<
-  TLoader extends DataLoader<any, any> = EntityLoader,
-> {
+export interface ResolverContext {
   // (undocumented)
-  loader: TLoader;
+  application: Application;
+  // (undocumented)
+  catalog: CatalogClient;
+  // (undocumented)
+  loader: DataLoader<any, any>;
   // (undocumented)
   refToId?: (ref: CompoundEntityRef | string) => string;
 }
