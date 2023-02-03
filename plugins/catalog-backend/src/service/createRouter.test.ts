@@ -145,7 +145,7 @@ describe('createRouter readonly disabled', () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         entities,
         totalItems: 100,
-        nextCursor: 'something',
+        pageInfo: { nextCursor: 'something' },
       });
 
       const response = await request(app).get('/entities/by-query');
@@ -160,6 +160,7 @@ describe('createRouter readonly disabled', () => {
     it('parses initial request', async () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         entities: [],
+        pageInfo: {},
         totalItems: 0,
       });
       const response = await request(app).get(
