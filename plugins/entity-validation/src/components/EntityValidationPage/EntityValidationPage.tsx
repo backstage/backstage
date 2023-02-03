@@ -17,7 +17,7 @@ import React, { useState } from 'react';
 import { Button, Content, Header, Page } from '@backstage/core-components';
 import { EntityTextArea } from '../EntityTextArea';
 import { Grid, TextField } from '@material-ui/core';
-import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorResult } from '../../types';
 import { parseEntityYaml } from '../../utils';
 import { EntityValidationOutput } from '../EntityValidationOutput';
 
@@ -36,14 +36,16 @@ spec:
   owner: owner
 `;
 
-export const EntityValidationPage = ({
-  defaultPreviewCatalog = EXAMPLE_CATALOG_INFO_YAML,
-  locationPlaceholder = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
-}: {
-  defaultPreviewCatalog?: string;
-  locationPlaceholder?: string;
+export const EntityValidationPage = (props: {
+  defaultYaml?: string;
+  defaultLocation?: string;
 }) => {
-  const [catalogYaml, setCatalogYaml] = useState(defaultPreviewCatalog);
+  const {
+    defaultYaml = EXAMPLE_CATALOG_INFO_YAML,
+    defaultLocation = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+  } = props;
+
+  const [catalogYaml, setCatalogYaml] = useState(defaultYaml);
   const [yamlFiles, setYamlFiles] = useState<CatalogProcessorResult[]>();
   const [locationUrl, setLocationUrl] = useState('');
 
@@ -72,7 +74,8 @@ export const EntityValidationPage = ({
               margin="normal"
               variant="outlined"
               required
-              placeholder={locationPlaceholder}
+              value={defaultLocation}
+              placeholder={defaultLocation}
               helperText="Location where you catalog-info.yaml file is, or will be, located"
               onChange={e => setLocationUrl(e.target.value)}
             />

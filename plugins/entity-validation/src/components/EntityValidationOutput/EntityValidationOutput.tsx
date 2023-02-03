@@ -15,7 +15,6 @@
  */
 import React from 'react';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
-import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
 import {
   catalogApiRef,
   humanizeEntityRef,
@@ -25,6 +24,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { InfoCard, Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import {
+  CatalogProcessorResult,
   ValidationOutput,
   ValidationOutputError,
   ValidationOutputOk,
