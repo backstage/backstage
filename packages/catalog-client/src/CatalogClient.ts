@@ -210,7 +210,7 @@ export class CatalogClient implements CatalogApi {
   async queryEntities(
     request: QueryEntitiesRequest = {},
     options?: CatalogRequestOptions,
-  ): Promise<QueryEntitiesResponse> {
+  ) {
     const params: string[] = [];
 
     if (isQueryEntitiesInitialRequest(request)) {
@@ -246,12 +246,11 @@ export class CatalogClient implements CatalogApi {
     }
 
     const query = params.length ? `?${params.join('&')}` : '';
-    return this.requestRequired<{
-      entities: Entity[];
-      totalItems: number;
-      nextCursor?: string;
-      prevCursor?: string;
-    }>('GET', `/entities/by-query${query}`, options);
+    return this.requestRequired<QueryEntitiesResponse>(
+      'GET',
+      `/entities/by-query${query}`,
+      options,
+    );
   }
 
   /**
