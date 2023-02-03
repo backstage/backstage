@@ -175,7 +175,9 @@ export const ProvidingComponentsCard: (props: {
 }) => JSX.Element;
 
 // @public (undocumented)
-export const TrpcApiDefinitionWidget: React_2.FC<TrpcApiDefinitionWidgetProps>;
+export const TrpcApiDefinitionWidget: (
+  props: TrpcApiDefinitionWidgetProps,
+) => JSX.Element;
 
 // @public (undocumented)
 export type TrpcApiDefinitionWidgetProps = {
