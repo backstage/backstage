@@ -310,8 +310,8 @@ describe('CatalogClient', () => {
       const response = await client.queryEntities({}, { token });
       expect(response?.entities).toEqual(defaultClientResponse.entities);
       expect(response?.totalItems).toEqual(defaultClientResponse.totalItems);
-      expect(response?.nextCursor).toBeDefined();
-      expect(response?.prevCursor).toBeDefined();
+      expect(response?.pageInfo.nextCursor).toBeDefined();
+      expect(response?.pageInfo.prevCursor).toBeDefined();
     });
 
     it('builds multiple entity search filters properly', async () => {
@@ -429,15 +429,15 @@ describe('CatalogClient', () => {
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe('?limit=2');
 
-      expect(response?.nextCursor).toBeDefined();
-      expect(response?.prevCursor).toBeDefined();
+      expect(response?.pageInfo.nextCursor).toBeDefined();
+      expect(response?.pageInfo.prevCursor).toBeDefined();
 
-      await client.queryEntities({ cursor: response!.nextCursor! });
+      await client.queryEntities({ cursor: response!.pageInfo.nextCursor! });
       expect(mockedEndpoint.mock.calls[1][0].url.search).toBe(
         '?cursor=nextcursor',
       );
 
-      await client.queryEntities({ cursor: response!.prevCursor! });
+      await client.queryEntities({ cursor: response!.pageInfo.prevCursor! });
       expect(mockedEndpoint.mock.calls[2][0].url.search).toBe(
         '?cursor=prevcursor',
       );
