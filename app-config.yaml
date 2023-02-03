@@ -450,4 +450,4 @@ permission:
   enabled: true
 
 stackstorm:
-  webUrl: 'https://your.stackstorm.webui.com'
+  webUrl: https://your.stackstorm.webui.com
