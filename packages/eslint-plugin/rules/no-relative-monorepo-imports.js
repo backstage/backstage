@@ -29,6 +29,11 @@ module.exports = {
       forbidden:
         "Relative imports of monorepo packages are forbidden, use '{{newImport}}' instead",
     },
+    docs: {
+      description:
+        'Forbid relative imports that reach outside of the package in a monorepo.',
+      url: 'https://github.com/backstage/backstage/blob/master/packages/eslint-plugin/docs/rules/no-relative-monorepo-imports.md',
+    },
   },
   create(context) {
     const packages = getPackageMap(context.getCwd());

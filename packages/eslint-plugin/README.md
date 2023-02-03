@@ -35,6 +35,8 @@ rules: {
 
 The following rules are provided by this plugin:
 
-| Rule                                      | Description                                                                     |
-| ----------------------------------------- | ------------------------------------------------------------------------------- |
-| `@backstage/no-forbidden-package-imports` | Disallow internal monorepo imports from package subpaths that are not exported. |
+| Rule                                                                                    | Description                                                                                                              |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [@backstage/no-forbidden-package-imports](./docs/rules/no-forbidden-package-imports.md) | Disallow internal monorepo imports from package subpaths that are not exported.                                          |
+| [@backstage/no-relative-monorepo-imports](./docs/rules/no-relative-monorepo-imports.md) | Forbid relative imports that reach outside of the package in a monorepo.                                                 |
+| [@backstage/no-undeclared-imports](./docs/rules/no-undeclared-imports.md)               | Forbid imports of external packages that have not been declared in the appropriate dependencies field in `package.json`. |

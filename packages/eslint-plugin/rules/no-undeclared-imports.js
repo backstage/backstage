@@ -125,6 +125,11 @@ module.exports = {
       switch:
         '{{ packageName }} is declared in {{ oldDepsField }}, but should be moved to {{ depsField }} in {{ packageJsonPath }}.',
     },
+    docs: {
+      description:
+        'Forbid imports of external packages that have not been declared in the appropriate dependencies field in `package.json`.',
+      url: 'https://github.com/backstage/backstage/blob/master/packages/eslint-plugin/docs/rules/no-undeclared-imports.md',
+    },
   },
   create(context) {
     const packages = getPackageMap(context.getCwd());
