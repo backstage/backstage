@@ -68,7 +68,9 @@ export interface TemplateEntityV1beta3 extends Entity {
 }
 
 /**
- * TODO
+ * Step that is part of a Template Entity.
+ *
+ * @public
  */
 export interface TemplateEntityStepV1beta3 extends JsonObject {
   id?: string;
@@ -80,18 +82,22 @@ export interface TemplateEntityStepV1beta3 extends JsonObject {
 }
 
 /**
- * TODO
- */
-export interface TemplateAccessControl extends JsonObject {
-  tags?: string[];
-}
-
-/**
- * TODO
+ * Parameter that is part of a Template Entity.
+ *
+ * @public
  */
 export interface TemplateParameter extends JsonObject {
   'backstage:accessControl'?: TemplateAccessControl;
   properties?: { [name: string]: JsonObject };
+}
+
+/**
+ *  Access control properties for parts of a template.
+ *
+ * @public
+ */
+export interface TemplateAccessControl extends JsonObject {
+  tags?: string[];
 }
 
 const validator = entityKindSchemaValidator(schema);

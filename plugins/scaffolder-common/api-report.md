@@ -8,7 +8,14 @@ import type { EntityMeta } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
 import type { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import type { UserEntity } from '@backstage/catalog-model';
+
+// @alpha
+export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
+
+// @alpha
+export const scaffolderPermissions: ResourcePermission<'scaffolder-template'>[];
 
 // @public
 export type TaskSpec = TaskSpecV1beta3;
@@ -38,19 +45,29 @@ export interface TaskStep {
 }
 
 // @public
+export interface TemplateEntityStepV1beta3 extends JsonObject {
+  // (undocumented)
+  'backstage:accessControl'?: TemplateSpecValuesMetadata;
+  // (undocumented)
+  action: string;
+  // (undocumented)
+  id?: string;
+  // (undocumented)
+  if?: string | boolean;
+  // (undocumented)
+  input?: JsonObject;
+  // (undocumented)
+  name?: string;
+}
+
+// @public
 export interface TemplateEntityV1beta3 extends Entity {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
   kind: 'Template';
   spec: {
     type: string;
-    parameters?: JsonObject | JsonObject[];
-    steps: Array<{
-      id?: string;
-      name?: string;
-      action: string;
-      input?: JsonObject;
-      if?: string | boolean;
-    }>;
+    parameters?: TemplateParameter | TemplateParameter[];
+    steps: Array<TemplateEntityStepV1beta3>;
     output?: {
       [name: string]: string;
     };
@@ -69,4 +86,26 @@ export type TemplateInfo = {
     metadata: EntityMeta;
   };
 };
+
+// @public
+export interface TemplateParameter extends JsonObject {
+  // (undocumented)
+  'backstage:accessControl'?: TemplateSpecValuesMetadata;
+  // (undocumented)
+  properties?: {
+    [name: string]: JsonObject;
+  };
+}
+
+// @alpha
+export const templateParameterReadPermission: ResourcePermission<'scaffolder-template'>;
+
+// @public
+export interface TemplateSpecValuesMetadata extends JsonObject {
+  // (undocumented)
+  tags?: string[];
+}
+
+// @alpha
+export const templateStepReadPermission: ResourcePermission<'scaffolder-template'>;
 ```
