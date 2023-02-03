@@ -250,14 +250,17 @@ export interface QueryEntitiesResponse {
    * The entities for the current pagination request
    */
   entities: Entity[];
-  /**
-   * The cursor of the next pagination request.
-   */
-  nextCursor?: string;
-  /**
-   * The cursor of the previous pagination request.
-   */
-  prevCursor?: string;
+
+  pageInfo: {
+    /**
+     * The cursor of the next pagination request.
+     */
+    nextCursor?: string;
+    /**
+     * The cursor of the previous pagination request.
+     */
+    prevCursor?: string;
+  };
   /**
    * the total number of entities matching the current filters.
    */
