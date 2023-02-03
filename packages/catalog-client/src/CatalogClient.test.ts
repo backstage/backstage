@@ -344,7 +344,7 @@ describe('CatalogClient', () => {
         fields: ['a', 'b'],
         limit: 100,
         query: 'query',
-        sortFields: [
+        orderFields: [
           { field: 'metadata.name', order: 'asc' },
           { field: 'metadata.uid', order: 'desc' },
         ],
@@ -367,7 +367,7 @@ describe('CatalogClient', () => {
         fields: ['a', 'b'],
         limit: 100,
         query: 'query',
-        sortFields: [{ field: 'metadata.name', order: 'asc' }],
+        orderFields: [{ field: 'metadata.name', order: 'asc' }],
         cursor: 'cursor',
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
