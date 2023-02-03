@@ -25,6 +25,7 @@ import { nextSelectedTemplateRouteRef } from '../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { DefaultOutputs } from './Outputs';
+import { ContextMenu } from './ContextMenu';
 
 export const OngoingTask = () => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
@@ -41,11 +42,11 @@ export const OngoingTask = () => {
     [taskStream],
   );
 
-  const [logsVisible, setLogsVisible] = useState(false);
+  const [logsVisible, setLogVisibleState] = useState(false);
 
   useEffect(() => {
     if (taskStream.error) {
-      setLogsVisible(true);
+      setLogVisibleState(true);
     }
   }, [taskStream.error]);
 
@@ -96,7 +97,13 @@ export const OngoingTask = () => {
           </div>
         }
         subtitle={`Task ${taskId}`}
-      />
+      >
+        <ContextMenu
+          onToggleLogs={setLogVisibleState}
+          onStartOver={startOver}
+          logsVisible={logsVisible}
+        />
+      </Header>
       <Content>
         <Box paddingBottom={2}>
           <Paper style={{ position: 'relative', overflow: 'hidden' }}>
@@ -110,27 +117,7 @@ export const OngoingTask = () => {
           </Paper>
         </Box>
         <DefaultOutputs output={taskStream.output} />
-        <Box paddingBottom={2}>
-          <Paper>
-            <Box
-              padding={2}
-              justifyContent="flex-end"
-              display="flex"
-              gridGap={16}
-            >
-              <Button variant="contained" color="primary" onClick={startOver}>
-                Start over
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setLogsVisible(!logsVisible)}
-              >
-                {logsVisible ? 'Hide logs' : 'Show logs'}
-              </Button>
-            </Box>
-          </Paper>
-        </Box>
+
         {logsVisible ? (
           <Box paddingBottom={2} height="100%">
             <Paper style={{ height: '100%' }}>
