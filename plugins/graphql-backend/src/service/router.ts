@@ -27,12 +27,7 @@ import { createLoader as createCatalogLoader } from '@backstage/plugin-graphql-c
 import helmet from 'helmet';
 import DataLoader from 'dataloader';
 import { CatalogClient } from '@backstage/catalog-client';
-import {
-  createYoga,
-  Plugin,
-  useExtendContext,
-  YogaServerInstance,
-} from 'graphql-yoga';
+import { createYoga, Plugin, YogaServerInstance } from 'graphql-yoga';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 import { useDataLoader } from '@envelop/dataloader';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -45,7 +40,9 @@ export interface RouterOptions {
   logger: Logger;
   modules?: Module[];
   plugins?: Plugin[];
-  createLoader?: (context: ResolverContext) => DataLoader<string, any>;
+  createLoader?: (
+    context: Omit<ResolverContext, 'loader'>,
+  ) => DataLoader<string, any>;
   refToId?: (ref: CompoundEntityRef | string) => string;
 }
 
@@ -90,9 +87,9 @@ export async function createRouter({
         plugins: [
           useGraphQLModules(application),
           useDataLoader('loader', createLoader ?? createCatalogLoader),
-          useExtendContext(() => ({ application, catalog, refToId })),
           ...(plugins ?? []),
         ],
+        context: { application, catalog, refToId },
         logging: logger,
         graphqlEndpoint: req.baseUrl,
       });

@@ -27,7 +27,9 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  createLoader?: (context: ResolverContext) => DataLoader<string, any>;
+  createLoader?: (
+    context: Omit<ResolverContext, 'loader'>,
+  ) => DataLoader<string, any>;
   // (undocumented)
   logger: Logger;
   // (undocumented)
