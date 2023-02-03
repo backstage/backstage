@@ -427,10 +427,12 @@ export type QueryEntitiesResponse = {
   entities: Entity[];
   /* The number of entities among all the requests */
   totalItems: number;
-  /* The cursor for the next batch of entities */
-  nextCursor?: string;
-  /* The cursor for the previous batch of entities */
-  prevCursor?: string;
+  pageInfo: {
+    /* The cursor for the next batch of entities */
+    nextCursor?: string;
+    /* The cursor for the previous batch of entities */
+    prevCursor?: string;
+  };
 };
 
 /**
