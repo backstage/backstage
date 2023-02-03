@@ -27,7 +27,6 @@ const depFields = {
   peer: 'peerDependencies',
 };
 
-const peerDeps = ['react', 'react-dom', 'react-router', 'react-router-dom'];
 const devModulePatterns = [
   new minimatch.Minimatch('!src/**'),
   new minimatch.Minimatch('src/**/*.test.*'),
@@ -38,12 +37,34 @@ const devModulePatterns = [
 ];
 
 function getExpectedDepType(
+  localPkg,
   /** @type {string} */ impPath,
   /** @type {string} */ modulePath,
 ) {
-  if (peerDeps.includes(impPath)) {
-    return 'peer';
+  const role = localPkg?.backstage?.role;
+  // Some package roles have known dependency types
+  switch (role) {
+    case 'common-library':
+    case 'web-library':
+    case 'frontend-plugin':
+    case 'frontend-plugin-module':
+    case 'node-library':
+    case 'backend-plugin':
+    case 'backend-plugin-module':
+      switch (impPath) {
+        case 'react':
+        case 'react-dom':
+        case 'react-router':
+        case 'react-router-dom':
+          return 'peer';
+      }
+    case 'cli':
+    case 'frontend':
+    case 'backend':
+    default:
+      break;
   }
+
   for (const pattern of devModulePatterns) {
     if (pattern.match(modulePath)) {
       return 'dev';
@@ -65,7 +86,7 @@ function findConflict(pkg, name, expectedType) {
   const isPeerDep = pkg.peerDependencies?.[name];
   const depsField = depFields[expectedType];
 
-  if (expectedType === 'dep' && !isDep) {
+  if (expectedType === 'dep' && !isDep && !isPeerDep) {
     const oldDepsField = isDevDep ? depFields.dev : undefined;
     return { oldDepsField, depsField };
   } else if (expectedType === 'dev' && !isDevDep && !isDep && !isPeerDep) {
@@ -127,7 +148,11 @@ module.exports = {
       }
 
       const modulePath = path.relative(localPkg.dir, filePath);
-      const expectedType = getExpectedDepType(imp.packageName, modulePath);
+      const expectedType = getExpectedDepType(
+        localPkg,
+        imp.packageName,
+        modulePath,
+      );
 
       const conflict = findConflict(
         localPkg.packageJson,
