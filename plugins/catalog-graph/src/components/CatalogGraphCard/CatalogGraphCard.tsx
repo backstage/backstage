@@ -132,12 +132,12 @@ export const CatalogGraphCard = (
       <EntityRelationsGraph
         {...props}
         rootEntityNames={entityName}
+        onNodeClick={onNodeClick}
+        className={classes.graph}
         maxDepth={maxDepth}
         unidirectional={unidirectional}
         mergeRelations={mergeRelations}
         direction={direction}
-        onNodeClick={onNodeClick}
-        className={classes.graph}
         relationPairs={relationPairs}
         zoom={zoom}
       />
