@@ -29,7 +29,7 @@
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "@types/zen-observable": "^0.8.2",
     "react-hook-form": "^7.12.2",
     "react-use": "^17.2.4",
