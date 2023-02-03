@@ -24,7 +24,7 @@ It includes the following features,
 
 ## Getting started
 
-The simplest way to start is just use [`@backstage/plugin-graphql-backend`](../graphql-backend) instead.
+The simplest way to start is just use [`@backstage/plugin-graphql-backend`](../graphql-backend/README.md) instead.
 
 Otherwise you'll need to create a router with GraphQL server. The minimal setup might be:
 
@@ -104,7 +104,7 @@ See [`packages/backend/src/index.ts`](../../packages/backend/src/index.ts) for a
 
 ## Extending Schema
 
-This plugin has minimal core schema which isn't useful. So you might be interested in installing [`@backstage/plugin-graphql-catalog`](../graphql-catalog) plugin that provides a GraphQL module with basic Backstage Catalog types. And you also can add your types/fields. This section will tell how to do it by writing custom GraphQL module.
+This plugin has minimal core schema which isn't useful. So you might be interested in installing [`@backstage/plugin-graphql-catalog`](../graphql-catalog/README.md) plugin that provides a GraphQL module with basic Backstage Catalog types. And you also can add your types/fields. This section will tell how to do it by writing custom GraphQL module.
 
 1. Create modules directory where you'll store all your GraphQL modules, for example in `packages/backend/src/modules`
 1. Create a module directory `my-module` there
@@ -227,7 +227,9 @@ type System {
 
 #### `@extend`
 
-`@extend` directive allows you to inherit fields from another entity. We created this directive to make it easier to implement interfaces that extend from other interfaces. It makes GraphQL types similar to extending types in TypeScript. In TypeScript, when a class extends another class, the child class automatically inherits properties and methods of the parent class. This functionality doesn't have an equivalent in GraphQL. Without this directive, the `IService` interface in GraphQL would need to reimplement many fields that are defined on implemented interfaces which leads to lots of duplication. Using this directive, you can easily create a new interface that includes all of the properties of the parent. To use the directive **your interface must be prefixed with `I` letter**, it's done to avoid naming collisions because for each interface we generate an object type,
+`@extend` directive allows you to inherit fields from another entity. We created this directive to make it easier to implement interfaces that extend from other interfaces. It makes GraphQL types similar to extending types in TypeScript. In TypeScript, when a class extends another class, the child class automatically inherits properties and methods of the parent class. This functionality doesn't have an equivalent in GraphQL. Without this directive, the `IService` interface in GraphQL would need to reimplement many fields that are defined on implemented interfaces which leads to lots of duplication.
+
+1. Using this directive, you can easily create a new interface that includes all of the properties of the parent. To use the directive **your interface must be prefixed with `I` letter**, it's done to avoid naming collisions because for each interface we generate an object type,
 
 ```graphql
 interface IService @extend(interface: "IComponent") {
