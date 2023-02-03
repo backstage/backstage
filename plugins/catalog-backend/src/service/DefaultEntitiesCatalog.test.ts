@@ -1057,7 +1057,7 @@ describe('DefaultEntitiesCatalog', () => {
           limit: 100,
 
           orderFields: [{ field: 'metadata.name', order: 'asc' }],
-          query: 'cAt ',
+          fullTextFilter: { term: 'cAt ' },
         };
         const response = await catalog.queryEntities(request);
         expect(response.items).toEqual([

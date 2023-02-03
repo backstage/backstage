@@ -368,11 +368,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       parseFilter(cursor.filter, dbQuery, db, false, 'search.entity_id');
     }
 
-    const normalizedQueryByName = cursor.query?.trim();
-    if (normalizedQueryByName) {
+    const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
+    if (normalizedFullTextFilterTerm) {
       dbQuery.andWhereRaw(
         'value like ?',
-        `%${normalizedQueryByName.toLocaleLowerCase('en-US')}%`,
+        `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
       );
     }
 
@@ -707,9 +707,9 @@ function parseCursorFromRequest(
     const {
       filter,
       orderFields: sortFields = [defaultSortField],
-      query,
+      fullTextFilter,
     } = request;
-    return { filter, orderFields: sortFields, query };
+    return { filter, orderFields: sortFields, fullTextFilter };
   }
   if (isQueryEntitiesCursorRequest(request)) {
     try {
