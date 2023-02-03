@@ -18,7 +18,11 @@ import { Entity } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
-import { CATALOG_FILTER_EXISTS, GetEntitiesResponse } from './types/api';
+import {
+  CATALOG_FILTER_EXISTS,
+  GetEntitiesResponse,
+  QueryEntitiesResponse,
+} from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
 const server = setupServer();
@@ -250,8 +254,8 @@ describe('CatalogClient', () => {
   });
 
   describe('queryEntities', () => {
-    const defaultServiceResponse = {
-      entities: [
+    const defaultResponse: QueryEntitiesResponse = {
+      items: [
         {
           apiVersion: '1',
           kind: 'Component',
@@ -269,47 +273,25 @@ describe('CatalogClient', () => {
           },
         },
       ],
+      pageInfo: {
+        nextCursor: 'next',
+        prevCursor: 'prev',
+      },
       totalItems: 10,
-      nextCursor: 'next',
-      prevCursor: 'prev',
-    };
-
-    const defaultClientResponse = {
-      entities: [
-        {
-          apiVersion: '1',
-          kind: 'Component',
-          metadata: {
-            name: 'Test2',
-            namespace: 'test1',
-          },
-        },
-        {
-          apiVersion: '1',
-          kind: 'Component',
-          metadata: {
-            name: 'Test1',
-            namespace: 'test1',
-          },
-        },
-      ],
-      totalItems: 10,
-      next: jest.fn(),
-      prev: jest.fn(),
     };
 
     beforeEach(() => {
       server.use(
         rest.get(`${mockBaseUrl}/entities/by-query`, (_, res, ctx) => {
-          return res(ctx.json(defaultServiceResponse));
+          return res(ctx.json(defaultResponse));
         }),
       );
     });
 
     it('should fetch entities from correct endpoint', async () => {
       const response = await client.queryEntities({}, { token });
-      expect(response?.entities).toEqual(defaultClientResponse.entities);
-      expect(response?.totalItems).toEqual(defaultClientResponse.totalItems);
+      expect(response?.items).toEqual(defaultResponse.items);
+      expect(response?.totalItems).toEqual(defaultResponse.totalItems);
       expect(response?.pageInfo.nextCursor).toBeDefined();
       expect(response?.pageInfo.prevCursor).toBeDefined();
     });
@@ -318,7 +300,7 @@ describe('CatalogClient', () => {
       const mockedEndpoint = jest
         .fn()
         .mockImplementation((_req, res, ctx) =>
-          res(ctx.json({ entities: [], totalItems: 0 })),
+          res(ctx.json({ items: [], totalItems: 0 })),
         );
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
@@ -342,7 +324,7 @@ describe('CatalogClient', () => {
         { token },
       );
 
-      expect(response).toEqual({ entities: [], totalItems: 0 });
+      expect(response).toEqual({ items: [], totalItems: 0 });
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
         '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
@@ -353,7 +335,7 @@ describe('CatalogClient', () => {
       const mockedEndpoint = jest
         .fn()
         .mockImplementation((_req, res, ctx) =>
-          res(ctx.json({ entities: [], totalItems: 0 })),
+          res(ctx.json({ items: [], totalItems: 0 })),
         );
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
@@ -376,7 +358,7 @@ describe('CatalogClient', () => {
       const mockedEndpoint = jest
         .fn()
         .mockImplementation((_req, res, ctx) =>
-          res(ctx.json({ entities: [], totalItems: 0 })),
+          res(ctx.json({ items: [], totalItems: 0 })),
         );
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
@@ -397,7 +379,7 @@ describe('CatalogClient', () => {
       const mockedEndpoint = jest.fn().mockImplementation((_req, res, ctx) =>
         res(
           ctx.json({
-            entities: [
+            items: [
               {
                 apiVersion: 'v1',
                 kind: 'CustomKind',
@@ -415,10 +397,12 @@ describe('CatalogClient', () => {
                 },
               },
             ],
-            nextCursor: 'nextcursor',
-            prevCursor: 'prevcursor',
+            pageInfo: {
+              nextCursor: 'nextcursor',
+              prevCursor: 'prevcursor',
+            },
             totalItems: 100,
-          }),
+          } as QueryEntitiesResponse),
         ),
       );
 
