@@ -477,14 +477,16 @@ export interface CatalogApi {
    *
    * @remarks
    *
-   * Example:
+   * @example
    *
    * ```
    * const response = await catalogClient.queryEntities({
    *   filter: [{ kind: 'group' }],
    *   limit: 20,
-   *   query: 'A',
-   *   sortFields: { field: 'metadata.name' order: 'asc' },
+   *   fullTextFilter: {
+   *     term: 'A',
+   *   }
+   *   orderFields: { field: 'metadata.name' order: 'asc' },
    * });
    * ```
    *
