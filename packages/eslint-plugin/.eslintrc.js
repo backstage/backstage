@@ -21,6 +21,9 @@ module.exports = {
     node: true,
     es2021: true,
   },
+  parserOptions: {
+    sourceType: 'module',
+  },
   rules: {
     '@backstage/no-undeclared-imports': ['error'],
     'no-unused-expressions': 'off',
