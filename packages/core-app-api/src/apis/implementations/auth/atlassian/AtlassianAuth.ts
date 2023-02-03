@@ -34,7 +34,7 @@ export default class AtlassianAuth {
     const {
       discoveryApi,
       environment = 'development',
-      usePopup = true,
+      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
     } = options;
@@ -44,7 +44,7 @@ export default class AtlassianAuth {
       oauthRequestApi,
       provider,
       environment,
-      usePopup,
+      authFlow,
     });
   }
 }

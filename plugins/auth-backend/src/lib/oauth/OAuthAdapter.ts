@@ -35,7 +35,6 @@ import {
 import { defaultCookieConfigurer, readState, verifyNonce } from './helpers';
 import {
   postMessageResponse,
-  redirectMessageResponse,
   ensuresXRequestedWith,
   WebMessageResponse,
 } from '../flow';
@@ -61,7 +60,6 @@ export type OAuthAdapterOptions = {
   cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
-  isPopupAuthenticationRequest: boolean;
 };
 
 /** @public */
@@ -74,8 +72,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       'providerId' | 'persistScopes' | 'callbackUrl' | 'redirectUrl'
     >,
   ): OAuthAdapter {
-    const { appUrl, baseUrl, isOriginAllowed, isPopupAuthenticationRequest } =
-      config;
+    const { appUrl, baseUrl, isOriginAllowed } = config;
     const { origin: appOrigin } = new URL(appUrl);
 
     const cookieConfigurer = config.cookieConfigurer ?? defaultCookieConfigurer;
@@ -86,7 +83,6 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       baseUrl,
       cookieConfigurer,
       isOriginAllowed,
-      isPopupAuthenticationRequest: isPopupAuthenticationRequest,
     });
   }
 
@@ -108,6 +104,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     const env = req.query.env?.toString();
     const origin = req.query.origin?.toString();
     const redirectUrl = req.query.redirectUrl?.toString();
+    const authFlow = req.query.authFlow?.toString();
     if (!env) {
       throw new InputError('No env provided in request query parameters');
     }
@@ -118,7 +115,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce, cookieConfig);
 
-    const state: OAuthState = { nonce, env, origin, redirectUrl };
+    const state: OAuthState = { nonce, env, origin, redirectUrl, authFlow };
 
     // If scopes are persisted then we pass them through the state so that we
     // can set the cookie on successful auth
@@ -184,8 +181,8 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         response: { ...response, backstageIdentity: identity },
       };
 
-      if (!this.options.isPopupAuthenticationRequest) {
-        return redirectMessageResponse(res, redirectUrl);
+      if (state.authFlow === 'redirect') {
+        res.redirect(redirectUrl);
       }
       // post message back to popup if successful
       return postMessageResponse(res, appOrigin, responseObj);

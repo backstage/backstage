@@ -33,10 +33,6 @@ type Options<AuthSession> = {
    */
   environment: string;
   /**
-   * use a popup or a redirect for authentication with backend authentication api
-   */
-  usePopup: boolean;
-  /**
    * Information about the auth provider to be shown to the user.
    * The ID Must match the backend auth plugin configuration, for example 'google'.
    */
@@ -53,6 +49,10 @@ type Options<AuthSession> = {
    * Function used to transform an auth response into the session type.
    */
   sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
+  /**
+   * The UI authentication flow with backend authentication api. Supports either 'popup' or 'redirect'.
+   */
+  authFlow: string;
 };
 
 function defaultJoinScopes(scopes: Set<string>) {
@@ -73,6 +73,7 @@ export class DefaultAuthConnector<AuthSession>
   private readonly joinScopesFunc: (scopes: Set<string>) => string;
   private readonly authRequester: OAuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
+  private readonly authFlow: string;
 
   constructor(options: Options<AuthSession>) {
     const {
@@ -81,39 +82,22 @@ export class DefaultAuthConnector<AuthSession>
       provider,
       joinScopes = defaultJoinScopes,
       oauthRequestApi,
-      usePopup,
+      authFlow,
       sessionTransform = id => id,
     } = options;
 
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
       onAuthRequest: async scopes => {
-        if (!usePopup) {
-          // modal before redirect
-          const scope = this.joinScopesFunc(scopes);
-          const redirectUrl = await this.buildUrl('/start', {
-            scope,
-            origin: window.location.origin,
-            redirectUrl: window.location.href,
-            authType: 'redirect',
-          });
-
-          if (provider.hasOwnProperty('provider_id')) {
-            // set the sign in provider here
-            localStorage.setItem(
-              '@backstage/core:SignInPage:provider',
-              provider.provider_id!,
-            );
-          }
-
-          window.location.href = redirectUrl;
-          // we need to return to exit function or else popup occurs
-          return Promise.resolve({} as AuthSession);
+        if (authFlow === 'popup') {
+          return this.showPopup(scopes);
         }
-        return this.showPopup(scopes);
+        return this.executeRedirect(scopes);
       },
+      authFlow,
     });
 
+    this.authFlow = authFlow;
     this.discoveryApi = discoveryApi;
     this.environment = environment;
     this.provider = provider;
@@ -122,7 +106,7 @@ export class DefaultAuthConnector<AuthSession>
   }
 
   async createSession(options: CreateSessionOptions): Promise<AuthSession> {
-    if (options.instantPopup) {
+    if (options.instantPopup && this.authFlow === 'popup') {
       return this.showPopup(options.scopes);
     }
     return this.authRequester(options.scopes);
@@ -184,6 +168,7 @@ export class DefaultAuthConnector<AuthSession>
     const popupUrl = await this.buildUrl('/start', {
       scope,
       origin: window.location.origin,
+      authFlow: 'popup',
     });
 
     const payload = await showLoginPopup({
@@ -195,6 +180,20 @@ export class DefaultAuthConnector<AuthSession>
     });
 
     return await this.sessionTransform(payload);
+  }
+
+  private async executeRedirect(scopes: Set<string>): Promise<AuthSession> {
+    const scope = this.joinScopesFunc(scopes);
+    const redirectUrl = await this.buildUrl('/start', {
+      scope,
+      origin: window.location.origin,
+      redirectUrl: window.location.href,
+      authFlow: 'redirect',
+    });
+    // redirect to auth api
+    window.location.href = redirectUrl;
+    // return a promise that never resolves
+    return new Promise(() => {});
   }
 
   private async buildUrl(

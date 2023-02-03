@@ -21,7 +21,6 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'microsoft',
   title: 'Microsoft',
-  provider_id: 'microsoft-auth-provider',
   icon: () => null,
 };
 
@@ -34,7 +33,7 @@ export default class MicrosoftAuth {
   static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
     const {
       environment = 'development',
-      usePopup = true,
+      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       discoveryApi,
@@ -52,7 +51,7 @@ export default class MicrosoftAuth {
       oauthRequestApi,
       provider,
       environment,
-      usePopup,
+      authFlow,
       defaultScopes,
     });
   }

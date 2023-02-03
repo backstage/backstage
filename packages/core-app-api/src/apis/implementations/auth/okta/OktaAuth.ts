@@ -21,7 +21,6 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'okta',
   title: 'Okta',
-  provider_id: 'okta-auth-provider',
   icon: () => null,
 };
 
@@ -47,7 +46,7 @@ export default class OktaAuth {
     const {
       discoveryApi,
       environment = 'development',
-      usePopup = true,
+      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = ['openid', 'email', 'profile', 'offline_access'],
@@ -58,7 +57,7 @@ export default class OktaAuth {
       oauthRequestApi,
       provider,
       environment,
-      usePopup,
+      authFlow,
       defaultScopes,
       scopeTransform(scopes) {
         return scopes.map(scope => {

@@ -36,7 +36,6 @@ export type BitbucketAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'bitbucket',
   title: 'Bitbucket',
-  provider_id: 'bitbucket-auth-provider',
   icon: () => null,
 };
 
@@ -50,7 +49,7 @@ export default class BitbucketAuth {
     const {
       discoveryApi,
       environment = 'development',
-      usePopup = true,
+      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = ['team'],
@@ -61,7 +60,7 @@ export default class BitbucketAuth {
       oauthRequestApi,
       provider,
       environment,
-      usePopup,
+      authFlow,
       defaultScopes,
     });
   }

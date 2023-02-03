@@ -21,7 +21,6 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'gitlab',
   title: 'GitLab',
-  provider_id: 'gitlab-auth-provider',
   icon: () => null,
 };
 
@@ -35,7 +34,7 @@ export default class GitlabAuth {
     const {
       discoveryApi,
       environment = 'development',
-      usePopup = true,
+      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = ['read_user'],
@@ -46,7 +45,7 @@ export default class GitlabAuth {
       oauthRequestApi,
       provider,
       environment,
-      usePopup,
+      authFlow,
       defaultScopes,
     });
   }

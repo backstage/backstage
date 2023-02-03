@@ -21,7 +21,6 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'github',
   title: 'GitHub',
-  provider_id: 'github-auth-provider',
   icon: () => null,
 };
 
@@ -38,7 +37,7 @@ export default class GithubAuth {
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = ['read:user'],
-      usePopup = true,
+      authFlow = 'popup',
     } = options;
 
     return OAuth2.create({
@@ -47,7 +46,7 @@ export default class GithubAuth {
       provider,
       environment,
       defaultScopes,
-      usePopup,
+      authFlow,
     });
   }
 }

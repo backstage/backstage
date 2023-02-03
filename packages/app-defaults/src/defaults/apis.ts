@@ -131,7 +131,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
-        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
+        authFlow: configApi.getOptionalString('auth.authFlow'),
       }),
   }),
   createApiFactory({
@@ -146,7 +146,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
-        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
+        authFlow: configApi.getOptionalString('auth.authFlow'),
       }),
   }),
   createApiFactory({
@@ -162,7 +162,7 @@ export const apis = [
         oauthRequestApi,
         defaultScopes: ['read:user'],
         environment: configApi.getOptionalString('auth.environment'),
-        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
+        authFlow: configApi.getOptionalString('auth.authFlow'),
       }),
   }),
   createApiFactory({
@@ -177,7 +177,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
-        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
+        authFlow: configApi.getOptionalString('auth.authFlow'),
       }),
   }),
   createApiFactory({
@@ -192,7 +192,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
-        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
+        authFlow: configApi.getOptionalString('auth.authFlow'),
       }),
   }),
   createApiFactory({
@@ -207,7 +207,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
-        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
+        authFlow: configApi.getOptionalString('auth.authFlow'),
       }),
   }),
   createApiFactory({
@@ -223,7 +223,7 @@ export const apis = [
         oauthRequestApi,
         defaultScopes: ['team'],
         environment: configApi.getOptionalString('auth.environment'),
-        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
+        authFlow: configApi.getOptionalString('auth.authFlow'),
       }),
   }),
   createApiFactory({
@@ -238,7 +238,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
-        usePopup: configApi.getOptionalBoolean('auth.usePopup'),
+        authFlow: configApi.getOptionalString('auth.authFlow'),
       });
     },
   }),

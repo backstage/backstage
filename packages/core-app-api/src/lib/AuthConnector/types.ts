@@ -17,7 +17,6 @@
 export type CreateSessionOptions = {
   scopes: Set<string>;
   instantPopup?: boolean;
-  redirectUrl?: string;
 };
 
 /**

@@ -131,8 +131,6 @@ export type AuthProviderConfig = {
    * The function used to resolve cookie configuration based on the auth provider options.
    */
   cookieConfigurer?: CookieConfigurer;
-
-  isPopupAuthenticationRequest: boolean;
 };
 
 /** @public */

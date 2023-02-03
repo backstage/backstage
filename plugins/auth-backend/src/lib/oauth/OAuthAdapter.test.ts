@@ -74,7 +74,6 @@ describe('OAuthAdapter', () => {
     providerId: 'test-provider',
     appOrigin: 'http://localhost:3000',
     baseUrl: 'http://domain.org/auth',
-    isPopupAuthenticationRequest: true,
     cookieConfigurer: mockCookieConfigurer,
     tokenIssuer: {
       issueToken: async () => 'my-id-token',
@@ -174,10 +173,14 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       isOriginAllowed: () => false,
-      isPopupAuthenticationRequest: false,
     });
 
-    const mockRequest = createEncodedQueryMockRequest(defaultState);
+    const state = {
+      ...defaultState,
+      redirectUrl: 'http://localhost:3000',
+      authFlow: 'redirect',
+    };
+    const mockRequest = createEncodedQueryMockRequest(state);
 
     await oauthProvider.frameHandler(mockRequest, mockResponse);
     expect(mockResponse.redirect).toHaveBeenCalledTimes(1);
@@ -343,7 +346,6 @@ describe('OAuthAdapter', () => {
       baseUrl: 'http://domain.org/auth',
       appUrl: 'http://domain.org',
       isOriginAllowed: () => false,
-      isPopupAuthenticationRequest: true,
     };
 
     const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
@@ -365,7 +367,6 @@ describe('OAuthAdapter', () => {
     baseUrl: 'http://domain.org/auth',
     appUrl: 'http://domain.org',
     isOriginAllowed: () => false,
-    isPopupAuthenticationRequest: true,
   };
 
   const mockStartRequestWithOrigin = {
@@ -505,7 +506,7 @@ describe('OAuthAdapter', () => {
     expect(mockResponse.redirect).not.toHaveBeenCalled();
   });
 
-  it('executed a response redirect when isPopupAuthenticationRequest is false', async () => {
+  it('executed a response redirect when authFlow query string is set to "redirect"', async () => {
     const handlers = {
       start: jest.fn(async (_req: { state: OAuthState }) => ({
         url: '/url',
@@ -516,7 +517,6 @@ describe('OAuthAdapter', () => {
     };
     const configWithNoPopupEnabled = {
       ...configOriginAllowed,
-      isPopupAuthenticationRequest: false,
     };
     const oauthProvider = OAuthAdapter.fromConfig(
       configWithNoPopupEnabled,
@@ -531,6 +531,7 @@ describe('OAuthAdapter', () => {
       ...defaultState,
       origin: 'http://other.domain',
       redirectUrl: 'http://domain.org',
+      authFlow: 'redirect',
     };
 
     const mockRequest = {
@@ -540,7 +541,6 @@ describe('OAuthAdapter', () => {
 
     await oauthProvider.frameHandler(mockRequest, mockResponse);
     expect(mockRequest.get).not.toHaveBeenCalled();
-    expect(mockResponse.end).not.toHaveBeenCalled();
     expect(mockCookieConfigurer).not.toHaveBeenCalled();
     expect(mockResponse.cookie).not.toHaveBeenCalled();
     expect(mockResponse.redirect).toHaveBeenCalledTimes(1);
