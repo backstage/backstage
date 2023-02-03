@@ -25,6 +25,11 @@ module.exports = {
     messages: {
       forbidden: '{{packageName}} does not export {{subPath}}',
     },
+    docs: {
+      description:
+        'Disallow internal monorepo imports from package subpaths that are not exported.',
+      url: 'https://github.com/backstage/backstage/blob/master/packages/eslint-plugin/docs/rules/no-forbidden-package-imports.md',
+    },
   },
   create(context) {
     return visitImports(context, (node, imp) => {
