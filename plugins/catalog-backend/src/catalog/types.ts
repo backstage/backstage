@@ -249,7 +249,7 @@ export interface QueryEntitiesResponse {
   /**
    * The entities for the current pagination request
    */
-  entities: Entity[];
+  items: Entity[];
 
   pageInfo: {
     /**

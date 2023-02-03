@@ -121,7 +121,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
     if (authorizeDecision.result === AuthorizeResult.DENY) {
       return {
-        entities: [],
+        items: [],
         pageInfo: {},
         totalItems: 0,
       };

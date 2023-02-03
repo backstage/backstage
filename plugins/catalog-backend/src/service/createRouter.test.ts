@@ -138,12 +138,12 @@ describe('createRouter readonly disabled', () => {
 
   describe('GET /entities/by-query', () => {
     it('happy path: lists entities', async () => {
-      const entities: Entity[] = [
+      const items: Entity[] = [
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        entities,
+        items,
         totalItems: 100,
         pageInfo: { nextCursor: 'something' },
       });
@@ -151,7 +151,7 @@ describe('createRouter readonly disabled', () => {
       const response = await request(app).get('/entities/by-query');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
-        entities,
+        items,
         totalItems: 100,
         nextCursor: 'something',
       });
@@ -159,7 +159,7 @@ describe('createRouter readonly disabled', () => {
 
     it('parses initial request', async () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        entities: [],
+        items: [],
         pageInfo: {},
         totalItems: 0,
       });
@@ -189,14 +189,14 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('parses cursor request', async () => {
-      const entities: Entity[] = [
+      const items: Entity[] = [
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        entities,
+        items,
         totalItems: 100,
-        nextCursor: 'next',
+        pageInfo: { nextCursor: 'next' },
       });
 
       const response = await request(app).get(
@@ -208,7 +208,7 @@ describe('createRouter readonly disabled', () => {
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
-        entities,
+        items,
         totalItems: 100,
         nextCursor: 'next',
       });
