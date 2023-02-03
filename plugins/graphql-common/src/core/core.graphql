@@ -7,7 +7,7 @@ directive @relation(
   nodeType: String
   kind: String
 ) on FIELD_DEFINITION
-directive @extend(
+directive @inherit(
   interface: String
   generatedTypeName: String
   when: ExtendWhenArgument
@@ -23,7 +23,7 @@ interface Node {
   id: ID!
 }
 
-interface Connection @extend(generatedTypeName: "NodeConnection") {
+interface Connection @inherit(generatedTypeName: "NodeConnection") {
   pageInfo: PageInfo!
   edges: [Edge!]!
   count: Int
@@ -36,7 +36,7 @@ type PageInfo {
   endCursor: String
 }
 
-interface Edge @extend(generatedTypeName: "NodeEdge") {
+interface Edge @inherit(generatedTypeName: "NodeEdge") {
   cursor: String!
   node: Node!
 }

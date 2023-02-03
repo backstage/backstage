@@ -11,7 +11,7 @@ union Ownable = IAPI | IComponent | IDomain | IResource | ISystem | ITemplate
 union Dependency = IComponent | IResource
 union Owner = IUser | IGroup
 
-interface IEntity @extend(interface: "Node") {
+interface IEntity @inherit(interface: "Node") {
   name: String! @field(at: "metadata.name")
   kind: String! @field(at: "kind")
   namespace: String! @field(at: "metadata.namespace", default: "default")
@@ -28,13 +28,13 @@ type EntityLink {
 }
 
 interface ILocation
-  @extend(interface: "IEntity", when: "kind", is: "Location") {
+  @inherit(interface: "IEntity", when: "kind", is: "Location") {
   type: String @field(at: "spec.type")
   target: String @field(at: "spec.target")
   targets: [String] @field(at: "spec.targets")
 }
 
-interface IAPI @extend(interface: "IEntity", when: "kind", is: "API") {
+interface IAPI @inherit(interface: "IEntity", when: "kind", is: "API") {
   lifecycle: Lifecycle! @field(at: "spec.lifecycle")
   owner: Owner! @relation(name: "ownedBy")
   definition: String! @field(at: "spec.definition")
@@ -44,7 +44,7 @@ interface IAPI @extend(interface: "IEntity", when: "kind", is: "API") {
 }
 
 interface IComponent
-  @extend(interface: "IEntity", when: "kind", is: "Component") {
+  @inherit(interface: "IEntity", when: "kind", is: "Component") {
   lifecycle: Lifecycle! @field(at: "spec.lifecycle")
   owner: Owner! @relation(name: "ownedBy")
   system: ISystem @relation(name: "partOf", kind: "system")
@@ -55,20 +55,20 @@ interface IComponent
   dependencies: Connection @relation(name: "dependsOn", nodeType: "Dependency")
 }
 
-interface IDomain @extend(interface: "IEntity", when: "kind", is: "Domain") {
+interface IDomain @inherit(interface: "IEntity", when: "kind", is: "Domain") {
   owner: Owner! @relation(name: "ownedBy")
   systems: Connection @relation(name: "hasPart", nodeType: "ISystem")
 }
 
 interface IResource
-  @extend(interface: "IEntity", when: "kind", is: "Resource") {
+  @inherit(interface: "IEntity", when: "kind", is: "Resource") {
   owner: Owner! @relation(name: "ownedBy")
   dependencies: Connection @relation(name: "dependsOn", nodeType: "Dependency")
   dependents: Connection @relation(name: "dependencyOf", nodeType: "Dependency")
   system: ISystem @relation(name: "partOf")
 }
 
-interface ISystem @extend(interface: "IEntity", when: "kind", is: "System") {
+interface ISystem @inherit(interface: "IEntity", when: "kind", is: "System") {
   owner: Owner! @relation(name: "ownedBy")
   domain: IDomain @relation(name: "partOf")
   components: Connection
@@ -86,14 +86,14 @@ type Step {
 }
 
 interface ITemplate
-  @extend(interface: "IEntity", when: "kind", is: "Template") {
+  @inherit(interface: "IEntity", when: "kind", is: "Template") {
   parameters: JSONObject @field(at: "spec.parameters")
   steps: [Step]! @field(at: "spec.steps")
   output: JSONObject @field(at: "spec.output")
   owner: Owner @relation(name: "ownedBy")
 }
 
-interface IGroup @extend(interface: "IEntity", when: "kind", is: "Group") {
+interface IGroup @inherit(interface: "IEntity", when: "kind", is: "Group") {
   displayName: String @field(at: "spec.profile.displayName")
   email: String @field(at: "spec.profile.email")
   picture: String @field(at: "spec.profile.picture")
@@ -103,7 +103,7 @@ interface IGroup @extend(interface: "IEntity", when: "kind", is: "Group") {
   ownerOf: Connection @relation(name: "ownerOf", nodeType: "Ownable")
 }
 
-interface IUser @extend(interface: "IEntity", when: "kind", is: "User") {
+interface IUser @inherit(interface: "IEntity", when: "kind", is: "User") {
   displayName: String @field(at: "spec.profile.displayName")
   email: String @field(at: "spec.profile.email")
   picture: String @field(at: "spec.profile.picture")
