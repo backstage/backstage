@@ -41,7 +41,6 @@ export type AuthProviderConfig = {
   appUrl: string;
   isOriginAllowed: (origin: string) => boolean;
   cookieConfigurer?: CookieConfigurer;
-  isPopupAuthenticationRequest: boolean;
 };
 
 // @public (undocumented)
@@ -290,7 +289,6 @@ export type OAuthAdapterOptions = {
   cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
-  isPopupAuthenticationRequest: boolean;
 };
 
 // @public (undocumented)
@@ -389,6 +387,7 @@ export type OAuthState = {
   origin?: string;
   scope?: string;
   redirectUrl?: string;
+  authFlow?: string;
 };
 
 // @public
@@ -670,12 +669,6 @@ export const providers: Readonly<{
 
 // @public (undocumented)
 export const readState: (stateString: string) => OAuthState;
-
-// @public (undocumented)
-export const redirectMessageResponse: (
-  res: express.Response,
-  redirectUrl: string,
-) => void;
 
 // @public (undocumented)
 export interface RouterOptions {

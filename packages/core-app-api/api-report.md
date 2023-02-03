@@ -263,7 +263,7 @@ export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
   provider?: AuthProviderInfo;
-  usePopup?: boolean;
+  authFlow?: string;
 };
 
 // @public
@@ -493,6 +493,8 @@ export type OAuthApiCreateOptions = AuthApiCreateOptions & {
 // @public
 export class OAuthRequestManager implements OAuthRequestApi {
   // (undocumented)
+  authFlow(): string;
+  // (undocumented)
   authRequest$(): Observable<PendingOAuthRequest[]>;
   // (undocumented)
   createAuthRequester<T>(options: OAuthRequesterOptions<T>): OAuthRequester<T>;
@@ -517,7 +519,7 @@ export type OneLoginAuthCreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
-  usePopup?: boolean;
+  authFlow?: string;
   provider?: AuthProviderInfo;
 };
 
