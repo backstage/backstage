@@ -25,12 +25,14 @@ describe('MockOAuthApi', () => {
     const requester1 = mock.createAuthRequester({
       provider: { icon: () => null, title: 'Test', id: 'test-provider' },
       onAuthRequest: authHandler1,
+      authFlow: 'popup',
     });
 
     const authHandler2 = jest.fn().mockResolvedValue('other');
     const requester2 = mock.createAuthRequester({
       provider: { icon: () => null, title: 'Test', id: 'test-provider' },
       onAuthRequest: authHandler2,
+      authFlow: 'popup',
     });
 
     const promises = [
@@ -68,12 +70,14 @@ describe('MockOAuthApi', () => {
     const requester1 = mock.createAuthRequester({
       provider: { icon: () => null, title: 'Test', id: 'test-provider' },
       onAuthRequest: authHandler1,
+      authFlow: 'popup',
     });
 
     const authHandler2 = jest.fn();
     const requester2 = mock.createAuthRequester({
       provider: { icon: () => null, title: 'Test', id: 'test-provider' },
       onAuthRequest: authHandler2,
+      authFlow: 'popup',
     });
 
     const promises = [

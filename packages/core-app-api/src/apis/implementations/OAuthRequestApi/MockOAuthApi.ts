@@ -55,4 +55,8 @@ export default class MockOAuthApi implements OAuthRequestApi {
       });
     });
   }
+
+  authFlow() {
+    return 'popup';
+  }
 }
