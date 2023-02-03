@@ -112,6 +112,11 @@ export const createConditionTransformer: <
 ) => ConditionTransformer<TQuery>;
 
 // @public
+export const createIsAuthorized: <TResource, TQuery>(
+  rules: PermissionRule<TResource, TQuery, string, PermissionRuleParams>[],
+) => (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+
+// @public
 export function createPermissionIntegrationRouter<
   TResourceType extends string,
   TResource,
