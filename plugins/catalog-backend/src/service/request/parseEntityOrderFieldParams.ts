@@ -18,19 +18,19 @@ import { InputError } from '@backstage/errors';
 import { EntityOrder } from '../../catalog/types';
 import { parseStringsParam } from './common';
 
-export function parseEntitySortFieldParams(
+export function parseEntityOrderFieldParams(
   params: Record<string, unknown>,
 ): EntityOrder[] | undefined {
-  const sortFieldStrings = parseStringsParam(params.sortField, 'sortField');
-  if (!sortFieldStrings) {
+  const orderFieldStrings = parseStringsParam(params.orderField, 'orderField');
+  if (!orderFieldStrings) {
     return undefined;
   }
 
-  return sortFieldStrings.map(sortFieldString => {
-    const [field, order] = sortFieldString.split(',');
+  return orderFieldStrings.map(orderFieldString => {
+    const [field, order] = orderFieldString.split(',');
 
     if (order !== undefined && !isOrder(order)) {
-      throw new InputError('Invalid sort field order, must be asc or desc');
+      throw new InputError('Invalid order field order, must be asc or desc');
     }
     return { field, order };
   });

@@ -228,7 +228,10 @@ export interface QueryEntitiesInitialRequest {
   limit?: number;
   filter?: EntityFilter;
   orderFields?: EntityOrder[];
-  query?: string;
+  fullTextFilter?: {
+    term: string;
+    fields?: string[];
+  };
 }
 
 /**
@@ -289,9 +292,12 @@ export type Cursor = {
    */
   isPrevious: boolean;
   /**
-   * Used for filtering the data by name.
+   * Used for performing full text filtering on the given fields.
    */
-  query?: string;
+  fullTextFilter?: {
+    term: string;
+    fields?: string[];
+  };
   /**
    * The value of the fields of the first returned item used for paginating the data.
    * The catalog uses this field internally to understand if the beginning
