@@ -4,9 +4,10 @@
 
 ```ts
 import type { CatalogClient } from '@backstage/catalog-client';
-import DataLoader from 'dataloader';
+import { default as default_2 } from 'dataloader';
 import { Entity } from '@backstage/catalog-model';
 import { Module } from 'graphql-modules';
+import { Options } from 'dataloader';
 
 // @public (undocumented)
 export const Catalog: Module;
@@ -16,8 +17,13 @@ export const catalogSchema: any[];
 
 // @public (undocumented)
 export function createLoader(
-  catalog: Pick<CatalogClient, 'getEntitiesByRefs'>,
-): DataLoader<string, Entity, string>;
+  {
+    catalog,
+  }: {
+    catalog: Pick<CatalogClient, 'getEntitiesByRefs'>;
+  },
+  options?: Options<string, Entity>,
+): default_2<string, Entity, string>;
 
 // (No @packageDocumentation comment for this package)
 ```
