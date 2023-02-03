@@ -18,4 +18,4 @@ export * from './createGraphQLApp';
 export * from './core';
 export * from './refToId';
 export { transformSchema } from './transformSchema';
-export type { ResolverContext, EntityLoader } from './types';
+export type { ResolverContext } from './types';
