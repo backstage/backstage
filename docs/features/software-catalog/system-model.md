@@ -108,3 +108,26 @@ domain would come with some documentation on how to accept payments for a new
 product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
+
+### User
+
+A user describes a person, such as an employee, a contractor, or similar.
+
+### Group
+
+A group describes an organizational entity, such as for example a team, a
+business unit, or a loose collection of people in an interest group.
+
+### Location
+
+A location is a marker that references other places to look for catalog data.
+
+### Type
+
+The type field in the system has no set meaning. It is up to the user to assign their own types and use them as desired, such as for link validation or creating custom UI components. Some common pre-defined types are depicted in the ecosystem modeling diagram.
+
+### Template
+
+A template definition describes both the parameters that are rendered in the
+frontend part of the scaffolding wizard, and the steps that are executed when
+scaffolding that component.
