@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createApiFactory,
   createPlugin,
@@ -24,6 +25,11 @@ import { stackStormApiRef, StackStormClient } from './api';
 
 import { rootRouteRef } from './routes';
 
+/**
+ * The Backstage plugin that holds stackstorm specific components
+ *
+ * @public
+ */
 export const stackstormPlugin = createPlugin({
   id: 'stackstorm',
   apis: [
@@ -45,6 +51,11 @@ export const stackstormPlugin = createPlugin({
   },
 });
 
+/**
+ * A component to display a stackstorm home page
+ *
+ * @public
+ */
 export const StackstormPage = stackstormPlugin.provide(
   createRoutableExtension({
     name: 'StackstormPage',
