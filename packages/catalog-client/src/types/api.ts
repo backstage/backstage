@@ -400,7 +400,7 @@ export type QueryEntitiesInitialRequest = {
   fields?: string[];
   limit?: number;
   filter?: EntityFilterQuery;
-  sortFields?: EntityOrderQuery;
+  orderFields?: EntityOrderQuery;
   query?: string;
 };
 

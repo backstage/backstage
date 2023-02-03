@@ -214,14 +214,14 @@ export class CatalogClient implements CatalogApi {
     const params: string[] = [];
 
     if (isQueryEntitiesInitialRequest(request)) {
-      const { fields = [], filter, limit, sortFields, query } = request;
+      const { fields = [], filter, limit, orderFields, query } = request;
       params.push(...this.getParams(filter));
 
       if (limit !== undefined) {
         params.push(`limit=${limit}`);
       }
-      if (sortFields !== undefined) {
-        (Array.isArray(sortFields) ? sortFields : [sortFields]).forEach(
+      if (orderFields !== undefined) {
+        (Array.isArray(orderFields) ? orderFields : [orderFields]).forEach(
           ({ field, order }) => params.push(`sortField=${field},${order}`),
         );
       }
