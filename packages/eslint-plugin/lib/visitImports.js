@@ -16,6 +16,7 @@
 
 // @ts-check
 
+const { builtinModules } = require('module');
 const getPackages = require('./getPackages');
 
 /**
@@ -42,9 +43,17 @@ const getPackages = require('./getPackages');
  */
 
 /**
+ * @typedef BuiltinImport
+ * @type {object}
+ * @property {'builtin'} type
+ * @property {string} path
+ * @property {string} packageName
+ */
+
+/**
  * @callback ImportVisitor
  * @param {import('eslint').Rule.Node} node
- * @param {LocalImport | InternalImport | ExternalImport} import
+ * @param {LocalImport | InternalImport | ExternalImport | BuiltinImport} import
  */
 
 /**
@@ -81,10 +90,17 @@ module.exports = function visitImports(context, visitor) {
     }
     const pkg = packages?.map.get(packageName);
     if (!pkg) {
+      if (
+        packageName.startsWith('node:') ||
+        builtinModules.includes(packageName)
+      ) {
+        return visitor(node, { type: 'builtin', path: subPath, packageName });
+      }
+
       return visitor(node, {
         type: 'external',
         path: subPath,
-        packageName: packageName,
+        packageName,
       });
     }
 
