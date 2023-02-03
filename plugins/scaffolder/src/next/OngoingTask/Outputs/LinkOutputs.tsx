@@ -16,10 +16,11 @@
 import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
-import { Button, makeStyles, Link } from '@material-ui/core';
+import { Button, makeStyles } from '@material-ui/core';
 import React from 'react';
 import WebIcon from '@material-ui/icons/Web';
 import { parseEntityRef } from '@backstage/catalog-model';
+import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   root: {
@@ -53,15 +54,10 @@ export const LinkOutputs = (props: { output: ScaffolderTaskOutput }) => {
         .map(({ url, title, icon }, i) => {
           const Icon = iconResolver(icon);
           return (
-            <Link
-              classes={{ root: classes.root }}
-              href={url}
-              key={i}
-              component={Button}
-              target="_blank"
-              startIcon={<Icon />}
-            >
-              {title}
+            <Link to={url} key={i} classes={{ root: classes.root }}>
+              <Button startIcon={<Icon />} component="div" color="primary">
+                {title}
+              </Button>
             </Link>
           );
         })}
