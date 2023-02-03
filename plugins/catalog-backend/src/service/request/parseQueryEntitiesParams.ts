@@ -47,7 +47,7 @@ export function parseQueryEntitiesParams(
     fields,
     filter,
     limit,
-    sortFields,
+    orderFields: sortFields,
     query,
   };
 

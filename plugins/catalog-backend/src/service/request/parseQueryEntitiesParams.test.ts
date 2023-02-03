@@ -36,7 +36,7 @@ describe('parseQueryEntitiesParams', () => {
       ) as QueryEntitiesInitialRequest;
       expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
-      expect(parsedObj.sortFields).toEqual([
+      expect(parsedObj.orderFields).toEqual([
         { field: 'metadata.name', order: 'desc' },
       ]);
       expect(parsedObj.filter).toBeDefined();
@@ -50,7 +50,7 @@ describe('parseQueryEntitiesParams', () => {
       ) as QueryEntitiesInitialRequest;
       expect(parsedObj.limit).toBeUndefined();
       expect(parsedObj.fields).toBeUndefined();
-      expect(parsedObj.sortFields).toBeUndefined();
+      expect(parsedObj.orderFields).toBeUndefined();
       expect(parsedObj.filter).toBeUndefined();
       expect(parsedObj.query).toBeUndefined();
       expect(parsedObj).not.toHaveProperty('authorizationToken');
