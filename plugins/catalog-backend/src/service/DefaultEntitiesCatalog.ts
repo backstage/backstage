@@ -62,6 +62,8 @@ const defaultSortField: EntityOrder = {
   order: 'asc',
 };
 
+const DEFAULT_LIMIT = 20;
+
 function parsePagination(input?: EntityPagination): {
   limit?: number;
   offset?: number;
@@ -336,7 +338,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     request: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
     const db = this.database;
-    const limit = request.limit ?? 20;
+
+    const limit = request.limit ?? DEFAULT_LIMIT;
 
     const cursor: Omit<Cursor, 'orderFieldValues'> & {
       orderFieldValues?: (string | null)[];
