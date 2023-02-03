@@ -114,7 +114,7 @@ frontend.
 Each `Step` is `JSONSchema` with some extra goodies for styling what it might
 look like in the frontend. For these steps we rely very heavily on this
 [library](https://github.com/rjsf-team/react-jsonschema-form). They have some
-[great docs](https://react-jsonschema-form.readthedocs.io/) and a
+[great docs](https://rjsf-team.github.io/react-jsonschema-form/docs/) and a
 [playground](https://rjsf-team.github.io/react-jsonschema-form) where you can
 play around with some examples.
 
