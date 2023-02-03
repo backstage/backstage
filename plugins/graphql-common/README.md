@@ -24,7 +24,7 @@ It includes the following features,
 
 ## Getting started
 
-The simplest way to start is just use [`@backstage/plugin-graphql-backend`](https://github.com/backstage/backstage/tree/master/plugins/graphql-backend) instead.
+The simplest way to start is just use [`@backstage/plugin-graphql-backend`](../graphql-backend) instead.
 
 Otherwise you'll need to create a router with GraphQL server. The minimal setup might be:
 
@@ -49,7 +49,6 @@ interface PluginEnvironment {
 export default function createRouter(env: PluginEnvironment): Router {
   const discovery = SingleHostDiscovery.fromConfig(config);
   const catalog = new CatalogClient({ discoveryApi: discovery });
-  const loader = () => createLoader(catalog);
 
   const application = createGraphQLApp({
     modules: [
@@ -60,7 +59,8 @@ export default function createRouter(env: PluginEnvironment): Router {
     plugins: [
       useEngine(graphql),
       useGraphQLModules(application),
-      useDataLoader('loader', env.loader),
+      useDataLoader('loader', createLoader),
+      useExtendContext(() => ({ application, catalog })),
     ],
   });
   const { parse, validate, contextFactory, execute } = run();
@@ -100,11 +100,11 @@ const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
 apiRouter.use('/graphql', await graphql(graphqlEnv));
 ```
 
-See [`packages/backend/src/index.ts`](https://github.com/backstage/backstage/blob/master/packages/backend/src/index.ts) for an example.
+See [`packages/backend/src/index.ts`](../../packages/backend/src/index.ts) for an example.
 
 ## Extending Schema
 
-This plugin has minimal core schema which isn't useful. So you might be interested in installing [`@backstage/plugin-graphql-catalog`](https://github.com/backstage/backstage/tree/master/plugins/graphql-catalog) plugin that provides a GraphQL module with basic Backstage Catalog types. And you also can add your types/fields. This section will tell how to do it by writing custom GraphQL module.
+This plugin has minimal core schema which isn't useful. So you might be interested in installing [`@backstage/plugin-graphql-catalog`](../graphql-catalog) plugin that provides a GraphQL module with basic Backstage Catalog types. And you also can add your types/fields. This section will tell how to do it by writing custom GraphQL module.
 
 1. Create modules directory where you'll store all your GraphQL modules, for example in `packages/backend/src/modules`
 1. Create a module directory `my-module` there
@@ -165,7 +165,7 @@ Every GraphQL API consists of two things - a schema and resolvers. The schema de
 
 #### `@field`
 
-`@field` directive allows you to access properties on the object using a given path. It allows you to specify a resolver for a field from the schema without actually writing a real resolver. Under the hood, it's creating the resolver for you. It's used extensively in the [`catalog.graphql`](https://github.com/backstage/backstage/tree/master/plugins/graphql-catalog/src/catalog/catalog.graphql) module to retrieve properties like `namespace`, `title` and others.
+`@field` directive allows you to access properties on the object using a given path. It allows you to specify a resolver for a field from the schema without actually writing a real resolver. Under the hood, it's creating the resolver for you. It's used extensively in the [`catalog.graphql`](../graphql-catalog/src/catalog/catalog.graphql) module to retrieve properties like `namespace`, `title` and others.
 
 1. Mapping `namespace.name` field from source data to `Entity#name` field:
 
@@ -340,4 +340,4 @@ interface IGroup implements IEntity & Node & Owner {
 }
 ```
 
-The reason why we do that, is because `Edge` interface has a `node` field with `Node` type. So it forces that any object types that implement `Edge` interface must have the `node` field with the type that implements `Node` interface. And unions can't implement interfaces yet ([graphql-spec#518](https://github.com/graphql/graphql-spec/issues/518)) So you just simply can't use unions in such case. As a workaround we change a union to an interface that implements `Node` and each type that was used in the union, now implements the new interface. To an end user there is no difference between a union and interface approach, both variants work similar.
+The reason why we do that, is because `Edge` interface has a `node` field with `Node` type. So it forces that any object types that implement `Edge` interface must have the `node` field with the type that implements `Node` interface. And unions can't implement interfaces yet ([graphql/graphql-spec#518](https://github.com/graphql/graphql-spec/issues/518)) So you just simply can't use unions in such case. As a workaround we change a union to an interface that implements `Node` and each type that was used in the union, now implements the new interface. To an end user there is no difference between a union and interface approach, both variants work similar.

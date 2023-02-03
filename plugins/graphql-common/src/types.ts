@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import type { CatalogClient } from '@backstage/catalog-client';
+import type { CompoundEntityRef } from '@backstage/catalog-model';
 import DataLoader from 'dataloader';
+import { Application } from 'graphql-modules';
 
 export type PromiseOrValue<T> = T | Promise<T>;
 
 /** @public */
-export type EntityLoader = DataLoader<string, Entity>;
-
-/** @public */
-export interface ResolverContext<
-  TLoader extends DataLoader<any, any> = EntityLoader,
-> {
-  loader: TLoader;
+export interface ResolverContext {
+  application: Application;
+  loader: DataLoader<any, any>;
+  catalog: CatalogClient;
   refToId?: (ref: CompoundEntityRef | string) => string;
 }
 
