@@ -261,8 +261,11 @@ export type QueryEntitiesInitialRequest = {
   fields?: string[];
   limit?: number;
   filter?: EntityFilterQuery;
-  sortFields?: EntityOrderQuery;
-  query?: string;
+  orderFields?: EntityOrderQuery;
+  fullTextFilter?: {
+    term: string;
+    fields?: string[];
+  };
 };
 
 // @public
@@ -272,10 +275,12 @@ export type QueryEntitiesRequest =
 
 // @public
 export type QueryEntitiesResponse = {
-  entities: Entity[];
+  items: Entity[];
   totalItems: number;
-  nextCursor?: string;
-  prevCursor?: string;
+  pageInfo: {
+    nextCursor?: string;
+    prevCursor?: string;
+  };
 };
 
 // @public
