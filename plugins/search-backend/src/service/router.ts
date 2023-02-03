@@ -184,7 +184,7 @@ export async function createRouter(
         }
 
         throw new Error(
-          `There was a problem performing the search query. ${error}`,
+          `There was a problem performing the search query: ${error.message}`,
         );
       }
     },

@@ -74,6 +74,23 @@ describe('createRouter', () => {
   });
 
   describe('GET /query', () => {
+    it('throws meaningful query errors', async () => {
+      const error = new Error('Query error message');
+      mockSearchEngine.query.mockRejectedValueOnce(error);
+
+      const response = await request(app).get('/query');
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toMatchObject(
+        expect.objectContaining({
+          error: {
+            name: 'Error',
+            message: `There was a problem performing the search query: ${error.message}`,
+          },
+        }),
+      );
+    });
+
     it('returns empty results array', async () => {
       const response = await request(app).get('/query');
 
