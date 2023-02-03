@@ -15,12 +15,13 @@
  */
 import type { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import DataLoader from 'dataloader';
+import { default as DataLoader, Options } from 'dataloader';
 import { GraphQLError } from 'graphql';
 
 /** @public */
 export function createLoader(
-  catalog: Pick<CatalogClient, 'getEntitiesByRefs'>,
+  { catalog }: { catalog: Pick<CatalogClient, 'getEntitiesByRefs'> },
+  options?: Options<string, Entity>,
 ) {
   return new DataLoader<string, Entity>(
     async (entityRefs): Promise<Array<Entity | Error>> => {
@@ -33,5 +34,6 @@ export function createLoader(
           new GraphQLError(`no such node with ref: '${entityRefs[index]}'`),
       );
     },
+    options,
   );
 }

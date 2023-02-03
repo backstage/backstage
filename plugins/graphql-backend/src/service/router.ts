@@ -19,8 +19,11 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
-import { createGraphQLApp } from '@backstage/plugin-graphql-common';
-import { createLoader } from '@backstage/plugin-graphql-catalog';
+import {
+  createGraphQLApp,
+  ResolverContext,
+} from '@backstage/plugin-graphql-common';
+import { createLoader as createCatalogLoader } from '@backstage/plugin-graphql-catalog';
 import helmet from 'helmet';
 import DataLoader from 'dataloader';
 import { CatalogClient } from '@backstage/catalog-client';
@@ -34,6 +37,7 @@ import { useGraphQLModules } from '@envelop/graphql-modules';
 import { useDataLoader } from '@envelop/dataloader';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { printSchema } from 'graphql';
 
 /** @public */
 export interface RouterOptions {
@@ -41,7 +45,7 @@ export interface RouterOptions {
   logger: Logger;
   modules?: Module[];
   plugins?: Plugin[];
-  loader?: () => DataLoader<string, any>;
+  createLoader?: (context: ResolverContext) => DataLoader<string, any>;
   refToId?: (ref: CompoundEntityRef | string) => string;
 }
 
@@ -51,24 +55,22 @@ export async function createRouter({
   logger,
   modules,
   plugins,
-  loader: customLoader,
+  createLoader,
   refToId,
 }: RouterOptions): Promise<express.Router> {
   let yoga: YogaServerInstance<any, any> | null = null;
 
-  const application = createGraphQLApp({ modules, logger });
-  const loader =
-    customLoader ??
-    (() => {
-      const discovery = SingleHostDiscovery.fromConfig(config);
-      const catalog = new CatalogClient({ discoveryApi: discovery });
-      return () => createLoader(catalog);
-    })();
-
   const router = Router();
+  const discovery = SingleHostDiscovery.fromConfig(config);
+  const catalog = new CatalogClient({ discoveryApi: discovery });
+  const application = createGraphQLApp({ modules, logger });
 
   router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
+  });
+
+  router.get('/schema', (_, response) => {
+    response.send(printSchema(application.schema));
   });
 
   if (process.env.NODE_ENV === 'development')
@@ -87,8 +89,8 @@ export async function createRouter({
       yoga = createYoga({
         plugins: [
           useGraphQLModules(application),
-          useDataLoader('loader', loader),
-          useExtendContext(() => ({ refToId })),
+          useDataLoader('loader', createLoader ?? createCatalogLoader),
+          useExtendContext(() => ({ application, catalog, refToId })),
           ...(plugins ?? []),
         ],
         logging: logger,
