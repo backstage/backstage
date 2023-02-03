@@ -1,8 +1,15 @@
 # GraphQL Backend
 
-This is the GraphQL Backend plugin.
+The `graphql-backend` plugin adds a [GraphQL][] endpoint
+(`/api/graphql`) to your Backstage instances, and provides a mechanism
+to customize it without having to write any bespoke TypeScript.
 
-It's responsible for merging different GraphQL modules together and provide fully-featured GraphQL server.
+It uses [GraphQL Modules][graphql-modules] and [Envelop][] plugins so you can
+compose pieces of schema and middleware from many different places
+(including other plugins) into a single, complete GraphQL server.
+
+At a minimum, you should install the [graphql-catalog][] which adds basic
+schema elements to access the [Backstage Catalog][backstage-catalog] via GraphQL
 
 - [Getting started](#getting-started)
 - [Extending Schema](../graphql-common/README.md#extending-schema)
@@ -14,9 +21,10 @@ It's responsible for merging different GraphQL modules together and provide full
 
 ## Getting Started
 
-To run it within the backend do:
+To install the GraphQL Backend onto your server:
 
-1. Create `packages/backend/src/plugins/graphql.ts` file with the following content
+1. Create `packages/backend/src/plugins/graphql.ts` file with the following
+   content
 
 ```ts
 import { createRouter } from '@backstage/plugin-graphql-backend';
@@ -56,11 +64,46 @@ const service = createServiceBuilder(module)
 yarn workspace example-backend start
 ```
 
-This will launch the full example backend.
+This will launch the full example backend. However, without any modules
+installed, you won't be able to do much with it.
+
+## GraphQL Modules
+
+The way to add new types and new resolvers to your GraphQL backend is
+with [GraphQL Modules][graphql-modules]. These are portable little
+bundles of schema that you can drop into place and have them extend
+your GraphQL server. The most important of these that is maintained by
+the Backstage team is the [graphql-catalog][] plugin that makes your
+Catalog accessible via GraphQL. To add this module to your GraphQL server,
+add it to the `modules` array in your backend config:
+
+```ts
+import { Catalog } from '@backstage/plugin-graphql-catalog';
+
+// packages/backend/src/plugins/graphql.ts
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    config: env.config,
+    modules: [Catalog],
+  });
+}
+```
+
+To learn more about adding your own modules, see the [graphql-common][] package.
 
 ## Envelop Plugins
 
-GraphQL backend uses [`envelop`](https://the-guild.dev/graphql/envelop) a lightweight JavaScript (TypeScript) library for customizing the GraphQL execution layer. So it's possible to pass any envelop plugins and enhance the capabilities of your GraphQL server.
+Whereas [Graphql Modules][graphql-modules] are used to extend the
+schema and resolvers of your GraphQL server, [Envelop][] plugins are
+used to extend its GraphQL stack with tracing, error handling, context
+extensions, and other middlewares.
+
+Plugins are be added via the `plugins` option. For example, to prevent
+potentially sensitive error messages from leaking to your client in
+production, add the [`useMaskedErrors`][usemaskederrors] package.
 
 ```ts
 import { useMaskedErrors } from '@envelop/core';
@@ -77,11 +120,28 @@ export default async function createPlugin(
 }
 ```
 
-## Custom loader
+## Custom Data Loaders (Advanced)
 
-Another ability of GraphQL backend is requesting data from different sources and not only from `Catalog`. To achieve this you need to implement two things: `loader` and `refToId`
+By default, your graphql context will contain a `Dataloader` for retrieving
+records from the Catalog by their GraphQL ID. Most of the time this is all you
+will need. However, sometimes you will need to load data not just from the
+Backstage catalog, but from a differnt data source entirely. To do this, you
+will need to write a custom data loader.
 
-1. To properly decide which data source should be used you need to encode something inside node's id. You can do it whatever you'd like. But the GraphQL plugin doesn't know how to encode `Entity` reference to id, so you need to define `refToId` function
+> ⚠️Caution! If you find yourself wanting to load data directly from a
+> source other than the catalog, first consider the idea of instead
+> just ingesting that data into the catalog, and then using the
+> default data loader. After consideration, If you still want to load
+> data directly from a source other than the Backstage catalog, then
+> proceed with care.
+
+To implement a custom loader, you will have to provide two things:
+`loader` and `refToId`
+
+1. To properly decide which data source should be used you need to
+   encode something inside node's id. You can do it whatever you'd
+   like. But the GraphQL plugin doesn't know how to encode `Entity`
+   reference to id, so you need to define `refToId` function
 
 ```ts
 import {
@@ -99,7 +159,10 @@ export function refToId(ref: CompoundEntityRef | string) {
 }
 ```
 
-2. Then you need to define custom loader. It's a function that returns a [`DataLoader`](https://github.com/graphql/dataloader) that allows to batch multiple requests to 3rd party APIs and caches responses within a single GraphQL request.
+2. Next, you need to define custom loader. It's a function that
+   returns a [`DataLoader`](https://github.com/graphql/dataloader)
+   that allows to batch multiple requests to 3rd party APIs and caches
+   responses within a single GraphQL request.
 
 ```ts
 import { ResolverContext } from '@backstage/plugin-graphql-common';
@@ -142,7 +205,7 @@ export function createCustomLoader(context: ResolverContext) {
 }
 ```
 
-3. Finally pass both function to GraphQL backend router
+3. Finally pass both functions to GraphQL backend router
 
 ```ts
 // packages/backend/src/plugins/graphql.ts
@@ -158,7 +221,11 @@ export default async function createPlugin(
 }
 ```
 
-**NOTE**: Currently [`@relation`](../graphql-common/README.md#relation) directive can't resolve relationships for non-Entity objects. As a workaround, you can prepare data from 3rd party source by adding `relations` field with the same structure as it's in `Entity`
+> ⚠️Heads up! Currently
+> [`@relation`](../graphql-common/README.md#relation) directive can't
+> resolve relationships for non-Entity objects. As a workaround, you
+> can prepare data from 3rd party source by adding `relations` field
+> with the same structure as it's in `Entity`
 
 ## Integrations
 
@@ -193,9 +260,9 @@ Checkout this example [`packages/app/src/apis.ts`](../../packages/app/src/apis.t
 
 ### Backstage API Docs
 
-You might want to show the schema from your GraphQL API in API definition section of an API entity in Backstage. You can use the `/api/graphql/schema` endpoint to read the schema provided by your GraphQL API. Here is how you can accomplish this.
+You might want to show the schema from your GraphQL API in the API definition section of an API entity in Backstage. You can use the `/api/graphql/schema` endpoint to read the schema provided by your GraphQL API. Here's how:
 
-1. Create API entity and reference `definition.$text: http://localhost:7007/api/graphql/schema`
+1. Create the API entity and reference `definition.$text: http://localhost:7007/api/graphql/schema`
 
    ```yaml
    apiVersion: backstage.io/v1alpha1
@@ -220,3 +287,11 @@ backend:
     allow:
       - host: localhost:7007
 ```
+
+[graphql]: https://graphql.org
+[envelop]: https://the-guild.dev/graphql/envelop
+[graphql-modules]: https://the-guild.dev/graphql/modules
+[graphql-catalog]: ../graphql-catalog/README.md
+[graphql-common]: ../graphql-common/README.md
+[backstage-catalog]: https://backstage.io/docs/features/software-catalog/software-catalog-overview
+[usemaskederrors]: https://the-guild.dev/graphql/envelop/plugins/use-masked-errors
