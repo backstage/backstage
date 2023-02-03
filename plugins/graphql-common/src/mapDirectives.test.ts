@@ -44,9 +44,9 @@ describe('mapDirectives', () => {
     return schema;
   };
 
-  it('should add object type if empty @extend directive is used', function* () {
+  it('should add object type if empty @inherit directive is used', function* () {
     const schema = transformSchema(gql`
-      interface IEntity @extend {
+      interface IEntity @inherit {
         totalCount: Int!
       }
     `);
@@ -55,9 +55,9 @@ describe('mapDirectives', () => {
     ).toEqual(['type Entity implements IEntity {', '  totalCount: Int!', '}']);
   });
 
-  it('should add object with name from `generatedTypeName` argument of @extend directive', function* () {
+  it('should add object with name from `generatedTypeName` argument of @inherit directive', function* () {
     const schema = transformSchema(gql`
-      interface Entity @extend(generatedTypeName: "NodeEntity") {
+      interface Entity @inherit(generatedTypeName: "NodeEntity") {
         totalCount: Int!
       }
     `);
@@ -70,9 +70,9 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it('should merge fields from interface in @extend directive type', function* () {
+  it('should merge fields from interface in @inherit directive type', function* () {
     const schema = transformSchema(gql`
-      interface IEntity @extend(interface: "Node") {
+      interface IEntity @inherit(interface: "Node") {
         name: String!
       }
     `);
@@ -88,7 +88,7 @@ describe('mapDirectives', () => {
 
   it('should add object type with merged fields from interfaces', function* () {
     const schema = transformSchema(gql`
-      interface IEntity @extend(interface: "Node") {
+      interface IEntity @inherit(interface: "Node") {
         name: String!
       }
     `);
@@ -122,10 +122,10 @@ describe('mapDirectives', () => {
 
   it('should merge union types', function* () {
     const schema = transformSchema(gql`
-      interface IComponent @extend {
+      interface IComponent @inherit {
         name: String!
       }
-      interface IResource @extend {
+      interface IResource @inherit {
         name: String!
       }
 
@@ -142,17 +142,17 @@ describe('mapDirectives', () => {
     const schema = transformSchema(gql`
       union Ownable = IEntity
 
-      interface IEntity @extend {
+      interface IEntity @inherit {
         name: String!
       }
-      interface IResource @extend(interface: "IEntity") {
+      interface IResource @inherit(interface: "IEntity") {
         location: String!
       }
       interface IWebResource
-        @extend(interface: "IResource", when: "spec.type", is: "website") {
+        @inherit(interface: "IResource", when: "spec.type", is: "website") {
         url: String!
       }
-      interface IUser @extend {
+      interface IUser @inherit {
         ownerOf: [Ownable!]! @relation
       }
     `);
@@ -161,21 +161,21 @@ describe('mapDirectives', () => {
     ).toEqual(['union Ownable = Entity | Resource | WebResource']);
   });
 
-  it('should extend a types sequence', function* () {
+  it('should inherit a types sequence', function* () {
     const schema = transformSchema(gql`
-      interface IEntity @extend(interface: "Node") {
+      interface IEntity @inherit(interface: "Node") {
         name: String!
       }
       interface IResource
-        @extend(interface: "IEntity", when: "kind", is: "Resource") {
+        @inherit(interface: "IEntity", when: "kind", is: "Resource") {
         location: String!
       }
       interface IWebResource
-        @extend(interface: "IResource", when: "spec.type", is: "website") {
+        @inherit(interface: "IResource", when: "spec.type", is: "website") {
         url: String!
       }
       interface IExampleCom
-        @extend(
+        @inherit(
           interface: "IWebResource"
           when: "spec.url"
           is: "example.com"
@@ -198,11 +198,11 @@ describe('mapDirectives', () => {
 
   it('should add arguments to the "Connection" type', function* () {
     const schema = transformSchema(gql`
-      interface IGroup @extend(interface: "Node") {
+      interface IGroup @inherit(interface: "Node") {
         users: Connection @relation(name: "hasMember", nodeType: "IUser")
       }
 
-      interface IUser @extend(interface: "Node", when: "kind", is: "User") {
+      interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
         name: String!
       }
     `);
@@ -220,14 +220,14 @@ describe('mapDirectives', () => {
     const schema = transformSchema(gql`
       union Ownable = IEntity
 
-      interface IEntity @extend(interface: "Node") {
+      interface IEntity @inherit(interface: "Node") {
         name: String!
       }
       interface IResource
-        @extend(interface: "IEntity", when: "kind", is: "Resource") {
+        @inherit(interface: "IEntity", when: "kind", is: "Resource") {
         location: String!
       }
-      interface IUser @extend {
+      interface IUser @inherit {
         owns: Connection @relation(name: "ownerOf", nodeType: "Ownable")
       }
     `);
@@ -274,7 +274,7 @@ describe('mapDirectives', () => {
   it('should fail if `at` argument of @field is not a valid type', function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend {
+        interface IEntity @inherit {
           name: String! @field(at: 42)
         }
       `),
@@ -283,34 +283,34 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if `when` argument of @extend is not a valid type', function* () {
+  it('should fail if `when` argument of @inherit is not a valid type', function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend(when: 42, is: "answer") {
+        interface IEntity @inherit(when: 42, is: "answer") {
           name: String!
         }
       `),
     ).toThrow(
-      'The "when" argument of @extend directive must be a string or an array of strings',
+      'The "when" argument of @inherit directive must be a string or an array of strings',
     );
   });
 
-  it('should fail if `when` argument is used without `is` in @extend directive', function* () {
+  it('should fail if `when` argument is used without `is` in @inherit directive', function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend(when: "kind") {
+        interface IEntity @inherit(when: "kind") {
           name: String!
         }
       `),
     ).toThrow(
-      'The @extend directive for "IEntity" should have both "when" and "is" arguments or none of them',
+      'The @inherit directive for "IEntity" should have both "when" and "is" arguments or none of them',
     );
   });
 
   it("should fail if @relation interface doesn't exist", function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend {
+        interface IEntity @inherit {
           owners: Connection @relation(name: "ownedBy", nodeType: "Owner")
         }
       `),
@@ -322,7 +322,7 @@ describe('mapDirectives', () => {
   it('should fail if @relation interface is input type', function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend {
+        interface IEntity @inherit {
           owners: Connection @relation(name: "ownedBy", nodeType: "OwnerInput")
         }
         input OwnerInput {
@@ -334,49 +334,49 @@ describe('mapDirectives', () => {
     );
   });
 
-  it("should fail if @extend interface doesn't exist", function* () {
+  it("should fail if @inherit interface doesn't exist", function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend(interface: "NonExistingInterface") {
+        interface IEntity @inherit(interface: "NonExistingInterface") {
           name: String!
         }
       `),
     ).toThrow(
-      `The interface "NonExistingInterface" described in @extend directive for "IEntity" isn't abstract type or doesn't exist`,
+      `The interface "NonExistingInterface" described in @inherit directive for "IEntity" isn't abstract type or doesn't exist`,
     );
   });
 
-  it("should fail if @extend interface isn't an interface", function* () {
+  it("should fail if @inherit interface isn't an interface", function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend(interface: "String") {
+        interface IEntity @inherit(interface: "String") {
           name: String!
         }
       `),
     ).toThrow(
-      `The interface "String" described in @extend directive for "IEntity" isn't abstract type or doesn't exist`,
+      `The interface "String" described in @inherit directive for "IEntity" isn't abstract type or doesn't exist`,
     );
   });
 
-  it('should fail if @extend interface is already implemented by the type', function* () {
+  it('should fail if @inherit interface is already implemented by the type', function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity implements Node @extend(interface: "Node") {
+        interface IEntity implements Node @inherit(interface: "Node") {
           name: String!
         }
       `),
     ).toThrow(
-      `The interface "Node" described in @extend directive for "IEntity" is already implemented by the type`,
+      `The interface "Node" described in @inherit directive for "IEntity" is already implemented by the type`,
     );
   });
 
   it('should fail if Connection type is in a list', function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend {
+        interface IEntity @inherit {
           owners: [Connection] @relation(name: "ownedBy", nodeType: "IOwner")
         }
-        interface IOwner @extend {
+        interface IOwner @inherit {
           name: String!
         }
       `),
@@ -388,11 +388,11 @@ describe('mapDirectives', () => {
   it('should fail if Connection has arguments are not valid types', function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend {
+        interface IEntity @inherit {
           owners(first: String!, after: Int!): Connection
             @relation(name: "ownedBy", nodeType: "IOwner")
         }
-        interface IOwner @extend {
+        interface IOwner @inherit {
           name: String!
         }
       `),
@@ -404,12 +404,12 @@ describe('mapDirectives', () => {
   it('should fail if @relation and @field are used on the same field', function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend {
+        interface IEntity @inherit {
           owners: Connection
             @relation(name: "ownedBy", nodeType: "IOwner")
             @field(at: "name")
         }
-        interface IOwner @extend {
+        interface IOwner @inherit {
           name: String!
         }
       `),
@@ -418,43 +418,43 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if @extend without when/is is used more than once', function* () {
+  it('should fail if @inherit without when/is is used more than once', function* () {
     expect(() =>
       transformSchema(gql`
-        interface IEntity @extend(interface: "Node") {
+        interface IEntity @inherit(interface: "Node") {
           name: String!
         }
-        interface IComponent @extend(interface: "Node") {
+        interface IComponent @inherit(interface: "Node") {
           name: String!
         }
       `),
     ).toThrow(
-      `The @extend directive of "Node" without "when" and "is" arguments could be used only once`,
+      `The @inherit directive of "Node" without "when" and "is" arguments could be used only once`,
     );
   });
 
-  it('should fail if subtype with required fields extends without when/is arguments from type without when/is arguments', function* () {
+  it('should fail if subtype with required fields inherits without when/is arguments from type without when/is arguments', function* () {
     const getSchema = () =>
       transformSchema(gql`
-        interface IEntity @extend {
+        interface IEntity @inherit {
           name: String!
         }
-        interface IResource @extend(interface: "IEntity") {
+        interface IResource @inherit(interface: "IEntity") {
           location: String!
         }
-        interface IWebResource @extend(interface: "IResource") {
+        interface IWebResource @inherit(interface: "IResource") {
           url: String!
         }
       `);
     expect(getSchema).toThrow(
-      `The interface "IWebResource" has required fields and can't be extended from "IResource" without "when" and "is" arguments, because "IResource" has already been extended without them`,
+      `The interface "IWebResource" has required fields and can't be inherited from "IResource" without "when" and "is" arguments, because "IResource" has already been inherited without them`,
     );
   });
 
-  it(`should fail if extending interface doesn't meet naming criteria`, function* () {
+  it(`should fail if inheriting interface doesn't meet naming criteria`, function* () {
     const getSchema = () =>
       transformSchema(gql`
-        interface Entity @extend {
+        interface Entity @inherit {
           name: String!
         }
       `);
@@ -466,7 +466,7 @@ describe('mapDirectives', () => {
   it(`should fail if "generatedTypeName" is declared`, function* () {
     const getSchema = () =>
       transformSchema(gql`
-        interface Entity @extend(generatedTypeName: "EntityImpl") {
+        interface Entity @inherit(generatedTypeName: "EntityImpl") {
           name: String!
         }
 
@@ -475,7 +475,7 @@ describe('mapDirectives', () => {
         }
       `);
     expect(getSchema).toThrow(
-      `The type "EntityImpl" described in the @extend directive is already declared in the schema`,
+      `The type "EntityImpl" described in the @inherit directive is already declared in the schema`,
     );
   });
 
@@ -483,7 +483,7 @@ describe('mapDirectives', () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
-        interface IEntity @extend(interface: "Node") {
+        interface IEntity @inherit(interface: "Node") {
           first: String! @field(at: "metadata.name")
           second: String! @field(at: ["spec", "path.to.name"])
           third: String! @field(at: "nonexisting.path", default: "defaultValue")
@@ -546,15 +546,16 @@ describe('mapDirectives', () => {
       id: 'test',
       typeDefs: gql`
         interface IEntity
-          @extend(interface: "Node", when: "kind", is: "Entity") {
+          @inherit(interface: "Node", when: "kind", is: "Entity") {
           ownedBy: IUser @relation
           owner: IUser @relation(name: "ownedBy")
           group: IGroup @relation(name: "ownedBy", kind: "Group")
         }
-        interface IUser @extend(interface: "Node", when: "kind", is: "User") {
+        interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
           name: String! @field(at: "name")
         }
-        interface IGroup @extend(interface: "Node", when: "kind", is: "Group") {
+        interface IGroup
+          @inherit(interface: "Node", when: "kind", is: "Group") {
           name: String! @field(at: "name")
         }
       `,
@@ -608,16 +609,17 @@ describe('mapDirectives', () => {
         union Owner = IUser | IGroup
 
         interface IEntity
-          @extend(interface: "Node", when: "kind", is: "Entity") {
+          @inherit(interface: "Node", when: "kind", is: "Entity") {
           ownedBy: [Owner] @relation
           owners: [Owner] @relation(name: "ownedBy")
           users: [IUser] @relation(name: "ownedBy") # We intentionally don't specify kind here
           groups: [IGroup] @relation(name: "ownedBy", kind: "Group")
         }
-        interface IUser @extend(interface: "Node", when: "kind", is: "User") {
+        interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
           username: String! @field(at: "name")
         }
-        interface IGroup @extend(interface: "Node", when: "kind", is: "Group") {
+        interface IGroup
+          @inherit(interface: "Node", when: "kind", is: "Group") {
           groupname: String! @field(at: "name")
         }
       `,
@@ -688,7 +690,7 @@ describe('mapDirectives', () => {
         union Owner = IUser | IGroup
 
         interface IEntity
-          @extend(interface: "Node", when: "kind", is: "Entity") {
+          @inherit(interface: "Node", when: "kind", is: "Entity") {
           ownedBy: Connection @relation
           nodes: Connection @relation(name: "ownedBy")
           owners: Connection @relation(name: "ownedBy", nodeType: "Owner")
@@ -696,10 +698,11 @@ describe('mapDirectives', () => {
           groups: Connection
             @relation(name: "ownedBy", kind: "Group", nodeType: "IGroup")
         }
-        interface IUser @extend(interface: "Node", when: "kind", is: "User") {
+        interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
           username: String! @field(at: "name")
         }
-        interface IGroup @extend(interface: "Node", when: "kind", is: "Group") {
+        interface IGroup
+          @inherit(interface: "Node", when: "kind", is: "Group") {
           groupname: String! @field(at: "name")
         }
       `,
@@ -783,21 +786,22 @@ describe('mapDirectives', () => {
       id: 'test',
       typeDefs: gql`
         interface IEntity
-          @extend(interface: "Node", when: "kind", is: "Entity") {
+          @inherit(interface: "Node", when: "kind", is: "Entity") {
           assets: [Node] @relation
         }
-        interface IUser @extend(interface: "Node", when: "kind", is: "User") {
+        interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
           username: String! @field(at: "name")
         }
-        interface IGroup @extend(interface: "Node", when: "kind", is: "Group") {
+        interface IGroup
+          @inherit(interface: "Node", when: "kind", is: "Group") {
           groupname: String! @field(at: "name")
         }
         interface IComponent
-          @extend(interface: "Node", when: "kind", is: "Component") {
+          @inherit(interface: "Node", when: "kind", is: "Component") {
           name: String! @field(at: "name")
         }
         interface IResource
-          @extend(interface: "Node", when: "kind", is: "Resource") {
+          @inherit(interface: "Node", when: "kind", is: "Resource") {
           domain: String! @field(at: "name")
         }
       `,

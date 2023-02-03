@@ -127,7 +127,7 @@ export function mapDirectives(
   sourceSchema: GraphQLSchema,
   { logger = console }: { logger?: Logger } = {},
 ) {
-  const extendsWithoutArgs = new Set<string>();
+  const inheritsWithoutArgs = new Set<string>();
   const resolversMap: Record<string, GraphQLTypeResolver<any, any>> = {};
   const typesToAdd = new Map<string, GraphQLNamedType>();
   const additionalInterfaces: Record<string, Set<GraphQLInterfaceType>> = {};
@@ -284,40 +284,40 @@ export function mapDirectives(
       }
       if (schema.getType(directive.generatedTypeName)) {
         throw new Error(
-          `The type "${directive.generatedTypeName}" described in the @extend directive is already declared in the schema`,
+          `The type "${directive.generatedTypeName}" described in the @inherit directive is already declared in the schema`,
         );
       }
     }
     if ('when' in directive !== 'is' in directive) {
       throw new Error(
-        `The @extend directive for "${interfaceType.name}" should have both "when" and "is" arguments or none of them`,
+        `The @inherit directive for "${interfaceType.name}" should have both "when" and "is" arguments or none of them`,
       );
     }
     if (!('when' in directive)) {
       if (
         'interface' in directive &&
-        extendsWithoutArgs.has(directive.interface)
+        inheritsWithoutArgs.has(directive.interface)
       ) {
         throw new Error(
-          `The @extend directive of "${directive.interface}" without "when" and "is" arguments could be used only once`,
+          `The @inherit directive of "${directive.interface}" without "when" and "is" arguments could be used only once`,
         );
       } else {
-        extendsWithoutArgs.add(directive.interface);
+        inheritsWithoutArgs.add(directive.interface);
       }
       const parentType = schema.getType(directive.interface);
       if (parentType) {
-        const [extendDirective] =
-          getDirective(schema, parentType, 'extend') ?? [];
+        const [inheritDirective] =
+          getDirective(schema, parentType, 'inherit') ?? [];
         if (
-          extendDirective &&
-          'interface' in extendDirective &&
-          !('when' in extendDirective) &&
+          inheritDirective &&
+          'interface' in inheritDirective &&
+          !('when' in inheritDirective) &&
           Object.values(interfaceType.getFields()).some(field =>
             isNonNullType(field.type),
           )
         ) {
           throw new Error(
-            `The interface "${interfaceType.name}" has required fields and can't be extended from "${directive.interface}" without "when" and "is" arguments, because "${directive.interface}" has already been extended without them`,
+            `The interface "${interfaceType.name}" has required fields and can't be inherited from "${directive.interface}" without "when" and "is" arguments, because "${directive.interface}" has already been inherited without them`,
           );
         }
       }
@@ -329,7 +329,7 @@ export function mapDirectives(
           directive.when.some(a => typeof a !== 'string')))
     ) {
       throw new Error(
-        `The "when" argument of @extend directive must be a string or an array of strings`,
+        `The "when" argument of @inherit directive must be a string or an array of strings`,
       );
     }
   }
@@ -342,17 +342,23 @@ export function mapDirectives(
     const objectType = getObjectTypeName(iface, directive);
     if (!resolversMap[iface.name]) resolversMap[iface.name] = () => objectType;
 
-    const extendType = schema.getType(directive.interface) as
+    const inheritedInterface = schema.getType(directive.interface) as
       | GraphQLInterfaceType
       | undefined;
-    if (!extendType) return;
+    if (!inheritedInterface) return;
 
-    const [extendDirective] = getDirective(schema, extendType, 'extend') ?? [];
-    const extendedObjectType = getObjectTypeName(extendType, extendDirective);
+    const [inheritDirective] =
+      getDirective(schema, inheritedInterface, 'inherit') ?? [];
+    const inheritedObjectType = getObjectTypeName(
+      inheritedInterface,
+      inheritDirective,
+    );
     const resolveType =
-      resolversMap[extendType.name] ??
-      (extendType.name === 'Node' ? () => undefined : () => extendedObjectType);
-    resolversMap[extendType.name] = async (
+      resolversMap[inheritedInterface.name] ??
+      (inheritedInterface.name === 'Node'
+        ? () => undefined
+        : () => inheritedObjectType);
+    resolversMap[inheritedInterface.name] = async (
       source: { id: string },
       context: ResolverContext,
       info,
@@ -413,23 +419,23 @@ export function mapDirectives(
     interfaceType: GraphQLInterfaceType,
     schema: GraphQLSchema,
   ) {
-    const [extendDirective] =
-      getDirective(schema, interfaceType, 'extend') ?? [];
-    if (!extendDirective) return interfaceType;
+    const [inheritDirective] =
+      getDirective(schema, interfaceType, 'inherit') ?? [];
+    if (!inheritDirective) return interfaceType;
 
-    validateExtendDirective(interfaceType, extendDirective, schema);
-    defineResolver(interfaceType, extendDirective, schema);
+    validateExtendDirective(interfaceType, inheritDirective, schema);
+    defineResolver(interfaceType, inheritDirective, schema);
 
-    const objectType = getObjectTypeName(interfaceType, extendDirective);
-    const extendInterfaces = traverseExtends(interfaceType, schema);
+    const objectType = getObjectTypeName(interfaceType, inheritDirective);
+    const inheritedInterfaces = traverseExtends(interfaceType, schema);
     const interfaces = [
       ...new Map(
         [
           ...(additionalInterfaces[interfaceType.name]?.values() ?? []),
-          ...extendInterfaces.flatMap(iface => [
+          ...inheritedInterfaces.flatMap(iface => [
             ...(additionalInterfaces[iface.name]?.values() ?? []),
           ]),
-          ...extendInterfaces,
+          ...inheritedInterfaces,
         ].map(iface => [iface.name, iface]),
       ).values(),
     ];
@@ -521,25 +527,25 @@ function traverseExtends(
   type: GraphQLInterfaceType,
   schema: GraphQLSchema,
 ): GraphQLInterfaceType[] {
-  const [extendDirective] = getDirective(schema, type, 'extend') ?? [];
+  const [inheritDirective] = getDirective(schema, type, 'inherit') ?? [];
   const interfaces = [
     type,
     ...type.getInterfaces().flatMap(iface => traverseExtends(iface, schema)),
   ];
-  if (extendDirective && 'interface' in extendDirective) {
-    const extendType = schema.getType(extendDirective.interface);
-    if (!isInterfaceType(extendType)) {
+  if (inheritDirective && 'interface' in inheritDirective) {
+    const inheritedInterface = schema.getType(inheritDirective.interface);
+    if (!isInterfaceType(inheritedInterface)) {
       throw new Error(
-        `The interface "${extendDirective.interface}" described in @extend directive for "${type.name}" isn't abstract type or doesn't exist`,
+        `The interface "${inheritDirective.interface}" described in @inherit directive for "${type.name}" isn't abstract type or doesn't exist`,
       );
     }
-    if (interfaces.includes(extendType)) {
+    if (interfaces.includes(inheritedInterface)) {
       throw new Error(
-        `The interface "${extendDirective.interface}" described in @extend directive for "${type.name}" is already implemented by the type`,
+        `The interface "${inheritDirective.interface}" described in @inherit directive for "${type.name}" is already implemented by the type`,
       );
     }
 
-    interfaces.push(...traverseExtends(extendType, schema));
+    interfaces.push(...traverseExtends(inheritedInterface, schema));
   }
   return interfaces;
 }
