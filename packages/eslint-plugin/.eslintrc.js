@@ -17,8 +17,9 @@
 // Custom lint config here since source is ES5
 module.exports = {
   plugins: ['import'],
-  parserOptions: {
-    ecmaVersion: 5,
+  env: {
+    node: true,
+    es2021: true,
   },
   rules: {
     'import/no-extraneous-dependencies': [
@@ -30,6 +31,6 @@ module.exports = {
         bundledDependencies: true,
       },
     ],
-    'no-unused-expressions': 'off',
+    // 'no-unused-expressions': 'off',
   },
 };
