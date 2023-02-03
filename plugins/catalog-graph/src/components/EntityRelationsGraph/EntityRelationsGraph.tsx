@@ -66,7 +66,10 @@ const useStyles = makeStyles(
   { name: 'PluginCatalogGraphEntityRelationsGraph' },
 );
 
-export interface EntityRelationsGraphProps {
+/**
+ * @public
+ */
+export type EntityRelationsGraphProps = {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
   maxDepth?: number;
   unidirectional?: boolean;
@@ -81,7 +84,7 @@ export interface EntityRelationsGraphProps {
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
-}
+};
 
 /**
  * Core building block for custom entity relations diagrams.
