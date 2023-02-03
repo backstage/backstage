@@ -78,6 +78,7 @@ export type AsyncApiDefinitionWidgetProps = {
 // @public (undocumented)
 export const ConsumedApisCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ApiEntity>[];
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -106,6 +107,7 @@ export const EntityApiDefinitionCard: () => JSX.Element;
 // @public (undocumented)
 export const EntityConsumedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ApiEntity>[] | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -116,11 +118,13 @@ export const EntityConsumingComponentsCard: (props: {
 // @public (undocumented)
 export const EntityHasApisCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ApiEntity>[] | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityProvidedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ApiEntity>[] | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -141,6 +145,7 @@ export type GraphQlDefinitionWidgetProps = {
 // @public (undocumented)
 export const HasApisCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ApiEntity>[];
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -167,6 +172,7 @@ export type PlainApiDefinitionWidgetProps = {
 // @public (undocumented)
 export const ProvidedApisCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ApiEntity>[];
 }) => JSX.Element;
 
 // @public (undocumented)
