@@ -1,0 +1,9 @@
+{
+  "name": "@internal/bar",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "peerDependencies": {
+    "react": "*"
+  }
+}
