@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 const { resolve: resolvePath, join: joinPath, dirname } = require('path');
 const fs = require('fs').promises;

@@ -60,11 +60,11 @@ function createConfig(dir, extraConfig = {}) {
       '@spotify/eslint-config-typescript',
       'prettier',
       'plugin:jest/recommended',
-      'plugin:monorepo/recommended',
+      'plugin:@backstage/recommended',
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
-    plugins: ['import', ...(plugins ?? [])],
+    plugins: ['import', 'monorepo', ...(plugins ?? [])],
     env: {
       jest: true,
       ...env,
@@ -87,33 +87,8 @@ function createConfig(dir, extraConfig = {}) {
       '@typescript-eslint/no-shadow': 'error',
       '@typescript-eslint/no-redeclare': 'error',
       'no-undef': 'off',
+      'monorepo/no-relative-import': 'error',
       'import/newline-after-import': 'error',
-      'import/no-extraneous-dependencies': [
-        'error',
-        {
-          devDependencies: dir
-            ? [
-                `!${joinPath(dir, 'src/**')}`,
-                joinPath(dir, 'src/**/*.test.*'),
-                joinPath(dir, 'src/**/*.stories.*'),
-                joinPath(dir, 'src/**/__testUtils__/**'),
-                joinPath(dir, 'src/**/__mocks__/**'),
-                joinPath(dir, 'src/setupTests.*'),
-              ]
-            : [
-                // Legacy config for packages that don't provide a dir
-                '**/*.test.*',
-                '**/*.stories.*',
-                '**/__testUtils__/**',
-                '**/__mocks__/**',
-                '**/src/setupTests.*',
-                '**/dev/**',
-              ],
-          optionalDependencies: true,
-          peerDependencies: true,
-          bundledDependencies: true,
-        },
-      ],
       'no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-expressions': 'error',
       '@typescript-eslint/consistent-type-assertions': 'error',
