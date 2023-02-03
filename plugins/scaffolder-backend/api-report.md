@@ -10,6 +10,8 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
@@ -23,8 +25,14 @@ import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
+import { PermissionCondition } from '@backstage/plugin-permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
@@ -32,6 +40,8 @@ import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node'
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateParameter } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
@@ -517,6 +527,14 @@ export const createPublishGitlabMergeRequestAction: (options: {
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
+// @alpha
+export const createScaffolderConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-template'>,
+  conditions: PermissionCriteria<
+    PermissionCondition<'scaffolder-template', PermissionRuleParams>
+  >,
+) => ConditionalPolicyDecision;
+
 // @public @deprecated (undocumented)
 export const createTemplateAction: <TInput extends JsonObject>(
   templateAction: TemplateAction_2<TInput>,
@@ -635,6 +653,8 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
+  permissionApi: PermissionEvaluator;
+  // (undocumented)
   reader: UrlReader;
   // (undocumented)
   scheduler?: PluginTaskScheduler;
@@ -651,6 +671,18 @@ export type RunCommandOptions = {
   options?: SpawnOptionsWithoutStdio;
   logStream?: Writable;
 };
+
+// @alpha
+export const scaffolderConditions: Conditions<{
+  hasTag: PermissionRule<
+    TemplateParameter | TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-template',
+    {
+      tag: string;
+    }
+  >;
+}>;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
