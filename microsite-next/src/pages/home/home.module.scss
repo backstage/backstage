@@ -1,0 +1,44 @@
+.homePage {
+  font-size: 1.25rem;
+
+  h1 {
+    font-size: 54px;
+    line-height: 56px;
+    word-break: break-word;
+  }
+
+  :global(.buttonsContainer) {
+    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+  }
+}
+
+.newsletterBanner {
+  --ifm-link-hover-color: var(--ifm-color-info);
+
+  flex-direction: row;
+  color: var(--ifm-button-color);
+  background-color: var(--ifm-color-primary);
+
+  :global(.bannerContent) {
+    flex: 1;
+  }
+}
+
+.openPlatformBanner {
+  :global(.svgContainer) {
+    position: relative;
+
+    :global(img.laptopSvg) {
+      width: 100%;
+    }
+
+    :global(img.laptopScreenGif) {
+      position: absolute;
+      top: 3%;
+      left: 17%;
+      width: 70%;
+    }
+  }
+}
