@@ -16,6 +16,8 @@
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_VIEW_URL,
+  DEFAULT_NAMESPACE,
+  Entity,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
@@ -61,6 +63,38 @@ const YellowStar = withStyles({
     color: '#f3ba37',
   },
 })(Star);
+
+const stringifySortingEntityRef = (ref: Entity): string => {
+  const kind = ref.kind;
+  const namespace = ref.metadata.namespace ?? DEFAULT_NAMESPACE;
+  const name = ref.metadata.title || ref.metadata.name;
+
+  return `${kind.toLocaleLowerCase('en-US')}:${namespace.toLocaleLowerCase(
+    'en-US',
+  )}/${name.toLocaleLowerCase('en-US')}`;
+};
+
+const refCompare = (a: Entity, b: Entity) => {
+  // in case field filtering is used, these fields might not be part of the response
+  if (
+    a.metadata?.name === undefined ||
+    a.kind === undefined ||
+    b.metadata?.name === undefined ||
+    b.kind === undefined
+  ) {
+    return 0;
+  }
+
+  const aRef = stringifySortingEntityRef(a);
+  const bRef = stringifySortingEntityRef(b);
+  if (aRef < bRef) {
+    return -1;
+  }
+  if (aRef > bRef) {
+    return 1;
+  }
+  return 0;
+};
 
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
@@ -177,7 +211,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  const rows = entities.map(entity => {
+  const rows = entities.sort(refCompare).map(entity => {
     const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
       kind: 'system',
     });
