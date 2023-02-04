@@ -15,84 +15,60 @@
  */
 
 import { MicrosoftAuthProvider } from './provider';
-import * as helpers from '../../lib/passport/PassportStrategyHelper';
-import { OAuthResult } from '../../lib/oauth';
 import { getVoidLogger } from '@backstage/backend-common';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { AuthResolverContext } from '../types';
+import express from 'express';
 
-jest.mock('../../lib/passport/PassportStrategyHelper', () => {
-  return {
-    executeFrameHandlerStrategy: jest.fn(),
-  };
-});
+describe('MicrosoftAuthProvider#handle', () => {
+  const server = setupServer();
+  setupRequestMockHandlers(server);
 
-const mockFrameHandler = jest.spyOn(
-  helpers,
-  'executeFrameHandlerStrategy',
-) as unknown as jest.MockedFunction<
-  () => Promise<{ result: OAuthResult; privateInfo: any }>
->;
-
-const mockResult = {
-  result: {
-    fullProfile: {
-      emails: [
-        {
-          type: 'work',
-          value: 'conrad@example.com',
+  beforeEach(() => {
+    server.use(
+      rest.post(
+        'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+        (_, res, ctx) =>
+          res(
+            ctx.json({
+              token_type: 'Bearer',
+              scope: 'email openid profile User.Read',
+              expires_in: 123,
+              ext_expires_in: 123,
+              access_token: 'accessToken',
+              refresh_token: 'refreshToken',
+              id_token: 'idToken',
+            }),
+          ),
+      ),
+      rest.get('https://graph.microsoft.com/v1.0/me/', (_, res, ctx) =>
+        res(
+          ctx.json({
+            id: 'conrad',
+            displayName: 'Conrad',
+            surname: 'Ribas',
+            givenName: 'Francisco',
+            mail: 'conrad@example.com',
+          }),
+        ),
+      ),
+      rest.get(
+        'https://graph.microsoft.com/v1.0/me/photos/*',
+        async (_, res, ctx) => {
+          const imageBuffer = new Uint8Array([104, 111, 119, 100, 121]).buffer;
+          return res(
+            ctx.set('Content-Length', imageBuffer.byteLength.toString()),
+            ctx.set('Content-Type', 'image/jpeg'),
+            ctx.body(imageBuffer),
+          );
         },
-      ],
-      displayName: 'Conrad',
-      name: {
-        familyName: 'Ribas',
-        givenName: 'Francisco',
-      },
-      id: 'conrad',
-      provider: 'microsoft',
-      photos: [
-        {
-          value: 'some-data',
-        },
-      ],
-    },
-    params: {
-      id_token: 'idToken',
-      scope: 'scope',
-      expires_in: 123,
-    },
-    accessToken: 'accessToken',
-  },
-  privateInfo: {
-    refreshToken: 'wacka',
-  },
-};
+      ),
+    );
+  });
 
-const server = setupServer();
-setupRequestMockHandlers(server);
-
-const setupHandlers = () => {
-  server.use(
-    rest.get(
-      'https://graph.microsoft.com/v1.0/me/photos/*',
-      async (_, res, ctx) => {
-        const imageBuffer = new Uint8Array([104, 111, 119, 100, 121]).buffer;
-        return res(
-          ctx.set('Content-Length', imageBuffer.byteLength.toString()),
-          ctx.set('Content-Type', 'image/jpeg'),
-          ctx.body(imageBuffer),
-        );
-      },
-    ),
-  );
-};
-
-describe('createMicrosoftProvider', () => {
-  it('should auth', async () => {
-    setupHandlers();
-
+  it('returns providerInfo and profile', async () => {
     const provider = new MicrosoftAuthProvider({
       logger: getVoidLogger(),
       resolverContext: {} as AuthResolverContext,
@@ -105,17 +81,25 @@ describe('createMicrosoftProvider', () => {
       }),
       clientId: 'mock',
       clientSecret: 'mock',
-      callbackUrl: 'mock',
+      callbackUrl: 'http://backstage.test/api/auth/microsoft/handler/frame',
     });
 
-    mockFrameHandler.mockResolvedValueOnce(mockResult);
-    const { response } = await provider.handler({} as any);
+    const { response } = await provider.handler({
+      method: 'GET',
+      url: 'http://backstage.test/api/auth/microsoft/handler/frame',
+      query: {
+        code: 'authorizationcode',
+      },
+      headers: { host: 'backstage.test' },
+      connection: {},
+    } as unknown as express.Request);
+
     expect(response).toEqual({
       providerInfo: {
         accessToken: 'accessToken',
         expiresInSeconds: 123,
         idToken: 'idToken',
-        scope: 'scope',
+        scope: 'email openid profile User.Read',
       },
       profile: {
         email: 'conrad@example.com',
@@ -125,8 +109,7 @@ describe('createMicrosoftProvider', () => {
     });
   });
 
-  it('should return the base64 encoded photo data of the profile', async () => {
-    setupHandlers();
+  it('returns base64 encoded photo data', async () => {
     const provider = new MicrosoftAuthProvider({
       logger: getVoidLogger(),
       resolverContext: {} as AuthResolverContext,
@@ -149,8 +132,17 @@ describe('createMicrosoftProvider', () => {
         };
       },
     });
-    mockFrameHandler.mockResolvedValueOnce(mockResult);
-    const { response } = await provider.handler({} as any);
+
+    const { response } = await provider.handler({
+      method: 'GET',
+      url: 'http://backstage.test/api/auth/microsoft/handler/frame',
+      query: {
+        code: 'authorizationcode',
+      },
+      headers: { host: 'backstage.test' },
+      connection: {},
+    } as unknown as express.Request);
+
     const overloadedIdentity = response.backstageIdentity as any;
     const photo = overloadedIdentity.info.result.fullProfile.photos[0];
     expect(photo.value).toEqual('data:image/jpeg;base64,aG93ZHk=');
