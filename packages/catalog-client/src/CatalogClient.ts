@@ -18,7 +18,6 @@ import {
   Entity,
   CompoundEntityRef,
   parseEntityRef,
-  stringifyEntityRef,
   stringifyLocationRef,
   DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
