@@ -21,8 +21,11 @@ module.exports = {
     node: true,
     es2021: true,
   },
+  parser: '@typescript-eslint/parser',
   parserOptions: {
+    ecmaVersion: 2018,
     sourceType: 'module',
+    lib: require('@backstage/cli/config/tsconfig.json').compilerOptions.lib,
   },
   rules: {
     '@backstage/no-undeclared-imports': ['error'],

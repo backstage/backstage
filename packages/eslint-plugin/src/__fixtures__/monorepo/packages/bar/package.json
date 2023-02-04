@@ -3,7 +3,10 @@
   "backstage": {
     "role": "frontend-plugin"
   },
-  "peerDependencies": {
-    "react": "*"
+  "dependencies": {
+    "react-router": "*"
+  },
+  "devDependencies": {
+    "react-router-dom": "*"
   }
 }
