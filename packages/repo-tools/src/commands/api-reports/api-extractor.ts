@@ -424,7 +424,9 @@ export async function runApiExtraction({
         },
 
         docModel: {
-          enabled: true,
+          // TODO(Rugvip): This skips docs for non-index entry points. We can try to work around it, but
+          //               most likely it makes sense to wait for API Extractor to natively support exports.
+          enabled: name === 'index',
           apiJsonFilePath: resolvePath(
             outputDir,
             `${prefix}<unscopedPackageName>.api.json`,
