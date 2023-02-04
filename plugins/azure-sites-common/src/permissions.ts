@@ -15,16 +15,25 @@
  */
 import { createPermission } from '@backstage/plugin-permission-common';
 
+/**
+ * @public
+ */
 export const azureSitesReadPermission = createPermission({
   name: 'azure.sites.read',
   attributes: { action: 'read' },
 });
 
+/**
+ * @public
+ */
 export const azureSitesActionPermission = createPermission({
   name: 'azure.sites.update',
   attributes: { action: 'update' },
 });
 
+/**
+ * @public
+ */
 export const azureSitesPermissions = [
   azureSitesReadPermission,
   azureSitesActionPermission,
