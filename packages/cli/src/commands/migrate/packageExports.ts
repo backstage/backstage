@@ -59,7 +59,11 @@ export async function command() {
 
       const typeEntries: Record<string, [string]> = {};
       for (const [path, value] of Object.entries(exp)) {
-        const newPath = path === '.' ? '*' : trimRelative(path);
+        // Main entry point does not need to be listed
+        if (path === '.') {
+          continue;
+        }
+        const newPath = trimRelative(path);
 
         if (typeof value === 'string') {
           typeEntries[newPath] = [trimRelative(value)];

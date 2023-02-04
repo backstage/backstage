@@ -7,7 +7,7 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { Entity } from '@backstage/catalog-model/*';
+import { Entity } from '@backstage/catalog-model';
 import { FindingSummary } from '@backstage/plugin-sonarqube-react/alpha';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
