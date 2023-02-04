@@ -161,7 +161,7 @@ module.exports = {
 
       const modulePath = path.relative(localPkg.dir, filePath);
       const expectedType = getExpectedDepType(
-        localPkg,
+        localPkg.packageJson,
         imp.packageName,
         modulePath,
       );
