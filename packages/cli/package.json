@@ -34,6 +34,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/eslint-plugin": "workspace:^",
     "@backstage/release-manifests": "workspace:^",
     "@backstage/types": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
