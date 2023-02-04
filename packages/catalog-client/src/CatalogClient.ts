@@ -18,8 +18,8 @@ import {
   Entity,
   CompoundEntityRef,
   parseEntityRef,
-  stringifyLocationRef,
   stringifyEntityRef,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import crossFetch from 'cross-fetch';
