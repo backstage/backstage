@@ -7,7 +7,7 @@ import { AnalyzeOptions } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
-import { Entity } from '@backstage/catalog-model/*';
+import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { EventParams } from '@backstage/plugin-events-node';

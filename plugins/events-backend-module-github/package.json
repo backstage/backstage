@@ -14,9 +14,6 @@
   },
   "typesVersions": {
     "*": {
-      "*": [
-        "src/index.ts"
-      ],
       "alpha": [
         "src/alpha.ts"
       ],

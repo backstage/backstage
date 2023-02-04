@@ -6,8 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
-import { Entity } from '@backstage/catalog-model/*';
-import { Entity as Entity_2 } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
@@ -72,7 +71,7 @@ export const catalogConditions: Conditions<{
 // @alpha
 export type CatalogPermissionRule<
   TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<Entity_2, EntitiesSearchFilter, 'catalog-entity', TParams>;
+> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha
 export const catalogPlugin: () => BackendFeature;
@@ -89,13 +88,8 @@ export const createCatalogConditionalDecision: (
 export const createCatalogPermissionRule: <
   TParams extends PermissionRuleParams = undefined,
 >(
-  rule: PermissionRule<
-    Entity_2,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    TParams
-  >,
-) => PermissionRule<Entity_2, EntitiesSearchFilter, 'catalog-entity', TParams>;
+  rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
+) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @public
 export type EntitiesSearchFilter = {

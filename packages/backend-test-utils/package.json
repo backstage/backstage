@@ -13,9 +13,6 @@
   },
   "typesVersions": {
     "*": {
-      "*": [
-        "src/index.ts"
-      ],
       "package.json": [
         "package.json"
       ]
