@@ -19,7 +19,6 @@ import {
   relative as relativePath,
   basename,
   join,
-  extname,
 } from 'path';
 import { execFile } from 'child_process';
 import fs from 'fs-extra';
@@ -63,6 +62,7 @@ import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { paths as cliPaths } from '../../lib/paths';
 import minimatch from 'minimatch';
+import { getPackageExportNames } from '../../lib/entryPoints';
 
 const tmpDir = cliPaths.resolveTargetRoot(
   './node_modules/.cache/api-extractor',
@@ -313,30 +313,15 @@ async function findPackageEntryPoints(packageDirs: string[]): Promise<
         cliPaths.resolveTargetRoot(packageDir, 'package.json'),
       );
 
-      if (pkg.exports && typeof pkg.exports !== 'string') {
-        return Object.entries(pkg.exports).flatMap(([mount, path]) => {
-          const ext = extname(String(path));
-          if (!['.ts', '.tsx', '.cts', '.mts'].includes(ext)) {
-            return []; // Ignore non-TS entry points
-          }
-          let name = mount;
-          if (name.startsWith('./')) {
-            name = name.slice(2);
-          }
-          if (!name || name === '.') {
-            return [{ packageDir, name: 'index' }];
-          }
-          return [{ packageDir, name }];
-        });
-      }
-
-      return {
-        packageDir,
-        name: 'index',
-        usesExperimentalTypeBuild: pkg.scripts?.build?.includes(
-          '--experimental-type-build',
-        ),
-      };
+      return (
+        getPackageExportNames(pkg)?.map(name => ({ packageDir, name })) ?? {
+          packageDir,
+          name: 'index',
+          usesExperimentalTypeBuild: pkg.scripts?.build?.includes(
+            '--experimental-type-build',
+          ),
+        }
+      );
     }),
   ).then(results => results.flat());
 }
