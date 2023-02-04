@@ -128,7 +128,7 @@ export async function revertProductionPack(packageDir: string) {
     // Remove any extra entrypoint backwards compatibility directories
     const entryPoints = readEntryPoints(pkg);
     for (const entryPoint of entryPoints) {
-      if (entryPoint.mount !== '.') {
+      if (entryPoint.mount !== '.' && SCRIPT_EXTS.includes(entryPoint.ext)) {
         await fs.remove(resolvePath(packageDir, entryPoint.name));
       }
     }
@@ -244,7 +244,11 @@ async function prepareExportsEntryPoints(
     }
   }
 
-  pkg.exports = outputExports;
+  if (pkg.exports) {
+    pkg.exports = outputExports;
+    // We treat package.json as a fixed export that is always available in the published package
+    pkg.exports['./package.json'] = './package.json';
+  }
 
   if (compatibilityWriters.length > 0) {
     return async (targetDir: string) => {
