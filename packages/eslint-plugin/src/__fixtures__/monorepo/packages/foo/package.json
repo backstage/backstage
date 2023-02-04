@@ -8,5 +8,9 @@
   },
   "peerDependencies": {
     "react": "*"
-  }
+  },
+  "files": [
+    "dist",
+    "type-utils"
+  ]
 }
