@@ -56,12 +56,17 @@ const getPackages = require('./getPackages');
 
 /**
  * @callback ImportVisitor
- * @param {import('eslint').Rule.Node} node
+ * @param {ConsideredNode} node
  * @param {LocalImport | InternalImport | ExternalImport | BuiltinImport} import
  */
 
 /**
- * @param {import('estree').ImportDeclaration | import('estree').ExportAllDeclaration | import('estree').ExportNamedDeclaration | import('estree').ImportExpression | import('estree').SimpleCallExpression} node
+ * @typedef ConsideredNode
+ * @type {import('estree').ImportDeclaration | import('estree').ExportAllDeclaration | import('estree').ExportNamedDeclaration | import('estree').ImportExpression | import('estree').SimpleCallExpression}
+ */
+
+/**
+ * @param {ConsideredNode} node
  * @returns {undefined | {path: string, kind: 'type' | 'value'}}
  */
 function getImportInfo(node) {
@@ -103,6 +108,9 @@ module.exports = function visitImports(context, visitor) {
     return;
   }
 
+  /**
+   * @param {ConsideredNode} node
+   */
   function visit(node) {
     const info = getImportInfo(node);
     if (!info) {

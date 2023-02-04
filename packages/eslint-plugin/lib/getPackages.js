@@ -36,8 +36,10 @@ const manypkg = require('@manypkg/get-packages');
 
 // Loads all packages in the monorepo once, and caches the result
 module.exports = (function () {
+  /** @type {PackageMap | undefined} */
   let result = undefined;
-  let lastLoadAt = undefined;
+  /** @type {number} */
+  let lastLoadAt = 0;
 
   /** @returns {PackageMap | undefined} */
   return function getPackages(/** @type {string} */ dir) {
@@ -58,11 +60,9 @@ module.exports = (function () {
       list: packages.packages,
       root: packages.root,
       byPath(filePath) {
-        return packages.packages.find(pkg => {
-          if (!path.relative(pkg.dir, filePath).startsWith('..')) {
-            return pkg;
-          }
-        });
+        return packages.packages.find(
+          pkg => !path.relative(pkg.dir, filePath).startsWith('..'),
+        );
       },
     };
     lastLoadAt = Date.now();

@@ -37,7 +37,7 @@ const devModulePatterns = [
 ];
 
 function getExpectedDepType(
-  localPkg,
+  /** @type {any} */ localPkg,
   /** @type {string} */ impPath,
   /** @type {string} */ modulePath,
 ) {
@@ -58,6 +58,7 @@ function getExpectedDepType(
         case 'react-router-dom':
           return 'peer';
       }
+      break;
     case 'cli':
     case 'frontend':
     case 'backend':
@@ -100,10 +101,14 @@ function findConflict(pkg, name, expectedType) {
 
     return { oldDepsField, depsField };
   }
+  return undefined;
 }
 
-function getAddFlagForConflict(conflict) {
-  switch (conflict?.depsField) {
+/**
+ * @param {string} depsField
+ */
+function getAddFlagForDepsField(depsField) {
+  switch (depsField) {
     case depFields.dep:
       return '';
     case depFields.dev:
@@ -189,7 +194,7 @@ module.exports = {
           data: {
             ...conflict,
             packagePath,
-            addFlag: getAddFlagForConflict(conflict),
+            addFlag: getAddFlagForDepsField(conflict.depsField),
             packageName: imp.packageName,
             packageJsonPath: packageJsonPath,
           },
