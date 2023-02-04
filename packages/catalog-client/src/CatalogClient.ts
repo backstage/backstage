@@ -19,7 +19,7 @@ import {
   CompoundEntityRef,
   parseEntityRef,
   stringifyLocationRef,
-  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import crossFetch from 'cross-fetch';
@@ -176,8 +176,8 @@ export class CatalogClient implements CatalogApi {
         return 0;
       }
 
-      const aRef = this.stringifySortingEntityRef(a);
-      const bRef = this.stringifySortingEntityRef(b);
+      const aRef = stringifyEntityRef(a);
+      const bRef = stringifyEntityRef(b);
       if (aRef < bRef) {
         return -1;
       }
@@ -503,15 +503,5 @@ export class CatalogClient implements CatalogApi {
     }
 
     return await response.json();
-  }
-
-  private stringifySortingEntityRef(ref: Entity): string {
-    const kind = ref.kind;
-    const namespace = ref.metadata.namespace ?? DEFAULT_NAMESPACE;
-    const name = ref.metadata.title || ref.metadata.name;
-
-    return `${kind.toLocaleLowerCase('en-US')}:${namespace.toLocaleLowerCase(
-      'en-US',
-    )}/${name.toLocaleLowerCase('en-US')}`;
   }
 }
