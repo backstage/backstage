@@ -153,7 +153,7 @@ const techDocsTabsConfig = [
 
 const AppRoutes = () => {
   <FlatRoutes>
-    <Route path="/docs" element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}>
+    <Route path="/docs" element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />} />
   </FlatRoutes>;
 };
 ```
