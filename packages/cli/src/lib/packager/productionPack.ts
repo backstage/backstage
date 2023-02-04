@@ -181,7 +181,11 @@ async function prepareExportsEntryPoints(
   pkg: ExtendedPackageJSON,
   packageDir: string,
 ) {
-  const distFiles = await fs.readdir(resolvePath(packageDir, 'dist'));
+  const distPath = resolvePath(packageDir, 'dist');
+  if (!(await fs.pathExists(distPath))) {
+    return undefined;
+  }
+  const distFiles = await fs.readdir(distPath);
   const outputExports = {} as Record<string, Record<string, string>>;
 
   const compatibilityWriters = new Array<
