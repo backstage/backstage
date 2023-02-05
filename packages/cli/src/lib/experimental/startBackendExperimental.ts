@@ -19,7 +19,7 @@ import type { ChildProcess } from 'child_process';
 import { fileURLToPath } from 'url';
 import { isAbsolute as isAbsolutePath } from 'path';
 import { FSWatcher, watch } from 'chokidar';
-import { ChannelServer } from './ChannelServer';
+import { IpcServer } from './IpcServer';
 import { ServerDataStore } from './ServerDataStore';
 import debounce from 'lodash/debounce';
 import spawn from 'cross-spawn';
@@ -34,7 +34,7 @@ export async function startBackendExperimental(options: BackendServeOptions) {
   }
 
   // Set up the parent IPC server and bind the available services
-  const server = new ChannelServer();
+  const server = new IpcServer();
   ServerDataStore.bind(server);
 
   let exiting = false;

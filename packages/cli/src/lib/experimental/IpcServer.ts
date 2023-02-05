@@ -36,7 +36,7 @@ interface Request {
 const requestType = '@backstage/cli/channel/request';
 const responseType = '@backstage/cli/channel/response';
 
-export class ChannelServer {
+export class IpcServer {
   #generation = 1;
   #methods = new Map<string, MethodHandler<any, any>>();
 
