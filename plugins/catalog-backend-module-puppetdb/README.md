@@ -46,7 +46,7 @@ The following configuration is an example of how a setup could look for importin
 ```yaml
 catalog:
   providers:
-    puppet:
+    puppetdb:
       default:
         # (Required) The host of PuppetDB API instance:
         host: https://puppetdb.example.com

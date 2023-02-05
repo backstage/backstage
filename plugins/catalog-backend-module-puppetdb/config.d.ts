@@ -29,9 +29,9 @@ export interface Config {
      */
     providers?: {
       /**
-       * Puppet entity provider configuration. Uses "default" as default ID for the single config variant.
+       * PuppetDB Entity Provider configuration. Uses "default" as default ID for the single config variant.
        */
-      puppet?: ProviderConfig | Record<string, ProviderConfig>;
+      puppetdb?: ProviderConfig | Record<string, ProviderConfig>;
     };
   };
 }
