@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-catalog-backend-module-puppetdb-backend",
+  "name": "@backstage/plugin-catalog-backend-module-puppetdb",
   "description": "A Backstage catalog backend module that helps integrate towards PuppetDB",
   "version": "0.0.1",
   "main": "src/index.ts",

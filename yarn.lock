@@ -5206,9 +5206,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-puppetdb-backend@workspace:plugins/catalog-backend-module-puppetdb":
+"@backstage/plugin-catalog-backend-module-puppetdb@workspace:plugins/catalog-backend-module-puppetdb":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-catalog-backend-module-puppetdb-backend@workspace:plugins/catalog-backend-module-puppetdb"
+  resolution: "@backstage/plugin-catalog-backend-module-puppetdb@workspace:plugins/catalog-backend-module-puppetdb"
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
