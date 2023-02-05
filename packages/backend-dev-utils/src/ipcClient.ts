@@ -84,10 +84,7 @@ export class BackstageIpcClient {
           return;
         }
 
-        const timeout = setTimeout(() => {
-          reject(new Error('IPC request timed out'));
-        }, 1000);
-        timeout.unref();
+        let timeout: NodeJS.Timeout | undefined = undefined;
 
         const messageHandler = (response: Response) => {
           if (response?.type !== responseType) {
@@ -110,6 +107,12 @@ export class BackstageIpcClient {
           clearTimeout(timeout);
           process.removeListener('message', messageHandler);
         };
+
+        timeout = setTimeout(() => {
+          reject(new Error(`IPC request '${method}' with ID ${id} timed out`));
+          process.removeListener('message', messageHandler);
+        }, 5000);
+        timeout.unref();
 
         process.addListener('message', messageHandler as () => void);
       });
