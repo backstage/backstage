@@ -16,4 +16,4 @@
 
 export { PuppetDbEntityProvider } from './PuppetDbEntityProvider';
 export type { PuppetDbEntityProviderConfig } from './PuppetDbEntityProviderConfig';
-export { DEFAULT_PROVIDER_ID, DEFAULT_OWNER } from './constants';
+export { DEFAULT_PROVIDER_ID } from './constants';

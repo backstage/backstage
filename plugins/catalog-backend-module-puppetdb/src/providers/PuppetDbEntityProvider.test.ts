@@ -20,13 +20,12 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { PuppetDbEntityProvider } from './PuppetDbEntityProvider';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import * as p from '../puppet/read';
-import { DEFAULT_OWNER } from './constants';
 import { ANNOTATION_PUPPET_CERTNAME } from '../puppet';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
 } from '@backstage/catalog-model/';
-import { ENDPOINT_NODES } from '../puppet/constants';
+import { DEFAULT_OWNER, ENDPOINT_NODES } from '../puppet/constants';
 
 const logger = getVoidLogger();
 

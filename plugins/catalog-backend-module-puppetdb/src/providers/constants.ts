@@ -20,10 +20,3 @@
  * @public
  */
 export const DEFAULT_PROVIDER_ID = 'default';
-
-/**
- * Default owner for entities created by the PuppetDB provider.
- *
- * @public
- */
-export const DEFAULT_OWNER = 'unknown';

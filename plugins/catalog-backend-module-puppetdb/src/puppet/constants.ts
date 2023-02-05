@@ -30,3 +30,10 @@ export const ENDPOINT_FACTSETS = '/pdb/query/v4/factsets';
  * Path of PuppetDB Nodes endpoint.
  */
 export const ENDPOINT_NODES = '/pdb/query/v4/nodes';
+
+/**
+ * Default owner for entities created by the PuppetDB provider.
+ *
+ * @public
+ */
+export const DEFAULT_OWNER = 'unknown';

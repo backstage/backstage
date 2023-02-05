@@ -16,8 +16,7 @@
 
 import { ResourceTransformer } from './types';
 import { DEFAULT_NAMESPACE, ResourceEntity } from '@backstage/catalog-model';
-import { DEFAULT_OWNER } from '../providers';
-import { ANNOTATION_PUPPET_CERTNAME } from './constants';
+import { ANNOTATION_PUPPET_CERTNAME, DEFAULT_OWNER } from './constants';
 
 /**
  * A default implementation of the {@link ResourceTransformer}.

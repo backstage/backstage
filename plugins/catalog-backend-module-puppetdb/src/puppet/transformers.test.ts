@@ -18,8 +18,7 @@ import { PuppetDbEntityProviderConfig } from '../providers';
 import { PuppetNode } from './types';
 import { defaultResourceTransformer } from './transformers';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
-import { DEFAULT_OWNER } from '../providers';
-import { ANNOTATION_PUPPET_CERTNAME } from './constants';
+import { ANNOTATION_PUPPET_CERTNAME, DEFAULT_OWNER } from './constants';
 
 describe('defaultResourceTransformer', () => {
   it('should transform a puppet node to a resource entity', async () => {

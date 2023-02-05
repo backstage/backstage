@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  TaskScheduleDefinition,
-  TaskScheduleDefinitionConfig,
-} from '@backstage/backend-tasks';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
 /**
  * Represents the configuration for the Backstage.

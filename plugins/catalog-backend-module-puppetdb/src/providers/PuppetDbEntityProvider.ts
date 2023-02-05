@@ -158,7 +158,7 @@ export class PuppetDbEntityProvider implements EntityProvider {
   /**
    * Refreshes the catalog by reading nodes from PuppetDB and registering them as Resource Entities.
    *
-   * @param logger - The instance of a {@link Logger}.
+   * @param logger - The instance of a Logger.
    */
   async refresh(logger: Logger) {
     if (!this.connection) {
