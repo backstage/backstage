@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChannelServer } from './ChannelServer';
+import { IpcServer } from './IpcServer';
 
 interface StorageItem {
   generation: number;
@@ -40,7 +40,7 @@ interface LoadResponse {
 }
 
 export class ServerDataStore {
-  static bind(server: ChannelServer): void {
+  static bind(server: IpcServer): void {
     const store = new Map<string, StorageItem>();
 
     server.registerMethod<SaveRequest, SaveResponse>(
