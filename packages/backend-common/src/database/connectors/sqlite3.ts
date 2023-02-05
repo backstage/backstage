@@ -20,7 +20,11 @@ import knexFactory, { Knex } from 'knex';
 import path from 'path';
 import { DevDataStore } from '@backstage/backend-dev-utils';
 import { mergeDatabaseConfig } from '../config';
-import { DatabaseConnector, PluginDatabaseDependencies } from '../types';
+import { DatabaseConnector } from '../types';
+import {
+  LifecycleService,
+  PluginMetadataService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Creates a knex SQLite3 database connection
@@ -31,7 +35,10 @@ import { DatabaseConnector, PluginDatabaseDependencies } from '../types';
 export function createSqliteDatabaseClient(
   dbConfig: Config,
   overrides?: Knex.Config,
-  deps?: PluginDatabaseDependencies,
+  deps?: {
+    lifecycle: LifecycleService;
+    pluginMetadata: PluginMetadataService;
+  },
 ) {
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
   const connConfig = knexConfig.connection as Knex.Sqlite3ConnectionConfig;

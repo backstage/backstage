@@ -27,9 +27,13 @@ import {
   ensureSchemaExists,
   normalizeConnection,
 } from './connection';
-import { PluginDatabaseDependencies, PluginDatabaseManager } from './types';
+import { PluginDatabaseManager } from './types';
 import path from 'path';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LifecycleService,
+  LoggerService,
+  PluginMetadataService,
+} from '@backstage/backend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 
 /**
@@ -96,7 +100,10 @@ export class DatabaseManager {
    */
   forPlugin(
     pluginId: string,
-    deps?: PluginDatabaseDependencies,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
   ): PluginDatabaseManager {
     const _this = this;
 
@@ -312,7 +319,10 @@ export class DatabaseManager {
    */
   private async getDatabase(
     pluginId: string,
-    deps?: PluginDatabaseDependencies,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
   ): Promise<Knex> {
     if (this.databaseCache.has(pluginId)) {
       return this.databaseCache.get(pluginId)!;

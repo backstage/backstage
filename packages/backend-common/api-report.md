@@ -234,7 +234,10 @@ export class Contexts {
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
-  deps?: PluginDatabaseDependencies,
+  deps?: {
+    lifecycle: LifecycleService;
+    pluginMetadata: PluginMetadataService;
+  },
 ): Knex<any, any[]>;
 
 // @public
@@ -257,7 +260,10 @@ export function createStatusCheckRouter(options: {
 export class DatabaseManager {
   forPlugin(
     pluginId: string,
-    deps?: PluginDatabaseDependencies,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
   ): PluginDatabaseManager;
   static fromConfig(
     config: Config,
@@ -576,12 +582,6 @@ export function makeLegacyPlugin<
 export function notFoundHandler(): RequestHandler;
 
 export { PluginCacheManager };
-
-// @public
-export type PluginDatabaseDependencies = {
-  lifecycle: LifecycleService;
-  pluginMetadata: PluginMetadataService;
-};
 
 export { PluginDatabaseManager };
 
