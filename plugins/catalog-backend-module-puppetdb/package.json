@@ -35,8 +35,14 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
     "node-fetch": "^2.6.7",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
