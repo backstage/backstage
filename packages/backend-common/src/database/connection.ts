@@ -19,9 +19,13 @@ import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import knexFactory, { Knex } from 'knex';
 import { mergeDatabaseConfig } from './config';
-import { DatabaseConnector, PluginDatabaseDependencies } from './types';
+import { DatabaseConnector } from './types';
 
 import { mysqlConnector, pgConnector, sqlite3Connector } from './connectors';
+import {
+  LifecycleService,
+  PluginMetadataService,
+} from '@backstage/backend-plugin-api';
 
 type DatabaseClient =
   | 'pg'
@@ -55,7 +59,10 @@ const ConnectorMapping: Record<DatabaseClient, DatabaseConnector> = {
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
-  deps?: PluginDatabaseDependencies,
+  deps?: {
+    lifecycle: LifecycleService;
+    pluginMetadata: PluginMetadataService;
+  },
 ) {
   const client: DatabaseClient = dbConfig.getString('client');
 

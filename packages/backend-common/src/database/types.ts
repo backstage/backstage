@@ -24,16 +24,6 @@ import { Knex } from 'knex';
 export type { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 
 /**
- * Service dependencies for `PluginDatabaseManager`.
- *
- * @public
- */
-export type PluginDatabaseDependencies = {
-  lifecycle: LifecycleService;
-  pluginMetadata: PluginMetadataService;
-};
-
-/**
  * DatabaseConnector manages an underlying Knex database driver.
  */
 export interface DatabaseConnector {
@@ -43,7 +33,10 @@ export interface DatabaseConnector {
   createClient(
     dbConfig: Config,
     overrides?: Partial<Knex.Config>,
-    deps?: PluginDatabaseDependencies,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
   ): Knex;
   /**
    * createNameOverride provides a partial knex config sufficient to override a
