@@ -1,14 +1,91 @@
-# catalog-backend-module-puppetdb
+# Catalog Backend Module for Puppet
 
-Welcome to the catalog-backend-module-puppetdb backend plugin!
+This is an extension module to the `plugin-catalog-backend` plugin, providing an `PuppetDbEntityProvider` that can be used to ingest
+[Resource entities](https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource) from a
+[PuppetDB](https://www.puppet.com/docs/puppet/6/puppetdb_overview.html) instance(s). This provider is useful if you want to import nodes
+from your PuppetDB into Backstage.
 
-_This plugin was created through the Backstage CLI_
+## Installation
 
-## Getting started
+The provider is not installed by default, therefore you have to add a dependency to `@backstage/plugin-catalog-backend-module-puppetdb`
+to your backend package:
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn
-start` in the root directory, and then navigating to [/catalog-backend-module-puppetdb](http://localhost:3000/catalog-backend-module-puppetdb).
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-puppetdb
+```
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+Update the catalog plugin initialization in your backend to add the provider and schedule it:
+
+```diff
++ import { PuppetDbEntityProvider } from '@backstage/plugin-catalog-backend-module-puppetdb';
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
+
++  builder.addEntityProvider(
++    PuppetDbEntityProvider.fromConfig(env.config, {
++      logger: env.logger,
++      schedule: env.scheduler.createScheduledTaskRunner({
++        frequency: { minutes: 10 },
++        timeout: { minutes: 50 },
++        initialDelay: { seconds: 15}
++      }),
++    });
++  );
+```
+
+After this, you also have to add some configuration in your app-config that describes what you want to import for that target.
+
+## Configuration
+
+The following configuration is an example of how a setup could look for importing nodes from an internal PuppetDB instance:
+
+```yaml
+catalog:
+  providers:
+    puppet:
+      default:
+        # (Required) The host of PuppetDB API instance:
+        host: https://puppetdb.example.com
+
+        # (Optional) Query to filter PuppetDB nodes:
+        #query: '["=","certname","example.com"]'
+```
+
+## Customize the Provider
+
+The default ingestion behaviour will likely not work for all use cases - you will want to set proper `Owner`, `System` and other fields for the
+ingested resources. In case you want to customize the ingested entities, the provider allows to pass a transformer for resources. Here we will show an example
+of overriding the default transformer.
+
+1. Create a transformer:
+2.
+
+```ts
+export const customResourceTransformer: ResourceTransformer = async (
+  node,
+  config,
+): Promise<GroupEntity | undefined> => {
+  // Transofrmations may change namespace, owner, change entity naming pattern, add labels, annotations, etc.
+
+  // Create the Resource Entity on your own, or wrap the default transformer
+  return await defaultResourceTransformer(node, config);
+};
+```
+
+2. Configure the provider with the transformer:
+
+```ts
+const puppetDbEntityProvider = PuppetDbEntityProvider.fromConfig(env.config, {
+  logger: env.logger,
+  schedule: env.scheduler.createScheduledTaskRunner({
+    frequency: { minutes: 10 },
+    timeout: { minutes: 50 },
+    initialDelay: { seconds: 15 },
+  }),
+  transformer: customResourceTransformer,
+});
+```

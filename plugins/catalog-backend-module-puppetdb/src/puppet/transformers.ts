@@ -31,7 +31,7 @@ import { ANNOTATION_PUPPET_CERTNAME, DEFAULT_ENTITY_OWNER } from './constants';
 export const defaultResourceTransformer: ResourceTransformer = async (
   node,
   _config,
-) => {
+): Promise<ResourceEntity | undefined> => {
   const certName = node.certname.toLowerCase();
   const type = node.facts?.data?.find(e => e.name === 'is_virtual')?.value
     ? 'virtual-machine'
