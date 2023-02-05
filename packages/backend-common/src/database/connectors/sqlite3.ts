@@ -43,47 +43,53 @@ export function createSqliteDatabaseClient(
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
   const connConfig = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
 
+  const filename = connConfig.filename ?? ':memory:';
+
   // If storage on disk is used, ensure that the directory exists
-  if (connConfig.filename && connConfig.filename !== ':memory:') {
-    const directory = path.dirname(connConfig.filename);
+  if (filename !== ':memory:') {
+    const directory = path.dirname(filename);
     ensureDirSync(directory);
   }
 
   let database: Knex;
 
-  if (deps && connConfig.filename === ':memory:') {
+  if (deps && filename === ':memory:') {
     // The dev store is used during watch mode to store and restore the database
     // across reloads. It is only available when running the backend through
     // `backstage-cli package start`.
     const devStore = DevDataStore.get();
-    const dataKey = `sqlite3-db-${deps.pluginMetadata.getId()}`;
 
     if (devStore) {
+      const dataKey = `sqlite3-db-${deps.pluginMetadata.getId()}`;
+
+      const connectionLoader = async () => {
+        // If seed data is available, use it tconnectionLoader restore the database
+        const { data: seedData } = await devStore.load(dataKey);
+
+        return {
+          ...(knexConfig.connection as Knex.Sqlite3ConnectionConfig),
+          filename: seedData ?? ':memory:',
+        };
+      };
+
       database = knexFactory({
         ...knexConfig,
-        connection: async () => {
-          // If seed data is available, use it to restore the database
-          const { data: seedData } = await devStore?.load(dataKey);
-
-          return {
-            ...(knexConfig.connection as Knex.Sqlite3ConnectionConfig),
-            filename: seedData ?? ':memory:',
-          };
-        },
+        connection: Object.assign(connectionLoader, {
+          // This is a workaround for the knex SQLite driver always warning when using a config loader
+          filename: ':memory:',
+        }),
       });
-    } else {
-      database = knexFactory(knexConfig);
-    }
 
-    if (devStore) {
       // If the dev store is available we save the database state on shutdown
-      deps?.lifecycle?.addShutdownHook({
+      deps.lifecycle.addShutdownHook({
         async fn() {
           const connection = await database.client.acquireConnection();
           const data = connection.serialize();
           await devStore.save(dataKey, data);
         },
       });
+    } else {
+      database = knexFactory(knexConfig);
     }
   } else {
     database = knexFactory(knexConfig);
