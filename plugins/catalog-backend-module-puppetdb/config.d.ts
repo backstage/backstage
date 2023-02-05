@@ -40,7 +40,7 @@ export interface Config {
 }
 
 /**
- * Configuration of {@link PuppetDBEntityProvider}.
+ * Configuration of {@link PuppetDbEntityProvider}.
  */
 interface ProviderConfig {
   /**

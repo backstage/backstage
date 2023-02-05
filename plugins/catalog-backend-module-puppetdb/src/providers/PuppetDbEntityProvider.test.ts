@@ -17,7 +17,7 @@
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
-import { PuppetDBEntityProvider } from './PuppetDBEntityProvider';
+import { PuppetDbEntityProvider } from './PuppetDbEntityProvider';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import * as p from '../puppet/read';
 import { DEFAULT_OWNER } from './constants';
@@ -79,7 +79,7 @@ describe('PuppetEntityProvider', () => {
         applyMutation: jest.fn(),
         refresh: jest.fn(),
       };
-      const providers = PuppetDBEntityProvider.fromConfig(config, {
+      const providers = PuppetDbEntityProvider.fromConfig(config, {
         logger,
         schedule: new PersistingTaskRunner(),
       });
@@ -144,7 +144,7 @@ describe('PuppetEntityProvider', () => {
         applyMutation: jest.fn(),
         refresh: jest.fn(),
       };
-      const providers = PuppetDBEntityProvider.fromConfig(config, {
+      const providers = PuppetDbEntityProvider.fromConfig(config, {
         logger,
         schedule: new PersistingTaskRunner(),
       });

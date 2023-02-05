@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PuppetDBEntityProviderConfig } from '../providers';
+import { PuppetDbEntityProviderConfig } from '../providers';
 import { PuppetNode, ResourceTransformer } from './types';
 import { ResourceEntity } from '@backstage/catalog-model/';
 import { defaultResourceTransformer } from './transformers';
@@ -29,7 +29,7 @@ import { Logger } from 'winston';
  * @param opts - Additional options.
  */
 export async function readPuppetNodes(
-  config: PuppetDBEntityProviderConfig,
+  config: PuppetDbEntityProviderConfig,
   opts?: {
     transformer?: ResourceTransformer;
     logger?: Logger;

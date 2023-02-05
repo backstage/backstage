@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PuppetDBEntityProviderConfig } from '../providers';
+import { PuppetDbEntityProviderConfig } from '../providers';
 import { PuppetNode } from './types';
 import { defaultResourceTransformer } from './transformers';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
@@ -23,7 +23,7 @@ import { ANNOTATION_PUPPET_CERTNAME } from './constants';
 
 describe('defaultResourceTransformer', () => {
   it('should transform a puppet node to a resource entity', async () => {
-    const config: PuppetDBEntityProviderConfig = {
+    const config: PuppetDbEntityProviderConfig = {
       host: '',
       id: '',
     };

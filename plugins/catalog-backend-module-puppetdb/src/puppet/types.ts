@@ -16,7 +16,7 @@
 
 import { ResourceEntity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
-import { PuppetDBEntityProviderConfig } from '../providers/PuppetDBEntityProviderConfig';
+import { PuppetDbEntityProviderConfig } from '../providers/PuppetDbEntityProviderConfig';
 
 /**
  * Customize the ingested Resource entity.
@@ -30,7 +30,7 @@ import { PuppetDBEntityProviderConfig } from '../providers/PuppetDBEntityProvide
  */
 export type ResourceTransformer = (
   node: PuppetNode,
-  config: PuppetDBEntityProviderConfig,
+  config: PuppetDbEntityProviderConfig,
 ) => Promise<ResourceEntity | undefined>;
 
 /**

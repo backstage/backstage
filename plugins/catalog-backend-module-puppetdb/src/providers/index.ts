@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { PuppetDBEntityProvider } from './PuppetDBEntityProvider';
-export type { PuppetDBEntityProviderConfig } from './PuppetDBEntityProviderConfig';
+export { PuppetDbEntityProvider } from './PuppetDbEntityProvider';
+export type { PuppetDbEntityProviderConfig } from './PuppetDbEntityProviderConfig';
 export { DEFAULT_PROVIDER_ID, DEFAULT_OWNER } from './constants';

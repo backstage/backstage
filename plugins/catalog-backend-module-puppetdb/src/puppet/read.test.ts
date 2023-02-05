@@ -17,7 +17,7 @@
 import { readPuppetNodes } from './read';
 import {
   DEFAULT_PROVIDER_ID,
-  PuppetDBEntityProviderConfig,
+  PuppetDbEntityProviderConfig,
 } from '../providers';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
@@ -37,7 +37,7 @@ describe('readPuppetNodes', () => {
   const mockFetch = fetch as unknown as jest.Mocked<any>;
 
   describe('where no query is specified', () => {
-    const config: PuppetDBEntityProviderConfig = {
+    const config: PuppetDbEntityProviderConfig = {
       host: 'https://puppetdb',
       id: DEFAULT_PROVIDER_ID,
     };
@@ -186,7 +186,7 @@ describe('readPuppetNodes', () => {
   });
 
   describe('where query is specified', () => {
-    const config: PuppetDBEntityProviderConfig = {
+    const config: PuppetDbEntityProviderConfig = {
       host: 'https://puppetdb',
       id: DEFAULT_PROVIDER_ID,
       query: '["=", "certname", "node1"]',

@@ -22,11 +22,11 @@ import { Config } from '@backstage/config';
 import { DEFAULT_PROVIDER_ID } from './constants';
 
 /**
- * Configuration of {@link PuppetDBEntityProvider}.
+ * Configuration of {@link PuppetDbEntityProvider}.
  *
  * @public
  */
-export type PuppetDBEntityProviderConfig = {
+export type PuppetDbEntityProviderConfig = {
   /**
    * ID of the provider.
    */
@@ -54,7 +54,7 @@ export type PuppetDBEntityProviderConfig = {
  */
 export function readProviderConfigs(
   config: Config,
-): PuppetDBEntityProviderConfig[] {
+): PuppetDbEntityProviderConfig[] {
   const providersConfig = config.getOptionalConfig(
     'catalog.providers.puppetdb',
   );
@@ -82,7 +82,7 @@ export function readProviderConfigs(
 function readProviderConfig(
   id: string,
   config: Config,
-): PuppetDBEntityProviderConfig {
+): PuppetDbEntityProviderConfig {
   const host = config.getString('host').replace(/\/+$/, '');
   const query = config.getOptionalString('query');
 

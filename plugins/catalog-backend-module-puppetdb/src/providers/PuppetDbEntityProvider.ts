@@ -20,9 +20,9 @@ import {
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import {
-  PuppetDBEntityProviderConfig,
+  PuppetDbEntityProviderConfig,
   readProviderConfigs,
-} from './PuppetDBEntityProviderConfig';
+} from './PuppetDbEntityProviderConfig';
 import { Config } from '@backstage/config';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import * as uuid from 'uuid';
@@ -42,20 +42,20 @@ import { ENDPOINT_NODES } from '../puppet/constants';
  *
  * @public
  */
-export class PuppetDBEntityProvider implements EntityProvider {
-  private readonly config: PuppetDBEntityProviderConfig;
+export class PuppetDbEntityProvider implements EntityProvider {
+  private readonly config: PuppetDbEntityProviderConfig;
   private readonly logger: Logger;
   private readonly scheduleFn: () => Promise<void>;
   private readonly transformer: ResourceTransformer;
   private connection?: EntityProviderConnection;
 
   /**
-   * Creates instances of {@link PuppetDBEntityProvider} from a configuration.
+   * Creates instances of {@link PuppetDbEntityProvider} from a configuration.
    *
    * @param config - The configuration to read provider information from.
-   * @param deps - The dependencies for  {@link PuppetDBEntityProvider}.
+   * @param deps - The dependencies for  {@link PuppetDbEntityProvider}.
    *
-   * @returns A list of {@link PuppetDBEntityProvider} instances.
+   * @returns A list of {@link PuppetDbEntityProvider} instances.
    */
   static fromConfig(
     config: Config,
@@ -65,7 +65,7 @@ export class PuppetDBEntityProvider implements EntityProvider {
       scheduler?: PluginTaskScheduler;
       transformer?: ResourceTransformer;
     },
-  ): PuppetDBEntityProvider[] {
+  ): PuppetDbEntityProvider[] {
     if (!deps.schedule && !deps.scheduler) {
       throw new Error('Either schedule or scheduler must be provided.');
     }
@@ -83,7 +83,7 @@ export class PuppetDBEntityProvider implements EntityProvider {
 
       const transformer = deps.transformer ?? defaultResourceTransformer;
 
-      return new PuppetDBEntityProvider(
+      return new PuppetDbEntityProvider(
         providerConfig,
         deps.logger,
         taskRunner,
@@ -93,7 +93,7 @@ export class PuppetDBEntityProvider implements EntityProvider {
   }
 
   /**
-   * Creates an instance of {@link PuppetDBEntityProvider}.
+   * Creates an instance of {@link PuppetDbEntityProvider}.
    *
    * @param config - Configuration of the provider.
    * @param logger - The instance of a {@link Logger}.
@@ -103,7 +103,7 @@ export class PuppetDBEntityProvider implements EntityProvider {
    * @private
    */
   private constructor(
-    config: PuppetDBEntityProviderConfig,
+    config: PuppetDbEntityProviderConfig,
     logger: Logger,
     taskRunner: TaskRunner,
     transformer: ResourceTransformer,
@@ -141,7 +141,7 @@ export class PuppetDBEntityProvider implements EntityProvider {
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
-            class: PuppetDBEntityProvider.prototype.constructor.name,
+            class: PuppetDbEntityProvider.prototype.constructor.name,
             taskId,
             taskInstanceId: uuid.v4(),
           });

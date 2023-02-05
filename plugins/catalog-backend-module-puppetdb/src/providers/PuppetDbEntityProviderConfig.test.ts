@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readProviderConfigs } from './PuppetDBEntityProviderConfig';
+import { readProviderConfigs } from './PuppetDbEntityProviderConfig';
 import { Duration } from 'luxon';
 
 describe('readProviderConfigs', () => {
