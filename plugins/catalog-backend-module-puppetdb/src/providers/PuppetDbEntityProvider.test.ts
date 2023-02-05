@@ -25,7 +25,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
 } from '@backstage/catalog-model/';
-import { DEFAULT_OWNER, ENDPOINT_NODES } from '../puppet/constants';
+import { DEFAULT_ENTITY_OWNER, ENDPOINT_NODES } from '../puppet/constants';
 
 const logger = getVoidLogger();
 
@@ -110,7 +110,7 @@ describe('PuppetEntityProvider', () => {
             description: 'Description 1',
             spec: {
               type: 'virtual-machine',
-              owner: DEFAULT_OWNER,
+              owner: DEFAULT_ENTITY_OWNER,
               dependsOn: [],
               dependencyOf: [],
             },
@@ -129,7 +129,7 @@ describe('PuppetEntityProvider', () => {
             description: 'Description 2',
             spec: {
               type: 'physical-server',
-              owner: DEFAULT_OWNER,
+              owner: DEFAULT_ENTITY_OWNER,
               dependsOn: [],
               dependencyOf: [],
             },
@@ -175,7 +175,7 @@ describe('PuppetEntityProvider', () => {
                 description: 'Description 1',
                 spec: {
                   type: 'virtual-machine',
-                  owner: DEFAULT_OWNER,
+                  owner: DEFAULT_ENTITY_OWNER,
                   dependsOn: [],
                   dependencyOf: [],
                 },
@@ -203,7 +203,7 @@ describe('PuppetEntityProvider', () => {
                 description: 'Description 2',
                 spec: {
                   type: 'physical-server',
-                  owner: DEFAULT_OWNER,
+                  owner: DEFAULT_ENTITY_OWNER,
                   dependsOn: [],
                   dependencyOf: [],
                 },

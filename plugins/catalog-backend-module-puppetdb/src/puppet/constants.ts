@@ -36,4 +36,4 @@ export const ENDPOINT_NODES = '/pdb/query/v4/nodes';
  *
  * @public
  */
-export const DEFAULT_OWNER = 'unknown';
+export const DEFAULT_ENTITY_OWNER = 'unknown';

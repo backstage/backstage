@@ -16,7 +16,7 @@
 
 import { ResourceTransformer } from './types';
 import { DEFAULT_NAMESPACE, ResourceEntity } from '@backstage/catalog-model';
-import { ANNOTATION_PUPPET_CERTNAME, DEFAULT_OWNER } from './constants';
+import { ANNOTATION_PUPPET_CERTNAME, DEFAULT_ENTITY_OWNER } from './constants';
 
 /**
  * A default implementation of the {@link ResourceTransformer}.
@@ -54,7 +54,7 @@ export const defaultResourceTransformer: ResourceTransformer = async (
     },
     spec: {
       type: type,
-      owner: DEFAULT_OWNER,
+      owner: DEFAULT_ENTITY_OWNER,
       dependsOn: [],
       dependencyOf: [],
     },
