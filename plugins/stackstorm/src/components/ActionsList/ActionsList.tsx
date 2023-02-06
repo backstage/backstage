@@ -73,6 +73,7 @@ export const ActionItems = ({ pack }: ActionItemsProps) => {
       {(value || []).map(a => {
         return (
           <ListItem
+            key={a.ref}
             button
             className={classes.nested}
             onClick={() =>
@@ -150,6 +151,7 @@ export const ActionsList = () => {
       {(value || []).map(p => {
         return (
           <PackListItem
+            key={p.ref}
             pack={p}
             opened={expanded.includes(p.ref)}
             onClick={onClick}
