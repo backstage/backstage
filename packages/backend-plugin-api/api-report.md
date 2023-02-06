@@ -311,21 +311,16 @@ export interface LifecycleServiceShutdownOptions {
 // @public
 export interface LoggerService {
   // (undocumented)
-  child(meta: LogMeta): LoggerService;
+  child(meta: Record<string, unknown>): LoggerService;
   // (undocumented)
-  debug(message: string, meta?: Error | LogMeta): void;
+  debug(message: string, meta?: Error | Record<string, unknown>): void;
   // (undocumented)
-  error(message: string, meta?: Error | LogMeta): void;
+  error(message: string, meta?: Error | Record<string, unknown>): void;
   // (undocumented)
-  info(message: string, meta?: Error | LogMeta): void;
+  info(message: string, meta?: Error | Record<string, unknown>): void;
   // (undocumented)
-  warn(message: string, meta?: Error | LogMeta): void;
+  warn(message: string, meta?: Error | Record<string, unknown>): void;
 }
-
-// @public (undocumented)
-export type LogMeta = {
-  [name: string]: unknown;
-};
 
 // @public (undocumented)
 export interface PermissionsService extends PermissionEvaluator {}

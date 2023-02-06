@@ -16,38 +16,49 @@
 
 import {
   LoggerService,
-  LogMeta,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import type { mockServices } from './mockServices';
 
 export class MockRootLoggerService implements RootLoggerService {
   #levels: Exclude<mockServices.rootLogger.Options['levels'], boolean>;
-  #meta: LogMeta;
+  #meta: Record<string, unknown>;
 
-  error(message: string, meta?: LogMeta | Error | undefined): void {
+  error(
+    message: string,
+    meta?: Record<string, unknown> | Error | undefined,
+  ): void {
     this.#log('error', message, meta);
   }
 
-  warn(message: string, meta?: LogMeta | Error | undefined): void {
+  warn(
+    message: string,
+    meta?: Record<string, unknown> | Error | undefined,
+  ): void {
     this.#log('warn', message, meta);
   }
 
-  info(message: string, meta?: LogMeta | Error | undefined): void {
+  info(
+    message: string,
+    meta?: Record<string, unknown> | Error | undefined,
+  ): void {
     this.#log('info', message, meta);
   }
 
-  debug(message: string, meta?: LogMeta | Error | undefined): void {
+  debug(
+    message: string,
+    meta?: Record<string, unknown> | Error | undefined,
+  ): void {
     this.#log('debug', message, meta);
   }
 
-  child(meta: LogMeta): LoggerService {
+  child(meta: Record<string, unknown>): LoggerService {
     return new MockRootLoggerService(this.#levels, { ...this.#meta, ...meta });
   }
 
   constructor(
     levels: mockServices.rootLogger.Options['levels'],
-    meta: LogMeta,
+    meta: Record<string, unknown>,
   ) {
     if (typeof levels === 'boolean') {
       this.#levels = {
@@ -65,7 +76,7 @@ export class MockRootLoggerService implements RootLoggerService {
   #log(
     level: 'error' | 'warn' | 'info' | 'debug',
     message: string,
-    meta?: LogMeta | Error | undefined,
+    meta?: Record<string, unknown> | Error | undefined,
   ) {
     if (this.#levels[level]) {
       const labels = Object.entries(this.#meta)
