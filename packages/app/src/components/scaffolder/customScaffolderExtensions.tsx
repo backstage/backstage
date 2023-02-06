@@ -68,7 +68,7 @@ export const LowerCaseValuePickerFieldExtension = scaffolderPlugin.provide(
 const MockDelayComponent = (
   props: NextFieldExtensionComponentProps<{ test?: string }>,
 ) => {
-  const { onChange, formData, rawErrors } = props;
+  const { onChange, formData, rawErrors = [] } = props;
   return (
     <TextField
       label="test"
@@ -76,7 +76,7 @@ const MockDelayComponent = (
       value={formData?.test ?? ''}
       onChange={({ target: { value } }) => onChange({ test: value })}
       margin="normal"
-      error={rawErrors?.length > 0 && !formData}
+      error={rawErrors.length > 0 && !formData}
     />
   );
 };

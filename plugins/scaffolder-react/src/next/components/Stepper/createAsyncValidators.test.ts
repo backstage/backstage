@@ -224,13 +224,19 @@ describe('createAsyncValidators', () => {
       apiHolder: { get: jest.fn() },
     });
 
-    await validate({
-      actionType: 'newThing',
+    await expect(
+      validate({
+        actionType: 'newThing',
+        general: {
+          name: undefined,
+        },
+      }),
+    ).resolves.toEqual({
       general: {
-        name: undefined,
+        name: expect.objectContaining({
+          __errors: ['something is broken here!'],
+        }),
       },
     });
-
-    expect(validators.NameField).toHaveBeenCalled();
   });
 });
