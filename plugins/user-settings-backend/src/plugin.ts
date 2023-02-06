@@ -26,7 +26,7 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export const userSettingsPlugin = createBackendPlugin({
-  id: 'userSettings',
+  pluginId: 'userSettings',
   register(env) {
     env.registerInit({
       deps: {

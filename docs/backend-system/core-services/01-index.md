@@ -33,7 +33,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: { http: coreServices.httpRouter },
@@ -86,7 +86,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -157,7 +157,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -215,7 +215,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -288,7 +288,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -327,7 +327,7 @@ import {
 import { resolvePackagePath } from '@backstage/backend-common';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -366,7 +366,7 @@ import {
 import { fetch } from 'node-fetch';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -397,7 +397,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -465,7 +465,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -563,7 +563,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -612,7 +612,7 @@ import {
 import { fetch } from 'node-fetch';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -651,7 +651,7 @@ import {
 import os from 'os';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
