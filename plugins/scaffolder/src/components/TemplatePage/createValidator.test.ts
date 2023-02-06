@@ -37,9 +37,6 @@ describe('createValidator', () => {
         _context: { apiHolder: ApiHolder },
       ) => {
         const input = values as string[];
-        if (input.length === 0) {
-          fieldValidation.addError('A tag name can not be empty');
-        }
         for (const item of input) {
           if (!/^[a-z0-9-]+$/.test(item)) {
             fieldValidation.addError(
