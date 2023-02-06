@@ -56,10 +56,7 @@ const useStyles = makeStyles<Theme, { height: number | undefined }>(
 );
 
 export const CatalogGraphCard = (
-  props: Omit<
-    EntityRelationsGraphProps,
-    'rootEntityNames' | 'onNodeClick' | 'className'
-  > & {
+  props: Partial<EntityRelationsGraphProps> & {
     variant?: InfoCardVariants;
     height?: number;
     title?: string;
@@ -75,6 +72,9 @@ export const CatalogGraphCard = (
     kinds,
     relations,
     height,
+    className,
+    rootEntityNames,
+    onNodeClick,
     title = 'Relations',
     zoom = 'enable-on-click',
   } = props;
@@ -87,7 +87,7 @@ export const CatalogGraphCard = (
   const classes = useStyles({ height });
   const analytics = useAnalytics();
 
-  const onNodeClick = useCallback(
+  const defaultOnNodeClick = useCallback(
     (node: EntityNode, _: MouseEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
       const path = catalogEntityRoute({
@@ -131,9 +131,9 @@ export const CatalogGraphCard = (
     >
       <EntityRelationsGraph
         {...props}
-        rootEntityNames={entityName}
-        onNodeClick={onNodeClick}
-        className={classes.graph}
+        rootEntityNames={rootEntityNames || entityName}
+        onNodeClick={onNodeClick || defaultOnNodeClick}
+        className={className || classes.graph}
         maxDepth={maxDepth}
         unidirectional={unidirectional}
         mergeRelations={mergeRelations}
