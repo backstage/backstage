@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-tech-radar': minor
+'@backstage/plugin-tech-radar': patch
 ---
 
 Deprecate `RadarEntry.url` - use `RadarEntry.links` instead
