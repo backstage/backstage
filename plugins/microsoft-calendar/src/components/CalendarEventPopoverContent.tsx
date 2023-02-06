@@ -33,21 +33,19 @@ import { MicrosoftCalendarEvent } from '../api';
 import { getTimePeriod, getOnlineMeetingLink } from './util';
 
 const useStyles = makeStyles(
-  theme => {
-    return {
-      description: {
-        wordBreak: 'break-word',
-        '& a': {
-          color: theme.palette.primary.main,
-          fontWeight: 500,
-        },
+  theme => ({
+    description: {
+      wordBreak: 'break-word',
+      '& a': {
+        color: theme.palette.primary.main,
+        fontWeight: 500,
       },
-      divider: {
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-      },
-    };
-  },
+    },
+    divider: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
+  }),
   {
     name: 'GCalendarEventPopoverContent',
   },
@@ -60,7 +58,7 @@ type CalendarEventPopoverProps = {
 export const CalendarEventPopoverContent = ({
   event,
 }: CalendarEventPopoverProps) => {
-  const classes = useStyles({ event });
+  const classes = useStyles();
   const onlineMeetingLink = getOnlineMeetingLink(event);
 
   return (

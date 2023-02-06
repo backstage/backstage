@@ -27,7 +27,7 @@ import {
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
-import { MicrosoftCalendar } from '@backstage/plugin-microsoft-calendar';
+import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 
@@ -116,7 +116,7 @@ export const homePage = (
           <HomePageCalendar />
         </Grid>
         <Grid item xs={12} md={4}>
-          <MicrosoftCalendar />
+          <MicrosoftCalendarCard />
         </Grid>
         <Grid item xs={12} md={4}>
           <HomePageStarredEntities />
