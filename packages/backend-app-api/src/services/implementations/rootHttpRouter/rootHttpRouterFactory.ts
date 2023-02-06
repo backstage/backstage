@@ -104,12 +104,7 @@ export const rootHttpRouterFactory = createServiceFactory({
       { logger },
     );
 
-    lifecycle.addShutdownHook({
-      async fn() {
-        await server.stop();
-      },
-      logger,
-    });
+    lifecycle.addShutdownHook(() => server.stop());
 
     await server.start();
 

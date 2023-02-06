@@ -81,12 +81,10 @@ export function createSqliteDatabaseClient(
       });
 
       // If the dev store is available we save the database state on shutdown
-      deps.lifecycle.addShutdownHook({
-        async fn() {
-          const connection = await database.client.acquireConnection();
-          const data = connection.serialize();
-          await devStore.save(dataKey, data);
-        },
+      deps.lifecycle.addShutdownHook(async () => {
+        const connection = await database.client.acquireConnection();
+        const data = connection.serialize();
+        await devStore.save(dataKey, data);
       });
     } else {
       database = knexFactory(knexConfig);

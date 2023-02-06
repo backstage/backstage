@@ -97,11 +97,7 @@ export const catalogPlugin = createBackendPlugin({
         const { processingEngine, router } = await builder.build();
 
         await processingEngine.start();
-        lifecycle.addShutdownHook({
-          fn: async () => {
-            await processingEngine.stop();
-          },
-        });
+        lifecycle.addShutdownHook(() => processingEngine.stop());
         httpRouter.use(router);
       },
     });
