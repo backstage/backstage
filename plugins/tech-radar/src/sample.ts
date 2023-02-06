@@ -45,7 +45,6 @@ entries.push({
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
     },
   ],
-  url: '#',
   key: 'javascript',
   id: 'javascript',
   title: 'JavaScript',
@@ -73,7 +72,6 @@ entries.push({
         'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat',
     },
   ],
-  url: '#',
   key: 'typescript',
   id: 'typescript',
   title: 'TypeScript',
@@ -91,7 +89,6 @@ entries.push({
         'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
     },
   ],
-  url: '#',
   links: [
     {
       url: 'https://webpack.js.org/',
@@ -111,7 +108,6 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
   links: [
     {
       url: 'https://reactjs.org/',
@@ -131,7 +127,6 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
   key: 'code-reviews',
   id: 'code-reviews',
   title: 'Code Reviews',
@@ -145,7 +140,6 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
   key: 'mob-programming',
   id: 'mob-programming',
   title: 'Mob Programming',
@@ -159,7 +153,6 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
   key: 'docs-like-code',
   id: 'docs-like-code',
   title: 'Docs-like-code',
@@ -172,7 +165,6 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
   key: 'force-push',
   id: 'force-push',
   title: 'Force push to master',
@@ -186,7 +178,6 @@ entries.push({
       description: 'long description',
     },
   ],
-  url: '#',
   links: [
     {
       url: 'https://reactjs.org/',
