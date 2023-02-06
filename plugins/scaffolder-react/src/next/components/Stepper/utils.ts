@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { JsonObject, JsonValue } from '@backstage/types';
 import type { FieldValidation } from '@rjsf/utils';
 import { FormValidation } from './createAsyncValidators';
 
@@ -34,4 +35,8 @@ export function hasErrors(errors?: FormValidation): boolean {
   }
 
   return false;
+}
+
+export function isObject(value: JsonValue | undefined): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
