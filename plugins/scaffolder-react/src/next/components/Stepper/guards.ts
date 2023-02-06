@@ -19,7 +19,7 @@ function isFieldValidation(error: any): error is FieldValidation {
   return !!error && '__errors' in error;
 }
 
-export function isInvalid(errors?: Record<string, FieldValidation>): boolean {
+export function hasErrors(errors?: Record<string, FieldValidation>): boolean {
   if (!errors) {
     return false;
   }
@@ -29,7 +29,7 @@ export function isInvalid(errors?: Record<string, FieldValidation>): boolean {
       return (error.__errors ?? []).length > 0;
     }
 
-    return isInvalid(error);
+    return hasErrors(error);
   }
 
   return false;
