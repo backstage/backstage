@@ -129,12 +129,7 @@ export async function startTestBackend<
         { logger },
       );
 
-      lifecycle.addShutdownHook({
-        async fn() {
-          await server.stop();
-        },
-        logger,
-      });
+      lifecycle.addShutdownHook(() => server.stop(), { logger });
 
       await server.start();
 

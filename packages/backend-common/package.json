@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-dev-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",

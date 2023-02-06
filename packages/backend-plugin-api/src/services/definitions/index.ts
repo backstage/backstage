@@ -28,6 +28,7 @@ export type { HttpRouterService } from './HttpRouterService';
 export type {
   LifecycleService,
   LifecycleServiceShutdownHook,
+  LifecycleServiceShutdownOptions,
 } from './LifecycleService';
 export type { LoggerService, LogMeta } from './LoggerService';
 export type { PermissionsService } from './PermissionsService';

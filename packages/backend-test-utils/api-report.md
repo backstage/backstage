@@ -6,7 +6,6 @@
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
-import { ConfigReader } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
@@ -20,7 +19,6 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
-import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
@@ -35,12 +33,10 @@ export namespace mockServices {
   // (undocumented)
   export namespace cache {
     const // (undocumented)
-      ref: ServiceRef<CacheService, 'plugin'>;
-    const // (undocumented)
       factory: () => ServiceFactory<CacheService>;
   }
   // (undocumented)
-  export function config(options?: config.Options): ConfigReader;
+  export function config(options?: config.Options): ConfigService;
   // (undocumented)
   export namespace config {
     // (undocumented)
@@ -48,21 +44,15 @@ export namespace mockServices {
       data?: JsonObject;
     };
     const // (undocumented)
-      ref: ServiceRef<ConfigService, 'root'>;
-    const // (undocumented)
       factory: (options?: Options | undefined) => ServiceFactory<ConfigService>;
   }
   // (undocumented)
   export namespace database {
     const // (undocumented)
-      ref: ServiceRef<DatabaseService, 'plugin'>;
-    const // (undocumented)
       factory: () => ServiceFactory<DatabaseService>;
   }
   // (undocumented)
   export namespace httpRouter {
-    const // (undocumented)
-      ref: ServiceRef<HttpRouterService, 'plugin'>;
     const // (undocumented)
       factory: (
         options?: HttpRouterFactoryOptions | undefined,
@@ -73,35 +63,25 @@ export namespace mockServices {
   // (undocumented)
   export namespace identity {
     const // (undocumented)
-      ref: ServiceRef<IdentityService, 'plugin'>;
-    const // (undocumented)
       factory: () => ServiceFactory<IdentityService>;
   }
   // (undocumented)
   export namespace lifecycle {
-    const // (undocumented)
-      ref: ServiceRef<LifecycleService, 'plugin'>;
     const // (undocumented)
       factory: () => ServiceFactory<LifecycleService>;
   }
   // (undocumented)
   export namespace logger {
     const // (undocumented)
-      ref: ServiceRef<LoggerService, 'plugin'>;
-    const // (undocumented)
       factory: () => ServiceFactory<LoggerService>;
   }
   // (undocumented)
   export namespace permissions {
     const // (undocumented)
-      ref: ServiceRef<PermissionsService, 'plugin'>;
-    const // (undocumented)
       factory: () => ServiceFactory<PermissionsService>;
   }
   // (undocumented)
   export namespace rootLifecycle {
-    const // (undocumented)
-      ref: ServiceRef<RootLifecycleService, 'root'>;
     const // (undocumented)
       factory: () => ServiceFactory<RootLifecycleService>;
   }
@@ -121,14 +101,10 @@ export namespace mockServices {
           };
     };
     const // (undocumented)
-      ref: ServiceRef<RootLoggerService, 'root'>;
-    const // (undocumented)
       factory: (options?: Options | undefined) => ServiceFactory<LoggerService>;
   }
   // (undocumented)
   export namespace scheduler {
-    const // (undocumented)
-      ref: ServiceRef<SchedulerService, 'plugin'>;
     const // (undocumented)
       factory: () => ServiceFactory<SchedulerService>;
   }
@@ -137,14 +113,10 @@ export namespace mockServices {
   // (undocumented)
   export namespace tokenManager {
     const // (undocumented)
-      ref: ServiceRef<TokenManagerService, 'plugin'>;
-    const // (undocumented)
       factory: () => ServiceFactory<TokenManagerService>;
   }
   // (undocumented)
   export namespace urlReader {
-    const // (undocumented)
-      ref: ServiceRef<UrlReaderService, 'plugin'>;
     const // (undocumented)
       factory: () => ServiceFactory<UrlReaderService>;
   }
