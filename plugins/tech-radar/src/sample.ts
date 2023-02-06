@@ -45,12 +45,16 @@ entries.push({
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
     },
   ],
-  url: 'https://www.javascript.com/',
+  url: '#',
   key: 'javascript',
   id: 'javascript',
   title: 'JavaScript',
   quadrant: 'languages',
   links: [
+    {
+      url: 'https://www.javascript.com/',
+      title: 'Learn more',
+    },
     {
       url: 'https://www.typescriptlang.org/',
       title: 'TypeScript',
@@ -87,7 +91,13 @@ entries.push({
         'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
     },
   ],
-  url: 'https://webpack.js.org/',
+  url: '#',
+  links: [
+    {
+      url: 'https://webpack.js.org/',
+      title: 'Learn more',
+    },
+  ],
   key: 'webpack',
   id: 'webpack',
   title: 'Webpack',
@@ -101,7 +111,13 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: 'https://reactjs.org/',
+  url: '#',
+  links: [
+    {
+      url: 'https://reactjs.org/',
+      title: 'Learn more',
+    },
+  ],
   key: 'react',
   id: 'react',
   title: 'React',
@@ -170,7 +186,13 @@ entries.push({
       description: 'long description',
     },
   ],
-  url: 'https://github.com',
+  url: '#',
+  links: [
+    {
+      url: 'https://reactjs.org/',
+      title: 'Learn more',
+    },
+  ],
   key: 'github-actions',
   id: 'github-actions',
   title: 'GitHub Actions',
