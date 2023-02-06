@@ -15,6 +15,7 @@
  */
 
 import {
+  ConfigService,
   coreServices,
   createServiceFactory,
   IdentityService,
@@ -56,7 +57,7 @@ function simpleFactory<TService, TOptions extends [options?: object] = []>(
  * @alpha
  */
 export namespace mockServices {
-  export function config(options?: config.Options) {
+  export function config(options?: config.Options): ConfigService {
     return new ConfigReader(options?.data, 'mock-config');
   }
   export namespace config {
