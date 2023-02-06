@@ -38,7 +38,7 @@ import { useFormDataFromQuery } from '../../hooks';
 import { FormProps } from '../../types';
 import { LayoutOptions } from '../../../layouts';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
-import { hasErrors } from './guards';
+import { hasErrors } from './utils';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
