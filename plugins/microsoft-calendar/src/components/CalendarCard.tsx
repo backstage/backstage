@@ -131,11 +131,7 @@ export const CalendarCard = () => {
               </Box>
             )}
             {sortBy(events, [getStartDate]).map(event => (
-              <CalendarEvent
-                key={`${event.id}`}
-                event={event}
-                // calendar={calendars}
-              />
+              <CalendarEvent key={`${event.id}`} event={event} />
             ))}
           </Box>
         )}

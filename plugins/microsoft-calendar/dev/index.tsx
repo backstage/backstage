@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { microsoftCalendarPlugin, MicrosoftCalendar } from '../src/plugin';
+import { microsoftCalendarPlugin, MicrosoftCalendarCard } from '../src/plugin';
 import { microsoftCalendarApiRef } from '../src';
 import responseMock from './mock.json';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
@@ -52,7 +52,7 @@ createDevApp()
       <Page themeId="home">
         <Content>
           <Grid item xs={12} md={6}>
-            <MicrosoftCalendar />
+            <MicrosoftCalendarCard />
           </Grid>
         </Content>
       </Page>

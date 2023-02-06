@@ -24,13 +24,9 @@ import {
   microsoftCalendarApiRef,
   MicrosoftCalendarApiClient,
 } from './api/index';
-import { rootRouteRef } from './routes';
 
 export const microsoftCalendarPlugin = createPlugin({
   id: 'microsoft-calendar',
-  routes: {
-    root: rootRouteRef,
-  },
   apis: [
     createApiFactory({
       api: microsoftCalendarApiRef,
@@ -43,9 +39,9 @@ export const microsoftCalendarPlugin = createPlugin({
 });
 
 /** @public */
-export const MicrosoftCalendar = microsoftCalendarPlugin.provide(
+export const MicrosoftCalendarCard = microsoftCalendarPlugin.provide(
   createComponentExtension({
-    name: 'MicrosoftCalendar',
+    name: 'MicrosoftCalendarCard',
     component: {
       lazy: () => import('./components').then(m => m.MicrosoftCalendar),
     },

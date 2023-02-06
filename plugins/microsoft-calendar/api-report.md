@@ -12,9 +12,6 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const MicrosoftCalendar: () => JSX.Element;
-
-// @public (undocumented)
 export class MicrosoftCalendarApiClient {
   constructor(options: { authApi: OAuthApi; fetchApi: FetchApi });
   // (undocumented)
@@ -34,6 +31,9 @@ export class MicrosoftCalendarApiClient {
 
 // @public (undocumented)
 export const microsoftCalendarApiRef: ApiRef<MicrosoftCalendarApiClient>;
+
+// @public (undocumented)
+export const MicrosoftCalendarCard: () => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

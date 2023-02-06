@@ -71,11 +71,11 @@ const useStyles = makeStyles(
         backgroundColor: theme.palette.grey[100],
       },
     },
-    calendarColor: () => ({
+    calendarColor: {
       width: 8,
       borderTopLeftRadius: 4,
       borderBottomLeftRadius: 4,
-    }),
+    },
   }),
   {
     name: 'MicrosoftCalendarEvent',
@@ -83,7 +83,7 @@ const useStyles = makeStyles(
 );
 
 export const CalendarEvent = ({ event }: { event: MicrosoftCalendarEvent }) => {
-  const classes = useStyles({ event });
+  const classes = useStyles();
   const popoverState = usePopupState({
     variant: 'popover',
     popupId: event.id,

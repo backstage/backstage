@@ -1,6 +1,6 @@
 ---
-'@backstage/plugin-microsoft-calendar': patch
+'@backstage/plugin-microsoft-calendar': minor
 ---
 
-created new plugin @backstage/plugin-microsoft-calendar and added it to plugins directory
-updated example-app homepage to show microsoft-calendar widget.
+Created a new Frontend plugin @backstage/plugin-microsoft-calendar and added it to plugins directory.
+please refer to readme (readme.md)[./../plugins/microsoft-calendar/README.md] for step wise instruction to setup the plugin in your backstage frontend app.

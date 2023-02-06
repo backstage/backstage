@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { MicrosoftCalendar } from './plugin';
+export { MicrosoftCalendarCard } from './plugin';
 export { MicrosoftCalendarApiClient, microsoftCalendarApiRef } from './api';
