@@ -48,7 +48,7 @@ The source code is available here:
 
     Create a new `packages/backend/src/plugins/todolist.ts` with the following content:
 
-    ```javascript
+    ```typescript
     import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
     import { createRouter } from '@internal/plugin-todo-list-backend';
     import { Router } from 'express';

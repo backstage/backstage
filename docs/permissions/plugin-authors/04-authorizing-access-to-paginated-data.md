@@ -15,7 +15,7 @@ One possible solution may leverage the batching functionality to authorize all o
 -     res.json(getAll())
 +     const items = getAll();
 +     const decisions = await permissions.authorize(
-+       items.map(({ id }) => ({ permission: todosListRead, resourceRef: id })),
++       items.map(({ id }) => ({ permission: todoListReadPermission, resourceRef: id })),
 +     );
 
 +     const filteredItems = decisions.filter(
@@ -53,7 +53,7 @@ Let's add another permission to the plugin.
     resourceType: TODO_LIST_RESOURCE_TYPE,
   });
 +
-+ export const todosListRead = createPermission({
++ export const todoListReadPermission = createPermission({
 +   name: 'todos.list.read',
 +   attributes: { action: 'read' },
 +   resourceType: TODO_LIST_RESOURCE_TYPE,
@@ -81,10 +81,9 @@ So far we've only used the `PermissionEvaluator.authorize` method, which will ev
   import {
     todosListCreate,
     todosListUpdate,
-+   todosListRead,
++   todoListReadPermission,
     TODO_LIST_RESOURCE_TYPE,
   } from './permissions';
-+ import { rules } from './rules';
 
 + const transformConditions: ConditionTransformer<TodoFilter> = createConditionTransformer(Object.values(rules));
 
@@ -95,7 +94,7 @@ So far we've only used the `PermissionEvaluator.authorize` method, which will ev
 +   );
 +
 +   const decision = (
-+     await permissions.authorizeConditional([{ permission: todosListRead }], {
++     await permissions.authorizeConditional([{ permission: todoListReadPermission }], {
 +       token,
 +     })
 +   )[0];
@@ -110,7 +109,6 @@ So far we've only used the `PermissionEvaluator.authorize` method, which will ev
 +   } else {
 +     res.json(getAll());
 +   }
-+ }
 -   res.json(getAll());
   });
 ```
@@ -121,7 +119,7 @@ Since `TodoFilter` used in our plugin matches the structure of the conditions ob
 
 ## Test the authorized read endpoint
 
-Let's update our permission policy to return a conditional result whenever a `todosListRead` permission is received. In this case, we can reuse the decision returned for the `todosListCreate` permission.
+Let's update our permission policy to return a conditional result whenever a `todoListReadPermission` permission is received. In this case, we can reuse the decision returned for the `todosListCreate` permission.
 
 ```diff
 // packages/backend/src/plugins/permission.ts
@@ -132,7 +130,6 @@ import {
   todoListCreatePermission,
   todoListUpdatePermission,
 + todoListReadPermission,
-  TODO_LIST_RESOURCE_TYPE,
 } from '@internal/plugin-todo-list-common';
 
 ...
