@@ -165,7 +165,7 @@ describe('TestBackend', () => {
     expect.assertions(2);
 
     const testPlugin = createBackendPlugin({
-      id: 'test',
+      pluginId: 'test',
       register(env) {
         env.registerInit({
           deps: {
@@ -201,7 +201,7 @@ describe('TestBackend', () => {
 
   it('should allow making requests via supertest', async () => {
     const testPlugin = createBackendPlugin({
-      id: 'test',
+      pluginId: 'test',
       register(env) {
         env.registerInit({
           deps: {

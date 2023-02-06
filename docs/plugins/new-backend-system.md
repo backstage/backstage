@@ -84,7 +84,7 @@ import {
 // export type ExamplePluginOptions = { exampleOption: boolean };
 export const examplePlugin = createBackendPlugin({
   // unique id for the plugin
-  id: 'example',
+  pluginId: 'example',
   // It's possible to provide options to the plugin
   // register(env, options: ExamplePluginOptions) {
   register(env) {
@@ -111,7 +111,7 @@ If we wanted our plugin to accept options as well, we'd accept the options as th
 
 ```ts
 export const examplePlugin = createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env, options?: { silent?: boolean }) {
     env.registerInit({
       deps: { logger: coreServices.logger },

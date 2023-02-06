@@ -21,7 +21,7 @@ Example:
 
 ```ts
 export const catalogPlugin = createBackendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   ...
 })
 ```
@@ -36,7 +36,7 @@ export const catalogPlugin = createBackendPlugin({
 Example:
 
 ```ts
-export const catalogModuleGithubEntityProvider = createBackendPlugin({
+export const catalogModuleGithubEntityProvider = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'githubEntityProvider',
   ...

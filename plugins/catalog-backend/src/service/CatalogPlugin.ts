@@ -56,7 +56,7 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
  * @alpha
  */
 export const catalogPlugin = createBackendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   register(env) {
     const processingExtensions = new CatalogExtensionPointImpl();
     // plugins depending on this API will be initialized before this plugins init method is executed.

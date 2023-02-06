@@ -80,7 +80,7 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
  * @alpha
  */
 export const eventsPlugin = createBackendPlugin({
-  id: 'events',
+  pluginId: 'events',
   register(env) {
     const extensionPoint = new EventsExtensionPointImpl();
     env.registerExtensionPoint(eventsExtensionPoint, extensionPoint);

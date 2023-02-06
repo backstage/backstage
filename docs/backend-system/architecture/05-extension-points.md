@@ -44,7 +44,7 @@ class ActionsExtension implements ScaffolderActionsExtensionPoint {
 
 export const scaffolderPlugin = createBackendPlugin(
   {
-    id: 'scaffolder',
+    pluginId: 'scaffolder',
     register(env) {
       const actionsExtensions = new ActionsExtension();
       env.registerExtensionPoint(

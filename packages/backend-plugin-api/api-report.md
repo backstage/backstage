@@ -47,7 +47,7 @@ export interface BackendModuleRegistrationPoints {
 
 // @public
 export interface BackendPluginConfig {
-  id: string;
+  pluginId: string;
   // (undocumented)
   register(reg: BackendPluginRegistrationPoints): void;
 }

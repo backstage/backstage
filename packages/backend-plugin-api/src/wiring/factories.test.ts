@@ -33,7 +33,7 @@ describe('createExtensionPoint', () => {
 describe('createBackendPlugin', () => {
   it('should create a BackendPlugin', () => {
     const plugin = createBackendPlugin((_options: { a: string }) => ({
-      id: 'x',
+      pluginId: 'x',
       register() {},
     }));
     expect(plugin).toBeDefined();
@@ -47,7 +47,7 @@ describe('createBackendPlugin', () => {
 
   it('should create plugins with optional options', () => {
     const plugin = createBackendPlugin((_options?: { a: string }) => ({
-      id: 'x',
+      pluginId: 'x',
       register() {},
     }));
     expect(plugin).toBeDefined();
@@ -59,7 +59,7 @@ describe('createBackendPlugin', () => {
 
   it('should create plugins without options', () => {
     const plugin = createBackendPlugin({
-      id: 'x',
+      pluginId: 'x',
       register() {},
     });
     expect(plugin).toBeDefined();
@@ -74,7 +74,7 @@ describe('createBackendPlugin', () => {
       a: string;
     }
     const plugin = createBackendPlugin((_options: TestOptions) => ({
-      id: 'x',
+      pluginId: 'x',
       register() {},
     }));
     expect(plugin).toBeDefined();
@@ -91,7 +91,7 @@ describe('createBackendPlugin', () => {
       a: string;
     }
     const plugin = createBackendPlugin((_options?: TestOptions) => ({
-      id: 'x',
+      pluginId: 'x',
       register() {},
     }));
     expect(plugin).toBeDefined();
