@@ -23,7 +23,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { type IChangeEvent, withTheme } from '@rjsf/core-v5';
-import { ErrorSchema, FieldValidation } from '@rjsf/utils';
+import { ErrorSchema } from '@rjsf/utils';
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
