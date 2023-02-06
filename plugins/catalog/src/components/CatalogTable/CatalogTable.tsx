@@ -65,21 +65,12 @@ const YellowStar = withStyles({
 
 const refCompare = (a: Entity, b: Entity) => {
   const toRef = (entity: Entity) =>
-    entity.metadata.title?.toLocaleLowerCase('en-US') ||
+    entity.metadata.title ||
     humanizeEntityRef(entity, {
       defaultKind: 'Component',
-    }).toLocaleLowerCase('en-US');
+    });
 
-  const aRef = toRef(a);
-  const bRef = toRef(b);
-
-  if (aRef < bRef) {
-    return -1;
-  }
-  if (aRef > bRef) {
-    return 1;
-  }
-  return 0;
+  return toRef(a).localeCompare(toRef(b));
 };
 
 /** @public */
