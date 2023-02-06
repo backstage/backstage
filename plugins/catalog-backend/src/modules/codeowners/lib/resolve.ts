@@ -16,7 +16,7 @@
 
 import * as codeowners from 'codeowners-utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
-import { filter, get, head, pipe, reverse } from 'lodash/fp';
+import { get, head, pipe, reverse } from 'lodash/fp';
 
 const USER_PATTERN = /^@.*/;
 const GROUP_PATTERN = /^@.*\/.*/;
@@ -24,18 +24,26 @@ const EMAIL_PATTERN = /^.*@.*\..*$/;
 
 export function resolveCodeOwner(
   contents: string,
-  pattern = '*',
+  pattern?: string,
 ): string | undefined {
   const owners = codeowners.parse(contents);
 
-  return pipe(
-    filter((e: CodeOwnersEntry) => pattern.includes(e.pattern)),
+  let relevantOwners = owners.filter((e: CodeOwnersEntry) =>
+    pattern?.includes(e.pattern),
+  );
+  if (relevantOwners.length === 0) {
+    relevantOwners = owners.filter((e: CodeOwnersEntry) => e.pattern === '*');
+  }
+
+  const result = pipe(
     reverse,
     head,
     get('owners'),
     head,
     normalizeCodeOwner,
-  )(owners);
+  )(relevantOwners);
+
+  return result;
 }
 
 export function normalizeCodeOwner(owner: string) {

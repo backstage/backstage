@@ -21,7 +21,7 @@ import { LocationSpec } from '@backstage/plugin-catalog-node';
 
 const mockCodeOwnersText = () => `
 *       @acme/team-foo @acme/team-bar
-/docs   @acme/team-bar
+/docs   @acme/team-docs
 `;
 
 describe('CodeOwnersProcessor', () => {
@@ -34,8 +34,12 @@ describe('CodeOwnersProcessor', () => {
   });
 
   describe('preProcessEntity', () => {
-    const setupTest = ({ kind = 'Component', spec = {} } = {}) => {
-      const entity = { kind, spec };
+    const setupTest = ({
+      kind = 'Component',
+      spec = {},
+      metadata = {},
+    } = {}) => {
+      const entity = { kind, spec, metadata };
       const config = new ConfigReader({});
       const reader = {
         read: jest.fn(),
@@ -99,6 +103,23 @@ describe('CodeOwnersProcessor', () => {
       expect(result).toEqual({
         ...entity,
         spec: { owner: 'team-foo' },
+      });
+    });
+    it('should use the "backstage.io/managed-by-location" annotation as pattern', async () => {
+      const { entity, processor } = setupTest({
+        metadata: {
+          annotations: { 'backstage.io/managed-by-location': '/docs' },
+        },
+      });
+
+      const result = await processor.preProcessEntity(
+        entity as any,
+        mockLocation(),
+      );
+
+      expect(result).toEqual({
+        ...entity,
+        spec: { owner: 'team-docs' },
       });
     });
   });

@@ -18,12 +18,20 @@ import { normalizeCodeOwner, resolveCodeOwner } from './resolve';
 
 const mockCodeOwnersText = () => `
 *       @acme/team-foo @acme/team-bar
-/docs   @acme/team-bar
+/docs   @acme/team-docs
 `;
 
 describe('resolveCodeOwner', () => {
   it('should parse the codeowners file', () => {
     expect(resolveCodeOwner(mockCodeOwnersText())).toBe('team-foo');
+  });
+  it('should include the codeowners path into the provided pattern', () => {
+    expect(
+      resolveCodeOwner(
+        mockCodeOwnersText(),
+        'url:https://github.com/acem/repo/main/docs/catalog-info.yaml',
+      ),
+    ).toBe('team-docs');
   });
 });
 
