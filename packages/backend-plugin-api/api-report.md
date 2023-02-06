@@ -275,7 +275,7 @@ export type ExtensionPoint<T> = {
   id: string;
   T: T;
   toString(): string;
-  $$ref: 'extension-point';
+  $$type: '@backstage/ExtensionPoint';
 };
 
 // @public
@@ -490,7 +490,7 @@ export type ServiceRef<
   scope: TScope;
   T: TService;
   toString(): string;
-  $$ref: 'service';
+  $$type: '@backstage/ServiceRef';
 };
 
 // @public (undocumented)

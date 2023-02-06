@@ -48,7 +48,7 @@ describe('createSharedEnvironment', () => {
     expect(env).toBeDefined();
     const internalEnv = env() as unknown as InternalSharedBackendEnvironment;
     expect(internalEnv).toEqual({
-      $$type: 'SharedBackendEnvironment',
+      $$type: '@backstage/SharedBackendEnvironment',
       version: 'v1',
       services: undefined,
     });
