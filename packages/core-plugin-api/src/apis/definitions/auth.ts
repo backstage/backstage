@@ -413,6 +413,21 @@ export const bitbucketAuthApiRef: ApiRef<
 });
 
 /**
+ * Provides authentication towards Bitbucket Server APIs.
+ *
+ * @public
+ * @remarks
+ *
+ * See {@link https://confluence.atlassian.com/bitbucketserver/bitbucket-oauth-2-0-provider-api-1108483661.html#BitbucketOAuth2.0providerAPI-scopes}
+ * for a full list of supported scopes.
+ */
+export const bitbucketServerAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.bitbucket-server',
+});
+
+/**
  * Provides authentication towards Atlassian APIs.
  *
  * @public
