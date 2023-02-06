@@ -18,6 +18,7 @@ import {
   createServiceFactory,
   coreServices,
   LifecycleServiceShutdownHook,
+  LifecycleServiceShutdownOptions,
   RootLifecycleService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -26,10 +27,16 @@ export class BackendLifecycleImpl implements RootLifecycleService {
   constructor(private readonly logger: LoggerService) {}
 
   #isCalled = false;
-  #shutdownTasks: Array<LifecycleServiceShutdownHook> = [];
+  #shutdownTasks: Array<{
+    hook: LifecycleServiceShutdownHook;
+    options?: LifecycleServiceShutdownOptions;
+  }> = [];
 
-  addShutdownHook(options: LifecycleServiceShutdownHook): void {
-    this.#shutdownTasks.push(options);
+  addShutdownHook(
+    hook: LifecycleServiceShutdownHook,
+    options?: LifecycleServiceShutdownOptions,
+  ): void {
+    this.#shutdownTasks.push({ hook, options });
   }
 
   async shutdown(): Promise<void> {
@@ -40,10 +47,10 @@ export class BackendLifecycleImpl implements RootLifecycleService {
 
     this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
     await Promise.all(
-      this.#shutdownTasks.map(async hook => {
-        const { logger = this.logger } = hook;
+      this.#shutdownTasks.map(async ({ hook, options }) => {
+        const logger = options?.logger ?? this.logger;
         try {
-          await hook.fn();
+          await hook();
           logger.info(`Shutdown hook succeeded`);
         } catch (error) {
           logger.error(`Shutdown hook failed, ${error}`);

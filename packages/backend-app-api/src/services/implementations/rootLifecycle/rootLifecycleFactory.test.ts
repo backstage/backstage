@@ -21,11 +21,7 @@ describe('lifecycleService', () => {
   it('should execute registered shutdown hook', async () => {
     const service = new BackendLifecycleImpl(getVoidLogger());
     const hook = jest.fn();
-    service.addShutdownHook({
-      fn: async () => {
-        hook();
-      },
-    });
+    service.addShutdownHook(() => hook());
     // should not execute the hook more than once.
     await service.shutdown();
     await service.shutdown();
@@ -35,10 +31,16 @@ describe('lifecycleService', () => {
 
   it('should not throw errors', async () => {
     const service = new BackendLifecycleImpl(getVoidLogger());
-    service.addShutdownHook({
-      fn: async () => {
-        throw new Error('oh no');
-      },
+    service.addShutdownHook(() => {
+      throw new Error('oh no');
+    });
+    await expect(service.shutdown()).resolves.toBeUndefined();
+  });
+
+  it('should not throw async errors', async () => {
+    const service = new BackendLifecycleImpl(getVoidLogger());
+    service.addShutdownHook(async () => {
+      throw new Error('oh no');
     });
     await expect(service.shutdown()).resolves.toBeUndefined();
   });

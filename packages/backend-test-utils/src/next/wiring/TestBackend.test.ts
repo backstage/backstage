@@ -40,10 +40,8 @@ beforeAll(async () => {
           env.registerInit({
             deps: { lifecycle: coreServices.lifecycle },
             async init({ lifecycle }) {
-              lifecycle.addShutdownHook({
-                fn() {
-                  globalTestBackendHasBeenStopped = true;
-                },
+              lifecycle.addShutdownHook(() => {
+                globalTestBackendHasBeenStopped = true;
               });
             },
           });
@@ -145,7 +143,7 @@ describe('TestBackend', () => {
             lifecycle: coreServices.lifecycle,
           },
           async init({ lifecycle }) {
-            lifecycle.addShutdownHook({ fn: shutdownSpy });
+            lifecycle.addShutdownHook(shutdownSpy);
           },
         });
       },
