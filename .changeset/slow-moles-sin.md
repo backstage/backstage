@@ -2,4 +2,4 @@
 '@backstage/plugin-circleci': patch
 ---
 
-Making workflow a link 
+Making workflow a link
