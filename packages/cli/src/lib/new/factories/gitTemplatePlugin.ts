@@ -121,7 +121,7 @@ export const gitTemplatePlugin = createFactory<Options>({
       await addCodeownersEntry(`/plugins/${id}`, options.owner);
     }
 
-    // await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
+    await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
     await Task.forCommand('yarn lint --fix', {
       cwd: targetDir,
       optional: true,
