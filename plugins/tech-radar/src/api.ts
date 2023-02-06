@@ -136,7 +136,7 @@ export interface RadarEntry {
    *
    * @deprecated Use {@link RadarEntry.links} instead
    */
-  url: string;
+  url?: string;
   /**
    * History of the Entry moving through {@link RadarRing}
    */
