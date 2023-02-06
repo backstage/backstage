@@ -44,7 +44,7 @@ export type ServiceRef<
 
   toString(): string;
 
-  $$ref: 'service';
+  $$type: '@backstage/ServiceRef';
 };
 
 /** @public */
@@ -119,7 +119,7 @@ export function createServiceRef<TService>(
     toString() {
       return `serviceRef{${config.id}}`;
     },
-    $$ref: 'service', // TODO: declare
+    $$type: '@backstage/ServiceRef',
     __defaultFactory: defaultFactory,
   } as ServiceRef<TService, typeof scope> & {
     __defaultFactory?: (
