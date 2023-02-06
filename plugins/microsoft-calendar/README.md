@@ -29,8 +29,8 @@ The following sections will help you set up the Microsoft calendar plugin.
 yarn add --cwd packages/app @backstage/plugin-microsoft-calendar
 ```
 
-You need to first import the Microsoft calendar React component from "@backstage/plugin-microsoft-calendar".
-You can then use the provided component Microsoft calendar in the backstage frontend where ever you want
+2. Import the Microsoft calendar React component from "@backstage/plugin-microsoft-calendar".
+3. You can then use the provided react component MicrosoftCalendar in the backstage frontend where ever you want
 
 ```tsx
 import { MicrosoftCalendar } from '@backstage/plugin-microsoft-calendar';
@@ -43,6 +43,8 @@ import { MicrosoftCalendar } from '@backstage/plugin-microsoft-calendar';
 ```
 
 ![Microsoft Calendar plugin demo](https://user-images.githubusercontent.com/23618736/215717491-25db5fa6-b237-487f-8c00-28f572e8da05.mp4)
+
+![Sample](./docs/microsoft-calendar-plugin.png)
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
