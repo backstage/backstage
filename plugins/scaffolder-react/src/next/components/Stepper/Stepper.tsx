@@ -27,7 +27,10 @@ import { ErrorSchema, FieldValidation } from '@rjsf/utils';
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
-import { createAsyncValidators } from './createAsyncValidators';
+import {
+  createAsyncValidators,
+  type FormValidation,
+} from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv8';
@@ -93,9 +96,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useFormDataFromQuery(props.initialState);
 
-  const [errors, setErrors] = useState<
-    undefined | Record<string, FieldValidation>
-  >();
+  const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
 
   const extensions = useMemo(() => {
