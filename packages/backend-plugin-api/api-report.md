@@ -508,7 +508,7 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
 // @public
 export interface SharedBackendEnvironment {
   // (undocumented)
-  $$type: 'SharedBackendEnvironment';
+  $$type: '@backstage/SharedBackendEnvironment';
 }
 
 // @public
