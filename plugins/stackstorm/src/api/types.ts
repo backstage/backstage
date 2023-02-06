@@ -23,8 +23,8 @@ export type Execution = {
   id: string;
   action: Action;
   status: string;
-  start_timestamp: Date;
-  end_timestamp: Date;
+  start_timestamp: string;
+  end_timestamp: string;
   result: object;
   parameters: object;
   elapsed_seconds: number;
@@ -33,7 +33,7 @@ export type Execution = {
 
 export type ExecutionLog = {
   status: string;
-  timestamp: Date;
+  timestamp: string;
 };
 
 export type Action = {

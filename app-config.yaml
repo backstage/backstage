@@ -118,6 +118,11 @@ proxy:
     headers:
       Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 
+  '/stackstorm':
+    target: https://your.stackstorm.instance.com/api
+    headers:
+      St2-Api-Key: ${ST2_API_KEY}
+
 organization:
   name: My Company
 
@@ -440,6 +445,9 @@ apacheAirflow:
 
 gocd:
   baseUrl: https://your.gocd.instance.com
+
+stackstorm:
+  webUrl: https://your.stackstorm.webui.instance.com
 
 permission:
   enabled: true
