@@ -154,4 +154,83 @@ describe('createAsyncValidators', () => {
       }),
     });
   });
+
+  it('should run validation on complex nested schemas', async () => {
+    const schema: JsonObject = {
+      title: 'Select component',
+      properties: {
+        actionType: {
+          title: 'action type',
+          type: 'string',
+          description: 'Select the action type',
+          enum: ['newThing', 'existingThing'],
+          enumNames: ['New thing', 'Existing thing'],
+          default: 'newThing',
+        },
+      },
+      required: ['actionType'],
+      dependencies: {
+        actionType: {
+          oneOf: [
+            {
+              properties: {
+                actionType: {
+                  enum: ['newThing'],
+                },
+                general: {
+                  title: 'General',
+                  type: 'object',
+                  properties: {
+                    name: {
+                      title: 'Name',
+                      type: 'string',
+                      'ui:field': 'NameField',
+                    },
+                  },
+                },
+              },
+            },
+            {
+              properties: {
+                actionType: {
+                  enum: ['existingThing'],
+                },
+                thingId: {
+                  title: 'Thing id',
+                  type: 'string',
+                  description: 'Enter thing id',
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const NameField: NextCustomFieldValidator<string> = (
+      value,
+      { addError },
+    ) => {
+      if (!value) {
+        addError('something is broken here!');
+      }
+    };
+
+    const validators = {
+      NameField: NameField as NextCustomFieldValidator<unknown>,
+    };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      actionType: 'newThing',
+      general: {
+        name: undefined,
+      },
+    });
+
+    expect(validators.NameField).toHaveBeenCalled();
+  });
 });
