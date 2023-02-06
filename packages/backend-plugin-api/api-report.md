@@ -275,7 +275,7 @@ export type ExtensionPoint<T> = {
   id: string;
   T: T;
   toString(): string;
-  $$ref: 'extension-point';
+  $$type: '@backstage/ExtensionPoint';
 };
 
 // @public
@@ -495,7 +495,7 @@ export type ServiceRef<
   scope: TScope;
   T: TService;
   toString(): string;
-  $$ref: 'service';
+  $$type: '@backstage/ServiceRef';
 };
 
 // @public (undocumented)
@@ -513,7 +513,7 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
 // @public
 export interface SharedBackendEnvironment {
   // (undocumented)
-  $$type: 'SharedBackendEnvironment';
+  $$type: '@backstage/SharedBackendEnvironment';
 }
 
 // @public

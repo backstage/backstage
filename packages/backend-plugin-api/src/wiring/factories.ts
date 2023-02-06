@@ -55,7 +55,7 @@ export function createExtensionPoint<T>(
     toString() {
       return `extensionPoint{${config.id}}`;
     },
-    $$ref: 'extension-point', // TODO: declare
+    $$type: '@backstage/ExtensionPoint',
   };
 }
 
