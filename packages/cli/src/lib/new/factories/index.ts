@@ -15,6 +15,7 @@
  */
 
 export { frontendPlugin } from './frontendPlugin';
+export { gitTemplatePlugin } from './gitTemplatePlugin';
 export { backendPlugin } from './backendPlugin';
 export { webLibraryPackage } from './webLibraryPackage';
 export { pluginCommon } from './pluginCommon';
