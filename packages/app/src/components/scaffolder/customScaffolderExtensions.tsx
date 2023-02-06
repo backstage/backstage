@@ -76,7 +76,7 @@ const MockDelayComponent = (
       value={formData?.test ?? ''}
       onChange={({ target: { value } }) => onChange({ test: value })}
       margin="normal"
-      error={rawErrors?.length > 0 && !formData}
+      error={rawErrors.length > 0 && !formData}
     />
   );
 };

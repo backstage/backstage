@@ -35,6 +35,7 @@ import { useFormDataFromQuery } from '../../hooks';
 import { FormProps } from '../../types';
 import { LayoutOptions } from '../../../layouts';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
+import { isInvalid } from './guards';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -136,11 +137,7 @@ export const Stepper = (stepperProps: StepperProps) => {
 
     const returnedValidation = await validation(formData);
 
-    const hasErrors = Object.values(returnedValidation).some(
-      i => i.__errors?.length,
-    );
-
-    if (hasErrors) {
+    if (isInvalid(returnedValidation)) {
       setErrors(returnedValidation);
     } else {
       setErrors(undefined);

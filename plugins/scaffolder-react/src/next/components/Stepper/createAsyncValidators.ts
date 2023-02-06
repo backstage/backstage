@@ -15,11 +15,20 @@
  */
 
 import { FieldValidation } from '@rjsf/utils';
-import { JsonObject } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { createFieldValidation } from '../../lib';
 import { NextCustomFieldValidator } from '../../extensions';
+
+function isObject(value: JsonValue | undefined): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+type FormValidation = Record<
+  string,
+  FieldValidation | Record<string, FieldValidation>
+>;
 
 export const createAsyncValidators = (
   rootSchema: JsonObject,
@@ -28,14 +37,17 @@ export const createAsyncValidators = (
     apiHolder: ApiHolder;
   },
 ) => {
-  async function validate(formData: JsonObject, pathPrefix: string = '#') {
+  async function validate(
+    formData: JsonObject,
+    pathPrefix: string = '#',
+    current: JsonObject = formData,
+  ): Promise<Record<string, FieldValidation>> {
     const parsedSchema = new JSONSchema(rootSchema);
-    const formValidation: Record<string, FieldValidation> = {};
-    for (const [key, value] of Object.entries(formData)) {
-      const definitionInSchema = parsedSchema.getSchema(
-        `${pathPrefix}/${key}`,
-        formData,
-      );
+    const formValidation: FormValidation = {};
+
+    for (const [key, value] of Object.entries(current)) {
+      const path = `${pathPrefix}/${key}`;
+      const definitionInSchema = parsedSchema.getSchema(path, formData);
 
       if (definitionInSchema && 'ui:field' in definitionInSchema) {
         const validator = validators[definitionInSchema['ui:field']];
@@ -48,10 +60,15 @@ export const createAsyncValidators = (
           }
           formValidation[key] = fieldValidation;
         }
+      } else if (isObject(value)) {
+        formValidation[key] = (await validate(formData, path, value)) as Record<
+          string,
+          FieldValidation
+        >;
       }
     }
 
-    return formValidation;
+    return formValidation as Record<string, FieldValidation>;
   }
 
   return async (formData: JsonObject) => {
