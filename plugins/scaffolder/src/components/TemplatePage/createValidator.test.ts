@@ -17,14 +17,32 @@
 import { createValidator } from './createValidator';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { FormValidation } from '@rjsf/core';
+import { FieldValidation, FormValidation } from '@rjsf/core';
 
 describe('createValidator', () => {
   const validators: Record<string, undefined | CustomFieldValidator<unknown>> =
     {
-      CustomPicker: (value, validation, _context) => {
+      CustomPicker: (
+        value: unknown,
+        fieldValidation: FieldValidation,
+        _context: { apiHolder: ApiHolder },
+      ) => {
         if (!value || !(value as { value?: unknown }).value) {
-          validation.addError('Error !');
+          fieldValidation.addError('Error !');
+        }
+      },
+      TagPicker: (
+        value: unknown,
+        fieldValidation: FieldValidation,
+        _context: { apiHolder: ApiHolder },
+      ) => {
+        if (!value) {
+          fieldValidation.addError('A tag name can not be empty');
+        }
+        if (!/^[a-z0-9-]+$/.test(value as string)) {
+          fieldValidation.addError(
+            'A tag name can only contain lowercase letters, numeric characters or dashes',
+          );
         }
       },
     };
@@ -69,5 +87,40 @@ describe('createValidator', () => {
     /* THEN */
     expect(result).not.toBeNull();
     expect(result.p1.addError).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should call validator for array property from a custom field extension', () => {
+    /* GIVEN */
+    const rootSchema = {
+      title: 'My form',
+      properties: {
+        tags: {
+          title: 'Tags',
+          type: 'array',
+          items: {
+            type: 'string',
+            'ui:field': 'TagPicker',
+          },
+        },
+      },
+    };
+    const validator = createValidator(rootSchema, validators, context);
+
+    const formData = {
+      tags: ['invalid-tag$$'],
+    };
+    const errors = {
+      addError: jest.fn(),
+      tags: {
+        addError: jest.fn(),
+      } as unknown as FormValidation,
+    } as unknown as FormValidation;
+
+    /* WHEN */
+    const result = validator(formData, errors);
+
+    /* THEN */
+    expect(result).not.toBeNull();
+    expect(result.tags.addError).toHaveBeenCalledTimes(1);
   });
 });
