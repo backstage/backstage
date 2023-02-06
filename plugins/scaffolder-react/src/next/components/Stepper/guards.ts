@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import type { FieldValidation } from '@rjsf/utils';
+import { FormValidation } from './createAsyncValidators';
 
 function isFieldValidation(error: any): error is FieldValidation {
   return !!error && '__errors' in error;
 }
 
-export function hasErrors(errors?: Record<string, FieldValidation>): boolean {
+export function hasErrors(errors?: FormValidation): boolean {
   if (!errors) {
     return false;
   }

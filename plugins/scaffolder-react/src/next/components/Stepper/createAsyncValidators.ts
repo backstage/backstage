@@ -25,7 +25,10 @@ function isObject(value: JsonValue | undefined): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-type FormValidation = Record<
+/**
+ * @internal
+ */
+export type FormValidation = Record<
   string,
   FieldValidation | Record<string, FieldValidation>
 >;
@@ -41,7 +44,7 @@ export const createAsyncValidators = (
     formData: JsonObject,
     pathPrefix: string = '#',
     current: JsonObject = formData,
-  ): Promise<Record<string, FieldValidation>> {
+  ): Promise<FormValidation> {
     const parsedSchema = new JSONSchema(rootSchema);
     const formValidation: FormValidation = {};
 
@@ -68,7 +71,7 @@ export const createAsyncValidators = (
       }
     }
 
-    return formValidation as Record<string, FieldValidation>;
+    return formValidation;
   }
 
   return async (formData: JsonObject) => {
