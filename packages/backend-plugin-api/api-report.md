@@ -294,14 +294,19 @@ export interface IdentityService extends IdentityApi {}
 
 // @public (undocumented)
 export interface LifecycleService {
-  addShutdownHook(options: LifecycleServiceShutdownHook): void;
+  addShutdownHook(
+    hook: LifecycleServiceShutdownHook,
+    options?: LifecycleServiceShutdownOptions,
+  ): void;
 }
 
 // @public (undocumented)
-export type LifecycleServiceShutdownHook = {
-  fn: () => void | Promise<void>;
+export type LifecycleServiceShutdownHook = () => void | Promise<void>;
+
+// @public (undocumented)
+export interface LifecycleServiceShutdownOptions {
   logger?: LoggerService;
-};
+}
 
 // @public
 export interface LoggerService {

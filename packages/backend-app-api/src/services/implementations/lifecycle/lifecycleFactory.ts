@@ -17,6 +17,7 @@ import {
   createServiceFactory,
   coreServices,
   LifecycleServiceShutdownHook,
+  LifecycleServiceShutdownOptions,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -33,11 +34,12 @@ export const lifecycleFactory = createServiceFactory({
   async factory({ rootLifecycle, logger, pluginMetadata }) {
     const plugin = pluginMetadata.getId();
     return {
-      addShutdownHook(options: LifecycleServiceShutdownHook): void {
-        rootLifecycle.addShutdownHook({
-          ...options,
-
-          logger: options.logger?.child({ plugin }) ?? logger,
+      addShutdownHook(
+        hook: LifecycleServiceShutdownHook,
+        options?: LifecycleServiceShutdownOptions,
+      ): void {
+        rootLifecycle.addShutdownHook(hook, {
+          logger: options?.logger?.child({ plugin }) ?? logger,
         });
       },
     };
