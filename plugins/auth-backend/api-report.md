@@ -16,6 +16,7 @@ import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { IncomingHttpHeaders } from 'http';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
+import passport from 'passport';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
@@ -130,6 +131,21 @@ export type BitbucketPassportProfile = Profile & {
       };
     };
   };
+};
+
+// Warning: (ae-missing-release-tag) "BitbucketServerOAuthResult" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BitbucketServerOAuthResult = {
+  fullProfile: PassportProfile;
+  params: {
+    scope: string;
+    access_token?: string;
+    token_type?: string;
+    expires_in?: number;
+  };
+  accessToken: string;
+  refreshToken?: string;
 };
 
 // @public
@@ -480,6 +496,23 @@ export const providers: Readonly<{
       userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
+  bitbucketServer: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<BitbucketServerOAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<BitbucketServerOAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: Readonly<{
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
+    }>;
+  }>;
   cfAccess: Readonly<{
     create: (options: {
       authHandler?: AuthHandler<CloudflareAccessResult> | undefined;
@@ -730,4 +763,8 @@ export type WebMessageResponse =
       type: 'authorization_response';
       error: Error;
     };
+
+// Warnings were encountered during analysis:
+//
+// src/providers/bitbucketServer/provider.d.ts:6:5 - (ae-forgotten-export) The symbol "PassportProfile" needs to be exported by the entry point index.d.ts
 ```
