@@ -24,7 +24,7 @@ import { createPackageVersionProvider } from '../../../version';
 import { CreateContext } from '../../types';
 
 // Inspired by https://github.com/xxorax/node-shell-escape/blob/master/shell-escape.js
-function escapeShellArg(s) {
+function escapeShellArg(s: string) {
   let res = `'${s.replace(/'/g, "'\\''")}'`;
   res = res.replace(/^(?:'')+/g, '').replace(/\\'''/g, "\\'");
   return res;
