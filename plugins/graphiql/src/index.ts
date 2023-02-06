@@ -29,6 +29,7 @@ export {
   GraphiQLPage,
 } from './plugin';
 export { GraphiQLPage as Router } from './components';
+export type { GraphiQLPageProps } from './components';
 export * from './lib/api';
 export * from './route-refs';
 

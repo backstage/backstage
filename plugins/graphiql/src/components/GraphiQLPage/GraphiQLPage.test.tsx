@@ -19,6 +19,7 @@ import { GraphiQLPage } from './GraphiQLPage';
 import { act } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { GraphQLBrowseApi, graphQlBrowseApiRef } from '../../lib/api';
+import { Header } from '@backstage/core-components';
 
 jest.mock('../GraphiQLBrowser', () => ({
   GraphiQLBrowser: () => '<GraphiQLBrowser />',
@@ -79,5 +80,26 @@ describe('GraphiQLPage', () => {
 
     rendered.getByText('GraphiQL');
     rendered.getByText('<GraphiQLBrowser />');
+  });
+
+  it('should render a different header when one is given', async () => {
+    const loadingApi: GraphQLBrowseApi = {
+      async getEndpoints() {
+        return [];
+      },
+    };
+
+    const CustomHeader = () => {
+      return <Header title="my custom header" />;
+    };
+
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[graphQlBrowseApiRef, loadingApi]]}>
+        <GraphiQLPage header={<CustomHeader />} />
+      </TestApiProvider>,
+    );
+
+    expect(rendered.getByText('my custom header')).toBeInTheDocument();
+    expect(rendered.getByText('<GraphiQLBrowser />')).toBeInTheDocument();
   });
 });

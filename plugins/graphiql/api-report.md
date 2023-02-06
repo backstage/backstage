@@ -36,7 +36,12 @@ export type GithubEndpointConfig = {
 export const GraphiQLIcon: IconComponent;
 
 // @public (undocumented)
-export const GraphiQLPage: () => JSX.Element;
+export const GraphiQLPage: (props: GraphiQLPageProps) => JSX.Element;
+
+// @public (undocumented)
+export type GraphiQLPageProps = {
+  header?: JSX.Element;
+};
 
 // @public (undocumented)
 const graphiqlPlugin: BackstagePlugin<{}, {}, {}>;
@@ -73,7 +78,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
 }
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: (props: GraphiQLPageProps) => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

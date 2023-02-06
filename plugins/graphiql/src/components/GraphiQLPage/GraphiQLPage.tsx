@@ -29,7 +29,21 @@ import {
 } from '@backstage/core-components';
 
 /** @public */
-export const GraphiQLPage = () => {
+export type GraphiQLPageProps = {
+  header?: JSX.Element;
+};
+
+const DefaultHeader = () => {
+  return (
+    <Header title="GraphiQL">
+      <HeaderLabel label="Owner" value="Spotify" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+  );
+};
+
+/** @public */
+export const GraphiQLPage = (props: GraphiQLPageProps) => {
   const graphQlBrowseApi = useApi(graphQlBrowseApiRef);
   const endpoints = useAsync(() => graphQlBrowseApi.getEndpoints());
 
@@ -60,10 +74,7 @@ export const GraphiQLPage = () => {
 
   return (
     <Page themeId="tool">
-      <Header title="GraphiQL">
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
+      {props.header ? props.header : <DefaultHeader />}
       {content}
     </Page>
   );
