@@ -114,6 +114,13 @@ export default async function createPlugin(
         },
       }),
 
+      bitbucketServer: providers.bitbucketServer.create({
+        signIn: {
+          resolver:
+            providers.bitbucketServer.resolvers.emailMatchingUserEntityProfileEmail(),
+        },
+      }),
+
       // This is an example of how to configure the OAuth2Proxy provider as well
       // as how to sign a user in without a matching user entity in the catalog.
       // You can try it out using `<ProxiedSignInPage {...props} provider="myproxy" />`
