@@ -6,7 +6,6 @@
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
-import { ConfigReader } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
@@ -37,7 +36,7 @@ export namespace mockServices {
       factory: () => ServiceFactory<CacheService>;
   }
   // (undocumented)
-  export function config(options?: config.Options): ConfigReader;
+  export function config(options?: config.Options): ConfigService;
   // (undocumented)
   export namespace config {
     // (undocumented)
