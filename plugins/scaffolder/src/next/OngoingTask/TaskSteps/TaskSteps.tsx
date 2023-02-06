@@ -20,6 +20,7 @@ import {
   StepButton as MuiStepButton,
   StepLabel as MuiStepLabel,
   StepIconProps,
+  Box,
 } from '@material-ui/core';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { Step } from '../../../components/hooks/useEventStream';
@@ -29,7 +30,6 @@ import { StepTime } from './StepTime';
 interface StepperProps {
   steps: (TaskStep & Step)[];
   activeStep?: number;
-  setActiveStep?: (step: number) => void;
 }
 
 export const TaskSteps = (props: StepperProps) => {
@@ -58,8 +58,7 @@ export const TaskSteps = (props: StepperProps) => {
                 StepIconProps={stepIconProps}
                 StepIconComponent={StepIcon}
               >
-                {step.name}
-                <br />
+                <Box>{step.name}</Box>
                 <StepTime step={step} />
               </MuiStepLabel>
             </MuiStepButton>

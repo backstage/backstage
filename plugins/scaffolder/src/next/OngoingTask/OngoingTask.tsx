@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { Page, Header, Content } from '@backstage/core-components';
+import { Page, Header, Content, ErrorPanel } from '@backstage/core-components';
 import { useTaskEventStream } from '../../components/hooks/useEventStream';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, Paper } from '@material-ui/core';
+import { Box, makeStyles, Paper } from '@material-ui/core';
 import { TaskSteps } from './TaskSteps';
 import { TaskBorder } from './TaskBorder';
 import { TaskLogStream } from './TaskLogStream';
@@ -27,12 +27,20 @@ import qs from 'qs';
 import { DefaultOutputs } from './Outputs';
 import { ContextMenu } from './ContextMenu';
 
+const useStyles = makeStyles({
+  contentWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+});
+
 export const OngoingTask = () => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(nextSelectedTemplateRouteRef);
   const navigate = useNavigate();
   const taskStream = useTaskEventStream(taskId!);
+  const classes = useStyles();
   const steps = useMemo(
     () =>
       taskStream.task?.spec.steps.map(step => ({
@@ -104,7 +112,16 @@ export const OngoingTask = () => {
           logsVisible={logsVisible}
         />
       </Header>
-      <Content>
+      <Content className={classes.contentWrapper}>
+        {taskStream.error ? (
+          <Box paddingBottom={2}>
+            <ErrorPanel
+              error={taskStream.error}
+              title={taskStream.error.message}
+            />
+          </Box>
+        ) : null}
+
         <Box paddingBottom={2}>
           <Paper style={{ position: 'relative', overflow: 'hidden' }}>
             <TaskBorder
@@ -116,6 +133,7 @@ export const OngoingTask = () => {
             </Box>
           </Paper>
         </Box>
+
         <DefaultOutputs output={taskStream.output} />
 
         {logsVisible ? (
