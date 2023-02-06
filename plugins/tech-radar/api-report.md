@@ -25,6 +25,7 @@ export interface RadarEntry {
   quadrant: string;
   timeline: Array<RadarEntrySnapshot>;
   title: string;
+  // @deprecated
   url: string;
 }
 
