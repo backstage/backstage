@@ -68,7 +68,7 @@ const refCompare = (a: Entity, b: Entity) => {
     entity.metadata.title?.toLocaleLowerCase('en-US') ||
     humanizeEntityRef(entity, {
       defaultKind: 'Component',
-    });
+    }).toLocaleLowerCase('en-US');
 
   const aRef = toRef(a);
   const bRef = toRef(b);
