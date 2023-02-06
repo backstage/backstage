@@ -26,7 +26,7 @@ export interface RadarEntry {
   timeline: Array<RadarEntrySnapshot>;
   title: string;
   // @deprecated
-  url: string;
+  url?: string;
 }
 
 // @public
