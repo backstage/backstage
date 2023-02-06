@@ -91,14 +91,7 @@ export namespace mockServices {
   export namespace rootLogger {
     // (undocumented)
     export type Options = {
-      levels:
-        | boolean
-        | {
-            error: boolean;
-            warn: boolean;
-            info: boolean;
-            debug: boolean;
-          };
+      level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
     const // (undocumented)
       factory: (options?: Options | undefined) => ServiceFactory<LoggerService>;
