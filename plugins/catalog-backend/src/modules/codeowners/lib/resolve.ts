@@ -28,11 +28,11 @@ export function resolveCodeOwner(
 ): string | undefined {
   const owners = codeowners.parse(contents);
 
-  let relevantOwners = owners.filter((e: CodeOwnersEntry) =>
+  let filteredOwners = owners.filter((e: CodeOwnersEntry) =>
     pattern?.includes(e.pattern),
   );
-  if (relevantOwners.length === 0) {
-    relevantOwners = owners.filter((e: CodeOwnersEntry) => e.pattern === '*');
+  if (filteredOwners.length === 0) {
+    filteredOwners = owners.filter((e: CodeOwnersEntry) => e.pattern === '*');
   }
 
   const result = pipe(
@@ -41,7 +41,7 @@ export function resolveCodeOwner(
     get('owners'),
     head,
     normalizeCodeOwner,
-  )(relevantOwners);
+  )(filteredOwners);
 
   return result;
 }
