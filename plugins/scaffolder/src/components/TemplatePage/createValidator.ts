@@ -63,15 +63,13 @@ export const createValidator = (
           if (isObject(propSchemaProps)) {
             const { items } = propSchemaProps;
             if (isObject(items)) {
-              for (const propItem of propData as JsonObject[]) {
-                const fieldName = items['ui:field'] as string;
-                if (fieldName && typeof validators[fieldName] === 'function') {
-                  validators[fieldName]!(
-                    propItem as JsonValue,
-                    propValidation,
-                    context,
-                  );
-                }
+              const fieldName = items['ui:field'] as string;
+              if (fieldName && typeof validators[fieldName] === 'function') {
+                validators[fieldName]!(
+                  propData as JsonObject[],
+                  propValidation,
+                  context,
+                );
               }
             }
           }
