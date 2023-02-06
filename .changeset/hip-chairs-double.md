@@ -6,7 +6,6 @@ Deprecate `RadarEntry.url` - use `RadarEntry.links` instead
 
 ```diff
 - url: 'https://www.javascript.com/',
-+ url: '#',
   key: 'javascript',
   id: 'javascript',
   title: 'JavaScript',
