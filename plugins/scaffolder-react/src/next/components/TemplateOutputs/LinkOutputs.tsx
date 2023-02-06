@@ -15,12 +15,12 @@
  */
 import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { Button, makeStyles } from '@material-ui/core';
 import React from 'react';
 import WebIcon from '@material-ui/icons/Web';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
+import { ScaffolderTaskOutput } from '../../../api';
 
 const useStyles = makeStyles({
   root: {
