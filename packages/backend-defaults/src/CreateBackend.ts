@@ -40,7 +40,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 // Internal import of the type to avoid needing to export this.
-// eslint-disable-next-line monorepo/no-internal-import
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
 import type { InternalSharedBackendEnvironment } from '@backstage/backend-plugin-api/src/wiring/createSharedEnvironment';
 
 export const defaultServiceFactories = [

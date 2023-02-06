@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 const { execFile: execFileCb } = require('child_process');
 const { resolve: resolvePath, dirname: dirnamePath } = require('path');

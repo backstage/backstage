@@ -50,7 +50,7 @@ export async function buildTypeDefinitionsWorker(
    */
   const {
     PackageJsonLookup,
-    // eslint-disable-next-line import/no-extraneous-dependencies
+    // eslint-disable-next-line @backstage/no-undeclared-imports
   } = require('@rushstack/node-core-library/lib/PackageJsonLookup');
 
   const old = PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor;

@@ -17,7 +17,7 @@
 import fs from 'fs';
 import { resolve as resolvePath } from 'path';
 // Cba polluting root package.json, we'll have this
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import chalk from 'chalk';
 import { getPackages, Package } from '@manypkg/get-packages';
 
