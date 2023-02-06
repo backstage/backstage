@@ -16,19 +16,6 @@
 export interface Config {
   stackstorm?: {
     /**
-     * StackStorm API base url
-     * Used for local testing to bypass CORS
-     * @visibility frontend
-     */
-    baseUrl?: string;
-    /**
-     * StackStorm API key
-     * Used for local testing to bypass CORS
-     * Do not set this in production deployment
-     * @visibility frontend
-     */
-    key?: string;
-    /**
      * StackStorm Web UI url
      * Used in links to StackStorm web UI
      * @visibility frontend
