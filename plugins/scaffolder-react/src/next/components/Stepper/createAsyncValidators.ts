@@ -15,15 +15,12 @@
  */
 
 import { FieldValidation } from '@rjsf/utils';
-import type { JsonObject, JsonValue } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { createFieldValidation } from '../../lib';
 import { NextCustomFieldValidator } from '../../extensions';
-
-function isObject(value: JsonValue | undefined): value is JsonObject {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
+import { isObject } from './utils';
 
 /**
  * @internal
