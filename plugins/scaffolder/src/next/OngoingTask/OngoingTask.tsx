@@ -24,8 +24,11 @@ import { TaskLogStream } from './TaskLogStream';
 import { nextSelectedTemplateRouteRef } from '../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
-import { DefaultOutputs } from './Outputs';
 import { ContextMenu } from './ContextMenu';
+import {
+  DefaultTemplateOutputs,
+  ScaffolderTaskOutput,
+} from '@backstage/plugin-scaffolder-react';
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -34,7 +37,11 @@ const useStyles = makeStyles({
   },
 });
 
-export const OngoingTask = () => {
+export const OngoingTask = (props: {
+  TemplateOutputsComponent?: React.ComponentType<{
+    output?: ScaffolderTaskOutput;
+  }>;
+}) => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(nextSelectedTemplateRouteRef);
@@ -92,6 +99,8 @@ export const OngoingTask = () => {
     templateRouteRef,
   ]);
 
+  const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
+
   const templateName =
     taskStream.task?.spec.templateInfo?.entity?.metadata.name;
 
@@ -134,7 +143,7 @@ export const OngoingTask = () => {
           </Paper>
         </Box>
 
-        <DefaultOutputs output={taskStream.output} />
+        <Outputs output={taskStream.output} />
 
         {logsVisible ? (
           <Box paddingBottom={2} height="100%">

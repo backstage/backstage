@@ -13,23 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
-import { Box, Paper } from '@material-ui/core';
-import { LinkOutputs } from './LinkOutputs';
-
-export const DefaultOutputs = (props: { output?: ScaffolderTaskOutput }) => {
-  if (!props.output?.links) {
-    return null;
-  }
-
-  return (
-    <Box paddingBottom={2}>
-      <Paper>
-        <Box padding={2} justifyContent="center" display="flex" gridGap={16}>
-          <LinkOutputs output={props.output} />
-        </Box>
-      </Paper>
-    </Box>
-  );
-};
+export { DefaultTemplateOutputs } from './DefaultTemplateOutputs';
