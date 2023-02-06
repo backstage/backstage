@@ -27,7 +27,7 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export const bazaarPlugin = createBackendPlugin({
-  id: 'bazaar',
+  pluginId: 'bazaar',
   register(env) {
     env.registerInit({
       deps: {

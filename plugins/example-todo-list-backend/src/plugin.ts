@@ -27,7 +27,7 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export const exampleTodoListPlugin = createBackendPlugin({
-  id: 'exampleTodoList',
+  pluginId: 'exampleTodoList',
   register(env) {
     env.registerInit({
       deps: {

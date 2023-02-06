@@ -36,7 +36,7 @@ import {
 import { createExampleRouter } from './router';
 
 export const examplePlugin = createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -183,7 +183,7 @@ that needs to be different across environments.
 import { coreServices } from '@backstage/backend-plugin-api';
 
 export const examplePlugin = createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: { config: coreServices.config },
@@ -216,7 +216,7 @@ export interface ExampleOptions {
 
 export const examplePlugin = createBackendPlugin(
   (options?: ExampleOptions) => ({
-    id: 'example',
+    pluginId: 'example',
     register(env) {
       env.registerInit({
         deps: {

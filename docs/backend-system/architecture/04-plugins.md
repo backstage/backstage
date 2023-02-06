@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 export const examplePlugin = createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -53,7 +53,7 @@ export interface ExamplePluginOptions {
 
 export const examplePlugin = createBackendPlugin(
   (options?: ExamplePluginOptions) => ({
-    id: 'example',
+    pluginId: 'example',
     register(env) {
       env.registerInit({
         deps: {
