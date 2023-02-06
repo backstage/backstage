@@ -16,7 +16,6 @@
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_VIEW_URL,
-  DEFAULT_NAMESPACE,
   Entity,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
@@ -64,29 +63,16 @@ const YellowStar = withStyles({
   },
 })(Star);
 
-const stringifySortingEntityRef = (ref: Entity): string => {
-  const kind = ref.kind;
-  const namespace = ref.metadata.namespace ?? DEFAULT_NAMESPACE;
-  const name = ref.metadata.title || ref.metadata.name;
-
-  return `${kind.toLocaleLowerCase('en-US')}:${namespace.toLocaleLowerCase(
-    'en-US',
-  )}/${name.toLocaleLowerCase('en-US')}`;
-};
-
 const refCompare = (a: Entity, b: Entity) => {
-  // in case field filtering is used, these fields might not be part of the response
-  if (
-    a.metadata?.name === undefined ||
-    a.kind === undefined ||
-    b.metadata?.name === undefined ||
-    b.kind === undefined
-  ) {
-    return 0;
-  }
+  const toRef = (entity: Entity) =>
+    entity.metadata.title?.toLocaleLowerCase('en-US') ||
+    humanizeEntityRef(entity, {
+      defaultKind: 'Component',
+    });
 
-  const aRef = stringifySortingEntityRef(a);
-  const bRef = stringifySortingEntityRef(b);
+  const aRef = toRef(a);
+  const bRef = toRef(b);
+
   if (aRef < bRef) {
     return -1;
   }
