@@ -20,9 +20,27 @@ import {
 } from '@backstage/backend-plugin-api';
 import type { mockServices } from './mockServices';
 
+const levels = {
+  none: 0,
+  error: 1,
+  warn: 2,
+  info: 3,
+  debug: 4,
+};
+
 export class MockRootLoggerService implements RootLoggerService {
-  #levels: Exclude<mockServices.rootLogger.Options['levels'], boolean>;
+  #level: number;
   #meta: Record<string, unknown>;
+
+  static create(
+    options?: mockServices.rootLogger.Options,
+  ): MockRootLoggerService {
+    const level = options?.level ?? 'none';
+    if (!(level in levels)) {
+      throw new Error(`Invalid log level '${level}'`);
+    }
+    return new MockRootLoggerService(levels[level], {});
+  }
 
   error(
     message: string,
@@ -53,23 +71,11 @@ export class MockRootLoggerService implements RootLoggerService {
   }
 
   child(meta: Record<string, unknown>): LoggerService {
-    return new MockRootLoggerService(this.#levels, { ...this.#meta, ...meta });
+    return new MockRootLoggerService(this.#level, { ...this.#meta, ...meta });
   }
 
-  constructor(
-    levels: mockServices.rootLogger.Options['levels'],
-    meta: Record<string, unknown>,
-  ) {
-    if (typeof levels === 'boolean') {
-      this.#levels = {
-        error: levels,
-        debug: levels,
-        info: levels,
-        warn: levels,
-      };
-    } else {
-      this.#levels = levels;
-    }
+  private constructor(level: number, meta: Record<string, unknown>) {
+    this.#level = level;
     this.#meta = meta;
   }
 
@@ -78,7 +84,8 @@ export class MockRootLoggerService implements RootLoggerService {
     message: string,
     meta?: Record<string, unknown> | Error | undefined,
   ) {
-    if (this.#levels[level]) {
+    const levelValue = levels[level] ?? 0;
+    if (levelValue <= this.#level) {
       const labels = Object.entries(this.#meta)
         .map(([key, value]) => `${key}=${value}`)
         .join(',');
