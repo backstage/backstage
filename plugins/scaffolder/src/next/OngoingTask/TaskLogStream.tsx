@@ -30,7 +30,6 @@ export const TaskLogStream = (props: { logs: { [k: string]: string[] } }) => {
   return (
     <div className={styles.root}>
       <LogViewer
-        tail
         text={Object.values(props.logs)
           .map(l => l.join('\n'))
           .filter(Boolean)
