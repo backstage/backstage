@@ -9,6 +9,8 @@ Airbrake
 Airbrakes
 Alaria
 Alef
+allowlisted
+allowlisted
 Anddddd
 Apdex
 api
@@ -23,6 +25,7 @@ Avro
 backend's
 backported
 backporting
+BEPs
 Bigtable
 Billett
 bitbucket
@@ -95,6 +98,8 @@ dockerfiles
 Dockerize
 dockerode
 Docusaurus
+Dominik
+Dominik
 DOMPurify
 don'ts
 dynatrace
@@ -119,6 +124,8 @@ Firekube
 Firestore
 Fiverr
 Francesco
+Frontside
+Frontside
 gerrit
 Gerrit
 gitbeaker
@@ -138,6 +145,8 @@ Hackathons
 haproxy
 hardcoded
 Helidon
+Henneke
+Henneke
 Heroku
 hoc
 horizontalpodautoscalers
@@ -167,12 +176,18 @@ jsonnet
 jsx
 JWTs
 Kaewkasi
+Kaswell
+Kaswell
 Keyv
 Knex
 KPIs
+Kuang
+Kuang
 kubectl
 kubernetes
 kubernetes
+Lainfiesta
+Lainfiesta
 ldap
 learnings
 Leasot
@@ -413,10 +428,3 @@ zod
 Zolotusky
 zoomable
 zsh
-Lainfiesta
-allowlisted
-Dominik
-Henneke
-Kuang
-Frontside
-Kaswell
