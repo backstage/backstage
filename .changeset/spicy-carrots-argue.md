@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': minor
 ---
 
-Add support to CodeOwnersProcces
+Add monorepo support to CodeOwnersProccesor.
