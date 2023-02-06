@@ -180,7 +180,7 @@ entries.push({
   ],
   links: [
     {
-      url: 'https://reactjs.org/',
+      url: 'https://github.com',
       title: 'Learn more',
     },
   ],
