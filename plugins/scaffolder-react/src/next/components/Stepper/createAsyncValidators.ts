@@ -28,10 +28,9 @@ function isObject(value: JsonValue | undefined): value is JsonObject {
 /**
  * @internal
  */
-export type FormValidation = Record<
-  string,
-  FieldValidation | Record<string, FieldValidation>
->;
+export type FormValidation = {
+  [name: string]: FieldValidation | FormValidation;
+};
 
 export const createAsyncValidators = (
   rootSchema: JsonObject,
@@ -64,10 +63,7 @@ export const createAsyncValidators = (
           formValidation[key] = fieldValidation;
         }
       } else if (isObject(value)) {
-        formValidation[key] = (await validate(formData, path, value)) as Record<
-          string,
-          FieldValidation
-        >;
+        formValidation[key] = await validate(formData, path, value);
       }
     }
 
