@@ -21,7 +21,6 @@ import { IdentityService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { LogMeta } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
@@ -263,21 +262,21 @@ export class WinstonLogger implements RootLoggerService {
   // (undocumented)
   addRedactions(redactions: Iterable<string>): void;
   // (undocumented)
-  child(meta: LogMeta): LoggerService;
+  child(meta: Record<string, unknown>): LoggerService;
   static colorFormat(): Format;
   static create(options: WinstonLoggerOptions): WinstonLogger;
   // (undocumented)
-  debug(message: string, meta?: LogMeta): void;
+  debug(message: string, meta?: Record<string, unknown>): void;
   // (undocumented)
-  error(message: string, meta?: LogMeta): void;
+  error(message: string, meta?: Record<string, unknown>): void;
   // (undocumented)
-  info(message: string, meta?: LogMeta): void;
+  info(message: string, meta?: Record<string, unknown>): void;
   static redacter(): {
     format: Format;
     add: (redactions: Iterable<string>) => void;
   };
   // (undocumented)
-  warn(message: string, meta?: LogMeta): void;
+  warn(message: string, meta?: Record<string, unknown>): void;
 }
 
 // @public (undocumented)
@@ -287,7 +286,7 @@ export interface WinstonLoggerOptions {
   // (undocumented)
   level: string;
   // (undocumented)
-  meta?: LogMeta;
+  meta?: Record<string, unknown>;
   // (undocumented)
   transports: transport[];
 }
