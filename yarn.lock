@@ -3423,6 +3423,7 @@ __metadata:
   resolution: "@backstage/backend-common@workspace:packages/backend-common"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-dev-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -3515,6 +3516,14 @@ __metadata:
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/backend-dev-utils@workspace:^, @backstage/backend-dev-utils@workspace:packages/backend-dev-utils":
+  version: 0.0.0-use.local
+  resolution: "@backstage/backend-dev-utils@workspace:packages/backend-dev-utils"
+  dependencies:
     "@backstage/cli": "workspace:^"
   languageName: unknown
   linkType: soft
@@ -3664,6 +3673,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@esbuild-kit/cjs-loader": ^2.4.1
     "@manypkg/get-packages": ^1.1.3
     "@octokit/request": ^6.0.0
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
@@ -3682,6 +3692,7 @@ __metadata:
     "@swc/core": ^1.3.9
     "@swc/helpers": ^0.4.7
     "@swc/jest": ^0.2.22
+    "@types/cross-spawn": ^6.0.2
     "@types/diff": ^5.0.0
     "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.1
@@ -3709,6 +3720,7 @@ __metadata:
     chalk: ^4.0.0
     chokidar: ^3.3.1
     commander: ^9.1.0
+    cross-spawn: ^7.0.3
     css-loader: ^6.5.1
     del: ^6.0.0
     diff: ^5.0.0
@@ -9188,6 +9200,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@esbuild-kit/cjs-loader@npm:^2.4.1":
+  version: 2.4.1
+  resolution: "@esbuild-kit/cjs-loader@npm:2.4.1"
+  dependencies:
+    "@esbuild-kit/core-utils": ^3.0.0
+    get-tsconfig: ^4.2.0
+  checksum: a516065907be0ead76ac2199ccb08ff92659ba5e2edb4bb8772b6a63afe4faed7eb45a3b4d87266a68c7c135c3dba971cd087bc6f16c382356e835c7dd3440f5
+  languageName: node
+  linkType: hard
+
+"@esbuild-kit/core-utils@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@esbuild-kit/core-utils@npm:3.0.0"
+  dependencies:
+    esbuild: ~0.15.10
+    source-map-support: ^0.5.21
+  checksum: 0e89ec718e2211bf95c48a8085aaef88e8e416f42abd1c62d488d5458eecd3fbc144179a0c5570ad36fa7e2d3bbc411f8d3fb28802c37ced2154dc2c6ded9dfe
+  languageName: node
+  linkType: hard
+
 "@esbuild/android-arm64@npm:0.17.5":
   version: 0.17.5
   resolution: "@esbuild/android-arm64@npm:0.17.5"
@@ -13939,6 +13971,15 @@ __metadata:
     "@types/luxon": "*"
     "@types/node": "*"
   checksum: 392d2cfca51504140397533c30be8facd2196251074eb26ee09232a7e983144ff1d8364cd64922ed22d142686a4724934a70672fc8353b441fea729ac0ed0611
+  languageName: node
+  linkType: hard
+
+"@types/cross-spawn@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "@types/cross-spawn@npm:6.0.2"
+  dependencies:
+    "@types/node": "*"
+  checksum: fa9edd32178878cab3ea8d6d0260639e0fe4860ddb3887b8de53d6e8036e154fc5f313c653f690975aa25025aea8beb83fb0870b931bf8d9202c3ac530a24c9d
   languageName: node
   linkType: hard
 
@@ -21365,7 +21406,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.15.6":
+"esbuild@npm:^0.15.6, esbuild@npm:~0.15.10":
   version: 0.15.18
   resolution: "esbuild@npm:0.15.18"
   dependencies:
@@ -23520,6 +23561,13 @@ __metadata:
     call-bind: ^1.0.2
     get-intrinsic: ^1.1.1
   checksum: 9ceff8fe968f9270a37a1f73bf3f1f7bda69ca80f4f80850670e0e7b9444ff99323f7ac52f96567f8b5f5fbe7ac717a0d81d3407c7313e82810c6199446a5247
+  languageName: node
+  linkType: hard
+
+"get-tsconfig@npm:^4.2.0":
+  version: 4.3.0
+  resolution: "get-tsconfig@npm:4.3.0"
+  checksum: 2597aab99aa3a24db209e192a3e5874ac47fc5abc71703ee26346e0c5816cb346ca09fc813c739db5862d3a2905d89aeca1b0cbc46c2b272398d672309aaf414
   languageName: node
   linkType: hard
 
@@ -35176,7 +35224,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.16, source-map-support@npm:~0.5.20":
+"source-map-support@npm:^0.5.16, source-map-support@npm:^0.5.21, source-map-support@npm:~0.5.20":
   version: 0.5.21
   resolution: "source-map-support@npm:0.5.21"
   dependencies:
