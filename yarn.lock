@@ -9212,12 +9212,12 @@ __metadata:
   linkType: hard
 
 "@esbuild-kit/cjs-loader@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "@esbuild-kit/cjs-loader@npm:2.4.1"
+  version: 2.4.2
+  resolution: "@esbuild-kit/cjs-loader@npm:2.4.2"
   dependencies:
     "@esbuild-kit/core-utils": ^3.0.0
-    get-tsconfig: ^4.2.0
-  checksum: a516065907be0ead76ac2199ccb08ff92659ba5e2edb4bb8772b6a63afe4faed7eb45a3b4d87266a68c7c135c3dba971cd087bc6f16c382356e835c7dd3440f5
+    get-tsconfig: ^4.4.0
+  checksum: e346e339bfc7eff5c52c270fd0ec06a7f2341b624adfb69f84b7d83f119c35070420906f2761a0b4604e0a0ec90e35eaf12544585476c428ed6d6ee3b250c0fe
   languageName: node
   linkType: hard
 
@@ -23525,10 +23525,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-tsconfig@npm:^4.2.0":
-  version: 4.3.0
-  resolution: "get-tsconfig@npm:4.3.0"
-  checksum: 2597aab99aa3a24db209e192a3e5874ac47fc5abc71703ee26346e0c5816cb346ca09fc813c739db5862d3a2905d89aeca1b0cbc46c2b272398d672309aaf414
+"get-tsconfig@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "get-tsconfig@npm:4.4.0"
+  checksum: e193558b4f0c84c81ae9688cf5b9950dc0b341e44f91b002713fd0c37cfb73108e1cd9998ed540bcc423f193fde32cc58a15e99dd469f5158a2eb4a148611176
   languageName: node
   linkType: hard
 
