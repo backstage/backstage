@@ -48,9 +48,6 @@ export type ServiceRef<
 };
 
 /** @public */
-export type TypesToServiceRef<T> = { [key in keyof T]: ServiceRef<T[key]> };
-
-/** @public */
 export type ServiceFactory<TService = unknown> =
   | {
       // This scope prop is needed in addition to the service ref, as TypeScript

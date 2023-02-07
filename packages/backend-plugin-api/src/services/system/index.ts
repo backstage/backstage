@@ -17,7 +17,6 @@
 export type {
   ServiceRef,
   ServiceRefConfig,
-  TypesToServiceRef,
   ServiceFactory,
   PluginServiceFactoryConfig,
   RootServiceFactoryConfig,
