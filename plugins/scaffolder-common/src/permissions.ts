@@ -24,6 +24,25 @@ import { createPermission } from '@backstage/plugin-permission-common';
 export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 
 /**
+ * Permission resource type which corresponds to a scaffolder action.
+ *
+ * @alpha
+ */
+export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
+
+/**
+ * This permission is used to authorize actions that involve executing
+ * an action from a template.
+ *
+ * @alpha
+ */
+export const actionExecutePermission = createPermission({
+  name: 'scaffolder.action.execute',
+  attributes: {},
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+});
+
+/**
  * This permission is used to authorize actions that involve reading
  * one or more parameters from a template.
  *
@@ -64,6 +83,7 @@ export const templateStepReadPermission = createPermission({
  * @alpha
  */
 export const scaffolderPermissions = [
+  actionExecutePermission,
   templateParameterReadPermission,
   templateStepReadPermission,
 ];
