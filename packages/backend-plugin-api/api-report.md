@@ -8,6 +8,7 @@
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
+import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -311,15 +312,15 @@ export interface LifecycleServiceShutdownOptions {
 // @public
 export interface LoggerService {
   // (undocumented)
-  child(meta: Record<string, unknown>): LoggerService;
+  child(meta: JsonObject): LoggerService;
   // (undocumented)
-  debug(message: string, meta?: Error | Record<string, unknown>): void;
+  debug(message: string, meta?: Error | JsonObject): void;
   // (undocumented)
-  error(message: string, meta?: Error | Record<string, unknown>): void;
+  error(message: string, meta?: Error | JsonObject): void;
   // (undocumented)
-  info(message: string, meta?: Error | Record<string, unknown>): void;
+  info(message: string, meta?: Error | JsonObject): void;
   // (undocumented)
-  warn(message: string, meta?: Error | Record<string, unknown>): void;
+  warn(message: string, meta?: Error | JsonObject): void;
 }
 
 // @public (undocumented)

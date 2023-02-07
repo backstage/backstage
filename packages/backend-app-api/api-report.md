@@ -18,6 +18,7 @@ import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -266,21 +267,21 @@ export class WinstonLogger implements RootLoggerService {
   // (undocumented)
   addRedactions(redactions: Iterable<string>): void;
   // (undocumented)
-  child(meta: Record<string, unknown>): LoggerService;
+  child(meta: JsonObject): LoggerService;
   static colorFormat(): Format;
   static create(options: WinstonLoggerOptions): WinstonLogger;
   // (undocumented)
-  debug(message: string, meta?: Record<string, unknown>): void;
+  debug(message: string, meta?: JsonObject): void;
   // (undocumented)
-  error(message: string, meta?: Record<string, unknown>): void;
+  error(message: string, meta?: JsonObject): void;
   // (undocumented)
-  info(message: string, meta?: Record<string, unknown>): void;
+  info(message: string, meta?: JsonObject): void;
   static redacter(): {
     format: Format;
     add: (redactions: Iterable<string>) => void;
   };
   // (undocumented)
-  warn(message: string, meta?: Record<string, unknown>): void;
+  warn(message: string, meta?: JsonObject): void;
 }
 
 // @public (undocumented)
@@ -290,7 +291,7 @@ export interface WinstonLoggerOptions {
   // (undocumented)
   level: string;
   // (undocumented)
-  meta?: Record<string, unknown>;
+  meta?: JsonObject;
   // (undocumented)
   transports: transport[];
 }

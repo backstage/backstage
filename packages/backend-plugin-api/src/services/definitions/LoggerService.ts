@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/types';
+
 /**
  * A service that provides a logging facility.
  *
  * @public
  */
 export interface LoggerService {
-  error(message: string, meta?: Error | Record<string, unknown>): void;
-  warn(message: string, meta?: Error | Record<string, unknown>): void;
-  info(message: string, meta?: Error | Record<string, unknown>): void;
-  debug(message: string, meta?: Error | Record<string, unknown>): void;
+  error(message: string, meta?: Error | JsonObject): void;
+  warn(message: string, meta?: Error | JsonObject): void;
+  info(message: string, meta?: Error | JsonObject): void;
+  debug(message: string, meta?: Error | JsonObject): void;
 
-  child(meta: Record<string, unknown>): LoggerService;
+  child(meta: JsonObject): LoggerService;
 }
