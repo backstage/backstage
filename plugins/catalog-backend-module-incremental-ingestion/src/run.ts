@@ -13,20 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// eslint-disable-next-line @backstage/no-undeclared-imports
-import {
-  databaseServiceFactory,
-  discoveryServiceFactory,
-  httpRouterServiceFactory,
-  lifecycleServiceFactory,
-  loggerServiceFactory,
-  permissionsServiceFactory,
-  rootLoggerServiceFactory,
-  schedulerServiceFactory,
-  tokenManagerServiceFactory,
-  urlReaderServiceFactory,
-} from '@backstage/backend-app-api';
 import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
@@ -61,19 +47,7 @@ async function main() {
   };
 
   await startTestBackend({
-    services: [
-      [coreServices.config, new ConfigReader(config)],
-      databaseServiceFactory(),
-      discoveryServiceFactory(),
-      httpRouterServiceFactory(),
-      lifecycleServiceFactory(),
-      loggerServiceFactory(),
-      permissionsServiceFactory(),
-      rootLoggerServiceFactory(),
-      schedulerServiceFactory(),
-      tokenManagerServiceFactory(),
-      urlReaderServiceFactory(),
-    ],
+    services: [[coreServices.config, new ConfigReader(config)]],
     extensionPoints: [],
     features: [
       catalogPlugin(),
