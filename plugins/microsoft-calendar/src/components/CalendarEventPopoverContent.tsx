@@ -47,7 +47,7 @@ const useStyles = makeStyles(
     },
   }),
   {
-    name: 'GCalendarEventPopoverContent',
+    name: 'MicrosoftCalendarEventPopoverContent',
   },
 );
 
