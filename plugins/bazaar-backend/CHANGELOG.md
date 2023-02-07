@@ -1,5 +1,19 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.2.5-next.2
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- 4a6f38a535: Added a Backend System plugin feature
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-test-utils@0.1.34-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+
 ## 0.2.5-next.1
 
 ### Patch Changes

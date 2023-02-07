@@ -1,5 +1,25 @@
 # @backstage/plugin-adr
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- ec34b535c0: The `AdrSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- ec34b535c0: Support displaying an icon on `AdrSearchResultListItem`
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-search-react@1.5.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/integration-react@1.1.10-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-adr-common@0.2.6-next.1
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.3.1-next.1
 
 ### Patch Changes

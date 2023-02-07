@@ -1,5 +1,25 @@
 # @backstage/backend-test-utils
 
+## 0.1.34-next.2
+
+### Patch Changes
+
+- baf6e4c96a: Removed unnecessary `@backstage/cli` dependency.
+- 1835311713: Added explicit return type signature for `mockServices.config()`.
+- e716946103: Updated usage of the lifecycle service.
+- 7e7557a2be: Updated the `mockServices.rootLogger` options to accept a single level option instead.
+- 610d65e143: Updates to match new `BackendFeature` type.
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- f1adb2e36b: Removed the `ref` from all `mockServices`.
+- 71a5ec0f06: Updated usages of `LogMeta`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0-next.2
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+
 ## 0.1.34-next.1
 
 ### Patch Changes

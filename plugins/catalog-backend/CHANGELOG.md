@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend
 
+## 1.7.2-next.2
+
+### Patch Changes
+
+- e716946103: Updated usage of the lifecycle service.
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/plugin-permission-node@0.7.5-next.2
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.7.2-next.1
 
 ### Patch Changes

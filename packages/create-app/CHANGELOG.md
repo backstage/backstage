@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.4.37-next.2
+
+### Patch Changes
+
+- 02f1316e57: Updated `packages/app/cypress/.eslintrc.json` to remove the unnecessary `import/no-extraneous-dependencies` rule.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
 ## 0.4.37-next.1
 
 ### Patch Changes
