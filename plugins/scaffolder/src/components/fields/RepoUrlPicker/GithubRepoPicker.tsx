@@ -67,6 +67,8 @@ export const GithubRepoPicker = (props: {
                   style: { marginLeft: 0 },
                 }}
                 variant="outlined"
+                onChange={e => onChange({ owner: e.target.value })}
+                value={owner}
                 InputProps={params.InputProps}
               />
             )}

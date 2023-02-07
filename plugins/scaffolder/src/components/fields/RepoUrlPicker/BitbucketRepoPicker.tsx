@@ -81,7 +81,7 @@ export const BitbucketRepoPicker = (props: {
               }
               onChange={(_event, newValue) =>
                 onChange({
-                  owner: newValue?.label,
+                  workspace: newValue?.label,
                 })
               }
               renderInput={params => (
@@ -94,6 +94,8 @@ export const BitbucketRepoPicker = (props: {
                     style: { marginLeft: 0 },
                   }}
                   variant="outlined"
+                  onChange={e => onChange({ owner: e.target.value })}
+                  value={workspace}
                   InputProps={params.InputProps}
                 />
               )}
@@ -142,6 +144,8 @@ export const BitbucketRepoPicker = (props: {
                   style: { marginLeft: 0 },
                 }}
                 variant="outlined"
+                onChange={e => onChange({ owner: e.target.value })}
+                value={project}
                 InputProps={params.InputProps}
               />
             )}

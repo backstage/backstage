@@ -82,6 +82,8 @@ export const AzureRepoPicker = (props: {
                   style: { marginLeft: 0 },
                 }}
                 variant="outlined"
+                onChange={e => onChange({ owner: e.target.value })}
+                value={organization}
                 InputProps={params.InputProps}
               />
             )}
@@ -129,6 +131,8 @@ export const AzureRepoPicker = (props: {
                   style: { marginLeft: 0 },
                 }}
                 variant="outlined"
+                onChange={e => onChange({ owner: e.target.value })}
+                value={owner}
                 InputProps={params.InputProps}
               />
             )}

@@ -46,7 +46,7 @@ export const GitlabRepoPicker = (props: {
       >
         {allowedOwners?.length ? (
           <Autocomplete
-            aria-label="Select Owner"
+            aria-label="Select an Owner"
             options={ownerItems}
             defaultValue={ownerItems[0]}
             getOptionLabel={owners => owners.label || 'error getting label'}
@@ -68,6 +68,8 @@ export const GitlabRepoPicker = (props: {
                   style: { marginLeft: 0 },
                 }}
                 variant="outlined"
+                onChange={e => onChange({ owner: e.target.value })}
+                value={owner}
                 InputProps={params.InputProps}
               />
             )}
