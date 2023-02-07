@@ -59,11 +59,11 @@ There's additional configuration that you can optionally pass to setup the `http
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { httpRouterFactory } from '@backstage/backend-app-api';
+import { httpRouterServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    httpRouterFactory({
+    httpRouterServiceFactory({
       getPath: (pluginId: string) => `/plugins/${pluginId}`,
     }),
   ],
@@ -116,11 +116,11 @@ There's additional options that you can pass to configure the root HTTP Router s
 You can configure the root HTTP Router service by passing the options to the `createBackend` function.
 
 ```ts
-import { rootHttpRouterFactory } from '@backstage/backend-app-api';
+import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    rootHttpRouterFactory({
+    rootHttpRouterServiceFactory({
       configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
         // the built in middleware is provided through an option in the configure function
         app.use(middleware.helmet());
@@ -183,11 +183,11 @@ There's additional configuration that you can optionally pass to setup the `conf
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { configFactory } from '@backstage/backend-app-api';
+import { configServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    configFactory({
+    configServiceFactory({
       argv: [
         '--config',
         '/backstage/app-config.development.yaml',
@@ -438,11 +438,11 @@ There's additional configuration that you can optionally pass to setup the `iden
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { identityFactory } from '@backstage/backend-app-api';
+import { identityServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    identityFactory({
+    identityServiceFactory({
       issuer: 'backstage',
       algorithms: ['ES256', 'RS256'],
     }),
