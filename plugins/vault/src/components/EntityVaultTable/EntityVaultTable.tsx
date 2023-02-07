@@ -81,7 +81,12 @@ export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
   });
 
   if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return (
+      <Alert severity="error">
+        Unexpected error while fetching secrets from path '{secretPath}':{' '}
+        {error.message}
+      </Alert>
+    );
   }
 
   return (
