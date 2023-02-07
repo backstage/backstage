@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-/**
- * Common functionalities for Kubernetes, to be shared between the `kubernetes` and `kubernetes-backend` plugins
- *
- * @packageDocumentation
- */
+import { createPermission } from '@backstage/plugin-permission-common';
 
-export * from './types';
-export * from './catalog-entity-constants';
-export {
+/** This permission is used to authorize actions that involve using the kubernetes Proxy Endpoint /proxy
+ * @alpha
+ */
+export const kubernetesProxyReadPermission = createPermission({
+  name: 'kubernetes.proxy.read',
+  attributes: { action: 'read' },
+});
+
+export const kubernetesProxyCreatePermission = createPermission({
+  name: 'kubernetes.proxy.create',
+  attributes: { action: 'create' },
+});
+
+/**
+ * List of all cluster permissions.
+ * @alpha
+ */
+export const kubernetesClusterPermissions = [
   kubernetesProxyReadPermission,
   kubernetesProxyCreatePermission,
-  kubernetesClusterPermissions,
-} from './permissions';
+];

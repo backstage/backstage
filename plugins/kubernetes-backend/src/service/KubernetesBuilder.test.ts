@@ -31,16 +31,24 @@ import {
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { CatalogApi } from '@backstage/catalog-client';
-import { HEADER_KUBERNETES_CLUSTER } from './KubernetesProxy';
+import {
+  HEADER_KUBERNETES_CLUSTER,
+  HEADER_KUBERNETES_AUTH,
+} from './KubernetesProxy';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 
 describe('KubernetesBuilder', () => {
   let app: express.Express;
   let kubernetesFanOutHandler: jest.Mocked<KubernetesFanOutHandler>;
   let config: Config;
   let catalogApi: CatalogApi;
+  let permissions: jest.Mocked<PermissionEvaluator>;
 
   beforeAll(async () => {
     const logger = getVoidLogger();
@@ -74,10 +82,16 @@ describe('KubernetesBuilder', () => {
       getKubernetesObjectsByEntity: jest.fn(),
     } as any;
 
+    permissions = {
+      authorize: jest.fn(),
+      authorizeConditional: jest.fn(),
+    };
+
     const { router } = await KubernetesBuilder.createBuilder({
       config,
       logger,
       catalogApi,
+      permissions,
     })
       .setObjectsProvider(kubernetesFanOutHandler)
       .setClusterSupplier(clusterSupplier)
@@ -250,6 +264,7 @@ describe('KubernetesBuilder', () => {
         logger,
         config,
         catalogApi,
+        permissions,
       })
         .setClusterSupplier(clusterSupplier)
         .setServiceLocator(serviceLocator)
@@ -278,20 +293,26 @@ describe('KubernetesBuilder', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.post('https://localhost:1234/api/v1/namespaces', (req, res, ctx) =>
-          req
-            .arrayBuffer()
-            .then(body =>
-              res(
-                ctx.set('content-type', `${req.headers.get('content-type')}`),
-                ctx.body(body),
-              ),
-            ),
+        rest.post(
+          'https://localhost:1234/api/v1/namespaces',
+          (req, res, ctx) => {
+            if (!req.headers.get('Authorization')) {
+              return res(ctx.status(401));
+            }
+            return req
+              .arrayBuffer()
+              .then(body =>
+                res(
+                  ctx.set('content-type', `${req.headers.get('content-type')}`),
+                  ctx.body(body),
+                ),
+              );
+          },
         ),
       );
     });
 
-    it('returns the given request body', async () => {
+    it('returns the given request body with permission set to allow', async () => {
       const requestBody = {
         kind: 'Namespace',
         apiVersion: 'v1',
@@ -300,9 +321,14 @@ describe('KubernetesBuilder', () => {
         },
       };
 
+      permissions.authorize.mockReturnValue(
+        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+      );
+
       const proxyEndpointRequest = request(app)
         .post('/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
+        .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
         .send(requestBody);
 
       worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
@@ -312,17 +338,22 @@ describe('KubernetesBuilder', () => {
       expect(response.body).toStrictEqual(requestBody);
     });
 
-    it('supports yaml content type', async () => {
+    it('supports yaml content type with permission set to allow', async () => {
       const requestBody = `---
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: new-ns
-`;
+    kind: Namespace
+    apiVersion: v1
+    metadata:
+      name: new-ns
+    `;
+
+      permissions.authorize.mockReturnValue(
+        Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+      );
 
       const proxyEndpointRequest = request(app)
         .post('/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
+        .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
         .set('content-type', 'application/yaml')
         .send(requestBody);
 
@@ -330,6 +361,32 @@ metadata:
 
       const response = await proxyEndpointRequest;
       expect(response.text).toEqual(requestBody);
+    });
+
+    it('returns a 403 response if Permission Policy is in place that blocks endpoint', async () => {
+      const requestBody = {
+        kind: 'Namespace',
+        apiVersion: 'v1',
+        metadata: {
+          name: 'new-ns',
+        },
+      };
+
+      permissions.authorize.mockReturnValue(
+        Promise.resolve([{ result: AuthorizeResult.DENY }]),
+      );
+
+      const proxyEndpointRequest = request(app)
+        .post('/proxy/api/v1/namespaces')
+        .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
+        .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
+        .send(requestBody);
+
+      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+
+      const response = await proxyEndpointRequest;
+
+      expect(response.status).toEqual(403);
     });
   });
 });

@@ -18,9 +18,19 @@ import {
   ErrorResponseBody,
   ForwardedError,
   InputError,
+  NotAllowedError,
   NotFoundError,
   serializeError,
 } from '@backstage/errors';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import {
+  kubernetesProxyReadPermission,
+  kubernetesProxyCreatePermission,
+} from '@backstage/plugin-kubernetes-common';
+import {
+  PermissionEvaluator,
+  AuthorizeResult,
+} from '@backstage/plugin-permission-common';
 import { bufferFromFileOrString } from '@kubernetes/client-node';
 import type { Request, RequestHandler } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
@@ -37,6 +47,13 @@ export const APPLICATION_JSON: string = 'application/json';
 export const HEADER_KUBERNETES_CLUSTER: string = 'X-Kubernetes-Cluster';
 
 /**
+ * The header that is used to specify the Authentication Authorities token.
+ * e.x if using the google auth provider as your authentication authority then this field would be the google provided bearer token.
+ * @alpha
+ */
+export const HEADER_KUBERNETES_AUTH: string = 'X-Kubernetes-Authorization';
+
+/**
  * A proxy that routes requests to the Kubernetes API.
  *
  * @public
@@ -49,8 +66,33 @@ export class KubernetesProxy {
     private readonly clusterSupplier: KubernetesClustersSupplier,
   ) {}
 
-  public createRequestHandler(): RequestHandler {
+  public createRequestHandler(
+    permissionApi: PermissionEvaluator,
+  ): RequestHandler {
     return async (req, res, next) => {
+      const token = getBearerTokenFromAuthorizationHeader(
+        req.header('authorization'),
+      );
+
+      const authorizeResponse = (
+        await permissionApi.authorize(
+          [
+            { permission: kubernetesProxyReadPermission },
+            { permission: kubernetesProxyCreatePermission },
+          ],
+          {
+            token,
+          },
+        )
+      )[0];
+
+      if (authorizeResponse.result === AuthorizeResult.DENY) {
+        res
+          .status(403)
+          .json({ error: new NotAllowedError('Unauthorized').message });
+        return;
+      }
+
       const middleware = await this.getMiddleware(req);
       middleware(req, res, next);
     };
@@ -103,6 +145,11 @@ export class KubernetesProxy {
           };
 
           res.status(500).json(body);
+        },
+        onProxyReq: (proxyReq, req) => {
+          // the kubernetes proxy endpoint expects a header field labeled `X-Kubernetes-Authorization` that will be used to authenticate with the Kubernetes Api. The token provided as a value should be an Authentication Providers bearer token.
+          const token = req.header('X-Kubernetes-Authorization') ?? '';
+          proxyReq.setHeader('Authorization', token);
         },
       });
 

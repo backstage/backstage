@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
     "@kubernetes/client-node": "0.18.1"
   },
   "devDependencies": {
