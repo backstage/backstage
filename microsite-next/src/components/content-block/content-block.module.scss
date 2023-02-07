@@ -1,0 +1,22 @@
+.contentBlock {
+  gap: 1.5rem;
+  display: grid;
+
+  > *,
+  h1,
+  h2 {
+    margin: 0;
+    padding: 0;
+  }
+
+  :global(.bulletLine) {
+    width: 50px;
+    margin-bottom: 0.5rem;
+  }
+
+  :global(.actionButtons) {
+    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+  }
+}
