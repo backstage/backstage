@@ -67,13 +67,11 @@ export namespace mockServices {
   }
 
   export function rootLogger(options?: rootLogger.Options): LoggerService {
-    return new MockRootLoggerService(options?.levels ?? false, {});
+    return MockRootLoggerService.create(options);
   }
   export namespace rootLogger {
     export type Options = {
-      levels:
-        | boolean
-        | { error: boolean; warn: boolean; info: boolean; debug: boolean };
+      level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
 
     export const factory = simpleFactory(coreServices.rootLogger, rootLogger);
