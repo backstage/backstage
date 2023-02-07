@@ -114,6 +114,7 @@
     "@types/stoppable": "^1.1.0",
     "@types/supertest": "^2.0.8",
     "@types/tar": "^6.1.1",
+    "@types/triple-beam": "^1.3.2",
     "@types/webpack-env": "^1.15.2",
     "@types/yauzl": "^2.10.0",
     "aws-sdk-mock": "^5.2.1",
