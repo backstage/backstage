@@ -1,5 +1,14 @@
 # @backstage/backend-defaults
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0-next.2
+  - @backstage/backend-plugin-api@0.4.0-next.2
+
 ## 0.1.7-next.1
 
 ### Patch Changes

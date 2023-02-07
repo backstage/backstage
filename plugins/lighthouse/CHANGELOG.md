@@ -1,5 +1,41 @@
 # @backstage/plugin-lighthouse
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- eef62546ce: Require @backstage/plugin-lighthouse-common package where API implementation moved to.
+
+  **BREAKING**: the following types have been moved to @backstage/plugin-lighthouse-common:
+
+  - `Audit`
+  - `AuditBase`
+  - `AuditCompleted`
+  - `AuditFailed`
+  - `AuditRunning`
+  - `FetchError`
+  - `LASListRequest`
+  - `LASListResponse`
+  - `LighthouseApi`
+  - `LighthouseCategoryAbbr`
+  - `LighthouseCategoryId`
+  - `LighthouseConfigSettings`
+  - `LighthouseRestApi`
+  - `TriggerAuditPayload`
+  - `Website`
+  - `WebsiteListResponse`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-lighthouse-common@0.1.0-next.0
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+
 ## 0.3.15-next.1
 
 ### Patch Changes

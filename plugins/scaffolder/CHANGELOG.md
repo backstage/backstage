@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder
 
+## 1.11.0-next.2
+
+### Patch Changes
+
+- b46f385eff: scaffolder/next: Implementing a simple `OngoingTask` page
+- ccbf91051b: bump `@rjsf` `v5` dependencies to 5.1.0
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.1.0-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.10-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11-next.1
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+
 ## 1.11.0-next.1
 
 ### Patch Changes

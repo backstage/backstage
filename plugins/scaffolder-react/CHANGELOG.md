@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.1.0-next.2
+
+### Minor Changes
+
+- 5555e17313: refactor `createAsyncValidators` to be recursive to ensure validators are called in nested schemas.
+
+### Patch Changes
+
+- b46f385eff: scaffolder/next: Implementing a simple `OngoingTask` page
+- ccbf91051b: bump `@rjsf` `v5` dependencies to 5.1.0
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+
 ## 1.1.0-next.1
 
 ### Patch Changes

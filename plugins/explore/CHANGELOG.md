@@ -1,5 +1,25 @@
 # @backstage/plugin-explore
 
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 66e2aab4c4: `ListItem` wrapper component moved to `SearchResultListItemExtension` for all `*SearchResultListItems` that are exported as extensions. This is to make sure the list only contains list elements.
+
+  Note: If you have implemented a custom result list item, we recommend you to remove the list item wrapper to avoid nested `<li>` elements.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-search-react@1.5.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.25
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.4.0-next.1
 
 ### Minor Changes
