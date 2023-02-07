@@ -149,12 +149,13 @@ export const Router = (props: RouterProps) => {
           </SecretsContextProvider>
         }
       />
+
+      <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
+      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
         path={scaffolderListTaskRouteRef.path}
         element={<ListTasksPage />}
       />
-      <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
-      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
         path={editRouteRef.path}
         element={

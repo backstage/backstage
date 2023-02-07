@@ -31,11 +31,15 @@ import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {
+  nextActionsRouteRef,
+  nextScaffolderListTaskRouteRef,
   nextScaffolderTaskRouteRef,
   nextSelectedTemplateRouteRef,
 } from '../routes';
 import { ErrorPage } from '@backstage/core-components';
 import { OngoingTask } from '../OngoingTask';
+import { ActionsPage } from '../../components/ActionsPage';
+import { ListTasksPage } from '../../components/ListTasksPage';
 
 /**
  * The Props for the Scaffolder Router
@@ -119,6 +123,11 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         element={
           <OngoingTask TemplateOutputsComponent={TemplateOutputsComponent} />
         }
+      />
+      <Route path={nextActionsRouteRef.path} element={<ActionsPage />} />
+      <Route
+        path={nextScaffolderListTaskRouteRef.path}
+        element={<ListTasksPage />}
       />
       <Route
         path="*"
