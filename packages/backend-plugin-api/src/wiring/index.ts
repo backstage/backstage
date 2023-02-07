@@ -32,7 +32,6 @@ export {
 export type {
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,
-  BackendRegistrationPoints,
   BackendFeature,
   ExtensionPoint,
 } from './types';
