@@ -22,6 +22,8 @@ import { Entity } from '@backstage/catalog-model';
 import { GithubActionsApi, githubActionsApiRef } from '../src';
 import getWorkflowRunResponse from '../src/__fixtures__/get-workflow-run.json';
 import listJobsForWorkflowRunResponse from '../src/__fixtures__/list-jobs-for-workflow-run.json';
+import listWorkflowRuns from '../src/__fixtures__/list-workflow-runs.json';
+import { downloadJobLogsForWorkflowRun } from '../src/__fixtures__/downloadJobLogsForWorkflowRun';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -41,7 +43,9 @@ const mockEntity: Entity = {
 };
 
 const mockGithubActionsApi: GithubActionsApi = {
-  async downloadJobLogsForWorkflowRun() {},
+  async downloadJobLogsForWorkflowRun() {
+    return downloadJobLogsForWorkflowRun;
+  },
   async getWorkflow() {
     return {} as any;
   },
@@ -52,7 +56,7 @@ const mockGithubActionsApi: GithubActionsApi = {
     return listJobsForWorkflowRunResponse as any;
   },
   async listWorkflowRuns() {
-    return {} as any;
+    return listWorkflowRuns as any;
   },
   async reRunWorkflow() {
     return {} as any;
