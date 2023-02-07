@@ -69,45 +69,42 @@ function defaultConfigure({
 }
 
 /** @public */
-export const rootHttpRouterFactory = createServiceFactory({
-  service: coreServices.rootHttpRouter,
-  deps: {
-    config: coreServices.config,
-    rootLogger: coreServices.rootLogger,
-    lifecycle: coreServices.rootLifecycle,
-  },
-  async factory(
-    { config, rootLogger, lifecycle },
-    {
-      indexPath,
-      configure = defaultConfigure,
-    }: RootHttpRouterFactoryOptions = {},
-  ) {
-    const logger = rootLogger.child({ service: 'rootHttpRouter' });
-    const app = express();
+export const rootHttpRouterFactory = createServiceFactory(
+  (options?: RootHttpRouterFactoryOptions) => ({
+    service: coreServices.rootHttpRouter,
+    deps: {
+      config: coreServices.config,
+      rootLogger: coreServices.rootLogger,
+      lifecycle: coreServices.rootLifecycle,
+    },
+    async factory({ config, rootLogger, lifecycle }) {
+      const { indexPath, configure = defaultConfigure } = options ?? {};
+      const logger = rootLogger.child({ service: 'rootHttpRouter' });
+      const app = express();
 
-    const router = DefaultRootHttpRouter.create({ indexPath });
-    const middleware = MiddlewareFactory.create({ config, logger });
+      const router = DefaultRootHttpRouter.create({ indexPath });
+      const middleware = MiddlewareFactory.create({ config, logger });
 
-    configure({
-      app,
-      routes: router.handler(),
-      middleware,
-      config,
-      logger,
-      lifecycle,
-    });
+      configure({
+        app,
+        routes: router.handler(),
+        middleware,
+        config,
+        logger,
+        lifecycle,
+      });
 
-    const server = await createHttpServer(
-      app,
-      readHttpServerOptions(config.getOptionalConfig('backend')),
-      { logger },
-    );
+      const server = await createHttpServer(
+        app,
+        readHttpServerOptions(config.getOptionalConfig('backend')),
+        { logger },
+      );
 
-    lifecycle.addShutdownHook(() => server.stop());
+      lifecycle.addShutdownHook(() => server.stop());
 
-    await server.start();
+      await server.start();
 
-    return router;
-  },
-});
+      return router;
+    },
+  }),
+);

@@ -232,7 +232,9 @@ export interface RootHttpRouterConfigureOptions {
 }
 
 // @public (undocumented)
-export const rootHttpRouterFactory: () => ServiceFactory<RootHttpRouterService>;
+export const rootHttpRouterFactory: (
+  options?: RootHttpRouterFactoryOptions | undefined,
+) => ServiceFactory<RootHttpRouterService>;
 
 // @public (undocumented)
 export type RootHttpRouterFactoryOptions = {

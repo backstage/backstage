@@ -2,4 +2,4 @@
 '@backstage/backend-app-api': patch
 ---
 
-Moved the options of the config service out to the factory itself, where it belongs
+Moved the options of the `config` and `rootHttpRouter` services out to the factories themselves, where they belong
