@@ -32,6 +32,7 @@ import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
 import { Knex } from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
+import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -40,6 +41,7 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { CacheService as PluginCacheManager } from '@backstage/backend-plugin-api';
 import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
+import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
@@ -232,6 +234,10 @@ export class Contexts {
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
+  deps?: {
+    lifecycle: LifecycleService;
+    pluginMetadata: PluginMetadataService;
+  },
 ): Knex<any, any[]>;
 
 // @public
@@ -252,7 +258,13 @@ export function createStatusCheckRouter(options: {
 
 // @public
 export class DatabaseManager {
-  forPlugin(pluginId: string): PluginDatabaseManager;
+  forPlugin(
+    pluginId: string,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): PluginDatabaseManager;
   static fromConfig(
     config: Config,
     options?: DatabaseManagerOptions,

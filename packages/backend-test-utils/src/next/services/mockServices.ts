@@ -15,6 +15,7 @@
  */
 
 import {
+  ConfigService,
   coreServices,
   createServiceFactory,
   IdentityService,
@@ -56,14 +57,13 @@ function simpleFactory<TService, TOptions extends [options?: object] = []>(
  * @alpha
  */
 export namespace mockServices {
-  export function config(options?: config.Options) {
+  export function config(options?: config.Options): ConfigService {
     return new ConfigReader(options?.data, 'mock-config');
   }
   export namespace config {
     export type Options = { data?: JsonObject };
 
-    export const ref = coreServices.config;
-    export const factory = simpleFactory(ref, config);
+    export const factory = simpleFactory(coreServices.config, config);
   }
 
   export function rootLogger(options?: rootLogger.Options): LoggerService {
@@ -76,8 +76,7 @@ export namespace mockServices {
         | { error: boolean; warn: boolean; info: boolean; debug: boolean };
     };
 
-    export const ref = coreServices.rootLogger;
-    export const factory = simpleFactory(ref, rootLogger);
+    export const factory = simpleFactory(coreServices.rootLogger, rootLogger);
   }
 
   export function tokenManager(): TokenManagerService {
@@ -93,55 +92,47 @@ export namespace mockServices {
     };
   }
   export namespace tokenManager {
-    export const ref = coreServices.tokenManager;
-    export const factory = simpleFactory(ref, tokenManager);
+    export const factory = simpleFactory(
+      coreServices.tokenManager,
+      tokenManager,
+    );
   }
 
   export function identity(): IdentityService {
     return new MockIdentityService();
   }
   export namespace identity {
-    export const ref = coreServices.identity;
-    export const factory = simpleFactory(ref, identity);
+    export const factory = simpleFactory(coreServices.identity, identity);
   }
 
   // TODO(Rugvip): Not all core services have implementations available here yet.
   //               some may need a bit more refactoring for it to be simpler to
   //               re-implement functioning mock versions here.
   export namespace cache {
-    export const ref = coreServices.cache;
     export const factory = cacheFactory;
   }
   export namespace database {
-    export const ref = coreServices.database;
     export const factory = databaseFactory;
   }
   export namespace httpRouter {
-    export const ref = coreServices.httpRouter;
     export const factory = httpRouterFactory;
   }
   export namespace lifecycle {
-    export const ref = coreServices.lifecycle;
     export const factory = lifecycleFactory;
   }
   export namespace logger {
-    export const ref = coreServices.logger;
     export const factory = loggerFactory;
   }
   export namespace permissions {
-    export const ref = coreServices.permissions;
     export const factory = permissionsFactory;
   }
   export namespace rootLifecycle {
-    export const ref = coreServices.rootLifecycle;
     export const factory = rootLifecycleFactory;
   }
   export namespace scheduler {
-    export const ref = coreServices.scheduler;
     export const factory = schedulerFactory;
   }
   export namespace urlReader {
-    export const ref = coreServices.urlReader;
     export const factory = urlReaderFactory;
   }
 }

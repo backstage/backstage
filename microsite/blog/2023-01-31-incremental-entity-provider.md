@@ -4,8 +4,6 @@ author: Paul Cowan & Taras Mankovski
 authorURL: https://frontside.com/
 ---
 
-# Scaling Backstage Ingestion with Incremental Entity Providers
-
 At the heart of [Backstage](https://backstage.io/) is the [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview), which is a data store that allows an organization to centralize and visualize its many software services and components. Backstage inspects and transforms an organization's disparate software services and parts into a centralized data store.
 
 ![catalog pipeline](assets/2023-01-31/catalog-pipeline.png)

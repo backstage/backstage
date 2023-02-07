@@ -28,7 +28,7 @@ describe('schedulerFactory', () => {
     const subject = schedulerFactory();
 
     const plugin = createBackendPlugin({
-      id: 'example',
+      pluginId: 'example',
       register(reg) {
         reg.registerInit({
           deps: {

@@ -60,7 +60,7 @@ function createConfig(dir, extraConfig = {}) {
       '@spotify/eslint-config-typescript',
       'prettier',
       'plugin:jest/recommended',
-      'plugin:monorepo/recommended',
+      'plugin:@backstage/recommended',
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
@@ -88,32 +88,6 @@ function createConfig(dir, extraConfig = {}) {
       '@typescript-eslint/no-redeclare': 'error',
       'no-undef': 'off',
       'import/newline-after-import': 'error',
-      'import/no-extraneous-dependencies': [
-        'error',
-        {
-          devDependencies: dir
-            ? [
-                `!${joinPath(dir, 'src/**')}`,
-                joinPath(dir, 'src/**/*.test.*'),
-                joinPath(dir, 'src/**/*.stories.*'),
-                joinPath(dir, 'src/**/__testUtils__/**'),
-                joinPath(dir, 'src/**/__mocks__/**'),
-                joinPath(dir, 'src/setupTests.*'),
-              ]
-            : [
-                // Legacy config for packages that don't provide a dir
-                '**/*.test.*',
-                '**/*.stories.*',
-                '**/__testUtils__/**',
-                '**/__mocks__/**',
-                '**/src/setupTests.*',
-                '**/dev/**',
-              ],
-          optionalDependencies: true,
-          peerDependencies: true,
-          bundledDependencies: true,
-        },
-      ],
       'no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-expressions': 'error',
       '@typescript-eslint/consistent-type-assertions': 'error',
@@ -135,9 +109,6 @@ function createConfig(dir, extraConfig = {}) {
             ...(restrictedSrcImports ?? []),
           ],
           patterns: [
-            // Avoid cross-package imports
-            '**/../../**/*/src/**',
-            '**/../../**/*/src',
             // Prevent imports of stories or tests
             '*.stories*',
             '*.test*',
@@ -187,8 +158,6 @@ function createConfig(dir, extraConfig = {}) {
                 ...(restrictedImports ?? []),
                 ...(restrictedTestImports ?? []),
               ],
-              // Avoid cross-package imports
-              patterns: ['**/../../**/*/src/**', '**/../../**/*/src'],
             },
           ],
         },

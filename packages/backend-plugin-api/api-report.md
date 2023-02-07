@@ -47,7 +47,7 @@ export interface BackendModuleRegistrationPoints {
 
 // @public
 export interface BackendPluginConfig {
-  id: string;
+  pluginId: string;
   // (undocumented)
   register(reg: BackendPluginRegistrationPoints): void;
 }
@@ -275,7 +275,7 @@ export type ExtensionPoint<T> = {
   id: string;
   T: T;
   toString(): string;
-  $$ref: 'extension-point';
+  $$type: '@backstage/ExtensionPoint';
 };
 
 // @public
@@ -294,14 +294,19 @@ export interface IdentityService extends IdentityApi {}
 
 // @public (undocumented)
 export interface LifecycleService {
-  addShutdownHook(options: LifecycleServiceShutdownHook): void;
+  addShutdownHook(
+    hook: LifecycleServiceShutdownHook,
+    options?: LifecycleServiceShutdownOptions,
+  ): void;
 }
 
 // @public (undocumented)
-export type LifecycleServiceShutdownHook = {
-  fn: () => void | Promise<void>;
+export type LifecycleServiceShutdownHook = () => void | Promise<void>;
+
+// @public (undocumented)
+export interface LifecycleServiceShutdownOptions {
   logger?: LoggerService;
-};
+}
 
 // @public
 export interface LoggerService {
@@ -490,7 +495,7 @@ export type ServiceRef<
   scope: TScope;
   T: TService;
   toString(): string;
-  $$ref: 'service';
+  $$type: '@backstage/ServiceRef';
 };
 
 // @public (undocumented)
@@ -508,7 +513,7 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
 // @public
 export interface SharedBackendEnvironment {
   // (undocumented)
-  $$type: 'SharedBackendEnvironment';
+  $$type: '@backstage/SharedBackendEnvironment';
 }
 
 // @public

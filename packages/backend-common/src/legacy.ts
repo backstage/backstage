@@ -60,7 +60,7 @@ export function makeLegacyPlugin<
     }>,
   ) => {
     const compatPlugin = createBackendPlugin({
-      id: name,
+      pluginId: name,
       register(env) {
         env.registerInit({
           deps: { ...envMapping, _router: coreServices.httpRouter },

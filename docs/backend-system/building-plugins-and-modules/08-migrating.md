@@ -46,7 +46,7 @@ import { Router } from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
 
 export const kubernetesPlugin = createBackendPlugin({
-  id: 'kubernetes',
+  pluginId: 'kubernetes',
   register(env) {
     env.registerInit({
       deps: {
@@ -95,7 +95,7 @@ export interface KubernetesOptions {
 }
 
 const kubernetesPlugin = createBackendPlugin((options: KubernetesOptions) => ({
-  id: 'kubernetes',
+  pluginId: 'kubernetes',
   register(env) {
     env.registerInit({
       deps: {
@@ -182,7 +182,7 @@ class ClusterSupplier implements KubernetesClusterSupplierExtensionPoint {
 }
 
 export const kubernetesPlugin = createBackendPlugin({
-  id: 'kubernetes',
+  pluginId: 'kubernetes',
   register(env) {
     const extensionPoint = new ClusterSupplier();
     // We register the extension point with the backend, which allows modules to

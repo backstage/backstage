@@ -27,7 +27,7 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export const kafkaPlugin = createBackendPlugin({
-  id: 'kafka',
+  pluginId: 'kafka',
   register(env) {
     env.registerInit({
       deps: {
