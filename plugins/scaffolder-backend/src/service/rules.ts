@@ -16,20 +16,74 @@
 
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
+} from '@backstage/plugin-scaffolder-common/alpha';
+
+import {
   TemplateEntityStepV1beta3,
   TemplateParametersV1beta3,
 } from '@backstage/plugin-scaffolder-common';
-import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 
 import { z } from 'zod';
+import { JsonObject } from '@backstage/types';
 
-export const createScaffolderPermissionRule = makeCreatePermissionRule<
+export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
 >();
 
-export const hasTag = createScaffolderPermissionRule({
+export const createActionPermissionRule = makeCreatePermissionRule<
+  {
+    actionId: string;
+    input: JsonObject;
+    template: TemplateEntityStepV1beta3 | TemplateParametersV1beta3;
+  },
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION
+>();
+
+export const hasActionId = createActionPermissionRule({
+  name: 'HAS_ACTION_ID',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  description: `Match actions with the given actionId`,
+  paramsSchema: z.object({
+    actionId: z.string().describe('Name of the actionId to match on'),
+  }),
+  apply: (resource, { actionId }) => {
+    return resource.actionId === actionId;
+  },
+  toQuery: () => ({}),
+});
+
+export const matchesInput = createActionPermissionRule({
+  name: 'MATCHED_INPUT',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  description: `Matches actionId and the input given`,
+  paramsSchema: z.object({
+    actionId: z.string().describe('Name of the actionId to match on'),
+
+    // Pass in a json schema to validate the input against
+    input: z.jsonSchema({}).describe('Input to match on'),
+  }),
+  apply: (resource, { actionId, input }) => {
+    if (resource.actionId !== actionId) {
+      return false;
+    }
+
+    for (const [key, value] of Object.entries(input)) {
+      if (resource.input[key] !== value) {
+        return false;
+      }
+    }
+
+    return true;
+  },
+  toQuery: () => ({}),
+});
+
+export const hasTag = createTemplatePermissionRule({
   name: 'HAS_TAG',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   description: `Match parameters or steps with the given tag`,

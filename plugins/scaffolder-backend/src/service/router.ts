@@ -378,31 +378,7 @@ export async function createRouter(
 
       const baseUrl = getEntityBaseUrl(template);
 
-      const taskSpec: TaskSpec = {
-        apiVersion: template.apiVersion,
-        steps: template.spec.steps.map((step, index) => ({
-          ...step,
-          id: step.id ?? `step-${index + 1}`,
-          name: step.name ?? step.action,
-        })),
-        output: template.spec.output ?? {},
-        parameters: values,
-        user: {
-          entity: userEntity as UserEntity,
-          ref: userEntityRef,
-        },
-        templateInfo: {
-          entityRef: stringifyEntityRef({
-            kind,
-            namespace,
-            name: template.metadata?.name,
-          }),
-          baseUrl,
-          entity: {
-            metadata: template.metadata,
-          },
-        },
-      };
+      const taskSpec = await authorizeTaskSpec(template);
 
       const result = await taskBroker.dispatch({
         spec: taskSpec,
@@ -649,6 +625,36 @@ export async function createRouter(
     );
 
     return template;
+  }
+
+  async function authorizeTaskSpec(template: TemplateEntityV1beta3): TaskSpec {
+    const taskSpec: TaskSpec = {
+      apiVersion: template.apiVersion,
+      steps: template.spec.steps.map((step, index) => ({
+        ...step,
+        id: step.id ?? `step-${index + 1}`,
+        name: step.name ?? step.action,
+      })),
+      output: template.spec.output ?? {},
+      parameters: values,
+      user: {
+        entity: userEntity as UserEntity,
+        ref: userEntityRef,
+      },
+      templateInfo: {
+        entityRef: stringifyEntityRef({
+          kind,
+          namespace,
+          name: template.metadata?.name,
+        }),
+        baseUrl,
+        entity: {
+          metadata: template.metadata,
+        },
+      },
+    };
+
+    return taskSpec;
   }
 
   return app;
