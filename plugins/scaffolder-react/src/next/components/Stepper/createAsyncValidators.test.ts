@@ -181,6 +181,18 @@ describe('createAsyncValidators', () => {
                   title: 'General',
                   type: 'object',
                   properties: {
+                    address: {
+                      type: 'object',
+                      'ui:field': 'AddressField',
+                      properties: {
+                        street: {
+                          type: 'string',
+                        },
+                        postcode: {
+                          type: 'string',
+                        },
+                      },
+                    },
                     name: {
                       title: 'Name',
                       type: 'string',
@@ -207,6 +219,19 @@ describe('createAsyncValidators', () => {
       },
     };
 
+    const AddressField: NextCustomFieldValidator<{
+      street?: string;
+      postcode?: string;
+    }> = (value, { addError }) => {
+      if (!value.postcode) {
+        addError('postcode is missing!');
+      }
+
+      if (!value.street) {
+        addError('street is missing here!');
+      }
+    };
+
     const NameField: NextCustomFieldValidator<string> = (
       value,
       { addError },
@@ -217,6 +242,7 @@ describe('createAsyncValidators', () => {
     };
 
     const validators = {
+      AddressField: AddressField as NextCustomFieldValidator<unknown>,
       NameField: NameField as NextCustomFieldValidator<unknown>,
     };
 
@@ -228,11 +254,18 @@ describe('createAsyncValidators', () => {
       validate({
         actionType: 'newThing',
         general: {
+          address: {
+            street: 'street',
+            postcode: 'postcode',
+          },
           name: undefined,
         },
       }),
     ).resolves.toEqual({
       general: {
+        address: expect.objectContaining({
+          __errors: [],
+        }),
         name: expect.objectContaining({
           __errors: ['something is broken here!'],
         }),

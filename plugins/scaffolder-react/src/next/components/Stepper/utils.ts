@@ -28,7 +28,11 @@ export function hasErrors(errors?: FormValidation): boolean {
 
   for (const error of Object.values(errors)) {
     if (isFieldValidation(error)) {
-      return (error.__errors ?? []).length > 0;
+      if ((error.__errors ?? []).length > 0) {
+        return true;
+      }
+
+      continue;
     }
 
     return hasErrors(error);
