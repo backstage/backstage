@@ -70,16 +70,24 @@ export const BitbucketRepoPicker = (props: {
         >
           {allowedOwners?.length ? (
             <Autocomplete
-              aria-label="Allowed Workspaces"
+              aria-label="Select a Workspace"
               options={ownerItems}
               defaultValue={ownerItems[0]}
               getOptionLabel={owners => owners.label || 'error getting label'}
               disabled={allowedOwners.length === 1}
               data-testid="select"
+              getOptionSelected={(option, value) =>
+                option.label === value.value
+              }
+              onChange={(_event, newValue) =>
+                onChange({
+                  owner: newValue?.label,
+                })
+              }
               renderInput={params => (
                 <TextField
                   {...params}
-                  placeholder="Allowed Workspaces"
+                  placeholder="Select a Workspace"
                   margin="dense"
                   FormHelperTextProps={{
                     margin: 'dense',
@@ -112,16 +120,22 @@ export const BitbucketRepoPicker = (props: {
       >
         {allowedProjects?.length ? (
           <Autocomplete
-            aria-label="Allowed Projects"
+            aria-label="Select a Project"
             options={projectItems}
             defaultValue={projectItems[0]}
             getOptionLabel={projects => projects.label || 'error getting label'}
             disabled={allowedProjects.length === 1}
             data-testid="select"
+            getOptionSelected={(option, value) => option.label === value.value}
+            onChange={(_event, newValue) =>
+              onChange({
+                project: newValue?.label,
+              })
+            }
             renderInput={params => (
               <TextField
                 {...params}
-                placeholder="Allowed Projects"
+                placeholder="Select a Project"
                 margin="dense"
                 FormHelperTextProps={{
                   margin: 'dense',

@@ -51,6 +51,12 @@ export const GithubRepoPicker = (props: {
             getOptionLabel={owners => owners.label || 'error getting label'}
             disabled={allowedOwners.length === 1}
             data-testid="select"
+            getOptionSelected={(option, value) => option.label === value.value}
+            onChange={(_event, newValue) =>
+              onChange({
+                owner: newValue?.label,
+              })
+            }
             renderInput={params => (
               <TextField
                 {...params}

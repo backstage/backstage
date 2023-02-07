@@ -50,13 +50,18 @@ export const GitlabRepoPicker = (props: {
             options={ownerItems}
             defaultValue={ownerItems[0]}
             getOptionLabel={owners => owners.label || 'error getting label'}
+            getOptionSelected={(option, value) => option.label === value.value}
             disabled={allowedOwners.length === 1}
             data-testid="select"
-            autoSelect
+            onChange={(_event, newValue) =>
+              onChange({
+                owner: newValue?.label,
+              })
+            }
             renderInput={params => (
               <TextField
                 {...params}
-                placeholder="Select Owner"
+                placeholder="Select an Owner"
                 margin="dense"
                 FormHelperTextProps={{
                   margin: 'dense',
