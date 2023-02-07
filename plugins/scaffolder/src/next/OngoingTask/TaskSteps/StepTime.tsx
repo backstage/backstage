@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import useInterval from 'react-use/lib/useInterval';
 import { DateTime, Interval } from 'luxon';
 import humanizeDuration from 'humanize-duration';
 import { Typography } from '@material-ui/core';
+import { useMountEffect } from '@react-hookz/web';
 
 export const StepTime = (props: {
   step: {
@@ -48,7 +49,7 @@ export const StepTime = (props: {
     setTime(humanizeDuration(formatted, { round: true }));
   }, [step.endedAt, step.startedAt]);
 
-  useMemo(() => calculate(), [calculate]);
+  useMountEffect(() => calculate());
 
   useInterval(() => !step.endedAt && calculate(), 1000);
 

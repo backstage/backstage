@@ -76,7 +76,11 @@ export type NextRouterProps = {
  */
 export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   const {
-    components: { TemplateCardComponent, TemplateOutputsComponent } = {},
+    components: {
+      TemplateCardComponent,
+      TemplateOutputsComponent,
+      TaskPageComponent = OngoingTask,
+    } = {},
   } = props;
   const outlet = useOutlet() || props.children;
   const customFieldExtensions =
@@ -121,7 +125,9 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       <Route
         path={nextScaffolderTaskRouteRef.path}
         element={
-          <OngoingTask TemplateOutputsComponent={TemplateOutputsComponent} />
+          <TaskPageComponent
+            TemplateOutputsComponent={TemplateOutputsComponent}
+          />
         }
       />
       <Route path={nextActionsRouteRef.path} element={<ActionsPage />} />
