@@ -19,6 +19,9 @@ import {
   BackendPluginRegistrationPoints,
   BackendFeature,
   ExtensionPoint,
+  InternalBackendFeature,
+  InternalBackendModuleRegistration,
+  InternalBackendPluginRegistration,
 } from './types';
 
 /**
@@ -86,11 +89,59 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
 ): (...params: TOptions) => BackendFeature {
   const configCallback = typeof config === 'function' ? config : () => config;
-  return (...options: TOptions) => {
+  return (...options: TOptions): InternalBackendFeature => {
     const c = configCallback(...options);
+
+    let registrations: InternalBackendPluginRegistration[];
+
     return {
-      ...c,
-      id: c.pluginId,
+      $$type: '@backstage/BackendFeature',
+      version: 'v1',
+      getRegistrations() {
+        if (registrations) {
+          return registrations;
+        }
+        const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
+          [];
+        let init: InternalBackendPluginRegistration['init'] | undefined =
+          undefined;
+
+        c.register({
+          registerExtensionPoint(ext, impl) {
+            if (init) {
+              throw new Error(
+                'registerExtensionPoint called after registerInit',
+              );
+            }
+            extensionPoints.push([ext, impl]);
+          },
+          registerInit(regInit) {
+            if (init) {
+              throw new Error('registerInit must only be called once');
+            }
+            init = {
+              deps: regInit.deps,
+              func: regInit.init,
+            };
+          },
+        });
+
+        if (!init) {
+          throw new Error(
+            `registerInit was not called by register in ${c.pluginId}`,
+          );
+        }
+
+        registrations = [
+          {
+            type: 'plugin',
+            pluginId: c.pluginId,
+            extensionPoints,
+            init,
+          },
+        ];
+        return registrations;
+      },
     };
   };
 }
@@ -127,11 +178,49 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
 ): (...params: TOptions) => BackendFeature {
   const configCallback = typeof config === 'function' ? config : () => config;
-  return (...options: TOptions) => {
+  return (...options: TOptions): InternalBackendFeature => {
     const c = configCallback(...options);
+
+    let registrations: InternalBackendModuleRegistration[];
+
     return {
-      id: `${c.pluginId}.${c.moduleId}`,
-      register: c.register,
+      $$type: '@backstage/BackendFeature',
+      version: 'v1',
+      getRegistrations() {
+        if (registrations) {
+          return registrations;
+        }
+        let init: InternalBackendModuleRegistration['init'] | undefined =
+          undefined;
+
+        c.register({
+          registerInit(regInit) {
+            if (init) {
+              throw new Error('registerInit must only be called once');
+            }
+            init = {
+              deps: regInit.deps,
+              func: regInit.init,
+            };
+          },
+        });
+
+        if (!init) {
+          throw new Error(
+            `registerInit was not called by register in ${c.moduleId} module for ${c.pluginId}`,
+          );
+        }
+
+        registrations = [
+          {
+            type: 'module',
+            pluginId: c.pluginId,
+            moduleId: c.moduleId,
+            init,
+          },
+        ];
+        return registrations;
+      },
     };
   };
 }

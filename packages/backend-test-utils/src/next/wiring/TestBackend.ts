@@ -30,6 +30,7 @@ import {
   BackendFeature,
   ExtensionPoint,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
@@ -193,16 +194,18 @@ export async function startTestBackend<
 
   backendInstancesToCleanUp.push(backend);
 
-  backend.add({
-    id: `---test-extension-point-registrar`,
-    register(reg) {
-      for (const [ref, impl] of extensionPoints) {
-        reg.registerExtensionPoint(ref, impl);
-      }
+  backend.add(
+    createBackendPlugin({
+      pluginId: `---test-extension-point-registrar`,
+      register(reg) {
+        for (const [ref, impl] of extensionPoints) {
+          reg.registerExtensionPoint(ref, impl);
+        }
 
-      reg.registerInit({ deps: {}, async init() {} });
-    },
-  });
+        reg.registerInit({ deps: {}, async init() {} });
+      },
+    })(),
+  );
 
   for (const feature of features) {
     backend.add(feature);

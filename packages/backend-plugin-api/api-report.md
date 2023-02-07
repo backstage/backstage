@@ -17,9 +17,7 @@ import { Readable } from 'stream';
 // @public (undocumented)
 export interface BackendFeature {
   // (undocumented)
-  id: string;
-  // (undocumented)
-  register(reg: BackendRegistrationPoints): void;
+  $$type: '@backstage/BackendFeature';
 }
 
 // @public
@@ -67,26 +65,6 @@ export interface BackendPluginRegistrationPoints {
   >(options: {
     deps: {
       [name in keyof Deps]: ServiceRef<Deps[name]>;
-    };
-    init(deps: Deps): Promise<void>;
-  }): void;
-}
-
-// @public
-export interface BackendRegistrationPoints {
-  // (undocumented)
-  registerExtensionPoint<TExtensionPoint>(
-    ref: ExtensionPoint<TExtensionPoint>,
-    impl: TExtensionPoint,
-  ): void;
-  // (undocumented)
-  registerInit<
-    Deps extends {
-      [name in string]: unknown;
-    },
-  >(options: {
-    deps: {
-      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
     };
     init(deps: Deps): Promise<void>;
   }): void;
