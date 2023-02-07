@@ -197,9 +197,17 @@ export type NextRouterProps = {
       template: TemplateEntityV1beta3;
     }>;
     TaskPageComponent?: React_2.ComponentType<{}>;
+    TemplateOutputsComponent?: React_2.ComponentType<{
+      output?: ScaffolderTaskOutput_2;
+    }>;
   };
   groups?: TemplateGroupFilter[];
   FormProps?: FormProps_2;
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+    tasks?: boolean;
+  };
 };
 
 // @alpha
