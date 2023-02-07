@@ -33,10 +33,7 @@ const packs: Pack[] = [
 
 describe('PacksTable', () => {
   const mockApi: jest.Mocked<StackStormApi> = {
-    getExecutions: jest.fn().mockResolvedValue([]),
-    getExecution: jest.fn().mockResolvedValue({}),
     getPacks: jest.fn().mockResolvedValue(packs),
-    getActions: jest.fn().mockResolvedValue([]),
   } as any;
 
   it('should render all packs', async () => {
