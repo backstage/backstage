@@ -1,3 +1,11 @@
+openapi: 3.1.0
+info:
+  title: '@backstage/plugin-catalog-backend'
+  version: '1'
+  description: The Backstage backend plugin that provides the Backstage catalog
+  license:
+    name: Apache-2.0
+  contact: {}
 components:
   examples: {}
   headers: {}
@@ -382,14 +390,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-info:
-  title: '@backstage/plugin-catalog-backend'
-  version: 1.6.0-next.1
-  description: The Backstage backend plugin that provides the Backstage catalog
-  license:
-    name: Apache-2.0
-  contact: {}
-openapi: 3.1.0
+
 paths:
   /refresh:
     post:
@@ -398,6 +399,7 @@ paths:
         '200':
           description: Refreshed
       security:
+        - {}
         - JWT: []
       parameters: []
       requestBody:
@@ -419,6 +421,7 @@ paths:
                   $ref: '#/components/schemas/Entity'
                 type: array
       security:
+        - {}
         - JWT: []
       parameters:
         - in: query
@@ -457,6 +460,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Entity'
       security:
+        - {}
         - JWT: []
       parameters:
         - in: path
@@ -470,6 +474,7 @@ paths:
         '204':
           description: Deleted successfully.
       security:
+        - {}
         - JWT: []
       parameters:
         - in: path
@@ -489,6 +494,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Entity'
       security:
+        - {}
         - JWT: []
       parameters:
         - in: path
@@ -517,6 +523,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EntityAncestryResponse'
       security:
+        - {}
         - JWT: []
       parameters:
         - in: path
@@ -545,6 +552,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EntitiesBatchResponse'
       security:
+        - {}
         - JWT: []
       parameters:
         - in: query
@@ -571,6 +579,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EntityFacetsResponse'
       security:
+        - {}
         - JWT: []
       parameters:
         - in: query
@@ -606,6 +615,7 @@ paths:
                   - location
                 type: object
       security:
+        - {}
         - JWT: []
       parameters:
         - in: query
@@ -650,6 +660,7 @@ paths:
                   type: object
                 type: array
       security:
+        - {}
         - JWT: []
       parameters: []
   /locations/{id}:
@@ -663,6 +674,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Location'
       security:
+        - {}
         - JWT: []
       parameters:
         - in: path
@@ -676,6 +688,7 @@ paths:
         '204':
           description: No content
       security:
+        - {}
         - JWT: []
       parameters:
         - in: path
@@ -694,6 +707,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AnalyzeLocationResponse'
       security:
+        - {}
         - JWT: []
       parameters: []
       requestBody:
@@ -735,6 +749,7 @@ paths:
                       - errors
                     type: object
       security:
+        - {}
         - JWT: []
       parameters: []
       requestBody:
