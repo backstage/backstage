@@ -196,6 +196,14 @@ function findTypeDepErrors(typeDeps: string[], pkg: Package) {
   }
 
   for (const dep of deps) {
+    // Remove this once the logform issue has been fixed.
+    // https://github.com/winstonjs/logform/issues/242
+    if (
+      pkg.packageJson.name === '@backstage/backend-common' &&
+      dep === '@types/triple-beam'
+    ) {
+      continue;
+    }
     errors.push(
       mkErr('WrongDepError', `Should be dev dep ${dep}`, {
         dep,
