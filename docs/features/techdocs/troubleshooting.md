@@ -72,3 +72,23 @@ details.
 
 Instead use `svg_inline` which renders as an `<svg>` tag and provides the same
 benefits as `svg_object`.
+
+## Table of Contents doesn't render
+
+The [toc](https://python-markdown.github.io/extensions/toc/) extension is included
+in the standard Markdown library.
+
+But in order for it to render, you can't use single dash headers. (#)
+
+This header will not render in the Table of Contents:
+``` markdown
+# Some Header
+```
+
+This one will:
+``` markdown
+## Some Header
+```
+
+Avoid using single dash headers in your markdown-files to ensure that the
+Table of Contents will render.
