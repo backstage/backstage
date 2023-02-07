@@ -23,11 +23,14 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { type IChangeEvent, withTheme } from '@rjsf/core-v5';
-import { ErrorSchema, FieldValidation } from '@rjsf/utils';
+import { ErrorSchema } from '@rjsf/utils';
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
 import { TemplateParameterSchema } from '../../../types';
-import { createAsyncValidators } from './createAsyncValidators';
+import {
+  createAsyncValidators,
+  type FormValidation,
+} from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv8';
@@ -35,6 +38,7 @@ import { useFormDataFromQuery } from '../../hooks';
 import { FormProps } from '../../types';
 import { LayoutOptions } from '../../../layouts';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
+import { hasErrors } from './utils';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -92,9 +96,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useFormDataFromQuery(props.initialState);
 
-  const [errors, setErrors] = useState<
-    undefined | Record<string, FieldValidation>
-  >();
+  const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
 
   const extensions = useMemo(() => {
@@ -136,11 +138,7 @@ export const Stepper = (stepperProps: StepperProps) => {
 
     const returnedValidation = await validation(formData);
 
-    const hasErrors = Object.values(returnedValidation).some(
-      i => i.__errors?.length,
-    );
-
-    if (hasErrors) {
+    if (hasErrors(returnedValidation)) {
       setErrors(returnedValidation);
     } else {
       setErrors(undefined);
