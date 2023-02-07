@@ -61,7 +61,7 @@ class DefaultFooService implements FooService {
   }
 }
 
-export const fooFactory = createServiceFactory({
+export const fooServiceFactory = createServiceFactory({
   service: fooServiceRef,
   deps: { bar: barServiceRef },
   factory({ bar }) {
@@ -75,7 +75,7 @@ To create a service factory we need to provide a reference to the `service` for 
 If you need the creation of the service instance to be asynchronous, you can make the `factory` function async. For example:
 
 ```ts
-export const fooFactory = createServiceFactory({
+export const fooServiceFactory = createServiceFactory({
   service: fooServiceRef,
   deps: {},
   async factory() {
@@ -94,18 +94,18 @@ To install a service factory in a backend instance, we pass it in through the `s
 
 ```ts
 const backend = createBackend({
-  services: [fooFactory()],
+  services: [fooServiceFactory()],
 });
 ```
 
-Note that we call `fooFactory` to create the service factory instance. This is because `createServiceFactory` always returns a factory function that creates the actual service factory. This is done to always allow for options to be added to the service factory in the future, without breaking existing code. To add options to your service factory, you wrap the object passed to `createServiceFactory` in a callback that accepts the desired options. For example:
+Note that we call `fooServiceFactory` to create the service factory instance. This is because `createServiceFactory` always returns a factory function that creates the actual service factory. This is done to always allow for options to be added to the service factory in the future, without breaking existing code. To add options to your service factory, you wrap the object passed to `createServiceFactory` in a callback that accepts the desired options. For example:
 
 ```ts
 export interface FooFactoryOptions {
   mode: 'eager' | 'lazy';
 }
 
-export const fooFactory = createServiceFactory(
+export const fooServiceFactory = createServiceFactory(
   (options?: FooFactoryOptions) => ({
     service: fooServiceRef,
     deps: { bar: barServiceRef },
@@ -120,7 +120,7 @@ This lets us use the options to customize the factory implementation in any way 
 
 ```ts
 const backend = createBackend({
-  services: [fooFactory({ mode: 'eager' })],
+  services: [fooServiceFactory({ mode: 'eager' })],
 });
 ```
 
@@ -164,7 +164,7 @@ Plugin scoped services have access to a plugin metadata service, which is a spec
 The plugin metadata service is the base for all plugin specific customizations for services. For example, the default implementation of the plugin scoped logger service uses the plugin metadata service to attach the plugin ID as a field in all log messages:
 
 ```ts
-export const loggerFactory = createServiceFactory({
+export const loggerServiceFactory = createServiceFactory({
   service: coreServices.logger,
   deps: {
     rootLogger: coreServices.rootLogger,
@@ -183,7 +183,7 @@ Some services may benefit from having a context that is shared across all instan
 The root context is defined as part of the service factory by passing the `createRootContext` option:
 
 ```ts
-export const fooFactory = createServiceFactory({
+export const fooServiceFactory = createServiceFactory({
   service: fooServiceRef,
   deps: { rootLogger: coreServices.rootLogger, bar: barServiceRef },
   createRootContext({ rootLogger }) {
