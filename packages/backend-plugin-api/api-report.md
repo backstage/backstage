@@ -530,11 +530,6 @@ export interface TokenManagerService {
   }>;
 }
 
-// @public (undocumented)
-export type TypesToServiceRef<T> = {
-  [key in keyof T]: ServiceRef<T[key]>;
-};
-
 // @public
 export interface UrlReaderService {
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
