@@ -28,6 +28,7 @@ import {
   useEntityList,
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
+import _ from 'lodash';
 
 type KeysMatchingCondition<T, V, K> = T extends V ? K : never;
 type KeysMatching<T, V> = {
@@ -96,21 +97,22 @@ export function EntityAutocompletePicker<
   // Set selected options on query parameter updates; this happens at initial page load and from
   // external updates to the page location
   useEffect(() => {
-    if (queryParameters.length) {
+    if (
+      queryParameters.length &&
+      !_.isEqual(selectedOptions, queryParameters)
+    ) {
       setSelectedOptions(queryParameters);
     }
-  }, [queryParameters]);
+  }, [selectedOptions, queryParameters]);
 
   const availableOptions = Object.keys(availableValues ?? {});
+  const shouldAddFilter = selectedOptions.length && availableOptions.length;
 
   useEffect(() => {
     updateFilters({
-      [name]:
-        selectedOptions.length && availableOptions.length
-          ? new Filter(selectedOptions)
-          : undefined,
+      [name]: shouldAddFilter ? new Filter(selectedOptions) : undefined,
     } as Partial<T>);
-  }, [name, Filter, selectedOptions, availableOptions, updateFilters]);
+  }, [name, shouldAddFilter, selectedOptions, Filter, updateFilters]);
 
   if (
     (filters[name] && !('values' in filters[name])) ||
@@ -127,7 +129,7 @@ export function EntityAutocompletePicker<
           multiple
           options={availableOptions}
           value={selectedOptions}
-          onChange={(_: object, options: string[]) =>
+          onChange={(_event: object, options: string[]) =>
             setSelectedOptions(options)
           }
           renderOption={(option, { selected }) => (
