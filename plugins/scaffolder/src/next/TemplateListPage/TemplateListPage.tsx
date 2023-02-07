@@ -37,7 +37,7 @@ import { RegisterExistingButton } from './RegisterExistingButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
 import { registerComponentRouteRef } from '../../routes';
-import { ScaffolderPageContextMenu } from '../../components/ScaffolderPage/ScaffolderPageContextMenu';
+import { ContextMenu } from './ContextMenu';
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{
@@ -68,7 +68,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
         >
-          <ScaffolderPageContextMenu {...props.contextMenu} />
+          <ContextMenu {...props.contextMenu} />
         </Header>
         <Content>
           <ContentHeader title="Available Templates">
