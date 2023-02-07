@@ -507,7 +507,7 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
-      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<BitbucketServerOAuthResult>;
     }>;
   }>;
   cfAccess: Readonly<{
