@@ -298,6 +298,7 @@ export const bitbucketServer = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their email to the entity email.
      */
-    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
+    emailMatchingUserEntityProfileEmail:
+      (): SignInResolver<BitbucketServerOAuthResult> => commonByEmailResolver,
   },
 });

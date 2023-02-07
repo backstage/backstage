@@ -18,10 +18,16 @@ import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
 import { AuthResolverContext } from '../types';
 import {
+  bitbucketServer,
   BitbucketServerAuthProvider,
   BitbucketServerOAuthResult,
 } from './provider';
-import { commonByEmailResolver } from '../resolvers';
+import { setupServer } from 'msw/node';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { fetch } from 'cross-fetch';
+import { rest } from 'msw';
+
+global.fetch = fetch;
 
 jest.mock('../../lib/passport/PassportStrategyHelper', () => {
   return {
@@ -51,60 +57,60 @@ const passportProfile = {
   photos: [{ value: 'https://bitbucket.org/user/123/avatar' }],
 };
 
-const mockFetchUserRequests = (
-  failOnWhoAmI: boolean = false,
-  whoAmIValue: string = passportProfile.username,
-  failOnGetUser: boolean = false,
-  getUserOk: boolean = true,
-  avatarUrl: string = '/user/123/avatar',
-  setDisplayName: boolean = true,
-  setUserName: boolean = true,
-) => {
-  const fetchMock = global.fetch as jest.Mock;
-  if (failOnWhoAmI) {
-    fetchMock.mockRejectedValueOnce(() => {});
-  } else {
-    fetchMock.mockResolvedValueOnce({
-      headers: { get: jest.fn(() => whoAmIValue) },
-    });
-  }
-  if (failOnGetUser) {
-    fetchMock.mockRejectedValueOnce(() => {});
-  } else {
-    fetchMock.mockResolvedValueOnce({
-      ok: getUserOk,
-      json: () => ({
-        name: setUserName ? 'john.doe' : undefined,
-        emailAddress: 'john@doe.com',
-        id: 123,
-        displayName: setDisplayName ? 'John Doe' : undefined,
-        active: true,
-        slug: 'john.doe',
-        type: 'NORMAL',
-        links: {
-          self: [
-            {
-              href: 'https://bitbucket.org/users/john.doe',
-            },
-          ],
-        },
-        avatarUrl: avatarUrl,
-      }),
-    });
-  }
-};
+const mockHost = 'bitbucket.org';
+const mockBaseUrl = `https://${mockHost}`;
+
+const whoAmIHandler = (options?: { fail?: boolean; value?: string }) =>
+  rest.get(
+    `${mockBaseUrl}/plugins/servlet/applinks/whoami`,
+    (_req, res, ctx) => {
+      if (options?.fail) {
+        res.networkError('error');
+      }
+      return res(
+        ctx.status(200),
+        ctx.set('X-Ausername', options?.value ?? passportProfile.username),
+      );
+    },
+  );
+
+const getUserHandler = (options?: {
+  fail?: boolean;
+  status?: number;
+  avatarUrl?: string;
+  noDisplayName?: boolean;
+  noUserName?: boolean;
+}) =>
+  rest.get(
+    `${mockBaseUrl}/rest/api/latest/users/${passportProfile.username}`,
+    (_req, res, ctx) => {
+      if (options?.fail) {
+        res.networkError('error');
+      }
+      return res(
+        ctx.status(options?.status ?? 200),
+        ctx.json({
+          name: options?.noUserName ? undefined : 'john.doe',
+          emailAddress: 'john@doe.com',
+          id: 123,
+          displayName: options?.noDisplayName ? undefined : 'John Doe',
+          active: true,
+          slug: 'john.doe',
+          type: 'NORMAL',
+          links: {
+            self: [
+              {
+                href: 'https://bitbucket.org/users/john.doe',
+              },
+            ],
+          },
+          avatarUrl: options?.avatarUrl ?? '/user/123/avatar',
+        }),
+      );
+    },
+  );
 
 describe('BitbucketServerAuthProvider', () => {
-  const originalFetch = global.fetch;
-
-  beforeEach(() => {
-    global.fetch = jest.fn();
-  });
-
-  afterEach(() => {
-    global.fetch = originalFetch;
-  });
-
   const provider = new BitbucketServerAuthProvider({
     resolverContext: {
       signInWithCatalogUser: jest.fn(info => {
@@ -113,21 +119,26 @@ describe('BitbucketServerAuthProvider', () => {
         };
       }),
     } as unknown as AuthResolverContext,
-    signInResolver: commonByEmailResolver,
+    signInResolver:
+      bitbucketServer.resolvers.emailMatchingUserEntityProfileEmail(),
     authHandler: async ({ fullProfile }) => ({
       profile: makeProfileInfo(fullProfile),
     }),
     callbackUrl: 'mock',
     clientId: 'mock',
     clientSecret: 'mock',
-    host: 'bitbucket.org',
+    host: mockHost,
     authorizationUrl: 'mock',
     tokenUrl: 'mock',
   });
 
   describe('when transforming to type OAuthResponse', () => {
+    const server = setupServer();
+    setupRequestMockHandlers(server);
+
     it('should map to a valid response', async () => {
-      mockFetchUserRequests();
+      server.use(whoAmIHandler(), getUserHandler());
+
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
 
@@ -153,8 +164,10 @@ describe('BitbucketServerAuthProvider', () => {
       const { response } = await provider.handler({} as any);
       expect(response).toEqual(expected);
     });
+
     it('should throw if whoami fails', async () => {
-      mockFetchUserRequests(true);
+      server.use(whoAmIHandler({ fail: true }), getUserHandler());
+
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
       mockFrameHandler.mockResolvedValueOnce({
@@ -166,8 +179,10 @@ describe('BitbucketServerAuthProvider', () => {
         `Failed to retrieve the username of the logged in user`,
       );
     });
+
     it('should throw if whoami returns an invalid response', async () => {
-      mockFetchUserRequests(false, '');
+      server.use(whoAmIHandler({ value: '' }), getUserHandler());
+
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
       mockFrameHandler.mockResolvedValueOnce({
@@ -179,8 +194,9 @@ describe('BitbucketServerAuthProvider', () => {
         `Failed to retrieve the username of the logged in user`,
       );
     });
+
     it('should throw if get user fails', async () => {
-      mockFetchUserRequests(false, passportProfile.username, true);
+      server.use(whoAmIHandler(), getUserHandler({ fail: true }));
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
       mockFrameHandler.mockResolvedValueOnce({
@@ -192,8 +208,9 @@ describe('BitbucketServerAuthProvider', () => {
         `Failed to retrieve the user '${passportProfile.username}'`,
       );
     });
+
     it('should throw if get user is not ok', async () => {
-      mockFetchUserRequests(false, passportProfile.username, false, false);
+      server.use(whoAmIHandler(), getUserHandler({ status: 500 }));
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
       mockFrameHandler.mockResolvedValueOnce({
@@ -205,8 +222,9 @@ describe('BitbucketServerAuthProvider', () => {
         `Failed to retrieve the user '${passportProfile.username}'`,
       );
     });
+
     it('should not set an avatar url if not given', async () => {
-      mockFetchUserRequests(false, passportProfile.username, false, true, '');
+      server.use(whoAmIHandler(), getUserHandler({ avatarUrl: '' }));
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
 
@@ -231,15 +249,10 @@ describe('BitbucketServerAuthProvider', () => {
       const { response } = await provider.handler({} as any);
       expect(response).toEqual(expected);
     });
+
     it('should fallback to the username if no displayName is given', async () => {
-      mockFetchUserRequests(
-        false,
-        passportProfile.username,
-        false,
-        true,
-        '/user/123/avatar',
-        false,
-      );
+      server.use(whoAmIHandler(), getUserHandler({ noDisplayName: true }));
+
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
 
@@ -265,16 +278,13 @@ describe('BitbucketServerAuthProvider', () => {
       const { response } = await provider.handler({} as any);
       expect(response).toEqual(expected);
     });
+
     it('should fallback to the user id if no name is given', async () => {
-      mockFetchUserRequests(
-        false,
-        passportProfile.username,
-        false,
-        true,
-        '/user/123/avatar',
-        false,
-        false,
+      server.use(
+        whoAmIHandler(),
+        getUserHandler({ noDisplayName: true, noUserName: true }),
       );
+
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
 
@@ -303,8 +313,12 @@ describe('BitbucketServerAuthProvider', () => {
   });
 
   describe('when authenticating', () => {
+    const server = setupServer();
+    setupRequestMockHandlers(server);
+
     it('should forward the refresh token', async () => {
-      mockFetchUserRequests();
+      server.use(whoAmIHandler(), getUserHandler());
+
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
       mockFrameHandler.mockResolvedValueOnce({
@@ -334,8 +348,10 @@ describe('BitbucketServerAuthProvider', () => {
 
       expect(response).toEqual(expected);
     });
+
     it('should forward a new refresh token on refresh', async () => {
-      mockFetchUserRequests();
+      server.use(whoAmIHandler(), getUserHandler());
+
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
       const params = { scope: 'REPO_READ' };
       const mockRefreshToken = jest.spyOn(
