@@ -19,13 +19,13 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { schedulerFactory } from './schedulerFactory';
+import { schedulerServiceFactory } from './schedulerServiceFactory';
 
 describe('schedulerFactory', () => {
   it('creates sidecar database features', async () => {
     expect.assertions(3);
 
-    const subject = schedulerFactory();
+    const subject = schedulerServiceFactory();
 
     const plugin = createBackendPlugin({
       pluginId: 'example',

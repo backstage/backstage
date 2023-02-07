@@ -31,7 +31,7 @@ export interface HttpRouterFactoryOptions {
 }
 
 /** @public */
-export const httpRouterFactory = createServiceFactory(
+export const httpRouterServiceFactory = createServiceFactory(
   (options?: HttpRouterFactoryOptions) => ({
     service: coreServices.httpRouter,
     deps: {

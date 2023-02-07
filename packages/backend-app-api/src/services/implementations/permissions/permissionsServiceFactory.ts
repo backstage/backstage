@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger, UrlReaders } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 /** @public */
-export const urlReaderFactory = createServiceFactory({
-  service: coreServices.urlReader,
+export const permissionsServiceFactory = createServiceFactory({
+  service: coreServices.permissions,
   deps: {
     config: coreServices.config,
-    logger: coreServices.logger,
+    discovery: coreServices.discovery,
+    tokenManager: coreServices.tokenManager,
   },
-  async factory({ config, logger }) {
-    return UrlReaders.default({
-      config,
-      logger: loggerToWinstonLogger(logger),
+  async factory({ config, discovery, tokenManager }) {
+    return ServerPermissionClient.fromConfig(config, {
+      discovery,
+      tokenManager,
     });
   },
 });

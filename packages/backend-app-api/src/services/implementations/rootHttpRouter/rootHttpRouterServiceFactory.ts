@@ -69,7 +69,7 @@ function defaultConfigure({
 }
 
 /** @public */
-export const rootHttpRouterFactory = createServiceFactory(
+export const rootHttpRouterServiceFactory = createServiceFactory(
   (options?: RootHttpRouterFactoryOptions) => ({
     service: coreServices.rootHttpRouter,
     deps: {

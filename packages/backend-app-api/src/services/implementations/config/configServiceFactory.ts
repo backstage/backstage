@@ -18,30 +18,31 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-
-/**
- * An identity client options object which allows extra configurations
- *
- * @public
- */
-export type IdentityFactoryOptions = {
-  issuer?: string;
-
-  /** JWS "alg" (Algorithm) Header Parameter values. Defaults to an array containing just ES256.
-   * More info on supported algorithms: https://github.com/panva/jose */
-  algorithms?: string[];
-};
+import { LoadConfigOptionsRemote } from '@backstage/config-loader';
+import { loadBackendConfig } from '../../../config';
 
 /** @public */
-export const identityFactory = createServiceFactory(
-  (options?: IdentityFactoryOptions) => ({
-    service: coreServices.identity,
-    deps: {
-      discovery: coreServices.discovery,
-    },
-    async factory({ discovery }) {
-      return DefaultIdentityClient.create({ discovery, ...options });
+export interface ConfigFactoryOptions {
+  /**
+   * Process arguments to use instead of the default `process.argv()`.
+   */
+  argv?: string[];
+
+  /**
+   * Enables and sets options for remote configuration loading.
+   */
+  remote?: LoadConfigOptionsRemote;
+}
+
+/** @public */
+export const configServiceFactory = createServiceFactory(
+  (options?: ConfigFactoryOptions) => ({
+    service: coreServices.config,
+    deps: {},
+    async factory({}) {
+      const { argv = process.argv, remote } = options ?? {};
+      const { config } = await loadBackendConfig({ argv, remote });
+      return config;
     },
   }),
 );

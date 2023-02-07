@@ -23,7 +23,7 @@ import { transports, format } from 'winston';
 import { createConfigSecretEnumerator } from '../../../config';
 
 /** @public */
-export const rootLoggerFactory = createServiceFactory({
+export const rootLoggerServiceFactory = createServiceFactory({
   service: coreServices.rootLogger,
   deps: {
     config: coreServices.config,

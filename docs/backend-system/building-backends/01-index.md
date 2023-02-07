@@ -61,11 +61,11 @@ All of these services can be replaced with your own implementations if you need 
 For example, let's say we want to customize the core configuration service to enable remote configuration loading. That would look something like this:
 
 ```ts
-import { configFactory } from '@backstage/backend-app-api';
+import { configServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    configFactory({
+    configServiceFactory({
       remote: { reloadIntervalSeconds: 60 },
     }),
   ],
@@ -160,11 +160,11 @@ A shared environment is defined using `createSharedEnvironment`. In this example
 ```ts
 // packages/backend-env/src/index.ts
 import { createSharedEnvironment } from '@backstage/backend-plugin-api';
-import { customDiscoveryFactory } from './customDiscoveryFactory';
+import { customDiscoveryServiceFactory } from './customDiscoveryServiceFactory';
 
 export const env = createSharedEnvironment({
   services: [
-    customDiscoveryFactory(), // custom DiscoveryService implementation
+    customDiscoveryServiceFactory(), // custom DiscoveryService implementation
   ],
 });
 ```
