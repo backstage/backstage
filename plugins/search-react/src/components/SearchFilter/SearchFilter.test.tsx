@@ -37,7 +37,7 @@ describe('SearchFilter', () => {
 
   const label = 'Field';
   const name = 'field';
-  const values = ['value1', 'value2'];
+  const values = ['value1', 'value2', 'value3'];
   const filters = { unrelated: 'unrelated' };
 
   const query = jest.fn().mockResolvedValue({});
@@ -208,6 +208,18 @@ describe('SearchFilter', () => {
       expect(
         screen.getByRole('option', { name: values[1] }),
       ).toBeInTheDocument();
+    });
+
+    it('Renders placeholder', async () => {
+      render(
+        <SearchContextProvider initialState={initialState}>
+          <SearchFilter.Select placeholder="Hey" name={name} values={values} />
+        </SearchContextProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Hey')).toBeInTheDocument();
+      });
     });
 
     it('Renders values when provided asynchronously', async () => {
@@ -403,6 +415,53 @@ describe('SearchFilter', () => {
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
+        );
+      });
+    });
+
+    it('Selecting multiple values sets filter state', async () => {
+      render(
+        <SearchContextProvider initialState={initialState}>
+          <SearchFilter.Multiselect label={label} name={name} values={values} />
+        </SearchContextProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(label)).toBeInTheDocument();
+      });
+
+      const button = screen.getByRole('button');
+
+      await userEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
+      await userEvent.click(screen.getByRole('option', { name: values[2] }));
+
+      await waitFor(() => {
+        expect(query).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            filters: { [name]: [values[0], values[2]] },
+          }),
+        );
+      });
+
+      await userEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
+
+      await waitFor(() => {
+        expect(query).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            filters: { [name]: [values[2]] },
+          }),
         );
       });
     });

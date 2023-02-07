@@ -15,6 +15,8 @@
  */
 
 import React, { ReactElement, ChangeEvent } from 'react';
+import _ from 'lodash';
+import classnames from 'classnames';
 import {
   makeStyles,
   FormControl,
@@ -25,6 +27,7 @@ import {
   MenuItem,
   FormLabel,
 } from '@material-ui/core';
+import { JsonValue } from '@backstage/types';
 
 import { useSearch } from '../../context';
 import {
@@ -33,11 +36,15 @@ import {
 } from './SearchFilter.Autocomplete';
 import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 
-const useStyles = makeStyles({
-  label: {
-    textTransform: 'capitalize',
+const useStyles = makeStyles(
+  {
+    label: {
+      textTransform: 'capitalize',
+    },
+    menu: {},
   },
-});
+  { name: 'SearchFilter' },
+);
 
 /**
  * @public
@@ -72,6 +79,18 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 /**
  * @public
  */
+export interface SelectFilterProps<T extends JsonValue = string>
+  extends SearchFilterComponentProps {
+  multiple?: boolean;
+  emptyItemLabel?: string;
+  placeholder?: string;
+  renderValue?: (selected: T) => string;
+  fullWidth?: boolean;
+}
+
+/**
+ * @public
+ */
 export const CheckboxFilter = (props: SearchFilterComponentProps) => {
   const {
     className,
@@ -84,14 +103,10 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
   const classes = useStyles();
   const { filters, setFilters } = useSearch();
   useDefaultFilterValue(name, defaultValue);
-  const asyncValues =
-    typeof givenValues === 'function' ? givenValues : undefined;
-  const defaultValues =
-    typeof givenValues === 'function' ? undefined : givenValues;
+
   const { value: values = [], loading } = useAsyncFilterValues(
-    asyncValues,
+    givenValues,
     '',
-    defaultValues,
     valuesDebounceMs,
   );
 
@@ -140,27 +155,33 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
 /**
  * @public
  */
-export const SelectFilter = (props: SearchFilterComponentProps) => {
+export function SelectFilter<T extends JsonValue = string>(
+  props: SelectFilterProps<T>,
+) {
   const {
     className,
     defaultValue,
     label,
     name,
+    placeholder,
     values: givenValues,
     valuesDebounceMs,
+    renderValue,
+    fullWidth = true,
+    multiple = false,
+    emptyItemLabel = 'All',
   } = props;
+
   const classes = useStyles();
   useDefaultFilterValue(name, defaultValue);
-  const asyncValues =
-    typeof givenValues === 'function' ? givenValues : undefined;
-  const defaultValues =
-    typeof givenValues === 'function' ? undefined : givenValues;
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const { value: values = [], loading } = useAsyncFilterValues(
-    asyncValues,
+    givenValues,
     '',
-    defaultValues,
     valuesDebounceMs,
   );
+
   const { filters, setFilters } = useSearch();
 
   const handleChange = (e: ChangeEvent<{ value: unknown }>) => {
@@ -169,17 +190,22 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     } = e;
 
     setFilters(prevFilters => {
-      const { [name]: filter, ...others } = prevFilters;
-      return value ? { ...others, [name]: value as string } : others;
+      const { [props.name]: filter, ...others } = prevFilters;
+
+      return _.isEmpty(value)
+        ? others
+        : { ...others, [props.name]: value as T };
     });
   };
+
+  const displayEmpty = !label;
 
   return (
     <FormControl
       disabled={loading}
       className={className}
       variant="filled"
-      fullWidth
+      fullWidth={fullWidth}
       data-testid="search-selectfilter-next"
     >
       {label ? (
@@ -188,13 +214,37 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
         </InputLabel>
       ) : null}
       <Select
+        className={classnames({
+          selected: filters[name],
+        })}
         variant="outlined"
-        value={filters[name] || ''}
+        value={filters[name] || (multiple ? [] : '')}
         onChange={handleChange}
+        multiple={multiple}
+        displayEmpty={displayEmpty}
+        renderValue={selected => {
+          if (displayEmpty && _.isEmpty(selected as T)) {
+            return placeholder;
+          }
+
+          if (renderValue) {
+            return renderValue(selected as T);
+          }
+
+          return selected as T;
+        }}
+        MenuProps={{
+          className: classes.menu,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'left',
+          },
+          getContentAnchorEl: null,
+        }}
       >
-        <MenuItem value="">
-          <em>All</em>
-        </MenuItem>
+        {!multiple && emptyItemLabel && (
+          <MenuItem value="">{emptyItemLabel}</MenuItem>
+        )}
         {values.map((value: string) => (
           <MenuItem key={value} value={value}>
             {value}
@@ -202,6 +252,19 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
         ))}
       </Select>
     </FormControl>
+  );
+}
+
+/**
+ * @public
+ */
+export const MultiselectFilter = (props: SearchFilterComponentProps) => {
+  return (
+    <SelectFilter<string[]>
+      {...props}
+      multiple
+      renderValue={selected => selected.join(', ')}
+    />
   );
 };
 
@@ -219,9 +282,13 @@ SearchFilter.Checkbox = (
 ) => <SearchFilter {...props} component={CheckboxFilter} />;
 
 SearchFilter.Select = (
+  props: Omit<SearchFilterWrapperProps, 'component'> & SelectFilterProps,
+) => <SearchFilter {...props} component={SelectFilter} />;
+
+SearchFilter.Multiselect = (
   props: Omit<SearchFilterWrapperProps, 'component'> &
     SearchFilterComponentProps,
-) => <SearchFilter {...props} component={SelectFilter} />;
+) => <SearchFilter {...props} component={MultiselectFilter} />;
 
 /**
  * A control surface for a given filter field name, rendered as an autocomplete

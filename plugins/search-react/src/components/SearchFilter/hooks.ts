@@ -27,14 +27,19 @@ import { useSearch } from '../../context';
  * @public
  */
 export const useAsyncFilterValues = (
-  fn: ((partial: string) => Promise<string[]>) | undefined,
+  givenValues: string[] | ((partial: string) => Promise<string[]>) | undefined,
   inputValue: string,
-  defaultValues: string[] = [],
   debounce: number = 250,
 ) => {
+  const fn = typeof givenValues === 'function' ? givenValues : undefined;
+
+  const defaultValues =
+    (typeof givenValues === 'function' ? undefined : givenValues) ?? [];
+
   const valuesMemo = useRef<Record<string, string[] | Promise<string[]>>>({});
   const definiteFn = fn || (() => Promise.resolve([]));
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const [state, callback] = useAsyncFn(definiteFn, [inputValue], {
     loading: true,
   });

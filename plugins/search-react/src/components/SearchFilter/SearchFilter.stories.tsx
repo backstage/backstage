@@ -64,6 +64,18 @@ export const SelectFilter = () => {
   );
 };
 
+export const MultiselectFilter = () => {
+  return (
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Multiselect
+        label="Search Select Filter"
+        name="select_filter"
+        values={['value1', 'value2']}
+      />
+    </Paper>
+  );
+};
+
 export const AsyncSelectFilter = () => {
   return (
     <Paper style={{ padding: 10 }}>

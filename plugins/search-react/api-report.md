@@ -83,6 +83,11 @@ export class MockSearchApi implements SearchApi {
 }
 
 // @public (undocumented)
+export const MultiselectFilter: (
+  props: SearchFilterComponentProps,
+) => JSX.Element;
+
+// @public (undocumented)
 export interface SearchApi {
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
@@ -199,6 +204,9 @@ export const SearchFilter: {
       SearchFilterComponentProps,
   ): JSX.Element;
   Select(
+    props: Omit<SearchFilterWrapperProps, 'component'> & SelectFilterProps,
+  ): JSX.Element;
+  Multiselect(
     props: Omit<SearchFilterWrapperProps, 'component'> &
       SearchFilterComponentProps,
   ): JSX.Element;
@@ -454,7 +462,24 @@ export type SearchResultStateProps = SearchResultContextProps &
   Partial<SearchResultApiProps>;
 
 // @public (undocumented)
-export const SelectFilter: (props: SearchFilterComponentProps) => JSX.Element;
+export function SelectFilter<T extends JsonValue = string>(
+  props: SelectFilterProps<T>,
+): JSX.Element;
+
+// @public (undocumented)
+export interface SelectFilterProps<T extends JsonValue = string>
+  extends SearchFilterComponentProps {
+  // (undocumented)
+  emptyItemLabel?: string;
+  // (undocumented)
+  fullWidth?: boolean;
+  // (undocumented)
+  multiple?: boolean;
+  // (undocumented)
+  placeholder?: string;
+  // (undocumented)
+  renderValue?: (selected: T) => string;
+}
 
 // @public
 export const useSearch: () => SearchContextValue;

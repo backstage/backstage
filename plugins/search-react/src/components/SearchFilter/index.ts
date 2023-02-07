@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-export { CheckboxFilter, SearchFilter, SelectFilter } from './SearchFilter';
+export {
+  CheckboxFilter,
+  SearchFilter,
+  SelectFilter,
+  MultiselectFilter,
+} from './SearchFilter';
 export { AutocompleteFilter } from './SearchFilter.Autocomplete';
 export type {
   SearchFilterComponentProps,
   SearchFilterWrapperProps,
+  SelectFilterProps,
 } from './SearchFilter';
 export type { SearchAutocompleteFilterProps } from './SearchFilter.Autocomplete';

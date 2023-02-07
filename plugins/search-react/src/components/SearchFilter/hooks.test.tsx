@@ -217,7 +217,7 @@ describe('SearchFilter.hooks', () => {
     it('should immediately return given values when provided', () => {
       const givenValues = ['value1', 'value2'];
       const { result } = renderHook(() =>
-        useAsyncFilterValues(undefined, '', givenValues),
+        useAsyncFilterValues(givenValues, ''),
       );
 
       expect(result.current.loading).toEqual(false);
@@ -228,7 +228,7 @@ describe('SearchFilter.hooks', () => {
       const expectedValues = ['value1', 'value2'];
       const asyncFn = () => Promise.resolve(expectedValues);
       const { result, waitForNextUpdate } = renderHook(() =>
-        useAsyncFilterValues(asyncFn, '', undefined, 1000),
+        useAsyncFilterValues(asyncFn, '', 1000),
       );
 
       expect(result.current.loading).toEqual(true);
@@ -243,7 +243,7 @@ describe('SearchFilter.hooks', () => {
     it('should debounce method invocation', async () => {
       const expectedValues = ['value1', 'value2'];
       const asyncFn = jest.fn().mockResolvedValue(expectedValues);
-      renderHook(() => useAsyncFilterValues(asyncFn, '', undefined, 1000));
+      renderHook(() => useAsyncFilterValues(asyncFn, '', 1000));
 
       expect(asyncFn).not.toHaveBeenCalled();
 
@@ -262,7 +262,7 @@ describe('SearchFilter.hooks', () => {
         .mockImplementation((x: string) => Promise.resolve([x]));
       const { rerender, waitForNextUpdate } = renderHook(
         (props: { inputValue: string } = { inputValue: '' }) =>
-          useAsyncFilterValues(asyncFn, props.inputValue, undefined, 1000),
+          useAsyncFilterValues(asyncFn, props.inputValue, 1000),
       );
 
       expect(asyncFn).not.toHaveBeenCalled();
@@ -284,7 +284,7 @@ describe('SearchFilter.hooks', () => {
       const asyncFn = jest.fn().mockResolvedValue(expectedValues);
       const { rerender, waitForNextUpdate } = renderHook(
         (props: { inputValue: string } = { inputValue: '' }) =>
-          useAsyncFilterValues(asyncFn, props.inputValue, undefined, 1000),
+          useAsyncFilterValues(asyncFn, props.inputValue, 1000),
       );
 
       expect(asyncFn).not.toHaveBeenCalled();

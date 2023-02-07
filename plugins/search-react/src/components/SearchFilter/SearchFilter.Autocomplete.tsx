@@ -52,14 +52,10 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
   } = props;
   const [inputValue, setInputValue] = useState<string>('');
   useDefaultFilterValue(name, defaultValue);
-  const asyncValues =
-    typeof givenValues === 'function' ? givenValues : undefined;
-  const defaultValues =
-    typeof givenValues === 'function' ? undefined : givenValues;
+
   const { value: values, loading } = useAsyncFilterValues(
-    asyncValues,
+    givenValues,
     inputValue,
-    defaultValues,
     valuesDebounceMs,
   );
   const { filters, setFilters } = useSearch();
