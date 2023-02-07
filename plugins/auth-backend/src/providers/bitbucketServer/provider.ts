@@ -40,13 +40,14 @@ import {
 } from '../types';
 import express from 'express';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { PassportProfile } from '../../lib/passport/types';
+import { Profile as PassportProfile } from 'passport';
 import { commonByEmailResolver } from '../resolvers';
 
 type PrivateInfo = {
   refreshToken: string;
 };
 
+/** @public */
 export type BitbucketServerOAuthResult = {
   fullProfile: PassportProfile;
   params: {
@@ -216,7 +217,7 @@ export class BitbucketServerAuthProvider implements OAuthHandlers {
 
     const user = await userResponse.json();
 
-    return {
+    const passportProfile = {
       provider: 'bitbucketServer',
       id: user.id.toString(),
       displayName: user.displayName,
@@ -226,10 +227,15 @@ export class BitbucketServerAuthProvider implements OAuthHandlers {
           value: user.emailAddress,
         },
       ],
-      avatarUrl: user.avatarUrl
-        ? `https://${this.host}${user.avatarUrl}`
-        : undefined,
-    };
+    } as PassportProfile;
+
+    if (user.avatarUrl) {
+      passportProfile.photos = [
+        { value: `https://${this.host}${user.avatarUrl}` },
+      ];
+    }
+
+    return passportProfile;
   }
 }
 

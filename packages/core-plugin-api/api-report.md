@@ -242,6 +242,11 @@ export const bitbucketAuthApiRef: ApiRef<
 >;
 
 // @public
+export const bitbucketServerAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+>;
+
+// @public
 export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
   error: Error;
