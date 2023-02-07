@@ -133,7 +133,7 @@ export interface HttpRouterFactoryOptions {
 // @public
 export type HttpServerCertificateOptions =
   | {
-      type: 'plain';
+      type: 'pem';
       key: string;
       cert: string;
     }
