@@ -15,6 +15,7 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { Logger as WinstonLogger, createLogger } from 'winston';
 import Transport, { TransportStreamOptions } from 'winston-transport';
 
@@ -31,7 +32,7 @@ class BackstageLoggerTransport extends Transport {
       callback();
       return;
     }
-    const { level, message, ...meta } = info as { [name: string]: unknown };
+    const { level, message, ...meta } = info as JsonObject;
     switch (level) {
       case 'error':
         this.backstageLogger.error(String(message), meta);

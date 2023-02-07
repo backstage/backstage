@@ -18,6 +18,7 @@ import {
   LoggerService,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import type { mockServices } from './mockServices';
 
 const levels = {
@@ -30,7 +31,7 @@ const levels = {
 
 export class MockRootLoggerService implements RootLoggerService {
   #level: number;
-  #meta: Record<string, unknown>;
+  #meta: JsonObject;
 
   static create(
     options?: mockServices.rootLogger.Options,
@@ -42,39 +43,27 @@ export class MockRootLoggerService implements RootLoggerService {
     return new MockRootLoggerService(levels[level], {});
   }
 
-  error(
-    message: string,
-    meta?: Record<string, unknown> | Error | undefined,
-  ): void {
+  error(message: string, meta?: JsonObject | Error | undefined): void {
     this.#log('error', message, meta);
   }
 
-  warn(
-    message: string,
-    meta?: Record<string, unknown> | Error | undefined,
-  ): void {
+  warn(message: string, meta?: JsonObject | Error | undefined): void {
     this.#log('warn', message, meta);
   }
 
-  info(
-    message: string,
-    meta?: Record<string, unknown> | Error | undefined,
-  ): void {
+  info(message: string, meta?: JsonObject | Error | undefined): void {
     this.#log('info', message, meta);
   }
 
-  debug(
-    message: string,
-    meta?: Record<string, unknown> | Error | undefined,
-  ): void {
+  debug(message: string, meta?: JsonObject | Error | undefined): void {
     this.#log('debug', message, meta);
   }
 
-  child(meta: Record<string, unknown>): LoggerService {
+  child(meta: JsonObject): LoggerService {
     return new MockRootLoggerService(this.#level, { ...this.#meta, ...meta });
   }
 
-  private constructor(level: number, meta: Record<string, unknown>) {
+  private constructor(level: number, meta: JsonObject) {
     this.#level = level;
     this.#meta = meta;
   }
@@ -82,7 +71,7 @@ export class MockRootLoggerService implements RootLoggerService {
   #log(
     level: 'error' | 'warn' | 'info' | 'debug',
     message: string,
-    meta?: Record<string, unknown> | Error | undefined,
+    meta?: JsonObject | Error | undefined,
   ) {
     const levelValue = levels[level] ?? 0;
     if (levelValue <= this.#level) {
