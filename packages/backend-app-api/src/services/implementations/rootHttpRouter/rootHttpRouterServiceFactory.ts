@@ -32,7 +32,7 @@ import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 /**
  * @public
  */
-export interface RootHttpRouterConfigureOptions {
+export interface RootHttpRouterConfigureContext {
   app: Express;
   middleware: MiddlewareFactory;
   routes: RequestHandler;
@@ -51,14 +51,11 @@ export type RootHttpRouterFactoryOptions = {
    */
   indexPath?: string | false;
 
-  configure?(options: RootHttpRouterConfigureOptions): void;
+  configure?(context: RootHttpRouterConfigureContext): void;
 };
 
-function defaultConfigure({
-  app,
-  routes,
-  middleware,
-}: RootHttpRouterConfigureOptions) {
+function defaultConfigure(context: RootHttpRouterConfigureContext) {
+  const { app, routes, middleware } = context;
   app.use(middleware.helmet());
   app.use(middleware.cors());
   app.use(middleware.compression());

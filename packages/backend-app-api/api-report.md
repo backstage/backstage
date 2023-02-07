@@ -11,7 +11,6 @@ import { ConfigService } from '@backstage/backend-plugin-api';
 import { CorsOptions } from 'cors';
 import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { Format } from 'logform';
 import { Handler } from 'express';
 import { HelmetOptions } from 'helmet';
@@ -34,7 +33,6 @@ import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
-import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
@@ -216,7 +214,7 @@ export function readHelmetOptions(config?: Config): HelmetOptions;
 export function readHttpServerOptions(config?: Config): HttpServerOptions;
 
 // @public (undocumented)
-export interface RootHttpRouterConfigureOptions {
+export interface RootHttpRouterConfigureContext {
   // (undocumented)
   app: Express_2;
   // (undocumented)
@@ -234,7 +232,7 @@ export interface RootHttpRouterConfigureOptions {
 // @public (undocumented)
 export type RootHttpRouterFactoryOptions = {
   indexPath?: string | false;
-  configure?(options: RootHttpRouterConfigureOptions): void;
+  configure?(context: RootHttpRouterConfigureContext): void;
 };
 
 // @public (undocumented)
@@ -250,11 +248,6 @@ export const rootLoggerServiceFactory: () => ServiceFactory<RootLoggerService>;
 
 // @public (undocumented)
 export const schedulerServiceFactory: () => ServiceFactory<SchedulerService>;
-
-// @public (undocumented)
-export type ServiceOrExtensionPoint<T = unknown> =
-  | ExtensionPoint<T>
-  | ServiceRef<T>;
 
 // @public (undocumented)
 export const tokenManagerServiceFactory: () => ServiceFactory<TokenManagerService>;
