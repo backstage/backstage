@@ -16,7 +16,6 @@ import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { IncomingHttpHeaders } from 'http';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
-import passport from 'passport';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
@@ -133,11 +132,9 @@ export type BitbucketPassportProfile = Profile & {
   };
 };
 
-// Warning: (ae-missing-release-tag) "BitbucketServerOAuthResult" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BitbucketServerOAuthResult = {
-  fullProfile: PassportProfile;
+  fullProfile: Profile;
   params: {
     scope: string;
     access_token?: string;
@@ -763,8 +760,4 @@ export type WebMessageResponse =
       type: 'authorization_response';
       error: Error;
     };
-
-// Warnings were encountered during analysis:
-//
-// src/providers/bitbucketServer/provider.d.ts:6:5 - (ae-forgotten-export) The symbol "PassportProfile" needs to be exported by the entry point index.d.ts
 ```
