@@ -399,6 +399,7 @@ paths:
         '200':
           description: Refreshed
       security:
+        # From https://stackoverflow.com/questions/47659324/how-to-specify-an-endpoints-authorization-is-optional-in-openapi-v3
         - {}
         - JWT: []
       parameters: []
