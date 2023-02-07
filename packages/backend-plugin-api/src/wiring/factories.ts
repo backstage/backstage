@@ -17,7 +17,6 @@
 import {
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,
-  BackendRegistrationPoints,
   BackendFeature,
   ExtensionPoint,
 } from './types';
@@ -86,19 +85,14 @@ export interface BackendPluginConfig {
 export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
 ): (...params: TOptions) => BackendFeature {
-  if (typeof config === 'function') {
-    return (...options: TOptions) => {
-      const c = config(...options);
-      return {
-        ...c,
-        id: c.pluginId,
-      };
+  const configCallback = typeof config === 'function' ? config : () => config;
+  return (...options: TOptions) => {
+    const c = configCallback(...options);
+    return {
+      ...c,
+      id: c.pluginId,
     };
-  }
-  return () => ({
-    ...config,
-    id: config.pluginId,
-  });
+  };
 }
 
 /**
@@ -132,21 +126,12 @@ export interface BackendModuleConfig {
 export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
 ): (...params: TOptions) => BackendFeature {
-  if (typeof config === 'function') {
-    return (...options: TOptions) => {
-      const c = config(...options);
-      return {
-        id: `${c.pluginId}.${c.moduleId}`,
-        register: c.register,
-      };
+  const configCallback = typeof config === 'function' ? config : () => config;
+  return (...options: TOptions) => {
+    const c = configCallback(...options);
+    return {
+      id: `${c.pluginId}.${c.moduleId}`,
+      register: c.register,
     };
-  }
-  return () => ({
-    id: `${config.pluginId}.${config.moduleId}`,
-    register(register: BackendRegistrationPoints) {
-      return config.register({
-        registerInit: register.registerInit.bind(register),
-      });
-    },
-  });
+  };
 }
