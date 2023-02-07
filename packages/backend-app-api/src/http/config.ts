@@ -93,7 +93,7 @@ function readHttpsOptions(config?: Config): HttpServerOptions['https'] {
 
   return {
     certificate: {
-      type: 'plain',
+      type: 'pem',
       cert: cc.getString('certificate.cert'),
       key: cc.getString('certificate.key'),
     },
