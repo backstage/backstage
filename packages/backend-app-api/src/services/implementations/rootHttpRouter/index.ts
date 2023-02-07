@@ -17,7 +17,7 @@
 export {
   rootHttpRouterServiceFactory,
   type RootHttpRouterFactoryOptions,
-  type RootHttpRouterConfigureOptions,
+  type RootHttpRouterConfigureContext,
 } from './rootHttpRouterServiceFactory';
 export {
   DefaultRootHttpRouter,
