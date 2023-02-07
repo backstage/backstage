@@ -23,15 +23,9 @@ import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
 import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_FACTSETS } from './constants';
 
-jest.mock('node-fetch', () => {
-  const original = jest.requireActual('node-fetch');
-  return {
-    __esModule: true,
-    default: jest.fn(),
-    Headers: original.Headers,
-  };
-});
+jest.mock('node-fetch');
 (global as any).fetch = fetch;
+const { Response } = jest.requireActual('node-fetch');
 
 describe('readPuppetNodes', () => {
   const mockFetch = fetch as unknown as jest.Mocked<any>;
