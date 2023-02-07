@@ -25,15 +25,15 @@ import {
   TokenManagerService,
 } from '@backstage/backend-plugin-api';
 import {
-  cacheFactory,
-  databaseFactory,
-  httpRouterFactory,
-  lifecycleFactory,
-  loggerFactory,
-  permissionsFactory,
-  rootLifecycleFactory,
-  schedulerFactory,
-  urlReaderFactory,
+  cacheServiceFactory,
+  databaseServiceFactory,
+  httpRouterServiceFactory,
+  lifecycleServiceFactory,
+  loggerServiceFactory,
+  permissionsServiceFactory,
+  rootLifecycleServiceFactory,
+  schedulerServiceFactory,
+  urlReaderServiceFactory,
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -109,30 +109,30 @@ export namespace mockServices {
   //               some may need a bit more refactoring for it to be simpler to
   //               re-implement functioning mock versions here.
   export namespace cache {
-    export const factory = cacheFactory;
+    export const factory = cacheServiceFactory;
   }
   export namespace database {
-    export const factory = databaseFactory;
+    export const factory = databaseServiceFactory;
   }
   export namespace httpRouter {
-    export const factory = httpRouterFactory;
+    export const factory = httpRouterServiceFactory;
   }
   export namespace lifecycle {
-    export const factory = lifecycleFactory;
+    export const factory = lifecycleServiceFactory;
   }
   export namespace logger {
-    export const factory = loggerFactory;
+    export const factory = loggerServiceFactory;
   }
   export namespace permissions {
-    export const factory = permissionsFactory;
+    export const factory = permissionsServiceFactory;
   }
   export namespace rootLifecycle {
-    export const factory = rootLifecycleFactory;
+    export const factory = rootLifecycleServiceFactory;
   }
   export namespace scheduler {
-    export const factory = schedulerFactory;
+    export const factory = schedulerServiceFactory;
   }
   export namespace urlReader {
-    export const factory = urlReaderFactory;
+    export const factory = urlReaderServiceFactory;
   }
 }

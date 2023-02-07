@@ -16,16 +16,16 @@
 
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import {
-  databaseFactory,
-  discoveryFactory,
-  httpRouterFactory,
-  lifecycleFactory,
-  loggerFactory,
-  permissionsFactory,
-  rootLoggerFactory,
-  schedulerFactory,
-  tokenManagerFactory,
-  urlReaderFactory,
+  databaseServiceFactory,
+  discoveryServiceFactory,
+  httpRouterServiceFactory,
+  lifecycleServiceFactory,
+  loggerServiceFactory,
+  permissionsServiceFactory,
+  rootLoggerServiceFactory,
+  schedulerServiceFactory,
+  tokenManagerServiceFactory,
+  urlReaderServiceFactory,
 } from '@backstage/backend-app-api';
 import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
@@ -63,16 +63,16 @@ async function main() {
   await startTestBackend({
     services: [
       [coreServices.config, new ConfigReader(config)],
-      databaseFactory(),
-      discoveryFactory(),
-      httpRouterFactory(),
-      lifecycleFactory(),
-      loggerFactory(),
-      permissionsFactory(),
-      rootLoggerFactory(),
-      schedulerFactory(),
-      tokenManagerFactory(),
-      urlReaderFactory(),
+      databaseServiceFactory(),
+      discoveryServiceFactory(),
+      httpRouterServiceFactory(),
+      lifecycleServiceFactory(),
+      loggerServiceFactory(),
+      permissionsServiceFactory(),
+      rootLoggerServiceFactory(),
+      schedulerServiceFactory(),
+      tokenManagerServiceFactory(),
+      urlReaderServiceFactory(),
     ],
     extensionPoints: [],
     features: [
