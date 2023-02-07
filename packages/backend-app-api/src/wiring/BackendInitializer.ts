@@ -28,7 +28,7 @@ import {
 } from './types';
 
 export class BackendInitializer {
-  #started = false;
+  #startPromise?: Promise<void>;
   #features = new Map<BackendFeature, unknown>();
   #registerInits = new Array<BackendRegisterInit>();
   #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
@@ -75,18 +75,40 @@ export class BackendInitializer {
   }
 
   add<TOptions>(feature: BackendFeature, options?: TOptions) {
-    if (this.#started) {
+    if (this.#startPromise) {
       throw new Error('feature can not be added after the backend has started');
     }
     this.#features.set(feature, options);
   }
 
   async start(): Promise<void> {
-    if (this.#started) {
+    if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
-    this.#started = true;
 
+    const exitHandler = async () => {
+      process.removeListener('SIGTERM', exitHandler);
+      process.removeListener('SIGINT', exitHandler);
+      process.removeListener('beforeExit', exitHandler);
+
+      try {
+        await this.stop();
+        process.exit(0);
+      } catch (error) {
+        console.error(error);
+        process.exit(1);
+      }
+    };
+
+    process.addListener('SIGTERM', exitHandler);
+    process.addListener('SIGINT', exitHandler);
+    process.addListener('beforeExit', exitHandler);
+
+    this.#startPromise = this.#doStart();
+    await this.#startPromise;
+  }
+
+  async #doStart(): Promise<void> {
     // Initialize all root scoped services
     for (const ref of this.#serviceHolder.getServiceRefs()) {
       if (ref.scope === 'root') {
@@ -177,9 +199,10 @@ export class BackendInitializer {
   }
 
   async stop(): Promise<void> {
-    if (!this.#started) {
+    if (!this.#startPromise) {
       return;
     }
+    await this.#startPromise;
 
     const lifecycleService = await this.#serviceHolder.get(
       coreServices.rootLifecycle,

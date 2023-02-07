@@ -48,11 +48,11 @@ describe('TechDocs Live Preview - Backstage Serve', () => {
     cy.get('.md-footer').should('have.length', 1);
   });
 
-  it('toMatchImageSnapshot - Backstage TechDocs Page', () => {
+  it('matchImage - Backstage TechDocs Page', () => {
     cy.visit(
       `${Cypress.env('backstageBaseUrl')}/docs/default/component/local`,
     ).then(() => {
-      cy.document().toMatchImageSnapshot();
+      cy.document().matchImage();
     });
   });
 });

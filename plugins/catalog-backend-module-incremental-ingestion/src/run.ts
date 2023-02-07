@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import {
   databaseFactory,
   discoveryFactory,

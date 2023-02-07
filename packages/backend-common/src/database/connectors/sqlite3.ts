@@ -18,8 +18,13 @@ import { Config } from '@backstage/config';
 import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
 import path from 'path';
+import { DevDataStore } from '@backstage/backend-dev-utils';
 import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
+import {
+  LifecycleService,
+  PluginMetadataService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Creates a knex SQLite3 database connection
@@ -30,22 +35,63 @@ import { DatabaseConnector } from '../types';
 export function createSqliteDatabaseClient(
   dbConfig: Config,
   overrides?: Knex.Config,
+  deps?: {
+    lifecycle: LifecycleService;
+    pluginMetadata: PluginMetadataService;
+  },
 ) {
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
+  const connConfig = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
+
+  const filename = connConfig.filename ?? ':memory:';
 
   // If storage on disk is used, ensure that the directory exists
-  if (
-    (knexConfig.connection as Knex.Sqlite3ConnectionConfig).filename &&
-    (knexConfig.connection as Knex.Sqlite3ConnectionConfig).filename !==
-      ':memory:'
-  ) {
-    const { filename } = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
+  if (filename !== ':memory:') {
     const directory = path.dirname(filename);
-
     ensureDirSync(directory);
   }
 
-  const database = knexFactory(knexConfig);
+  let database: Knex;
+
+  if (deps && filename === ':memory:') {
+    // The dev store is used during watch mode to store and restore the database
+    // across reloads. It is only available when running the backend through
+    // `backstage-cli package start`.
+    const devStore = DevDataStore.get();
+
+    if (devStore) {
+      const dataKey = `sqlite3-db-${deps.pluginMetadata.getId()}`;
+
+      const connectionLoader = async () => {
+        // If seed data is available, use it tconnectionLoader restore the database
+        const { data: seedData } = await devStore.load(dataKey);
+
+        return {
+          ...(knexConfig.connection as Knex.Sqlite3ConnectionConfig),
+          filename: seedData ?? ':memory:',
+        };
+      };
+
+      database = knexFactory({
+        ...knexConfig,
+        connection: Object.assign(connectionLoader, {
+          // This is a workaround for the knex SQLite driver always warning when using a config loader
+          filename: ':memory:',
+        }),
+      });
+
+      // If the dev store is available we save the database state on shutdown
+      deps.lifecycle.addShutdownHook(async () => {
+        const connection = await database.client.acquireConnection();
+        const data = connection.serialize();
+        await devStore.save(dataKey, data);
+      });
+    } else {
+      database = knexFactory(knexConfig);
+    }
+  } else {
+    database = knexFactory(knexConfig);
+  }
 
   database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
     resource.run('PRAGMA foreign_keys = ON', () => {});

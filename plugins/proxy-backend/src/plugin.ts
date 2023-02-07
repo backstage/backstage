@@ -28,7 +28,7 @@ import { createRouter } from './service/router';
  */
 export const proxyPlugin = createBackendPlugin(
   (options?: { skipInvalidProxies?: boolean }) => ({
-    id: 'proxy',
+    pluginId: 'proxy',
     register(env) {
       env.registerInit({
         deps: {

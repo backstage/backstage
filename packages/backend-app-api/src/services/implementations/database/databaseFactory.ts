@@ -26,7 +26,8 @@ export const databaseFactory = createServiceFactory({
   service: coreServices.database,
   deps: {
     config: coreServices.config,
-    plugin: coreServices.pluginMetadata,
+    lifecycle: coreServices.lifecycle,
+    pluginMetadata: coreServices.pluginMetadata,
   },
   async createRootContext({ config }) {
     return config.getOptional('backend.database')
@@ -39,7 +40,10 @@ export const databaseFactory = createServiceFactory({
           }),
         );
   },
-  async factory({ plugin }, databaseManager) {
-    return databaseManager.forPlugin(plugin.getId());
+  async factory({ pluginMetadata, lifecycle }, databaseManager) {
+    return databaseManager.forPlugin(pluginMetadata.getId(), {
+      pluginMetadata,
+      lifecycle,
+    });
   },
 });

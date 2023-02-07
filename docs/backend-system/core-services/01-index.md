@@ -33,7 +33,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: { http: coreServices.httpRouter },
@@ -86,7 +86,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -157,7 +157,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -215,7 +215,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -288,7 +288,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -327,7 +327,7 @@ import {
 import { resolvePackagePath } from '@backstage/backend-common';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -366,7 +366,7 @@ import {
 import { fetch } from 'node-fetch';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -397,7 +397,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -465,7 +465,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -479,10 +479,7 @@ createBackendPlugin({
           // do some other stuff.
         }, 1000);
 
-        lifecycle.addShutdownHook({
-          fn: () => clearInterval(interval),
-          logger,
-        });
+        lifecycle.addShutdownHook(() => clearInterval(interval));
       },
     });
   },
@@ -499,17 +496,19 @@ The following example shows how to override the default implementation of the li
 
 ```ts
 class MyCustomLifecycleService implements RootLifecycleService {
-  constructor(private readonly logger: LoggerService) {
-    ['SIGKILL', 'SIGTERM'].map(signal =>
-      process.on(signal, () => this.shutdown()),
-    );
-  }
+  constructor(private readonly logger: LoggerService) {}
 
   #isCalled = false;
-  #shutdownTasks: Array<LifecycleServiceShutdownHook> = [];
+  #shutdownTasks: Array<{
+    hook: LifecycleServiceShutdownHook;
+    options?: LifecycleServiceShutdownOptions;
+  }> = [];
 
-  addShutdownHook(options: LifecycleServiceShutdownHook): void {
-    this.#shutdownTasks.push(options);
+  addShutdownHook(
+    hook: LifecycleServiceShutdownHook,
+    options?: LifecycleServiceShutdownOptions,
+  ): void {
+    this.#shutdownTasks.push({ hook, options });
   }
 
   async shutdown(): Promise<void> {
@@ -520,10 +519,10 @@ class MyCustomLifecycleService implements RootLifecycleService {
 
     this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
     await Promise.all(
-      this.#shutdownTasks.map(async hook => {
-        const { logger = this.logger } = hook;
+      this.#shutdownTasks.map(async ({ hook, options }) => {
+        const logger = options?.logger ?? this.logger;
         try {
-          await hook.fn();
+          await hook();
           logger.info(`Shutdown hook succeeded`);
         } catch (error) {
           logger.error(`Shutdown hook failed, ${error}`);
@@ -564,7 +563,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -613,7 +612,7 @@ import {
 import { fetch } from 'node-fetch';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -652,7 +651,7 @@ import {
 import os from 'os';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {

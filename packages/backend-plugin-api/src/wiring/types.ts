@@ -32,7 +32,7 @@ export type ExtensionPoint<T> = {
 
   toString(): string;
 
-  $$ref: 'extension-point';
+  $$type: '@backstage/ExtensionPoint';
 };
 
 /**

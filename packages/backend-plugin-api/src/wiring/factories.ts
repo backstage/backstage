@@ -55,7 +55,7 @@ export function createExtensionPoint<T>(
     toString() {
       return `extensionPoint{${config.id}}`;
     },
-    $$ref: 'extension-point', // TODO: declare
+    $$type: '@backstage/ExtensionPoint',
   };
 }
 
@@ -72,7 +72,7 @@ export interface BackendPluginConfig {
    *
    * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
    */
-  id: string;
+  pluginId: string;
   register(reg: BackendPluginRegistrationPoints): void;
 }
 
@@ -87,10 +87,18 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
 ): (...params: TOptions) => BackendFeature {
   if (typeof config === 'function') {
-    return config;
+    return (...options: TOptions) => {
+      const c = config(...options);
+      return {
+        ...c,
+        id: c.pluginId,
+      };
+    };
   }
-
-  return () => config;
+  return () => ({
+    ...config,
+    id: config.pluginId,
+  });
 }
 
 /**
