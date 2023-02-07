@@ -54,8 +54,6 @@ const actions: Action[] = [
 
 describe('ActionsList', () => {
   const mockApi: jest.Mocked<StackStormApi> = {
-    getExecutions: jest.fn().mockResolvedValue([]),
-    getExecution: jest.fn().mockResolvedValue({}),
     getPacks: jest.fn().mockResolvedValue(packs),
     getActions: jest.fn().mockResolvedValue(actions),
   } as any;
