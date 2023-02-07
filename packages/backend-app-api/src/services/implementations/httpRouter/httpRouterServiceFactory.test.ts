@@ -18,12 +18,12 @@ import {
   HttpRouterService,
   ServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { httpRouterFactory } from './httpRouterFactory';
+import { httpRouterServiceFactory } from './httpRouterServiceFactory';
 
 describe('httpRouterFactory', () => {
   it('should register plugin paths', async () => {
     const rootHttpRouter = { use: jest.fn() };
-    const factory = httpRouterFactory() as Exclude<
+    const factory = httpRouterServiceFactory() as Exclude<
       ServiceFactory<HttpRouterService>,
       { scope: 'root' }
     >;
@@ -55,7 +55,7 @@ describe('httpRouterFactory', () => {
 
   it('should use custom path generator', async () => {
     const rootHttpRouter = { use: jest.fn() };
-    const factory = httpRouterFactory({
+    const factory = httpRouterServiceFactory({
       getPath: id => `/some/${id}/path`,
     }) as Exclude<ServiceFactory<HttpRouterService>, { scope: 'root' }>;
 

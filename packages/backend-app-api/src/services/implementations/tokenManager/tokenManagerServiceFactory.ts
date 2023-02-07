@@ -21,7 +21,7 @@ import {
 import { ServerTokenManager } from '@backstage/backend-common';
 
 /** @public */
-export const tokenManagerFactory = createServiceFactory({
+export const tokenManagerServiceFactory = createServiceFactory({
   service: coreServices.tokenManager,
   deps: {
     config: coreServices.config,

@@ -20,13 +20,13 @@ import {
   TokenManagerService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { tokenManagerFactory } from './tokenManagerFactory';
+import { tokenManagerServiceFactory } from './tokenManagerServiceFactory';
 
 describe('tokenManagerFactory', () => {
   it('should create managers that can share tokens in development', async () => {
     (process.env as { NODE_ENV?: string }).NODE_ENV = 'development';
 
-    const factory = tokenManagerFactory() as Exclude<
+    const factory = tokenManagerServiceFactory() as Exclude<
       ServiceFactory<TokenManagerService>,
       { scope: 'root' }
     >;

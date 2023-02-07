@@ -65,7 +65,7 @@ export class BackendLifecycleImpl implements RootLifecycleService {
  *
  * @public
  */
-export const rootLifecycleFactory = createServiceFactory({
+export const rootLifecycleServiceFactory = createServiceFactory({
   service: coreServices.rootLifecycle,
   deps: {
     logger: coreServices.rootLogger,

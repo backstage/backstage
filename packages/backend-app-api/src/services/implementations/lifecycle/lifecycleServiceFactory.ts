@@ -24,7 +24,7 @@ import {
  * Allows plugins to register shutdown hooks that are run when the process is about to exit.
  * @public
  */
-export const lifecycleFactory = createServiceFactory({
+export const lifecycleServiceFactory = createServiceFactory({
   service: coreServices.lifecycle,
   deps: {
     logger: coreServices.logger,

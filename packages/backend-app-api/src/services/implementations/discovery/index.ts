@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { discoveryFactory } from './discoveryFactory';
+export { discoveryServiceFactory } from './discoveryServiceFactory';

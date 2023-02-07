@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { identityFactory } from './identityFactory';
-export type { IdentityFactoryOptions } from './identityFactory';
+export { identityServiceFactory } from './identityServiceFactory';
+export type { IdentityFactoryOptions } from './identityServiceFactory';
