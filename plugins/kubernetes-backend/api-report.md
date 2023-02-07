@@ -17,6 +17,7 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger } from 'winston';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
@@ -200,6 +201,7 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
     proxy: KubernetesProxy,
+    permissionApi: PermissionEvaluator,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
@@ -271,6 +273,8 @@ export interface KubernetesEnvironment {
   config: Config;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  permissions: PermissionEvaluator;
 }
 
 // @public
@@ -340,7 +344,7 @@ export type KubernetesObjectTypes =
 export class KubernetesProxy {
   constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
   // (undocumented)
-  createRequestHandler(): RequestHandler;
+  createRequestHandler(permissionApi: PermissionEvaluator): RequestHandler;
 }
 
 // @public
@@ -418,6 +422,8 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  permissions: PermissionEvaluator;
 }
 
 // @public (undocumented)

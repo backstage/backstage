@@ -30,6 +30,10 @@ import {
   HEADER_KUBERNETES_CLUSTER,
   KubernetesProxy,
 } from './KubernetesProxy';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
@@ -64,6 +68,11 @@ describe('KubernetesProxy', () => {
     getClusters: jest.fn(),
   };
 
+  const permissions: jest.Mocked<PermissionEvaluator> = {
+    authorize: jest.fn(),
+    authorizeConditional: jest.fn(),
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
     proxy = new KubernetesProxy(getVoidLogger(), clusterSupplier);
@@ -71,13 +80,16 @@ describe('KubernetesProxy', () => {
 
   it('should return a ERROR_NOT_FOUND if no clusters are found', async () => {
     clusterSupplier.getClusters.mockResolvedValue([]);
+    permissions.authorize.mockReturnValue(
+      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+    );
 
     const req = buildMockRequest('test', 'api');
     const { res, next } = getMockRes();
 
-    await expect(proxy.createRequestHandler()(req, res, next)).rejects.toThrow(
-      NotFoundError,
-    );
+    await expect(
+      proxy.createRequestHandler(permissions)(req, res, next),
+    ).rejects.toThrow(NotFoundError);
   });
 
   it('should pass the exact response from Kubernetes', async () => {
@@ -100,7 +112,13 @@ describe('KubernetesProxy', () => {
         authProvider: 'serviceAccount',
       },
     ] as ClusterDetails[]);
-    const app = express().use('/mountpath', proxy.createRequestHandler());
+    const app = express().use(
+      '/mountpath',
+      proxy.createRequestHandler(permissions),
+    );
+    permissions.authorize.mockReturnValue(
+      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+    );
     const requestPromise = request(app)
       .get('/mountpath/api')
       .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');

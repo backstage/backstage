@@ -7463,32 +7463,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-proxy-restrict@^0.0.0, @backstage/plugin-proxy-restrict@workspace:plugins/proxy-restrict":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-proxy-restrict@workspace:plugins/proxy-restrict"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
-    "@backstage/core-components": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
-    "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
-    "@material-ui/lab": ^4.0.0-alpha.57
-    "@testing-library/jest-dom": ^5.10.1
-    "@testing-library/react": ^12.1.3
-    "@testing-library/user-event": ^14.0.0
-    "@types/node": "*"
-    cross-fetch: ^3.1.5
-    msw: ^0.49.0
-    react-use: ^17.2.4
-  peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-  languageName: unknown
-  linkType: soft
-
 "@backstage/plugin-rollbar-backend@workspace:^, @backstage/plugin-rollbar-backend@workspace:plugins/rollbar-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-rollbar-backend@workspace:plugins/rollbar-backend"
@@ -22496,7 +22470,6 @@ __metadata:
     "@backstage/plugin-pagerduty": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-playlist": "workspace:^"
-    "@backstage/plugin-proxy-restrict": ^0.0.0
     "@backstage/plugin-rollbar": "workspace:^"
     "@backstage/plugin-scaffolder": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
