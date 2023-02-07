@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 407dc01fc9: Removing extra imports for `run` script as `TestBackend` auto loads the default factories
+- 77c41b6924: Updated README to include newer API options for incremental entity providers
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-test-utils@0.1.34-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-catalog-backend@1.7.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-events-node@0.2.3-next.2
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.2.0-next.1
 
 ### Patch Changes

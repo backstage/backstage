@@ -1,5 +1,24 @@
 # @backstage/backend-common
 
+## 0.18.2-next.2
+
+### Patch Changes
+
+- e716946103: Updated usage of the lifecycle service.
+- d31d8e00b3: Updated to work with the new `type: 'pem'` with `createHttpServer` from `@backstage/backend-app-api`
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- f60cca9da1: The `DatabaseManager.forPlugin` method now accepts additional service dependencies. There is no need to update existing code to pass these dependencies.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0-next.2
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-dev-utils@0.1.0-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
 ## 0.18.2-next.1
 
 ### Patch Changes

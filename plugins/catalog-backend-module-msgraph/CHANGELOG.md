@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.5.0-next.2
+
+### Minor Changes
+
+- fb568e2683: Improve performance when loading users via group membership.
+  Users data is now loaded from a paged query, rather than having to make an extra call per user to load each user's profiles.
+
+  Note, there are still additional per user calls made to load user avatars
+
+### Patch Changes
+
+- 28f9883440: Fixed a bug reading the `user.select` field expected from the `app-config.yaml` configuration
+- c5b119ad9c: Increased default page size to 999 (from 100) to reduce the number of calls made to the Microsoft Graph API.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-catalog-backend@1.7.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/config@1.0.6
+
 ## 0.4.8-next.1
 
 ### Patch Changes
