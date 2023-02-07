@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
+import { loggerToWinstonLogger, UrlReaders } from '@backstage/backend-common';
 import {
-  createServiceFactory,
   coreServices,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
-export const loggerFactory = createServiceFactory({
-  service: coreServices.logger,
+export const urlReaderServiceFactory = createServiceFactory({
+  service: coreServices.urlReader,
   deps: {
-    rootLogger: coreServices.rootLogger,
-    plugin: coreServices.pluginMetadata,
+    config: coreServices.config,
+    logger: coreServices.logger,
   },
-  factory({ rootLogger, plugin }) {
-    return rootLogger.child({ plugin: plugin.getId() });
+  async factory({ config, logger }) {
+    return UrlReaders.default({
+      config,
+      logger: loggerToWinstonLogger(logger),
+    });
   },
 });

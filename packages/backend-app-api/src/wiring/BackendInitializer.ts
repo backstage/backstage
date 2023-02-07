@@ -20,7 +20,7 @@ import {
   coreServices,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
-import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleFactory';
+import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import {
   BackendRegisterInit,
   EnumerableServiceHolder,

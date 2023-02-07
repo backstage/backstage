@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import { TaskScheduler } from '@backstage/backend-tasks';
 
 /** @public */
-export const permissionsFactory = createServiceFactory({
-  service: coreServices.permissions,
+export const schedulerServiceFactory = createServiceFactory({
+  service: coreServices.scheduler,
   deps: {
-    config: coreServices.config,
-    discovery: coreServices.discovery,
-    tokenManager: coreServices.tokenManager,
+    plugin: coreServices.pluginMetadata,
+    databaseManager: coreServices.database,
+    logger: coreServices.logger,
   },
-  async factory({ config, discovery, tokenManager }) {
-    return ServerPermissionClient.fromConfig(config, {
-      discovery,
-      tokenManager,
+  async factory({ plugin, databaseManager, logger }) {
+    return TaskScheduler.forPlugin({
+      pluginId: plugin.getId(),
+      databaseManager,
+      logger: loggerToWinstonLogger(logger),
     });
   },
 });

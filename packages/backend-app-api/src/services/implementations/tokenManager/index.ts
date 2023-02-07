@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { tokenManagerFactory } from './tokenManagerFactory';
+export { tokenManagerServiceFactory } from './tokenManagerServiceFactory';

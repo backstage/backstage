@@ -14,23 +14,36 @@
  * limitations under the License.
  */
 
-import { CacheManager } from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { ConfigReader } from '@backstage/config';
 
 /** @public */
-export const cacheFactory = createServiceFactory({
-  service: coreServices.cache,
+export const databaseServiceFactory = createServiceFactory({
+  service: coreServices.database,
   deps: {
     config: coreServices.config,
-    plugin: coreServices.pluginMetadata,
+    lifecycle: coreServices.lifecycle,
+    pluginMetadata: coreServices.pluginMetadata,
   },
   async createRootContext({ config }) {
-    return CacheManager.fromConfig(config);
+    return config.getOptional('backend.database')
+      ? DatabaseManager.fromConfig(config)
+      : DatabaseManager.fromConfig(
+          new ConfigReader({
+            backend: {
+              database: { client: 'better-sqlite3', connection: ':memory:' },
+            },
+          }),
+        );
   },
-  async factory({ plugin }, manager) {
-    return manager.forPlugin(plugin.getId());
+  async factory({ pluginMetadata, lifecycle }, databaseManager) {
+    return databaseManager.forPlugin(pluginMetadata.getId(), {
+      pluginMetadata,
+      lifecycle,
+    });
   },
 });

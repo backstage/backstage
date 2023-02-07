@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 /** @public */
-export const discoveryFactory = createServiceFactory({
+export const discoveryServiceFactory = createServiceFactory({
   service: coreServices.discovery,
   deps: {
     config: coreServices.config,
