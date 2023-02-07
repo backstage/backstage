@@ -262,6 +262,8 @@ async function getRootConfig() {
         testScript?.includes('backstage-cli test') ||
         testScript?.includes('backstage-cli package test');
       if (testScript && isSupportedTestScript) {
+        // Some global Jest config might be invalid for a 'project' level config and output warnings
+        // See: https://github.com/facebook/jest/blob/main/packages/jest-types/src/Config.ts
         return await getProjectConfig(projectPath, {
           displayName: packageData.name,
         });
@@ -271,10 +273,13 @@ async function getRootConfig() {
     }),
   ).then(cs => cs.filter(Boolean));
 
+  const rootBaseConfig = await getProjectConfig(targetPath, coverageConfig);
   return {
-    rootDir: targetPath,
-    projects: configs,
-    ...coverageConfig,
+    ...rootBaseConfig,
+    ...{
+      rootDir: targetPath,
+      projects: configs,
+    },
   };
 }
 
