@@ -53,7 +53,9 @@ export interface Backend {
 export const cacheFactory: () => ServiceFactory<PluginCacheManager>;
 
 // @public (undocumented)
-export const configFactory: () => ServiceFactory<ConfigService>;
+export const configFactory: (
+  options?: ConfigFactoryOptions | undefined,
+) => ServiceFactory<ConfigService>;
 
 // @public (undocumented)
 export interface ConfigFactoryOptions {

@@ -35,13 +35,15 @@ export interface ConfigFactoryOptions {
 }
 
 /** @public */
-export const configFactory = createServiceFactory({
-  service: coreServices.config,
-  deps: {},
-  async factory({}, options?: ConfigFactoryOptions) {
-    const { argv = process.argv, remote } = options ?? {};
+export const configFactory = createServiceFactory(
+  (options?: ConfigFactoryOptions) => ({
+    service: coreServices.config,
+    deps: {},
+    async factory() {
+      const { argv = process.argv, remote } = options ?? {};
 
-    const { config } = await loadBackendConfig({ argv, remote });
-    return config;
-  },
-});
+      const { config } = await loadBackendConfig({ argv, remote });
+      return config;
+    },
+  }),
+);
