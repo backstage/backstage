@@ -442,6 +442,25 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 export class MicrosoftAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
+  // (undocumented)
+  getAccessToken(
+    scope?: string | string[],
+    options?: AuthRequestOptions,
+  ): Promise<string>;
+  // (undocumented)
+  getBackstageIdentity(
+    options?: AuthRequestOptions,
+  ): Promise<BackstageIdentityResponse | undefined>;
+  // (undocumented)
+  getIdToken(options?: AuthRequestOptions): Promise<string>;
+  // (undocumented)
+  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
+  // (undocumented)
+  sessionState$(): Observable<SessionState>;
+  // (undocumented)
+  signIn(): Promise<void>;
+  // (undocumented)
+  signOut(): Promise<void>;
 }
 
 // @public
