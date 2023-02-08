@@ -36,6 +36,7 @@ import fs from 'fs-extra';
 import linguist from 'linguist-js';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
+import { HumanDuration } from '@backstage/types';
 
 /** @public */
 export class LinguistBackendApi {
@@ -45,6 +46,7 @@ export class LinguistBackendApi {
     private readonly store: LinguistBackendStore,
     private readonly urlReader: UrlReader,
     private readonly discovery: PluginEndpointDiscovery,
+    private readonly age?: HumanDuration,
   ) {}
 
   public async getEntityLanguages(entityRef: string): Promise<Languages> {
@@ -148,8 +150,8 @@ export class LinguistBackendApi {
     const processedEntities = await this.store.getProcessedEntities();
 
     const staleEntities = processedEntities.filter(pe => {
-      if (age === 0) return false;
-      const staleDate = DateTime.now().minus({ days: age });
+      if (age === undefined) return false;
+      const staleDate = DateTime.now().minus(this.age as HumanDuration);
       return DateTime.fromJSDate(pe.processed_date) >= staleDate;
     });
 

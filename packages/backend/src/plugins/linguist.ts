@@ -36,5 +36,6 @@ export default async function createPlugin(
     database: env.database,
     scheduler: env.scheduler,
     schedule: schedule,
+    age: { days: 30 },
   });
 }

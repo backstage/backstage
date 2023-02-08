@@ -7,6 +7,7 @@ import { Config } from '@backstage/config';
 import { EntitiesOverview } from '@backstage/plugin-linguist-common';
 import { EntityResults } from '@backstage/plugin-linguist-common';
 import express from 'express';
+import { HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
 import { Languages } from '@backstage/plugin-linguist-common';
 import { Logger } from 'winston';
@@ -28,6 +29,7 @@ export class LinguistBackendApi {
     store: LinguistBackendStore,
     urlReader: UrlReader,
     discovery: PluginEndpointDiscovery,
+    age?: HumanDuration | undefined,
   );
   // (undocumented)
   getEntitiesOverview(): Promise<EntitiesOverview>;
@@ -64,6 +66,8 @@ export interface LinguistBackendStore {
 
 // @public (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  age?: HumanDuration;
   // (undocumented)
   config: Config;
   // (undocumented)
