@@ -69,11 +69,11 @@ export class MicrosoftCalendarApiClient {
     return response.json() as Promise<T>;
   }
 
-  public async getCalendars(params?: any): Promise<MicrosoftCalendar[]> {
+  public async getCalendars(): Promise<MicrosoftCalendar[]> {
     const data = await this.get<{
       id: string;
       value: MicrosoftCalendar[];
-    }>('v1.0/me/calendars', params);
+    }>('v1.0/me/calendars');
 
     return data.value;
   }
