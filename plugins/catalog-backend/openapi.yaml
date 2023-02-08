@@ -1,4 +1,5 @@
 openapi: 3.1.0
+
 info:
   title: '@backstage/plugin-catalog-backend'
   version: '1'
@@ -6,6 +7,10 @@ info:
   license:
     name: Apache-2.0
   contact: {}
+
+servers:
+  - url: /
+
 components:
   examples: {}
   headers: {}
@@ -14,6 +19,7 @@ components:
   responses: {}
   schemas:
     RefreshOptions:
+      type: object
       properties:
         authorizationToken:
           type: string
@@ -22,19 +28,19 @@ components:
           description: The reference to a single entity that should be refreshed
       required:
         - entityRef
-      type: object
       description: Options for requesting a refresh of entities in the catalog.
     JsonObject:
-      properties: {}
       type: object
+      properties: {}
       description: A type representing all allowed JSON object values.
     MapStringString:
-      properties: {}
       type: object
+      properties: {}
       additionalProperties:
         type: string
       description: Construct a type with a set of properties K of type T
     EntityLink:
+      type: object
       properties:
         type:
           type: string
@@ -50,21 +56,21 @@ components:
           description: The url to the external site, document, etc.
       required:
         - url
-      type: object
       description: A link to external information that is related to the entity.
     EntityMeta:
       allOf:
         - $ref: '#/components/schemas/JsonObject'
-        - properties:
+        - type: object
+          properties:
             links:
+              type: array
               items:
                 $ref: '#/components/schemas/EntityLink'
-              type: array
               description: A list of external hyperlinks related to the entity.
             tags:
+              type: array
               items:
                 type: string
-              type: array
               description: |-
                 A list of single-valued strings, to for example classify catalog entities in
                 various ways.
@@ -126,9 +132,9 @@ components:
                 that do so in such a way that it breaks semantics.
           required:
             - name
-          type: object
       description: Metadata fields common to all versions/kinds of entity.
     EntityRelation:
+      type: object
       properties:
         targetRef:
           type: string
@@ -139,14 +145,14 @@ components:
       required:
         - targetRef
         - type
-      type: object
       description: A relation of a specific type to another entity in the catalog.
     Entity:
+      type: object
       properties:
         relations:
+          type: array
           items:
             $ref: '#/components/schemas/EntityRelation'
-          type: array
           description: The relations that this entity has with other entities.
         spec:
           $ref: '#/components/schemas/JsonObject'
@@ -164,12 +170,14 @@ components:
         - metadata
         - kind
         - apiVersion
-      type: object
       description: The parts of the format that's common to all versions/kinds of entity.
     EntityAncestryResponse:
+      type: object
       properties:
         items:
+          type: array
           items:
+            type: object
             properties:
               parentEntityRefs:
                 items:
@@ -180,44 +188,42 @@ components:
             required:
               - parentEntityRefs
               - entity
-            type: object
-          type: array
         rootEntityRef:
           type: string
       required:
         - items
         - rootEntityRef
-      type: object
     EntitiesBatchResponse:
+      type: object
       properties:
         items:
+          type: array
           items:
             allOf:
               - $ref: '#/components/schemas/Entity'
             nullable: true
-          type: array
           description: |-
             The list of entities, in the same order as the refs in the request. Entries
             that are null signify that no entity existed with that ref.
       required:
         - items
-      type: object
     EntityFacets:
       type: object
-      properties: 
-        value: 
+      properties:
+        value:
           type: string
-        count: 
+        count:
           type: number
       description: Construct a type with a set of properties K of type T
     EntityFacetsResponse:
-      properties: {}
       type: object
+      properties: {}
       additionalProperties:
-          $ref: '#/components/schemas/EntityFacets'
+        $ref: '#/components/schemas/EntityFacets'
       required:
         - facets
     Location:
+      type: object
       properties:
         target:
           type: string
@@ -229,9 +235,9 @@ components:
         - target
         - type
         - id
-      type: object
       description: Entity location for a specific entity.
     LocationSpec:
+      type: object
       properties:
         presence:
           type: string
@@ -245,9 +251,9 @@ components:
       required:
         - target
         - type
-      type: object
       description: Holds the entity location information.
     AnalyzeLocationExistingEntity:
+      type: object
       properties:
         entity:
           $ref: '#/components/schemas/Entity'
@@ -259,13 +265,13 @@ components:
         - entity
         - isRegistered
         - location
-      type: object
       description: |-
         If the folder pointed to already contained catalog info yaml files, they are
         read and emitted like this so that the frontend can inform the user that it
         located them and can make sure to register them as well if they weren't
         already
     RecursivePartial_Entity_:
+      type: object
       properties:
         apiVersion:
           type: string
@@ -280,13 +286,13 @@ components:
         spec:
           $ref: '#/components/schemas/JsonObject'
         relations:
+          type: array
           items:
             $ref: '#/components/schemas/EntityRelation'
-          type: array
           description: The relations that this entity has with other entities.
-      type: object
       description: Makes all keys of an entire hierarchy optional.
     AnalyzeLocationEntityField:
+      type: object
       properties:
         description:
           type: string
@@ -315,19 +321,18 @@ components:
         - value
         - state
         - field
-      type: object
     AnalyzeLocationGenerateEntity:
+      type: object
       properties:
         fields:
+          type: array
           items:
             $ref: '#/components/schemas/AnalyzeLocationEntityField'
-          type: array
         entity:
           $ref: '#/components/schemas/RecursivePartial_Entity_'
       required:
         - fields
         - entity
-      type: object
       description: |-
         This is some form of representation of what the analyzer could deduce.
         We should probably have a chat about how this can best be conveyed to
@@ -335,6 +340,7 @@ components:
         enough info for the frontend to know what form data to show to the user
         for overriding/completing the info.
     AnalyzeLocationResponse:
+      type: object
       properties:
         generateEntities:
           items:
@@ -347,8 +353,8 @@ components:
       required:
         - generateEntities
         - existingEntityFiles
-      type: object
     LocationInput:
+      type: object
       properties:
         type:
           type: string
@@ -363,11 +369,11 @@ components:
         - type
         - target
         - presence
-      type: object
     SerializedError:
       allOf:
         - $ref: '#/components/schemas/JsonObject'
-        - properties:
+        - type: object
+          properties:
             code:
               type: string
               description: A custom code (not necessarily the same as an HTTP response code); may not be present
@@ -383,7 +389,6 @@ components:
           required:
             - message
             - name
-          type: object
       description: The serialized form of an Error.
   securitySchemes:
     JWT:
@@ -409,6 +414,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RefreshOptions'
+
   /entities:
     get:
       operationId: GetEntities
@@ -418,9 +424,9 @@ paths:
           content:
             application/json:
               schema:
+                type: array
                 items:
                   $ref: '#/components/schemas/Entity'
-                type: array
       security:
         - {}
         - JWT: []
@@ -450,6 +456,7 @@ paths:
           required: false
           schema:
             type: string
+
   /entities/by-uid/{uid}:
     get:
       operationId: GetEntityByUid
@@ -513,6 +520,7 @@ paths:
           required: true
           schema:
             type: string
+
   /entities/by-name/{kind}/{namespace}/{name}/ancestry:
     get:
       operationId: GetEntityAncestryByName
@@ -542,6 +550,7 @@ paths:
           required: true
           schema:
             type: string
+
   /entities/by-refs:
     post:
       operationId: GetEntitiesByRefs
@@ -566,9 +575,10 @@ paths:
         content:
           application/json:
             schema:
+              type: array
               items:
                 type: string
-              type: array
+
   /entity-facets:
     get:
       operationId: GetEntityFacets
@@ -593,6 +603,7 @@ paths:
           required: false
           schema:
             type: string
+
   /locations:
     post:
       operationId: CreateLocation
@@ -602,6 +613,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   exists:
                     type: boolean
@@ -614,7 +626,6 @@ paths:
                 required:
                   - entities
                   - location
-                type: object
       security:
         - {}
         - JWT: []
@@ -629,6 +640,7 @@ paths:
         content:
           application/json:
             schema:
+              type: object
               properties:
                 presence:
                   type: string
@@ -643,7 +655,6 @@ paths:
                 - presence
                 - target
                 - type
-              type: object
     get:
       operationId: GetLocations
       responses:
@@ -652,18 +663,19 @@ paths:
           content:
             application/json:
               schema:
+                type: array
                 items:
+                  type: object
                   properties:
                     data:
                       $ref: '#/components/schemas/Location'
                   required:
                     - data
-                  type: object
-                type: array
       security:
         - {}
         - JWT: []
       parameters: []
+
   /locations/{id}:
     get:
       operationId: GetLocation
@@ -697,6 +709,7 @@ paths:
           required: true
           schema:
             type: string
+
   /analyze-location:
     post:
       operationId: AnalyzeLocation
@@ -716,6 +729,7 @@ paths:
         content:
           application/json:
             schema:
+              type: object
               properties:
                 catalogFileName:
                   type: string
@@ -724,7 +738,7 @@ paths:
               required:
                 - catalogFileName
                 - location
-              type: object
+
   /validate-entity:
     post:
       operationId: ValidateEntity
@@ -735,20 +749,20 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - properties:
+                  - type: object
+                    properties:
                       errors:
                         $ref: '#/components/schemas/SerializedError'
                     required:
                       - errors
-                    type: object
-                  - properties:
+                  - type: object
+                    properties:
                       errors:
+                        type: array
                         items:
                           $ref: '#/components/schemas/SerializedError'
-                        type: array
                     required:
                       - errors
-                    type: object
       security:
         - {}
         - JWT: []
@@ -758,6 +772,7 @@ paths:
         content:
           application/json:
             schema:
+              type: object
               properties:
                 location:
                   type: string
@@ -766,6 +781,3 @@ paths:
               required:
                 - location
                 - entity
-              type: object
-servers:
-  - url: /
