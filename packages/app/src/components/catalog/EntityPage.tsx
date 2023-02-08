@@ -154,6 +154,7 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
   TextSize,
   ReportIssue,
+  LightBox,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { EntityCostInsightsContent } from '@backstage/plugin-cost-insights';
 
@@ -205,6 +206,7 @@ const techdocsContent = (
     <TechDocsAddons>
       <TextSize />
       <ReportIssue />
+      <LightBox />
     </TechDocsAddons>
   </EntityTechdocsContent>
 );
