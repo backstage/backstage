@@ -169,6 +169,54 @@ export function Home() {
           </div>
         </BannerSection>
 
+        <BannerSection greenGradientBackground>
+          <div className={homeStyles.softwareTemplatesContainer}>
+            <div className="softwareTemplatesTitle">
+              <img
+                src={`${siteConfig.baseUrl}animations/backstage-software-templates-icon-5.gif`}
+                alt="Software Templates Rocket GIF"
+              />
+
+              <h2 className="text--primary">Backstage Software Templates</h2>
+
+              <h1>Standards can set you free</h1>
+            </div>
+
+            <picture className="softwareTemplatesImg">
+              <source
+                srcSet={`${siteConfig.baseUrl}img/cards.png`}
+                media="(min-width: 997px)"
+              />
+              <img src={`${siteConfig.baseUrl}img/service-cards.png`} alt="" />
+            </picture>
+
+            <ContentBlock
+              title="Like automated getting started guides"
+              hasBulletLine
+            >
+              Using templates, engineers can spin up a new microservice with
+              your organization's best practices built-in, right from the start
+            </ContentBlock>
+
+            <ContentBlock title="Push-button deployment" hasBulletLine>
+              Click a button to create a Spring Boot project with your repo
+              automatically configured on GitHub and your CI already running the
+              first build
+            </ContentBlock>
+
+            <ContentBlock title="Built to your standards" hasBulletLine>
+              Go instead of Java? CircleCI instead of Jenkins? Serverless
+              instead of Kubernetes? GCP instead of AWS? Customize your recipes
+              with your best practices baked-in
+            </ContentBlock>
+
+            <ContentBlock title="Golden Paths pave the way" hasBulletLine>
+              When the right way is also the easiest way, engineers get up and
+              running faster — and more safely
+            </ContentBlock>
+          </div>
+        </BannerSection>
+
         <BannerSection greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Build your own software templates</h1>
