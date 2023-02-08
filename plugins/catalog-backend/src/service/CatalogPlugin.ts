@@ -103,3 +103,47 @@ export const catalogPlugin = createBackendPlugin({
     });
   },
 });
+
+/*
+
+Capabilities:
+
+Sorting...
+
+Option:
+- set processing interval callback
+- set the allowed location types
+
+Extension Point:
+  Processing:
+  - set entity data parser, which is available to all processors
+  - install entity providers
+  - install entity processors
+  - replace all existing entity processors, except for BuiltinKindsEntityProcessor and PlaceholderProcessor (maybe?)
+  - get the default set of processors so that they can be used when replacing
+  - set a custom placeholder resolver
+
+  Catalog Model:
+  - add additional entity policies
+  - replace all entity policies with a new set
+  - override field format validators, e.g. isValidTag
+
+  Location Analyzers:
+  - set a custom location analyzer
+  - add location analyzers
+
+  Permissions:
+  - install additional permission rules
+
+Config:
+- set processing interval in seconds
+- can decide whether to start processing engine or not (based on config)
+
+Remove:
+- switch to the legacy single processor validation
+
+Crazy future stuff:
+  Break out into a separate module:
+   - locations
+
+*/
