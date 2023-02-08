@@ -81,10 +81,7 @@ will be forwarded as-is.
 
 The proxy as it was released in [Backstage
 1.9](https://github.com/backstage/backstage/blob/master/docs/releases/v1.9.0-changelog.md#patch-changes-15)
-has a few known bugs:
+has a known bug:
 
 - [#15901](https://github.com/backstage/backstage/issues/15901) - it cannot
   reliably target clusters who share the same name with another located cluster.
-- [#16018](https://github.com/backstage/backstage/issues/16018) - it does not
-  forward request bodies, making it incapable of supporting `POST`, `PUT` or
-  `PATCH` verbs in practice.
