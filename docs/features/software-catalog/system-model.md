@@ -63,6 +63,17 @@ BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together
 with components and systems will better allow us to visualize resource
 footprint, and create tooling around them.
 
+##Organizational Entities
+
+### User
+
+A user describes a person, such as an employee, a contractor, or similar.
+
+### Group
+
+A group describes an organizational entity, such as for example a team, a
+business unit, or a loose collection of people in an interest group.
+
 ## Ecosystem Modeling
 
 A large catalogue of components, APIs and resources can be highly granular and
@@ -109,14 +120,7 @@ product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
 
-### User
-
-A user describes a person, such as an employee, a contractor, or similar.
-
-### Group
-
-A group describes an organizational entity, such as for example a team, a
-business unit, or a loose collection of people in an interest group.
+##Other
 
 ### Location
 
