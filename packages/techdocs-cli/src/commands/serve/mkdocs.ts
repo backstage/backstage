@@ -29,7 +29,7 @@ export default async function serveMkdocs(opts: OptionValues) {
   const localAddr = `http://127.0.0.1:${opts.port}`;
   const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
 
-  const { path: mkDocsYmlPath, configIsTemporary } = await getMkdocsYml(
+  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
     './',
     opts.siteName,
   );
@@ -81,7 +81,7 @@ export default async function serveMkdocs(opts: OptionValues) {
 
   if (configIsTemporary) {
     process.on('exit', async () => {
-      fs.rmSync(mkDocsYmlPath, {});
+      fs.rmSync(mkdocsYmlPath, {});
     });
   }
 }

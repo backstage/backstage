@@ -34,7 +34,7 @@ import {
 import {
   patchMkdocsYmlPreBuild,
   pathMkdocsYmlWithTechdocsPlugin,
-} from './mkDocsPatchers';
+} from './mkdocsPatchers';
 import {
   GeneratorBase,
   GeneratorConfig,
