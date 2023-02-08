@@ -15,7 +15,7 @@ import { OAuthApi } from '@backstage/core-plugin-api';
 export class MicrosoftCalendarApiClient {
   constructor(options: { authApi: OAuthApi; fetchApi: FetchApi });
   // (undocumented)
-  getCalendars(params?: any): Promise<Calendar[]>;
+  getCalendars(): Promise<Calendar[]>;
   // (undocumented)
   getEvents(
     calendarId: string,
