@@ -30,6 +30,7 @@ import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
+import { HumanDuration } from '@backstage/types';
 
 /** @public */
 export interface RouterOptions {
@@ -41,14 +42,23 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   scheduler?: PluginTaskScheduler;
   schedule?: TaskScheduleDefinition;
+  age?: HumanDuration;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { config, logger, reader, database, discovery, scheduler, schedule } =
-    options;
+  const {
+    config,
+    logger,
+    reader,
+    database,
+    discovery,
+    scheduler,
+    schedule,
+    age,
+  } = options;
 
   const linguistBackendStore = await LinguistBackendDatabase.create(
     await database.getClient(),
@@ -62,6 +72,7 @@ export async function createRouter(
       linguistBackendStore,
       reader,
       discovery,
+      age,
     );
 
   if (scheduler && schedule) {

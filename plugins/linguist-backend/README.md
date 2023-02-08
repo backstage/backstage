@@ -79,14 +79,22 @@ const schedule: TaskScheduleDefinition = {
 };
 ```
 
-The default setup will only generate the language breakdown for entities with the linguist annotation that have not been generated yet. If you want this process to also refresh the data you can do so by adding the following configuration to your `app-config.yaml`:
+The default setup will only generate the language breakdown for entities with the linguist annotation that have not been generated yet. If you want this process to also refresh the data you can do so by adding the `age` in your `packages/backend/src/plugins/linguist.ts`:
 
-```yaml
-linguist:
-  age: 15 # Days
+```diff
+  return createRouter({
+    logger: env.logger,
+    config: env.config,
+    reader: env.reader,
+    discovery: env.discovery,
+    database: env.database,
+    scheduler: env.scheduler,
+    schedule: schedule,
++   age: { days: 15 },
+  });
 ```
 
-With the configuration setup like this if the language breakdown is older than 15 days it will get regenerated. It's recommended that if you choose to use this configuration to set it to a large value - 30, 90, or 180 - as this data generally does not change drastically.
+With the `age` setup like this if the language breakdown is older than 15 days it will get regenerated. It's recommended that if you choose to use this configuration to set it to a large value - 30, 90, or 180 - as this data generally does not change drastically.
 
 ## Links
 
