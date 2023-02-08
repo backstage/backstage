@@ -55,7 +55,7 @@ export default async function generate(opts: OptionValues) {
 
   await fs.ensureDir(outputDir);
 
-  const { path: mkDocsYmlPath, configIsTemporary } = await getMkdocsYml(
+  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
     sourceDir,
   );
 
@@ -116,7 +116,7 @@ export default async function generate(opts: OptionValues) {
 
   if (configIsTemporary) {
     process.on('exit', async () => {
-      fs.rmSync(mkDocsYmlPath, {});
+      fs.rmSync(mkdocsYmlPath, {});
     });
   }
 
