@@ -109,7 +109,6 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
       value={value}
       selected={selected}
       classes={classes}
-      aria-label={label}
     />
   );
 };
