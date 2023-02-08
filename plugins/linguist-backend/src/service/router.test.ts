@@ -26,6 +26,7 @@ import request from 'supertest';
 import { ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
 import { LinguistBackendApi } from '../api';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -52,19 +53,28 @@ const mockUrlReader = UrlReaders.default({
   config: new ConfigReader({}),
 });
 
+const schedule: TaskScheduleDefinition = {
+  frequency: { minutes: 2 },
+  timeout: { minutes: 15 },
+  initialDelay: { seconds: 15 },
+};
+
 describe('createRouter', () => {
   let linguistBackendApi: jest.Mocked<LinguistBackendApi>;
   let app: express.Express;
 
   beforeAll(async () => {
-    const router = await createRouter({
-      linguistBackendApi,
-      config: new ConfigReader({}),
-      discovery: testDiscovery,
-      database: createDatabase(),
-      reader: mockUrlReader,
-      logger: getVoidLogger(),
-    });
+    const router = await createRouter(
+      { schedule: schedule, age: { days: 30 } },
+      {
+        linguistBackendApi,
+        config: new ConfigReader({}),
+        discovery: testDiscovery,
+        database: createDatabase(),
+        reader: mockUrlReader,
+        logger: getVoidLogger(),
+      },
+    );
     app = express().use(router);
   });
 
