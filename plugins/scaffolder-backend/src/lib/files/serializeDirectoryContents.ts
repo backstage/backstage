@@ -19,7 +19,6 @@ import globby from 'globby';
 import limiterFactory from 'p-limit';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { SerializedFile } from './types';
-import { isError } from '@backstage/errors';
 
 const DEFAULT_GLOB_PATTERNS = ['./**', '!.git'];
 
@@ -62,7 +61,7 @@ export async function serializeDirectoryContents(
 
   const limiter = limiterFactory(10);
 
-  const valid = await asyncFilter(paths, async ({ dirent, path }) => {
+  const valid = await asyncFilter(paths, async ({ dirent }) => {
     if (dirent.isDirectory()) return false;
     if (!dirent.isSymbolicLink()) return true;
 
