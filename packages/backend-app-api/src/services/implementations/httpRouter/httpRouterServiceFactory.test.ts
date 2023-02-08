@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  HttpRouterService,
-  ServiceFactory,
-} from '@backstage/backend-plugin-api';
 import { httpRouterServiceFactory } from './httpRouterServiceFactory';
 
 describe('httpRouterFactory', () => {
   it('should register plugin paths', async () => {
     const rootHttpRouter = { use: jest.fn() };
-    const factory = httpRouterServiceFactory() as Exclude<
-      ServiceFactory<HttpRouterService>,
-      { scope: 'root' }
-    >;
+    const factory = httpRouterServiceFactory() as any;
 
     const handler1 = () => {};
     const router1 = await factory.factory(
@@ -57,7 +50,7 @@ describe('httpRouterFactory', () => {
     const rootHttpRouter = { use: jest.fn() };
     const factory = httpRouterServiceFactory({
       getPath: id => `/some/${id}/path`,
-    }) as Exclude<ServiceFactory<HttpRouterService>, { scope: 'root' }>;
+    }) as any;
 
     const handler1 = () => {};
     const router1 = await factory.factory(
