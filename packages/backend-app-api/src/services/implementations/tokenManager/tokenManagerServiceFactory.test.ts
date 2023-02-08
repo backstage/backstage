@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  LoggerService,
-  ServiceFactory,
-  TokenManagerService,
-} from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { tokenManagerServiceFactory } from './tokenManagerServiceFactory';
 
@@ -26,10 +22,7 @@ describe('tokenManagerFactory', () => {
   it('should create managers that can share tokens in development', async () => {
     (process.env as { NODE_ENV?: string }).NODE_ENV = 'development';
 
-    const factory = tokenManagerServiceFactory() as Exclude<
-      ServiceFactory<TokenManagerService>,
-      { scope: 'root' }
-    >;
+    const factory = tokenManagerServiceFactory() as any;
     const deps = {
       config: new ConfigReader({}),
       logger: { warn() {} } as unknown as LoggerService,

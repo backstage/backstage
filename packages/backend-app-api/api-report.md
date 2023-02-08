@@ -48,7 +48,10 @@ export interface Backend {
 }
 
 // @public (undocumented)
-export const cacheServiceFactory: () => ServiceFactory<PluginCacheManager>;
+export const cacheServiceFactory: () => ServiceFactory<
+  PluginCacheManager,
+  'plugin'
+>;
 
 // @public (undocumented)
 export interface ConfigFactoryOptions {
@@ -59,7 +62,7 @@ export interface ConfigFactoryOptions {
 // @public (undocumented)
 export const configServiceFactory: (
   options?: ConfigFactoryOptions | undefined,
-) => ServiceFactory<ConfigService>;
+) => ServiceFactory<ConfigService, 'root'>;
 
 // @public (undocumented)
 export function createConfigSecretEnumerator(options: {
@@ -88,7 +91,10 @@ export interface CreateSpecializedBackendOptions {
 }
 
 // @public (undocumented)
-export const databaseServiceFactory: () => ServiceFactory<PluginDatabaseManager>;
+export const databaseServiceFactory: () => ServiceFactory<
+  PluginDatabaseManager,
+  'plugin'
+>;
 
 // @public
 export class DefaultRootHttpRouter implements RootHttpRouterService {
@@ -106,7 +112,10 @@ export interface DefaultRootHttpRouterOptions {
 }
 
 // @public (undocumented)
-export const discoveryServiceFactory: () => ServiceFactory<PluginEndpointDiscovery>;
+export const discoveryServiceFactory: () => ServiceFactory<
+  PluginEndpointDiscovery,
+  'plugin'
+>;
 
 // @public
 export interface ExtendedHttpServer extends http.Server {
@@ -126,7 +135,7 @@ export interface HttpRouterFactoryOptions {
 // @public (undocumented)
 export const httpRouterServiceFactory: (
   options?: HttpRouterFactoryOptions | undefined,
-) => ServiceFactory<HttpRouterService>;
+) => ServiceFactory<HttpRouterService, 'plugin'>;
 
 // @public
 export type HttpServerCertificateOptions =
@@ -160,10 +169,13 @@ export type IdentityFactoryOptions = {
 // @public (undocumented)
 export const identityServiceFactory: (
   options?: IdentityFactoryOptions | undefined,
-) => ServiceFactory<IdentityService>;
+) => ServiceFactory<IdentityService, 'plugin'>;
 
 // @public
-export const lifecycleServiceFactory: () => ServiceFactory<LifecycleService>;
+export const lifecycleServiceFactory: () => ServiceFactory<
+  LifecycleService,
+  'plugin'
+>;
 
 // @public
 export function loadBackendConfig(options: {
@@ -174,7 +186,10 @@ export function loadBackendConfig(options: {
 }>;
 
 // @public (undocumented)
-export const loggerServiceFactory: () => ServiceFactory<LoggerService>;
+export const loggerServiceFactory: () => ServiceFactory<
+  LoggerService,
+  'plugin'
+>;
 
 // @public
 export class MiddlewareFactory {
@@ -202,7 +217,10 @@ export interface MiddlewareFactoryOptions {
 }
 
 // @public (undocumented)
-export const permissionsServiceFactory: () => ServiceFactory<PermissionsService>;
+export const permissionsServiceFactory: () => ServiceFactory<
+  PermissionsService,
+  'plugin'
+>;
 
 // @public
 export function readCorsOptions(config?: Config): CorsOptions;
@@ -238,22 +256,34 @@ export type RootHttpRouterFactoryOptions = {
 // @public (undocumented)
 export const rootHttpRouterServiceFactory: (
   options?: RootHttpRouterFactoryOptions | undefined,
-) => ServiceFactory<RootHttpRouterService>;
+) => ServiceFactory<RootHttpRouterService, 'root'>;
 
 // @public
-export const rootLifecycleServiceFactory: () => ServiceFactory<RootLifecycleService>;
+export const rootLifecycleServiceFactory: () => ServiceFactory<
+  RootLifecycleService,
+  'root'
+>;
 
 // @public (undocumented)
-export const rootLoggerServiceFactory: () => ServiceFactory<RootLoggerService>;
+export const rootLoggerServiceFactory: () => ServiceFactory<
+  RootLoggerService,
+  'root'
+>;
 
 // @public (undocumented)
-export const schedulerServiceFactory: () => ServiceFactory<SchedulerService>;
+export const schedulerServiceFactory: () => ServiceFactory<
+  SchedulerService,
+  'plugin'
+>;
 
 // @public (undocumented)
-export const tokenManagerServiceFactory: () => ServiceFactory<TokenManagerService>;
+export const tokenManagerServiceFactory: () => ServiceFactory<
+  TokenManagerService,
+  'plugin'
+>;
 
 // @public (undocumented)
-export const urlReaderServiceFactory: () => ServiceFactory<UrlReader>;
+export const urlReaderServiceFactory: () => ServiceFactory<UrlReader, 'plugin'>;
 
 // @public
 export class WinstonLogger implements RootLoggerService {

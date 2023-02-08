@@ -40,17 +40,21 @@ import { JsonObject } from '@backstage/types';
 import { MockIdentityService } from './MockIdentityService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 
-function simpleFactory<TService, TOptions extends [options?: object] = []>(
-  ref: ServiceRef<TService>,
+function simpleFactory<
+  TService,
+  TScope extends 'root' | 'plugin',
+  TOptions extends [options?: object] = [],
+>(
+  ref: ServiceRef<TService, TScope>,
   factory: (...options: TOptions) => TService,
-): (...options: TOptions) => ServiceFactory<TService> {
+): (...options: TOptions) => ServiceFactory<TService, TScope> {
   return createServiceFactory((options: unknown) => ({
     service: ref as ServiceRef<TService, any>,
     deps: {},
     async factory() {
       return (factory as any)(options);
     },
-  }));
+  })) as (...options: TOptions) => ServiceFactory<TService, any>;
 }
 
 /**
