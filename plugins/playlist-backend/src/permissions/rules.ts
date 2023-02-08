@@ -31,10 +31,10 @@ const createPlaylistPermissionRule = makeCreatePermissionRule<
 
 const isOwner = createPlaylistPermissionRule({
   name: 'IS_OWNER',
-  description: 'Should allow only if the playlist belongs to the user',
+  description: 'Allow playlists owned by the given entity refs',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
   paramsSchema: z.object({
-    owners: z.array(z.string()).describe('List of owner entity refs'),
+    owners: z.array(z.string()).describe('List of entity refs to match on'),
   }),
   apply: (list: PlaylistMetadata, { owners }) => owners.includes(list.owner),
   toQuery: ({ owners }) => ({
@@ -45,7 +45,7 @@ const isOwner = createPlaylistPermissionRule({
 
 const isPublic = createPlaylistPermissionRule({
   name: 'IS_PUBLIC',
-  description: 'Should allow only if the playlist is public',
+  description: 'Allow playlists that are set as public',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
   apply: (list: PlaylistMetadata) => list.public,
   toQuery: () => ({ key: 'public', values: [true] }),
