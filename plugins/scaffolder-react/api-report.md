@@ -85,6 +85,11 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   },
 ) => void | Promise<void>;
 
+// @alpha
+export const DefaultTemplateOutputs: (props: {
+  output?: ScaffolderTaskOutput;
+}) => JSX.Element | null;
+
 // @alpha (undocumented)
 export const EmbeddableWorkflow: (props: WorkflowProps) => JSX.Element;
 

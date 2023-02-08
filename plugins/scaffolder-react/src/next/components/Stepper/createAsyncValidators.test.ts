@@ -154,4 +154,122 @@ describe('createAsyncValidators', () => {
       }),
     });
   });
+
+  it('should run validation on complex nested schemas', async () => {
+    const schema: JsonObject = {
+      title: 'Select component',
+      properties: {
+        actionType: {
+          title: 'action type',
+          type: 'string',
+          description: 'Select the action type',
+          enum: ['newThing', 'existingThing'],
+          enumNames: ['New thing', 'Existing thing'],
+          default: 'newThing',
+        },
+      },
+      required: ['actionType'],
+      dependencies: {
+        actionType: {
+          oneOf: [
+            {
+              properties: {
+                actionType: {
+                  enum: ['newThing'],
+                },
+                general: {
+                  title: 'General',
+                  type: 'object',
+                  properties: {
+                    address: {
+                      type: 'object',
+                      'ui:field': 'AddressField',
+                      properties: {
+                        street: {
+                          type: 'string',
+                        },
+                        postcode: {
+                          type: 'string',
+                        },
+                      },
+                    },
+                    name: {
+                      title: 'Name',
+                      type: 'string',
+                      'ui:field': 'NameField',
+                    },
+                  },
+                },
+              },
+            },
+            {
+              properties: {
+                actionType: {
+                  enum: ['existingThing'],
+                },
+                thingId: {
+                  title: 'Thing id',
+                  type: 'string',
+                  description: 'Enter thing id',
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const AddressField: NextCustomFieldValidator<{
+      street?: string;
+      postcode?: string;
+    }> = (value, { addError }) => {
+      if (!value.postcode) {
+        addError('postcode is missing!');
+      }
+
+      if (!value.street) {
+        addError('street is missing here!');
+      }
+    };
+
+    const NameField: NextCustomFieldValidator<string> = (
+      value,
+      { addError },
+    ) => {
+      if (!value) {
+        addError('something is broken here!');
+      }
+    };
+
+    const validators = {
+      AddressField: AddressField as NextCustomFieldValidator<unknown>,
+      NameField: NameField as NextCustomFieldValidator<unknown>,
+    };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await expect(
+      validate({
+        actionType: 'newThing',
+        general: {
+          address: {
+            street: 'street',
+            postcode: 'postcode',
+          },
+          name: undefined,
+        },
+      }),
+    ).resolves.toEqual({
+      general: {
+        address: expect.objectContaining({
+          __errors: [],
+        }),
+        name: expect.objectContaining({
+          __errors: ['something is broken here!'],
+        }),
+      },
+    });
+  });
 });

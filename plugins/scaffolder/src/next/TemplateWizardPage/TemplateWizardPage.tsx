@@ -28,12 +28,17 @@ import {
   Workflow,
   type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
-import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
+import {
+  NextFieldExtensionOptions,
+  FormProps,
+} from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
-import { type FormProps } from '../types';
-import { nextRouteRef } from '../routes';
-import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { Header, Page } from '@backstage/core-components';
+import {
+  nextRouteRef,
+  nextScaffolderTaskRouteRef,
+  nextSelectedTemplateRouteRef,
+} from '../routes';
 
 export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
@@ -43,12 +48,12 @@ export type TemplateWizardPageProps = {
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const rootRef = useRouteRef(nextRouteRef);
-  const taskRoute = useRouteRef(scaffolderTaskRouteRef);
+  const taskRoute = useRouteRef(nextScaffolderTaskRouteRef);
   const { secrets } = useTemplateSecrets();
   const scaffolderApi = useApi(scaffolderApiRef);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
-    selectedTemplateRouteRef,
+    nextSelectedTemplateRouteRef,
   );
 
   const templateRef = stringifyEntityRef({

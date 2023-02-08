@@ -8,6 +8,7 @@
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
+import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -17,9 +18,7 @@ import { Readable } from 'stream';
 // @public (undocumented)
 export interface BackendFeature {
   // (undocumented)
-  id: string;
-  // (undocumented)
-  register(reg: BackendRegistrationPoints): void;
+  $$type: '@backstage/BackendFeature';
 }
 
 // @public
@@ -67,26 +66,6 @@ export interface BackendPluginRegistrationPoints {
   >(options: {
     deps: {
       [name in keyof Deps]: ServiceRef<Deps[name]>;
-    };
-    init(deps: Deps): Promise<void>;
-  }): void;
-}
-
-// @public
-export interface BackendRegistrationPoints {
-  // (undocumented)
-  registerExtensionPoint<TExtensionPoint>(
-    ref: ExtensionPoint<TExtensionPoint>,
-    impl: TExtensionPoint,
-  ): void;
-  // (undocumented)
-  registerInit<
-    Deps extends {
-      [name in string]: unknown;
-    },
-  >(options: {
-    deps: {
-      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
     };
     init(deps: Deps): Promise<void>;
   }): void;
@@ -166,7 +145,7 @@ export function createServiceFactory<
   TOpts extends object | undefined = undefined,
 >(
   config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
-): () => ServiceFactory<TService>;
+): () => ServiceFactory<TService, 'root'>;
 
 // @public
 export function createServiceFactory<
@@ -178,7 +157,7 @@ export function createServiceFactory<
   TOpts extends object | undefined = undefined,
 >(
   config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
-): (options?: TOpts) => ServiceFactory<TService>;
+): (options?: TOpts) => ServiceFactory<TService, 'root'>;
 
 // @public
 export function createServiceFactory<
@@ -190,7 +169,7 @@ export function createServiceFactory<
   TOpts extends object | undefined = undefined,
 >(
   config: (options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
-): (options: TOpts) => ServiceFactory<TService>;
+): (options: TOpts) => ServiceFactory<TService, 'root'>;
 
 // @public
 export function createServiceFactory<
@@ -203,7 +182,7 @@ export function createServiceFactory<
   TOpts extends object | undefined = undefined,
 >(
   config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
-): () => ServiceFactory<TService>;
+): () => ServiceFactory<TService, 'plugin'>;
 
 // @public
 export function createServiceFactory<
@@ -218,7 +197,7 @@ export function createServiceFactory<
   config: (
     options?: TOpts,
   ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
-): (options?: TOpts) => ServiceFactory<TService>;
+): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
 
 // @public
 export function createServiceFactory<
@@ -235,7 +214,7 @@ export function createServiceFactory<
     | ((
         options: TOpts,
       ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
-): (options: TOpts) => ServiceFactory<TService>;
+): (options: TOpts) => ServiceFactory<TService, 'plugin'>;
 
 // @public
 export function createServiceRef<TService>(
@@ -311,21 +290,16 @@ export interface LifecycleServiceShutdownOptions {
 // @public
 export interface LoggerService {
   // (undocumented)
-  child(meta: LogMeta): LoggerService;
+  child(meta: JsonObject): LoggerService;
   // (undocumented)
-  debug(message: string, meta?: Error | LogMeta): void;
+  debug(message: string, meta?: Error | JsonObject): void;
   // (undocumented)
-  error(message: string, meta?: Error | LogMeta): void;
+  error(message: string, meta?: Error | JsonObject): void;
   // (undocumented)
-  info(message: string, meta?: Error | LogMeta): void;
+  info(message: string, meta?: Error | JsonObject): void;
   // (undocumented)
-  warn(message: string, meta?: Error | LogMeta): void;
+  warn(message: string, meta?: Error | JsonObject): void;
 }
-
-// @public (undocumented)
-export type LogMeta = {
-  [name: string]: unknown;
-};
 
 // @public (undocumented)
 export interface PermissionsService extends PermissionEvaluator {}
@@ -453,38 +427,18 @@ export type SearchResponseFile = {
 };
 
 // @public (undocumented)
-export type ServiceFactory<TService = unknown> =
-  | {
-      scope: 'root';
-      service: ServiceRef<TService, 'root'>;
-      deps: {
-        [key in string]: ServiceRef<unknown>;
-      };
-      factory(deps: {
-        [key in string]: unknown;
-      }): Promise<TService>;
-    }
-  | {
-      scope: 'plugin';
-      service: ServiceRef<TService, 'plugin'>;
-      deps: {
-        [key in string]: ServiceRef<unknown>;
-      };
-      createRootContext?(deps: {
-        [key in string]: unknown;
-      }): Promise<unknown>;
-      factory(
-        deps: {
-          [key in string]: unknown;
-        },
-        context: unknown,
-      ): Promise<TService>;
-    };
+export interface ServiceFactory<
+  TService = unknown,
+  TScope extends 'plugin' | 'root' = 'plugin' | 'root',
+> {
+  // (undocumented)
+  $$type: '@backstage/ServiceFactory';
+  // (undocumented)
+  service: ServiceRef<TService, TScope>;
+}
 
 // @public
-export type ServiceFactoryOrFunction<TService = unknown> =
-  | ServiceFactory<TService>
-  | (() => ServiceFactory<TService>);
+export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
 
 // @public
 export type ServiceRef<
@@ -503,7 +457,7 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   // (undocumented)
   defaultFactory?: (
     service: ServiceRef<TService, TScope>,
-  ) => Promise<ServiceFactoryOrFunction<TService>>;
+  ) => Promise<ServiceFactoryOrFunction>;
   // (undocumented)
   id: string;
   // (undocumented)
@@ -529,11 +483,6 @@ export interface TokenManagerService {
     token: string;
   }>;
 }
-
-// @public (undocumented)
-export type TypesToServiceRef<T> = {
-  [key in keyof T]: ServiceRef<T[key]>;
-};
 
 // @public
 export interface UrlReaderService {

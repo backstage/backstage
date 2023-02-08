@@ -22,6 +22,8 @@ import HTTPServer from '../../lib/httpServer';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
+import { getMkDocsYml } from '@backstage/plugin-techdocs-node';
+import fs from 'fs-extra';
 
 function findPreviewBundlePath(): string {
   try {
@@ -63,6 +65,11 @@ export default async function serve(opts: OptionValues) {
   const mkdocsExpectedDevAddr = opts.docker
     ? mkdocsDockerAddr
     : mkdocsLocalAddr;
+
+  const { path: mkDocsYmlPath, configIsTemporary } = await getMkDocsYml(
+    './',
+    opts.siteName,
+  );
 
   let mkdocsServerHasStarted = false;
   const mkdocsLogFunc: LogFunc = data => {
@@ -140,4 +147,10 @@ export default async function serve(opts: OptionValues) {
     });
 
   await waitForSignal([mkdocsChildProcess]);
+
+  if (configIsTemporary) {
+    process.on('exit', async () => {
+      fs.rmSync(mkDocsYmlPath, {});
+    });
+  }
 }

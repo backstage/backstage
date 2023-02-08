@@ -19,6 +19,7 @@ import { TemplateListPage } from '../TemplateListPage';
 import { TemplateWizardPage } from '../TemplateWizardPage';
 import {
   NextFieldExtensionOptions,
+  ScaffolderTaskOutput,
   SecretsContextProvider,
   useCustomFieldExtensions,
   useCustomLayouts,
@@ -28,7 +29,17 @@ import {
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
-import { nextSelectedTemplateRouteRef } from '../routes';
+
+import {
+  nextActionsRouteRef,
+  nextScaffolderListTaskRouteRef,
+  nextScaffolderTaskRouteRef,
+  nextSelectedTemplateRouteRef,
+} from '../routes';
+import { ErrorPage } from '@backstage/core-components';
+import { OngoingTask } from '../OngoingTask';
+import { ActionsPage } from '../../components/ActionsPage';
+import { ListTasksPage } from '../../components/ListTasksPage';
 
 /**
  * The Props for the Scaffolder Router
@@ -41,9 +52,21 @@ export type NextRouterProps = {
       template: TemplateEntityV1beta3;
     }>;
     TaskPageComponent?: React.ComponentType<{}>;
+    TemplateOutputsComponent?: React.ComponentType<{
+      output?: ScaffolderTaskOutput;
+    }>;
   };
   groups?: TemplateGroupFilter[];
+  // todo(blam): rename this to formProps
   FormProps?: FormProps;
+  contextMenu?: {
+    /** Whether to show a link to the template editor */
+    editor?: boolean;
+    /** Whether to show a link to the actions documentation */
+    actions?: boolean;
+    /** Whether to show a link to the tasks page */
+    tasks?: boolean;
+  };
 };
 
 /**
@@ -52,10 +75,17 @@ export type NextRouterProps = {
  * @alpha
  */
 export const Router = (props: PropsWithChildren<NextRouterProps>) => {
-  const { components: { TemplateCardComponent } = {} } = props;
+  const {
+    components: {
+      TemplateCardComponent,
+      TemplateOutputsComponent,
+      TaskPageComponent = OngoingTask,
+    } = {},
+  } = props;
   const outlet = useOutlet() || props.children;
   const customFieldExtensions =
     useCustomFieldExtensions<NextFieldExtensionOptions>(outlet);
+
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
@@ -75,6 +105,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         element={
           <TemplateListPage
             TemplateCardComponent={TemplateCardComponent}
+            contextMenu={props.contextMenu}
             groups={props.groups}
           />
         }
@@ -90,6 +121,23 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
             />
           </SecretsContextProvider>
         }
+      />
+      <Route
+        path={nextScaffolderTaskRouteRef.path}
+        element={
+          <TaskPageComponent
+            TemplateOutputsComponent={TemplateOutputsComponent}
+          />
+        }
+      />
+      <Route path={nextActionsRouteRef.path} element={<ActionsPage />} />
+      <Route
+        path={nextScaffolderListTaskRouteRef.path}
+        element={<ListTasksPage />}
+      />
+      <Route
+        path="*"
+        element={<ErrorPage status="404" statusMessage="Page not found" />}
       />
     </Routes>
   );

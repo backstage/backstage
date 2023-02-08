@@ -1,5 +1,19 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-tech-insights-common@0.2.10-next.0
+
 ## 0.3.7-next.1
 
 ### Patch Changes

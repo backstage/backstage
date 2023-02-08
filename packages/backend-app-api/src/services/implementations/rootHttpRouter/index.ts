@@ -15,10 +15,10 @@
  */
 
 export {
-  rootHttpRouterFactory,
+  rootHttpRouterServiceFactory,
   type RootHttpRouterFactoryOptions,
-  type RootHttpRouterConfigureOptions,
-} from './rootHttpRouterFactory';
+  type RootHttpRouterConfigureContext,
+} from './rootHttpRouterServiceFactory';
 export {
   DefaultRootHttpRouter,
   type DefaultRootHttpRouterOptions,

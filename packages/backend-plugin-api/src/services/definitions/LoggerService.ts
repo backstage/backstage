@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * @public
- */
-export type LogMeta = { [name: string]: unknown };
+import { JsonObject } from '@backstage/types';
 
 /**
  * A service that provides a logging facility.
@@ -25,10 +22,10 @@ export type LogMeta = { [name: string]: unknown };
  * @public
  */
 export interface LoggerService {
-  error(message: string, meta?: Error | LogMeta): void;
-  warn(message: string, meta?: Error | LogMeta): void;
-  info(message: string, meta?: Error | LogMeta): void;
-  debug(message: string, meta?: Error | LogMeta): void;
+  error(message: string, meta?: Error | JsonObject): void;
+  warn(message: string, meta?: Error | JsonObject): void;
+  info(message: string, meta?: Error | JsonObject): void;
+  debug(message: string, meta?: Error | JsonObject): void;
 
-  child(meta: LogMeta): LoggerService;
+  child(meta: JsonObject): LoggerService;
 }

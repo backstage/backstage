@@ -30,7 +30,7 @@ export type {
   LifecycleServiceShutdownHook,
   LifecycleServiceShutdownOptions,
 } from './LifecycleService';
-export type { LoggerService, LogMeta } from './LoggerService';
+export type { LoggerService } from './LoggerService';
 export type { PermissionsService } from './PermissionsService';
 export type { PluginMetadataService } from './PluginMetadataService';
 export type { RootHttpRouterService } from './RootHttpRouterService';

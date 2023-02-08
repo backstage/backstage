@@ -22,7 +22,7 @@ import { z } from 'zod';
 export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
   createCatalogPermissionRule({
     name: `HAS_${propertyType.toUpperCase()}`,
-    description: `Allow entities which have the specified ${propertyType} subfield.`,
+    description: `Allow entities with the specified ${propertyType} subfield`,
     resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
     paramsSchema: z.object({
       key: z

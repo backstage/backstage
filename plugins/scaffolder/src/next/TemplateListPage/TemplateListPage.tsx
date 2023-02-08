@@ -37,12 +37,18 @@ import { RegisterExistingButton } from './RegisterExistingButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
 import { registerComponentRouteRef } from '../../routes';
+import { ContextMenu } from './ContextMenu';
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+    tasks?: boolean;
+  };
 };
 
 const defaultGroup: TemplateGroupFilter = {
@@ -61,7 +67,9 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
           pageTitleOverride="Create a new component"
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
-        />
+        >
+          <ContextMenu {...props.contextMenu} />
+        </Header>
         <Content>
           <ContentHeader title="Available Templates">
             <RegisterExistingButton

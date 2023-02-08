@@ -54,6 +54,11 @@ export function registerCommands(program: Command) {
       '--etag <ETAG>',
       'A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.',
     )
+    .option(
+      '--site-name',
+      'Name for site when using default MkDocs config',
+      'Documentation Site',
+    )
     .option('-v --verbose', 'Enable verbose output.', false)
     .option(
       '--omitTechdocsCoreMkdocsPlugin',
@@ -224,6 +229,11 @@ export function registerCommands(program: Command) {
       '--no-docker',
       'Do not use Docker, run `mkdocs serve` in current user environment.',
     )
+    .option(
+      '--site-name',
+      'Name for site when using default MkDocs config',
+      'Documentation Site',
+    )
     .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)
     .action(lazy(() => import('./serve/mkdocs').then(m => m.default)));
@@ -249,6 +259,11 @@ export function registerCommands(program: Command) {
     .option(
       '--no-docker',
       'Do not use Docker, use MkDocs executable in current user environment.',
+    )
+    .option(
+      '--site-name',
+      'Name for site when using default MkDocs config',
+      'Documentation Site',
     )
     .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)
