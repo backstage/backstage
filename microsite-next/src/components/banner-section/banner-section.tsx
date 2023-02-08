@@ -7,6 +7,7 @@ export type IBannerSectionProps = PropsWithChildren<{
   greyBackground?: boolean;
   greenGradientBackground?: boolean;
   greenBottomGradientBackground?: boolean;
+  greenCallToActionGradientBackground?: boolean;
 }>;
 
 export const BannerSection = ({
@@ -14,14 +15,16 @@ export const BannerSection = ({
   greyBackground = false,
   greenGradientBackground = false,
   greenBottomGradientBackground = false,
+  greenCallToActionGradientBackground = false,
 }: IBannerSectionProps) => (
   <section
     className={clsx(bannerStyles.bannerSection, {
       greyBackground,
       greenGradientBackground,
       greenBottomGradientBackground,
+      greenCallToActionGradientBackground,
     })}
   >
-    <div className="container">{children}</div>
+    <div className="container padding-vert--lg">{children}</div>
   </section>
 );

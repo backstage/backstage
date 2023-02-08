@@ -26,4 +26,10 @@
         rgba(155, 240, 225, 0.67) 137.34%
       );
   }
+
+  &:global(.greenCallToActionGradientBackground) {
+    background: linear-gradient(87.29deg, #9bf0e1 17.71%, #36baa2 80.85%);
+
+    color: var(--ifm-color-gray-900);
+  }
 }
