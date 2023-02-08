@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 import { createPermission } from '@backstage/plugin-permission-common';
-
-/**
- * @public
- */
-export const azureSitesReadPermission = createPermission({
-  name: 'azure.sites.read',
-  attributes: { action: 'read' },
-});
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 
 /**
  * @public
@@ -29,12 +22,10 @@ export const azureSitesReadPermission = createPermission({
 export const azureSitesActionPermission = createPermission({
   name: 'azure.sites.update',
   attributes: { action: 'update' },
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
 });
 
 /**
  * @public
  */
-export const azureSitesPermissions = [
-  azureSitesReadPermission,
-  azureSitesActionPermission,
-];
+export const azureSitesPermissions = [azureSitesActionPermission];

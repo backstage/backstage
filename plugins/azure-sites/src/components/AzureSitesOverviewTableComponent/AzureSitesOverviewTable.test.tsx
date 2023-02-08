@@ -46,6 +46,14 @@ const identityApiMock = (getCredentials: any) => ({
 });
 const azureSitesApiMock = {};
 
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  useEntity: () => {
+    return { loading: true, entity: undefined };
+  },
+  useEntityPermission: () => {
+    return { loading: false, allowed: true };
+  },
+}));
 const config = {
   getString: (_: string) => 'https://test-url',
 };

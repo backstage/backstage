@@ -89,11 +89,14 @@ Here's how to get the backend plugin up and running:
    class TestPermissionPolicy implements PermissionPolicy {
    - async handle(): Promise<PolicyDecision> {
    + async handle(request: PolicyQuery, user?: BackstageIdentityResponse): Promise<PolicyDecision> {
-       if (isPermission(request.permission, azureSitesActionPermission)) {
-         return {
-           result: AuthorizeResult.DENY,
-         };
-       }
+      if (isPermission(request.permission, azureSitesActionPermission)) {
+        return createCatalogConditionalDecision(
+          request.permission,
+          catalogConditions.isEntityOwner({
+            claims: user?.identity.ownershipEntityRefs ??  [],
+          }),
+      );
+    }
        ...
        return {
          result: AuthorizeResult.ALLOW,

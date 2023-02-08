@@ -20,6 +20,7 @@ import {
   AzureSiteListResponse,
   AzureSiteStartStopRequest,
 } from '@backstage/plugin-azure-sites-common';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 /** @public */
 export const azureSiteApiRef = createApiRef<AzureSitesApi>({
@@ -29,6 +30,12 @@ export const azureSiteApiRef = createApiRef<AzureSitesApi>({
 /** @public */
 export type AzureSitesApi = {
   list: (request: AzureSiteListRequest) => Promise<AzureSiteListResponse>;
-  start: (request: AzureSiteStartStopRequest) => Promise<void>;
-  stop: (request: AzureSiteStartStopRequest) => Promise<void>;
+  start: (
+    request: AzureSiteStartStopRequest,
+    entity: CompoundEntityRef,
+  ) => Promise<void>;
+  stop: (
+    request: AzureSiteStartStopRequest,
+    entity: CompoundEntityRef,
+  ) => Promise<void>;
 };

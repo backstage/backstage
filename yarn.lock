@@ -4653,6 +4653,7 @@ __metadata:
     "@azure/arm-resourcegraph": ^4.2.1
     "@azure/identity": ^2.1.0
     "@backstage/backend-common": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -4676,6 +4677,7 @@ __metadata:
   resolution: "@backstage/plugin-azure-sites-common@workspace:plugins/azure-sites-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
   languageName: unknown
   linkType: soft
@@ -22236,6 +22238,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-azure-devops-backend": "workspace:^"
     "@backstage/plugin-azure-sites-backend": "workspace:^"
+    "@backstage/plugin-azure-sites-common": "workspace:^"
     "@backstage/plugin-badges-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"

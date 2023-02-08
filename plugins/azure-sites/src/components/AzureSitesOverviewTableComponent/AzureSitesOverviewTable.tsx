@@ -40,7 +40,11 @@ import Typography from '@material-ui/core/Typography';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core-plugin-api';
-import { usePermission } from '@backstage/plugin-permission-react';
+import { getCompoundEntityRef } from '@backstage/catalog-model';
+import {
+  useEntity,
+  useEntityPermission,
+} from '@backstage/plugin-catalog-react';
 import { azureSiteApiRef } from '../../api';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed' | 'Stopped';
@@ -99,6 +103,7 @@ const ActionButtons = ({
   onMenuItemClick: Dispatch<React.SetStateAction<string | null>>;
 }) => {
   const azureApi = useApi(azureSiteApiRef);
+  const { entity } = useEntity();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -109,28 +114,35 @@ const ActionButtons = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const start = () => {
-    azureApi.start({
-      name: value.name,
-      resourceGroup: value.resourceGroup,
-      subscription: value.subscription,
-    });
+  const start = async () => {
+    const entityRef = await getCompoundEntityRef(entity);
+    azureApi.start(
+      {
+        name: value.name,
+        resourceGroup: value.resourceGroup,
+        subscription: value.subscription,
+      },
+      entityRef,
+    );
     onMenuItemClick('Starting, this may take some time...');
     handleClose();
   };
-  const stop = () => {
-    azureApi.stop({
-      name: value.name,
-      resourceGroup: value.resourceGroup,
-      subscription: value.subscription,
-    });
+  const stop = async () => {
+    const entityRef = await getCompoundEntityRef(entity);
+    azureApi.stop(
+      {
+        name: value.name,
+        resourceGroup: value.resourceGroup,
+        subscription: value.subscription,
+      },
+      entityRef,
+    );
     onMenuItemClick('Stopping, this may take some time...');
     handleClose();
   };
 
-  const { loading: loadingPermission, allowed: canDoAction } = usePermission({
-    permission: azureSitesActionPermission,
-  });
+  const { loading: loadingPermission, allowed: canDoAction } =
+    useEntityPermission(azureSitesActionPermission);
 
   return (
     <div>

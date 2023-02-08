@@ -18,6 +18,7 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 import { NotAllowedError } from '@backstage/errors';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
@@ -25,10 +26,7 @@ import {
   PermissionEvaluator,
   AuthorizeResult,
 } from '@backstage/plugin-permission-common';
-import {
-  azureSitesReadPermission,
-  azureSitesActionPermission,
-} from '@backstage/plugin-azure-sites-common';
+import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
 
 import { AzureSitesApi } from '../api';
 
@@ -53,18 +51,6 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
   router.get('/list/:name', async (request, response) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      request.header('authorization'),
-    );
-    const decision = (
-      await permissions.authorize([{ permission: azureSitesReadPermission }], {
-        token,
-      })
-    )[0];
-    if (decision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError('Unauthorized');
-    }
-
     const { name } = request.params;
     response.json(
       await azureSitesApi.list({
@@ -73,14 +59,17 @@ export async function createRouter(
     );
   });
   router.post(
-    '/:subscription/:resourceGroup/:name/start',
+    '/entity/:namespace/:kind/:name/sites/:subscription/:resourceGroup/:sitename/start',
     async (request, response) => {
+      const { namespace, kind, name, subscription, resourceGroup, sitename } =
+        request.params;
       const token = getBearerTokenFromAuthorizationHeader(
         request.header('authorization'),
       );
+      const resourceRef = stringifyEntityRef({ kind, namespace, name });
       const decision = (
         await permissions.authorize(
-          [{ permission: azureSitesActionPermission }],
+          [{ permission: azureSitesActionPermission, resourceRef }],
           {
             token,
           },
@@ -90,26 +79,28 @@ export async function createRouter(
         throw new NotAllowedError('Unauthorized');
       }
 
-      const { subscription, resourceGroup, name } = request.params;
       console.log('starting...');
       response.json(
         await azureSitesApi.start({
           subscription,
           resourceGroup,
-          name,
+          name: sitename,
         }),
       );
     },
   );
   router.post(
-    '/:subscription/:resourceGroup/:name/stop',
+    '/entity/:namespace/:kind/:name/sites/:subscription/:resourceGroup/:sitename/stop',
     async (request, response) => {
+      const { namespace, kind, name, subscription, resourceGroup, sitename } =
+        request.params;
       const token = getBearerTokenFromAuthorizationHeader(
         request.header('authorization'),
       );
+      const resourceRef = stringifyEntityRef({ kind, namespace, name });
       const decision = (
         await permissions.authorize(
-          [{ permission: azureSitesActionPermission }],
+          [{ permission: azureSitesActionPermission, resourceRef }],
           {
             token,
           },
@@ -119,13 +110,12 @@ export async function createRouter(
         throw new NotAllowedError('Unauthorized');
       }
 
-      const { subscription, resourceGroup, name } = request.params;
       console.log('stopping...');
       response.json(
         await azureSitesApi.stop({
           subscription,
           resourceGroup,
-          name,
+          name: sitename,
         }),
       );
     },

@@ -10,6 +10,7 @@ import { AzureSiteListRequest } from '@backstage/plugin-azure-sites-common';
 import { AzureSiteListResponse } from '@backstage/plugin-azure-sites-common';
 import { AzureSiteStartStopRequest } from '@backstage/plugin-azure-sites-common';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -21,8 +22,14 @@ export const azureSiteApiRef: ApiRef<AzureSitesApi>;
 // @public (undocumented)
 export type AzureSitesApi = {
   list: (request: AzureSiteListRequest) => Promise<AzureSiteListResponse>;
-  start: (request: AzureSiteStartStopRequest) => Promise<void>;
-  stop: (request: AzureSiteStartStopRequest) => Promise<void>;
+  start: (
+    request: AzureSiteStartStopRequest,
+    entity: CompoundEntityRef,
+  ) => Promise<void>;
+  stop: (
+    request: AzureSiteStartStopRequest,
+    entity: CompoundEntityRef,
+  ) => Promise<void>;
 };
 
 // @public (undocumented)
@@ -34,9 +41,15 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
   // (undocumented)
   list(request: AzureSiteListRequest): Promise<AzureSiteListResponse>;
   // (undocumented)
-  start(request: AzureSiteStartStopRequest): Promise<void>;
+  start(
+    request: AzureSiteStartStopRequest,
+    entity: CompoundEntityRef,
+  ): Promise<void>;
   // (undocumented)
-  stop(request: AzureSiteStartStopRequest): Promise<void>;
+  stop(
+    request: AzureSiteStartStopRequest,
+    entity: CompoundEntityRef,
+  ): Promise<void>;
 }
 
 // @public (undocumented)
