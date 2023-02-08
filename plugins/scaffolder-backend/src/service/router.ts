@@ -40,6 +40,7 @@ import {
   scaffolderPermissions,
   templateParameterReadPermission,
   templateStepReadPermission,
+  actionExecutePermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -71,7 +72,7 @@ import {
   createPermissionIntegrationRouter,
   PermissionRule,
 } from '@backstage/plugin-permission-node';
-import { scaffolderTemplateRules } from './rules';
+import { scaffolderTemplateRules, scaffolderActionRules } from './rules';
 
 /**
  *
@@ -85,6 +86,10 @@ export type TemplatePermissionRuleInput<
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   TParams
 >;
+
+const isActionAuthorized = createConditionAuthorizer(
+  Object.values(scaffolderActionRules),
+);
 
 /**
  * RouterOptions
@@ -376,9 +381,16 @@ export async function createRouter(
         }
       }
 
-      const baseUrl = getEntityBaseUrl(template);
-
-      const taskSpec = await authorizeTaskSpec(template);
+      const taskSpec = await authorizeActions(
+        {
+          parameters: values,
+          template,
+          templateRef: { kind, name, namespace },
+          user: userEntity as UserEntity,
+          userEntityRef,
+        },
+        { token },
+      );
 
       const result = await taskBroker.dispatch({
         spec: taskSpec,
@@ -627,7 +639,24 @@ export async function createRouter(
     return template;
   }
 
-  async function authorizeTaskSpec(template: TemplateEntityV1beta3): TaskSpec {
+  async function authorizeActions(
+    {
+      parameters,
+      template,
+      user,
+      userEntityRef,
+      templateRef,
+    }: {
+      template: TemplateEntityV1beta3;
+      parameters: JsonObject;
+      user: UserEntity;
+      userEntityRef: string | undefined;
+      templateRef: CompoundEntityRef;
+    },
+    { token }: { token: string | undefined },
+  ): Promise<TaskSpec> {
+    const baseUrl = getEntityBaseUrl(template);
+
     const taskSpec: TaskSpec = {
       apiVersion: template.apiVersion,
       steps: template.spec.steps.map((step, index) => ({
@@ -636,23 +665,33 @@ export async function createRouter(
         name: step.name ?? step.action,
       })),
       output: template.spec.output ?? {},
-      parameters: values,
+      parameters,
       user: {
-        entity: userEntity as UserEntity,
+        entity: user,
         ref: userEntityRef,
       },
       templateInfo: {
-        entityRef: stringifyEntityRef({
-          kind,
-          namespace,
-          name: template.metadata?.name,
-        }),
+        entityRef: stringifyEntityRef(templateRef),
         baseUrl,
         entity: {
           metadata: template.metadata,
         },
       },
     };
+
+    if (permissionApi) {
+      const [decision] = await permissionApi.authorizeConditional(
+        [{ permission: actionExecutePermission }],
+        { token },
+      );
+
+      for (const step of taskSpec.steps) {
+        const { action, input } = step;
+        if (!isActionAuthorized(decision, { action, input })) {
+          throw new InputError(`Unauthorized action: ${action}, ${input}`);
+        }
+      }
+    }
 
     return taskSpec;
   }

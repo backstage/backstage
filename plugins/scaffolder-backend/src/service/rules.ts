@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Ajv from 'ajv';
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
@@ -34,11 +35,11 @@ export const createTemplatePermissionRule = makeCreatePermissionRule<
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
 >();
 
+const ajv = new Ajv({ allErrors: true });
 export const createActionPermissionRule = makeCreatePermissionRule<
   {
-    actionId: string;
-    input: JsonObject;
-    template: TemplateEntityStepV1beta3 | TemplateParametersV1beta3;
+    action: string;
+    input: JsonObject | undefined;
   },
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_ACTION
@@ -52,7 +53,7 @@ export const hasActionId = createActionPermissionRule({
     actionId: z.string().describe('Name of the actionId to match on'),
   }),
   apply: (resource, { actionId }) => {
-    return resource.actionId === actionId;
+    return resource.action === actionId;
   },
   toQuery: () => ({}),
 });
@@ -62,23 +63,19 @@ export const matchesInput = createActionPermissionRule({
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
   description: `Matches actionId and the input given`,
   paramsSchema: z.object({
-    actionId: z.string().describe('Name of the actionId to match on'),
-
+    action: z.string().describe('Name of the actionId to match on'),
     // Pass in a json schema to validate the input against
-    input: z.jsonSchema({}).describe('Input to match on'),
+    schema: z.record(z.any()),
   }),
-  apply: (resource, { actionId, input }) => {
-    if (resource.actionId !== actionId) {
-      return false;
+  apply: (resource, { action, schema }) => {
+    if (resource.action !== action) {
+      return true;
+    }
+    if (!schema) {
+      return true;
     }
 
-    for (const [key, value] of Object.entries(input)) {
-      if (resource.input[key] !== value) {
-        return false;
-      }
-    }
-
-    return true;
+    return ajv.validate(schema, resource.input);
   },
   toQuery: () => ({}),
 });
@@ -97,3 +94,4 @@ export const hasTag = createTemplatePermissionRule({
 });
 
 export const scaffolderTemplateRules = { hasTag };
+export const scaffolderActionRules = { matchesInput };
