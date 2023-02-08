@@ -21,7 +21,7 @@ import Docker from 'dockerode';
 import {
   TechdocsGenerator,
   ParsedLocationAnnotation,
-  getMkDocsYml,
+  getMkdocsYml,
 } from '@backstage/plugin-techdocs-node';
 import {
   ContainerRunner,
@@ -55,7 +55,7 @@ export default async function generate(opts: OptionValues) {
 
   await fs.ensureDir(outputDir);
 
-  const { path: mkDocsYmlPath, configIsTemporary } = await getMkDocsYml(
+  const { path: mkDocsYmlPath, configIsTemporary } = await getMkdocsYml(
     sourceDir,
   );
 
