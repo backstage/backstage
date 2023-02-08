@@ -66,15 +66,7 @@ export async function serializeDirectoryContents(
     if (dirent.isDirectory()) return false;
     if (!dirent.isSymbolicLink()) return true;
 
-    const safePath = resolveSafeChildPath(sourcePath, path);
-
-    // we only want files that don't exist
-    try {
-      await fs.stat(safePath);
-      return false;
-    } catch (e) {
-      return isError(e) && e.code === 'ENOENT';
-    }
+    return true;
   });
 
   return Promise.all(

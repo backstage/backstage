@@ -106,7 +106,7 @@ describe('serializeDirectoryContents', () => {
     ]);
   });
 
-  it('should ignore symlinked files', async () => {
+  it('should not ignore symlinked files', async () => {
     mockFs({
       root: {
         'a.txt': 'some text',
@@ -122,6 +122,12 @@ describe('serializeDirectoryContents', () => {
         executable: false,
         symlink: false,
         content: Buffer.from('some text', 'utf8'),
+      },
+      {
+        path: 'sym',
+        executable: false,
+        symlink: true,
+        content: Buffer.from('./a.txt', 'utf8'),
       },
     ]);
   });
@@ -145,7 +151,32 @@ describe('serializeDirectoryContents', () => {
     ]);
   });
 
-  it('should ignore symlinked folder files', async () => {
+  it('should add symlinks', async () => {
+    mockFs({
+      root: {
+        'a.txt': 'a',
+        'b.txt': mockFs.symlink({
+          path: './a.txt',
+        }),
+      },
+    });
+
+    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+      {
+        path: 'a.txt',
+        executable: false,
+        symlink: false,
+        content: Buffer.from('a', 'utf8'),
+      },
+      {
+        path: 'b.txt',
+        executable: false,
+        symlink: true,
+        content: Buffer.from('./a.txt', 'utf8'),
+      },
+    ]);
+  });
+  it('should not ignore symlinked folder files', async () => {
     mockFs({
       root: {
         'a.txt': 'some text',
@@ -164,6 +195,12 @@ describe('serializeDirectoryContents', () => {
         executable: false,
         symlink: false,
         content: Buffer.from('some text', 'utf8'),
+      },
+      {
+        path: 'sym',
+        executable: false,
+        symlink: true,
+        content: Buffer.from('./linkme', 'utf8'),
       },
       {
         path: 'linkme/b.txt',
