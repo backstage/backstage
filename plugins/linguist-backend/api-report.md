@@ -19,7 +19,10 @@ import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
-export function createRouter(options: RouterOptions): Promise<express.Router>;
+export function createRouter(
+  pluginOptions: PluginOptions,
+  routerOptions: RouterOptions,
+): Promise<express.Router>;
 
 // @public (undocumented)
 export class LinguistBackendApi {
@@ -65,9 +68,15 @@ export interface LinguistBackendStore {
 }
 
 // @public (undocumented)
-export interface RouterOptions {
+export interface PluginOptions {
   // (undocumented)
   age?: HumanDuration;
+  // (undocumented)
+  schedule?: TaskScheduleDefinition;
+}
+
+// @public (undocumented)
+export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
@@ -80,8 +89,6 @@ export interface RouterOptions {
   logger: Logger;
   // (undocumented)
   reader: UrlReader;
-  // (undocumented)
-  schedule?: TaskScheduleDefinition;
   // (undocumented)
   scheduler?: PluginTaskScheduler;
 }
