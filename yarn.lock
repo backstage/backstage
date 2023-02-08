@@ -11036,11 +11036,11 @@ __metadata:
   linkType: hard
 
 "@keyv/redis@npm:^2.5.3":
-  version: 2.5.4
-  resolution: "@keyv/redis@npm:2.5.4"
+  version: 2.5.5
+  resolution: "@keyv/redis@npm:2.5.5"
   dependencies:
-    ioredis: ^5.2.4
-  checksum: 02f557e0bc0343aea44b8dd4b6ff273da5833b935236c4036fa89e90b1d92d9688dafa064d5318d26744a6c72497cd4c41dcac825cb8d5919271e3a25a3cadbb
+    ioredis: ^5.3.0
+  checksum: dc4c4e9c0a44dec1166a6a4481a42342289b4618136c2f640306bee381cf30d737346b064ecc369fc8ebdd2baaaba47e099aabe9f37839911171a9c006d75e62
   languageName: node
   linkType: hard
 
@@ -20465,10 +20465,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"denque@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "denque@npm:2.0.1"
-  checksum: ec398d1e3c6c8d4f5213dcf9ad74d7faa3b461e29a0019c9742b49a97ac5e16aa7134db45fa9d841e318e7722dd1ba670a474fde9a5b0d870b3a5fc6fe914c30
+"denque@npm:^2.0.1, denque@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "denque@npm:2.1.0"
+  checksum: 1d4ae1d05e59ac3a3481e7b478293f4b4c813819342273f3d5b826c7ffa9753c520919ba264f377e09108d24ec6cf0ec0ac729a5686cbb8f32d797126c5dae74
   languageName: node
   linkType: hard
 
@@ -25064,20 +25064,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ioredis@npm:^5.2.4":
-  version: 5.2.4
-  resolution: "ioredis@npm:5.2.4"
+"ioredis@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "ioredis@npm:5.3.0"
   dependencies:
     "@ioredis/commands": ^1.1.1
     cluster-key-slot: ^1.1.0
     debug: ^4.3.4
-    denque: ^2.0.1
+    denque: ^2.1.0
     lodash.defaults: ^4.2.0
     lodash.isarguments: ^3.1.0
     redis-errors: ^1.2.0
     redis-parser: ^3.0.0
     standard-as-callback: ^2.1.0
-  checksum: c3a7df407a41ae516bede8b6db853c568198b13fe4a4785f66be5cd541087121b9d45fb9a6b1b6a5fb668c29ce52ab4685642b994803bdfa0a35f794ea8ef7ae
+  checksum: d3a1fd8f1b5d9ce6d4b7dd083773dbe0936ea3d1f55f07d36daa3d0b59c4636e95640f90bc003a08bc900a9803307e7d7e191817a2c2970696e204dae6f3dc35
   languageName: node
   linkType: hard
 
