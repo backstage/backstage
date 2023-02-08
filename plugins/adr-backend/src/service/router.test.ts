@@ -107,6 +107,8 @@ class MockCacheClient implements CacheClient {
   async delete(key: string) {
     delete this.itemRegistry[key];
   }
+
+  withOptions = () => this;
 }
 
 describe('createRouter', () => {

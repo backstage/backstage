@@ -20,6 +20,7 @@ import {
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
+import { cacheToPluginCacheManager } from './cache';
 import { loggerToWinstonLogger } from './logging';
 
 /**
@@ -119,5 +120,6 @@ export const legacyPlugin = makeLegacyPlugin(
   },
   {
     logger: log => loggerToWinstonLogger(log),
+    cache: cache => cacheToPluginCacheManager(cache),
   },
 );

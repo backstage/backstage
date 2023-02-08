@@ -13,9 +13,9 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
-import { CacheClient } from '@backstage/backend-plugin-api';
-import { CacheClientOptions } from '@backstage/backend-plugin-api';
-import { CacheClientSetOptions } from '@backstage/backend-plugin-api';
+import { CacheService as CacheClient } from '@backstage/backend-plugin-api';
+import { CacheServiceOptions as CacheClientOptions } from '@backstage/backend-plugin-api';
+import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import cors from 'cors';
@@ -38,7 +38,6 @@ import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { CacheService as PluginCacheManager } from '@backstage/backend-plugin-api';
 import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
@@ -198,6 +197,11 @@ export type CacheManagerOptions = {
   logger?: LoggerService;
   onError?: (err: Error) => void;
 };
+
+// @public (undocumented)
+export function cacheToPluginCacheManager(
+  cache: CacheClient,
+): PluginCacheManager;
 
 // @public
 export const coloredFormat: winston.Logform.Format;
@@ -528,7 +532,7 @@ export const legacyPlugin: (
     default: LegacyCreateRouter<
       TransformedEnv<
         {
-          cache: PluginCacheManager;
+          cache: CacheClient;
           config: ConfigService;
           database: PluginDatabaseManager;
           discovery: PluginEndpointDiscovery;
@@ -541,6 +545,7 @@ export const legacyPlugin: (
         },
         {
           logger: (log: LoggerService) => Logger;
+          cache: (cache: CacheClient) => PluginCacheManager;
         }
       >
     >;
@@ -581,7 +586,11 @@ export function makeLegacyPlugin<
 // @public
 export function notFoundHandler(): RequestHandler;
 
-export { PluginCacheManager };
+// @public (undocumented)
+export interface PluginCacheManager {
+  // (undocumented)
+  getClient(options?: CacheClientOptions): CacheClient;
+}
 
 export { PluginDatabaseManager };
 

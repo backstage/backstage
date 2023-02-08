@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CacheClient } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { CorsOptions } from 'cors';
@@ -22,7 +23,6 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RequestHandler } from 'express';
@@ -48,10 +48,7 @@ export interface Backend {
 }
 
 // @public (undocumented)
-export const cacheServiceFactory: () => ServiceFactory<
-  PluginCacheManager,
-  'plugin'
->;
+export const cacheServiceFactory: () => ServiceFactory<CacheClient, 'plugin'>;
 
 // @public (undocumented)
 export interface ConfigFactoryOptions {
