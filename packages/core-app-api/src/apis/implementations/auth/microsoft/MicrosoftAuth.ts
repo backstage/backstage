@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
+import {
+  microsoftAuthApiRef,
+  AuthRequestOptions,
+  AuthProviderInfo,
+  DiscoveryApi,
+  OAuthRequestApi,
+} from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
 
@@ -30,7 +36,18 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class MicrosoftAuth {
+  private oauth2: Record<string, OAuth2>;
+  private environment: string;
+  private provider: AuthProviderInfo;
+  private oauthRequestApi: OAuthRequestApi;
+  private discoveryApi: DiscoveryApi;
+
+  private static MicrosoftGraphID = '00000003-0000-0000-c000-000000000000';
+
   static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
+    return new MicrosoftAuth(options);
+  }
+  private constructor(options: OAuthApiCreateOptions) {
     const {
       environment = 'development',
       provider = DEFAULT_PROVIDER,
@@ -45,12 +62,51 @@ export default class MicrosoftAuth {
       ],
     } = options;
 
-    return OAuth2.create({
-      discoveryApi,
-      oauthRequestApi,
-      provider,
-      environment,
-      defaultScopes,
-    });
+    this.environment = environment;
+    this.provider = provider;
+    this.oauthRequestApi = oauthRequestApi;
+    this.discoveryApi = discoveryApi;
+
+    this.oauth2 = {
+      [MicrosoftAuth.MicrosoftGraphID]: OAuth2.create({
+        discoveryApi: this.discoveryApi,
+        oauthRequestApi: this.oauthRequestApi,
+        provider: this.provider,
+        environment: this.environment,
+        defaultScopes,
+      }),
+    };
+  }
+
+  private microsoftGraph(): OAuth2 {
+    return this.oauth2[MicrosoftAuth.MicrosoftGraphID];
+  }
+
+  getAccessToken(scope?: string | string[], options?: AuthRequestOptions) {
+    return this.microsoftGraph().getAccessToken(scope, options);
+  }
+
+  getIdToken(options?: AuthRequestOptions) {
+    return this.microsoftGraph().getIdToken(options);
+  }
+
+  getProfile(options?: AuthRequestOptions) {
+    return this.microsoftGraph().getProfile(options);
+  }
+
+  getBackstageIdentity(options?: AuthRequestOptions) {
+    return this.microsoftGraph().getBackstageIdentity(options);
+  }
+
+  signIn() {
+    return this.microsoftGraph().signIn();
+  }
+
+  signOut() {
+    return this.microsoftGraph().signOut();
+  }
+
+  sessionState$() {
+    return this.microsoftGraph().sessionState$();
   }
 }
