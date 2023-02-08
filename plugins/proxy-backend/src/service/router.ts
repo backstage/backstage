@@ -19,6 +19,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import {
   createProxyMiddleware,
+  fixRequestBody,
   Options,
   RequestHandler,
 } from 'http-proxy-middleware';
@@ -58,6 +59,7 @@ export interface RouterOptions {
 export interface ProxyConfig extends Options {
   allowedMethods?: string[];
   allowedHeaders?: string[];
+  reviveRequestBody?: boolean;
 }
 
 // Creates a proxy middleware, possibly with defaults added on top of the
@@ -174,6 +176,10 @@ export function buildMiddleware(
       }
     });
   };
+
+  if (fullConfig.reviveRequestBody) {
+    fullConfig.onProxyReq = fixRequestBody;
+  }
 
   return createProxyMiddleware(filter, fullConfig);
 }

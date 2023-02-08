@@ -18,11 +18,16 @@ import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Request, Response } from 'express';
 import * as http from 'http';
-import { createProxyMiddleware, Options } from 'http-proxy-middleware';
+import {
+  createProxyMiddleware,
+  fixRequestBody,
+  Options,
+} from 'http-proxy-middleware';
 import { buildMiddleware, createRouter } from './router';
 
 jest.mock('http-proxy-middleware', () => ({
   createProxyMiddleware: jest.fn(() => () => undefined),
+  fixRequestBody: jest.fn(),
 }));
 
 const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
@@ -387,6 +392,41 @@ describe('buildMiddleware', () => {
     );
 
     expect(Object.keys(testClientResponse.headers!)).toEqual(['set-cookie']);
+  });
+
+  it('revives request body when configured', async () => {
+    buildMiddleware('/proxy', logger, '/test', {
+      target: 'http://mocked',
+      reviveRequestBody: true,
+    });
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const config = mockCreateProxyMiddleware.mock.calls[0][1] as Options;
+
+    expect(config).toBeDefined();
+    expect(config.onProxyReq).toBeDefined();
+
+    config.onProxyReq!(
+      {} as http.ClientRequest,
+      {} as Request,
+      {} as Response,
+      {},
+    );
+    expect(fixRequestBody).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not revive request body when not configured', async () => {
+    buildMiddleware('/proxy', logger, '/test', {
+      target: 'http://mocked',
+    });
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const config = mockCreateProxyMiddleware.mock.calls[0][1] as Options;
+
+    expect(config).toBeDefined();
+    expect(config.onProxyReq).not.toBeDefined();
   });
 
   it('rejects malformed target URLs', async () => {
