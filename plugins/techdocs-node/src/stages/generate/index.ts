@@ -23,3 +23,10 @@ export type {
   GeneratorRunOptions,
   SupportedGeneratorKey,
 } from './types';
+import { getMkdocsYml } from './helpers';
+/**
+ * @public
+ * @deprecated
+ * Deprecated in favor of getMkdocsYml (lowercase 'd')
+ */
+export const getMkDocsYml = getMkdocsYml;

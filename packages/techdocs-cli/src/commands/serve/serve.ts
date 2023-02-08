@@ -66,7 +66,7 @@ export default async function serve(opts: OptionValues) {
     ? mkdocsDockerAddr
     : mkdocsLocalAddr;
 
-  const { path: mkDocsYmlPath, configIsTemporary } = await getMkdocsYml(
+  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
     './',
     opts.siteName,
   );
@@ -150,7 +150,7 @@ export default async function serve(opts: OptionValues) {
 
   if (configIsTemporary) {
     process.on('exit', async () => {
-      fs.rmSync(mkDocsYmlPath, {});
+      fs.rmSync(mkdocsYmlPath, {});
     });
   }
 }
