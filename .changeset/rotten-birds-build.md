@@ -2,5 +2,6 @@
 '@backstage/plugin-microsoft-calendar': minor
 ---
 
-Created a new Frontend plugin @backstage/plugin-microsoft-calendar and added it to plugins directory.
-please refer to [readme.md](./../plugins/microsoft-calendar/README.md) for step wise instruction to setup the plugin in your backstage frontend app.
+Created a new plugin `@backstage/plugin-microsoft-calendar` to display events from a Microsoft Calendar.
+
+please refer to the [README.md](https://backstage.io/docs/plugins/microsoft-calendar/README.md) for step-by-step instructions to setup the plugin in your Backstage instance.
