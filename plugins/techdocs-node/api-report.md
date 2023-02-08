@@ -89,7 +89,7 @@ export const getLocationForEntity: (
 ) => ParsedLocationAnnotation;
 
 // @public
-export const getMkDocsYml: (
+export const getMkdocsYml: (
   inputDir: string,
   siteOptions?: {
     name?: string;

@@ -193,7 +193,7 @@ export const generateMkdocsYml = async (
  * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
  * required `site_name` property, default value is "Documentation Site"
  */
-export const getMkDocsYml = async (
+export const getMkdocsYml = async (
   inputDir: string,
   siteOptions?: { name?: string },
 ): Promise<{ path: string; content: string; configIsTemporary: boolean }> => {
