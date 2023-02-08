@@ -20,7 +20,7 @@ The following sections will help you set up the Microsoft calendar plugin.
 
 ### Microsoft azure authentication provider
 
-> You need to setup [microsoft azure authentication provider](https://backstage.io/docs/auth/microsoft/provider), before you move forward with any of the below step if you have'nt already.
+> You need to setup [Microsoft Azure authentication provider](https://backstage.io/docs/auth/microsoft/provider), before you move forward with any of the below step if you haven't already.
 
 1. Install the plugin by running this command
 
@@ -29,8 +29,8 @@ The following sections will help you set up the Microsoft calendar plugin.
 yarn add --cwd packages/app @backstage/plugin-microsoft-calendar
 ```
 
-2. Import the Microsoft calendar React component from "@backstage/plugin-microsoft-calendar".
-3. You can then use the provided react component MicrosoftCalendar in the backstage frontend where ever you want
+2. Import the Microsoft calendar React component from `@backstage/plugin-microsoft-calendar`.
+3. You can then use the provided React component `MicrosoftCalendar` in the backstage frontend where ever you want
 
 ```tsx
 import { MicrosoftCalendar } from '@backstage/plugin-microsoft-calendar';
