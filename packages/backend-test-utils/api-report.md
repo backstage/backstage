@@ -33,7 +33,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace cache {
     const // (undocumented)
-      factory: () => ServiceFactory<CacheService>;
+      factory: () => ServiceFactory<CacheService, 'plugin'>;
   }
   // (undocumented)
   export function config(options?: config.Options): ConfigService;
@@ -44,46 +44,48 @@ export namespace mockServices {
       data?: JsonObject;
     };
     const // (undocumented)
-      factory: (options?: Options | undefined) => ServiceFactory<ConfigService>;
+      factory: (
+        options?: Options | undefined,
+      ) => ServiceFactory<ConfigService, 'root'>;
   }
   // (undocumented)
   export namespace database {
     const // (undocumented)
-      factory: () => ServiceFactory<DatabaseService>;
+      factory: () => ServiceFactory<DatabaseService, 'plugin'>;
   }
   // (undocumented)
   export namespace httpRouter {
     const // (undocumented)
       factory: (
         options?: HttpRouterFactoryOptions | undefined,
-      ) => ServiceFactory<HttpRouterService>;
+      ) => ServiceFactory<HttpRouterService, 'plugin'>;
   }
   // (undocumented)
   export function identity(): IdentityService;
   // (undocumented)
   export namespace identity {
     const // (undocumented)
-      factory: () => ServiceFactory<IdentityService>;
+      factory: () => ServiceFactory<IdentityService, 'plugin'>;
   }
   // (undocumented)
   export namespace lifecycle {
     const // (undocumented)
-      factory: () => ServiceFactory<LifecycleService>;
+      factory: () => ServiceFactory<LifecycleService, 'plugin'>;
   }
   // (undocumented)
   export namespace logger {
     const // (undocumented)
-      factory: () => ServiceFactory<LoggerService>;
+      factory: () => ServiceFactory<LoggerService, 'plugin'>;
   }
   // (undocumented)
   export namespace permissions {
     const // (undocumented)
-      factory: () => ServiceFactory<PermissionsService>;
+      factory: () => ServiceFactory<PermissionsService, 'plugin'>;
   }
   // (undocumented)
   export namespace rootLifecycle {
     const // (undocumented)
-      factory: () => ServiceFactory<RootLifecycleService>;
+      factory: () => ServiceFactory<RootLifecycleService, 'root'>;
   }
   // (undocumented)
   export function rootLogger(options?: rootLogger.Options): LoggerService;
@@ -94,24 +96,26 @@ export namespace mockServices {
       level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
     const // (undocumented)
-      factory: (options?: Options | undefined) => ServiceFactory<LoggerService>;
+      factory: (
+        options?: Options | undefined,
+      ) => ServiceFactory<LoggerService, 'root'>;
   }
   // (undocumented)
   export namespace scheduler {
     const // (undocumented)
-      factory: () => ServiceFactory<SchedulerService>;
+      factory: () => ServiceFactory<SchedulerService, 'plugin'>;
   }
   // (undocumented)
   export function tokenManager(): TokenManagerService;
   // (undocumented)
   export namespace tokenManager {
     const // (undocumented)
-      factory: () => ServiceFactory<TokenManagerService>;
+      factory: () => ServiceFactory<TokenManagerService, 'plugin'>;
   }
   // (undocumented)
   export namespace urlReader {
     const // (undocumented)
-      factory: () => ServiceFactory<UrlReaderService>;
+      factory: () => ServiceFactory<UrlReaderService, 'plugin'>;
   }
 }
 
