@@ -66,10 +66,7 @@ export enum Direction {
 
 // @public
 export const EntityCatalogGraphCard: (
-  props: Omit<
-    EntityRelationsGraphProps,
-    'className' | 'onNodeClick' | 'rootEntityNames'
-  > & {
+  props: Partial<EntityRelationsGraphProps> & {
     variant?: InfoCardVariants | undefined;
     height?: number | undefined;
     title?: string | undefined;
