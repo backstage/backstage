@@ -50,7 +50,7 @@ export interface IdentityApi {
 
 // @public
 export type IdentityApiGetIdentityRequest = {
-  request: Request_2<unknown>;
+  request: Request_2<any>;
 };
 
 // @public @deprecated

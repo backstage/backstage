@@ -37,7 +37,7 @@ export interface BackstageSignInResult {
  * @public
  */
 export type IdentityApiGetIdentityRequest = {
-  request: Request<unknown>;
+  request: Request<any>;
 };
 
 /**
