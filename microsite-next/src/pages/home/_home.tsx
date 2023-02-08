@@ -130,10 +130,7 @@ export function Home() {
               makes it possible for your company to manage thousands of them
             </ContentBlock>
 
-            <ContentBlock
-              title="Backstage makes it easy for one team to manage 10 services — and makes it possible for your company to manage thousands of them"
-              hasBulletLine
-            >
+            <ContentBlock title="A uniform overview" hasBulletLine>
               Every team can see all the services they own and related resources
               (deployments, data pipelines, pull request status, etc.)
             </ContentBlock>
@@ -156,6 +153,84 @@ export function Home() {
               No more orphan software hiding in the dark corners of your tech
               stack
             </ContentBlock>
+          </div>
+        </BannerSection>
+
+        <BannerSection greenCallToActionGradientBackground>
+          <div className="padding--lg text--center">
+            <h1>Learn more about the software catalog</h1>
+
+            <Link
+              to="https://backstage.io/docs/features/software-catalog/software-catalog-overview"
+              className="button button--secondary"
+            >
+              READ
+            </Link>
+          </div>
+        </BannerSection>
+
+        <BannerSection greenCallToActionGradientBackground>
+          <div className="padding--lg text--center">
+            <h1>Build your own software templates</h1>
+
+            <Link
+              to="https://backstage.io/docs/features/software-templates"
+              className="button button--secondary"
+            >
+              CONTRIBUTE
+            </Link>
+          </div>
+        </BannerSection>
+
+        <BannerSection greenCallToActionGradientBackground>
+          <div className="padding--lg text--center">
+            <h1>Learn more about TechDocs</h1>
+
+            <Link
+              to="https://backstage.io/docs/features/techdocs/techdocs-overview"
+              className="button button--secondary"
+            >
+              DOCS
+            </Link>
+          </div>
+        </BannerSection>
+
+        <BannerSection greenCallToActionGradientBackground>
+          <div className="padding--lg text--center">
+            <h1>Learn more about Backstage Search</h1>
+
+            <Link
+              to="https://backstage.io/docs/features/search/search-overview"
+              className="button button--secondary"
+            >
+              READ
+            </Link>
+          </div>
+        </BannerSection>
+
+        <BannerSection greenCallToActionGradientBackground>
+          <div className="padding--lg text--center">
+            <h1>Learn more about the K8s plugin</h1>
+
+            <Link
+              to="https://backstage.io/blog/2021/01/12/new-backstage-feature-kubernetes-for-service-owners"
+              className="button button--secondary"
+            >
+              READ
+            </Link>
+          </div>
+        </BannerSection>
+
+        <BannerSection greenCallToActionGradientBackground>
+          <div className="padding--lg text--center">
+            <h1>Build a plugin</h1>
+
+            <Link
+              to="/docs/plugins/create-a-plugin"
+              className="button button--secondary"
+            >
+              CONTRIBUTE
+            </Link>
           </div>
         </BannerSection>
       </div>
