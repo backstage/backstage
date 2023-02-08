@@ -18,6 +18,7 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
+  isPermission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
@@ -28,8 +29,19 @@ import {
   DefaultPlaylistPermissionPolicy,
   isPlaylistPermission,
 } from '@backstage/plugin-playlist-backend';
+import {
+  createScaffolderActionConditionalDecision,
+  scaffolderActionConditions,
+} from '@backstage/plugin-scaffolder-backend';
+import { actionExecutePermission } from '@backstage/plugin-scaffolder-common';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
+import { z } from 'zod';
+import zodToJsonSchema from 'zod-to-json-schema';
+
+const inputSchema = zodToJsonSchema(
+  z.object({ message: z.enum(['hello']) }).strict(),
+);
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
@@ -40,6 +52,16 @@ class ExamplePermissionPolicy implements PermissionPolicy {
   ): Promise<PolicyDecision> {
     if (isPlaylistPermission(request.permission)) {
       return this.playlistPermissionPolicy.handle(request, user);
+    }
+
+    if (isPermission(request.permission, actionExecutePermission)) {
+      return createScaffolderActionConditionalDecision(
+        request.permission,
+        scaffolderActionConditions.matchesInput({
+          action: 'debug:log',
+          schema: inputSchema,
+        }),
+      );
     }
 
     return {

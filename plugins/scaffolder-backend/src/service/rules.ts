@@ -21,14 +21,15 @@ import {
   TemplateEntityStepV1beta3,
   TemplateParameter,
 } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import { z } from 'zod';
+import Ajv from 'ajv';
 
+const ajv = new Ajv({ allErrors: true });
 export const createScaffolderActionPermissionRule = makeCreatePermissionRule<
   {
-    actionId: string;
-    input: JsonObject;
-    template: TemplateEntityStepV1beta3 | TemplateParameter;
+    action: string;
+    input: JsonObject | undefined;
   },
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_ACTION
@@ -48,7 +49,7 @@ export const hasActionId = createScaffolderActionPermissionRule({
     actionId: z.string().describe('Name of the actionId to match on'),
   }),
   apply: (resource, { actionId }) => {
-    return resource.actionId === actionId;
+    return resource.action === actionId;
   },
   toQuery: () => ({}),
 });
@@ -58,23 +59,19 @@ export const matchesInput = createScaffolderActionPermissionRule({
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
   description: `Matches actionId and the input given`,
   paramsSchema: z.object({
-    actionId: z.string().describe('Name of the actionId to match on'),
-
+    action: z.string().describe('Name of the actionId to match on'),
     // Pass in a json schema to validate the input against
-    input: z.jsonSchema({}).describe('Input to match on'),
+    schema: z.record(z.any()),
   }),
-  apply: (resource, { actionId, input }) => {
-    if (resource.actionId !== actionId) {
-      return false;
+  apply: (resource, { action, schema }) => {
+    if (resource.action !== action) {
+      return true;
+    }
+    if (!schema) {
+      return true;
     }
 
-    for (const [key, value] of Object.entries(input)) {
-      if (resource.input[key] !== value) {
-        return false;
-      }
-    }
-
-    return true;
+    return ajv.validate(schema, resource.input);
   },
   toQuery: () => ({}),
 });
@@ -93,3 +90,4 @@ export const hasTag = createScaffolderTemplatePermissionRule({
 });
 
 export const scaffolderStepRules = { hasTag };
+export const scaffolderActionRules = { matchesInput };

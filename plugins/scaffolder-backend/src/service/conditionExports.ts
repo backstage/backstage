@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common';
+import {
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+} from '@backstage/plugin-scaffolder-common';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { scaffolderStepRules } from './rules';
+import { scaffolderActionRules, scaffolderStepRules } from './rules';
 
 const { conditions, createConditionalDecision } = createConditionExports({
   pluginId: 'scaffolder',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   rules: scaffolderStepRules,
+});
+
+const {
+  conditions: scaffolderActionConditions,
+  createConditionalDecision: createScaffolderActionConditionalDecision,
+} = createConditionExports({
+  pluginId: 'scaffolder',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  rules: scaffolderActionRules,
 });
 
 /**
@@ -65,3 +77,7 @@ export const scaffolderConditions = conditions;
  * @alpha
  */
 export const createScaffolderConditionalDecision = createConditionalDecision;
+export {
+  createScaffolderActionConditionalDecision,
+  scaffolderActionConditions,
+};

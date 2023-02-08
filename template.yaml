@@ -1,0 +1,30 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: my-custom-template
+  parameters:
+    - title: Provide some simple information
+      metadata:
+        tags:
+          - bang
+      properties:
+        description:
+          title: Description
+          type: string
+            metadata:
+              tags:
+                - bar
+  steps:
+    - id: step-one
+      name: First log
+      action: debug:log
+      input:
+        message: hello
+      metadata:
+        tags:
+          - foo
+    - id: step-two
+      name: Second log
+      action: debug:log
+      input:
+        message: world
