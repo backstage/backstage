@@ -85,8 +85,15 @@ module.exports = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     {
+      colorMode: {
+        defaultMode: 'dark',
+        // disableSwitch: true,
+      },
       navbar: {
-        title: 'Backstage Software Catalog and Developer Platform',
+        logo: {
+          alt: 'Backstage Software Catalog and Developer Platform',
+          src: 'img/logo.svg',
+        },
         items: [
           {
             href: 'https://github.com/backstage/backstage',
