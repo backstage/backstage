@@ -36,7 +36,7 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class MicrosoftAuth {
-  private oauth2: Record<string, OAuth2>;
+  private oauth2: { [aud: string]: OAuth2 };
   private environment: string;
   private provider: AuthProviderInfo;
   private oauthRequestApi: OAuthRequestApi;
@@ -82,8 +82,59 @@ export default class MicrosoftAuth {
     return this.oauth2[MicrosoftAuth.MicrosoftGraphID];
   }
 
+  static expectedClaims(scope: string): { aud: string; scp: string } {
+    const scopes = scope.split(' ').map(MicrosoftAuth.parseScope);
+    const firstAudience =
+      scopes.map(({ aud }) => aud).find(aud => aud !== 'openid') ??
+      MicrosoftAuth.MicrosoftGraphID;
+    return {
+      aud: firstAudience,
+      scp: scopes
+        .filter(
+          ({ aud, scp }) =>
+            (aud === 'openid' && scp !== 'offline_access') ||
+            aud === firstAudience,
+        )
+        .map(({ scp }) => scp)
+        .join(' '),
+    };
+  }
+
+  private static parseScope(scope: string): { aud: string; scp: string } {
+    const groups = scope.match(/^(?<resourceURI>.*)\/(?<scp>[^\/]*)$/)?.groups;
+    if (groups) {
+      const { resourceURI, scp } = groups;
+      const aud = resourceURI.replace(/^api:\/\//, '');
+      return { aud, scp };
+    }
+    switch (scope) {
+      case 'email':
+      case 'openid':
+      case 'offline_access':
+      case 'profile': {
+        return { aud: 'openid', scp: scope };
+      }
+      default:
+        return { aud: MicrosoftAuth.MicrosoftGraphID, scp: scope };
+    }
+  }
+
   getAccessToken(scope?: string | string[], options?: AuthRequestOptions) {
-    return this.microsoftGraph().getAccessToken(scope, options);
+    const { aud } =
+      scope === undefined
+        ? { aud: MicrosoftAuth.MicrosoftGraphID }
+        : MicrosoftAuth.expectedClaims(
+            Array.isArray(scope) ? scope.join(' ') : scope,
+          );
+    if (!(aud in this.oauth2)) {
+      this.oauth2[aud] = OAuth2.create({
+        discoveryApi: this.discoveryApi,
+        oauthRequestApi: this.oauthRequestApi,
+        provider: this.provider,
+        environment: this.environment,
+      });
+    }
+    return this.oauth2[aud].getAccessToken(scope, options);
   }
 
   getIdToken(options?: AuthRequestOptions) {
