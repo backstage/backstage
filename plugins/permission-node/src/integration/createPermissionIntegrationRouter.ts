@@ -218,50 +218,91 @@ export const createIsAuthorized = <TResource, TQuery>(
  *
  * @public
  */
-export const createPermissionIntegrationRouter = <
+export function createPermissionIntegrationRouter<
   TResourceType extends string,
   TResource,
->(options: {
-  resourceType: TResourceType;
-  permissions?: Array<Permission>;
-  // Do not infer value of TResourceType from supplied rules.
-  // instead only consider the resourceType parameter, and
-  // consider any rules whose resource type does not match
-  // to be an error.
-  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
-  getResources: (
-    resourceRefs: string[],
-  ) => Promise<Array<TResource | undefined>>;
-}): express.Router => {
-  const { resourceType, permissions, rules, getResources } = options;
+>(
+  options: PermissionIntegrationRouterOptions<TResourceType, TResource>,
+): express.Router;
+export function createPermissionIntegrationRouter<
+  TResourceType1 extends string,
+  TResource1,
+>(
+  options: [PermissionIntegrationRouterOptions<TResourceType1, TResource1>],
+): express.Router;
+
+export function createPermissionIntegrationRouter<
+  TResourceType1 extends string,
+  TResource1,
+  TResourceType2 extends string,
+  TResource2,
+>(
+  options: [
+    PermissionIntegrationRouterOptions<TResourceType1, TResource1>,
+    PermissionIntegrationRouterOptions<TResourceType2, TResource2>,
+  ],
+): express.Router;
+export function createPermissionIntegrationRouter<
+  TResourceType1 extends string,
+  TResource1,
+  TResourceType2 extends string,
+  TResource2,
+  TResourceType3 extends string,
+  TResource3,
+>(
+  options: [
+    PermissionIntegrationRouterOptions<TResourceType1, TResource1>,
+    PermissionIntegrationRouterOptions<TResourceType2, TResource2>,
+    PermissionIntegrationRouterOptions<TResourceType3, TResource3>,
+  ],
+): express.Router;
+export function createPermissionIntegrationRouter<
+  TResourceType extends string,
+  TResource,
+>(
+  options:
+    | PermissionIntegrationRouterOptions<TResourceType, TResource>
+    | Array<PermissionIntegrationRouterOptions<TResourceType, TResource>>,
+): express.Router {
+  const allOptions = [options].flat();
+
   const router = Router();
   router.use(express.json());
 
   router.get('/.well-known/backstage/permissions/metadata', (_, res) => {
-    const serializedRules: MetadataResponseSerializedRule[] = rules.map(
-      rule => ({
+    const serializedRules: MetadataResponseSerializedRule[] = allOptions
+      .flatMap(o => o.rules)
+      .map(rule => ({
         name: rule.name,
         description: rule.description,
         resourceType: rule.resourceType,
         paramsSchema: zodToJsonSchema(rule.paramsSchema ?? z.object({})),
-      }),
-    );
+      }));
 
     const responseJson: MetadataResponse = {
-      permissions,
+      permissions: allOptions
+        .flatMap(o => o.permissions)
+        .filter((p): p is Permission => !!p),
       rules: serializedRules,
     };
 
     return res.json(responseJson);
   });
 
-  const getRule = createGetRule(rules);
+  const getRuleMapByResourceType = allOptions.reduce<
+    Record<string, ReturnType<typeof createGetRule>>
+  >((acc, option) => {
+    acc[option.resourceType] = createGetRule(option.rules);
+    return acc;
+  }, {});
 
   const assertValidResourceTypes = (
     requests: ApplyConditionsRequestEntry[],
   ) => {
     const invalidResourceTypes = requests
-      .filter(request => request.resourceType !== resourceType)
+      .filter(request =>
+        allOptions.every(o => o.resourceType !== request.resourceType),
+      )
       .map(request => request.resourceType);
 
     if (invalidResourceTypes.length) {
@@ -284,23 +325,41 @@ export const createPermissionIntegrationRouter = <
 
       assertValidResourceTypes(body.items);
 
-      const resourceRefs = Array.from(
-        new Set(body.items.map(({ resourceRef }) => resourceRef)),
-      );
-      const resourceArray = await getResources(resourceRefs);
-      const resources = resourceRefs.reduce((acc, resourceRef, index) => {
-        acc[resourceRef] = resourceArray[index];
+      const resourceRefsByResourceType = body.items.reduce<
+        Record<string, string[]>
+      >((acc, item) => {
+        if (!acc[item.resourceType]) {
+          acc[item.resourceType] = [];
+        }
 
+        acc[item.resourceType].push(item.resourceRef);
         return acc;
-      }, {} as Record<string, TResource | undefined>);
+      }, {});
+
+      const resourcesByResourceType: Record<string, Record<string, any>> = {};
+
+      for (const option of allOptions) {
+        resourcesByResourceType[option.resourceType] = {};
+
+        (
+          await option.getResources(
+            resourceRefsByResourceType[option.resourceType],
+          )
+        ).forEach((resource, index) => {
+          const resourceRef =
+            resourceRefsByResourceType[option.resourceType][index];
+
+          resourcesByResourceType[option.resourceType][resourceRef] = resource;
+        });
+      }
 
       return res.json({
         items: body.items.map(request => ({
           id: request.id,
           result: applyConditions(
             request.conditions,
-            resources[request.resourceRef],
-            getRule,
+            resourcesByResourceType[request.resourceType][request.resourceRef],
+            getRuleMapByResourceType[request.resourceType],
           )
             ? AuthorizeResult.ALLOW
             : AuthorizeResult.DENY,
@@ -312,4 +371,20 @@ export const createPermissionIntegrationRouter = <
   router.use(errorHandler());
 
   return router;
+}
+
+type PermissionIntegrationRouterOptions<
+  TResourceType extends string,
+  TResource,
+> = {
+  resourceType: TResourceType;
+  permissions?: Array<Permission>;
+  // Do not infer value of TResourceType from supplied rules.
+  // instead only consider the resourceType parameter, and
+  // consider any rules whose resource type does not match
+  // to be an error.
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
+  getResources: (
+    resourceRefs: string[],
+  ) => Promise<Array<TResource | undefined>>;
 };
