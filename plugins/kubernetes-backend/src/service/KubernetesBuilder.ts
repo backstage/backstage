@@ -15,7 +15,12 @@
  */
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import {
+  kubernetesPermissions,
+  RESOURCE_TYPE_KUBERNETES_RESOURCE,
+} from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Duration } from 'luxon';
@@ -272,7 +277,13 @@ export class KubernetesBuilder {
     const router = Router();
     router.use('/proxy', proxy.createRequestHandler(permissionApi));
     router.use(express.json());
-
+    router.use(
+      createPermissionIntegrationRouter({
+        resourceType: RESOURCE_TYPE_KUBERNETES_RESOURCE,
+        permissions: kubernetesPermissions,
+        rules: [],
+      }),
+    );
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
       const serviceId = req.params.serviceId;

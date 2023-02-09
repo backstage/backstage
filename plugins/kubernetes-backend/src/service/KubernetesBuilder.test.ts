@@ -286,7 +286,6 @@ describe('KubernetesBuilder', () => {
       expect(response.status).toEqual(200);
     });
   });
-
   describe('post /proxy', () => {
     const worker = setupServer();
     setupRequestMockHandlers(worker);
@@ -340,11 +339,11 @@ describe('KubernetesBuilder', () => {
 
     it('supports yaml content type with permission set to allow', async () => {
       const requestBody = `---
-    kind: Namespace
-    apiVersion: v1
-    metadata:
-      name: new-ns
-    `;
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: new-ns
+`;
 
       permissions.authorize.mockReturnValue(
         Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
@@ -387,6 +386,25 @@ describe('KubernetesBuilder', () => {
       const response = await proxyEndpointRequest;
 
       expect(response.status).toEqual(403);
+    });
+  });
+  describe('get /.well-known/backstage/permissions/metadata', () => {
+    it('lists permissions supported by the kubernetes plugin', async () => {
+      const response = await request(app).get(
+        '/.well-known/backstage/permissions/metadata',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        permissions: [
+          {
+            type: 'basic',
+            name: 'kubernetes.proxy',
+            attributes: {},
+          },
+        ],
+        rules: [],
+      });
     });
   });
 });

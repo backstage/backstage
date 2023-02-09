@@ -207,9 +207,6 @@ export interface JobsFetchResponse {
   type: 'jobs';
 }
 
-// @alpha
-export const kubernetesClusterPermissions: BasicPermission[];
-
 // @public (undocumented)
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
@@ -222,10 +219,10 @@ export type KubernetesErrorTypes =
 export type KubernetesFetchError = StatusError | RawFetchError;
 
 // @alpha
-export const kubernetesProxyCreatePermission: BasicPermission;
+export const kubernetesPermissions: BasicPermission[];
 
 // @alpha
-export const kubernetesProxyReadPermission: BasicPermission;
+export const kubernetesProxyPermission: BasicPermission;
 
 // @public (undocumented)
 export interface KubernetesRequestAuth {
@@ -290,6 +287,9 @@ export interface ReplicaSetsFetchResponse {
   // (undocumented)
   type: 'replicasets';
 }
+
+// @alpha
+export const RESOURCE_TYPE_KUBERNETES_RESOURCE = 'kubernetes-resource';
 
 // @public (undocumented)
 export interface ServiceFetchResponse {

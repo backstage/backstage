@@ -16,6 +16,12 @@
 
 import { createPermission } from '@backstage/plugin-permission-common';
 
+/**
+ * Permission resource type which corresponds to cluster entities.
+ * @alpha
+ */
+export const RESOURCE_TYPE_KUBERNETES_RESOURCE = 'kubernetes-resource';
+
 /** This permission is used to check access to the proxy endpoint
  * @alpha
  */
@@ -25,7 +31,7 @@ export const kubernetesProxyPermission = createPermission({
 });
 
 /**
- * List of all cluster permissions.
+ * List of all Kubernetes permissions.
  * @alpha
  */
-export const kubernetesClusterPermissions = [kubernetesProxyPermission];
+export const kubernetesPermissions = [kubernetesProxyPermission];
