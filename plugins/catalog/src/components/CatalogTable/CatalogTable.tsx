@@ -52,6 +52,7 @@ export interface CatalogTableProps {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  detailPanel?: TableProps<CatalogTableRow>['detailPanel'];
   emptyContent?: ReactNode;
   subtitle?: string;
 }
@@ -64,7 +65,14 @@ const YellowStar = withStyles({
 
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
-  const { columns, actions, tableOptions, subtitle, emptyContent } = props;
+  const {
+    columns,
+    actions,
+    tableOptions,
+    detailPanel,
+    subtitle,
+    emptyContent,
+  } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
 
@@ -230,6 +238,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       actions={actions || defaultActions}
       subtitle={subtitle}
       emptyContent={emptyContent}
+      detailPanel={detailPanel}
     />
   );
 };
