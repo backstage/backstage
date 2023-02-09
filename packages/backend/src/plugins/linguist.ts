@@ -28,5 +28,13 @@ export default async function createPlugin(
     initialDelay: { seconds: 15 },
   };
 
-  return createRouter({ schedule: schedule, age: { days: 30 } }, { ...env });
+  return createRouter(
+    {
+      schedule: schedule,
+      age: { days: 30 },
+      batchSize: 2,
+      useSourceLocation: false,
+    },
+    { ...env },
+  );
 }
