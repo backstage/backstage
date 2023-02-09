@@ -26,6 +26,7 @@ import openBrowser from 'react-dev-utils/openBrowser';
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
 export default async (org: string) => {
+  // Why is the Org check not done here?
   const answers: Answers = await inquirer.prompt({
     name: 'appType',
     type: 'checkbox',
