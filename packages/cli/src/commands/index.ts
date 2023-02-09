@@ -25,6 +25,13 @@ const configOption = [
   Array<string>(),
 ] as const;
 
+export function registerAdminCommand(program: Command) {
+  program
+    .command('admin')
+    .description('Get help setting up your Backstage App.')
+    .action(lazy(() => import('./admin').then(m => m.command)));
+}
+
 export function registerRepoCommand(program: Command) {
   const command = program
     .command('repo [command]')
@@ -360,6 +367,7 @@ export function registerCommands(program: Command) {
   registerRepoCommand(program);
   registerScriptCommand(program);
   registerMigrateCommand(program);
+  registerAdminCommand(program);
 
   program
     .command('versions:bump')
