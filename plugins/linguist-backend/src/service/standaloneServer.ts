@@ -60,10 +60,9 @@ export async function startStandaloneServer(
 
   logger.debug('Starting application server...');
   const router = await createRouter(
-    { schedule: schedule, age: { days: 30 } },
+    { schedule: schedule, age: { days: 30 }, useSourceLocation: false },
     {
       database: { getClient: async () => db },
-      config,
       discovery: SingleHostDiscovery.fromConfig(config),
       reader: UrlReaders.default({ logger, config }),
       logger,

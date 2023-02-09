@@ -33,8 +33,10 @@ export type RawDbEntityResultRow = {
 /** @public */
 export interface LinguistBackendStore {
   insertEntityResults(entityLanguages: EntityResults): Promise<string>;
+  insertNewEntity(entityRef: string): Promise<void>;
   getEntityResults(entityRef: string): Promise<Languages>;
-  getProcessedEntities(): Promise<ProcessedEntity[]>;
+  getProcessedEntities(): Promise<ProcessedEntity[] | []>;
+  getUnprocessedEntities(): Promise<string[] | []>;
 }
 
 const migrationsDir = resolvePackagePath(
@@ -71,8 +73,21 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     return result.id;
   }
 
+  async insertNewEntity(entityRef: string): Promise<void> {
+    const entityLanguageId = uuid();
+
+    await this.db<RawDbEntityResultRow>('entity_result')
+      .insert({
+        id: entityLanguageId,
+        entity_ref: entityRef,
+      })
+      .onConflict('entity_ref')
+      .ignore(); // If the entity_ref is in the table already then we don't want to add it again
+  }
+
   async getEntityResults(entityRef: string): Promise<Languages> {
     const entityResults = await this.db<RawDbEntityResultRow>('entity_result')
+      .whereNotNull('languages')
       .where({ entity_ref: entityRef })
       .first();
 
@@ -93,11 +108,40 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     }
   }
 
-  async getProcessedEntities(): Promise<ProcessedEntity[]> {
-    const entityResults = await this.db<ProcessedEntity>(
-      'entity_result',
-    ).select('entity_ref', 'processed_date');
+  async getProcessedEntities(): Promise<ProcessedEntity[] | []> {
+    const rawEntities = await this.db<RawDbEntityResultRow>('entity_result')
+      .whereNotNull('processed_date')
+      .whereNotNull('languages');
 
-    return entityResults;
+    if (!rawEntities) {
+      return [];
+    }
+
+    const processedEntities = rawEntities.map(rawEntity => {
+      const processEntity = {
+        entityRef: rawEntity.entity_ref,
+        processedDate: rawEntity.processed_date,
+      };
+
+      return processEntity;
+    });
+
+    return processedEntities;
+  }
+
+  async getUnprocessedEntities(): Promise<string[] | []> {
+    const rawEntities = await this.db<RawDbEntityResultRow>('entity_result')
+      .whereNull('languages')
+      .orderBy('created_at', 'asc');
+
+    if (!rawEntities) {
+      return [];
+    }
+
+    const unprocessedEntities = rawEntities.map(rawEntity => {
+      return rawEntity.entity_ref;
+    });
+
+    return unprocessedEntities;
   }
 }

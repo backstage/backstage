@@ -20,7 +20,6 @@ import {
   PluginEndpointDiscovery,
   UrlReader,
 } from '@backstage/backend-common';
-import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -36,12 +35,13 @@ import { HumanDuration } from '@backstage/types';
 export interface PluginOptions {
   schedule?: TaskScheduleDefinition;
   age?: HumanDuration;
+  batchSize?: number;
+  useSourceLocation?: boolean;
 }
 
 /** @public */
 export interface RouterOptions {
   linguistBackendApi?: LinguistBackendApi;
-  config: Config;
   logger: Logger;
   reader: UrlReader;
   database: PluginDatabaseManager;
@@ -54,10 +54,9 @@ export async function createRouter(
   pluginOptions: PluginOptions,
   routerOptions: RouterOptions,
 ): Promise<express.Router> {
-  const { schedule, age } = pluginOptions;
+  const { schedule, age, batchSize, useSourceLocation } = pluginOptions;
 
-  const { config, logger, reader, database, discovery, scheduler } =
-    routerOptions;
+  const { logger, reader, database, discovery, scheduler } = routerOptions;
 
   const linguistBackendStore = await LinguistBackendDatabase.create(
     await database.getClient(),
@@ -66,12 +65,13 @@ export async function createRouter(
   const linguistBackendApi =
     routerOptions.linguistBackendApi ||
     new LinguistBackendApi(
-      config,
       logger,
       linguistBackendStore,
       reader,
       discovery,
       age,
+      batchSize,
+      useSourceLocation,
     );
 
   if (scheduler && schedule) {

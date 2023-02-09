@@ -65,10 +65,9 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter(
-      { schedule: schedule, age: { days: 30 } },
+      { schedule: schedule, age: { days: 30 }, useSourceLocation: false },
       {
         linguistBackendApi,
-        config: new ConfigReader({}),
         discovery: testDiscovery,
         database: createDatabase(),
         reader: mockUrlReader,

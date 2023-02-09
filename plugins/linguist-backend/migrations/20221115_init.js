@@ -36,10 +36,7 @@ exports.up = async function up(knex) {
       .unique()
       .notNullable()
       .comment('The entity ref that this Linguist result applies to');
-    table
-      .text('languages')
-      .notNullable()
-      .comment('The results json as a string');
+    table.text('languages').comment('The results json as a string');
     table
       .dateTime('created_at')
       .defaultTo(knex.fn.now())
@@ -48,7 +45,6 @@ exports.up = async function up(knex) {
     table
       .dateTime('processed_date')
       .defaultTo(knex.fn.now())
-      .notNullable()
       .comment('The timestamp when this entity was processed');
     table.index('index', 'entity_result_index_idx');
     table.index('entity_ref', 'entity_result_entity_ref_idx');

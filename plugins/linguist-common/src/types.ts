@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
 
 /** @public */
 export type EntityResults = {
@@ -41,7 +40,7 @@ export type Language = {
 /** @public */
 export type ProcessedEntity = {
   entityRef: string;
-  processed_date: Date;
+  processedDate: Date;
 };
 
 /** @public */
@@ -50,5 +49,5 @@ export type EntitiesOverview = {
   processedCount: number;
   pendingCount: number;
   staleCount: number;
-  filteredEntities: Entity[];
+  filteredEntities: string[];
 };
