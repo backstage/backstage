@@ -24,7 +24,8 @@
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
-    "start": "nodemon --"
+    "start": "nodemon --",
+    "start-admin-web": "ts-node --transpile-only --project ../../tsconfig.json --compiler-options '{\"module\": \"CommonJS\"}' src/commands/admin-web/local-dev.ts"
   },
   "bin": {
     "backstage-cli": "bin/backstage-cli"
