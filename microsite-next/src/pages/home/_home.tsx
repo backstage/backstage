@@ -1,13 +1,13 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { BannerSection } from '@site/src/components/banner-section/banner-section';
+import { BannerSectionColumns } from '@site/src/components/banner-section/banner-section-columns';
+import { ContentBlock } from '@site/src/components/content-block/content-block';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
 import React from 'react';
 
-import { BannerSection } from '../../components/banner-section/banner-section';
 import homeStyles from './home.module.scss';
-import { BannerSectionColumns } from '../../components/banner-section/banner-section-columns';
-import { ContentBlock } from '@site/src/components/content-block/content-block';
 
 export function Home() {
   const { siteConfig } = useDocusaurusContext();
@@ -118,7 +118,7 @@ export function Home() {
               />
               <img
                 src={`${siteConfig.baseUrl}img/components-with-filter-small.png`}
-                alt=""
+                alt="Software Catalog Filter Sidebar"
               />
             </picture>
 
@@ -169,7 +169,7 @@ export function Home() {
           </div>
         </BannerSection>
 
-        <BannerSection greenGradientBackground>
+        <BannerSection greenBottomGradientBackground>
           <div className={homeStyles.softwareTemplatesContainer}>
             <div className="softwareTemplatesTitle">
               <img
@@ -187,7 +187,10 @@ export function Home() {
                 srcSet={`${siteConfig.baseUrl}img/cards.png`}
                 media="(min-width: 997px)"
               />
-              <img src={`${siteConfig.baseUrl}img/service-cards.png`} alt="" />
+              <img
+                src={`${siteConfig.baseUrl}img/service-cards.png`}
+                alt="Software Templates Cards"
+              />
             </picture>
 
             <ContentBlock
@@ -230,6 +233,53 @@ export function Home() {
           </div>
         </BannerSection>
 
+        <BannerSection greenBottomGradientBackground>
+          <div className={homeStyles.softwareTemplatesContainer}>
+            <div className="softwareTemplatesTitle">
+              <img
+                src={`${siteConfig.baseUrl}animations/backstage-techdocs-icon-1.gif`}
+                alt="Backstage TechDocs File Copy GIF"
+              />
+
+              <h2 className="text--primary">Backstage TechDocs</h2>
+
+              <h1>Docs like code</h1>
+            </div>
+
+            <picture className="softwareTemplatesImg">
+              <source
+                srcSet={`${siteConfig.baseUrl}img/techdocs2.gif`}
+                media="(min-width: 997px)"
+              />
+              <img
+                src={`${siteConfig.baseUrl}img/techdocs-static-mobile.png`}
+                alt="Backstage TechDocs Markdown to HTML"
+              />
+            </picture>
+
+            <ContentBlock title="Free documentation" hasBulletLine>
+              Whenever you use a Backstage Software Template, your project
+              automatically gets a TechDocs site, for free
+            </ContentBlock>
+
+            <ContentBlock title="Easy to write" hasBulletLine>
+              With our docs-like-code approach, engineers write their
+              documentation in Markdown files right alongside their code
+            </ContentBlock>
+
+            <ContentBlock title="Easy to maintain" hasBulletLine>
+              Updating code? Update your documentation while you're there — with
+              docs and code in the same place, it becomes a natural part of your
+              workstream
+            </ContentBlock>
+
+            <ContentBlock title="Easy to find and use" hasBulletLine>
+              Since all your documentation is in Backstage, finding any TechDoc
+              is just a search query away
+            </ContentBlock>
+          </div>
+        </BannerSection>
+
         <BannerSection greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Learn more about TechDocs</h1>
@@ -240,6 +290,54 @@ export function Home() {
             >
               DOCS
             </Link>
+          </div>
+        </BannerSection>
+
+        <BannerSection greenGradientBackground>
+          <div className={homeStyles.softwareTemplatesContainer}>
+            <div className="softwareTemplatesTitle">
+              <img
+                src={`${siteConfig.baseUrl}animations/backstage-search-platform-icon-1.gif`}
+                alt="Search Platform Telescope GIF"
+              />
+
+              <h2 className="text--primary">Backstage Search Platform</h2>
+
+              <h1>A search platform made just for you</h1>
+            </div>
+
+            <picture className="softwareTemplatesImg">
+              <source
+                srcSet={`${siteConfig.baseUrl}img/search-platform-overview.png`}
+                media="(min-width: 997px)"
+              />
+              <img
+                src={`${siteConfig.baseUrl}img/search-platform-overview-small.png`}
+                alt="Search Platform Search Bar"
+              />
+            </picture>
+
+            <ContentBlock title="Way more than a text box" hasBulletLine>
+              Backstage Search more than just a box you type questions into —
+              it's an entire platform all by itself, which you can customize to
+              fit your organization's needs
+            </ContentBlock>
+
+            <ContentBlock title="Search the way you want" hasBulletLine>
+              Bring your own search engine, create a customized search page
+              experience, or edit the look and feel of each search result
+            </ContentBlock>
+
+            <ContentBlock title="Index everything, find anything" hasBulletLine>
+              With an extensible backend, you can search beyond the Software
+              Catalog and index any source you'd like — whether it's TechDocs or
+              Confluence and Stack Overflow
+            </ContentBlock>
+
+            <ContentBlock title="Discoverability unlocked" hasBulletLine>
+              New hires and seasoned employees alike can easily search your
+              infrastructure instead of getting lost in it
+            </ContentBlock>
           </div>
         </BannerSection>
 
@@ -256,6 +354,50 @@ export function Home() {
           </div>
         </BannerSection>
 
+        <BannerSection greenBottomGradientBackground>
+          <BannerSectionColumns
+            header={
+              <div className={homeStyles.softwareTemplatesContainer}>
+                <div className="softwareTemplatesTitle">
+                  <img
+                    src={`${siteConfig.baseUrl}animations/backstage-kubernetes-icon-1.gif`}
+                    alt="Backstage Kubernetes Flag GIF"
+                  />
+
+                  <h2 className="text--primary">Backstage Kubernetes</h2>
+
+                  <h1>Manage your services, not clusters</h1>
+                </div>
+              </div>
+            }
+          >
+            <ContentBlock
+              title="Kubernetes made just for service owners"
+              hasBulletLine
+            >
+              Backstage features the first Kubernetes monitoring tool designed
+              around the needs of service owners, not cluster admins
+            </ContentBlock>
+
+            <ContentBlock title="Your service at a glance" hasBulletLine>
+              Get all your service's deployments in one, aggregated view — no
+              more digging through cluster logs in a CLI, no more combing
+              through lists of services you don't own
+            </ContentBlock>
+
+            <ContentBlock title="Pick a cloud, any cloud" hasBulletLine>
+              Since Backstage uses the Kubernetes API, it's cloud agnostic — so
+              it works no matter which cloud provider or managed Kubernetes
+              service you use, and even works in multi-cloud orgs
+            </ContentBlock>
+
+            <ContentBlock title="Any K8s, one UI" hasBulletLine>
+              Now you don't have to switch dashboards when you move from local
+              testing to production, or from one cloud provider to another
+            </ContentBlock>
+          </BannerSectionColumns>
+        </BannerSection>
+
         <BannerSection greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Learn more about the K8s plugin</h1>
@@ -269,6 +411,65 @@ export function Home() {
           </div>
         </BannerSection>
 
+        <BannerSection greenBottomGradientBackground>
+          <div className={homeStyles.softwareTemplatesContainer}>
+            <div className="softwareTemplatesTitle">
+              <img
+                src={`${siteConfig.baseUrl}animations/backstage-plugin-icon-2.gif`}
+                alt="Plugins Building Blocks GIF"
+              />
+
+              <h2 className="text--primary">
+                Customize Backstage with plugins
+              </h2>
+
+              <h1>An app store for your infrastructure</h1>
+            </div>
+
+            <picture className="softwareTemplatesImg">
+              <source
+                srcSet={`${siteConfig.baseUrl}img/cards-plugins.png`}
+                media="(min-width: 997px)"
+              />
+              <img
+                src={`${siteConfig.baseUrl}img/plugins.png`}
+                alt="Plugins Cards"
+              />
+            </picture>
+
+            <ContentBlock title="Add functionality" hasBulletLine>
+              Want scalable website testing? Add the{' '}
+              <Link to="https://backstage.io/blog/2020/04/06/lighthouse-plugin">
+                Lighthouse{' '}
+              </Link>
+              plugin. Wondering about recommended frameworks? Add the{' '}
+              <Link to="https://backstage.io/blog/2020/05/14/tech-radar-plugin">
+                Tech Radar{' '}
+              </Link>
+              plugin.
+            </ContentBlock>
+
+            <ContentBlock title="BYO Plugins" hasBulletLine>
+              If you don't see the plugin you need, it's simple to build your
+              own
+            </ContentBlock>
+
+            <ContentBlock
+              title="Integrate your own custom tooling"
+              hasBulletLine
+            >
+              Building internal plugins lets you tailor your version of
+              Backstage to be a perfect fit for your infrastructure
+            </ContentBlock>
+
+            <ContentBlock title="Share with the community" hasBulletLine>
+              Building <Link to="/plugins">open source plugins</Link>{' '}
+              contributes to the entire Backstage ecosystem, which benefits
+              everyone
+            </ContentBlock>
+          </div>
+        </BannerSection>
+
         <BannerSection greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Build a plugin</h1>
@@ -279,6 +480,24 @@ export function Home() {
             >
               CONTRIBUTE
             </Link>
+          </div>
+        </BannerSection>
+
+        <BannerSection>
+          <div className="padding--lg text--center">
+            <h2>
+              Backstage is a{' '}
+              <Link to="https://www.cncf.io">
+                Cloud Native Computing Foundation
+              </Link>{' '}
+              incubation project
+            </h2>
+
+            <img
+              src={`${siteConfig.baseUrl}img/cncf-white.svg`}
+              alt="CNCF Logo"
+              height="100px"
+            />
           </div>
         </BannerSection>
       </div>
