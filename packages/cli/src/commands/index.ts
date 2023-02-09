@@ -27,7 +27,7 @@ const configOption = [
 
 export function registerAdminCommand(program: Command) {
   program
-    .command('admin')
+    .command('admin', { hidden: true })
     .description('Get help setting up your Backstage App.')
     .action(lazy(() => import('./admin').then(m => m.command)));
 }
