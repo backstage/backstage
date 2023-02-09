@@ -1,0 +1,13 @@
+---
+title: PuppetDB
+author: TDabasinskas
+authorUrl: https://github.com/tdabasinskas
+category: Configuration Management
+description: Visualize resource information and Puppet facts from PuppetDB.
+documentation: https://github.com/backstage/backstage/blob/master/plugins/puppetdb/README.md
+iconUrl: https://avatars.githubusercontent.com/u/234268?s=200&v=4
+npmPackageName: '@backstage/plugin-puppetdb'
+tags:
+  - puppet
+  - puppetdb
+addedDate: '2023-02-10'
