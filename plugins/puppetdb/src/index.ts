@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { puppetdbPlugin, PuppetdbPage } from './plugin';
+export { puppetdbPlugin, PuppetDbTab, isPuppetDbAvailable } from './plugin';

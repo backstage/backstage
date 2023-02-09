@@ -13,4 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { ExampleComponent } from './ExampleComponent';
+
+/**
+ * Annotation for specifying the certificate name of a node in PuppetDB.
+ *
+ * @public
+ */
+export const ANNOTATION_PUPPET_CERTNAME = 'puppet.com/certname';

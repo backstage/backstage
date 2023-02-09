@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { puppetdbPlugin, PuppetdbPage } from '../src/plugin';
-
-createDevApp()
-  .registerPlugin(puppetdbPlugin)
-  .addPage({
-    element: <PuppetdbPage />,
-    title: 'Root Page',
-    path: '/puppetdb',
-  })
-  .render();
+export { PuppetDbTab } from './PuppetDbTab';

@@ -19,7 +19,13 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
+import { Entity } from '@backstage/catalog-model';
+import { ANNOTATION_PUPPET_CERTNAME } from './constants';
 
+/**
+ * Create the PuppetDB frontend plugin.
+ * @public
+ */
 export const puppetdbPlugin = createPlugin({
   id: 'puppetdb',
   routes: {
@@ -27,11 +33,24 @@ export const puppetdbPlugin = createPlugin({
   },
 });
 
-export const PuppetdbPage = puppetdbPlugin.provide(
+/**
+ * Checks if the entity has a puppet certname annotation.
+ * @public
+ * @param entity - The entity to check for the puppet cername annotation.
+ */
+export const isPuppetDbAvailable = (entity: Entity) =>
+  // TODO(tdabasinskas): Remove the `|| true` once testing is done.
+  Boolean(entity.metadata.annotations?.[ANNOTATION_PUPPET_CERTNAME]) || true;
+
+/**
+ * Creates a routable extension for the PuppetDB plugin tab.
+ * @public
+ */
+export const PuppetDbTab = puppetdbPlugin.provide(
   createRoutableExtension({
     name: 'PuppetdbPage',
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/PuppetDbTab').then(m => m.PuppetDbTab),
     mountPoint: rootRouteRef,
   }),
 );
