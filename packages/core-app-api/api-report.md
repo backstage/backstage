@@ -441,6 +441,11 @@ export class MicrosoftAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
   // (undocumented)
+  static expectedClaims(scope: string): {
+    aud: string;
+    scp: string;
+  };
+  // (undocumented)
   getAccessToken(
     scope?: string | string[],
     options?: AuthRequestOptions,
