@@ -87,7 +87,7 @@ module.exports = {
     {
       colorMode: {
         defaultMode: 'dark',
-        // disableSwitch: true,
+        disableSwitch: true,
       },
       navbar: {
         logo: {
