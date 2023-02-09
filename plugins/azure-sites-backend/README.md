@@ -36,7 +36,7 @@ Here's how to get the backend plugin up and running:
 1. First we need to add the `@backstage/plugin-azure-sites-backend` package to your backend:
 
    ```sh
-   # From the Backstage root directory
+   # From your Backstage root directory
    yarn add --cwd packages/backend @backstage/plugin-azure-sites-backend
    ```
 
