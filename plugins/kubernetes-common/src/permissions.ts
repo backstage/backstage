@@ -16,27 +16,16 @@
 
 import { createPermission } from '@backstage/plugin-permission-common';
 
-/** This permission is used to authorize `read` actions that involve using the kubernetes Proxy Endpoint /proxy
+/** This permission is used to check access to the proxy endpoint
  * @alpha
  */
-export const kubernetesProxyReadPermission = createPermission({
-  name: 'kubernetes.proxy.read',
-  attributes: { action: 'read' },
-});
-
-/** This permission is used to authorize `create` actions that involve using the kubernetes Proxy Endpoint /proxy
- * @alpha
- */
-export const kubernetesProxyCreatePermission = createPermission({
-  name: 'kubernetes.proxy.create',
-  attributes: { action: 'create' },
+export const kubernetesProxyPermission = createPermission({
+  name: 'kubernetes.proxy',
+  attributes: {},
 });
 
 /**
  * List of all cluster permissions.
  * @alpha
  */
-export const kubernetesClusterPermissions = [
-  kubernetesProxyReadPermission,
-  kubernetesProxyCreatePermission,
-];
+export const kubernetesClusterPermissions = [kubernetesProxyPermission];

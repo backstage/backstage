@@ -23,7 +23,6 @@
 export * from './types';
 export * from './catalog-entity-constants';
 export {
-  kubernetesProxyReadPermission,
-  kubernetesProxyCreatePermission,
+  kubernetesProxyPermission,
   kubernetesClusterPermissions,
 } from './permissions';

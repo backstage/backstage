@@ -23,10 +23,7 @@ import {
   serializeError,
 } from '@backstage/errors';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
-import {
-  kubernetesProxyReadPermission,
-  kubernetesProxyCreatePermission,
-} from '@backstage/plugin-kubernetes-common';
+import { kubernetesProxyPermission } from '@backstage/plugin-kubernetes-common';
 import {
   PermissionEvaluator,
   AuthorizeResult,
@@ -76,10 +73,7 @@ export class KubernetesProxy {
 
       const authorizeResponse = (
         await permissionApi.authorize(
-          [
-            { permission: kubernetesProxyReadPermission },
-            { permission: kubernetesProxyCreatePermission },
-          ],
+          [{ permission: kubernetesProxyPermission }],
           {
             token,
           },
