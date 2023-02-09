@@ -56,3 +56,19 @@ export function ownerPrompt(): Prompt<{
     },
   };
 }
+
+export function templatePrompt(): Prompt<{ template: string }> {
+  return {
+    type: 'input',
+    name: 'template',
+    message: 'Enter the URL of the git template repository [required]',
+    validate: (value: string) => {
+      if (!value) {
+        return 'Please enter the URL of the template';
+      } else if (value === '') {
+        return 'Template URLs must be valid .git repositories';
+      }
+      return true;
+    },
+  };
+}
