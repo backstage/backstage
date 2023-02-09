@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-document.querySelector('button').onclick = event => {
-  event.target.innerHTML = 'clicked';
-};
+const button = document.querySelector('button');
+
+if (button) {
+  button.addEventListener('clicked', () => {
+    button.innerHTML = 'clicked';
+  });
+}
+
+export {};
