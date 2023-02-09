@@ -35,7 +35,6 @@
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
-    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@types/express": "*",
@@ -50,6 +49,7 @@
     "yn": "^5.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/compression": "^1.7.2",
     "@types/supertest": "^2.0.8",
