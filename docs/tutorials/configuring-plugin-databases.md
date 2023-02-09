@@ -37,7 +37,7 @@ package. If you intend to use both PostgreSQL and SQLite, you can install
 both of them.
 
 ```bash
-# From the Backstage root directory
+# From your Backstage root directory
 # install pg if you need PostgreSQL
 yarn add --cwd packages/backend pg
 
