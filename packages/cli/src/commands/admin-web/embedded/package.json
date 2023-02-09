@@ -1,0 +1,3 @@
+{
+  "_comment": "Needed because serveBundle() wants a package.json to parse a 'proxy' property from"
+}

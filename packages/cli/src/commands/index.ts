@@ -392,6 +392,11 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./create-github-app').then(m => m.default)));
 
   program
+    .command('admin-web')
+    .description('Open web-based administration tool')
+    .action(lazy(() => import('./admin-web').then(m => m.default)));
+
+  program
     .command('info')
     .description('Show helpful information for debugging and reporting bugs')
     .action(lazy(() => import('./info').then(m => m.default)));

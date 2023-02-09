@@ -6,6 +6,7 @@
     "plugins/*/dev",
     "plugins/*/migrations"
   ],
+  "exclude": ["packages/cli/src/commands/admin-web/embedded"],
   "compilerOptions": {
     "outDir": "dist-types",
     "rootDir": ".",
