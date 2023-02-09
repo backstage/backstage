@@ -5,12 +5,24 @@ import { BannerSectionColumns } from '@site/src/components/banner-section/banner
 import { ContentBlock } from '@site/src/components/content-block/content-block';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
-import React from 'react';
+import React, { useState } from 'react';
 
 import homeStyles from './home.module.scss';
+import { HubSpotNewAdoptersForm } from './_hub-spot-new-adopters-form';
+
+const hiddenNewsletterBannerKey = 'hiddenNewsletterBanner';
 
 export function Home() {
   const { siteConfig } = useDocusaurusContext();
+
+  const [hiddenNewsletterBanner, setHideNewsletterBanner] = useState(() => {
+    return JSON.parse(localStorage.getItem(hiddenNewsletterBannerKey)) || false;
+  });
+
+  const hideNewsletterBanner = (shouldHide: boolean) => {
+    localStorage.setItem(hiddenNewsletterBannerKey, JSON.stringify(shouldHide));
+    setHideNewsletterBanner(shouldHide);
+  };
 
   return (
     <Layout>
@@ -18,26 +30,45 @@ export function Home() {
         <BannerSection greyBackground>
           <BannerSectionColumns
             header={
-              <div
-                className={clsx(
-                  'card',
-                  'padding--md',
-                  homeStyles.newsletterBanner,
-                )}
-              >
-                <div className="text--left bannerContent">
-                  🗞️ Want to stay up to date with Backstage? Sign up for our{' '}
-                  <Link
-                    to="https://info.backstage.spotify.com/newsletter_subscribe"
-                    className="text--secondary"
+              <>
+                {!hiddenNewsletterBanner && (
+                  <div
+                    className={clsx(
+                      'card',
+                      'padding--md',
+                      homeStyles.newsletterBanner,
+                    )}
                   >
-                    Newsletter
-                  </Link>
-                  !
-                </div>
+                    <div className="text--left bannerContent">
+                      🗞️ Want to stay up to date with Backstage? Sign up for our{' '}
+                      <Link
+                        to="https://info.backstage.spotify.com/newsletter_subscribe"
+                        className="text--secondary"
+                      >
+                        Newsletter
+                      </Link>
+                      !
+                    </div>
 
-                <div className="bannerCloseButton">X</div>
-              </div>
+                    <div
+                      className={clsx(
+                        'button button--link',
+                        'bannerCloseButton',
+                      )}
+                      onClick={() => hideNewsletterBanner(true)}
+                    >
+                      <svg
+                        className="text--secondary"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+              </>
             }
           >
             <ContentBlock
@@ -500,6 +531,8 @@ export function Home() {
             />
           </div>
         </BannerSection>
+
+        <HubSpotNewAdoptersForm />
       </div>
     </Layout>
   );

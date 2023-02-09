@@ -26,6 +26,10 @@ $desktopUpBreakpoint: 997px;
   :global(.bannerContent) {
     flex: 1;
   }
+
+  :global(.bannerCloseButton) {
+    color: var(--ifm-color-secondary);
+  }
 }
 
 .svgContainer {
