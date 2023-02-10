@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { OAuthApp } from '@octokit/oauth-app';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Task } from '../../lib/tasks';
@@ -22,12 +23,39 @@ export type GithubAuthConfig = {
   auth: {
     providers: {
       github: {
-        clientId: string;
-        clientSecret: string;
-        enterpriseInstanceUrl?: string;
+        development: {
+          clientId: string;
+          clientSecret: string;
+          enterpriseInstanceUrl?: string;
+        };
       };
     };
   };
+};
+
+const validateCredentials = async (clientId: string, clientSecret: string) => {
+  try {
+    const app = new OAuthApp({
+      clientId,
+      clientSecret,
+    });
+    await app.createToken({
+      code: '%NOT-VALID-CODE%',
+    });
+  } catch (error) {
+    // @octokit/request returns a error.response object when a request is rejected.
+    // We can check it to see what kind of error we received.
+
+    // If error.response is successful we can double-check that the error itself was due to the bad code.
+    // If that's the case then we can assume that the client id and secret exists as we otherwise would
+    // have gotten a 400/404.
+    if (
+      error.response.status !== 200 &&
+      error.response.data.error !== 'bad_verification_code'
+    ) {
+      throw new Error(`Validating Github Credentials failed.`);
+    }
+  }
 };
 
 export const github = async (
@@ -38,6 +66,11 @@ export const github = async (
       'https://github.com/settings/developers',
     )}
     The Homepage URL should point to Backstage's frontend, while the Authorization callback URL will point to the auth backend.
+
+    Settings for local development:
+    ${chalk.cyan(`
+      Homepage URL: http://localhost:3000
+      Authorization callback URL: http://localhost:7007/api/auth/github/handler/frame`)}
 
     You can find the full documentation page here: ${chalk.blue(
       'https://backstage.io/docs/auth/github/provider',
@@ -52,21 +85,15 @@ export const github = async (
   }>([
     {
       type: 'input',
-      name: 'clientSecret',
-      message: 'What is your Client Secret?',
-      // TODO(eide): Is there another way to validate?
-      //   validate(input) {
-      //     if (/([a-f0-9]{40})/g.test(input)) {
-      //       return true;
-      //     }
-
-      //     throw Error('Please provide a valid client secret.');
-      //   },
+      name: 'clientId',
+      message: 'What is your Client Id?',
+      validate: (input: string) => (input.length ? true : false),
     },
     {
       type: 'input',
-      name: 'clientId',
-      message: 'What is your Client Id?',
+      name: 'clientSecret',
+      message: 'What is your Client Secret?',
+      validate: (input: string) => (input.length ? true : false),
     },
     {
       type: 'confirm',
@@ -78,25 +105,27 @@ export const github = async (
       name: 'enterpriseInstanceUrl',
       message: 'What is your URL for Github Enterprise?',
       when: ({ hasGithubEnterprise }) => hasGithubEnterprise,
-      validate(input: string) {
-        return Boolean(new URL(input));
-      },
+      validate: (input: string) => Boolean(new URL(input)),
     },
   ]);
+
+  await validateCredentials(answers.clientId, answers.clientSecret);
 
   return {
     auth: {
       providers: {
         github: {
-          clientId: useEnvForSecrets
-            ? '${AUTH_GITHUB_CLIENT_ID}'
-            : answers.clientId,
-          clientSecret: useEnvForSecrets
-            ? '${AUTH_GITHUB_CLIENT_SECRET}'
-            : answers.clientSecret,
-          ...(answers.hasGithubEnterprise && {
-            enterpriseInstanceUrl: answers.enterpriseInstanceUrl,
-          }),
+          development: {
+            clientId: useEnvForSecrets
+              ? '${AUTH_GITHUB_CLIENT_ID}'
+              : answers.clientId,
+            clientSecret: useEnvForSecrets
+              ? '${AUTH_GITHUB_CLIENT_SECRET}'
+              : answers.clientSecret,
+            ...(answers.hasGithubEnterprise && {
+              enterpriseInstanceUrl: answers.enterpriseInstanceUrl,
+            }),
+          },
         },
       },
     },

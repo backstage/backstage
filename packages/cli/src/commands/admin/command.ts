@@ -30,9 +30,7 @@ export async function command(): Promise<void> {
     {
       type: 'confirm',
       name: 'shouldSetupAuth',
-      message: chalk.blue(
-        'Do you want to set up Authentication for this project?',
-      ),
+      message: 'Do you want to set up Authentication for this project?',
     },
     {
       type: 'confirm',
@@ -51,7 +49,6 @@ export async function command(): Promise<void> {
   ]);
 
   if (!answers.shouldSetupAuth) {
-    // TODO(eide): Can we add a Task.warning() method?
     console.log(
       chalk.yellow(
         'If you change your mind, feel free to re-run this command.',
