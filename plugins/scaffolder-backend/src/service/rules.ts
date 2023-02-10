@@ -22,8 +22,8 @@ import {
   TemplateParameter,
 } from '@backstage/plugin-scaffolder-common';
 import { JsonObject } from '@backstage/types';
-import { z } from 'zod';
 import Ajv from 'ajv';
+import { z } from 'zod';
 
 const ajv = new Ajv({ allErrors: true });
 export const createScaffolderActionPermissionRule = makeCreatePermissionRule<
@@ -55,23 +55,34 @@ export const hasActionId = createScaffolderActionPermissionRule({
 });
 
 export const matchesInput = createScaffolderActionPermissionRule({
-  name: 'MATCHED_INPUT',
+  name: 'MATCHES_INPUT',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
   description: `Matches actionId and the input given`,
   paramsSchema: z.object({
     action: z.string().describe('Name of the actionId to match on'),
-    // Pass in a json schema to validate the input against
-    schema: z.record(z.any()),
+    input: z
+      .any()
+      .optional()
+      .describe('JSON schema to validate input against')
+      .superRefine((value, ctx) => {
+        if (value && ajv.validateSchema(value)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Invalid JSON schema',
+          });
+        }
+      }),
   }),
-  apply: (resource, { action, schema }) => {
+  apply: (resource, { action, input }) => {
     if (resource.action !== action) {
       return true;
     }
-    if (!schema) {
+
+    if (!input) {
       return true;
     }
 
-    return ajv.validate(schema, resource.input);
+    return ajv.validate(input, resource.input);
   },
   toQuery: () => ({}),
 });
