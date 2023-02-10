@@ -168,5 +168,6 @@ scaffolder backend:
 | Scaffolder Git Actions   | [plugin-scaffolder-git-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-git-actions)                               | [Drew Hill](https://github.com/arhill05)                     |
 | Azure Pipeline Actions   | [scaffolder-backend-module-azure-pipelines](https://www.npmjs.com/package/@parfuemerie-douglas/scaffolder-backend-module-azure-pipelines)       | [Parfümerie Douglas](https://github.com/Parfuemerie-Douglas) |
 | Azure Repository Actions | [scaffolder-backend-module-azure-repositories](https://www.npmjs.com/package/@parfuemerie-douglas/scaffolder-backend-module-azure-repositories) | [Parfümerie Douglas](https://github.com/Parfuemerie-Douglas) |
+| Snyk Import Project      | [plugin-scaffolder-backend-module-snyk](https://www.npmjs.com/package/@ma11hewthomas/plugin-scaffolder-backend-module-snyk)                     | [Matthew Thomas](https://github.com/Ma11hewThomas)           |
 
 Have fun! 🚀
