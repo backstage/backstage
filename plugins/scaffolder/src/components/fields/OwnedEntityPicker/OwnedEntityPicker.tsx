@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { GetEntitiesResponse } from '@backstage/catalog-client';
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -54,12 +54,9 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
   const { ownedEntities, loading } = useOwnedEntities(allowedKinds);
 
-  const entityRefs = ownedEntities?.items
-    .map(e => humanizeEntityRef(e, { defaultKind, defaultNamespace }))
-    .filter(n => n);
-
-  const onSelect = (_: any, value: string | null) => {
-    onChange(value || '');
+  const entities = ownedEntities?.items.filter(n => n);
+  const onSelect = (_: any, value: Entity | null) => {
+    onChange(value?.metadata.name || '');
   };
 
   return (
@@ -70,10 +67,10 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
     >
       <Autocomplete
         id={idSchema?.$id}
-        value={(formData as string) || ''}
+        // value={(formData as string) || ''}
         loading={loading}
         onChange={onSelect}
-        options={entityRefs || []}
+        options={entities || []}
         autoSelect
         freeSolo={allowArbitraryValues}
         renderInput={params => (
