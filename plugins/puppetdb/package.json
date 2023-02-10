@@ -36,6 +36,7 @@
   "dependencies": {
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -58,8 +59,7 @@
     "msw": "^0.49.0"
   },
   "files": [
-    "dist",
-    "config.d.ts"
+    "dist"
   ],
   "configSchema": "config.d.ts"
 }

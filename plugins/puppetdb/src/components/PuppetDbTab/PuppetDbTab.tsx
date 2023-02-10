@@ -22,6 +22,7 @@ import {
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { isPuppetDbAvailable } from '../../plugin';
 import { ANNOTATION_PUPPET_CERTNAME } from '../../constants';
+import { PuppetDbNodeCard } from '../PuppetDbNodeCard';
 
 export const PuppetDbTab = () => {
   const { entity } = useEntity();
@@ -32,10 +33,13 @@ export const PuppetDbTab = () => {
     );
   }
 
+  // @ts-ignore
+  const certName = entity.metadata.annotations[ANNOTATION_PUPPET_CERTNAME];
+
   return (
     <Page themeId="tool">
       <Content>
-        <text>TODO: Implement PuppetDB plugin</text>
+        <PuppetDbNodeCard certName={certName} />
       </Content>
     </Page>
   );

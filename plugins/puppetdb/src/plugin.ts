@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 import {
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
 import { Entity } from '@backstage/catalog-model';
 import { ANNOTATION_PUPPET_CERTNAME } from './constants';
+import { puppetDbApiRef, PuppetDbClient } from './api';
 
 /**
  * Create the PuppetDB frontend plugin.
@@ -28,9 +32,20 @@ import { ANNOTATION_PUPPET_CERTNAME } from './constants';
  */
 export const puppetdbPlugin = createPlugin({
   id: 'puppetdb',
-  routes: {
-    root: rootRouteRef,
-  },
+  apis: [
+    createApiFactory({
+      api: puppetDbApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new PuppetDbClient({
+          discoveryApi,
+          fetchApi,
+        }),
+    }),
+  ],
 });
 
 /**
