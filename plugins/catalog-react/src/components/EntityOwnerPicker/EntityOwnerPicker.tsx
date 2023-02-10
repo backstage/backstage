@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  RELATION_OWNED_BY,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   Box,
   Checkbox,
@@ -32,6 +37,9 @@ import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { getEntityRelations } from '../../utils';
 import { humanizeEntityRef } from '../EntityRefLink';
+import useAsync from 'react-use/lib/useAsync';
+import { useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '../../api';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -57,6 +65,7 @@ export const EntityOwnerPicker = () => {
     filters,
     queryParameters: { owners: ownersParameter },
   } = useEntityList();
+  const catalogApi = useApi(catalogApiRef);
 
   const queryParamOwners = useMemo(
     () => [ownersParameter].flat().filter(Boolean) as string[],
@@ -91,6 +100,21 @@ export const EntityOwnerPicker = () => {
     [backendEntities],
   );
 
+  const {
+    loading,
+    error,
+    value: owners,
+  } = useAsync(async () => {
+    const { items } = await catalogApi.getEntitiesByRefs({
+      entityRefs: availableOwners.map(ref =>
+        stringifyEntityRef(parseEntityRef(ref, { defaultKind: 'Group' })),
+      ),
+    });
+    return availableOwners.map(
+      (e, i) => items.at(i) || ({ metadata: { name: e } } as Entity),
+    );
+  }, [availableOwners]);
+
   useEffect(() => {
     updateFilters({
       owners:
@@ -101,6 +125,7 @@ export const EntityOwnerPicker = () => {
   }, [selectedOwners, updateFilters, availableOwners]);
 
   if (!availableOwners.length) return null;
+  if (error) throw error;
 
   return (
     <Box pb={1} pt={1}>
@@ -109,9 +134,17 @@ export const EntityOwnerPicker = () => {
         <Autocomplete
           multiple
           disableCloseOnSelect
-          options={availableOwners}
-          value={selectedOwners}
-          onChange={(_: object, value: string[]) => setSelectedOwners(value)}
+          loading={loading}
+          options={owners || []}
+          getOptionLabel={option =>
+            option.metadata.title || option.metadata.name
+          }
+          value={owners?.filter(e =>
+            selectedOwners.some(f => f === e.metadata.name),
+          )}
+          onChange={(_: object, value: Entity[]) =>
+            setSelectedOwners(value.map(e => e.metadata.name))
+          }
           renderOption={(option, { selected }) => (
             <FormControlLabel
               control={
@@ -122,7 +155,7 @@ export const EntityOwnerPicker = () => {
                 />
               }
               onClick={event => event.preventDefault()}
-              label={option}
+              label={option.metadata.title || option.metadata.name}
             />
           )}
           size="small"
