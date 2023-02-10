@@ -16,16 +16,16 @@ Now, this is not like previous scaffolder changes where you would have to change
 ## What's new?
 
 First off, the main dependency that we have for the frontend which is responsible for rendering the `JSONSchema` into `material-ui` components is [react-jsonschema-form](https://github.com/rjsf-team/react-jsonschema-form).
-This dependency in the current verison of the plugin is 3.x.x, which is now 2 major versions out of date. Long story short, `v4` of this plugin contained some bug fixes, and new features but we we're unable to upragde due to some issues with having support for `material-ui@v4`, so we had to wait for `v5` to be released, and because of the `FieldExtensions` and how they are very tightly coupled to the `react-jsonschema-form` library, we also wanted to make sure that this release was stable before getting people to migrate their `Field Extensions`.
+This dependency in the current version of the plugin is 3.x.x, which is now 2 major versions out of date. Long story short, `v4` of this plugin contained some bug fixes, and new features but we we're unable to upgrade due to some issues with having support for `material-ui@v4`, so we had to wait for `v5` to be released, and because of the `FieldExtensions` and how they are very tightly coupled to the `react-jsonschema-form` library, we also wanted to make sure that this release was stable before getting people to migrate their `Field Extensions`.
 
-With that in mind, this release has `v5` of `react-jsonschema-form`, and with that comes all the new features and bugfixes in `v4` that we were waiting for - one of the main ones being the ability to use `if / then else` syntax in the `template.yaml` definitions! 🎉
+With that in mind, this release has `v5` of `react-jsonschema-form`, and with that comes all the new features and bugfixes in `v4` that we were waiting for - one of the main ones being the ability to use `if / then / else` syntax in the `template.yaml` definitions! 🎉
 
 We've also rebuilt how validation works in the `scaffolder` components, which now means that we've opened the ability to have `async` validation functions in your `Field Extensions`.
 
 Some of the pages have gotten a little bit of an overhaul in terms of UI based on some research and feedback from the community and internally.
 
 - The `TemplateList` page has gotten some new `Card` components which show a little more information than the previous version with a little `material-ui` standards.
-- The `WizardPage` has recieved some new updates with the stepper now running horizontally, and the `Review` step being a dedicated step in the stepper.
+- The `WizardPage` has received some new updates with the stepper now running horizontally, and the `Review` step being a dedicated step in the stepper.
 - The `OngoingTask` page now does not show the logs by default, and instead has a much cleaner interface for tracking the ongoing steps and the pipeline of actions that are currently showing.
   - You can also now provide your own `OutputsComponent` which can be used to render the outputs from an ongoing / completed task in a way that suits your templates the best. For instance, if your template produces `Pull Requests`, it could be useful to render these in an interactive way where you can see the statuses of each of these `Pull Requests` in the `Ongoing Task` page.
 
@@ -47,7 +47,7 @@ The `ScaffolderPage` router has a completely different export for the `scaffolde
 
 ```
 
-And this API should be the exact same as the previous Router, so you should be able to make a change like the following futher down in this file:
+And this API should be the exact same as the previous Router, so you should be able to make a change like the following further down in this file:
 
 ```diff
   <Route
@@ -180,7 +180,7 @@ export const entityNamePickerValidation = (
 
 You will need to change the import for `FieldValidation` to point at the new `react-jsonschema-form` dependency.
 
-> Note: you will proabably need to install this dependency too, by using `yarn add @rjsf/utils` in the package where you define these validation functions, this could also be in the `packages/app` folder, so you can install it there if needed.
+> Note: you will probably need to install this dependency too, by using `yarn add @rjsf/utils` in the package where you define these validation functions, this could also be in the `packages/app` folder, so you can install it there if needed.
 
 ```diff
 - import { FieldValidation } from '@rjsf/core';
