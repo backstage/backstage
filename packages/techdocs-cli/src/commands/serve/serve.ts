@@ -127,7 +127,7 @@ export default async function serve(opts: OptionValues) {
   const httpServer = new HTTPServer(
     previewAppPath,
     port,
-    opts.mkdocsPort,
+    mkdocsExpectedDevAddr,
     opts.verbose,
   );
 
