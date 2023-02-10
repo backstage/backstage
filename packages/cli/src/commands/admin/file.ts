@@ -22,17 +22,21 @@ import { GithubAuthConfig } from './github';
 
 /* eslint-disable-next-line no-restricted-syntax */
 const { targetRoot } = findPaths(__dirname);
-const APP_CONFIG_FILE = path.join(targetRoot, 'app-config.development.yaml');
+const APP_CONFIG_FILE = path.join(targetRoot, 'app-config.local.yaml');
 const ENV_CONFIG_FILE = path.join(targetRoot, '.env.development');
 
-// export const readAppConfig = async (file: string) => {
-//   return yaml.parse(await fs.readFile(file, 'utf8'));
-// };
+const readConfigFile = async (file: string) => {
+  return yaml.parse(await fs.readFile(file, 'utf8'));
+};
 
 export const updateConfigFile = async (config: GithubAuthConfig) => {
+  const content = fs.existsSync(APP_CONFIG_FILE)
+    ? { ...(await readConfigFile(APP_CONFIG_FILE)), ...config }
+    : config;
+
   return await fs.writeFile(
     APP_CONFIG_FILE,
-    yaml.stringify(config, {
+    yaml.stringify(content, {
       indent: 2,
     }),
     'utf8',
@@ -41,8 +45,12 @@ export const updateConfigFile = async (config: GithubAuthConfig) => {
 
 export const updateEnvFile = async (config: GithubAuthConfig) => {
   const content = `
-AUTH_GITHUB_CLIENT_ID=${config.auth.providers.github.clientId}
-AUTH_GITHUB_CLIENT_SECRET=${config.auth.providers.github.clientId}`;
+AUTH_GITHUB_CLIENT_ID=${config.auth.providers.github.development.clientId}
+AUTH_GITHUB_CLIENT_SECRET=${config.auth.providers.github.development.clientId}`;
+
+  if (fs.existsSync(ENV_CONFIG_FILE)) {
+    await fs.appendFile(ENV_CONFIG_FILE, content, 'utf8');
+  }
 
   return await fs.writeFile(ENV_CONFIG_FILE, content, 'utf8');
 };
