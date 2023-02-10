@@ -39,6 +39,7 @@ import { FormProps } from '../../types';
 import { LayoutOptions } from '../../../layouts';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 import { hasErrors } from './utils';
+import * as FieldOverrides from './FieldOverrides';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -175,7 +176,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             schema={currentStep.schema}
             uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
-            fields={extensions}
+            fields={{ ...FieldOverrides, ...extensions }}
             showErrorList={false}
             onChange={handleChange}
             {...(props.FormProps ?? {})}
