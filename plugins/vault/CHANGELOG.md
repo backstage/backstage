@@ -1,5 +1,18 @@
 # @backstage/plugin-vault
 
+## 0.1.9-next.2
+
+### Patch Changes
+
+- fd7a77b9c4: Surface additional context and details to the Backstage UI when the Vault plugin encounters non-successful HTTP responses from the Vault API.
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+
 ## 0.1.9-next.1
 
 ### Patch Changes

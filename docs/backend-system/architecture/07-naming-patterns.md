@@ -21,7 +21,7 @@ Example:
 
 ```ts
 export const catalogPlugin = createBackendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   ...
 })
 ```
@@ -36,7 +36,7 @@ export const catalogPlugin = createBackendPlugin({
 Example:
 
 ```ts
-export const catalogModuleGithubEntityProvider = createBackendPlugin({
+export const catalogModuleGithubEntityProvider = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'githubEntityProvider',
   ...
@@ -66,12 +66,12 @@ export const catalogProcessingExtensionPoint = createExtensionPoint<CatalogProce
 
 ### Services
 
-| Description | Pattern             | Examples                                           |
-| ----------- | ------------------- | -------------------------------------------------- |
-| Interface   | `<Name>Service`     | `LoggerService`, `DatabaseService`                 |
-| Reference   | `<name>ServiceRef`  | `loggerServiceRef`, `databaseServiceRef`           |
-| ID          | `<pluginId>.<name>` | `'core.rootHttpRouter'`, `'catalog.catalogClient'` |
-| Factory     | `<name>Factory`     | `loggerFactory`, `databaseFactory`                 |
+| Description | Pattern                | Examples                                           |
+| ----------- | ---------------------- | -------------------------------------------------- |
+| Interface   | `<Name>Service`        | `LoggerService`, `DatabaseService`                 |
+| Reference   | `<name>ServiceRef`     | `loggerServiceRef`, `databaseServiceRef`           |
+| ID          | `<pluginId>.<name>`    | `'core.rootHttpRouter'`, `'catalog.catalogClient'` |
+| Factory     | `<name>ServiceFactory` | `loggerServiceFactory`, `databaseServiceFactory`   |
 
 Example:
 
@@ -85,7 +85,7 @@ export const catalogClientServiceRef = createServiceRef<CatalogClientService>({
   ...
 })
 
-export const catalogClientFactory = createServiceFactory({
+export const catalogClientServiceFactory = createServiceFactory({
   service: catalogClientServiceRef,
   ...
 })

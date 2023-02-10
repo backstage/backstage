@@ -28,8 +28,7 @@ import { createCatalogPermissionRule } from './util';
  */
 export const hasAnnotation = createCatalogPermissionRule({
   name: 'HAS_ANNOTATION',
-  description:
-    'Allow entities which are annotated with the specified annotation',
+  description: 'Allow entities with the specified annotation',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
   paramsSchema: z.object({
     annotation: z.string().describe('Name of the annotation to match on'),

@@ -20,16 +20,19 @@ import {
   coreServices,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
-import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleFactory';
+import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import {
   BackendRegisterInit,
   EnumerableServiceHolder,
   ServiceOrExtensionPoint,
 } from './types';
+// Direct internal import to avoid duplication
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
 
 export class BackendInitializer {
   #startPromise?: Promise<void>;
-  #features = new Map<BackendFeature, unknown>();
+  #features = new Array<InternalBackendFeature>();
   #registerInits = new Array<BackendRegisterInit>();
   #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
   #serviceHolder: EnumerableServiceHolder;
@@ -74,11 +77,22 @@ export class BackendInitializer {
     return Object.fromEntries(result);
   }
 
-  add<TOptions>(feature: BackendFeature, options?: TOptions) {
+  add(feature: BackendFeature) {
     if (this.#startPromise) {
       throw new Error('feature can not be added after the backend has started');
     }
-    this.#features.set(feature, options);
+    if (feature.$$type !== '@backstage/BackendFeature') {
+      throw new Error(
+        `Failed to add feature, invalid type '${feature.$$type}'`,
+      );
+    }
+    const internalFeature = feature as InternalBackendFeature;
+    if (internalFeature.version !== 'v1') {
+      throw new Error(
+        `Failed to add feature, invalid version '${internalFeature.version}'`,
+      );
+    }
+    this.#features.push(internalFeature);
   }
 
   async start(): Promise<void> {
@@ -117,50 +131,39 @@ export class BackendInitializer {
     }
 
     // Initialize all features
-    for (const [feature] of this.#features) {
-      const provides = new Set<ExtensionPoint<unknown>>();
+    for (const feature of this.#features) {
+      for (const r of feature.getRegistrations()) {
+        const provides = new Set<ExtensionPoint<unknown>>();
 
-      let registerInit: BackendRegisterInit | undefined = undefined;
+        if (r.type === 'plugin') {
+          for (const [extRef, extImpl] of r.extensionPoints) {
+            if (this.#extensionPoints.has(extRef)) {
+              throw new Error(
+                `ExtensionPoint with ID '${extRef.id}' is already registered`,
+              );
+            }
+            this.#extensionPoints.set(extRef, extImpl);
+            provides.add(extRef);
+          }
+        }
 
-      feature.register({
-        registerExtensionPoint: (extensionPointRef, impl) => {
-          if (registerInit) {
-            throw new Error('registerExtensionPoint called after registerInit');
-          }
-          if (this.#extensionPoints.has(extensionPointRef)) {
-            throw new Error(`API ${extensionPointRef.id} already registered`);
-          }
-          this.#extensionPoints.set(extensionPointRef, impl);
-          provides.add(extensionPointRef);
-        },
-        registerInit: registerOptions => {
-          if (registerInit) {
-            throw new Error('registerInit must only be called once');
-          }
-          registerInit = {
-            id: feature.id,
-            provides,
-            consumes: new Set(Object.values(registerOptions.deps)),
-            deps: registerOptions.deps,
-            init: registerOptions.init as BackendRegisterInit['init'],
-          };
-        },
-      });
-
-      if (!registerInit) {
-        throw new Error(
-          `registerInit was not called by register in ${feature.id}`,
-        );
+        this.#registerInits.push({
+          id: r.type === 'plugin' ? r.pluginId : `${r.pluginId}.${r.moduleId}`,
+          provides,
+          consumes: new Set(Object.values(r.init.deps)),
+          init: r.init,
+        });
       }
-
-      this.#registerInits.push(registerInit);
     }
 
     const orderedRegisterResults = this.#resolveInitOrder(this.#registerInits);
 
     for (const registerInit of orderedRegisterResults) {
-      const deps = await this.#getInitDeps(registerInit.deps, registerInit.id);
-      await registerInit.init(deps);
+      const deps = await this.#getInitDeps(
+        registerInit.init.deps,
+        registerInit.id,
+      );
+      await registerInit.init.func(deps);
     }
   }
 

@@ -29,16 +29,20 @@ import {
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
-const useStyles = makeStyles({
-  flexContainer: {
-    flexWrap: 'wrap',
+const useStyles = makeStyles(
+  {
+    item: {},
+    flexContainer: {
+      flexWrap: 'wrap',
+    },
+    itemText: {
+      width: '100%',
+      wordBreak: 'break-all',
+      marginBottom: '1rem',
+    },
   },
-  itemText: {
-    width: '100%',
-    wordBreak: 'break-all',
-    marginBottom: '1rem',
-  },
-});
+  { name: 'CatalogSearchResultListItem' },
+);
 
 /**
  * Props for {@link CatalogSearchResultListItem}.
@@ -64,7 +68,7 @@ export function CatalogSearchResultListItem(
   if (!result) return null;
 
   return (
-    <>
+    <div className={classes.item}>
       {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
       <div className={classes.flexContainer}>
         <ListItemText
@@ -102,6 +106,6 @@ export function CatalogSearchResultListItem(
           )}
         </Box>
       </div>
-    </>
+    </div>
   );
 }

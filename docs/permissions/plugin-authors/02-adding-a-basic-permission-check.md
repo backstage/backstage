@@ -301,7 +301,7 @@ Finally, we need to update `plugins/todo-list-backend/src/plugin.ts`:
   * @alpha
   */
   export const exampleTodoListPlugin = createBackendPlugin({
-    id: 'exampleTodoList',
+    pluginId: 'exampleTodoList',
     register(env) {
       env.registerInit({
         deps: {

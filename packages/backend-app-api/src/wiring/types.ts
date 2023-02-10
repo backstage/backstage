@@ -34,8 +34,10 @@ export interface BackendRegisterInit {
   id: string;
   consumes: Set<ServiceOrExtensionPoint>;
   provides: Set<ServiceOrExtensionPoint>;
-  deps: { [name: string]: ServiceOrExtensionPoint };
-  init: (deps: { [name: string]: unknown }) => Promise<void>;
+  init: {
+    deps: { [name: string]: ServiceOrExtensionPoint };
+    func: (deps: { [name: string]: unknown }) => Promise<void>;
+  };
 }
 
 /**
