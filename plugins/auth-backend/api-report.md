@@ -7,7 +7,7 @@
 
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
-import { CacheClient } from '@backstage/backend-plugin-api';
+import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
@@ -486,7 +486,7 @@ export const providers: Readonly<{
       signIn: {
         resolver: SignInResolver<CloudflareAccessResult>;
       };
-      cache?: CacheClient | undefined;
+      cache?: CacheService | undefined;
     }) => AuthProviderFactory;
     resolvers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;

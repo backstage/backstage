@@ -17,9 +17,8 @@
 export { coreServices } from './coreServices';
 export type {
   CacheService,
-  CacheClient,
-  CacheClientOptions,
-  CacheClientSetOptions,
+  CacheServiceOptions,
+  CacheServiceSetOptions,
 } from './CacheService';
 export type { ConfigService } from './ConfigService';
 export type { DatabaseService } from './DatabaseService';
