@@ -7,13 +7,14 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
+import { ComponentType } from 'react';
 import { Dispatch } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldProps as FieldProps_2 } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/core';
 import { FieldValidation as FieldValidation_2 } from '@rjsf/utils';
-import type { FormProps as FormProps_2 } from '@rjsf/core-v5';
+import { FormProps as FormProps_2 } from '@rjsf/core-v5';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
@@ -22,6 +23,7 @@ import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { RJSFSchema } from '@rjsf/utils';
 import { SetStateAction } from 'react';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
@@ -125,6 +127,9 @@ export type FieldExtensionOptions<
   validation?: CustomFieldValidator<TFieldReturnValue>;
   schema?: CustomFieldExtensionSchema;
 };
+
+// @alpha (undocumented)
+export const Form: ComponentType<FormProps_2<any, RJSFSchema, any>>;
 
 // @public
 export type FormProps = Pick<
