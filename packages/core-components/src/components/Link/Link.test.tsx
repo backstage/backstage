@@ -173,4 +173,13 @@ describe('<Link />', () => {
       });
     });
   });
+
+  it('throws an error when attempting to link to script code', () => {
+    expect(() =>
+      // eslint-disable-next-line no-script-url
+      render(wrapInTestApp(<Link to="javascript:alert('hello')">Script</Link>)),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Link component rejected javascript: URL as a security precaution"`,
+    );
+  });
 });
