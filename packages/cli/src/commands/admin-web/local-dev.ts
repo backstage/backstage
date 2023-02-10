@@ -21,8 +21,9 @@ import { ConfigReader } from '@backstage/config';
 console.log('CLI spoolin');
 
 async function main() {
-  /* eslint-disable-next-line no-restricted-syntax */
-  const targetDir = path.resolve(__dirname, '../../../../admin-web');
+  const targetDir = path.dirname(
+    path.dirname(require.resolve('@backstage/admin-web')),
+  );
   const waitForExit = await serveBundle({
     entry: path.resolve(targetDir, 'src/index'),
     targetDir,

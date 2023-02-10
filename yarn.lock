@@ -3347,6 +3347,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/admin-web@0.0.0, @backstage/admin-web@workspace:packages/admin-web":
+  version: 0.0.0-use.local
+  resolution: "@backstage/admin-web@workspace:packages/admin-web"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+  languageName: unknown
+  linkType: soft
+
 "@backstage/app-defaults@workspace:^, @backstage/app-defaults@workspace:packages/app-defaults":
   version: 0.0.0-use.local
   resolution: "@backstage/app-defaults@workspace:packages/app-defaults"
@@ -3660,6 +3673,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/cli@workspace:packages/cli"
   dependencies:
+    "@backstage/admin-web": 0.0.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -16308,19 +16322,6 @@ __metadata:
   checksum: d966deee6ab9a0f96ed1d25dc73e91a248f64479c91f9daeb15237b8e3c39a02faac4e6afe8987ef9e5aea60a1593cef5882b7456ab2e6196fc0229a93ec39c2
   languageName: node
   linkType: hard
-
-"admin-web@workspace:packages/admin-web":
-  version: 0.0.0-use.local
-  resolution: "admin-web@workspace:packages/admin-web"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@material-ui/core": ^4.12.2
-    "@types/react": "*"
-    "@types/react-dom": "*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
-  languageName: unknown
-  linkType: soft
 
 "agent-base@npm:6, agent-base@npm:^6.0.2":
   version: 6.0.2
