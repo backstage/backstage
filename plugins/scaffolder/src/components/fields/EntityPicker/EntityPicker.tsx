@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { type EntityFilterQuery } from '@backstage/catalog-client';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -22,8 +26,10 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect, useState } from 'react';
+import Autocomplete, {
+  AutocompleteChangeReason,
+} from '@material-ui/lab/Autocomplete';
+import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { EntityPickerProps } from './schema';
 
@@ -46,7 +52,6 @@ export const EntityPicker = (props: EntityPickerProps) => {
     idSchema,
   } = props;
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
-  console.log(formData);
 
   const catalogFilter: EntityFilterQuery | undefined =
     uiSchema['ui:options']?.catalogFilter ||
@@ -56,7 +61,6 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
 
   const catalogApi = useApi(catalogApiRef);
-  const [value, setValue] = useState(formData);
 
   const { value: entities, loading } = useAsync(async () => {
     const { items } = await catalogApi.getEntities(
@@ -64,16 +68,36 @@ export const EntityPicker = (props: EntityPickerProps) => {
     );
     return items;
   });
+  const allowArbitraryValues =
+    uiSchema['ui:options']?.allowArbitraryValues ?? true;
 
   const onSelect = useCallback(
-    (_: any, ref: string | Entity | null) => {
-      let entityRef: string = typeof ref === 'string' ? ref : '';
-      if (typeof ref !== 'string')
-        entityRef = ref ? stringifyEntityRef(ref as Entity) : '';
-      setValue(entityRef);
-      onChange(entityRef);
+    (_: any, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
+      // if ref == string
+      if (typeof ref !== 'string') {
+        onChange(ref ? stringifyEntityRef(ref as Entity) : '');
+      } else {
+        if (reason === 'blur') {
+          // Add in default namespace, etc.
+          let entityRef = ref;
+          try {
+            // Attempt to parse the entity ref into it's full form.
+            entityRef = stringifyEntityRef(
+              parseEntityRef(ref as string, {
+                defaultKind,
+                defaultNamespace: defaultNamespace || undefined,
+              }),
+            );
+          } catch (err) {
+            // If the passed in value isn't an entity ref, do nothing.
+          }
+          if (formData !== entityRef) {
+            onChange(ref);
+          }
+        }
+      }
     },
-    [onChange, setValue],
+    [onChange, formData, defaultKind, defaultNamespace],
   );
 
   useEffect(() => {
@@ -91,17 +115,22 @@ export const EntityPicker = (props: EntityPickerProps) => {
       <Autocomplete
         disabled={entities?.length === 1}
         id={idSchema?.$id}
-        value={entities?.find(e => e.metadata.name === formData)}
+        value={
+          // Since free solo is usually enabled, attempt to
+          entities?.find(e => stringifyEntityRef(e) === formData) ??
+          (allowArbitraryValues ? formData : '')
+        }
         loading={loading}
         onChange={onSelect}
         options={entities || []}
         getOptionLabel={option =>
+          // option can be a string due to freeSolo.
           typeof option === 'string'
             ? option
             : humanizeEntityRef(option, { defaultKind, defaultNamespace })!
         }
         autoSelect
-        freeSolo={uiSchema['ui:options']?.allowArbitraryValues ?? true}
+        freeSolo={allowArbitraryValues}
         renderInput={params => (
           <TextField
             {...params}
