@@ -18,6 +18,7 @@ import {
   Entity,
   CompoundEntityRef,
   DEFAULT_NAMESPACE,
+  UserEntity,
 } from '@backstage/catalog-model';
 
 /**
@@ -64,4 +65,29 @@ export function humanizeEntityRef(
       ? undefined
       : kind;
   return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
+}
+
+/**
+ * Convert an entity to its more common name.
+ *
+ * @param entity Entity to convert.
+ * @returns Readable name, defaults to unique identifier.
+ */
+export function humanizeEntity(
+  entity: Entity,
+  opts?: {
+    defaultKind?: string;
+    defaultNamespace?: string | false;
+  },
+) {
+  let title: string | undefined = undefined;
+  switch (entity.kind) {
+    case 'User':
+    case 'Group':
+      title = (entity as UserEntity).spec?.profile?.displayName;
+      break;
+    default:
+      title = entity.metadata.title;
+  }
+  return title || humanizeEntityRef(entity, opts);
 }

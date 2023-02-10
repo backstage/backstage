@@ -40,6 +40,7 @@ import { humanizeEntityRef } from '../EntityRefLink';
 import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../../api';
+import { humanizeEntity } from '../EntityRefLink/humanize';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -109,9 +110,16 @@ export const EntityOwnerPicker = () => {
       entityRefs: availableOwners.map(ref =>
         stringifyEntityRef(parseEntityRef(ref, { defaultKind: 'Group' })),
       ),
+      fields: [
+        'kind',
+        'metadata.name',
+        'metadata.title',
+        'spec.profile.displayName',
+      ],
     });
     return availableOwners.map(
-      (e, i) => items.at(i) || ({ metadata: { name: e } } as Entity),
+      (e, i) =>
+        items.at(i) || ({ metadata: { name: e }, kind: 'Group' } as Entity),
     );
   }, [availableOwners]);
 
@@ -136,14 +144,18 @@ export const EntityOwnerPicker = () => {
           disableCloseOnSelect
           loading={loading}
           options={owners || []}
-          getOptionLabel={option =>
-            option.metadata.title || option.metadata.name
+          value={
+            owners?.filter(e =>
+              selectedOwners.some(
+                f => f === humanizeEntityRef(e, { defaultKind: 'Group' }),
+              ),
+            ) ?? []
           }
-          value={owners?.filter(e =>
-            selectedOwners.some(f => f === e.metadata.name),
-          )}
           onChange={(_: object, value: Entity[]) =>
             setSelectedOwners(value.map(e => e.metadata.name))
+          }
+          getOptionLabel={option =>
+            humanizeEntity(option, { defaultKind: 'Group' })
           }
           renderOption={(option, { selected }) => (
             <FormControlLabel
@@ -155,7 +167,7 @@ export const EntityOwnerPicker = () => {
                 />
               }
               onClick={event => event.preventDefault()}
-              label={option.metadata.title || option.metadata.name}
+              label={humanizeEntity(option, { defaultKind: 'Group' })}
             />
           )}
           size="small"
