@@ -57,7 +57,7 @@ describe('createValidator', () => {
     apiHolder: apiHolderMock,
   };
 
-  it('Should call validator for object property from a custom field extension', () => {
+  it('should call validator for object property from a custom field extension', () => {
     /* GIVEN */
     const rootSchema = {
       title: 'Title',
@@ -89,7 +89,7 @@ describe('createValidator', () => {
     expect(result.p1.addError).toHaveBeenCalledTimes(1);
   });
 
-  it('Should call validator for array property from a custom field extension', () => {
+  it('should call validator for array property from a custom field extension', () => {
     /* GIVEN */
     const rootSchema = {
       title: 'My form',
