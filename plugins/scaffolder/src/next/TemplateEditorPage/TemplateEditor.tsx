@@ -20,12 +20,12 @@ import type {
   NextFieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateDirectoryAccess } from '../../lib/filesystem';
-import { DirectoryEditorProvider } from './DirectoryEditorContext';
-import { DryRunProvider } from './DryRunContext';
-import { DryRunResults } from './DryRunResults';
-import { TemplateEditorBrowser } from './TemplateEditorBrowser';
+import { DirectoryEditorProvider } from '../../components/TemplateEditorPage/DirectoryEditorContext';
+import { DryRunProvider } from '../../components/TemplateEditorPage/DryRunContext';
+import { DryRunResults } from '../../components/TemplateEditorPage/DryRunResults';
+import { TemplateEditorBrowser } from '../../components/TemplateEditorPage/TemplateEditorBrowser';
 import { TemplateEditorForm } from './TemplateEditorForm';
-import { TemplateEditorTextArea } from './TemplateEditorTextArea';
+import { TemplateEditorTextArea } from '../../components/TemplateEditorPage/TemplateEditorTextArea';
 
 const useStyles = makeStyles({
   // Reset and fix sizing to make sure scrolling behaves correctly

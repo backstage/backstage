@@ -37,7 +37,7 @@ import {
   type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorForm } from './TemplateEditorForm';
-import { TemplateEditorTextArea } from './TemplateEditorTextArea';
+import { TemplateEditorTextArea } from '../../components/TemplateEditorPage/TemplateEditorTextArea';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:

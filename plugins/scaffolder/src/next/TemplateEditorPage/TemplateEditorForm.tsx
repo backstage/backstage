@@ -25,9 +25,8 @@ import {
   Stepper,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
-
-import { useDirectoryEditor } from './DirectoryEditorContext';
-import { useDryRun } from './DryRunContext';
+import { useDryRun } from '../../components/TemplateEditorPage/DryRunContext';
+import { useDirectoryEditor } from '../../components/TemplateEditorPage/DirectoryEditorContext';
 
 const useStyles = makeStyles({
   containerWrapper: {
