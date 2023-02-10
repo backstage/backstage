@@ -23494,6 +23494,7 @@ __metadata:
     "@backstage/plugin-rollbar-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-rails": "workspace:^"
+    "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^"
     "@backstage/plugin-search-backend-module-pg": "workspace:^"
@@ -23522,6 +23523,8 @@ __metadata:
     pg-connection-string: ^2.3.0
     prom-client: ^14.0.1
     winston: ^3.2.1
+    zod: ~3.18.0
+    zod-to-json-schema: ~3.18.0
   languageName: unknown
   linkType: soft
 
@@ -40640,6 +40643,15 @@ __metadata:
   peerDependencies:
     zod: ^3.20.0
   checksum: 55bc649dbc82ce25fbfbfdd42ca530d883d83be5d02cb81e89f6401d54bca151fc6b8cc57999c75eb6a3dcaa3f000697315fbd4f505637472621570ed52784d8
+  languageName: node
+  linkType: hard
+
+"zod-to-json-schema@npm:~3.18.0":
+  version: 3.18.2
+  resolution: "zod-to-json-schema@npm:3.18.2"
+  peerDependencies:
+    zod: ^3.18.0
+  checksum: 10e84864a3ccc2e04500b9bc81369ed7c5b3ec068ea582a13369175ed40e785091a63ae7fa86ebb4ddf1bccd55c3dab32f4d3070bbcc3296e68305ff787c9df3
   languageName: node
   linkType: hard
 

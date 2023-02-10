@@ -35,9 +35,9 @@ import {
 } from '@backstage/plugin-scaffolder-backend';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common';
 import { Router } from 'express';
-import { PluginEnvironment } from '../types';
 import { z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
+import { PluginEnvironment } from '../types';
 
 const inputSchema = zodToJsonSchema(
   z.object({ message: z.enum(['hello']) }).strict(),
