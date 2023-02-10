@@ -1,5 +1,5 @@
 {
-  "name": "admin-web",
+  "name": "@backstage/admin-web",
   "version": "0.0.0",
   "private": true,
   "backstage": {

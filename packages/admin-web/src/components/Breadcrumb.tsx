@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,21 @@
  */
 import React from 'react';
 import { Breadcrumbs, Link } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  root: {
+    padding: '16px',
+    textDecoration: 'underline',
+  },
+});
 
 const Breadcrumb = () => {
+  const classes = useStyles();
   return (
-    <Breadcrumbs aria-label="breadcrumb">
+    <Breadcrumbs aria-label="breadcrumb" className={classes.root}>
       <Link color="inherit" href="/">
-        Welcome page
+        WelcomePage
       </Link>
     </Breadcrumbs>
   );

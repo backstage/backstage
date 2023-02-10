@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ import React from 'react';
 import WelcomePage from './components/WelcomePage';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Paper } from '@material-ui/core';
-// import Breadcrumb from './components/Breadcrumb';
+import Breadcrumb from './components/Breadcrumb';
 import Bar from './components/Bar';
 
 const useStyles = makeStyles(theme => ({
@@ -44,7 +44,7 @@ const App = () => {
       <Grid item xs={6}>
         <Bar />
         <Paper elevation={3}>
-          {/* <Breadcrumb /> */}
+          <Breadcrumb />
           <WelcomePage />
         </Paper>
       </Grid>
