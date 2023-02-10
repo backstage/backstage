@@ -37,8 +37,15 @@ import {
   Table,
   TableColumn,
   Link,
+  PromptableLoginProps,
+  OAuthPromptWrapper,
 } from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  githubAuthApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 
 const generatedColumns: TableColumn[] = [
   {
@@ -157,7 +164,7 @@ export const WorkflowRunsTableView = ({
   );
 };
 
-export const WorkflowRunsTable = ({
+const WorkflowRunsTableContent = ({
   entity,
   branch,
 }: {
@@ -206,5 +213,24 @@ export const WorkflowRunsTable = ({
       onChangePageSize={setPageSize}
       onChangePage={setPage}
     />
+  );
+};
+
+export const WorkflowRunsTable = (
+  props: PromptableLoginProps<{
+    entity: Entity;
+    branch?: string;
+  }>,
+) => {
+  const { autoPromptLogin = true } = props;
+
+  return (
+    <OAuthPromptWrapper
+      authApiRef={githubAuthApiRef}
+      autoPromptLogin={autoPromptLogin}
+      scope={['repo']}
+    >
+      <WorkflowRunsTableContent {...props} />
+    </OAuthPromptWrapper>
   );
 };

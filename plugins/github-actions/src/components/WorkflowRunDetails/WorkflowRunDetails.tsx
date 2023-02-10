@@ -44,8 +44,17 @@ import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { WorkflowRunLogs } from '../WorkflowRunLogs';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Breadcrumbs, Link } from '@backstage/core-components';
+import {
+  configApiRef,
+  githubAuthApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
+import {
+  Breadcrumbs,
+  Link,
+  OAuthPromptWrapper,
+  PromptableLoginProps,
+} from '@backstage/core-components';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -162,7 +171,7 @@ const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
   );
 };
 
-export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
+const WorkflowRunDetailsContent = ({ entity }: { entity: Entity }) => {
   const config = useApi(configApiRef);
   const projectName = getProjectNameFromEntity(entity);
 
@@ -264,5 +273,21 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
         </Table>
       </TableContainer>
     </div>
+  );
+};
+
+export const WorkflowRunDetails = (
+  props: PromptableLoginProps<{ entity: Entity }>,
+) => {
+  const { autoPromptLogin = true } = props;
+
+  return (
+    <OAuthPromptWrapper
+      authApiRef={githubAuthApiRef}
+      autoPromptLogin={autoPromptLogin}
+      scope={['repo']}
+    >
+      <WorkflowRunDetailsContent {...props} />
+    </OAuthPromptWrapper>
   );
 };

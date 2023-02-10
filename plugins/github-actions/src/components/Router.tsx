@@ -22,14 +22,18 @@ import { buildRouteRef } from '../routes';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { GITHUB_ACTIONS_ANNOTATION } from './getProjectNameFromEntity';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
+import {
+  MissingAnnotationEmptyState,
+  PromptableLoginProps,
+} from '@backstage/core-components';
 
 /** @public */
 export const isGithubActionsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);
 
 /** @public */
-export const Router = () => {
+export const Router = (props: PromptableLoginProps) => {
+  const { autoPromptLogin = true } = props;
   const { entity } = useEntity();
 
   if (!isGithubActionsAvailable(entity)) {
@@ -39,10 +43,23 @@ export const Router = () => {
   }
   return (
     <Routes>
-      <Route path="/" element={<WorkflowRunsTable entity={entity} />} />
+      <Route
+        path="/"
+        element={
+          <WorkflowRunsTable
+            autoPromptLogin={autoPromptLogin}
+            entity={entity}
+          />
+        }
+      />
       <Route
         path={`${buildRouteRef.path}`}
-        element={<WorkflowRunDetails entity={entity} />}
+        element={
+          <WorkflowRunDetails
+            entity={entity}
+            autoPromptLogin={autoPromptLogin}
+          />
+        }
       />
       )
     </Routes>

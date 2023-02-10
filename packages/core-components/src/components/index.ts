@@ -33,6 +33,7 @@ export * from './Link';
 export * from './LinkButton';
 export * from './LogViewer';
 export * from './MarkdownContent';
+export * from './OAuthPromptWrapper';
 export * from './OAuthRequestDialog';
 export * from './OverflowTooltip';
 export * from './Progress';
