@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-document.querySelector('button').onclick = event => {
-  event.target.innerHTML = 'clicked';
-};
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+
+ReactDOM.render(<App />, document.getElementById('root'));

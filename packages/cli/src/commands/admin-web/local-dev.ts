@@ -22,9 +22,9 @@ console.log('CLI spoolin');
 
 async function main() {
   /* eslint-disable-next-line no-restricted-syntax */
-  const targetDir = path.resolve(__dirname, 'embedded/');
+  const targetDir = path.resolve(__dirname, '../../../../admin-web');
   const waitForExit = await serveBundle({
-    entry: path.resolve(targetDir, 'index'),
+    entry: path.resolve(targetDir, 'src/index'),
     targetDir,
     checksEnabled: false,
     frontendAppConfigs: [],
@@ -42,4 +42,7 @@ async function main() {
   await waitForExit();
 }
 
-main().then(() => {});
+main().catch(err => {
+  console.error(err.stack);
+  process.exit(1);
+});

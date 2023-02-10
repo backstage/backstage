@@ -16309,6 +16309,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"admin-web@workspace:packages/admin-web":
+  version: 0.0.0-use.local
+  resolution: "admin-web@workspace:packages/admin-web"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+  languageName: unknown
+  linkType: soft
+
 "agent-base@npm:6, agent-base@npm:^6.0.2":
   version: 6.0.2
   resolution: "agent-base@npm:6.0.2"
