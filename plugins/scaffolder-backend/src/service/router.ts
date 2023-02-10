@@ -30,6 +30,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 import {
   actionExecutePermission,
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   TaskSpec,
   TemplateEntityV1beta3,
@@ -175,11 +176,18 @@ function buildDefaultIdentityClient({
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    getResources: async () => undefined!,
-    resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-    rules: Object.values(scaffolderStepRules),
-  });
+  const permissionIntegrationRouter = createPermissionIntegrationRouter([
+    {
+      getResources: async () => undefined!,
+      resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+      rules: Object.values(scaffolderStepRules),
+    },
+    {
+      getResources: async () => undefined!,
+      resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+      rules: Object.values(scaffolderActionRules),
+    },
+  ]);
 
   const router = Router();
   // Be generous in upload size to support a wide range of templates in dry-run mode.
