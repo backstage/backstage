@@ -16,7 +16,6 @@
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import FormControl from '@material-ui/core/FormControl';
 import InputBase from '@material-ui/core/InputBase';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -30,9 +29,11 @@ import {
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
 
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
+import classnames from 'classnames';
 
 /** @public */
 export type SelectInputBaseClassKey = 'root' | 'input';
@@ -107,11 +108,6 @@ const useStyles = makeStyles(
         margin: 2,
       },
       checkbox: {},
-
-      root: {
-        display: 'flex',
-        flexDirection: 'column',
-      },
     }),
   { name: 'BackstageSelect' },
 );
@@ -126,12 +122,17 @@ export type SelectItem = {
 export type SelectedItems = string | string[] | number | number[];
 
 export type SelectProps = {
+  className?: string;
   multiple?: boolean;
   items: SelectItem[];
+  showLabel?: boolean;
   label: string;
   placeholder?: string;
+  emptyItemLabel?: string;
   selected?: SelectedItems;
   onChange: (arg: SelectedItems) => void;
+  renderValue?: (selectedValues: unknown) => React.ReactNode;
+  renderOption?: (option: SelectItem) => React.ReactNode;
   triggerReset?: boolean;
   native?: boolean;
   disabled?: boolean;
@@ -141,12 +142,17 @@ export type SelectProps = {
 /** @public */
 export function SelectComponent(props: SelectProps) {
   const {
+    className,
     multiple,
     items,
+    showLabel = true,
     label,
     placeholder,
     selected,
     onChange,
+    renderValue,
+    renderOption,
+    emptyItemLabel,
     triggerReset,
     native = false,
     disabled = false,
@@ -163,17 +169,17 @@ export function SelectComponent(props: SelectProps) {
   }, [triggerReset, multiple]);
 
   useEffect(() => {
-    if (selected !== undefined) {
+    if (selected !== undefined && selected !== value) {
       setValue(selected);
     }
-  }, [selected]);
+  }, [value, selected]);
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>): void => {
     setValue(event.target.value as SelectedItems);
     onChange(event.target.value as SelectedItems);
   };
 
-  const handleClick = (event: React.ChangeEvent<any>) => {
+  const handleClick = (event: React.ChangeEvent<any>): void => {
     if (disabled) {
       event.preventDefault();
       return;
@@ -186,100 +192,114 @@ export function SelectComponent(props: SelectProps) {
     });
   };
 
-  const handleClickAway = () => {
-    setOpen(false);
-  };
-
-  const handleDelete = (selectedValue: string | number) => () => {
+  const handleDelete = (selectedValue: string | number) => (): void => {
     const newValue = (value as any[]).filter(chip => chip !== selectedValue);
     setValue(newValue);
     onChange(newValue);
   };
 
+  const renderValueDefault = (selectedValues: unknown): React.ReactNode => {
+    if (multiple && !_.isEmpty(value)) {
+      return (
+        <Box className={classes.chips}>
+          {(selectedValues as string[]).map(selectedValue => (
+            <Chip
+              key={items.find(el => el.value === selectedValue)?.value}
+              label={items.find(el => el.value === selectedValue)?.label}
+              clickable
+              onDelete={handleDelete(selectedValue)}
+              className={classes.chip}
+            />
+          ))}
+        </Box>
+      );
+    }
+
+    return (
+      <Typography>
+        {_.isEmpty(value)
+          ? placeholder || ''
+          : items.find(el => el.value === selectedValues)?.label}
+      </Typography>
+    );
+  };
+
+  const renderOptionDefault = (option: SelectItem): React.ReactNode => {
+    if (native) {
+      return (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      );
+    }
+
+    return (
+      <MenuItem key={option.value} value={option.value}>
+        {multiple && (
+          <Checkbox
+            color="primary"
+            checked={(value as any[]).includes(option.value) || false}
+            className={classes.checkbox}
+          />
+        )}
+        {option.label}
+      </MenuItem>
+    );
+  };
+
+  const getIconComponent = (): React.ElementType | undefined => {
+    if (native) {
+      return undefined;
+    }
+
+    return !isOpen ? ClosedDropdown : OpenedDropdown;
+  };
+
   return (
-    <Box className={classes.root}>
-      <ClickAwayListener onClickAway={handleClickAway}>
-        <FormControl className={classes.formControl}>
-          <InputLabel className={classes.formLabel}>{label}</InputLabel>
-          <Select
-            aria-label={label}
-            value={value}
-            native={native}
-            disabled={disabled}
-            data-testid="select"
-            displayEmpty
-            multiple={multiple}
-            margin={margin}
-            onChange={handleChange}
-            onClick={handleClick}
-            open={isOpen}
-            input={<BootstrapInput />}
-            label={label}
-            tabIndex={0}
-            renderValue={s =>
-              multiple && (value as any[]).length !== 0 ? (
-                <Box className={classes.chips}>
-                  {(s as string[]).map(selectedValue => (
-                    <Chip
-                      key={items.find(el => el.value === selectedValue)?.value}
-                      label={
-                        items.find(el => el.value === selectedValue)?.label
-                      }
-                      clickable
-                      onDelete={handleDelete(selectedValue)}
-                      className={classes.chip}
-                    />
-                  ))}
-                </Box>
-              ) : (
-                <Typography>
-                  {(value as any[]).length === 0
-                    ? placeholder || ''
-                    : items.find(el => el.value === s)?.label}
-                </Typography>
-              )
-            }
-            IconComponent={() =>
-              !isOpen ? <ClosedDropdown /> : <OpenedDropdown />
-            }
-            MenuProps={{
-              anchorOrigin: {
-                vertical: 'bottom',
-                horizontal: 'left',
-              },
-              transformOrigin: {
-                vertical: 'top',
-                horizontal: 'left',
-              },
-              getContentAnchorEl: null,
-            }}
-          >
-            {placeholder && !multiple && (
-              <MenuItem value={[]}>{placeholder}</MenuItem>
-            )}
-            {native
-              ? items &&
-                items.map(item => (
-                  <option value={item.value} key={item.value}>
-                    {item.label}
-                  </option>
-                ))
-              : items &&
-                items.map(item => (
-                  <MenuItem key={item.value} value={item.value}>
-                    {multiple && (
-                      <Checkbox
-                        color="primary"
-                        checked={(value as any[]).includes(item.value) || false}
-                        className={classes.checkbox}
-                      />
-                    )}
-                    {item.label}
-                  </MenuItem>
-                ))}
-          </Select>
-        </FormControl>
-      </ClickAwayListener>
-    </Box>
+    <FormControl className={classnames(className, classes.formControl)}>
+      {showLabel && (
+        <InputLabel className={classes.formLabel}>{label}</InputLabel>
+      )}
+      <Select
+        className={classnames({
+          selected: !_.isEmpty(value),
+        })}
+        aria-label={label}
+        value={value}
+        native={native}
+        disabled={disabled}
+        data-testid="select"
+        displayEmpty
+        multiple={multiple}
+        margin={margin}
+        onChange={handleChange}
+        onClick={handleClick}
+        open={isOpen}
+        input={<BootstrapInput />}
+        label={label}
+        tabIndex={0}
+        renderValue={renderValue ?? renderValueDefault}
+        IconComponent={getIconComponent()}
+        MenuProps={{
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'left',
+          },
+          transformOrigin: {
+            vertical: 'top',
+            horizontal: 'left',
+          },
+          getContentAnchorEl: null,
+        }}
+      >
+        {emptyItemLabel &&
+          !multiple &&
+          (renderOption ?? renderOptionDefault)({
+            label: emptyItemLabel,
+            value: '',
+          })}
+        {items.map(renderOption ?? renderOptionDefault)}
+      </Select>
+    </FormControl>
   );
 }
