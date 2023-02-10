@@ -19,6 +19,7 @@ import inquirer from 'inquirer';
 import { Task } from '../../lib/tasks';
 import { github } from './github';
 import { updateConfigFile, updateEnvFile } from './file';
+import ghAuth from './gh-auth';
 
 export async function command(): Promise<void> {
   const answers = await inquirer.prompt<{
@@ -44,7 +45,7 @@ export async function command(): Promise<void> {
       type: 'list',
       name: 'provider',
       message: 'Please select a provider:',
-      choices: ['github'],
+      choices: ['GitHub OAuth', 'GitHub App'],
       when: ({ shouldSetupAuth }) => shouldSetupAuth,
     },
   ]);
@@ -59,13 +60,32 @@ export async function command(): Promise<void> {
     process.exit(1);
   }
 
+  const { useEnvForSecrets } = answers;
+
   switch (answers.provider) {
-    case 'github': {
-      const { useEnvForSecrets } = answers;
+    case 'GitHub OAuth': {
       const config = await github(useEnvForSecrets);
       await updateConfigFile(config);
       if (useEnvForSecrets) {
         await updateEnvFile(config);
+      }
+      break;
+    }
+    case 'GitHub App': {
+      const config = await ghAuth();
+      // TODO(tudi2d): Also change integrations
+      if (useEnvForSecrets) {
+        await updateEnvFile({
+          auth: config.auth,
+        });
+        config.auth.providers.github.clientId = '${AUTH_GITHUB_CLIENT_ID}';
+        config.auth.providers.github.clientSecret =
+          '${AUTH_GITHUB_CLIENT_SECRET}';
+        await updateConfigFile({
+          auth: config.auth,
+        });
+      } else {
+        await updateConfigFile({ auth: config.auth });
       }
       break;
     }

@@ -14,62 +14,26 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import chalk from 'chalk';
-import { stringify as stringifyYaml } from 'yaml';
-import inquirer, { Question, Answers } from 'inquirer';
-import { paths } from '../../lib/paths';
-import { GithubCreateAppServer } from './GithubCreateAppServer';
+import fs from 'fs-extra';
+import inquirer, { Question } from 'inquirer';
 import fetch from 'node-fetch';
 import openBrowser from 'react-dev-utils/openBrowser';
+import { stringify as stringifyYaml } from 'yaml';
+import { GithubAppConfig } from '@backstage/integration';
+
+import { paths } from '../../lib/paths';
+import { GithubCreateAppServer } from './GithubCreateAppServer';
+
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
 export default async (org: string) => {
-  // Why is the Org check not done here?
-  const answers: Answers = await inquirer.prompt({
-    name: 'appType',
-    type: 'checkbox',
-    message:
-      'Select permissions [required] (these can be changed later but then require approvals in all installations)',
-    choices: [
-      {
-        name: 'Read access to content (required by Software Catalog to ingest data from repositories)',
-        value: 'read',
-        checked: true,
-      },
-      {
-        name: 'Read access to members (required by Software Catalog to ingest GitHub teams)',
-        value: 'members',
-        checked: true,
-      },
-      {
-        name: 'Read and Write to content and actions (required by Software Templates to create new repositories)',
-        value: 'write',
-      },
-    ],
-  });
-
-  if (answers.appType.length === 0) {
-    console.log(chalk.red('You must select at least one permission'));
-    process.exit(1);
-  }
-
+  // TODO(tudi2d): Why is the Org check not done here?
+  const answers = await permissionAnswers();
   await verifyGithubOrg(org);
-  const { slug, name, ...config } = await GithubCreateAppServer.run({
-    org,
-    permissions: answers.appType,
-  });
+  const { fileName } = await createGHAYaml(org, answers.appType);
 
-  const fileName = `github-app-${slug}-credentials.yaml`;
-  const content = `# Name: ${name}\n${stringifyYaml(config)}`;
-  await fs.writeFile(paths.resolveTargetRoot(fileName), content);
-  console.log(`GitHub App configuration written to ${chalk.cyan(fileName)}`);
-  console.log(
-    chalk.yellow(
-      'This file contains sensitive credentials, it should not be committed to version control and handled with care!',
-    ),
-  );
   console.log(
     "Here's an example on how to update the integrations section in app-config.yaml",
   );
@@ -82,6 +46,42 @@ integrations:
         - $include: ${fileName}`),
   );
 };
+
+/**
+ *
+ * @param org string: GitHub Organisation
+ * @returns Promise<config>: Partial App Config for Admin CLI
+ */
+export async function adminCli(org: string) {
+  await verifyGithubOrg(org);
+  const answers = await permissionAnswers({
+    read: true,
+    members: true,
+    write: true,
+  });
+  const { fileName, config } = await createGHAYaml(org, answers.appType);
+  const auth = {
+    providers: {
+      github: {
+        clientId: config.clientId,
+        clientSecret: config.clientSecret,
+      },
+    },
+  };
+  const integration = {
+    github: {
+      host: 'github.com',
+      apps: {
+        $include: `${fileName}`,
+      },
+    },
+  };
+
+  return {
+    auth,
+    integration,
+  };
+}
 
 async function verifyGithubOrg(org: string): Promise<void> {
   let response;
@@ -121,6 +121,7 @@ async function verifyGithubOrg(org: string): Promise<void> {
 
     openBrowser('https://github.com/account/organizations/new');
 
+    // TODO(tudi2d): Could we maybe re-run the command rather than exit?
     console.log(
       chalk.yellow(
         'Please re-run this command when you have created your new organization',
@@ -129,4 +130,69 @@ async function verifyGithubOrg(org: string): Promise<void> {
 
     process.exit(0);
   }
+}
+
+async function permissionAnswers(
+  checked: { read: boolean; members: boolean; write: boolean } = {
+    read: true,
+    members: true,
+    write: false,
+  },
+) {
+  const answers = await inquirer.prompt<{ appType: string[] }>({
+    name: 'appType',
+    type: 'checkbox',
+    message:
+      'Select permissions [required] (these can be changed later but then require approvals in all installations)',
+    choices: [
+      {
+        name: 'Read access to content (required by Software Catalog to ingest data from repositories)',
+        value: 'read',
+        checked: checked.read,
+      },
+      {
+        name: 'Read access to members (required by Software Catalog to ingest GitHub teams)',
+        value: 'members',
+        checked: checked.members,
+      },
+      {
+        name: 'Read and Write to content and actions (required by Software Templates to create new repositories)',
+        value: 'write',
+        checked: checked.write,
+      },
+    ],
+  });
+
+  if (answers.appType.length === 0) {
+    console.log(chalk.red('You must select at least one permission'));
+    // TODO(tudi2d): Maybe re-do input rather than exit?
+    process.exit(1);
+  }
+
+  return answers;
+}
+
+async function createGHAYaml(
+  org: string,
+  permissions: string[],
+): Promise<{ fileName: string; config: GithubAppConfig }> {
+  const { slug, name, ...config } = await GithubCreateAppServer.run({
+    org,
+    permissions,
+  });
+
+  const fileName = `github-app-${slug}-credentials.yaml`;
+  const content = `# Name: ${name}\n${stringifyYaml(config)}`;
+  await fs.writeFile(paths.resolveTargetRoot(fileName), content);
+  console.log(`GitHub App configuration written to ${chalk.cyan(fileName)}`);
+  console.log(
+    chalk.yellow(
+      'This file contains sensitive credentials, it should not be committed to version control and handled with care!',
+    ),
+  );
+
+  return {
+    fileName,
+    config,
+  };
 }

@@ -15,10 +15,11 @@
  */
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import createGithubApp from '../create-github-app';
+import { adminCli } from '../create-github-app';
 
+// TODO(tudi2d): Wrapper for admin CLI around `create-github-app` - potentially to be removed
 export default async () => {
-  // TODO: Make the GitHub Org optional
+  // TODO(tudi2d): Make the GitHub Org optional
   const input = await inquirer.prompt<{ org: string }>([
     {
       type: 'input',
@@ -26,5 +27,5 @@ export default async () => {
       message: chalk.blue('Enter a GitHub Org [required]'),
     },
   ]);
-  await createGithubApp(input.org);
+  return await adminCli(input.org);
 };

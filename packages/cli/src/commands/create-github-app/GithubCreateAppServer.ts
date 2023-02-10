@@ -33,7 +33,7 @@ const FORM_PAGE = `
 </html>
 `;
 
-type GithubAppConfig = {
+export type GithubAppConfig = {
   appId: number;
   slug?: string;
   name?: string;
