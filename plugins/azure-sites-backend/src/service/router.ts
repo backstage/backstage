@@ -26,7 +26,10 @@ import {
   PermissionEvaluator,
   AuthorizeResult,
 } from '@backstage/plugin-permission-common';
-import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
+import {
+  azureSitesActionPermission,
+  AZURE_WEB_SITE_NAME_ANNOTATION,
+} from '@backstage/plugin-azure-sites-common';
 
 import { AzureSitesApi } from '../api';
 
@@ -59,14 +62,24 @@ export async function createRouter(
     );
   });
   router.post(
-    '/entity/:namespace/:kind/:name/sites/:subscription/:resourceGroup/:sitename/start',
+    '/:subscription/:resourceGroup/:name/start',
     async (request, response) => {
-      const { namespace, kind, name, subscription, resourceGroup, sitename } =
-        request.params;
+      const { subscription, resourceGroup, name } = request.params;
       const token = getBearerTokenFromAuthorizationHeader(
         request.header('authorization'),
       );
-      const resourceRef = stringifyEntityRef({ kind, namespace, name });
+      const entity = request.body.entity;
+      const resourceRef = stringifyEntityRef(entity);
+      const matchAnnotation = name.match(
+        new RegExp(
+          entity.metadata.annotation?.[AZURE_WEB_SITE_NAME_ANNOTATION],
+        ),
+      );
+
+      if (!matchAnnotation) {
+        throw new NotAllowedError('Annotation Mismatched');
+      }
+
       const decision = (
         await permissions.authorize(
           [{ permission: azureSitesActionPermission, resourceRef }],
@@ -84,20 +97,30 @@ export async function createRouter(
         await azureSitesApi.start({
           subscription,
           resourceGroup,
-          name: sitename,
+          name,
         }),
       );
     },
   );
   router.post(
-    '/entity/:namespace/:kind/:name/sites/:subscription/:resourceGroup/:sitename/stop',
+    '/:subscription/:resourceGroup/:name/stop',
     async (request, response) => {
-      const { namespace, kind, name, subscription, resourceGroup, sitename } =
-        request.params;
+      const { subscription, resourceGroup, name } = request.params;
       const token = getBearerTokenFromAuthorizationHeader(
         request.header('authorization'),
       );
-      const resourceRef = stringifyEntityRef({ kind, namespace, name });
+      const entity = request.body.entity;
+      const resourceRef = stringifyEntityRef(entity);
+      const matchAnnotation = name.match(
+        new RegExp(
+          entity.metadata.annotation?.[AZURE_WEB_SITE_NAME_ANNOTATION],
+        ),
+      );
+
+      if (!matchAnnotation) {
+        throw new NotAllowedError('Annotation Mismatched');
+      }
+
       const decision = (
         await permissions.authorize(
           [{ permission: azureSitesActionPermission, resourceRef }],
@@ -115,7 +138,7 @@ export async function createRouter(
         await azureSitesApi.stop({
           subscription,
           resourceGroup,
-          name: sitename,
+          name,
         }),
       );
     },

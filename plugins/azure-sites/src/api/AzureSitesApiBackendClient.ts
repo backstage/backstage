@@ -21,7 +21,7 @@ import {
   AzureSiteStartStopRequest,
 } from '@backstage/plugin-azure-sites-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-import { CompoundEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 
 /** @public */
 export class AzureSitesApiBackendClient implements AzureSitesApi {
@@ -37,15 +37,11 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
 
   async stop(
     request: AzureSiteStartStopRequest,
-    entity: CompoundEntityRef,
+    entity: Entity,
   ): Promise<void> {
-    const url = `${await this.discoveryApi.getBaseUrl(
-      'azure-sites',
-    )}/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
-      entity.kind,
-    )}/${encodeURIComponent(entity.name)}/sites/${request.subscription}/${
-      request.resourceGroup
-    }/${request.name}/stop`;
+    const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/${
+      request.subscription
+    }/${request.resourceGroup}/${request.name}/stop`;
     const { token: accessToken } = await this.identityApi.getCredentials();
     await fetch(url, {
       method: 'POST',
@@ -53,19 +49,18 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
         'Content-Type': 'application/json',
         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
+      body: JSON.stringify({
+        entity,
+      }),
     });
   }
   async start(
     request: AzureSiteStartStopRequest,
-    entity: CompoundEntityRef,
+    entity: Entity,
   ): Promise<void> {
-    const url = `${await this.discoveryApi.getBaseUrl(
-      'azure-sites',
-    )}/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
-      entity.kind,
-    )}/${encodeURIComponent(entity.name)}/sites/${request.subscription}/${
-      request.resourceGroup
-    }/${request.name}/start`;
+    const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/${
+      request.subscription
+    }/${request.resourceGroup}/${request.name}/start`;
     const { token: accessToken } = await this.identityApi.getCredentials();
     await fetch(url, {
       method: 'POST',
@@ -73,6 +68,9 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
         'Content-Type': 'application/json',
         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
+      body: JSON.stringify({
+        entity,
+      }),
     });
   }
 

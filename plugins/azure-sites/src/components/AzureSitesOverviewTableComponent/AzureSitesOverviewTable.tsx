@@ -40,7 +40,6 @@ import Typography from '@material-ui/core/Typography';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core-plugin-api';
-import { getCompoundEntityRef } from '@backstage/catalog-model';
 import {
   useEntity,
   useEntityPermission,
@@ -114,28 +113,26 @@ const ActionButtons = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const start = async () => {
-    const entityRef = await getCompoundEntityRef(entity);
+  const start = () => {
     azureApi.start(
       {
         name: value.name,
         resourceGroup: value.resourceGroup,
         subscription: value.subscription,
       },
-      entityRef,
+      entity,
     );
     onMenuItemClick('Starting, this may take some time...');
     handleClose();
   };
   const stop = async () => {
-    const entityRef = await getCompoundEntityRef(entity);
     azureApi.stop(
       {
         name: value.name,
         resourceGroup: value.resourceGroup,
         subscription: value.subscription,
       },
-      entityRef,
+      entity,
     );
     onMenuItemClick('Stopping, this may take some time...');
     handleClose();

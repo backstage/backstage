@@ -6,6 +6,9 @@
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 
 // @public (undocumented)
+export const AZURE_WEB_SITE_NAME_ANNOTATION = 'azure.com/microsoft-web-sites';
+
+// @public (undocumented)
 export type AzureSite = {
   href: string;
   logstreamHref: string;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { AZURE_WEB_SITE_NAME_ANNOTATION } from '@backstage/plugin-azure-sites-common';
-
-export const useServiceEntityAnnotations = (entity: Entity) => {
-  const webSiteName =
-    entity?.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION] ?? '';
-
-  return {
-    webSiteName,
-  };
-};
+/**
+ * @public
+ */
+export const AZURE_WEB_SITE_NAME_ANNOTATION = 'azure.com/microsoft-web-sites';

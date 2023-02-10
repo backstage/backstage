@@ -17,10 +17,8 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useSites } from '../../hooks/useSites';
-import {
-  AZURE_WEB_SITE_NAME_ANNOTATION,
-  useServiceEntityAnnotations,
-} from '../../hooks/useServiceEntityAnnotations';
+import { useServiceEntityAnnotations } from '../../hooks/useServiceEntityAnnotations';
+import { AZURE_WEB_SITE_NAME_ANNOTATION } from '@backstage/plugin-azure-sites-common';
 import {
   ErrorBoundary,
   MissingAnnotationEmptyState,
