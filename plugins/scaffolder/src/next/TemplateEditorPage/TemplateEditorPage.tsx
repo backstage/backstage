@@ -20,13 +20,13 @@ import {
   WebFileSystemAccess,
 } from '../../lib/filesystem';
 import { CustomFieldExplorer } from './CustomFieldExplorer';
-import { TemplateEditorIntro } from './TemplateEditorIntro';
 import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 import {
   NextFieldExtensionOptions,
   type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
+import { TemplateEditorIntro } from '../../components/TemplateEditorPage/TemplateEditorIntro';
 
 type Selection =
   | {
