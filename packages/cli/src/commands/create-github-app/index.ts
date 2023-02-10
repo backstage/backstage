@@ -63,8 +63,10 @@ export async function adminCli(org: string) {
   const auth = {
     providers: {
       github: {
-        clientId: config.clientId,
-        clientSecret: config.clientSecret,
+        development: {
+          clientId: config.clientId,
+          clientSecret: config.clientSecret,
+        },
       },
     },
   };

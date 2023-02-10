@@ -75,8 +75,9 @@ export async function command(): Promise<void> {
         await updateEnvFile({
           auth: config.auth,
         });
-        config.auth.providers.github.clientId = '${AUTH_GITHUB_CLIENT_ID}';
-        config.auth.providers.github.clientSecret =
+        config.auth.providers.github.development.clientId =
+          '${AUTH_GITHUB_CLIENT_ID}';
+        config.auth.providers.github.development.clientSecret =
           '${AUTH_GITHUB_CLIENT_SECRET}';
         await updateConfigFile({
           auth: config.auth,
