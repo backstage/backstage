@@ -43,5 +43,6 @@ export type {
   UrlReader,
   UrlReaderPredicateTuple,
 } from './types';
+export { DefaultReadTreeResponseFactory } from './tree';
 export { UrlReaders } from './UrlReaders';
 export type { UrlReadersOptions } from './UrlReaders';
