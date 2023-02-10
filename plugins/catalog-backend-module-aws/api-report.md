@@ -11,7 +11,7 @@ import { Config } from '@backstage/config';
 import { Credentials } from 'aws-sdk';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
