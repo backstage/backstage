@@ -120,7 +120,7 @@ product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
 
-##Other
+## Other
 
 ### Location
 
