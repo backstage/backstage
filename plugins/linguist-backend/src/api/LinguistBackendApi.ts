@@ -76,7 +76,98 @@ export class LinguistBackendApi {
     return this.store.getEntityResults(entityRef);
   }
 
-  public async processEntity(entityRef: string, url: string): Promise<string> {
+  public async processEntities() {
+    this.logger?.info('Updating list of entities');
+
+    await this.addNewEntities();
+
+    this.logger?.info('Processing applicable entities through Linguist');
+
+    await this.generateEntitiesLanguages();
+  }
+
+  private async addNewEntities() {
+    const annotationKey = this.useSourceLocation
+      ? ANNOTATION_SOURCE_LOCATION
+      : LINGUIST_ANNOTATION;
+    const request: GetEntitiesRequest = {
+      filter: {
+        kind: ['API', 'Component', 'Template'],
+        [`metadata.annotations.${annotationKey}`]: CATALOG_FILTER_EXISTS,
+      },
+      fields: ['kind', 'metadata'],
+    };
+
+    const response = await this.catalogClient.getEntities(request);
+    const entities = response.items;
+
+    entities.forEach(entity => {
+      const entityRef = stringifyEntityRef(entity);
+      this.store.insertNewEntity(entityRef);
+    });
+  }
+
+  private async generateEntitiesLanguages() {
+    const entitiesOverview = await this.getEntitiesOverview();
+    this.logger?.info(
+      `Entities overview: Entity: ${entitiesOverview.entityCount}, Processed: ${entitiesOverview.processedCount}, Pending: ${entitiesOverview.pendingCount}, Stale ${entitiesOverview.staleCount}`,
+    );
+
+    const entities = entitiesOverview.filteredEntities.slice(
+      this.batchSize ?? 20,
+    );
+    entities.forEach(async entityRef => {
+      const entity = await this.catalogClient.getEntityByRef(entityRef);
+      const annotationKey = this.useSourceLocation
+        ? ANNOTATION_SOURCE_LOCATION
+        : LINGUIST_ANNOTATION;
+
+      let url = entity?.metadata.annotations?.[annotationKey] ?? '';
+      if (url.startsWith('url:')) {
+        url = url.slice(4);
+      }
+
+      try {
+        await this.generateEntityLanguages(entityRef, url);
+      } catch (error) {
+        assertError(error);
+        this.logger.error(
+          `Unable to process "${entityRef}" using "${url}", message: ${error.message}, stack: ${error.stack}`,
+        );
+      }
+    });
+  }
+
+  private async getEntitiesOverview(): Promise<EntitiesOverview> {
+    this.logger?.debug('Getting pending entities');
+
+    const processedEntities = await this.store.getProcessedEntities();
+    const staleEntities = processedEntities
+      .filter(pe => {
+        if (this.age === undefined) return false;
+        const staleDate = DateTime.now().minus(this.age as HumanDuration);
+        return DateTime.fromJSDate(pe.processedDate) <= staleDate;
+      })
+      .map(pe => pe.entityRef);
+
+    const unprocessedEntities = await this.store.getUnprocessedEntities();
+    const filteredEntities = staleEntities.concat(unprocessedEntities);
+
+    const entitiesOverview: EntitiesOverview = {
+      entityCount: unprocessedEntities.length,
+      processedCount: processedEntities.length,
+      staleCount: staleEntities.length,
+      pendingCount: filteredEntities.length,
+      filteredEntities: filteredEntities,
+    };
+
+    return entitiesOverview;
+  }
+
+  private async generateEntityLanguages(
+    entityRef: string,
+    url: string,
+  ): Promise<string> {
     this.logger?.info(
       `Processing languages for entity ${entityRef} from ${url}`,
     );
@@ -123,89 +214,5 @@ export class LinguistBackendApi {
       this.logger?.info(`Cleaning up files from ${dir}`);
       await fs.remove(dir);
     }
-  }
-
-  public async processEntities() {
-    this.logger?.info('Updating list of entities');
-
-    await this.addNewEntities();
-
-    this.logger?.info('Processing applicable entities through Linguist');
-
-    const entitiesOverview = await this.getEntitiesOverview();
-    this.logger?.info(
-      `Entities overview: Entity: ${entitiesOverview.entityCount}, Processed: ${entitiesOverview.processedCount}, Pending: ${entitiesOverview.pendingCount}, Stale ${entitiesOverview.staleCount}`,
-    );
-
-    const entities = entitiesOverview.filteredEntities.slice(
-      this.batchSize ?? 20,
-    );
-    entities.forEach(async entityRef => {
-      const entity = await this.catalogClient.getEntityByRef(entityRef);
-      const annotationKey = this.useSourceLocation
-        ? ANNOTATION_SOURCE_LOCATION
-        : LINGUIST_ANNOTATION;
-
-      let url = entity?.metadata.annotations?.[annotationKey] ?? '';
-      if (url.startsWith('url:')) {
-        url = url.slice(4);
-      }
-
-      try {
-        await this.processEntity(entityRef, url);
-      } catch (error) {
-        assertError(error);
-        this.logger.error(
-          `Unable to process "${entityRef}" using "${url}", message: ${error.message}, stack: ${error.stack}`,
-        );
-      }
-    });
-  }
-
-  public async getEntitiesOverview(): Promise<EntitiesOverview> {
-    this.logger?.debug('Getting pending entities');
-
-    const processedEntities = await this.store.getProcessedEntities();
-    const staleEntities = processedEntities
-      .filter(pe => {
-        if (this.age === undefined) return false;
-        const staleDate = DateTime.now().minus(this.age as HumanDuration);
-        return DateTime.fromJSDate(pe.processedDate) <= staleDate;
-      })
-      .map(pe => pe.entityRef);
-
-    const unprocessedEntities = await this.store.getUnprocessedEntities();
-    const filteredEntities = staleEntities.concat(unprocessedEntities);
-
-    const entitiesOverview: EntitiesOverview = {
-      entityCount: unprocessedEntities.length,
-      processedCount: processedEntities.length,
-      staleCount: staleEntities.length,
-      pendingCount: filteredEntities.length,
-      filteredEntities: filteredEntities,
-    };
-
-    return entitiesOverview;
-  }
-
-  private async addNewEntities() {
-    const annotationKey = this.useSourceLocation
-      ? ANNOTATION_SOURCE_LOCATION
-      : LINGUIST_ANNOTATION;
-    const request: GetEntitiesRequest = {
-      filter: {
-        kind: ['API', 'Component', 'Template'],
-        [`metadata.annotations.${annotationKey}`]: CATALOG_FILTER_EXISTS,
-      },
-      fields: ['kind', 'metadata'],
-    };
-
-    const response = await this.catalogClient.getEntities(request);
-    const entities = response.items;
-
-    entities.forEach(entity => {
-      const entityRef = stringifyEntityRef(entity);
-      this.store.insertNewEntity(entityRef);
-    });
   }
 }
