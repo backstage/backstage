@@ -63,7 +63,7 @@ BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together
 with components and systems will better allow us to visualize resource
 footprint, and create tooling around them.
 
-##Organizational Entities
+## Organizational Entities
 
 ### User
 
