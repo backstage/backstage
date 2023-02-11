@@ -92,7 +92,7 @@ export async function createRouter(
         throw new NotAllowedError('Unauthorized');
       }
 
-      console.log('starting...');
+      logger.info(`starting...${name}`);
       response.json(
         await azureSitesApi.start({
           subscription,
@@ -133,7 +133,7 @@ export async function createRouter(
         throw new NotAllowedError('Unauthorized');
       }
 
-      console.log('stopping...');
+      logger.info(`stopping...${name}`);
       response.json(
         await azureSitesApi.stop({
           subscription,
