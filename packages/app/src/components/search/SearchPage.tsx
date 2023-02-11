@@ -79,6 +79,7 @@ const SearchPage = () => {
               <SearchType.Accordion
                 name="Result Type"
                 defaultValue="software-catalog"
+                showCounts
                 types={[
                   {
                     value: 'software-catalog',

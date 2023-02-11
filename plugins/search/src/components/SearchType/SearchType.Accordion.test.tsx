@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import {
   searchApiRef,
@@ -34,6 +34,8 @@ jest.mock('@backstage/plugin-search-react', () => ({
     setTypes: (types: any) => setTypesMock(types),
     pageCursor: '',
     setPageCursor: (pageCursor: any) => setPageCursorMock(pageCursor),
+    term: 'abc',
+    filters: { foo: 'bar' },
   }),
 }));
 
@@ -48,7 +50,7 @@ describe('SearchType.Accordion', () => {
   };
 
   beforeEach(() => {
-    query.mockResolvedValue({ results: [] });
+    query.mockResolvedValue({ results: [], numberOfResults: 1234 });
   });
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
@@ -131,5 +133,35 @@ describe('SearchType.Accordion', () => {
     await user.click(getByText(expectedType.name));
 
     expect(queryByText('Collapse')).not.toBeInTheDocument();
+  });
+
+  it('should show result counts if enabled', async () => {
+    const { getAllByText } = render(
+      <Wrapper>
+        <SearchType.Accordion
+          name={expectedLabel}
+          showCounts
+          types={[expectedType]}
+        />
+      </Wrapper>,
+    );
+
+    expect(query).toHaveBeenCalledWith({
+      term: 'abc',
+      types: [],
+      filters: { foo: 'bar' },
+      pageLimit: 0,
+    });
+    expect(query).toHaveBeenCalledWith({
+      term: 'abc',
+      types: [expectedType.value],
+      filters: {},
+      pageLimit: 0,
+    });
+    await waitFor(() => {
+      const countLabels = getAllByText('1234 results');
+      expect(countLabels.length).toEqual(2);
+      expect(countLabels[0]).toBeInTheDocument();
+    });
   });
 });
