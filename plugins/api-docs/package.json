@@ -46,6 +46,7 @@
     "graphql": "^16.0.0",
     "graphql-ws": "^5.4.1",
     "isomorphic-form-data": "^2.0.0",
+    "openapi-explorer": "^0.11.483",
     "react-use": "^17.2.4",
     "swagger-ui-react": "^4.11.1"
   },
