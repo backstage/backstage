@@ -20,9 +20,9 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorParser,
-  LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import limiterFactory from 'p-limit';
 
 /**

@@ -107,7 +107,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       ],
     },
     {
-      test: /\.(js|mjs|cjs)/,
+      test: /\.(js|mjs|cjs)$/,
       resolve: {
         fullySpecified: false,
       },
@@ -141,9 +141,10 @@ export const transforms = (options: TransformOptions): Transforms => {
         /\.gif$/,
         /\.jpe?g$/,
         /\.png$/,
-        /\.frag/,
-        { and: [/\.svg/, { not: [/\.icon\.svg/] }] },
-        /\.xml/,
+        /\.frag$/,
+        /\.vert$/,
+        { and: [/\.svg$/, { not: [/\.icon\.svg$/] }] },
+        /\.xml$/,
       ],
       type: 'asset/resource',
       generator: {
