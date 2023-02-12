@@ -88,3 +88,14 @@ export function satisfiesForkFilter(
   // if forks are allowed, allow all repos through
   return true;
 }
+
+// Given the github organisation team slug, returns a tuple containing [organisation, team]
+export function splitTeamSlug(slug: string): [string, string] {
+  const parts = slug.split('/');
+  if (parts.length !== 2) {
+    throw new Error(
+      `Github team slug '${slug}' was not in the expected format <organisation>/<team>`,
+    );
+  }
+  return [parts[0], parts[1]];
+}
