@@ -56,7 +56,8 @@ export const coloredFormat = WinstonLogger.colorFormat();
  */
 export function createRootLogger(
   options: winston.LoggerOptions = {},
-  env = process.env,
+  env: NodeJS.ProcessEnv = process.env,
+  service: string = 'backstage',
 ): winston.Logger {
   const logger = winston
     .createLogger(
@@ -78,7 +79,7 @@ export function createRootLogger(
         options,
       ),
     )
-    .child({ service: 'backstage' });
+    .child({ service: service });
 
   setRootLogger(logger);
 
