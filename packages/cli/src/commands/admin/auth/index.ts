@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { auth } from './auth';
+import { Task } from '../../../lib/tasks';
+import { github } from './github';
 
-export async function command(): Promise<void> {
+export async function auth(): Promise<void> {
   const answers = await inquirer.prompt<{
-    shouldSetupAuth: boolean;
     provider?: string;
   }>([
     {
-      type: 'confirm',
-      name: 'shouldSetupAuth',
-      message: 'Do you want to set up Authentication for this project?',
+      type: 'list',
+      name: 'provider',
+      message: 'Please select a provider:',
+      choices: ['Github'],
     },
   ]);
 
-  if (!answers.shouldSetupAuth) {
-    console.log(
-      chalk.yellow(
-        'If you change your mind, feel free to re-run this command.',
-      ),
-    );
-    process.exit(1);
+  const { provider } = answers;
+
+  switch (provider) {
+    case 'Github': {
+      await github();
+      break;
+    }
+    default:
+      throw new Error(`Provider ${provider} not implemented yet.`);
   }
 
-  await auth();
+  Task.log(`Done setting up ${provider}!`);
 }

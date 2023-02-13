@@ -17,21 +17,7 @@
 import { OAuthApp } from '@octokit/oauth-app';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { Task } from '../../lib/tasks';
-
-export type GithubAuthConfig = {
-  auth: {
-    providers: {
-      github: {
-        development: {
-          clientId: string;
-          clientSecret: string;
-          enterpriseInstanceUrl?: string;
-        };
-      };
-    };
-  };
-};
+import { Task } from '../../../../lib/tasks';
 
 const validateCredentials = async (clientId: string, clientSecret: string) => {
   try {
@@ -58,9 +44,7 @@ const validateCredentials = async (clientId: string, clientSecret: string) => {
   }
 };
 
-export const github = async (
-  useEnvForSecrets?: boolean,
-): Promise<GithubAuthConfig> => {
+export const oauth = async (useEnvForSecrets?: boolean) => {
   Task.log(`
     To add GitHub authentication, you must create an OAuth App from the GitHub developer settings: ${chalk.blue(
       'https://github.com/settings/developers',
@@ -74,8 +58,7 @@ export const github = async (
 
     You can find the full documentation page here: ${chalk.blue(
       'https://backstage.io/docs/auth/github/provider',
-    )}
-    `);
+    )}`);
 
   const answers = await inquirer.prompt<{
     clientSecret: string;

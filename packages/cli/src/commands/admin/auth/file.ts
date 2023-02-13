@@ -18,7 +18,20 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import yaml from 'yaml';
 import { findPaths } from '@backstage/cli-common';
-import { GithubAuthConfig } from './github';
+
+export type GithubAuthConfig = {
+  auth: {
+    providers: {
+      github: {
+        development: {
+          clientId: string;
+          clientSecret: string;
+          enterpriseInstanceUrl?: string;
+        };
+      };
+    };
+  };
+};
 
 /* eslint-disable-next-line no-restricted-syntax */
 const { targetRoot } = findPaths(__dirname);
