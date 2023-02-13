@@ -597,7 +597,11 @@ If you also want to enable source maps when debugging tests, you can do so by se
 
 ### Debugging Jest Tests
 
-To configure the debugging of your tests in IntelliJ, you have to:
+For your productivity working with unit tests it's quite essential to have your debugging configured in IDE. It will help you to identify the root cause of the issue faster.
+
+Each of IDE has own way to set it up. We started with giving an example how to configure it in Intellij IDEA. In a near future we might also add the information for VS Code.
+
+#### Intellij IDEA
 
 1. Update Jest configuration template by:
 
