@@ -15,7 +15,6 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { OpenApiDefinition } from './OpenApiDefinition';
 
@@ -42,11 +41,8 @@ paths:
       <OpenApiDefinition definition={definition} />,
     );
 
-    // swagger-ui loads the documentation asynchronously
-    await waitFor(() => {
-      expect(getByText(/\/artists/i)).toBeInTheDocument();
-      expect(getByText(/List all artists/i)).toBeInTheDocument();
-    });
+    expect(getByText(/\/artists/i)).toBeInTheDocument();
+    expect(getByText(/List all artists/i)).toBeInTheDocument();
   });
 
   it('renders error if definition is missing', async () => {
