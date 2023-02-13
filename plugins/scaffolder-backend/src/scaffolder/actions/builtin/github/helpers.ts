@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { assertError, InputError } from '@backstage/errors';
+import { assertError, InputError, NotFoundError } from '@backstage/errors';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
@@ -370,7 +370,7 @@ async function validateAccessTeam(client: Octokit, access: string) {
     if (e.response.data.message === 'Not Found') {
       const message = `Received 'Not Found' from the API; one of org:
         ${org} or team: ${team_slug} was not found within GitHub.`;
-      throw new Error(message, { cause: e });
+      throw new NotFoundError(message);
     }
   }
 }
