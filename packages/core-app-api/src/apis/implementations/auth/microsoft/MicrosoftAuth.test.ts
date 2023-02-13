@@ -110,6 +110,17 @@ describe('MicrosoftAuth', () => {
         scp: 'openid profile email User.Read',
       });
     });
+
+    it('gets access token for other azure resources', async () => {
+      const accessToken = await microsoftAuth.getAccessToken(
+        'azure-resource/scope',
+      );
+
+      expect(accessToken).toHaveJWTClaims({
+        aud: 'azure-resource',
+        scp: 'scope',
+      });
+    });
   });
 
   describe('without a refresh token', () => {

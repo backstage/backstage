@@ -99,9 +99,12 @@ export class DefaultAuthConnector<AuthSession>
     return this.authRequester(options.scopes);
   }
 
-  async refreshSession(): Promise<any> {
+  async refreshSession(scopes?: Set<string>): Promise<any> {
     const res = await fetch(
-      await this.buildUrl('/refresh', { optional: true }),
+      await this.buildUrl('/refresh', {
+        optional: true,
+        ...(scopes && { scope: this.joinScopesFunc(scopes) }),
+      }),
       {
         headers: {
           'x-requested-with': 'XMLHttpRequest',
