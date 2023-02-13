@@ -6,6 +6,8 @@ sidebar_label: Migration Guide
 description: How to migrate existing backends to the new backend system
 ---
 
+> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+
 ## Overview
 
 This section describes how to migrate an existing Backstage backend service

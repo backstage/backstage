@@ -25,7 +25,7 @@ import { createCatalogPermissionRule } from './util';
  */
 export const isEntityKind = createCatalogPermissionRule({
   name: 'IS_ENTITY_KIND',
-  description: 'Allow entities with the specified kind',
+  description: 'Allow entities matching a specified kind',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
   paramsSchema: z.object({
     kinds: z

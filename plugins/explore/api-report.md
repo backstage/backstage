@@ -19,6 +19,7 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { TabProps } from '@material-ui/core';
 
 // @public @deprecated (undocumented)
@@ -126,7 +127,7 @@ export const ToolExplorerContent: (props: {
 
 // @public (undocumented)
 export const ToolSearchResultListItem: (
-  props: ToolSearchResultListItemProps,
+  props: SearchResultListItemExtensionProps<ToolSearchResultListItemProps>,
 ) => JSX.Element | null;
 
 // @public

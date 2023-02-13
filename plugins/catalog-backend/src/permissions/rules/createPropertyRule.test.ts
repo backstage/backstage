@@ -25,7 +25,7 @@ describe('createPropertyRule', () => {
 
   it('formats the rule description correctly', () => {
     expect(description).toBe(
-      'Allow entities which have the specified metadata subfield.',
+      'Allow entities with the specified metadata subfield',
     );
   });
 

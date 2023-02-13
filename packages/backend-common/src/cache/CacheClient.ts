@@ -15,50 +15,64 @@
  */
 
 import {
-  CacheClient,
-  CacheClientSetOptions,
+  CacheService,
+  CacheServiceOptions,
+  CacheServiceSetOptions,
 } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { createHash } from 'crypto';
 import Keyv from 'keyv';
 
-export type {
-  CacheClient,
-  CacheClientSetOptions,
-} from '@backstage/backend-plugin-api';
-
-type CacheClientArgs = {
-  client: Keyv;
-};
+export type CacheClientFactory = (options: CacheServiceOptions) => Keyv;
 
 /**
- * A basic, concrete implementation of the CacheClient, suitable for almost
+ * A basic, concrete implementation of the CacheService, suitable for almost
  * all uses in Backstage.
  */
-export class DefaultCacheClient implements CacheClient {
-  private readonly client: Keyv;
+export class DefaultCacheClient implements CacheService {
+  #client: Keyv;
+  #clientFactory: CacheClientFactory;
+  #options: CacheServiceOptions;
 
-  constructor({ client }: CacheClientArgs) {
-    this.client = client;
+  constructor(
+    client: Keyv,
+    clientFactory: CacheClientFactory,
+    options: CacheServiceOptions,
+  ) {
+    this.#client = client;
+    this.#clientFactory = clientFactory;
+    this.#options = options;
   }
 
-  async get(key: string): Promise<JsonValue | undefined> {
+  async get<TValue extends JsonValue>(
+    key: string,
+  ): Promise<TValue | undefined> {
     const k = this.getNormalizedKey(key);
-    return await this.client.get(k);
+    const value = await this.#client.get(k);
+    return value as TValue | undefined;
   }
 
   async set(
     key: string,
     value: JsonValue,
-    opts: CacheClientSetOptions = {},
+    opts: CacheServiceSetOptions = {},
   ): Promise<void> {
     const k = this.getNormalizedKey(key);
-    await this.client.set(k, value, opts.ttl);
+    await this.#client.set(k, value, opts.ttl);
   }
 
   async delete(key: string): Promise<void> {
     const k = this.getNormalizedKey(key);
-    await this.client.delete(k);
+    await this.#client.delete(k);
+  }
+
+  withOptions(options: CacheServiceOptions): CacheService {
+    const newOptions = { ...this.#options, ...options };
+    return new DefaultCacheClient(
+      this.#clientFactory(newOptions),
+      this.#clientFactory,
+      newOptions,
+    );
   }
 
   /**

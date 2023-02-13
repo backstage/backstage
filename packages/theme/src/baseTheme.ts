@@ -159,7 +159,7 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
       head: {
         wordBreak: 'break-word',
         overflow: 'hidden',
-        color: 'rgb(179, 179, 179)',
+        color: theme.palette.textSubtle,
         fontWeight: 'normal',
         lineHeight: '1',
       },

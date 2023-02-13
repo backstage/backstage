@@ -33,7 +33,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
 
-import { Box, List, ListProps } from '@material-ui/core';
+import { ListItem, List, ListProps, ListItemProps } from '@material-ui/core';
 
 import { DefaultResultListItem } from './components';
 
@@ -73,26 +73,34 @@ const findSearchResultListItemExtensionElement = (
 };
 
 /**
- * @internal
- * Props for {@link SearchResultListItemExtension}.
+ * @public
+ * Extends props for any search result list item extension
  */
-type SearchResultListItemExtensionProps = PropsWithChildren<{
-  rank?: number;
-  result?: SearchDocument;
-  noTrack?: boolean;
-}>;
+export type SearchResultListItemExtensionProps<Props extends {} = {}> = Props &
+  PropsWithChildren<
+    {
+      rank?: number;
+      result?: SearchDocument;
+      noTrack?: boolean;
+    } & Omit<ListItemProps, 'button'>
+  >;
 
 /**
  * @internal
  * Extends children with extension capabilities.
  * @param props - see {@link SearchResultListItemExtensionProps}.
  */
-const SearchResultListItemExtension = ({
-  rank,
-  result,
-  noTrack,
-  children,
-}: SearchResultListItemExtensionProps) => {
+const SearchResultListItemExtension = (
+  props: SearchResultListItemExtensionProps,
+) => {
+  const {
+    rank,
+    result,
+    noTrack,
+    children,
+    alignItems = 'flex-start',
+    ...rest
+  } = props;
   const analytics = useAnalytics();
 
   const handleClickCapture = useCallback(() => {
@@ -105,9 +113,14 @@ const SearchResultListItemExtension = ({
   }, [rank, result, noTrack, analytics]);
 
   return (
-    <Box role="button" tabIndex={0} onClickCapture={handleClickCapture}>
+    <ListItem
+      divider
+      alignItems={alignItems}
+      onClickCapture={handleClickCapture}
+      {...rest}
+    >
       {children}
-    </Box>
+    </ListItem>
   );
 };
 

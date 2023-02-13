@@ -26,6 +26,9 @@ The source code is available here:
       git checkout master -- plugins/example-todo-list/
       git checkout master -- plugins/example-todo-list-backend/
       git checkout master -- plugins/example-todo-list-common/
+      sed -i '' 's/workspace:\^/\*/g' plugins/example-todo-list/package.json
+      sed -i '' 's/workspace:\^/\*/g' plugins/example-todo-list-backend/package.json
+      sed -i '' 's/workspace:\^/\*/g' plugins/example-todo-list-common/package.json
       for file in plugins/*; do mv "$file" "$OLDPWD/${file/example-todo/todo}"; done
       cd -
     ```
@@ -37,15 +40,15 @@ The source code is available here:
 2.  Add these packages as dependencies for your Backstage app:
 
     ```
-    $ yarn workspace backend add @internal/plugin-todo-list-backend@^1.0.0 @internal/plugin-todo-list-common@^1.0.0
-    $ yarn workspace app add @internal/plugin-todo-list@^1.0.0
+    $ yarn workspace backend add @internal/plugin-todo-list-backend @internal/plugin-todo-list-common
+    $ yarn workspace app add @internal/plugin-todo-list
     ```
 
 3.  Include the backend and frontend plugin in your application:
 
     Create a new `packages/backend/src/plugins/todolist.ts` with the following content:
 
-    ```javascript
+    ```typescript
     import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
     import { createRouter } from '@internal/plugin-todo-list-backend';
     import { Router } from 'express';

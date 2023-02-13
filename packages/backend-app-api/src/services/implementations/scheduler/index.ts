@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { schedulerFactory } from './schedulerFactory';
+export { schedulerServiceFactory } from './schedulerServiceFactory';

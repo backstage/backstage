@@ -19,9 +19,9 @@ import { Config } from '@backstage/config';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import AWS, { Credentials, Organizations } from 'aws-sdk';
 import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
 import { Logger } from 'winston';

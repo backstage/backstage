@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.0-next.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+
+## 0.1.2-next.1
+
+### Patch Changes
+
+- da418c89e4: Fix broken module exports and dependencies to match a backend module, rather than a frontend plugin.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-scaffolder-node@0.1.0-next.1
+
 ## 0.1.2-next.0
 
 ### Patch Changes

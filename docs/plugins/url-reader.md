@@ -40,7 +40,7 @@ i.e.`packages/backend/src/index.ts`.
 ```ts
 // File: packages/backend/src/index.ts
 
-import { URLReaders } from '@backstage/backend-common';
+import { UrlReaders } from '@backstage/backend-common';
 
 function makeCreateEnv(config: Config) {
   // ....

@@ -6,6 +6,8 @@ sidebar_label: System Architecture
 description: The structure and architecture of the new Backend System and its component parts
 ---
 
+> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+
 ## Building Blocks
 
 This section introduces the high-level building blocks upon which this new

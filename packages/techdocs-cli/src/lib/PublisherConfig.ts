@@ -17,7 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import { OptionValues } from 'commander';
 
-type Publisher = keyof typeof PublisherConfig['configFactories'];
+type Publisher = keyof (typeof PublisherConfig)['configFactories'];
 type PublisherConfiguration = {
   [p in Publisher]?: any;
 } & {
@@ -73,7 +73,7 @@ export class PublisherConfig {
    */
   private static isKnownPublisher(
     type: string,
-  ): type is keyof typeof PublisherConfig['configFactories'] {
+  ): type is keyof (typeof PublisherConfig)['configFactories'] {
     return PublisherConfig.configFactories.hasOwnProperty(type);
   }
 

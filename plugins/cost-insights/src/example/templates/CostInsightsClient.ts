@@ -22,7 +22,7 @@
 
 // IMPORTANT: Remove the lines below to enable type checking and linting
 // @ts-nocheck
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 import {
   CostInsightsApi,

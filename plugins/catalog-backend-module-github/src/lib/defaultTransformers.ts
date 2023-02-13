@@ -16,6 +16,10 @@
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { graphql } from '@octokit/graphql';
+import {
+  ANNOTATION_GITHUB_TEAM_SLUG,
+  ANNOTATION_GITHUB_USER_LOGIN,
+} from './annotation';
 import { GithubTeam, GithubUser } from './github';
 
 /**
@@ -63,7 +67,7 @@ export const defaultUserTransformer: UserTransformer = async (
     metadata: {
       name: item.login,
       annotations: {
-        'github.com/user-login': item.login,
+        [ANNOTATION_GITHUB_USER_LOGIN]: item.login,
       },
     },
     spec: {
@@ -87,7 +91,7 @@ export const defaultUserTransformer: UserTransformer = async (
 export const defaultOrganizationTeamTransformer: TeamTransformer =
   async team => {
     const annotations: { [annotationName: string]: string } = {
-      'github.com/team-slug': team.combinedSlug,
+      [ANNOTATION_GITHUB_TEAM_SLUG]: team.combinedSlug,
     };
 
     if (team.editTeamUrl) {

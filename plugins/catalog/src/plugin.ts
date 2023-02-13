@@ -31,7 +31,10 @@ import {
   fetchApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
+import {
+  createSearchResultListItemExtension,
+  SearchResultListItemExtensionProps,
+} from '@backstage/plugin-search-react';
 import { DefaultStarredEntitiesApi } from './apis';
 import { AboutCardProps } from './components/AboutCard';
 import { DefaultCatalogPageProps } from './components/CatalogPage';
@@ -254,7 +257,7 @@ export const RelatedEntitiesCard: <T extends Entity>(
 
 /** @public */
 export const CatalogSearchResultListItem: (
-  props: CatalogSearchResultListItemProps,
+  props: SearchResultListItemExtensionProps<CatalogSearchResultListItemProps>,
 ) => JSX.Element | null = catalogPlugin.provide(
   createSearchResultListItemExtension({
     name: 'CatalogSearchResultListItem',

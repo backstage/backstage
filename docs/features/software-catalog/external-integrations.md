@@ -89,23 +89,23 @@ export class FrobsProvider implements EntityProvider {
   private readonly reader: UrlReader;
   private connection?: EntityProviderConnection;
 
-  /** [1] **/
+  /** [1] */
   constructor(env: string, reader: UrlReader) {
     this.env = env;
     this.reader = reader;
   }
 
-  /** [2] **/
+  /** [2] */
   getProviderName(): string {
     return `frobs-${this.env}`;
   }
 
-  /** [3] **/
+  /** [3] */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
   }
 
-  /** [4] **/
+  /** [4] */
   async run(): Promise<void> {
     if (!this.connection) {
       throw new Error('Not initialized');
@@ -116,10 +116,10 @@ export class FrobsProvider implements EntityProvider {
     );
     const data = JSON.parse(await response.buffer()).toString();
 
-    /** [5] **/
+    /** [5] */
     const entities: Entity[] = frobsToEntities(data);
 
-    /** [6] **/
+    /** [6] */
     await this.connection.applyMutation({
       type: 'full',
       entities: entities.map(entity => ({

@@ -159,7 +159,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     appendDeps(pkg);
   }
 
-  // eslint-disable-next-line import/no-extraneous-dependencies
+  // eslint-disable-next-line @backstage/no-forbidden-package-imports
   appendDeps(require('@backstage/create-app/package.json'));
 
   print(`Preparing workspace`);

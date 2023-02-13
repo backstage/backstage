@@ -1,5 +1,42 @@
 # @backstage/backend-plugin-api
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- e716946103: **BREAKING**: Split out the hook for both lifecycle services so that the first parameter of `addShutdownHook` is the hook function, and the second is the options.
+- 0ff03319be: **BREAKING**: The plugin ID option passed to `createBackendPlugin` is now `pluginId`, rather than just `id`. This is to make it match `createBackendModule` more closely.
+- 71a5ec0f06: **BREAKING**: Switched out `LogMeta` type for `JsonObject`.
+- 610d65e143: Switched `BackendFeature` to be an opaque type.
+
+### Patch Changes
+
+- 9c9456fd33: Removed the unused `TypesToServiceRef` type
+- 181c03edb5: Aligned opaque type markers to all use a `$type` property with namespacing.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- ae88f61e00: The `register` methods passed to `createBackendPlugin` and `createBackendModule`
+  now have dedicated `BackendPluginRegistrationPoints` and
+  `BackendModuleRegistrationPoints` arguments, respectively. This lets us make it
+  clear on a type level that it's not possible to pass in extension points as
+  dependencies to plugins (should only ever be done for modules). This has no
+  practical effect on code that was already well behaved.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.3.2-next.0
 
 ### Patch Changes

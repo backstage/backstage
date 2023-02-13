@@ -94,6 +94,13 @@ This section describes guidelines for designing public APIs. It can also be appl
        /* ... */
      }
 
+     // In order to make a private constructor available for testing you can use a
+     // static factory marked as `@internal`, which will not show up in the public API.
+     /** @internal */
+     static forTesting(internalOptions?: { ... }) {
+       return new DefaultImageLoader(internalOptions);
+     }
+
      private constructor(/* ... */) {
        /* ... */
      }

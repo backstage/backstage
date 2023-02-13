@@ -19,6 +19,7 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
@@ -400,7 +401,7 @@ export type TechDocsSearchProps = {
 
 // @public
 export const TechDocsSearchResultListItem: (
-  props: TechDocsSearchResultListItemProps,
+  props: SearchResultListItemExtensionProps<TechDocsSearchResultListItemProps>,
 ) => JSX.Element | null;
 
 // @public
