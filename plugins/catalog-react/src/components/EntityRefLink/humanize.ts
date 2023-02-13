@@ -68,9 +68,15 @@ export function humanizeEntityRef(
 }
 
 /**
- * Convert an entity to its more common name.
+ * Convert an entity to its more readable name if available.
+ *
+ * If an entity is either User or Group, this will be its `spec.profile.displayName`.
+ * Otherwise, this is `metadata.title`.
+ *
+ * If neither of those are found or populated, fallback to `humanizeEntityRef`.
  *
  * @param entity Entity to convert.
+ * @param opts If entity readable name is not available, opts will be used to specify humanizeEntityRef options.
  * @returns Readable name, defaults to unique identifier.
  */
 export function humanizeEntity(
