@@ -1,0 +1,27 @@
+{
+  "name": "@backstage/admin-web",
+  "version": "0.0.0",
+  "private": true,
+  "backstage": {
+    "role": "frontend"
+  },
+  "main": "src/index.tsx",
+  "bundled": true,
+  "dependencies": {
+    "@backstage/cli": "workspace:^",
+    "@material-ui/core": "^4.12.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "*",
+    "@types/react-dom": "*"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "test": "backstage-cli package test",
+    "lint": "backstage-cli package lint"
+  }
+}

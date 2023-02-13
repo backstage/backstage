@@ -15,6 +15,7 @@ yarn.lock                                           @backstage/maintainers @back
 /docs/plugins/integrating-search-into-plugins.md    @backstage/techdocs-core
 /packages/techdocs-cli                              @backstage/techdocs-core
 /packages/techdocs-cli-embedded-app                 @backstage/techdocs-core
+/packages/admin-web                                 @backstage/sharks
 /plugins/adr                                        @backstage/maintainers @kuangp
 /plugins/adr-*                                      @backstage/maintainers @kuangp
 /plugins/allure                                     @backstage/maintainers @deepak-bhardwaj-ps

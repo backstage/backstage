@@ -1,3 +1,3 @@
-# example-app
+# admin-web
 
-This package is an example of a Backstage application.
+This package is an admin tool for Growth of adoption.
