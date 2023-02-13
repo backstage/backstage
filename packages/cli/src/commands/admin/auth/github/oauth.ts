@@ -18,6 +18,7 @@ import { OAuthApp } from '@octokit/oauth-app';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Task } from '../../../../lib/tasks';
+import { updateConfigFile, updateEnvFile } from '../file';
 
 const validateCredentials = async (clientId: string, clientSecret: string) => {
   try {
@@ -44,7 +45,7 @@ const validateCredentials = async (clientId: string, clientSecret: string) => {
   }
 };
 
-export const oauth = async (useEnvForSecrets?: boolean) => {
+export const oauth = async (useEnvForSecrets: boolean) => {
   Task.log(`
     To add GitHub authentication, you must create an OAuth App from the GitHub developer settings: ${chalk.blue(
       'https://github.com/settings/developers',
@@ -94,23 +95,26 @@ export const oauth = async (useEnvForSecrets?: boolean) => {
 
   await validateCredentials(answers.clientId, answers.clientSecret);
 
-  return {
-    auth: {
-      providers: {
-        github: {
-          development: {
-            clientId: useEnvForSecrets
-              ? '${AUTH_GITHUB_CLIENT_ID}'
-              : answers.clientId,
-            clientSecret: useEnvForSecrets
-              ? '${AUTH_GITHUB_CLIENT_SECRET}'
-              : answers.clientSecret,
-            ...(answers.hasGithubEnterprise && {
-              enterpriseInstanceUrl: answers.enterpriseInstanceUrl,
-            }),
-          },
+  const auth = {
+    providers: {
+      github: {
+        development: {
+          clientId: useEnvForSecrets
+            ? '${AUTH_GITHUB_CLIENT_ID}'
+            : answers.clientId,
+          clientSecret: useEnvForSecrets
+            ? '${AUTH_GITHUB_CLIENT_SECRET}'
+            : answers.clientSecret,
+          ...(answers.hasGithubEnterprise && {
+            enterpriseInstanceUrl: answers.enterpriseInstanceUrl,
+          }),
         },
       },
     },
   };
+
+  await updateConfigFile({ auth });
+  if (useEnvForSecrets) {
+    await updateEnvFile(answers.clientId, answers.clientSecret);
+  }
 };

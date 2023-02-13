@@ -15,7 +15,6 @@
  */
 
 import inquirer from 'inquirer';
-import { GithubAuthConfig, updateConfigFile, updateEnvFile } from '../file';
 import { app } from './app';
 import { oauth } from './oauth';
 
@@ -42,20 +41,12 @@ export const github = async () => {
 
   switch (type) {
     case 'GitHub OAuth': {
-      const config: GithubAuthConfig = await oauth(useEnvForSecrets);
-      await updateConfigFile(config);
-      if (useEnvForSecrets) {
-        await updateEnvFile(config);
-      }
+      await oauth(useEnvForSecrets);
       break;
     }
     case 'GitHub App': {
-      const { auth }: GithubAuthConfig = await app();
       // TODO(tudi2d): Also change integrations
-      await updateConfigFile({ auth });
-      if (useEnvForSecrets) {
-        await updateEnvFile({ auth });
-      }
+      await app(useEnvForSecrets);
       break;
     }
     default:

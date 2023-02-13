@@ -16,9 +16,10 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { adminCli } from '../../../create-github-app';
+import { updateConfigFile, updateEnvFile } from '../file';
 
 // TODO(tudi2d): Wrapper for admin CLI around `create-github-app` - potentially to be removed
-export const app = async () => {
+export const app = async (useEnvForSecrets: boolean) => {
   // TODO(tudi2d): Make the GitHub Org optional
   const input = await inquirer.prompt<{ org: string }>([
     {
@@ -27,5 +28,14 @@ export const app = async () => {
       message: chalk.blue('Enter a GitHub Org [required]'),
     },
   ]);
-  return await adminCli(input.org);
+
+  const { auth } = await adminCli(input.org);
+
+  await updateConfigFile({ auth });
+  if (useEnvForSecrets) {
+    await updateEnvFile(
+      auth.providers.github.development.clientId,
+      auth.providers.github.development.clientSecret,
+    );
+  }
 };
