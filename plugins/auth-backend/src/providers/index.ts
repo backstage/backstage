@@ -19,6 +19,7 @@ export type {
   BitbucketOAuthResult,
   BitbucketPassportProfile,
 } from './bitbucket';
+export type { BitbucketServerOAuthResult } from './bitbucketServer';
 export type {
   CloudflareAccessClaims,
   CloudflareAccessGroup,

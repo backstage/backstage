@@ -132,6 +132,19 @@ export type BitbucketPassportProfile = Profile & {
   };
 };
 
+// @public (undocumented)
+export type BitbucketServerOAuthResult = {
+  fullProfile: Profile;
+  params: {
+    scope: string;
+    access_token?: string;
+    token_type?: string;
+    expires_in?: number;
+  };
+  accessToken: string;
+  refreshToken?: string;
+};
+
 // @public
 export class CatalogIdentityClient {
   constructor(options: { catalogApi: CatalogApi; tokenManager: TokenManager });
@@ -478,6 +491,23 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       usernameMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
       userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
+    }>;
+  }>;
+  bitbucketServer: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<BitbucketServerOAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<BitbucketServerOAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: Readonly<{
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<BitbucketServerOAuthResult>;
     }>;
   }>;
   cfAccess: Readonly<{
