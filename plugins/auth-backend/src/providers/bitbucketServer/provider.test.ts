@@ -26,8 +26,6 @@ import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 
-global.fetch = require('node-fetch');
-
 jest.mock('../../lib/passport/PassportStrategyHelper', () => {
   return {
     ...jest.requireActual('../../lib/passport/PassportStrategyHelper'),
