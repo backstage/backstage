@@ -73,7 +73,9 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
       }
 
       try {
-        const refreshedSession = await this.collapsedSessionRefresh();
+        const refreshedSession = await this.collapsedSessionRefresh(
+          options.scopes,
+        );
         const currentScopes = this.sessionScopesFunc(this.currentSession!);
         const refreshedScopes = this.sessionScopesFunc(refreshedSession);
         if (hasScopes(refreshedScopes, currentScopes)) {
@@ -97,7 +99,7 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     // already had an existing session.
     if (!this.currentSession && !options.instantPopup) {
       try {
-        const newSession = await this.collapsedSessionRefresh();
+        const newSession = await this.collapsedSessionRefresh(options.scopes);
         this.currentSession = newSession;
         // The session might not have the scopes requested so go back and check again
         return this.getSession(options);
@@ -130,12 +132,12 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     return this.stateTracker.sessionState$();
   }
 
-  private async collapsedSessionRefresh(): Promise<T> {
+  private async collapsedSessionRefresh(scopes?: Set<string>): Promise<T> {
     if (this.refreshPromise) {
       return this.refreshPromise;
     }
 
-    this.refreshPromise = this.connector.refreshSession();
+    this.refreshPromise = this.connector.refreshSession(scopes);
 
     try {
       const session = await this.refreshPromise;

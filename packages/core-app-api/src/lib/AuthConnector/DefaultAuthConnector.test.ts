@@ -59,22 +59,22 @@ describe('DefaultAuthConnector', () => {
     jest.resetAllMocks();
   });
 
-  it('should refresh a session', async () => {
+  it('should refresh a session with scope', async () => {
     server.use(
-      rest.get('*', (_req, res, ctx) =>
+      rest.get('*', (req, res, ctx) =>
         res(
           ctx.json({
             idToken: 'mock-id-token',
             accessToken: 'mock-access-token',
-            scopes: 'a b c',
+            scopes: req.url.searchParams.get('scope') || 'default-scope',
             expiresInSeconds: '60',
           }),
         ),
       ),
     );
 
-    const helper = new DefaultAuthConnector<any>(defaultOptions);
-    const session = await helper.refreshSession();
+    const connector = new DefaultAuthConnector<any>(defaultOptions);
+    const session = await connector.refreshSession(new Set(['a', 'b', 'c']));
     expect(session.idToken).toBe('mock-id-token');
     expect(session.accessToken).toBe('mock-access-token');
     expect(session.scopes).toEqual(new Set(['a', 'b', 'c']));
@@ -89,8 +89,8 @@ describe('DefaultAuthConnector', () => {
       ),
     );
 
-    const helper = new DefaultAuthConnector(defaultOptions);
-    await expect(helper.refreshSession()).rejects.toThrow(
+    const connector = new DefaultAuthConnector(defaultOptions);
+    await expect(connector.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, Error: Network NOPE',
     );
   });
@@ -98,19 +98,19 @@ describe('DefaultAuthConnector', () => {
   it('should handle failure response when refreshing session', async () => {
     server.use(rest.get('*', (_req, res, ctx) => res(ctx.status(401, 'NOPE'))));
 
-    const helper = new DefaultAuthConnector(defaultOptions);
-    await expect(helper.refreshSession()).rejects.toThrow(
+    const connector = new DefaultAuthConnector(defaultOptions);
+    await expect(connector.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, NOPE',
     );
   });
 
   it('should fail if popup was rejected', async () => {
     const mockOauth = new MockOAuthApi();
-    const helper = new DefaultAuthConnector({
+    const connector = new DefaultAuthConnector({
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });
-    const promise = helper.createSession({ scopes: new Set(['a', 'b']) });
+    const promise = connector.createSession({ scopes: new Set(['a', 'b']) });
     await mockOauth.rejectAll();
     await expect(promise).rejects.toMatchObject({ name: 'RejectedError' });
   });
@@ -125,12 +125,12 @@ describe('DefaultAuthConnector', () => {
         scopes: 'a b',
         expiresInSeconds: 3600,
       });
-    const helper = new DefaultAuthConnector({
+    const connector = new DefaultAuthConnector({
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });
 
-    const sessionPromise = helper.createSession({
+    const sessionPromise = connector.createSession({
       scopes: new Set(['a', 'b']),
     });
 
@@ -153,13 +153,13 @@ describe('DefaultAuthConnector', () => {
     const popupSpy = jest
       .spyOn(loginPopup, 'showLoginPopup')
       .mockResolvedValue('my-session');
-    const helper = new DefaultAuthConnector({
+    const connector = new DefaultAuthConnector({
       ...defaultOptions,
       oauthRequestApi: new MockOAuthApi(),
       sessionTransform: str => str,
     });
 
-    const sessionPromise = helper.createSession({
+    const sessionPromise = connector.createSession({
       scopes: new Set(),
       instantPopup: true,
     });
@@ -174,13 +174,13 @@ describe('DefaultAuthConnector', () => {
     const popupSpy = jest
       .spyOn(loginPopup, 'showLoginPopup')
       .mockResolvedValue({ scopes: '' });
-    const helper = new DefaultAuthConnector({
+    const connector = new DefaultAuthConnector({
       ...defaultOptions,
       joinScopes: scopes => `-${[...scopes].join('')}-`,
       oauthRequestApi: mockOauth,
     });
 
-    helper.createSession({ scopes: new Set(['a', 'b']) });
+    connector.createSession({ scopes: new Set(['a', 'b']) });
 
     await mockOauth.triggerAll();
 

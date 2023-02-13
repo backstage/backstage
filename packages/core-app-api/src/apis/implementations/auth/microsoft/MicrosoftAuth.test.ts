@@ -34,59 +34,20 @@ describe('MicrosoftAuth', () => {
     ),
   });
 
-  const toHaveJWTClaims = function toHaveJWTClaims(
-    this: jest.MatcherContext,
-    received: string,
-    expected: Record<string, any>,
-  ): jest.CustomMatcherResult {
-    let parsedClaims: Record<string, any>;
-    try {
-      parsedClaims = JSON.parse(
-        Buffer.from(received.split('.')[1], 'base64').toString(),
-      );
-    } catch (e) {
-      return {
-        pass: false,
-        message: () =>
-          `Expected JWT with claims: ${this.utils.printExpected(
-            expected,
-          )}\nReceived invalid JWT ${this.utils.printReceived(
-            received,
-          )}\nError: ${e}`,
-      };
-    }
-    const expectedResult = expect.objectContaining(expected);
-    return {
-      pass: this.equals(parsedClaims, expectedResult),
-      message: () =>
-        `Expected JWT with claims: ${this.utils.printExpected(
-          expected,
-        )}\nReceived JWT with claims: ${this.utils.printReceived(
-          parsedClaims,
-        )}\n\n${this.utils.diff(expectedResult, parsedClaims)}`,
-    };
-  };
-  expect.extend({ toHaveJWTClaims });
-
   describe('with a refresh token', () => {
     beforeEach(() => {
       server.use(
         rest.get(
           'http://backstage.test/api/auth/microsoft/refresh',
-          (req, res, ctx) => {
-            const scope =
-              req.url.searchParams.get('scope') ||
-              'openid profile email User.Read';
+          async (req, res, ctx) => {
+            const scopeParam = req.url.searchParams.get('scope');
             return res(
               ctx.json({
                 providerInfo: {
-                  accessToken: `header.${Buffer.from(
-                    JSON.stringify({
-                      aud: '00000003-0000-0000-c000-000000000000',
-                      scp: 'openid profile email User.Read',
-                    }),
-                  ).toString('base64')}.signature`,
-                  scope,
+                  accessToken: scopeParam
+                    ? 'tokenForOtherResource'
+                    : 'tokenForGrantScopes',
+                  scope: scopeParam || 'grant-resource/scope',
                 },
               }),
             );
@@ -95,13 +56,18 @@ describe('MicrosoftAuth', () => {
       );
     });
 
-    it('gets access token for Microsoft Graph', async () => {
+    it('gets access token with requested scopes for grant', async () => {
       const accessToken = await microsoftAuth.getAccessToken();
 
-      expect(accessToken).toHaveJWTClaims({
-        aud: '00000003-0000-0000-c000-000000000000',
-        scp: 'openid profile email User.Read',
-      });
+      expect(accessToken).toEqual('tokenForGrantScopes');
+    });
+
+    it('gets access token for other consented scopes besides those directly granted', async () => {
+      const accessToken = await microsoftAuth.getAccessToken(
+        'azure-resource/scope',
+      );
+
+      expect(accessToken).toEqual('tokenForOtherResource');
     });
   });
 
