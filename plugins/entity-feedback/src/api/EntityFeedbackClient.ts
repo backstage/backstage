@@ -18,8 +18,8 @@ import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import {
   EntityRatingsData,
+  FeedbackResponse,
   Rating,
-  Response,
 } from '@backstage/plugin-entity-feedback-common';
 
 import { EntityFeedbackApi } from './EntityFeedbackApi';
@@ -99,7 +99,7 @@ export class EntityFeedbackClient implements EntityFeedbackApi {
 
   async recordResponse(
     entityRef: string,
-    response: Omit<Response, 'entityRef' | 'userRef'>,
+    response: Omit<FeedbackResponse, 'entityRef' | 'userRef'>,
   ) {
     const baseUrl = await this.discoveryApi.getBaseUrl('entity-feedback');
     const resp = await this.fetchApi.fetch(
@@ -118,7 +118,7 @@ export class EntityFeedbackClient implements EntityFeedbackApi {
 
   async getResponses(
     entityRef: string,
-  ): Promise<Omit<Response, 'entityRef'>[]> {
+  ): Promise<Omit<FeedbackResponse, 'entityRef'>[]> {
     const baseUrl = await this.discoveryApi.getBaseUrl('entity-feedback');
     const resp = await this.fetchApi.fetch(
       `${baseUrl}/responses/${encodeURIComponent(entityRef)}`,

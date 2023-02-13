@@ -16,17 +16,7 @@ export interface EntityRatingsData {
 }
 
 // @public (undocumented)
-export interface Rating {
-  // (undocumented)
-  entityRef: string;
-  // (undocumented)
-  rating: string;
-  // (undocumented)
-  userRef: string;
-}
-
-// @public (undocumented)
-interface Response_2 {
+export interface FeedbackResponse {
   // (undocumented)
   comments?: string;
   // (undocumented)
@@ -38,5 +28,14 @@ interface Response_2 {
   // (undocumented)
   userRef: string;
 }
-export { Response_2 as Response };
+
+// @public (undocumented)
+export interface Rating {
+  // (undocumented)
+  entityRef: string;
+  // (undocumented)
+  rating: string;
+  // (undocumented)
+  userRef: string;
+}
 ```

@@ -15,7 +15,10 @@
  */
 
 import { resolvePackagePath } from '@backstage/backend-common';
-import { Rating, Response } from '@backstage/plugin-entity-feedback-common';
+import {
+  FeedbackResponse,
+  Rating,
+} from '@backstage/plugin-entity-feedback-common';
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
@@ -119,7 +122,7 @@ export class DatabaseHandler {
     ).map(rating => ({ userRef: rating.user_ref, rating: rating.rating }));
   }
 
-  async recordResponse(response: Response) {
+  async recordResponse(response: FeedbackResponse) {
     await this.database('responses').insert({
       entity_ref: response.entityRef,
       response: response.response,
@@ -131,7 +134,7 @@ export class DatabaseHandler {
 
   async getResponses(
     entityRef: string,
-  ): Promise<Omit<Response, 'entityRef'>[]> {
+  ): Promise<Omit<FeedbackResponse, 'entityRef'>[]> {
     return (
       await this.database('responses')
         .where('entity_ref', entityRef)

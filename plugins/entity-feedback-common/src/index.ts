@@ -32,7 +32,7 @@ export interface Rating {
 /**
  * @public
  */
-export interface Response {
+export interface FeedbackResponse {
   entityRef: string;
   response?: string;
   comments?: string;
