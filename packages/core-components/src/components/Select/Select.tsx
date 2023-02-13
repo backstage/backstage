@@ -29,7 +29,6 @@ import {
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
 
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
@@ -169,10 +168,10 @@ export function SelectComponent(props: SelectProps) {
   }, [triggerReset, multiple]);
 
   useEffect(() => {
-    if (selected !== undefined && selected !== value) {
+    if (selected !== undefined) {
       setValue(selected);
     }
-  }, [value, selected]);
+  }, [selected]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>): void => {
     setValue(event.target.value as SelectedItems);
@@ -199,7 +198,7 @@ export function SelectComponent(props: SelectProps) {
   };
 
   const renderValueDefault = (selectedValues: unknown): React.ReactNode => {
-    if (multiple && !_.isEmpty(value)) {
+    if (multiple && (value as any[]).length !== 0) {
       return (
         <Box className={classes.chips}>
           {(selectedValues as string[]).map(selectedValue => (
@@ -217,7 +216,7 @@ export function SelectComponent(props: SelectProps) {
 
     return (
       <Typography>
-        {_.isEmpty(value)
+        {(value as any[]).length === 0
           ? placeholder || ''
           : items.find(el => el.value === selectedValues)?.label}
       </Typography>
@@ -262,7 +261,7 @@ export function SelectComponent(props: SelectProps) {
       )}
       <Select
         className={classnames({
-          selected: !_.isEmpty(value),
+          selected: (value as any[]).length !== 0,
         })}
         aria-label={label}
         value={value}

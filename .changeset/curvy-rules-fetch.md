@@ -2,7 +2,7 @@
 '@backstage/core-components': minor
 ---
 
-Updated Select core component to be more customizable and general so more re-use cases will appear.
+Updated Select core component to be more customizable and general so more re-use cases will appear
 
 **BREAKING CHANGES**
 

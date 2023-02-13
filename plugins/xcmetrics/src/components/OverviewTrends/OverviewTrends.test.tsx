@@ -53,8 +53,9 @@ describe('OverviewTrends', () => {
       </TestApiProvider>,
     );
 
-    await userEvent.click(rendered.getByText('14 days'));
-    await userEvent.click(await rendered.findByText('30 days'));
+    await userEvent.click(rendered.getByTestId('select'));
+    await userEvent.click(rendered.getByText('30 days'));
+
     expect(await rendered.findByText('30 days')).toBeInTheDocument();
   });
 
