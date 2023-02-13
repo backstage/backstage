@@ -25,6 +25,9 @@ export type OpenApiDefinitionProps = {
 
 export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
   const theme: BackstageTheme = useTheme();
+  if (!definition || definition.trim().length === 0) {
+    return <div>No API definition provided</div>;
+  }
   return (
     <div>
       <openapi-explorer
