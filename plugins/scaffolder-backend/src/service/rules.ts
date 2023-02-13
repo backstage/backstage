@@ -41,4 +41,4 @@ export const hasTag = createScaffolderPermissionRule({
   toQuery: () => ({}),
 });
 
-export const scaffolderStepRules = { hasTag };
+export const scaffolderTemplateRules = { hasTag };

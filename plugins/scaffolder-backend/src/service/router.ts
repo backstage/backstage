@@ -58,9 +58,9 @@ import {
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createIsAuthorized } from '@backstage/plugin-permission-node';
-import { scaffolderStepRules } from './rules';
+import { scaffolderTemplateRules } from './rules';
 
-const isAuthorized = createIsAuthorized(Object.values(scaffolderStepRules));
+const isAuthorized = createIsAuthorized(Object.values(scaffolderTemplateRules));
 
 /**
  * RouterOptions

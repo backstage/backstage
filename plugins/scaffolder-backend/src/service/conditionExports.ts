@@ -16,12 +16,12 @@
 
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { scaffolderStepRules } from './rules';
+import { scaffolderTemplateRules } from './rules';
 
 const { conditions, createConditionalDecision } = createConditionExports({
   pluginId: 'scaffolder',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  rules: scaffolderStepRules,
+  rules: scaffolderTemplateRules,
 });
 
 /**
