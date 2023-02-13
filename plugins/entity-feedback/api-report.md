@@ -10,10 +10,10 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityRatingsData } from '@backstage/plugin-entity-feedback-common';
+import { FeedbackResponse } from '@backstage/plugin-entity-feedback-common';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { Rating } from '@backstage/plugin-entity-feedback-common';
 import { ReactNode } from 'react';
-import { Response as Response_2 } from '@backstage/plugin-entity-feedback-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -25,13 +25,15 @@ export interface EntityFeedbackApi {
   // (undocumented)
   getRatings(entityRef: string): Promise<Omit<Rating, 'entityRef'>[]>;
   // (undocumented)
-  getResponses(entityRef: string): Promise<Omit<Response_2, 'entityRef'>[]>;
+  getResponses(
+    entityRef: string,
+  ): Promise<Omit<FeedbackResponse, 'entityRef'>[]>;
   // (undocumented)
   recordRating(entityRef: string, rating: string): Promise<void>;
   // (undocumented)
   recordResponse(
     entityRef: string,
-    response: Omit<Response_2, 'entityRef' | 'userRef'>,
+    response: Omit<FeedbackResponse, 'entityRef' | 'userRef'>,
   ): Promise<void>;
 }
 
@@ -48,13 +50,15 @@ export class EntityFeedbackClient implements EntityFeedbackApi {
   // (undocumented)
   getRatings(entityRef: string): Promise<Omit<Rating, 'entityRef'>[]>;
   // (undocumented)
-  getResponses(entityRef: string): Promise<Omit<Response_2, 'entityRef'>[]>;
+  getResponses(
+    entityRef: string,
+  ): Promise<Omit<FeedbackResponse, 'entityRef'>[]>;
   // (undocumented)
   recordRating(entityRef: string, rating: string): Promise<void>;
   // (undocumented)
   recordResponse(
     entityRef: string,
-    response: Omit<Response_2, 'entityRef' | 'userRef'>,
+    response: Omit<FeedbackResponse, 'entityRef' | 'userRef'>,
   ): Promise<void>;
 }
 

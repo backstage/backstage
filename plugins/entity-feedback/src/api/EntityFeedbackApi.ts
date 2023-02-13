@@ -17,8 +17,8 @@
 import { createApiRef } from '@backstage/core-plugin-api';
 import {
   EntityRatingsData,
+  FeedbackResponse,
   Rating,
-  Response,
 } from '@backstage/plugin-entity-feedback-common';
 
 /**
@@ -42,8 +42,10 @@ export interface EntityFeedbackApi {
 
   recordResponse(
     entityRef: string,
-    response: Omit<Response, 'entityRef' | 'userRef'>,
+    response: Omit<FeedbackResponse, 'entityRef' | 'userRef'>,
   ): Promise<void>;
 
-  getResponses(entityRef: string): Promise<Omit<Response, 'entityRef'>[]>;
+  getResponses(
+    entityRef: string,
+  ): Promise<Omit<FeedbackResponse, 'entityRef'>[]>;
 }

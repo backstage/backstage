@@ -18,7 +18,7 @@ import { parseEntityRef } from '@backstage/catalog-model';
 import { ErrorPanel, Table } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
-import { Response } from '@backstage/plugin-entity-feedback-common';
+import { FeedbackResponse } from '@backstage/plugin-entity-feedback-common';
 import { BackstageTheme } from '@backstage/theme';
 import { Chip, makeStyles } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
@@ -27,7 +27,7 @@ import useAsync from 'react-use/lib/useAsync';
 
 import { entityFeedbackApiRef } from '../../api';
 
-type ResponseRow = Omit<Response, 'entityRef'>;
+type ResponseRow = Omit<FeedbackResponse, 'entityRef'>;
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   consentCheck: {
