@@ -68,7 +68,7 @@ describe('KubernetesProxy', () => {
     getClusters: jest.fn(),
   };
 
-  const permissions: jest.Mocked<PermissionEvaluator> = {
+  const permissionApi: jest.Mocked<PermissionEvaluator> = {
     authorize: jest.fn(),
     authorizeConditional: jest.fn(),
   };
@@ -80,7 +80,7 @@ describe('KubernetesProxy', () => {
 
   it('should return a ERROR_NOT_FOUND if no clusters are found', async () => {
     clusterSupplier.getClusters.mockResolvedValue([]);
-    permissions.authorize.mockReturnValue(
+    permissionApi.authorize.mockReturnValue(
       Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
     );
 
@@ -88,7 +88,7 @@ describe('KubernetesProxy', () => {
     const { res, next } = getMockRes();
 
     await expect(
-      proxy.createRequestHandler(permissions)(req, res, next),
+      proxy.createRequestHandler({ permissionApi })(req, res, next),
     ).rejects.toThrow(NotFoundError);
   });
 
@@ -114,9 +114,9 @@ describe('KubernetesProxy', () => {
     ] as ClusterDetails[]);
     const app = express().use(
       '/mountpath',
-      proxy.createRequestHandler(permissions),
+      proxy.createRequestHandler({ permissionApi }),
     );
-    permissions.authorize.mockReturnValue(
+    permissionApi.authorize.mockReturnValue(
       Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
     );
     const requestPromise = request(app)

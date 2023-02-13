@@ -23,6 +23,7 @@ import {
   googleAuthApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
 const CLUSTER_NAME = ''; // use a known cluster name
 
@@ -30,6 +31,11 @@ const CLUSTER_NAME = ''; // use a known cluster name
 const googleAuthApi = useApi(googleAuthApiRef);
 const token = await googleAuthApi.getAccessToken(
   'https://www.googleapis.com/auth/cloud-platform',
+);
+
+// get a bearer token from backstage `/auth`
+const userToken = getBearerTokenFromAuthorizationHeader(
+  req.header('authorization'),
 );
 
 const discoveryApi = useApi(discoveryApiRef);
@@ -40,8 +46,9 @@ const kubernetesProxyEndpoint = `${kubernetesBaseUrl}/proxy`;
 await fetch(`${kubernetesProxyEndpoint}/api/v1/namespaces`, {
   method: 'GET',
   headers: {
-    'X-Kubernetes-Cluster': CLUSTER_NAME,
-    Authorization: `Bearer ${token}`,
+    'Backstage-Kubernetes-Cluster': CLUSTER_NAME,
+    'Backstage-Kubernetes-Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${userToken}`,
   },
 });
 ```
@@ -49,7 +56,7 @@ await fetch(`${kubernetesProxyEndpoint}/api/v1/namespaces`, {
 ## How it works
 
 The proxy will interpret the
-[`X-Kubernetes-Cluster`
+[`Backstage-Kubernetes-Cluster`
 header](https://backstage.io/docs/reference/plugin-kubernetes-backend.header_kubernetes_cluster)
 as the name of the cluster to target. This name will be compared to each cluster
 returned by all the configured [cluster
@@ -59,6 +66,8 @@ the value in the header will be targeted.
 
 Then the request will be forwarded verbatim (but with the endpoint's base URL
 prefix stripped) to the cluster.
+
+The proxy will also interpret the `Backstage-Kubernetes-Authorization` header as the `Authorization` header to use when forwarding a request to a target cluster.
 
 ## Authentication
 

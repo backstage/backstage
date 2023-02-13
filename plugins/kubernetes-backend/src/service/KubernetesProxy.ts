@@ -41,14 +41,24 @@ export const APPLICATION_JSON: string = 'application/json';
  *
  * @public
  */
-export const HEADER_KUBERNETES_CLUSTER: string = 'X-Kubernetes-Cluster';
+export const HEADER_KUBERNETES_CLUSTER: string = 'Backstage-Kubernetes-Cluster';
 
 /**
  * The header that is used to specify the Authentication Authorities token.
  * e.x if using the google auth provider as your authentication authority then this field would be the google provided bearer token.
- * @alpha
+ * @public
  */
-export const HEADER_KUBERNETES_AUTH: string = 'X-Kubernetes-Authorization';
+export const HEADER_KUBERNETES_AUTH: string =
+  'Backstage-Kubernetes-Authorization';
+
+/**
+ * The options object expected to be passed as a parameter to KubernetesProxy.createRequestHandler().
+ *
+ * @public
+ */
+export type KubernetesProxyCreateRequestHandlerOptions = {
+  permissionApi: PermissionEvaluator;
+};
 
 /**
  * A proxy that routes requests to the Kubernetes API.
@@ -64,8 +74,9 @@ export class KubernetesProxy {
   ) {}
 
   public createRequestHandler(
-    permissionApi: PermissionEvaluator,
+    options: KubernetesProxyCreateRequestHandlerOptions,
   ): RequestHandler {
+    const { permissionApi } = options;
     return async (req, res, next) => {
       const token = getBearerTokenFromAuthorizationHeader(
         req.header('authorization'),
@@ -81,9 +92,7 @@ export class KubernetesProxy {
       )[0];
 
       if (authorizeResponse.result === AuthorizeResult.DENY) {
-        res
-          .status(403)
-          .json({ error: new NotAllowedError('Unauthorized').message });
+        res.status(403).json({ error: new NotAllowedError('Unauthorized') });
         return;
       }
 
@@ -141,8 +150,8 @@ export class KubernetesProxy {
           res.status(500).json(body);
         },
         onProxyReq: (proxyReq, req) => {
-          // the kubernetes proxy endpoint expects a header field labeled `X-Kubernetes-Authorization` that will be used to authenticate with the Kubernetes Api. The token provided as a value should be an Authentication Providers bearer token.
-          const token = req.header('X-Kubernetes-Authorization') ?? '';
+          // the kubernetes proxy endpoint expects a header field labeled `Backstage-Kubernetes-Authorization` that will be used to authenticate with the Kubernetes Api. The token provided as a value should be an bearer token for the target cluster.
+          const token = req.header(HEADER_KUBERNETES_AUTH) ?? '';
           proxyReq.setHeader('Authorization', token);
         },
       });

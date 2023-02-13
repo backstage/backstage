@@ -218,10 +218,10 @@ export type KubernetesErrorTypes =
 // @public (undocumented)
 export type KubernetesFetchError = StatusError | RawFetchError;
 
-// @alpha
+// @public
 export const kubernetesPermissions: BasicPermission[];
 
-// @alpha
+// @public
 export const kubernetesProxyPermission: BasicPermission;
 
 // @public (undocumented)
@@ -287,9 +287,6 @@ export interface ReplicaSetsFetchResponse {
   // (undocumented)
   type: 'replicasets';
 }
-
-// @alpha
-export const RESOURCE_TYPE_KUBERNETES_RESOURCE = 'kubernetes-resource';
 
 // @public (undocumented)
 export interface ServiceFetchResponse {

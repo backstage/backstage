@@ -143,6 +143,9 @@ export class GoogleServiceAccountAuthTranslator
 }
 
 // @public
+export const HEADER_KUBERNETES_AUTH: string;
+
+// @public
 export const HEADER_KUBERNETES_CLUSTER: string;
 
 // @public (undocumented)
@@ -344,8 +347,15 @@ export type KubernetesObjectTypes =
 export class KubernetesProxy {
   constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
   // (undocumented)
-  createRequestHandler(permissionApi: PermissionEvaluator): RequestHandler;
+  createRequestHandler(
+    options: KubernetesProxyCreateRequestHandlerOptions,
+  ): RequestHandler;
 }
+
+// @public
+export type KubernetesProxyCreateRequestHandlerOptions = {
+  permissionApi: PermissionEvaluator;
+};
 
 // @public
 export interface KubernetesServiceLocator {

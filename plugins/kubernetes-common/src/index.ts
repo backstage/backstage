@@ -23,7 +23,6 @@
 export * from './types';
 export * from './catalog-entity-constants';
 export {
-  RESOURCE_TYPE_KUBERNETES_RESOURCE,
   kubernetesProxyPermission,
   kubernetesPermissions,
 } from './permissions';

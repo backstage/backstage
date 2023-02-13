@@ -15,10 +15,7 @@
  */
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import {
-  kubernetesPermissions,
-  RESOURCE_TYPE_KUBERNETES_RESOURCE,
-} from '@backstage/plugin-kubernetes-common';
+import { kubernetesPermissions } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
@@ -275,13 +272,11 @@ export class KubernetesBuilder {
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
-    router.use('/proxy', proxy.createRequestHandler(permissionApi));
+    router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
     router.use(express.json());
     router.use(
       createPermissionIntegrationRouter({
-        resourceType: RESOURCE_TYPE_KUBERNETES_RESOURCE,
         permissions: kubernetesPermissions,
-        rules: [],
       }),
     );
     // @deprecated
