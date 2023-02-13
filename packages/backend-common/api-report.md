@@ -248,6 +248,7 @@ export function createDatabaseClient(
 export function createRootLogger(
   options?: winston.LoggerOptions,
   env?: NodeJS.ProcessEnv,
+  service?: string,
 ): winston.Logger;
 
 // @public
