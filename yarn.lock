@@ -3357,7 +3357,6 @@ __metadata:
     "@types/react-dom": "*"
     react: ^17.0.2
     react-dom: ^17.0.2
-    ts-node: ^10.0.0
   languageName: unknown
   linkType: soft
 

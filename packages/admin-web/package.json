@@ -15,15 +15,13 @@
   },
   "devDependencies": {
     "@types/react": "*",
-    "@types/react-dom": "*",
-    "ts-node": "^10.0.0"
+    "@types/react-dom": "*"
   },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "test": "backstage-cli package test",
-    "lint": "backstage-cli package lint",
-    "start-admin-web": "ts-node --transpile-only --project ../../tsconfig.json --compiler-options '{\"module\": \"CommonJS\"}' src/cli/local-dev.ts"
+    "lint": "backstage-cli package lint"
   }
 }
