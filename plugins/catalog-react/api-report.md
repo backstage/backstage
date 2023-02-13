@@ -453,6 +453,15 @@ export function getEntitySourceLocation(
   scmIntegrationsApi: ScmIntegrationRegistry,
 ): EntitySourceLocation | undefined;
 
+// @public
+export function humanizeEntity(
+  entity: Entity,
+  opts?: {
+    defaultKind?: string;
+    defaultNamespace?: string | false;
+  },
+): string;
+
 // @public (undocumented)
 export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,

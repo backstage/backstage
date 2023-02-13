@@ -75,9 +75,11 @@ export function humanizeEntityRef(
  *
  * If neither of those are found or populated, fallback to `humanizeEntityRef`.
  *
- * @param entity Entity to convert.
- * @param opts If entity readable name is not available, opts will be used to specify humanizeEntityRef options.
+ * @param entity - Entity to convert.
+ * @param opts - If entity readable name is not available, opts will be used to specify humanizeEntityRef options.
  * @returns Readable name, defaults to unique identifier.
+ *
+ * @public
  */
 export function humanizeEntity(
   entity: Entity,
