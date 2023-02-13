@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Adding dot option to mini match used in catalog rules to allow for catalog imports with hidden folders
+Location rule target patterns now also match hidden files, i.e. path components with a leading dot.
