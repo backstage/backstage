@@ -83,7 +83,7 @@ export class MockSearchApi implements SearchApi {
 }
 
 // @public (undocumented)
-export const MultiselectFilter: (
+export const MultiSelectFilter: (
   props: SearchFilterComponentProps,
 ) => JSX.Element;
 
@@ -206,7 +206,7 @@ export const SearchFilter: {
   Select(
     props: Omit<SearchFilterWrapperProps, 'component'> & SelectFilterProps,
   ): JSX.Element;
-  Multiselect(
+  MultiSelect(
     props: Omit<SearchFilterWrapperProps, 'component'> &
       SearchFilterComponentProps,
   ): JSX.Element;

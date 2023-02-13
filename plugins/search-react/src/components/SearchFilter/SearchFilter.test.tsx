@@ -422,7 +422,7 @@ describe('SearchFilter', () => {
     it('Selecting multiple values sets filter state', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Multiselect label={label} name={name} values={values} />
+          <SearchFilter.MultiSelect label={label} name={name} values={values} />
         </SearchContextProvider>,
       );
 

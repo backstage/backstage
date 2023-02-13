@@ -15,7 +15,7 @@
  */
 
 import React, { ReactElement, ChangeEvent } from 'react';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import classnames from 'classnames';
 import {
   makeStyles,
@@ -192,9 +192,7 @@ export function SelectFilter<T extends JsonValue = string>(
     setFilters(prevFilters => {
       const { [props.name]: filter, ...others } = prevFilters;
 
-      return _.isEmpty(value)
-        ? others
-        : { ...others, [props.name]: value as T };
+      return isEmpty(value) ? others : { ...others, [props.name]: value as T };
     });
   };
 
@@ -223,7 +221,7 @@ export function SelectFilter<T extends JsonValue = string>(
         multiple={multiple}
         displayEmpty={displayEmpty}
         renderValue={selected => {
-          if (displayEmpty && _.isEmpty(selected as T)) {
+          if (displayEmpty && isEmpty(selected as T)) {
             return placeholder;
           }
 
@@ -258,7 +256,7 @@ export function SelectFilter<T extends JsonValue = string>(
 /**
  * @public
  */
-export const MultiselectFilter = (props: SearchFilterComponentProps) => {
+export const MultiSelectFilter = (props: SearchFilterComponentProps) => {
   return (
     <SelectFilter<string[]>
       {...props}
@@ -285,10 +283,10 @@ SearchFilter.Select = (
   props: Omit<SearchFilterWrapperProps, 'component'> & SelectFilterProps,
 ) => <SearchFilter {...props} component={SelectFilter} />;
 
-SearchFilter.Multiselect = (
+SearchFilter.MultiSelect = (
   props: Omit<SearchFilterWrapperProps, 'component'> &
     SearchFilterComponentProps,
-) => <SearchFilter {...props} component={MultiselectFilter} />;
+) => <SearchFilter {...props} component={MultiSelectFilter} />;
 
 /**
  * A control surface for a given filter field name, rendered as an autocomplete

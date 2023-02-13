@@ -64,10 +64,10 @@ export const SelectFilter = () => {
   );
 };
 
-export const MultiselectFilter = () => {
+export const MultiSelectFilter = () => {
   return (
     <Paper style={{ padding: 10 }}>
-      <SearchFilter.Multiselect
+      <SearchFilter.MultiSelect
         label="Search Select Filter"
         name="select_filter"
         values={['value1', 'value2']}

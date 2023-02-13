@@ -18,7 +18,7 @@ export {
   CheckboxFilter,
   SearchFilter,
   SelectFilter,
-  MultiselectFilter,
+  MultiSelectFilter,
 } from './SearchFilter';
 export { AutocompleteFilter } from './SearchFilter.Autocomplete';
 export type {
