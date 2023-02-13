@@ -89,6 +89,12 @@ export const CatalogTable = (props: CatalogTableProps) => {
     ];
 
     function createEntitySpecificColumns(): TableColumn<CatalogTableRow>[] {
+      const baseColumns = [
+        columnFactories.createSystemColumn(),
+        columnFactories.createOwnerColumn(),
+        columnFactories.createSpecTypeColumn(),
+        columnFactories.createSpecLifecycleColumn(),
+      ];
       switch (filters.kind?.value) {
         case 'user':
           return [];
@@ -104,15 +110,14 @@ export const CatalogTable = (props: CatalogTableProps) => {
             columnFactories.createSpecTargetsColumn(),
           ];
         default:
-          return [
-            columnFactories.createSystemColumn(),
-            columnFactories.createOwnerColumn(),
-            columnFactories.createSpecTypeColumn(),
-            columnFactories.createSpecLifecycleColumn(),
-          ];
+          return entities.every(
+            entity => entity.metadata.namespace === 'default',
+          )
+            ? baseColumns
+            : [...baseColumns, columnFactories.createNamespaceColumn()];
       }
     }
-  }, [filters.kind?.value]);
+  }, [filters.kind?.value, entities]);
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar

@@ -40,6 +40,7 @@ import {
   EntityTextFilter,
   EntityTypeFilter,
   UserListFilter,
+  EntityNamespaceFilter,
 } from '../filters';
 import { EntityFilter } from '../types';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
@@ -56,6 +57,7 @@ export type DefaultEntityFilters = {
   text?: EntityTextFilter;
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
+  namespace?: EntityNamespaceFilter;
 };
 
 /** @public */

@@ -193,4 +193,11 @@ export const columnFactories = Object.freeze({
       width: 'auto',
     };
   },
+  createNamespaceColumn(): TableColumn<CatalogTableRow> {
+    return {
+      title: 'Namespace',
+      field: 'entity.metadata.namespace',
+      width: 'auto',
+    };
+  },
 });

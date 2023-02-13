@@ -29,3 +29,4 @@ export * from './InspectEntityDialog';
 export * from './UnregisterEntityDialog';
 export * from './UserListPicker';
 export * from './EntityProcessingStatusPicker';
+export * from './EntityNamespacePicker';
