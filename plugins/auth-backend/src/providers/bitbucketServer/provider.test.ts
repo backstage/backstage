@@ -15,7 +15,7 @@
  */
 
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
-import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
+import { makeProfileInfo } from '../../lib/passport';
 import { AuthResolverContext } from '../types';
 import {
   bitbucketServer,
@@ -24,10 +24,9 @@ import {
 } from './provider';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
-import { fetch } from 'cross-fetch';
 import { rest } from 'msw';
 
-global.fetch = fetch;
+global.fetch = require('node-fetch');
 
 jest.mock('../../lib/passport/PassportStrategyHelper', () => {
   return {
