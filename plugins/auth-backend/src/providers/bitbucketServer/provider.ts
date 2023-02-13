@@ -42,6 +42,7 @@ import express from 'express';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { Profile as PassportProfile } from 'passport';
 import { commonByEmailResolver } from '../resolvers';
+import fetch from 'node-fetch';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -215,7 +216,7 @@ export class BitbucketServerAuthProvider implements OAuthHandlers {
       throw new Error(`Failed to retrieve the user '${username}'`);
     }
 
-    const user = await userResponse.json();
+    const user = (await userResponse.json()) as any;
 
     const passportProfile = {
       provider: 'bitbucketServer',
