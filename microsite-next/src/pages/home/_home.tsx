@@ -1,7 +1,8 @@
+import BrowserOnly from '@docusaurus/BrowserOnly';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { BannerSection } from '@site/src/components/banner-section/banner-section';
-import { BannerSectionColumns } from '@site/src/components/banner-section/banner-section-columns';
+import { BannerSectionGrid } from '@site/src/components/banner-section/banner-section-grid';
 import { ContentBlock } from '@site/src/components/content-block/content-block';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
@@ -12,7 +13,7 @@ import { HubSpotNewAdoptersForm } from './_hub-spot-new-adopters-form';
 
 const hiddenNewsletterBannerKey = 'hiddenNewsletterBanner';
 
-export function Home() {
+const HomePage = () => {
   const { siteConfig } = useDocusaurusContext();
 
   const [hiddenNewsletterBanner, setHideNewsletterBanner] = useState(() => {
@@ -28,47 +29,42 @@ export function Home() {
     <Layout>
       <div className={homeStyles.homePage}>
         <BannerSection greyBackground>
-          <BannerSectionColumns
+          <BannerSectionGrid
             header={
-              <>
-                {!hiddenNewsletterBanner && (
-                  <div
-                    className={clsx(
-                      'card',
-                      'padding--md',
-                      homeStyles.newsletterBanner,
-                    )}
-                  >
-                    <div className="text--left bannerContent">
-                      🗞️ Want to stay up to date with Backstage? Sign up for our{' '}
-                      <Link
-                        to="https://info.backstage.spotify.com/newsletter_subscribe"
-                        className="text--secondary"
-                      >
-                        Newsletter
-                      </Link>
-                      !
-                    </div>
-
-                    <div
-                      className={clsx(
-                        'button button--link',
-                        'bannerCloseButton',
-                      )}
-                      onClick={() => hideNewsletterBanner(true)}
+              !hiddenNewsletterBanner && (
+                <div
+                  className={clsx(
+                    'card',
+                    'padding--md',
+                    homeStyles.newsletterBanner,
+                  )}
+                >
+                  <div className="text--left bannerContent">
+                    🗞️ Want to stay up to date with Backstage? Sign up for our{' '}
+                    <Link
+                      to="https://info.backstage.spotify.com/newsletter_subscribe"
+                      className="text--secondary"
                     >
-                      <svg
-                        className="text--secondary"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                      </svg>
-                    </div>
+                      Newsletter
+                    </Link>
+                    !
                   </div>
-                )}
-              </>
+
+                  <div
+                    className={clsx('button button--link', 'bannerCloseButton')}
+                    onClick={() => hideNewsletterBanner(true)}
+                  >
+                    <svg
+                      className="text--secondary"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                    </svg>
+                  </div>
+                </div>
+              )
             }
           >
             <ContentBlock
@@ -100,11 +96,11 @@ export function Home() {
                 src={`${siteConfig.baseUrl}animations/backstage-logos-hero-8.gif`}
               />
             </div>
-          </BannerSectionColumns>
+          </BannerSectionGrid>
         </BannerSection>
 
         <BannerSection>
-          <BannerSectionColumns>
+          <BannerSectionGrid>
             <ContentBlock
               title="The Speed Paradox"
               topImgSrc={`${siteConfig.baseUrl}animations/backstage-speed-paradox-7.gif`}
@@ -126,7 +122,7 @@ export function Home() {
               infrastructure complexity. So you can return to building and
               scaling, quickly and safely.
             </ContentBlock>
-          </BannerSectionColumns>
+          </BannerSectionGrid>
         </BannerSection>
 
         <BannerSection greenGradientBackground>
@@ -386,20 +382,19 @@ export function Home() {
         </BannerSection>
 
         <BannerSection greenBottomGradientBackground>
-          <BannerSectionColumns
+          <BannerSectionGrid
+            className={homeStyles.kubernetesSectionContainer}
             header={
-              <div className={homeStyles.softwareTemplatesContainer}>
-                <div className="softwareTemplatesTitle">
-                  <img
-                    src={`${siteConfig.baseUrl}animations/backstage-kubernetes-icon-1.gif`}
-                    alt="Backstage Kubernetes Flag GIF"
-                  />
+              <>
+                <img
+                  src={`${siteConfig.baseUrl}animations/backstage-kubernetes-icon-1.gif`}
+                  alt="Backstage Kubernetes Flag GIF"
+                />
 
-                  <h2 className="text--primary">Backstage Kubernetes</h2>
+                <h2 className="text--primary">Backstage Kubernetes</h2>
 
-                  <h1>Manage your services, not clusters</h1>
-                </div>
-              </div>
+                <h1>Manage your services, not clusters</h1>
+              </>
             }
           >
             <ContentBlock
@@ -426,7 +421,7 @@ export function Home() {
               Now you don't have to switch dashboards when you move from local
               testing to production, or from one cloud provider to another
             </ContentBlock>
-          </BannerSectionColumns>
+          </BannerSectionGrid>
         </BannerSection>
 
         <BannerSection greenCallToActionGradientBackground>
@@ -536,4 +531,8 @@ export function Home() {
       </div>
     </Layout>
   );
-}
+};
+
+export const Home = () => {
+  return <BrowserOnly>{() => <HomePage />}</BrowserOnly>;
+};

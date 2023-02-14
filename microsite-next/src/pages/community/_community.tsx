@@ -1,10 +1,13 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { BannerSection } from '@site/src/components/banner-section/banner-section';
+import { BannerSectionGrid } from '@site/src/components/banner-section/banner-section-grid';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
 import React from 'react';
 
 import communityStyles from './community.module.scss';
+import { ContentBlock } from '../../components/content-block/content-block';
 
 interface ICollectionItem {
   title?: string;
@@ -128,155 +131,137 @@ export function Community() {
   return (
     <Layout>
       <div className={clsx(communityStyles.communityPage)}>
-        <section className={communityStyles.banner}>
-          <div className={clsx('container')}>
-            <div className="row">
-              <div
-                className={clsx('col', 'padding-vert--xl padding-right--xl')}
-              >
-                <h1 className={clsx('margin-bottom--lg')}>
-                  Backstage Community
-                </h1>
+        <BannerSection greyBackground>
+          <BannerSectionGrid>
+            <ContentBlock
+              className="padding-right--xl"
+              title={<h1>Backstage Community</h1>}
+            >
+              Join the vibrant community around Backstage through social media
+              and different meetups. To ensure that you have a welcoming
+              environment, we follow the
+              <Link to="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
+                {' '}
+                CNCF Code of Conduct{' '}
+              </Link>
+              in everything we do.
+            </ContentBlock>
 
-                <p>
-                  Join the vibrant community around Backstage through social
-                  media and different meetups. To ensure that you have a
-                  welcoming environment, we follow the
-                  <Link to="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
-                    {' '}
-                    CNCF Code of Conduct{' '}
-                  </Link>
-                  in everything we do.
-                </p>
-              </div>
-
-              <div className={clsx('col', 'padding-vert--xl padding-left--xl')}>
-                <h2 className={clsx('margin-bottom--lg')}>
-                  Get started in our community!
-                </h2>
-
-                <ul>
-                  {communityListItems.map(
-                    ({ content: text, link, label }, index) => (
-                      <li key={index}>
-                        <p className="margin-bottom--none">
-                          {text} <Link to={link}>{label}</Link>
-                        </p>
-                      </li>
-                    ),
-                  )}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className={communityStyles.officialInitiatives}>
-          <div className={clsx('container', 'padding-vert--xl')}>
-            <div className="padding-bottom--xl">
-              <h2 className="text--primary">Offical Backstage initiatives</h2>
-
-              <h1>Stay tuned to the latest developments</h1>
-            </div>
-
-            <div className="row">
-              {officialInitiatives.map(
-                ({ title, content, link, label }, index) => (
-                  <div className={clsx('col')} key={index}>
-                    <div className="bulletLine"></div>
-
-                    <h2>{title}</h2>
-
-                    <p className="padding-bottom--lg">{content}</p>
-
-                    <Link
-                      className="button button--primary button--lg"
-                      to={link}
-                    >
-                      {label}
-                    </Link>
-                  </div>
-                ),
+            <ContentBlock
+              className={clsx(
+                'padding-left--xl',
+                communityStyles.listContainer,
               )}
-            </div>
-          </div>
-        </section>
+              title="Get started in our community!"
+            >
+              <ul>
+                {communityListItems.map(
+                  ({ content: text, link, label }, index) => (
+                    <li key={index}>
+                      <p className="margin-bottom--none">
+                        {text} <Link to={link}>{label}</Link>
+                      </p>
+                    </li>
+                  ),
+                )}
+              </ul>
+            </ContentBlock>
+          </BannerSectionGrid>
+        </BannerSection>
 
-        <section className={communityStyles.communityInitiatives}>
-          <div className={clsx('container', 'padding-vert--xl')}>
-            <div className="padding-bottom--xl">
-              <h2 className="text--primary">Community initiatives</h2>
-            </div>
+        <BannerSection greenBottomGradientBackground>
+          <BannerSectionGrid
+            header={
+              <>
+                <h2 className="text--primary">Offical Backstage initiatives</h2>
 
-            <div className="row">
-              {communityInitiatives.map(
-                ({ title, content, link, label }, index) => (
-                  <div className={clsx('col')} key={index}>
-                    <div className="bulletLine"></div>
+                <h1>Stay tuned to the latest developments</h1>
+              </>
+            }
+          >
+            {officialInitiatives.map(
+              ({ title, content, link, label }, index) => (
+                <ContentBlock
+                  key={index}
+                  title={title}
+                  hasBulletLine
+                  actionButtons={[
+                    {
+                      link,
+                      label,
+                    },
+                  ]}
+                >
+                  {content}
+                </ContentBlock>
+              ),
+            )}
+          </BannerSectionGrid>
+        </BannerSection>
 
-                    <h2>{title}</h2>
+        <BannerSection greyBackground>
+          <BannerSectionGrid
+            header={<h2 className="text--primary">Community initiatives</h2>}
+          >
+            {communityInitiatives.map(
+              ({ title, content, link, label }, index) => (
+                <ContentBlock
+                  key={index}
+                  title={title}
+                  hasBulletLine
+                  actionButtons={[
+                    {
+                      link,
+                      label,
+                    },
+                  ]}
+                >
+                  <p>{content}</p>
+                </ContentBlock>
+              ),
+            )}
+          </BannerSectionGrid>
+        </BannerSection>
 
-                    <p className="padding-bottom--lg">{content}</p>
-
-                    <Link
-                      className="button button--primary button--lg"
-                      to={link}
-                    >
-                      {label}
-                    </Link>
-                  </div>
-                ),
-              )}
-            </div>
-          </div>
-        </section>
-
-        <section className={communityStyles.trainingNCertifications}>
-          <div className={clsx('container', 'padding-vert--xl')}>
-            <div className="padding-bottom--xl">
+        <BannerSection>
+          <BannerSectionGrid
+            header={
               <h2 className="text--primary">Trainings and Certifications</h2>
-            </div>
+            }
+          >
+            {trainingNCertifications.map(
+              ({ title, content, link, label }, index) => (
+                <ContentBlock
+                  key={index}
+                  title={title}
+                  hasBulletLine
+                  actionButtons={[
+                    {
+                      link,
+                      label,
+                    },
+                  ]}
+                >
+                  <p>{content}</p>
+                </ContentBlock>
+              ),
+            )}
+          </BannerSectionGrid>
+        </BannerSection>
 
-            <div className="row">
-              {trainingNCertifications.map(
-                ({ title, content, link, label }, index) => (
-                  <div className={clsx('col')} key={index}>
-                    <div className="bulletLine"></div>
-
-                    <h2>{title}</h2>
-
-                    <p className="padding-bottom--lg">{content}</p>
-
-                    <Link
-                      className="button button--primary button--lg"
-                      to={link}
-                    >
-                      {label}
-                    </Link>
-                  </div>
-                ),
-              )}
-            </div>
-          </div>
-        </section>
-
-        <section className={communityStyles.commercialPartners}>
-          <div className={clsx('container', 'padding-vert--xl')}>
-            <div className="padding-bottom--xl">
-              <h2 className="text--primary">Commercial Partners</h2>
-            </div>
-
-            <div className="row">
-              {partners.map(({ name, url, logo }, index) => (
-                <div className={clsx('col')} key={index}>
-                  <Link to={url}>
-                    <img src={`${siteConfig.baseUrl}${logo}`} alt={name} />
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <BannerSection greyBackground>
+          <BannerSectionGrid
+            header={<h2 className="text--primary">Commercial Partners</h2>}
+          >
+            {partners.map(({ name, url, logo }, index) => (
+              <div key={index}>
+                <Link to={url}>
+                  <img src={`${siteConfig.baseUrl}${logo}`} alt={name} />
+                </Link>
+              </div>
+            ))}
+          </BannerSectionGrid>
+        </BannerSection>
       </div>
     </Layout>
   );

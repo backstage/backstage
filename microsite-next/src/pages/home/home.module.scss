@@ -60,7 +60,8 @@ $desktopUpBreakpoint: 997px;
   }
 
   :global([class*='Title']),
-  :global([class*='title']) {
+  :global([class*='title']),
+  :global([class*='gridHeader']) {
     img {
       max-width: 190px;
       max-height: 190px;
@@ -94,6 +95,15 @@ $desktopUpBreakpoint: 997px;
 
     :global(.softwareTemplatesTitle) {
       grid-column: span 4;
+    }
+  }
+}
+
+.kubernetesSectionContainer {
+  :global([class*='gridHeader']) {
+    img {
+      max-width: 190px;
+      max-height: 190px;
     }
   }
 }
