@@ -33,7 +33,7 @@ There's also a lot of bug fixes, and other things, but these are the main ones t
 
 ## How do I test out the `alpha` version?
 
-With the release of `v1.12.0` it's now possible to run the `scaffolder/next` plugin and it be a drop in replacement for the current version that you use today. This means that you can start using the new code, and start testing it out. Once we have collected enough feedback, and squashed any bugs that might block us from releasing is, it will be promoted from the `/alpha` exports and replace the existing code leading to breaking changes if you haven't already made these changes part of this testing pilot. Those that have chosen to opt into this testing pilot means that once we promote it from the `/alpha` exports, you will need to update your code to point to the original exports from the `scaffolder` plugin, just like the code is today but with the [breaking changes](#breaking-changes) that you already made to your `Custom Field Extensions`.
+With the release of `v1.12.0` it's now possible to run the `scaffolder/next` plugin and it be a drop in replacement for the current version that you use today. This means that you can start using the new code, and start testing it out. Once we have collected enough feedback, and squashed any bugs that might block us from releasing, it will be promoted from the `/alpha` exports and replace the existing code leading to breaking changes if you haven't already made these changes as part of this testing pilot. Those that have chosen to opt into this testing pilot means that once we promote it from the `/alpha` exports, you will need to update your code to point to the original exports from the `scaffolder` plugin, just like the code is today but with the [breaking changes](#breaking-changes) that you already made to your `Custom Field Extensions`.
 
 It's also worth calling out that if you do test this out, and find some issues or something not working out as expected, feel free to raise an issue in the [repo](https://github.com/backstage/backstage) or reach out to us on Discord!
 
@@ -131,7 +131,7 @@ export const EntityNamePicker = (
 }
 ```
 
-There's another `/alpha` export that's you need to replace `FieldExtensionComponentProps` with which is the `NextFieldExtensionComponentProps`.
+There's another `/alpha` export that you need to replace `FieldExtensionComponentProps` with which is the `NextFieldExtensionComponentProps`.
 
 ```diff
 - import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
@@ -226,7 +226,7 @@ If you were using the `formData` and assuming that it was set to an empty object
     schema: { title = 'Name', description = 'Unique name of the component' },
     rawErrors,
 -    formData,
-+    formData = {}, // or mayube some other default value that you would prefer
++    formData = {}, // or maybe some other default value that you would prefer
     uiSchema: { 'ui:autofocus': autoFocus } = {},
     idSchema,
     placeholder,
