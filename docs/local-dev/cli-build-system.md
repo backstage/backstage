@@ -566,7 +566,7 @@ For your productivity working with unit tests it's quite essential to have your 
 
 - Click on "Edit Configurations" on top panel
 - In the modal dialog click on link "Edit configuration templates..." located in the bottom left corner.
-- In "Jest package" you have to point to relative path of jest module (it will be suggested by IntelliJ), i.e. ~/proj/backstage/node_modules/jest
+- In "Jest package" you have to point to relative path of jest module (it will be suggested by IntelliJ), i.e. `~/proj/backstage/node_modules/jest`
 - In "Jest config" point to your jest configuration file, use absolute path for that, i.e. `--config /Users/user/proj/backstage/packages/cli/config/jest.js --runInBand`
 
 2. Now you can run any tests by clicking on green arrow located on `describe` or `it`.
