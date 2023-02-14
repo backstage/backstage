@@ -6961,6 +6961,77 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-linguist-backend@workspace:^, @backstage/plugin-linguist-backend@workspace:plugins/linguist-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-linguist-backend@workspace:plugins/linguist-backend"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-linguist-common": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    express: ^4.18.1
+    express-promise-router: ^4.1.0
+    fs-extra: ^10.0.0
+    knex: ^2.0.0
+    linguist-js: ^2.5.3
+    luxon: ^2.0.2
+    msw: ^0.49.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    uuid: ^8.3.2
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-linguist-common@workspace:^, @backstage/plugin-linguist-common@workspace:plugins/linguist-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-linguist-common@workspace:plugins/linguist-common"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-linguist@workspace:^, @backstage/plugin-linguist@workspace:plugins/linguist":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-linguist@workspace:plugins/linguist"
+  dependencies:
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/plugin-linguist-common": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.9.13
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.57
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    "@types/node": "*"
+    cross-fetch: ^3.1.5
+    luxon: ^2.0.2
+    msw: ^0.49.0
+    react-use: ^17.2.4
+    slugify: ^1.6.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-microsoft-calendar@workspace:^, @backstage/plugin-microsoft-calendar@workspace:plugins/microsoft-calendar":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-microsoft-calendar@workspace:plugins/microsoft-calendar"
@@ -17646,10 +17717,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"binary-extensions@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "binary-extensions@npm:2.0.0"
-  checksum: 554f65d3378cf71c3185c17dec3ca58334b8ff6ae242db3107284765ce33b2af19efd20c11faec41907a40534929e34b3a98e7d391c61e4211b45732dccb1115
+"binary-extensions@npm:^2.0.0, binary-extensions@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "binary-extensions@npm:2.2.0"
+  checksum: ccd267956c58d2315f5d3ea6757cf09863c5fc703e50fbeb13a7dc849b812ef76e3cf9ca8f35a0c48498776a7478d7b4a0418e1e2b8cb9cb9731f2922aaad7f8
   languageName: node
   linkType: hard
 
@@ -19009,7 +19080,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:*, commander@npm:^9.1.0, commander@npm:^9.4.1":
+"commander@npm:*, commander@npm:^9.1.0, commander@npm:^9.4.1, commander@npm:^9.5.0":
   version: 9.5.0
   resolution: "commander@npm:9.5.0"
   checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
@@ -22294,6 +22365,8 @@ __metadata:
     "@backstage/plugin-kafka": "workspace:^"
     "@backstage/plugin-kubernetes": "workspace:^"
     "@backstage/plugin-lighthouse": "workspace:^"
+    "@backstage/plugin-linguist": "workspace:^"
+    "@backstage/plugin-linguist-common": "workspace:^"
     "@backstage/plugin-microsoft-calendar": "workspace:^"
     "@backstage/plugin-newrelic": "workspace:^"
     "@backstage/plugin-newrelic-dashboard": "workspace:^"
@@ -22394,6 +22467,7 @@ __metadata:
     "@backstage/plugin-kafka-backend": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-lighthouse-backend": "workspace:^"
+    "@backstage/plugin-linguist-backend": "workspace:^"
     "@backstage/plugin-permission-backend": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
@@ -24874,10 +24948,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ignore@npm:^5.1.4, ignore@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "ignore@npm:5.2.0"
-  checksum: 6b1f926792d614f64c6c83da3a1f9c83f6196c2839aa41e1e32dd7b8d174cef2e329d75caabb62cb61ce9dc432f75e67d07d122a037312db7caa73166a1bdb77
+"ignore@npm:^5.1.4, ignore@npm:^5.2.0, ignore@npm:^5.2.4":
+  version: 5.2.4
+  resolution: "ignore@npm:5.2.4"
+  checksum: 3d4c309c6006e2621659311783eaea7ebcd41fe4ca1d78c91c473157ad6666a57a2df790fe0d07a12300d9aac2888204d7be8d59f9aaf665b1c7fcdb432517ef
   languageName: node
   linkType: hard
 
@@ -25894,7 +25968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isbinaryfile@npm:^4.0.10, isbinaryfile@npm:^4.0.8":
+"isbinaryfile@npm:^4.0.10, isbinaryfile@npm:^4.0.8, isbinaryfile@npm:^4.0.8 <5":
   version: 4.0.10
   resolution: "isbinaryfile@npm:4.0.10"
   checksum: a6b28db7e23ac7a77d3707567cac81356ea18bd602a4f21f424f862a31d0e7ab4f250759c98a559ece35ffe4d99f0d339f1ab884ffa9795172f632ab8f88e686
@@ -27767,6 +27841,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"linguist-js@npm:^2.5.3":
+  version: 2.5.4
+  resolution: "linguist-js@npm:2.5.4"
+  dependencies:
+    binary-extensions: ^2.2.0
+    commander: ^9.5.0
+    common-path-prefix: ^3.0.0
+    cross-fetch: ^3.1.5
+    ignore: ^5.2.4
+    isbinaryfile: ^4.0.8 <5
+    js-yaml: ^4.1.0
+    node-cache: ^5.1.2
+  bin:
+    linguist: bin/index.js
+    linguist-js: bin/index.js
+  checksum: 92ebfc45f0f17a056153068f7e939a3e6755307d3696673597e824011d83b698063241aa7d082a7f9059416efce85a49056f0a31b3158c25f79e273e2f51e309
+  languageName: node
+  linkType: hard
+
 "linkify-it@npm:^3.0.1":
   version: 3.0.2
   resolution: "linkify-it@npm:3.0.2"
@@ -28309,6 +28402,13 @@ __metadata:
   version: 2.3.9
   resolution: "lunr@npm:2.3.9"
   checksum: 176719e24fcce7d3cf1baccce9dd5633cd8bdc1f41ebe6a180112e5ee99d80373fe2454f5d4624d437e5a8319698ca6837b9950566e15d2cae5f2a543a3db4b8
+  languageName: node
+  linkType: hard
+
+"luxon@npm:^2.0.2":
+  version: 2.5.2
+  resolution: "luxon@npm:2.5.2"
+  checksum: d8b671ffd2ff0b438af862ac11082a81b3aedd9f8b6a4ca636f944224f8dd381125cd4d274ca0a8aedcaf2cfca0fc2ca96fe4cc1b16a28b7af701afb95c0bff8
   languageName: node
   linkType: hard
 
@@ -35140,6 +35240,13 @@ __metadata:
     ansi-styles: ^6.0.0
     is-fullwidth-code-point: ^4.0.0
   checksum: 7e600a2a55e333a21ef5214b987c8358fe28bfb03c2867ff2cbf919d62143d1812ac27b4297a077fdaf27a03da3678e49551c93e35f9498a3d90221908a1180e
+  languageName: node
+  linkType: hard
+
+"slugify@npm:^1.6.4":
+  version: 1.6.5
+  resolution: "slugify@npm:1.6.5"
+  checksum: a955a1b600201030f4c1daa9bb74a17d4402a0693fc40978bbd17e44e64fd72dad3bac4037422aa8aed55b5170edd57f3f4cd8f59ba331f5cf0f10f1a7795609
   languageName: node
   linkType: hard
 
