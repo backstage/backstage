@@ -19,7 +19,7 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   const authProviderFactories = {
-    'azure-easyAuth': providers.easyAuth.create({
+    'azure-easyauth': providers.easyAuth.create({
       signIn: {
         resolver: async (info, ctx) => {
           const {
@@ -52,7 +52,7 @@ export default async function createPlugin(
 ```
 
 Now the backend is ready to serve auth requests on the
-`/api/auth/azure-easyAuth/refresh` endpoint. All that's left is to update the frontend
+`/api/auth/azure-easyauth/refresh` endpoint. All that's left is to update the frontend
 sign-in mechanism to poll that endpoint through the IAP, on the user's behalf.
 
 ## Frontend Changes
@@ -65,7 +65,7 @@ installed in `packages/app/src/App.tsx` like this:
 
  const app = createApp({
    components: {
-+    SignInPage: props => <ProxiedSignInPage {...props} provider="azure-easyAuth" />,
++    SignInPage: props => <ProxiedSignInPage {...props} provider="azure-easyauth" />,
 ```
 
 See the [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) section for more information.
