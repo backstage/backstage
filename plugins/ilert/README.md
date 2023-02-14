@@ -26,7 +26,7 @@ In detail this plugin provides:
 Install the plugin:
 
 ```bash
-# From the Backstage repository root
+# From your Backstage root directory
 yarn add --cwd packages/app @backstage/plugin-ilert
 ```
 
