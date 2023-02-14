@@ -38,6 +38,7 @@ import {
   NotModifiedError,
   serializeError,
 } from '@backstage/errors';
+import { NotImplementedError } from '@backstage/errors';
 
 /**
  * Options used to create a {@link MiddlewareFactory}.
@@ -257,6 +258,8 @@ function getStatusCode(error: Error): number {
       return 404;
     case ConflictError.name:
       return 409;
+    case NotImplementedError.name:
+      return 501;
     default:
       break;
   }

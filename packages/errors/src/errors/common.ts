@@ -75,6 +75,13 @@ export class ConflictError extends CustomErrorBase {}
 export class NotModifiedError extends CustomErrorBase {}
 
 /**
+ * The server does not support the functionality required to fulfill the request.
+ *
+ * @public
+ */
+export class NotImplementedError extends CustomErrorBase {}
+
+/**
  * An error that forwards an underlying cause with additional context in the message.
  *
  * The `name` property of the error will be inherited from the `cause` if

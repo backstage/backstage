@@ -24,6 +24,7 @@ export {
   NotAllowedError,
   NotFoundError,
   NotModifiedError,
+  NotImplementedError,
 } from './common';
 export { CustomErrorBase } from './CustomErrorBase';
 export { ResponseError } from './ResponseError';
