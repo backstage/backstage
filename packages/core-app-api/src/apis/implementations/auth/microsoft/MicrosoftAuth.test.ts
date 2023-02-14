@@ -124,6 +124,8 @@ describe('MicrosoftAuth', () => {
   });
 
   describe('without a refresh token', () => {
+    let refreshTokenCookie: jest.Mock<(refreshToken: string) => void>;
+
     const getAccessTokenWaitingForPopup = async (scope?: string) => {
       const oauthRequestApi = new MockOAuthApi();
 
@@ -180,8 +182,13 @@ describe('MicrosoftAuth', () => {
         ),
       );
 
+      refreshTokenCookie = jest.fn();
+
       showLoginPopup.mockImplementation(({ url }) => {
         const scope = new URL(url).searchParams.get('scope')!;
+        if (scope.includes('offline_access')) {
+          refreshTokenCookie('refreshToken');
+        }
         return Promise.resolve({
           providerInfo: {
             accessToken: `header.${Buffer.from(
@@ -225,6 +232,12 @@ describe('MicrosoftAuth', () => {
         aud: 'customApiClientId',
         scp: 'some.scope',
       });
+    });
+
+    it('gets refresh token when requesting other azure scopes via popup', async () => {
+      await getAccessTokenWaitingForPopup('azure-resource/scope');
+
+      expect(refreshTokenCookie).toHaveBeenCalledWith('refreshToken');
     });
   });
 });
