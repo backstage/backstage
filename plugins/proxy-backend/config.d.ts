@@ -50,11 +50,6 @@ export interface Config {
            * and headers that are set by the proxy will be forwarded.
            */
           allowedHeaders?: string[];
-          /**
-           * Revive request body if it was consumed by a middleware before reaching the proxy. By default, the request
-           * body is not revived.
-           */
-          reviveRequestBody?: boolean;
         };
   };
 }
