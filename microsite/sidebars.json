@@ -104,6 +104,7 @@
           "features/software-templates/writing-custom-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
+          "features/software-templates/testing-scaffolder-alpha",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },
