@@ -6,7 +6,7 @@ sidebar_label: Overview
 description: Building backends using the new backend system
 ---
 
-> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
 
 > NOTE: If you have an existing backend that is not yet using the new backend
 > system, see [migrating](./08-migrating.md).
