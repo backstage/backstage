@@ -36,31 +36,66 @@ const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
 
 describe('createRouter', () => {
   describe('where all proxy config are valid', () => {
+    const logger = getVoidLogger();
+    const config = new ConfigReader({
+      backend: {
+        baseUrl: 'https://example.com:7007',
+        listen: {
+          port: 7007,
+        },
+      },
+      proxy: {
+        '/test': {
+          target: 'https://example.com',
+          headers: {
+            Authorization: 'Bearer supersecret',
+          },
+        },
+      },
+    });
+    const discovery = SingleHostDiscovery.fromConfig(config);
+
+    beforeEach(() => {
+      mockCreateProxyMiddleware.mockClear();
+    });
+
     it('works', async () => {
-      const logger = getVoidLogger();
-      const config = new ConfigReader({
-        backend: {
-          baseUrl: 'https://example.com:7007',
-          listen: {
-            port: 7007,
-          },
-        },
-        proxy: {
-          '/test': {
-            target: 'https://example.com',
-            headers: {
-              Authorization: 'Bearer supersecret',
-            },
-          },
-        },
-      });
-      const discovery = SingleHostDiscovery.fromConfig(config);
       const router = await createRouter({
         config,
         logger,
         discovery,
       });
       expect(router).toBeDefined();
+    });
+
+    it('revives request bodies when set', async () => {
+      const router = await createRouter({
+        config,
+        logger,
+        discovery,
+        reviveConsumedRequestBodies: true,
+      });
+      expect(router).toBeDefined();
+
+      expect(
+        mockCreateProxyMiddleware.mock.calls[0][1]?.onProxyReq,
+      ).toBeDefined();
+      expect(mockCreateProxyMiddleware.mock.calls[0][1]?.onProxyReq).toEqual(
+        fixRequestBody,
+      );
+    });
+
+    it('does not revive request bodies when not set', async () => {
+      const router = await createRouter({
+        config,
+        logger,
+        discovery,
+      });
+      expect(router).toBeDefined();
+
+      expect(
+        mockCreateProxyMiddleware.mock.calls[0][1]?.onProxyReq,
+      ).not.toBeDefined();
     });
   });
 
@@ -395,10 +430,15 @@ describe('buildMiddleware', () => {
   });
 
   it('revives request body when configured', async () => {
-    buildMiddleware('/proxy', logger, '/test', {
-      target: 'http://mocked',
-      reviveRequestBody: true,
-    });
+    buildMiddleware(
+      '/proxy',
+      logger,
+      '/test',
+      {
+        target: 'http://mocked',
+      },
+      true,
+    );
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
