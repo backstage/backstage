@@ -124,7 +124,7 @@ export const createPermissionIntegrationRouter: <
     NoInfer<TResourceType>,
     PermissionRuleParams
   >[];
-  getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
+  getResources?: GetResourcesFn<TResource> | undefined;
 }) => express.Router;
 
 // @public
@@ -136,6 +136,11 @@ export const createPermissionRule: <
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
+
+// @public
+export type GetResourcesFn<TResource> = (
+  resourceRefs: string[],
+) => Promise<Array<TResource | undefined>>;
 
 // @alpha
 export const isAndCriteria: <T>(

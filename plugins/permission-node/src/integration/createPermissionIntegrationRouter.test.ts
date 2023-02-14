@@ -19,17 +19,14 @@ import {
   createPermission,
   Permission,
 } from '@backstage/plugin-permission-common';
-import express, { Express, Router } from 'express';
+import express from 'express';
 import request, { Response } from 'supertest';
 import { z } from 'zod';
-import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
+import {
+  createPermissionIntegrationRouter,
+  GetResourcesFn,
+} from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
-
-const mockGetResources: jest.MockedFunction<
-  Parameters<typeof createPermissionIntegrationRouter>[0]['getResources']
-> = jest.fn(async resourceRefs =>
-  resourceRefs.map(resourceRef => ({ id: resourceRef })),
-);
 
 const testPermission: Permission = createPermission({
   name: 'test.permission',
@@ -56,27 +53,28 @@ const testRule2 = createPermissionRule({
   toQuery: () => ({}),
 });
 
-describe('createPermissionIntegrationRouter', () => {
-  let app: Express;
-  let router: Router;
+const defaultMockedGetResources: GetResourcesFn<{ id: string }> = jest.fn(
+  async resourceRefs => resourceRefs.map(resourceRef => ({ id: resourceRef })),
+);
 
-  beforeAll(() => {
-    router = createPermissionIntegrationRouter({
-      resourceType: 'test-resource',
-      permissions: [testPermission],
-      getResources: mockGetResources,
-      rules: [testRule1, testRule2],
-    });
-
-    app = express().use(router);
+const createApp = (
+  mockedGetResources:
+    | typeof defaultMockedGetResources
+    | null = defaultMockedGetResources,
+) => {
+  const router = createPermissionIntegrationRouter({
+    resourceType: 'test-resource',
+    permissions: [testPermission],
+    getResources: mockedGetResources || undefined,
+    rules: [testRule1, testRule2],
   });
 
+  return express().use(router);
+};
+
+describe('createPermissionIntegrationRouter', () => {
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('works', async () => {
-    expect(router).toBeDefined();
   });
 
   describe('POST /.well-known/backstage/permissions/apply-conditions', () => {
@@ -150,7 +148,7 @@ describe('createPermissionIntegrationRouter', () => {
         ],
       },
     ])('returns 200/ALLOW when criteria match (case %#)', async conditions => {
-      const response = await request(app)
+      const response = await request(createApp())
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -238,7 +236,7 @@ describe('createPermissionIntegrationRouter', () => {
     ])(
       'returns 200/DENY when criteria do not match (case %#)',
       async conditions => {
-        const response = await request(app)
+        const response = await request(createApp())
           .post('/.well-known/backstage/permissions/apply-conditions')
           .send({
             items: [
@@ -262,7 +260,7 @@ describe('createPermissionIntegrationRouter', () => {
       let response: Response;
 
       beforeEach(async () => {
-        response = await request(app)
+        response = await request(createApp())
           .post('/.well-known/backstage/permissions/apply-conditions')
           .send({
             items: [
@@ -353,7 +351,7 @@ describe('createPermissionIntegrationRouter', () => {
       });
 
       it('calls getResources for all required resources at once', () => {
-        expect(mockGetResources).toHaveBeenCalledWith([
+        expect(defaultMockedGetResources).toHaveBeenCalledWith([
           'default:test/resource-1',
           'default:test/resource-2',
           'default:test/resource-3',
@@ -363,7 +361,7 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('returns 400 when called with incorrect resource type', async () => {
-      const response = await request(app)
+      const response = await request(createApp())
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -413,11 +411,11 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('returns 200/DENY when resource is not found', async () => {
-      mockGetResources.mockImplementationOnce(async resourceRefs =>
-        resourceRefs.map(() => undefined),
+      const mockedGetResources: GetResourcesFn<{ id: string }> = jest.fn(
+        async resourceRefs => resourceRefs.map(() => undefined),
       );
 
-      const response = await request(app)
+      const response = await request(createApp(mockedGetResources))
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -446,15 +444,16 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('interleaves responses for present and missing resources', async () => {
-      mockGetResources.mockImplementationOnce(async resourceRefs =>
-        resourceRefs.map(resourceRef =>
-          resourceRef === 'default:test/missing-resource'
-            ? undefined
-            : { id: resourceRef },
-        ),
+      const mockedGetResources: GetResourcesFn<{ id: string }> = jest.fn(
+        async resourceRefs =>
+          resourceRefs.map(resourceRef =>
+            resourceRef === 'default:test/missing-resource'
+              ? undefined
+              : { id: resourceRef },
+          ),
       );
 
-      const response = await request(app)
+      const response = await request(createApp(mockedGetResources))
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -548,18 +547,31 @@ describe('createPermissionIntegrationRouter', () => {
         ],
       },
     ])(`returns 400 for invalid input %#`, async input => {
-      const response = await request(app)
+      const response = await request(createApp())
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send(input);
 
       expect(response.status).toEqual(400);
       expect(response.error && response.error.text).toMatch(/invalid/i);
     });
+
+    it('returns 400 with no getResources implementation', async () => {
+      const response = await request(createApp(null))
+        .post('/.well-known/backstage/permissions/apply-conditions')
+        .send({
+          items: [],
+        });
+
+      expect(response.status).toEqual(400);
+      expect(response.body.error.message).toEqual(
+        'This plugin does not support the apply-conditions API.',
+      );
+    });
   });
 
   describe('GET /.well-known/backstage/permissions/metadata', () => {
     it('returns a list of permissions and rules used by a given backend', async () => {
-      const response = await request(app).get(
+      const response = await request(createApp()).get(
         '/.well-known/backstage/permissions/metadata',
       );
 

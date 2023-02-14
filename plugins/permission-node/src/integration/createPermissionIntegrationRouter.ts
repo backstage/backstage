@@ -125,6 +125,16 @@ export type MetadataResponse = {
   rules: MetadataResponseSerializedRule[];
 };
 
+/**
+ * Function type for returning an array of resources
+ * matching the given resourceRefs.
+ *
+ * @public
+ */
+export type GetResourcesFn<TResource> = (
+  resourceRefs: string[],
+) => Promise<Array<TResource | undefined>>;
+
 const applyConditions = <TResourceType extends string, TResource>(
   criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
   resource: TResource | undefined,
@@ -205,9 +215,7 @@ export const createPermissionIntegrationRouter = <
   // consider any rules whose resource type does not match
   // to be an error.
   rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
-  getResources: (
-    resourceRefs: string[],
-  ) => Promise<Array<TResource | undefined>>;
+  getResources?: GetResourcesFn<TResource>;
 }): express.Router => {
   const { resourceType, permissions, rules, getResources } = options;
   const router = Router();
@@ -250,6 +258,12 @@ export const createPermissionIntegrationRouter = <
   router.post(
     '/.well-known/backstage/permissions/apply-conditions',
     async (req, res: Response<ApplyConditionsResponse | string>) => {
+      if (!getResources) {
+        throw new InputError(
+          'This plugin does not support the apply-conditions API.',
+        );
+      }
+
       const parseResult = applyConditionsRequestSchema.safeParse(req.body);
 
       if (!parseResult.success) {
