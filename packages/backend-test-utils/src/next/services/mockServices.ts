@@ -58,7 +58,7 @@ function simpleFactory<
 }
 
 /**
- * @alpha
+ * @public
  */
 export namespace mockServices {
   export function config(options?: config.Options): ConfigService {
