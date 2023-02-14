@@ -30,6 +30,15 @@ export type AdrFileInfo = {
 
   /** The name of the ADR file. */
   name: string;
+
+  /** The title of the ADR. */
+  title?: string;
+
+  /** The status of the ADR. */
+  status?: string;
+
+  /** The date of the ADR. */
+  date?: string;
 };
 
 /**

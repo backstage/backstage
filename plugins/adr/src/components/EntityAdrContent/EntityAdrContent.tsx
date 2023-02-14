@@ -35,6 +35,7 @@ import {
 } from '@backstage/plugin-adr-common';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
+  Chip,
   Grid,
   List,
   ListItem,
@@ -67,7 +68,9 @@ export const EntityAdrContent = (props: {
   const classes = useStyles();
   const { entity } = useEntity();
   const rootLink = useRouteRef(rootRouteRef);
-  const [adrList, setAdrList] = useState<string[]>([]);
+  const [adrList, setAdrList] = useState<
+    { name: string; title?: string; status?: string; date?: string }[]
+  >([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrApi = useApi(adrApiRef);
@@ -79,10 +82,10 @@ export const EntityAdrContent = (props: {
   }, [entity, scmIntegrations]);
 
   const selectedAdr =
-    adrList.find(adr => adr === searchParams.get('record')) ?? '';
+    adrList.find(adr => adr.name === searchParams.get('record'))?.name ?? '';
   useEffect(() => {
     if (adrList.length && !selectedAdr) {
-      searchParams.set('record', adrList[0]);
+      searchParams.set('record', adrList[0].name);
       setSearchParams(searchParams, { replace: true });
     }
   });
@@ -100,10 +103,21 @@ export const EntityAdrContent = (props: {
             ? filePathFilterFn(item.name)
             : madrFilePathFilter(item.name)),
       )
-      .map(({ name }: { name: string }) => name);
+      .map(({ name, title, status, date }) => ({ name, title, status, date }));
 
     setAdrList(adrs);
   }, [filePathFilterFn, value]);
+
+  const getChipColor = (status: string) => {
+    switch (status) {
+      case 'accepted':
+        return 'primary';
+      case 'rejected' || 'deprecated':
+        return 'secondary';
+      default:
+        return 'default';
+    }
+  };
 
   return (
     <Content>
@@ -133,13 +147,24 @@ export const EntityAdrContent = (props: {
                     key={idx}
                     button
                     component={Link}
-                    to={`${rootLink()}?record=${adr}`}
-                    selected={selectedAdr === adr}
+                    to={`${rootLink()}?record=${adr.name}`}
+                    selected={selectedAdr === adr.name}
                   >
                     <ListItemText
-                      secondaryTypographyProps={{ noWrap: true }}
-                      secondary={adr.replace(/\.md$/, '')}
+                      primaryTypographyProps={{
+                        style: { whiteSpace: 'normal' },
+                      }}
+                      primary={adr.title ?? adr?.name.replace(/\.md$/, '')}
+                      secondary={adr.date}
                     />
+                    {adr.status && (
+                      <Chip
+                        label={adr.status}
+                        size="small"
+                        variant="outlined"
+                        color={getChipColor(adr.status)}
+                      />
+                    )}
                   </ListItem>
                 ))}
               </List>
