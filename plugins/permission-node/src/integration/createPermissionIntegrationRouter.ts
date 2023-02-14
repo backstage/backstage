@@ -36,6 +36,7 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
+import { NotImplementedError } from '@backstage/errors';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -204,10 +205,11 @@ const applyConditions = <TResourceType extends string, TResource>(
  *
  * @public
  */
-export const createPermissionIntegrationRouter = <
+
+type CreatePermissionIntegrationRouterResourceOptions<
   TResourceType extends string,
   TResource,
->(options: {
+> = {
   resourceType: TResourceType;
   permissions?: Array<Permission>;
   // Do not infer value of TResourceType from supplied rules.
@@ -215,12 +217,28 @@ export const createPermissionIntegrationRouter = <
   // consider any rules whose resource type does not match
   // to be an error.
   rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
-  getResources?: GetResourcesFn<TResource>;
-}): express.Router => {
-  const { resourceType, permissions, rules, getResources } = options;
+  getResources: GetResourcesFn<TResource>;
+};
+
+type CreatePermissionIntegrationRouterOptions<
+  TResourceType extends string,
+  TResource,
+> =
+  | {
+      permissions: Array<Permission>;
+    }
+  | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>;
+
+export const createPermissionIntegrationRouter = <
+  TResourceType extends string,
+  TResource,
+>(
+  options: CreatePermissionIntegrationRouterOptions<TResourceType, TResource>,
+): express.Router => {
   const router = Router();
   router.use(express.json());
 
+  const { permissions = [], rules = [] } = { rules: [], ...options };
   router.get('/.well-known/backstage/permissions/metadata', (_, res) => {
     const serializedRules: MetadataResponseSerializedRule[] = rules.map(
       rule => ({
@@ -239,30 +257,31 @@ export const createPermissionIntegrationRouter = <
     return res.json(responseJson);
   });
 
-  const getRule = createGetRule(rules);
-
-  const assertValidResourceTypes = (
-    requests: ApplyConditionsRequestEntry[],
-  ) => {
-    const invalidResourceTypes = requests
-      .filter(request => request.resourceType !== resourceType)
-      .map(request => request.resourceType);
-
-    if (invalidResourceTypes.length) {
-      throw new InputError(
-        `Unexpected resource types: ${invalidResourceTypes.join(', ')}.`,
-      );
-    }
-  };
-
   router.post(
     '/.well-known/backstage/permissions/apply-conditions',
     async (req, res: Response<ApplyConditionsResponse | string>) => {
-      if (!getResources) {
-        throw new InputError(
-          'This plugin does not support the apply-conditions API.',
+      if (!isCreatePermissionIntegrationRouterResourceOptions(options)) {
+        throw new NotImplementedError(
+          'This plugin does not support the apply-conditions API',
         );
       }
+      const { resourceType, getResources } = options;
+
+      const getRule = createGetRule(rules);
+
+      const assertValidResourceTypes = (
+        requests: ApplyConditionsRequestEntry[],
+      ) => {
+        const invalidResourceTypes = requests
+          .filter(request => request.resourceType !== resourceType)
+          .map(request => request.resourceType);
+
+        if (invalidResourceTypes.length) {
+          throw new InputError(
+            `Unexpected resource types: ${invalidResourceTypes.join(', ')}.`,
+          );
+        }
+      };
 
       const parseResult = applyConditionsRequestSchema.safeParse(req.body);
 
@@ -303,3 +322,22 @@ export const createPermissionIntegrationRouter = <
 
   return router;
 };
+
+function isCreatePermissionIntegrationRouterResourceOptions<
+  TResourceType extends string,
+  TResource,
+>(
+  options: CreatePermissionIntegrationRouterOptions<TResourceType, TResource>,
+): options is CreatePermissionIntegrationRouterResourceOptions<
+  TResourceType,
+  TResource
+> {
+  return (
+    (
+      options as CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType,
+        TResource
+      >
+    ).resourceType !== undefined
+  );
+}

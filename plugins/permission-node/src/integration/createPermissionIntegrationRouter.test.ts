@@ -62,12 +62,16 @@ const createApp = (
     | typeof defaultMockedGetResources
     | null = defaultMockedGetResources,
 ) => {
-  const router = createPermissionIntegrationRouter({
-    resourceType: 'test-resource',
-    permissions: [testPermission],
-    getResources: mockedGetResources || undefined,
-    rules: [testRule1, testRule2],
-  });
+  const router = createPermissionIntegrationRouter(
+    mockedGetResources
+      ? {
+          resourceType: 'test-resource',
+          permissions: [testPermission],
+          getResources: mockedGetResources,
+          rules: [testRule1, testRule2],
+        }
+      : { permissions: [testPermission] },
+  );
 
   return express().use(router);
 };
@@ -555,16 +559,16 @@ describe('createPermissionIntegrationRouter', () => {
       expect(response.error && response.error.text).toMatch(/invalid/i);
     });
 
-    it('returns 400 with no getResources implementation', async () => {
+    it('returns 501 with no getResources implementation', async () => {
       const response = await request(createApp(null))
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [],
         });
 
-      expect(response.status).toEqual(400);
+      expect(response.status).toEqual(501);
       expect(response.body.error.message).toEqual(
-        'This plugin does not support the apply-conditions API.',
+        'This plugin does not support the apply-conditions API',
       );
     });
   });
