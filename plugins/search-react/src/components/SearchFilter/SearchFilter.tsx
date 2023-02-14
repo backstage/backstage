@@ -15,7 +15,6 @@
  */
 
 import React, { ReactElement, ChangeEvent } from 'react';
-import isEmpty from 'lodash/isEmpty';
 import classnames from 'classnames';
 import {
   makeStyles,
@@ -192,7 +191,9 @@ export function SelectFilter<T extends JsonValue = string>(
     setFilters(prevFilters => {
       const { [props.name]: filter, ...others } = prevFilters;
 
-      return isEmpty(value) ? others : { ...others, [props.name]: value as T };
+      return (value as any[]).length === 0
+        ? others
+        : { ...others, [props.name]: value as T };
     });
   };
 
@@ -221,7 +222,7 @@ export function SelectFilter<T extends JsonValue = string>(
         multiple={multiple}
         displayEmpty={displayEmpty}
         renderValue={selected => {
-          if (displayEmpty && isEmpty(selected as T)) {
+          if (displayEmpty && (selected as any[]).length === 0) {
             return placeholder;
           }
 
