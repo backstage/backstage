@@ -18,7 +18,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { ListItem, ListItemText } from '@material-ui/core';
+import { ListItemText } from '@material-ui/core';
 
 import {
   wrapInTestApp,
@@ -75,9 +75,9 @@ const createExtension = (
     predicate,
     component = async () => (props: { result?: SearchDocument }) =>
       (
-        <ListItem>
+        <>
           <ListItemText primary="Default" secondary={props.result?.title} />
-        </ListItem>
+        </>
       ),
   } = options;
   return plugin.provide(
@@ -120,7 +120,7 @@ describe('extensions', () => {
     );
 
     await userEvent.click(
-      screen.getByRole('button', { name: /Search Result 1/ }),
+      screen.getByRole('link', { name: /Search Result 1/ }),
     );
 
     expect(analyticsApiMock.getEvents()[0]).toMatchObject({
@@ -146,9 +146,7 @@ describe('extensions', () => {
     expect(screen.getByText('Default')).toBeInTheDocument();
     expect(screen.getByText('Search Result 1')).toBeInTheDocument();
 
-    await userEvent.click(
-      screen.getByRole('button', { name: /Search Result 1/ }),
-    );
+    await userEvent.click(screen.getByRole('listitem'));
 
     expect(analyticsApiMock.getEvents()[0]).toMatchObject({
       action: 'discover',
@@ -184,9 +182,9 @@ describe('extensions', () => {
       predicate: (result: SearchResult) => result.type === 'explore',
       component: async () => (props: { result?: SearchDocument }) =>
         (
-          <ListItem>
+          <>
             <ListItemText primary="Explore" secondary={props.result?.title} />
-          </ListItem>
+          </>
         ),
     });
 

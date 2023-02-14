@@ -1,0 +1,783 @@
+openapi: 3.1.0
+
+info:
+  title: '@backstage/plugin-catalog-backend'
+  version: '1'
+  description: The Backstage backend plugin that provides the Backstage catalog
+  license:
+    name: Apache-2.0
+  contact: {}
+
+servers:
+  - url: /
+
+components:
+  examples: {}
+  headers: {}
+  parameters: {}
+  requestBodies: {}
+  responses: {}
+  schemas:
+    RefreshOptions:
+      type: object
+      properties:
+        authorizationToken:
+          type: string
+        entityRef:
+          type: string
+          description: The reference to a single entity that should be refreshed
+      required:
+        - entityRef
+      description: Options for requesting a refresh of entities in the catalog.
+    JsonObject:
+      type: object
+      properties: {}
+      description: A type representing all allowed JSON object values.
+    MapStringString:
+      type: object
+      properties: {}
+      additionalProperties:
+        type: string
+      description: Construct a type with a set of properties K of type T
+    EntityLink:
+      type: object
+      properties:
+        type:
+          type: string
+          description: An optional value to categorize links into specific groups
+        icon:
+          type: string
+          description: An optional semantic key that represents a visual icon.
+        title:
+          type: string
+          description: An optional descriptive title for the link.
+        url:
+          type: string
+          description: The url to the external site, document, etc.
+      required:
+        - url
+      description: A link to external information that is related to the entity.
+    EntityMeta:
+      allOf:
+        - $ref: '#/components/schemas/JsonObject'
+        - type: object
+          properties:
+            links:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityLink'
+              description: A list of external hyperlinks related to the entity.
+            tags:
+              type: array
+              items:
+                type: string
+              description: |-
+                A list of single-valued strings, to for example classify catalog entities in
+                various ways.
+            annotations:
+              $ref: '#/components/schemas/MapStringString'
+            labels:
+              $ref: '#/components/schemas/MapStringString'
+            description:
+              type: string
+              description: |-
+                A short (typically relatively few words, on one line) description of the
+                entity.
+            title:
+              type: string
+              description: |-
+                A display name of the entity, to be presented in user interfaces instead
+                of the `name` property above, when available.
+                This field is sometimes useful when the `name` is cumbersome or ends up
+                being perceived as overly technical. The title generally does not have
+                as stringent format requirements on it, so it may contain special
+                characters and be more explanatory. Do keep it very short though, and
+                avoid situations where a title can be confused with the name of another
+                entity, or where two entities share a title.
+                Note that this is only for display purposes, and may be ignored by some
+                parts of the code. Entity references still always make use of the `name`
+                property, not the title.
+            namespace:
+              type: string
+              description: The namespace that the entity belongs to.
+            name:
+              type: string
+              description: |-
+                The name of the entity.
+                Must be unique within the catalog at any given point in time, for any
+                given namespace + kind pair. This value is part of the technical
+                identifier of the entity, and as such it will appear in URLs, database
+                tables, entity references, and similar. It is subject to restrictions
+                regarding what characters are allowed.
+                If you want to use a different, more human readable string with fewer
+                restrictions on it in user interfaces, see the `title` field below.
+            etag:
+              type: string
+              description: |-
+                An opaque string that changes for each update operation to any part of
+                the entity, including metadata.
+                This field can not be set by the user at creation time, and the server
+                will reject an attempt to do so. The field will be populated in read
+                operations. The field can (optionally) be specified when performing
+                update or delete operations, and the server will then reject the
+                operation if it does not match the current stored value.
+            uid:
+              type: string
+              description: |-
+                A globally unique ID for the entity.
+                This field can not be set by the user at creation time, and the server
+                will reject an attempt to do so. The field will be populated in read
+                operations. The field can (optionally) be specified when performing
+                update or delete operations, but the server is free to reject requests
+                that do so in such a way that it breaks semantics.
+          required:
+            - name
+      description: Metadata fields common to all versions/kinds of entity.
+    EntityRelation:
+      type: object
+      properties:
+        targetRef:
+          type: string
+          description: The entity ref of the target of this relation.
+        type:
+          type: string
+          description: The type of the relation.
+      required:
+        - targetRef
+        - type
+      description: A relation of a specific type to another entity in the catalog.
+    Entity:
+      type: object
+      properties:
+        relations:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityRelation'
+          description: The relations that this entity has with other entities.
+        spec:
+          $ref: '#/components/schemas/JsonObject'
+        metadata:
+          $ref: '#/components/schemas/EntityMeta'
+        kind:
+          type: string
+          description: The high level entity type being described.
+        apiVersion:
+          type: string
+          description: |-
+            The version of specification format for this particular entity that
+            this is written against.
+      required:
+        - metadata
+        - kind
+        - apiVersion
+      description: The parts of the format that's common to all versions/kinds of entity.
+    EntityAncestryResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              parentEntityRefs:
+                items:
+                  type: string
+                type: array
+              entity:
+                $ref: '#/components/schemas/Entity'
+            required:
+              - parentEntityRefs
+              - entity
+        rootEntityRef:
+          type: string
+      required:
+        - items
+        - rootEntityRef
+    EntitiesBatchResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Entity'
+            nullable: true
+          description: |-
+            The list of entities, in the same order as the refs in the request. Entries
+            that are null signify that no entity existed with that ref.
+      required:
+        - items
+    EntityFacets:
+      type: object
+      properties:
+        value:
+          type: string
+        count:
+          type: number
+      description: Construct a type with a set of properties K of type T
+    EntityFacetsResponse:
+      type: object
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/EntityFacets'
+      required:
+        - facets
+    Location:
+      type: object
+      properties:
+        target:
+          type: string
+        type:
+          type: string
+        id:
+          type: string
+      required:
+        - target
+        - type
+        - id
+      description: Entity location for a specific entity.
+    LocationSpec:
+      type: object
+      properties:
+        presence:
+          type: string
+          enum:
+            - optional
+            - required
+        target:
+          type: string
+        type:
+          type: string
+      required:
+        - target
+        - type
+      description: Holds the entity location information.
+    AnalyzeLocationExistingEntity:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/Entity'
+        isRegistered:
+          type: boolean
+        location:
+          $ref: '#/components/schemas/LocationSpec'
+      required:
+        - entity
+        - isRegistered
+        - location
+      description: |-
+        If the folder pointed to already contained catalog info yaml files, they are
+        read and emitted like this so that the frontend can inform the user that it
+        located them and can make sure to register them as well if they weren't
+        already
+    RecursivePartial_Entity_:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+          description: |-
+            The version of specification format for this particular entity that
+            this is written against.
+        kind:
+          type: string
+          description: The high level entity type being described.
+        metadata:
+          $ref: '#/components/schemas/EntityMeta'
+        spec:
+          $ref: '#/components/schemas/JsonObject'
+        relations:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityRelation'
+          description: The relations that this entity has with other entities.
+      description: Makes all keys of an entire hierarchy optional.
+    AnalyzeLocationEntityField:
+      type: object
+      properties:
+        description:
+          type: string
+          description: |-
+            A text to show to the user to inform about the choices made. Like, it could say
+            "Found a CODEOWNERS file that covers this target, so we suggest leaving this
+            field empty; which would currently make it owned by X" where X is taken from the
+            codeowners file.
+        value:
+          type: string
+          nullable: true
+        state:
+          type: string
+          enum:
+            - analysisSuggestedValue
+            - analysisSuggestedNoValue
+            - needsUserInput
+          description: The outcome of the analysis for this particular field
+        field:
+          type: string
+          description: |-
+            e.g. "spec.owner"? The frontend needs to know how to "inject" the field into the
+            entity again if the user wants to change it
+      required:
+        - description
+        - value
+        - state
+        - field
+    AnalyzeLocationGenerateEntity:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyzeLocationEntityField'
+        entity:
+          $ref: '#/components/schemas/RecursivePartial_Entity_'
+      required:
+        - fields
+        - entity
+      description: |-
+        This is some form of representation of what the analyzer could deduce.
+        We should probably have a chat about how this can best be conveyed to
+        the frontend. It'll probably contain a (possibly incomplete) entity, plus
+        enough info for the frontend to know what form data to show to the user
+        for overriding/completing the info.
+    AnalyzeLocationResponse:
+      type: object
+      properties:
+        generateEntities:
+          items:
+            $ref: '#/components/schemas/AnalyzeLocationGenerateEntity'
+          type: array
+        existingEntityFiles:
+          items:
+            $ref: '#/components/schemas/AnalyzeLocationExistingEntity'
+          type: array
+      required:
+        - generateEntities
+        - existingEntityFiles
+    LocationInput:
+      type: object
+      properties:
+        type:
+          type: string
+        target:
+          type: string
+        presence:
+          type: string
+          enum:
+            - optional
+            - required
+      required:
+        - type
+        - target
+        - presence
+    SerializedError:
+      allOf:
+        - $ref: '#/components/schemas/JsonObject'
+        - type: object
+          properties:
+            code:
+              type: string
+              description: A custom code (not necessarily the same as an HTTP response code); may not be present
+            stack:
+              type: string
+              description: A stringified stack trace; may not be present
+            message:
+              type: string
+              description: The message of the exception that was thrown
+            name:
+              type: string
+              description: The name of the exception that was thrown
+          required:
+            - message
+            - name
+      description: The serialized form of an Error.
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /refresh:
+    post:
+      operationId: RefreshEntity
+      responses:
+        '200':
+          description: Refreshed
+      security:
+        # From https://stackoverflow.com/questions/47659324/how-to-specify-an-endpoints-authorization-is-optional-in-openapi-v3
+        - {}
+        - JWT: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshOptions'
+
+  /entities:
+    get:
+      operationId: GetEntities
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entity'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: after
+          required: false
+          schema:
+            type: string
+
+  /entities/by-uid/{uid}:
+    get:
+      operationId: GetEntityByUid
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: string
+    delete:
+      operationId: DeleteEntityByUid
+      responses:
+        '204':
+          description: Deleted successfully.
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: string
+
+  /entities/by-name/{kind}/{namespace}/{name}:
+    get:
+      operationId: GetEntityByName
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: path
+          name: kind
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: namespace
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+
+  /entities/by-name/{kind}/{namespace}/{name}/ancestry:
+    get:
+      operationId: GetEntityAncestryByName
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityAncestryResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: path
+          name: kind
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: namespace
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+
+  /entities/by-refs:
+    post:
+      operationId: GetEntitiesByRefs
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntitiesBatchResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+
+  /entity-facets:
+    get:
+      operationId: GetEntityFacets
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityFacetsResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: query
+          name: facet
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+
+  /locations:
+    post:
+      operationId: CreateLocation
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exists:
+                    type: boolean
+                  entities:
+                    items:
+                      $ref: '#/components/schemas/Entity'
+                    type: array
+                  location:
+                    $ref: '#/components/schemas/Location'
+                required:
+                  - entities
+                  - location
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: query
+          name: dryRun
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                presence:
+                  type: string
+                  enum:
+                    - required
+                    - optional
+                target:
+                  type: string
+                type:
+                  type: string
+              required:
+                - presence
+                - target
+                - type
+    get:
+      operationId: GetLocations
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/Location'
+                  required:
+                    - data
+      security:
+        - {}
+        - JWT: []
+      parameters: []
+
+  /locations/{id}:
+    get:
+      operationId: GetLocation
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+    delete:
+      operationId: DeleteLocation
+      responses:
+        '204':
+          description: No content
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+
+  /analyze-location:
+    post:
+      operationId: AnalyzeLocation
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyzeLocationResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                catalogFileName:
+                  type: string
+                location:
+                  $ref: '#/components/schemas/LocationInput'
+              required:
+                - catalogFileName
+                - location
+
+  /validate-entity:
+    post:
+      operationId: ValidateEntity
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: object
+                    properties:
+                      errors:
+                        $ref: '#/components/schemas/SerializedError'
+                    required:
+                      - errors
+                  - type: object
+                    properties:
+                      errors:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SerializedError'
+                    required:
+                      - errors
+      security:
+        - {}
+        - JWT: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                entity:
+                  $ref: '#/components/schemas/Entity'
+              required:
+                - location
+                - entity

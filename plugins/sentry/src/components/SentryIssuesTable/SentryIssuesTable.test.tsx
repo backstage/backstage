@@ -19,6 +19,7 @@ import SentryIssuesTable from './SentryIssuesTable';
 import { SentryIssue } from '../../api';
 import mockIssue from '../../api/mock/sentry-issue-mock.json';
 import { renderInTestApp } from '@backstage/test-utils';
+import { DateTime } from 'luxon';
 
 describe('SentryIssuesTable', () => {
   it('should render headers in a table', async () => {
@@ -62,6 +63,7 @@ describe('SentryIssuesTable', () => {
         },
         count: '101',
         userCount: 202,
+        lastSeen: DateTime.now().toISO(),
       },
     ];
     const table = await renderInTestApp(
@@ -105,6 +107,6 @@ describe('SentryIssuesTable', () => {
         }}
       />,
     );
-    expect(await table.findByText('Last 24h')).toBeInTheDocument();
+    expect(await table.findByText('Stats for 24h')).toBeInTheDocument();
   });
 });

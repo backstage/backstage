@@ -83,6 +83,7 @@ const mockCacheClient = {
   get: jest.fn(),
   set: jest.fn(),
   delete: jest.fn(),
+  withOptions: jest.fn(),
 };
 
 jest.mock('jose');

@@ -6,7 +6,6 @@
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
-import { ConfigReader } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
@@ -20,7 +19,6 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
-import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
@@ -30,17 +28,15 @@ import { UrlReaderService } from '@backstage/backend-plugin-api';
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export namespace mockServices {
   // (undocumented)
   export namespace cache {
     const // (undocumented)
-      ref: ServiceRef<CacheService, 'plugin'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<CacheService>;
+      factory: () => ServiceFactory<CacheService, 'plugin'>;
   }
   // (undocumented)
-  export function config(options?: config.Options): ConfigReader;
+  export function config(options?: config.Options): ConfigService;
   // (undocumented)
   export namespace config {
     // (undocumented)
@@ -48,62 +44,48 @@ export namespace mockServices {
       data?: JsonObject;
     };
     const // (undocumented)
-      ref: ServiceRef<ConfigService, 'root'>;
-    const // (undocumented)
-      factory: (options?: Options | undefined) => ServiceFactory<ConfigService>;
+      factory: (
+        options?: Options | undefined,
+      ) => ServiceFactory<ConfigService, 'root'>;
   }
   // (undocumented)
   export namespace database {
     const // (undocumented)
-      ref: ServiceRef<DatabaseService, 'plugin'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<DatabaseService>;
+      factory: () => ServiceFactory<DatabaseService, 'plugin'>;
   }
   // (undocumented)
   export namespace httpRouter {
     const // (undocumented)
-      ref: ServiceRef<HttpRouterService, 'plugin'>;
-    const // (undocumented)
       factory: (
         options?: HttpRouterFactoryOptions | undefined,
-      ) => ServiceFactory<HttpRouterService>;
+      ) => ServiceFactory<HttpRouterService, 'plugin'>;
   }
   // (undocumented)
   export function identity(): IdentityService;
   // (undocumented)
   export namespace identity {
     const // (undocumented)
-      ref: ServiceRef<IdentityService, 'plugin'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<IdentityService>;
+      factory: () => ServiceFactory<IdentityService, 'plugin'>;
   }
   // (undocumented)
   export namespace lifecycle {
     const // (undocumented)
-      ref: ServiceRef<LifecycleService, 'plugin'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<LifecycleService>;
+      factory: () => ServiceFactory<LifecycleService, 'plugin'>;
   }
   // (undocumented)
   export namespace logger {
     const // (undocumented)
-      ref: ServiceRef<LoggerService, 'plugin'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<LoggerService>;
+      factory: () => ServiceFactory<LoggerService, 'plugin'>;
   }
   // (undocumented)
   export namespace permissions {
     const // (undocumented)
-      ref: ServiceRef<PermissionsService, 'plugin'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<PermissionsService>;
+      factory: () => ServiceFactory<PermissionsService, 'plugin'>;
   }
   // (undocumented)
   export namespace rootLifecycle {
     const // (undocumented)
-      ref: ServiceRef<RootLifecycleService, 'root'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<RootLifecycleService>;
+      factory: () => ServiceFactory<RootLifecycleService, 'root'>;
   }
   // (undocumented)
   export function rootLogger(options?: rootLogger.Options): LoggerService;
@@ -111,42 +93,29 @@ export namespace mockServices {
   export namespace rootLogger {
     // (undocumented)
     export type Options = {
-      levels:
-        | boolean
-        | {
-            error: boolean;
-            warn: boolean;
-            info: boolean;
-            debug: boolean;
-          };
+      level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
     const // (undocumented)
-      ref: ServiceRef<RootLoggerService, 'root'>;
-    const // (undocumented)
-      factory: (options?: Options | undefined) => ServiceFactory<LoggerService>;
+      factory: (
+        options?: Options | undefined,
+      ) => ServiceFactory<LoggerService, 'root'>;
   }
   // (undocumented)
   export namespace scheduler {
     const // (undocumented)
-      ref: ServiceRef<SchedulerService, 'plugin'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<SchedulerService>;
+      factory: () => ServiceFactory<SchedulerService, 'plugin'>;
   }
   // (undocumented)
   export function tokenManager(): TokenManagerService;
   // (undocumented)
   export namespace tokenManager {
     const // (undocumented)
-      ref: ServiceRef<TokenManagerService, 'plugin'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<TokenManagerService>;
+      factory: () => ServiceFactory<TokenManagerService, 'plugin'>;
   }
   // (undocumented)
   export namespace urlReader {
     const // (undocumented)
-      ref: ServiceRef<UrlReaderService, 'plugin'>;
-    const // (undocumented)
-      factory: () => ServiceFactory<UrlReaderService>;
+      factory: () => ServiceFactory<UrlReaderService, 'plugin'>;
   }
 }
 
@@ -157,7 +126,7 @@ export function setupRequestMockHandlers(worker: {
   resetHandlers: () => void;
 }): void;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export function startTestBackend<
   TServices extends any[],
   TExtensionPoints extends any[],
@@ -165,12 +134,12 @@ export function startTestBackend<
   options: TestBackendOptions<TServices, TExtensionPoints>,
 ): Promise<TestBackend>;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export interface TestBackend extends Backend {
   readonly server: ExtendedHttpServer;
 }
 
-// @alpha (undocumented)
+// @public (undocumented)
 export interface TestBackendOptions<
   TServices extends any[],
   TExtensionPoints extends any[],

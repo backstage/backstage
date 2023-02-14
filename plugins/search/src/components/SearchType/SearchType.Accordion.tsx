@@ -15,7 +15,8 @@
  */
 
 import React, { cloneElement, Fragment, useEffect, useState } from 'react';
-import { useSearch } from '@backstage/plugin-search-react';
+import { useApi } from '@backstage/core-plugin-api';
+import { searchApiRef, useSearch } from '@backstage/plugin-search-react';
 import {
   Accordion,
   AccordionSummary,
@@ -32,6 +33,7 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AllIcon from '@material-ui/icons/FontDownload';
+import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -81,13 +83,15 @@ export type SearchTypeAccordionProps = {
     icon: JSX.Element;
   }>;
   defaultValue?: string;
+  showCounts?: boolean;
 };
 
 export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
   const classes = useStyles();
-  const { setPageCursor, setTypes, types } = useSearch();
+  const { filters, setPageCursor, setTypes, term, types } = useSearch();
+  const searchApi = useApi(searchApiRef);
   const [expanded, setExpanded] = useState(true);
-  const { defaultValue, name, types: givenTypes } = props;
+  const { defaultValue, name, showCounts, types: givenTypes } = props;
 
   const toggleExpanded = () => setExpanded(prevState => !prevState);
   const handleClick = (type: string) => {
@@ -115,6 +119,37 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
     ...givenTypes,
   ];
   const selected = types[0] || '';
+
+  const { value: resultCounts } = useAsync(async () => {
+    if (!showCounts) {
+      return {};
+    }
+
+    const counts = await Promise.all(
+      definedTypes
+        .map(t => t.value)
+        .map(async type => {
+          const { numberOfResults } = await searchApi.query({
+            term,
+            types: type ? [type] : [],
+            filters:
+              types.includes(type) || (!types.length && !type) ? filters : {},
+            pageLimit: 0,
+          });
+
+          return [
+            type,
+            numberOfResults !== undefined
+              ? `${
+                  numberOfResults >= 10000 ? `>10000` : numberOfResults
+                } results`
+              : ' -- ',
+          ];
+        }),
+    );
+
+    return Object.fromEntries(counts);
+  }, [filters, showCounts, term, types]);
 
   return (
     <Card className={classes.card}>
@@ -161,7 +196,10 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
                         className: classes.listItemIcon,
                       })}
                     </ListItemIcon>
-                    <ListItemText primary={type.name} />
+                    <ListItemText
+                      primary={type.name}
+                      secondary={resultCounts && resultCounts[type.value]}
+                    />
                   </ListItem>
                 </Fragment>
               ))}

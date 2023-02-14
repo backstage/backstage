@@ -7,7 +7,8 @@ The shortcuts plugin allows a user to have easy access to pages within a Backsta
 ### Install the package:
 
 ```bash
-yarn add @backstage/plugin-shortcuts
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-shortcuts
 ```
 
 ### Register plugin:

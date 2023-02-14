@@ -6,6 +6,8 @@ sidebar_label: Naming Patterns
 description: Naming patterns in the backend system
 ---
 
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+
 These are the naming patterns to adhere to within the backend system. They help us keep exports consistent across packages and make it easier to understand the usage and intent of exports.
 
 ### Plugins
@@ -19,7 +21,7 @@ Example:
 
 ```ts
 export const catalogPlugin = createBackendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   ...
 })
 ```
@@ -34,7 +36,7 @@ export const catalogPlugin = createBackendPlugin({
 Example:
 
 ```ts
-export const catalogModuleGithubEntityProvider = createBackendPlugin({
+export const catalogModuleGithubEntityProvider = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'githubEntityProvider',
   ...
@@ -64,12 +66,12 @@ export const catalogProcessingExtensionPoint = createExtensionPoint<CatalogProce
 
 ### Services
 
-| Description | Pattern             | Examples                                           |
-| ----------- | ------------------- | -------------------------------------------------- |
-| Interface   | `<Name>Service`     | `LoggerService`, `DatabaseService`                 |
-| Reference   | `<name>ServiceRef`  | `loggerServiceRef`, `databaseServiceRef`           |
-| ID          | `<pluginId>.<name>` | `'core.rootHttpRouter'`, `'catalog.catalogClient'` |
-| Factory     | `<name>Factory`     | `loggerFactory`, `databaseFactory`                 |
+| Description | Pattern                | Examples                                           |
+| ----------- | ---------------------- | -------------------------------------------------- |
+| Interface   | `<Name>Service`        | `LoggerService`, `DatabaseService`                 |
+| Reference   | `<name>ServiceRef`     | `loggerServiceRef`, `databaseServiceRef`           |
+| ID          | `<pluginId>.<name>`    | `'core.rootHttpRouter'`, `'catalog.catalogClient'` |
+| Factory     | `<name>ServiceFactory` | `loggerServiceFactory`, `databaseServiceFactory`   |
 
 Example:
 
@@ -83,7 +85,7 @@ export const catalogClientServiceRef = createServiceRef<CatalogClientService>({
   ...
 })
 
-export const catalogClientFactory = createServiceFactory({
+export const catalogClientServiceFactory = createServiceFactory({
   service: catalogClientServiceRef,
   ...
 })

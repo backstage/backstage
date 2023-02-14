@@ -159,7 +159,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     appendDeps(pkg);
   }
 
-  // eslint-disable-next-line import/no-extraneous-dependencies
+  // eslint-disable-next-line @backstage/no-forbidden-package-imports
   appendDeps(require('@backstage/create-app/package.json'));
 
   print(`Preparing workspace`);
@@ -490,6 +490,17 @@ async function testBackendStart(appDir: string, ...args: string[]) {
           !l.includes('Update this package.json to use a subpath') &&
           !l.includes(
             '(Use `node --trace-deprecation ...` to show where the warning was created)',
+          ) &&
+          // These 4 are all for the AWS SDK v2 deprecation
+          !l.includes(
+            'The AWS SDK for JavaScript (v2) will be put into maintenance mode',
+          ) &&
+          !l.includes(
+            'Please migrate your code to use AWS SDK for JavaScript',
+          ) &&
+          !l.includes('check the migration guide at https://a.co/7PzMCcy') &&
+          !l.includes(
+            '(Use `node --trace-warnings ...` to show where the warning was created)',
           ),
       ).length !== 0
     );

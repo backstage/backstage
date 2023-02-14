@@ -21,6 +21,7 @@ import Docker from 'dockerode';
 import {
   TechdocsGenerator,
   ParsedLocationAnnotation,
+  getMkdocsYml,
 } from '@backstage/plugin-techdocs-node';
 import {
   ContainerRunner,
@@ -53,6 +54,10 @@ export default async function generate(opts: OptionValues) {
   logger.verbose('Creating output directory if it does not exist.');
 
   await fs.ensureDir(outputDir);
+
+  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
+    sourceDir,
+  );
 
   const config = new ConfigReader({
     techdocs: {
@@ -106,7 +111,14 @@ export default async function generate(opts: OptionValues) {
     logger,
     etag: opts.etag,
     ...(process.env.LOG_LEVEL === 'debug' ? { logStream: stdout } : {}),
+    siteOptions: { name: opts.siteName },
   });
+
+  if (configIsTemporary) {
+    process.on('exit', async () => {
+      fs.rmSync(mkdocsYmlPath, {});
+    });
+  }
 
   logger.info('Done!');
 }

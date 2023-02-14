@@ -18,7 +18,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { ListItem, MenuItem } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 import DocsIcon from '@material-ui/icons/InsertDriveFile';
 
 import {
@@ -143,8 +143,7 @@ describe('SearchResultGroup', () => {
     }).provide(
       createSearchResultListItemExtension({
         name: 'SearchResultGroupItemExtension',
-        component: async () => props =>
-          <ListItem>Result: {props.result?.title}</ListItem>,
+        component: async () => props => <>Result: {props.result?.title}</>,
       }),
     );
 

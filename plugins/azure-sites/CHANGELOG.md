@@ -1,5 +1,19 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.4-next.2
+
+### Patch Changes
+
+- 98a00a09d5: Fixed `AzureSites` plugin start and stop issue #15904
+  Fixed `AzureSites` UI load issue #15907
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-azure-sites-common@0.1.0
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+
 ## 0.1.4-next.1
 
 ### Patch Changes

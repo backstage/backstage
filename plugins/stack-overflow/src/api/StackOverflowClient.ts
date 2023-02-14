@@ -39,9 +39,8 @@ export class StackOverflowClient implements StackOverflowApi {
   }
 
   /**
-   * List Questions in the StackOverflow instance
-   *
-   * */
+   * List questions in the StackOverflow instance
+   */
   async listQuestions(options: {
     requestParams: StackOverflowQuestionsRequestParams;
   }): Promise<StackOverflowQuestion[]> {

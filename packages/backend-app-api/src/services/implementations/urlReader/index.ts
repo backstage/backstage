@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { urlReaderFactory } from './urlReaderFactory';
+export { urlReaderServiceFactory } from './urlReaderServiceFactory';

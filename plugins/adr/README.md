@@ -4,6 +4,8 @@ Welcome to the ADR plugin!
 
 This plugin allows you to browse ADRs associated with your entities as well as a way to discover ADRs across others entities via Backstage Search. Use this to learn from the past experience of other projects to guide your own architecture decisions.
 
+![ADR tab](./docs/adr-tab.png)
+
 ## Setup
 
 1. Install this plugin:

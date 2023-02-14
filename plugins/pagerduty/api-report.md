@@ -14,7 +14,7 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 
 // @public (undocumented)
-export const EntityPagerDutyCard: () => JSX.Element;
+export const EntityPagerDutyCard: (props: PagerDutyCardProps) => JSX.Element;
 
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
@@ -45,7 +45,12 @@ export type PagerDutyAssignee = {
 };
 
 // @public (undocumented)
-export const PagerDutyCard: () => JSX.Element;
+export const PagerDutyCard: (props: PagerDutyCardProps) => JSX.Element;
+
+// @public (undocumented)
+export type PagerDutyCardProps = {
+  readOnly?: boolean;
+};
 
 // @public (undocumented)
 export type PagerDutyChangeEvent = {

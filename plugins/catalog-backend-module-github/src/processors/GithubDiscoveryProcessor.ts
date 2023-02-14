@@ -46,7 +46,7 @@ import { getOrganizationRepositories } from '../lib';
  *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
  *
  * @public
- **/
+ */
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;

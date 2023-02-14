@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 /// <reference types="node" />
 /// <reference types="react" />

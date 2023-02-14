@@ -6,6 +6,8 @@ sidebar_label: Migration Guide
 description: How to migrate existing backends to the new backend system
 ---
 
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. As such, it is not considered stable, and it is not recommended to migrate production backends to the new backend system until it has a stable release.**
+
 ## Overview
 
 This section describes how to migrate an existing Backstage backend service

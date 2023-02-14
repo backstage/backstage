@@ -22,3 +22,4 @@ export * from './ComponentsCards';
 export * from './GraphQlDefinitionWidget';
 export * from './OpenApiDefinitionWidget';
 export * from './PlainApiDefinitionWidget';
+export * from './TrpcDefinitionWidget';

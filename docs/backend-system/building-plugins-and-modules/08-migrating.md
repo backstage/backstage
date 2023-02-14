@@ -6,6 +6,8 @@ sidebar_label: Migration Guide
 description: How to migrate existing backend plugins to the new backend system
 ---
 
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+
 Migrating an existing backend plugin to the new backend system is fairly straightforward. The process is similar across the majority of plugins which just return a `Router` that is then wired up in the `index.ts` file of your backend. The primary thing that we need to do is to make sure that the dependencies that are required by the plugin are available, and then registering the router with the HTTP router service.
 
 Let's look at an example of migrating the Kubernetes backend plugin. In the existing (old) system, the kubernetes backend is structured like this:
@@ -44,7 +46,7 @@ import { Router } from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
 
 export const kubernetesPlugin = createBackendPlugin({
-  id: 'kubernetes',
+  pluginId: 'kubernetes',
   register(env) {
     env.registerInit({
       deps: {
@@ -93,7 +95,7 @@ export interface KubernetesOptions {
 }
 
 const kubernetesPlugin = createBackendPlugin((options: KubernetesOptions) => ({
-  id: 'kubernetes',
+  pluginId: 'kubernetes',
   register(env) {
     env.registerInit({
       deps: {
@@ -180,7 +182,7 @@ class ClusterSupplier implements KubernetesClusterSupplierExtensionPoint {
 }
 
 export const kubernetesPlugin = createBackendPlugin({
-  id: 'kubernetes',
+  pluginId: 'kubernetes',
   register(env) {
     const extensionPoint = new ClusterSupplier();
     // We register the extension point with the backend, which allows modules to

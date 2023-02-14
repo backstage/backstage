@@ -188,12 +188,12 @@ export function InfoCard(props: Props): JSX.Element {
     variants.forEach(name => {
       calculatedStyle = {
         ...calculatedStyle,
-        ...VARIANT_STYLES.card[name as keyof typeof VARIANT_STYLES['card']],
+        ...VARIANT_STYLES.card[name as keyof (typeof VARIANT_STYLES)['card']],
       };
       calculatedCardStyle = {
         ...calculatedCardStyle,
         ...VARIANT_STYLES.cardContent[
-          name as keyof typeof VARIANT_STYLES['cardContent']
+          name as keyof (typeof VARIANT_STYLES)['cardContent']
         ],
       };
     });

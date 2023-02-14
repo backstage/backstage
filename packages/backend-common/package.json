@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.18.2-next.1",
+  "version": "0.18.2-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-dev-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",

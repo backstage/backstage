@@ -262,12 +262,12 @@ You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
 pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
 apt).
 
-You can do so by including the following lines in the last step of your
+You can do so by including the following lines right above `USER node` of your
 `Dockerfile`:
 
 ```Dockerfile
 RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install mkdocs-techdocs-core==1.0.1
+RUN pip3 install mkdocs-techdocs-core==1.1.7
 ```
 
 Please be aware that the version requirement could change, you need to check our

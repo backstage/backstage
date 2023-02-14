@@ -14,6 +14,7 @@ import { InputBaseProps } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LinkProps } from '@backstage/core-components';
+import { ListItemProps } from '@material-ui/core';
 import { ListItemTextProps } from '@material-ui/core';
 import { ListProps } from '@material-ui/core';
 import { PropsWithChildren } from 'react';
@@ -55,6 +56,7 @@ export type DefaultResultListItemProps = {
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;
+  toggleModal?: () => void;
 };
 
 // @public (undocumented)
@@ -390,6 +392,16 @@ export type SearchResultListItemExtensionOptions<
   component: () => Promise<Component>;
   predicate?: (result: SearchResult_2) => boolean;
 };
+
+// @public
+export type SearchResultListItemExtensionProps<Props extends {} = {}> = Props &
+  PropsWithChildren<
+    {
+      rank?: number;
+      result?: SearchDocument;
+      noTrack?: boolean;
+    } & Omit<ListItemProps, 'button'>
+  >;
 
 // @public
 export const SearchResultListItemExtensions: (

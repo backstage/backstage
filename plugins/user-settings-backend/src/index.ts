@@ -16,3 +16,4 @@
 
 export * from './service';
 export * from './database';
+export { userSettingsPlugin } from './plugin';

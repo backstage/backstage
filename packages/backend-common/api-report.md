@@ -13,9 +13,9 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
-import { CacheClient } from '@backstage/backend-plugin-api';
-import { CacheClientOptions } from '@backstage/backend-plugin-api';
-import { CacheClientSetOptions } from '@backstage/backend-plugin-api';
+import { CacheService as CacheClient } from '@backstage/backend-plugin-api';
+import { CacheServiceOptions as CacheClientOptions } from '@backstage/backend-plugin-api';
+import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import cors from 'cors';
@@ -32,14 +32,15 @@ import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
 import { Knex } from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
+import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { CacheService as PluginCacheManager } from '@backstage/backend-plugin-api';
 import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
+import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
@@ -197,6 +198,11 @@ export type CacheManagerOptions = {
   onError?: (err: Error) => void;
 };
 
+// @public (undocumented)
+export function cacheToPluginCacheManager(
+  cache: CacheClient,
+): PluginCacheManager;
+
 // @public
 export const coloredFormat: winston.Logform.Format;
 
@@ -232,6 +238,10 @@ export class Contexts {
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
+  deps?: {
+    lifecycle: LifecycleService;
+    pluginMetadata: PluginMetadataService;
+  },
 ): Knex<any, any[]>;
 
 // @public
@@ -252,7 +262,13 @@ export function createStatusCheckRouter(options: {
 
 // @public
 export class DatabaseManager {
-  forPlugin(pluginId: string): PluginDatabaseManager;
+  forPlugin(
+    pluginId: string,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): PluginDatabaseManager;
   static fromConfig(
     config: Config,
     options?: DatabaseManagerOptions,
@@ -516,7 +532,7 @@ export const legacyPlugin: (
     default: LegacyCreateRouter<
       TransformedEnv<
         {
-          cache: PluginCacheManager;
+          cache: CacheClient;
           config: ConfigService;
           database: PluginDatabaseManager;
           discovery: PluginEndpointDiscovery;
@@ -529,6 +545,7 @@ export const legacyPlugin: (
         },
         {
           logger: (log: LoggerService) => Logger;
+          cache: (cache: CacheClient) => PluginCacheManager;
         }
       >
     >;
@@ -569,7 +586,11 @@ export function makeLegacyPlugin<
 // @public
 export function notFoundHandler(): RequestHandler;
 
-export { PluginCacheManager };
+// @public (undocumented)
+export interface PluginCacheManager {
+  // (undocumented)
+  getClient(options?: CacheClientOptions): CacheClient;
+}
 
 export { PluginDatabaseManager };
 

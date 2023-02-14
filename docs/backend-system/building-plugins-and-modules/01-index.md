@@ -6,6 +6,8 @@ sidebar_label: Overview
 description: Building backend plugins and modules using the new backend system
 ---
 
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+
 > NOTE: If you have an existing backend and/or backend plugins that are not yet
 > using the new backend system, see [migrating](./08-migrating.md).
 
@@ -34,7 +36,7 @@ import {
 import { createExampleRouter } from './router';
 
 export const examplePlugin = createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -181,7 +183,7 @@ that needs to be different across environments.
 import { coreServices } from '@backstage/backend-plugin-api';
 
 export const examplePlugin = createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: { config: coreServices.config },
@@ -214,7 +216,7 @@ export interface ExampleOptions {
 
 export const examplePlugin = createBackendPlugin(
   (options?: ExampleOptions) => ({
-    id: 'example',
+    pluginId: 'example',
     register(env) {
       env.registerInit({
         deps: {
