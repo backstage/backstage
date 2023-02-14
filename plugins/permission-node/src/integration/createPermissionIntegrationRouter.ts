@@ -171,6 +171,40 @@ const applyConditions = <TResourceType extends string, TResource>(
 };
 
 /**
+ * Options for creating a permission integration router specific
+ * for a particular resource type.
+ *
+ * @public
+ */
+export type CreatePermissionIntegrationRouterResourceOptions<
+  TResourceType extends string,
+  TResource,
+> = {
+  resourceType: TResourceType;
+  permissions?: Array<Permission>;
+  // Do not infer value of TResourceType from supplied rules.
+  // instead only consider the resourceType parameter, and
+  // consider any rules whose resource type does not match
+  // to be an error.
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
+  getResources: GetResourcesFn<TResource>;
+};
+
+/**
+ * Options for creating a permission integration router.
+ *
+ * @public
+ */
+export type CreatePermissionIntegrationRouterOptions<
+  TResourceType extends string,
+  TResource,
+> =
+  | {
+      permissions: Array<Permission>;
+    }
+  | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>;
+
+/**
  * Create an express Router which provides an authorization route to allow
  * integration between the permission backend and other Backstage backend
  * plugins. Plugin owners that wish to support conditional authorization for
@@ -205,30 +239,6 @@ const applyConditions = <TResourceType extends string, TResource>(
  *
  * @public
  */
-
-type CreatePermissionIntegrationRouterResourceOptions<
-  TResourceType extends string,
-  TResource,
-> = {
-  resourceType: TResourceType;
-  permissions?: Array<Permission>;
-  // Do not infer value of TResourceType from supplied rules.
-  // instead only consider the resourceType parameter, and
-  // consider any rules whose resource type does not match
-  // to be an error.
-  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
-  getResources: GetResourcesFn<TResource>;
-};
-
-type CreatePermissionIntegrationRouterOptions<
-  TResourceType extends string,
-  TResource,
-> =
-  | {
-      permissions: Array<Permission>;
-    }
-  | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>;
-
 export const createPermissionIntegrationRouter = <
   TResourceType extends string,
   TResource,

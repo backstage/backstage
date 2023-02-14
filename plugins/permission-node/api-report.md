@@ -112,6 +112,11 @@ export const createConditionTransformer: <
 ) => ConditionTransformer<TQuery>;
 
 // @public
+export const createIsAuthorized: <TResource, TQuery>(
+  rules: PermissionRule<TResource, TQuery, string, PermissionRuleParams>[],
+) => (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+
+// @public
 export const createPermissionIntegrationRouter: <
   TResourceType extends string,
   TResource,
@@ -124,7 +129,7 @@ export const createPermissionIntegrationRouter: <
     NoInfer<TResourceType>,
     PermissionRuleParams
   >[];
-  getResources?: GetResourcesFn<TResource> | undefined;
+  getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
 }) => express.Router;
 
 // @public
@@ -136,11 +141,6 @@ export const createPermissionRule: <
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
-
-// @public
-export type GetResourcesFn<TResource> = (
-  resourceRefs: string[],
-) => Promise<Array<TResource | undefined>>;
 
 // @alpha
 export const isAndCriteria: <T>(
