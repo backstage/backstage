@@ -30,6 +30,7 @@
     "@backstage/plugin-code-coverage": "workspace:^",
     "@backstage/plugin-cost-insights": "workspace:^",
     "@backstage/plugin-dynatrace": "workspace:^",
+    "@backstage/plugin-entity-feedback": "workspace:^",
     "@backstage/plugin-explore": "workspace:^",
     "@backstage/plugin-gcalendar": "workspace:^",
     "@backstage/plugin-gcp-projects": "workspace:^",

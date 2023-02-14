@@ -186,7 +186,10 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       }
       if (
         matcher.pattern &&
-        !minimatch(location?.target, matcher.pattern, { nocase: true })
+        !minimatch(location?.target, matcher.pattern, {
+          nocase: true,
+          dot: true,
+        })
       ) {
         continue;
       }
