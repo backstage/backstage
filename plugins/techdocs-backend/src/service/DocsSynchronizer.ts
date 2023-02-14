@@ -165,7 +165,7 @@ export class DocsSynchronizer {
       );
       error(
         new NotFoundError(
-          'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
+          'Sorry! It took too long for the generated docs to show up in storage. Are you sure the docs project is generating an `index.html` file? Otherwise, check back later.',
         ),
       );
       return;
