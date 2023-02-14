@@ -63,7 +63,7 @@ BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together
 with components and systems will better allow us to visualize resource
 footprint, and create tooling around them.
 
-##Organizational Entities
+## Organizational Entities
 
 ### User
 
@@ -120,7 +120,7 @@ product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
 
-##Other
+## Other
 
 ### Location
 
