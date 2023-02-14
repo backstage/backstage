@@ -50,6 +50,9 @@ describe('parseLocationRef', () => {
     expect(() => parseLocationRef('https://bleh')).toThrow(
       "Invalid location ref 'https://bleh', please prefix it with 'url:', e.g. 'url:https://bleh'",
     );
+    expect(() => parseLocationRef('url:javascript:alert()')).toThrow(
+      "Invalid location ref 'url:javascript:alert()', target is a javascript: URL",
+    );
   });
 });
 
@@ -69,6 +72,12 @@ describe('stringifyLocationRef', () => {
     );
     expect(() => stringifyLocationRef({ type: 'hello', target: '' })).toThrow(
       'Unable to stringify location ref, empty target',
+    );
+    expect(() =>
+      // eslint-disable-next-line no-script-url
+      stringifyLocationRef({ type: 'url', target: 'javascript:alert()' }),
+    ).toThrow(
+      "Invalid location ref 'url:javascript:alert()', target is a javascript: URL",
     );
   });
 });
