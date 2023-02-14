@@ -241,6 +241,7 @@ OAuth
 octokit
 oidc
 Okta
+Olausson
 Oldsberg
 onboarding
 Onboarding
