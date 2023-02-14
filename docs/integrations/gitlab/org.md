@@ -20,9 +20,9 @@ integrations:
 ```
 
 This will query all users and groups from your gitlab installation. Depending on the size
-of the Gitlab Instance, this can take some time our resources.
+of the Gitlab Instance, this can take some time and resources.
 
-The token that is used for the Organization Integration, has to be an Admin PAT.
+The token that is used for the Organization Integration, has to be an Admin Personal Access Token (PAT).
 
 ```yaml
 catalog:
