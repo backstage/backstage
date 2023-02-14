@@ -1,5 +1,18 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.8
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+
 ## 0.2.8-next.2
 
 ### Patch Changes

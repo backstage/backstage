@@ -1,5 +1,19 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.4
+
+### Patch Changes
+
+- dfa0bb737e: Fix bug in EntityCostsCard if cost aggregation array is empty. Allow title override on the Cost Insights Page
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.12.4-next.2
 
 ### Patch Changes

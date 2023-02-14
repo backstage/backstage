@@ -1,5 +1,34 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.1.0
+
+### Minor Changes
+
+- a07750745b: Added `DescriptionField` field override to the `next/scaffolder`
+- a521379688: Migrating the `TemplateEditorPage` to work with the new components from `@backstage/plugin-scaffolder-react`
+- 8c2966536b: Embed scaffolder workflow in other components
+- 5555e17313: refactor `createAsyncValidators` to be recursive to ensure validators are called in nested schemas.
+
+### Patch Changes
+
+- 04f717a8e1: `scaffolder/next`: bump `react-jsonschema-form` libraries to `v5-stable`
+- b46f385eff: scaffolder/next: Implementing a simple `OngoingTask` page
+- cbab8ac107: lock versions of `@rjsf/*-beta` packages
+- 346d6b6630: Upgrade `@rjsf` version 5 dependencies to `beta.18`
+- ccbf91051b: bump `@rjsf` `v5` dependencies to 5.1.0
+- d2ddde2108: Add `ScaffolderLayouts` to `NextScaffolderPage`
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-scaffolder-common@1.2.5
+
 ## 1.1.0-next.2
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-apollo-explorer
 
+## 0.1.8
+
+### Patch Changes
+
+- d950d3e217: Depend on `@material-ui/core` version `^4.12.2` like all other in-repo packages
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+
 ## 0.1.8-next.1
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/app-defaults
 
+## 1.2.0
+
+### Minor Changes
+
+- db10b6ef65: Added a Bitbucket Server Auth Provider and added its API to the app defaults
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-app-api@1.5.0
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-permission-react@0.4.10
+
 ## 1.1.1-next.1
 
 ### Patch Changes

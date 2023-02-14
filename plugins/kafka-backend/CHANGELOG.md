@@ -1,5 +1,18 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.35
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- 4a6f38a535: Added a Backend System plugin feature
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+
 ## 0.2.35-next.2
 
 ### Patch Changes

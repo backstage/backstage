@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog
 
+## 1.8.0
+
+### Minor Changes
+
+- 0c1fc3986c: Added Markdown support in the `AboutCard` description section
+- 0eaa579f89: The `CatalogSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- d7f55f6bd2: The list of entities takes into account the title when its different from the name to sort the entities.
+- 66e2aab4c4: `ListItem` wrapper component moved to `SearchResultListItemExtension` for all `*SearchResultListItems` that are exported as extensions. This is to make sure the list only contains list elements.
+
+  Note: If you have implemented a custom result list item, we recommend you to remove the list item wrapper to avoid nested `<li>` elements.
+
+- 7d46ca2f68: Make catalog search result list a bit more customizable
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/errors@1.1.4
+  - @backstage/integration-react@1.1.10
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.8.0-next.2
 
 ### Patch Changes
