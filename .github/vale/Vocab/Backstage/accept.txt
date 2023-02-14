@@ -160,7 +160,6 @@ indexable
 inlined
 inlinehilite
 integrator's
-Intellij
 interop
 JaCoCo
 JavaScript

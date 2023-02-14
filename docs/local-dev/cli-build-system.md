@@ -560,7 +560,7 @@ The overrides in a single `package.json` may for example look like this:
 
 For your productivity working with unit tests it's quite essential to have your debugging configured in IDE. It will help you to identify the root cause of the issue faster.
 
-#### Intellij IDEA
+#### IntelliJ IDEA
 
 1. Update Jest configuration template by:
 
