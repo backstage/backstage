@@ -24,32 +24,30 @@ export const ContentBlock = ({
   topImgSrc,
   hasBulletLine,
   actionButtons,
-}: IContentBlockProps) => {
-  return (
-    <div className={clsx(className, contentBlockStyles.contentBlock)}>
-      {topImgSrc && <img src={topImgSrc} alt={topImgSrc} />}
+}: IContentBlockProps) => (
+  <div className={clsx(className, contentBlockStyles.contentBlock)}>
+    {topImgSrc && <img src={topImgSrc} alt={topImgSrc} />}
 
-      <div className="contentBlockTitle">
-        {hasBulletLine && <div className="bulletLine" />}
+    <div className="contentBlockTitle">
+      {hasBulletLine && <div className="bulletLine" />}
 
-        {title && React.isValidElement(title) ? title : <h2>{title}</h2>}
-      </div>
-
-      {children && <p>{children}</p>}
-
-      {actionButtons && (
-        <div className="actionButtons">
-          {actionButtons.map(({ link, label }, index) => (
-            <Link
-              key={index}
-              className="button button--primary button--lg"
-              to={link}
-            >
-              {label}
-            </Link>
-          ))}
-        </div>
-      )}
+      {title && React.isValidElement(title) ? title : <h2>{title}</h2>}
     </div>
-  );
-};
+
+    {children && React.isValidElement(children) ? children : <p>{children}</p>}
+
+    {actionButtons && (
+      <div className="actionButtons">
+        {actionButtons.map(({ link, label }, index) => (
+          <Link
+            key={index}
+            className="button button--primary button--lg"
+            to={link}
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
+    )}
+  </div>
+);
