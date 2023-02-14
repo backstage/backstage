@@ -128,7 +128,8 @@ A location is a marker that references other places to look for catalog data.
 
 ### Type
 
-The type field in the system has no set meaning. It is up to the user to assign their own types and use them as desired, such as for link validation or creating custom UI components. Some common pre-defined types are depicted in the ecosystem modeling diagram.
+The type field in the system has no set meaning. It is up to the user to assign their own types and use them as desired, such as for link validation or creating custom UI components. Some common pre-defined types are depicted in the
+[ecosystem modeling diagram](#ecosystem-modeling).
 
 ### Template
 
