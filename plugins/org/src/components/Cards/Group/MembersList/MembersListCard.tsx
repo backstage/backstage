@@ -59,15 +59,14 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1',
       minWidth: '0px',
     },
-    email: {
+    overflowingText: {
       overflow: 'hidden',
-      whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
       display: 'inline-block',
       maxWidth: '100%',
       '&:hover': {
         overflow: 'visible',
-        whiteSpace: 'normal',
+        wordBreak: 'break-word',
       },
     },
   }),
@@ -108,6 +107,7 @@ const MemberComponent = (props: { member: UserEntity }) => {
           >
             <Typography variant="h5">
               <Link
+                className={classes.overflowingText}
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
                   entityRouteParams(props.member),
@@ -117,7 +117,10 @@ const MemberComponent = (props: { member: UserEntity }) => {
               </Link>
             </Typography>
             {profile?.email && (
-              <Link className={classes.email} to={`mailto:${profile.email}`}>
+              <Link
+                className={classes.overflowingText}
+                to={`mailto:${profile.email}`}
+              >
                 {profile.email}
               </Link>
             )}

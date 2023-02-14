@@ -44,8 +44,16 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
       },
       height: '100%',
     },
-    bold: {
+    title: {
       fontWeight: theme.typography.fontWeightBold,
+      textAlign: 'center',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '100%',
+      '&:hover': {
+        overflow: 'visible',
+        wordBreak: 'break-word',
+      },
     },
     entityTypeBox: {
       background: (props: { type: string }) =>
@@ -77,10 +85,10 @@ const EntityCountTile = ({
         flexDirection="column"
         alignItems="center"
       >
-        <Typography className={classes.bold} variant="h6">
+        <Typography className={classes.title} variant="h6">
           {counter}
         </Typography>
-        <Typography className={classes.bold} variant="h6">
+        <Typography className={classes.title} variant="h6">
           {pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
         </Typography>
         {type && <Typography variant="subtitle1">{kind}</Typography>}
