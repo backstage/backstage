@@ -125,11 +125,11 @@ describe('MicrosoftAuth', () => {
       );
     });
 
-    it('gets access token for other azure resources via popup', async () => {
+    it('gets access + refresh token for other azure resources via popup', async () => {
       await sut.getAccessToken('azure-resource/scope');
 
       expect(mockRequester).toHaveBeenCalledWith(
-        new Set(['azure-resource/scope']),
+        new Set(['azure-resource/scope', 'offline_access']),
       );
     });
 
@@ -137,7 +137,7 @@ describe('MicrosoftAuth', () => {
       await sut.getAccessToken('api://customApiClientId/some.scope');
 
       expect(mockRequester).toHaveBeenCalledWith(
-        new Set(['api://customApiClientId/some.scope']),
+        new Set(['api://customApiClientId/some.scope', 'offline_access']),
       );
     });
   });

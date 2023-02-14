@@ -22,8 +22,7 @@ import {
   DiscoveryApi,
   OAuthRequestApi,
 } from '@backstage/core-plugin-api';
-import { OAuth2 } from '../oauth2';
-import { OAuthApiCreateOptions } from '../types';
+import { OAuth2, OAuth2CreateOptions } from '../oauth2';
 
 const DEFAULT_PROVIDER = {
   id: 'microsoft',
@@ -43,13 +42,14 @@ export default class MicrosoftAuth {
   private provider: AuthProviderInfo;
   private oauthRequestApi: OAuthRequestApi;
   private discoveryApi: DiscoveryApi;
+  private scopeTransform: (scopes: string[]) => string[];
 
   private static MicrosoftGraphID = '00000003-0000-0000-c000-000000000000';
 
-  static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
+  static create(options: OAuth2CreateOptions): typeof microsoftAuthApiRef.T {
     return new MicrosoftAuth(options);
   }
-  private constructor(options: OAuthApiCreateOptions) {
+  private constructor(options: OAuth2CreateOptions) {
     const {
       configApi,
       environment = 'development',
@@ -63,6 +63,7 @@ export default class MicrosoftAuth {
         'email',
         'User.Read',
       ],
+      scopeTransform = scopes => scopes.concat('offline_access'),
     } = options;
 
     this.configApi = configApi;
@@ -70,6 +71,7 @@ export default class MicrosoftAuth {
     this.provider = provider;
     this.oauthRequestApi = oauthRequestApi;
     this.discoveryApi = discoveryApi;
+    this.scopeTransform = scopeTransform;
 
     this.oauth2 = {
       [MicrosoftAuth.MicrosoftGraphID]: OAuth2.create({
@@ -78,6 +80,7 @@ export default class MicrosoftAuth {
         oauthRequestApi: this.oauthRequestApi,
         provider: this.provider,
         environment: this.environment,
+        scopeTransform: this.scopeTransform,
         defaultScopes,
       }),
     };
@@ -132,6 +135,7 @@ export default class MicrosoftAuth {
         oauthRequestApi: this.oauthRequestApi,
         provider: this.provider,
         environment: this.environment,
+        scopeTransform: this.scopeTransform,
       });
     }
     return this.oauth2[aud].getAccessToken(scope, options);

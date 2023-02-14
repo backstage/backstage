@@ -441,7 +441,7 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 // @public
 export class MicrosoftAuth {
   // (undocumented)
-  static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
+  static create(options: OAuth2CreateOptions): typeof microsoftAuthApiRef.T;
   // (undocumented)
   getAccessToken(
     scope?: string | string[],
