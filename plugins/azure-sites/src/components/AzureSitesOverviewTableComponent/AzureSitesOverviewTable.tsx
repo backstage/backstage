@@ -177,9 +177,8 @@ const ActionButtons = ({
           </MenuItem>
         )}
         <MenuItem
-          component="a"
-          href={value.logstreamHref}
-          target="_blank"
+          component={Link}
+          to={value.logstreamHref}
           key="logStream"
           onClick={handleClose}
         >
