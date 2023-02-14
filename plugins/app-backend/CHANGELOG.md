@@ -1,5 +1,17 @@
 # @backstage/plugin-app-backend
 
+## 0.3.42
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/types@1.0.2
+
 ## 0.3.42-next.2
 
 ### Patch Changes

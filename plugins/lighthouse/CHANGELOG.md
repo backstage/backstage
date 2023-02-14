@@ -1,5 +1,43 @@
 # @backstage/plugin-lighthouse
 
+## 0.4.0
+
+### Minor Changes
+
+- eef62546ce: Require @backstage/plugin-lighthouse-common package where API implementation moved to.
+
+  **BREAKING**: the following types have been moved to @backstage/plugin-lighthouse-common:
+
+  - `Audit`
+  - `AuditBase`
+  - `AuditCompleted`
+  - `AuditFailed`
+  - `AuditRunning`
+  - `FetchError`
+  - `LASListRequest`
+  - `LASListResponse`
+  - `LighthouseApi`
+  - `LighthouseCategoryAbbr`
+  - `LighthouseCategoryId`
+  - `LighthouseConfigSettings`
+  - `LighthouseRestApi`
+  - `TriggerAuditPayload`
+  - `Website`
+  - `WebsiteListResponse`
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- 4bdd6bcb3c: Prefer Link over plain anchors
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/plugin-lighthouse-common@0.1.0
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/config@1.0.6
+
 ## 0.4.0-next.2
 
 ### Minor Changes

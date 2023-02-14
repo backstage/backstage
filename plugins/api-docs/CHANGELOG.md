@@ -1,5 +1,23 @@
 # @backstage/plugin-api-docs
 
+## 0.9.0
+
+### Minor Changes
+
+- 9ed53218a5: Adds a new tRPC API definition widget which users can utilize to integrate their tRPC API definitions into Backstage.
+
+### Patch Changes
+
+- 60996f8aba: Updating the readme with better `csp` instructions
+- 6856ab98f4: Updated dependency `@asyncapi/react-component` to `1.0.0-next.47`.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.8.0
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+
 ## 0.9.0-next.2
 
 ### Minor Changes

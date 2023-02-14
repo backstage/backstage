@@ -1,5 +1,17 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.21
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- cc926a59bd: Fixed a bug where the azure devops host in URLs on the readme card was being URL encoded, breaking hosts with ports.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/plugin-azure-devops-common@0.3.0
+
 ## 0.3.21-next.2
 
 ### Patch Changes

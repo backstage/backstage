@@ -1,5 +1,31 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.7
+
+### Patch Changes
+
+- 4024b37449: TechInsightsApi interface now has getFactSchemas() method.
+  TechInsightsClient now implements method getFactSchemas().
+
+  **BREAKING** FactSchema type moved from @backstage/plugin-tech-insights-node into @backstage/plugin-tech-insights-common
+
+  These changes are **required** if you were importing this type directly.
+
+  ```diff
+  - import { FactSchema } from '@backstage/plugin-tech-insights-node';
+  + import { FactSchema } from '@backstage/plugin-tech-insights-common';
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/plugin-tech-insights-common@0.2.10
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
 ## 0.3.7-next.2
 
 ### Patch Changes

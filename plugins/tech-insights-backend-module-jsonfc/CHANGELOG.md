@@ -1,5 +1,17 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.26
+
+### Patch Changes
+
+- d6b912f963: Surface the cause of the json rules engine
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-tech-insights-common@0.2.10
+  - @backstage/plugin-tech-insights-node@0.4.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+
 ## 0.1.26-next.2
 
 ### Patch Changes

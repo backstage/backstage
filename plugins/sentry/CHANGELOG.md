@@ -1,5 +1,21 @@
 # @backstage/plugin-sentry
 
+## 0.5.0
+
+### Minor Changes
+
+- 6a8d6b9a0c: Add option to filter issues based on the time it was triggered
+
+### Patch Changes
+
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+
 ## 0.5.0-next.2
 
 ### Minor Changes

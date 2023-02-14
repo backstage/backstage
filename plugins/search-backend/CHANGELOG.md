@@ -1,5 +1,21 @@
 # @backstage/plugin-search-backend
 
+## 1.2.3
+
+### Patch Changes
+
+- 1b30c9a0f7: Change the router's response to include the error message instead of its object type in case it fails during a search query because the messages have more info.
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5
+  - @backstage/plugin-search-backend-node@1.1.3
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.2.3-next.2
 
 ### Patch Changes

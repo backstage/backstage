@@ -1,5 +1,28 @@
 # @backstage/plugin-search
 
+## 1.1.0
+
+### Minor Changes
+
+- 0eaa579f89: Update `SearchModal` component to use `SearchResult` extensions.
+
+### Patch Changes
+
+- 26fb21aa8b: Implement a `showCounts` option to display result counts per type in `SearchType.Accordion`
+- 66e2aab4c4: Updated colors for each tab used on search modal, to improve color contrast. Aria label added to tabs wrapper component. `disableRipple` property on the `Tab` component removed to improve keyboard navigation indicator.
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.1.0-next.2
 
 ### Patch Changes

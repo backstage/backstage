@@ -1,5 +1,56 @@
 # example-backend
 
+## 0.2.80
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/plugin-playlist-backend@0.2.5
+  - @backstage/plugin-search-backend-module-elasticsearch@1.1.3
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-kubernetes-backend@0.9.3
+  - @backstage/plugin-lighthouse-backend@0.1.0
+  - @backstage/plugin-code-coverage-backend@0.2.8
+  - @backstage/plugin-azure-devops-backend@0.3.21
+  - @backstage/plugin-azure-sites-backend@0.1.4
+  - @backstage/plugin-adr-backend@0.3.0
+  - @backstage/plugin-tech-insights-backend@0.5.8
+  - @backstage/plugin-tech-insights-node@0.4.0
+  - @backstage/plugin-entity-feedback-backend@0.1.0
+  - @backstage/plugin-search-backend@1.2.3
+  - @backstage/plugin-techdocs-backend@1.5.3
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.10
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.26
+  - @backstage/plugin-scaffolder-backend@1.11.0
+  - @backstage/plugin-events-backend@0.2.3
+  - @backstage/plugin-kafka-backend@0.2.35
+  - @backstage/plugin-proxy-backend@0.2.36
+  - @backstage/plugin-app-backend@0.3.42
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-auth-backend@0.18.0
+  - @backstage/plugin-linguist-backend@0.1.0
+  - @backstage/plugin-events-node@0.2.3
+  - example-app@0.2.80
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/integration@1.4.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-badges-backend@0.1.36
+  - @backstage/plugin-explore-backend@0.0.4
+  - @backstage/plugin-graphql-backend@0.1.32
+  - @backstage/plugin-jenkins-backend@0.1.32
+  - @backstage/plugin-permission-backend@0.5.17
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5
+  - @backstage/plugin-rollbar-backend@0.1.39
+  - @backstage/plugin-search-backend-module-pg@0.5.3
+  - @backstage/plugin-search-backend-node@1.1.3
+  - @backstage/plugin-search-common@1.2.1
+  - @backstage/plugin-todo-backend@0.1.39
+
 ## 0.2.80-next.2
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @backstage/backend-test-utils
 
+## 0.1.34
+
+### Patch Changes
+
+- baf6e4c96a: Removed unnecessary `@backstage/cli` dependency.
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- 1835311713: Added explicit return type signature for `mockServices.config()`.
+- e716946103: Updated usage of the lifecycle service.
+- 7e7557a2be: Updated the `mockServices.rootLogger` options to accept a single level option instead.
+- 610d65e143: Updates to match new `BackendFeature` type.
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- b86efa2d04: Updated usage of `ServiceFactory`.
+- 17b573e4be: The new backend system testing utilities have now been marked as stable API.
+- f1adb2e36b: Removed the `ref` from all `mockServices`.
+- d0901c9ba4: All mock service factories and mock service implementations are now available via the new experimental `mockServices` export.
+- 71a5ec0f06: Updated usages of `LogMeta`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+
 ## 0.1.34-next.2
 
 ### Patch Changes
