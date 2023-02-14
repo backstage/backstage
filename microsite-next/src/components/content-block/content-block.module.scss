@@ -1,12 +1,19 @@
 .contentBlock {
+  height: 100%;
+
   gap: 1.5rem;
   display: grid;
+  align-items: center;
 
   > *,
   h1,
   h2 {
     margin: 0;
     padding: 0;
+  }
+
+  :global(.contentBlockTitle) {
+    align-self: start;
   }
 
   :global(.bulletLine) {
@@ -17,6 +24,7 @@
   :global(.actionButtons) {
     gap: 1rem;
     display: grid;
-    grid-template-columns: repeat(2, auto);
+    align-self: end;
+    grid-template-columns: repeat(auto-fit, minmax(100px, auto));
   }
 }

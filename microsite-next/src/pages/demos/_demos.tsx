@@ -1,5 +1,8 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { BannerSection } from '@site/src/components/banner-section/banner-section';
+import { BannerSectionGrid } from '@site/src/components/banner-section/banner-section-grid';
+import { ContentBlock } from '@site/src/components/content-block/content-block';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
 import React from 'react';
@@ -162,50 +165,38 @@ export function Demos() {
     <Layout>
       <div className={clsx(demosStyles.communityPage)}>
         {demoItems.map((demoItem, index) => (
-          <section
-            className={clsx(
-              demosStyles.banner,
-              index % 2 === 0 && demosStyles.bannerGradient,
-            )}
+          <BannerSection
+            key={index}
+            greyBackground={index % 2 === 0}
+            className={demosStyles.banner}
           >
-            <div className={clsx('container')}>
-              <div className="row">
-                <div className={clsx('col col--5', 'padding-vert--xl')}>
-                  <h1 className={clsx('margin-bottom--lg')}>
-                    {demoItem.title}
-                  </h1>
+            <BannerSectionGrid>
+              <ContentBlock
+                title={<h1>{demoItem.title}</h1>}
+                actionButtons={[
+                  {
+                    link: demoItem.actionItemLink,
+                    label: 'WATCH NOW',
+                  },
+                ]}
+              >
+                {demoItem.content}
+              </ContentBlock>
 
-                  {React.isValidElement(demoItem.content) ? (
-                    demoItem.content
-                  ) : (
-                    <p>{demoItem.content}</p>
-                  )}
-
-                  {demoItem.actionItemLink && (
-                    <Link
-                      className="button button--primary button--lg"
-                      to={demoItem.actionItemLink}
-                    >
-                      WATCH NOW
-                    </Link>
-                  )}
-                </div>
-
-                <div className={clsx('col col--7', 'padding-vert--xl')}>
-                  {demoItem.media.type === 'image' ? (
-                    <img src={demoItem.media.link} alt={demoItem.title} />
-                  ) : (
-                    <iframe
-                      src={demoItem.media.link}
-                      title={demoItem.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    ></iframe>
-                  )}
-                </div>
+              <div className={clsx()}>
+                {demoItem.media.type === 'image' ? (
+                  <img src={demoItem.media.link} alt={demoItem.title} />
+                ) : (
+                  <iframe
+                    src={demoItem.media.link}
+                    title={demoItem.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                )}
               </div>
-            </div>
-          </section>
+            </BannerSectionGrid>
+          </BannerSection>
         ))}
       </div>
     </Layout>

@@ -8,60 +8,21 @@
     line-height: 56px;
     word-break: break-word;
   }
-}
 
-.banner,
-.officialInitiatives,
-.communityInitiatives,
-.trainingNCertifications,
-.commercialPartners {
-  :global(.row .col) {
-    max-width: 50%;
-
-    display: flex;
-    flex-direction: column;
-
-    :global(.bulletLine) {
-      width: 50px;
-    }
-
-    p {
-      text-align: justify;
-      flex: 1;
-    }
+  p {
+    text-align: justify;
   }
 }
 
-.banner,
-.communityInitiatives,
-.commercialPartners {
-  background: linear-gradient(90.49deg, #121212 15.36%, #282828 70.44%);
-  // clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2vw - 10px), 0 100%);
-}
+.listContainer {
+  height: 100%;
+  align-items: stretch !important;
+  grid-template-rows: auto 1fr;
 
-.banner {
   ul {
-    flex: 1;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
-}
-
-.officialInitiatives {
-  background: linear-gradient(
-      178.64deg,
-      hsla(0, 0%, 100%, 0) 57.61%,
-      hsla(0, 0%, 100%, 0.17) 127.71%
-    ),
-    linear-gradient(
-      144.35deg,
-      rgba(98, 197, 179, 0) 56.68%,
-      rgba(98, 197, 179, 0.59) 109.25%
-    ),
-    linear-gradient(
-      192.29deg,
-      rgba(155, 240, 225, 0) 54.17%,
-      rgba(155, 240, 225, 0.67) 137.34%
-    );
 }
