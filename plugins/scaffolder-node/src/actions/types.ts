@@ -21,7 +21,7 @@ import { Schema } from 'jsonschema';
 import { TaskSecrets } from '../tasks/types';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
-
+import { z } from 'zod';
 /**
  * ActionContext is passed into scaffolder actions.
  * @public
@@ -63,14 +63,23 @@ export type ActionContext<TInput extends JsonObject> = {
 };
 
 /** @public */
-export type TemplateAction<TInput extends JsonObject> = {
+export type TemplateAction<
+  TParams,
+  TInputSchema extends Schema | z.ZodType = {},
+> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];
   supportsDryRun?: boolean;
   schema?: {
-    input?: Schema;
+    input?: TInputSchema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TInput>) => Promise<void>;
+  handler: (
+    ctx: ActionContext<
+      TInputSchema extends z.ZodType<any, any, infer IReturn>
+        ? IReturn
+        : TParams
+    >,
+  ) => Promise<void>;
 };

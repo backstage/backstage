@@ -17,10 +17,8 @@
 import fs from 'fs-extra';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import * as yaml from 'yaml';
-import { Entity } from '@backstage/catalog-model';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { z } from 'zod';
-import { convertZodtoJson } from '../../../tasks';
 
 const id = 'catalog:write';
 
@@ -60,23 +58,24 @@ const examples = [
  */
 
 export function createCatalogWriteAction() {
-  const inputSchema = convertZodtoJson(
-    z.object({
-      filePath: z.string().optional().describe('Defaults to catalog-info.yaml'),
-      entity: z
-        .string()
-        .optional()
-        .describe('You can provide the same values used in the Entity schema.'),
-    }),
-  );
-
-  return createTemplateAction<{ filePath?: string; entity: Entity }>({
-    id,
+  return createTemplateAction({
+    id: 'catalog:write',
     description: 'Writes the catalog-info.yaml for your template',
-    examples,
     schema: {
-      input: inputSchema,
+      input: z.object({
+        filePath: z
+          .string()
+          .optional()
+          .describe('Defaults to catalog-info.yaml'),
+        entity: z
+          .object({})
+          .optional()
+          .describe(
+            'You can provide the same values used in the Entity schema.',
+          ),
+      }),
     },
+    examples,
     supportsDryRun: true,
     async handler(ctx) {
       ctx.logStream.write(`Writing catalog-info.yaml`);

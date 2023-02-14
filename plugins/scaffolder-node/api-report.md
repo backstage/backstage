@@ -13,6 +13,7 @@ import { Schema } from 'jsonschema';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
+import { z } from 'zod';
 
 // @public
 export type ActionContext<TInput extends JsonObject> = {
@@ -32,9 +33,12 @@ export type ActionContext<TInput extends JsonObject> = {
 };
 
 // @public
-export const createTemplateAction: <TInput extends JsonObject>(
-  templateAction: TemplateAction<TInput>,
-) => TemplateAction<TInput>;
+export const createTemplateAction: <
+  TParams,
+  TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
+>(
+  templateAction: TemplateAction<TParams, TInputSchema>,
+) => TemplateAction<TParams, TInputSchema>;
 
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
@@ -51,7 +55,10 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 // @public (undocumented)
-export type TemplateAction<TInput extends JsonObject> = {
+export type TemplateAction<
+  TParams,
+  TInputSchema extends Schema | z.ZodType = {},
+> = {
   id: string;
   description?: string;
   examples?: {
@@ -60,9 +67,15 @@ export type TemplateAction<TInput extends JsonObject> = {
   }[];
   supportsDryRun?: boolean;
   schema?: {
-    input?: Schema;
+    input?: TInputSchema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TInput>) => Promise<void>;
+  handler: (
+    ctx: ActionContext<
+      TInputSchema extends z.ZodType<any, any, infer IReturn>
+        ? IReturn
+        : TParams
+    >,
+  ) => Promise<void>;
 };
 ```

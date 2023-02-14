@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
 import { TemplateAction } from './types';
+import { z } from 'zod';
+import { Schema } from 'jsonschema';
 
 /**
  * This function is used to create new template actions to get type safety.
  *
  * @public
  */
-export const createTemplateAction = <TInput extends JsonObject>(
-  templateAction: TemplateAction<TInput>,
-): TemplateAction<TInput> => {
+export const createTemplateAction = <
+  TParams,
+  TInputSchema extends Schema | z.ZodType = {},
+>(
+  templateAction: TemplateAction<TParams, TInputSchema>,
+): TemplateAction<TParams, TInputSchema> => {
   // TODO(blam): Can add some more validation here to validate the action later on
   return templateAction;
 };
