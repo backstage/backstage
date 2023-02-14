@@ -178,25 +178,15 @@ function validateAppServiceConfiguration(env: NodeJS.ProcessEnv) {
   if (env.WEBSITE_SKU === undefined) {
     throw new Error('Backstage is not running on Azure App Services');
   }
-  if (!isEqualCaseInsensitive(env.WEBSITE_AUTH_ENABLED, 'True')) {
+  if (env.WEBSITE_AUTH_ENABLED?.toLowerCase() !== 'true') {
     throw new Error('Azure App Services does not have authentication enabled');
   }
   if (
-    !isEqualCaseInsensitive(
-      env.WEBSITE_AUTH_DEFAULT_PROVIDER,
-      'AzureActiveDirectory',
-    )
+    env.WEBSITE_AUTH_DEFAULT_PROVIDER?.toLowerCase() !== 'azureactivedirectory'
   ) {
-    throw new Error('Authentication provider is not  Azure Active Directory');
+    throw new Error('Authentication provider is not Azure Active Directory');
   }
-  if (!isEqualCaseInsensitive(process.env.WEBSITE_AUTH_TOKEN_STORE, 'True')) {
+  if (process.env.WEBSITE_AUTH_TOKEN_STORE?.toLowerCase() !== 'true') {
     throw new Error('Token Store is not enabled');
   }
-}
-
-function isEqualCaseInsensitive(left: string | undefined, right: string) {
-  return (
-    left !== undefined &&
-    right.localeCompare(left, undefined, { sensitivity: 'base' }) === 0
-  );
 }
