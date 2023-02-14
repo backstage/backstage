@@ -1,5 +1,23 @@
 # @backstage/plugin-user-settings
 
+## 0.7.0
+
+### Minor Changes
+
+- db10b6ef65: Added a Bitbucket Server Auth Provider and added its API to the app defaults
+
+### Patch Changes
+
+- c4940b6322: Added a message to advise a page reload when toggling feature flags
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-app-api@1.5.0
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
 ## 0.6.3-next.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-events-backend
 
+## 0.2.3
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-events-node@0.2.3
+  - @backstage/config@1.0.6
+
 ## 0.2.3-next.2
 
 ### Patch Changes

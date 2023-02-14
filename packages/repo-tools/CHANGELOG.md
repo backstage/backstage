@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.1.2
+
+### Patch Changes
+
+- ff63acf30a: Packages without a declared `backstage.role` are now ignored.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/errors@1.1.4
+
 ## 0.1.2-next.0
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/plugin-home
 
+## 0.4.31
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- 3d1d867d42: Fixed regression that caused the `WelcomeTitle` to not be the right size when passed to the `title` property of the `<Header>` component. A Storybook entry was also added for the `WelcomeTitle`
+- c553a625d2: remove unused plugin-stack-overflow dependency
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/config@1.0.6
+
 ## 0.4.31-next.2
 
 ### Patch Changes

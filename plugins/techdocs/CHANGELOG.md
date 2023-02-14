@@ -1,5 +1,65 @@
 # @backstage/plugin-techdocs
 
+## 1.5.0
+
+### Minor Changes
+
+- 20840b36b4: Update DocsTable and EntityListDocsTable to accept overrides for Material Table options.
+- 0eaa579f89: The `TechDocsSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- c8e09cc383: Fixed bug in Techdocs reader where a techdocs page with a hash in the URL did not always jump to the document anchor.
+- cad5607411: Improve view: remove footer overlay on large screen
+- 66e2aab4c4: `ListItem` wrapper component moved to `SearchResultListItemExtension` for all `*SearchResultListItems` that are exported as extensions. This is to make sure the list only contains list elements.
+
+  Note: If you have implemented a custom result list item, we recommend you to remove the list item wrapper to avoid nested `<li>` elements.
+
+- 4660b63947: Create a TechDocs `<LightBox/>` addon that allows users to open images in a light-box on documentation pages, they can navigate between images if there are several on one page.
+
+  Here's an example on how to use it in a Backstage app:
+
+  ```diff
+  import {
+    DefaultTechDocsHome,
+    TechDocsIndexPage,
+    TechDocsReaderPage,
+  } from '@backstage/plugin-techdocs';
+  import { TechDocsAddons } from '@backstage/plugin-techdocs-react/alpha';
+  +import { LightBox } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+  const AppRoutes = () => {
+    <FlatRoutes>
+      // other plugin routes
+      <Route path="/docs" element={<TechDocsIndexPage />}>
+        <DefaultTechDocsHome />
+      </Route>
+      <Route
+        path="/docs/:namespace/:kind/:name/*"
+        element={<TechDocsReaderPage />}
+      >
+        <TechDocsAddons>
+  +       <LightBox />
+        </TechDocsAddons>
+      </Route>
+    </FlatRoutes>;
+  };
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.10
+  - @backstage/plugin-search-common@1.2.1
+  - @backstage/plugin-techdocs-react@1.1.3
+
 ## 1.5.0-next.2
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.10
+
+### Patch Changes
+
+- d950d3e217: Depend on `@material-ui/core` version `^4.12.2` like all other in-repo packages
+- Updated dependencies
+  - @backstage/plugin-catalog@1.8.0
+  - @backstage/plugin-techdocs@1.5.0
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-app-api@1.5.0
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/integration-react@1.1.10
+  - @backstage/test-utils@1.2.5
+  - @backstage/plugin-techdocs-react@1.1.3
+
 ## 1.0.10-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-jenkins-common@0.1.13
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.1.32-next.2
 
 ### Patch Changes

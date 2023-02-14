@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.2.0
+
+### Minor Changes
+
+- 1ba120faa3: Added new mechanism to handle deltas in incremental providers
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- 407dc01fc9: Removing extra imports for `run` script as `TestBackend` auto loads the default factories
+- b7e36660d5: Return `EventSubscriber` from `addIncrementalEntityProvider` to hook up to `EventsBackend`
+- 5b7cd5580d: Moving the backend-test-utils to devDependencies.
+- 77c41b6924: Updated README to include newer API options for incremental entity providers
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-events-node@0.2.3
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.2.0-next.2
 
 ### Patch Changes

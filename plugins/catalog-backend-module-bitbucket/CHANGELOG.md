@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-bitbucket
 
+## 0.2.9
+
+### Patch Changes
+
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-bitbucket-cloud-common@0.2.3
+
 ## 0.2.9-next.2
 
 ### Patch Changes
