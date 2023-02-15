@@ -136,7 +136,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     // to display it's own loading? Or should we grey out the entire form.
     setErrors(undefined);
 
-    const formDataWithDefaults = getDefaultFormState(
+    const newFormData = getDefaultFormState(
       validator,
       currentStep.schema,
       formData,
@@ -144,7 +144,7 @@ export const Stepper = (stepperProps: StepperProps) => {
       true,
     );
 
-    const returnedValidation = await validation(formDataWithDefaults);
+    const returnedValidation = await validation(newFormData);
 
     if (hasErrors(returnedValidation)) {
       setErrors(returnedValidation);
