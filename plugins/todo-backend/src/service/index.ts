@@ -19,3 +19,5 @@ export type { RouterOptions } from './router';
 export type { TodoService, ListTodosRequest, ListTodosResponse } from './types';
 export { TodoReaderService } from './TodoReaderService';
 export type { TodoReaderServiceOptions } from './TodoReaderService';
+export { todosPlugin } from './plugin';
+export type { TodosPluginDependencies } from './plugin';
