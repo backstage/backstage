@@ -31,7 +31,9 @@ import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles(
   {
-    item: {},
+    item: {
+      display: 'flex',
+    },
     flexContainer: {
       flexWrap: 'wrap',
     },
