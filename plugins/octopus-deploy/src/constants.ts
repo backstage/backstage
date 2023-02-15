@@ -1,0 +1,1 @@
+export const OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION = 'octopus.com/project-id';
