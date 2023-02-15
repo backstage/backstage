@@ -436,4 +436,48 @@ describe('Stepper', () => {
       expect(getByRole('textbox', { name: 'field1' })).toBeInTheDocument();
     });
   });
+
+  it('should call validator in extension if no key initially exists in formData', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Fill in some steps',
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                'ui:field': 'Mock',
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    const MockComponent = () => <h2>Mock</h2>;
+
+    const customExtension = {
+      name: 'Mock',
+      component: MockComponent,
+      validation: jest.fn(),
+    };
+
+    const { getByRole } = await renderInTestApp(
+      <Stepper
+        manifest={manifest}
+        onCreate={jest.fn()}
+        extensions={[customExtension]}
+      />,
+    );
+
+    const reviewButton = getByRole('button', { name: 'Review' });
+
+    await act(async () => {
+      await fireEvent.click(reviewButton);
+    });
+
+    expect(customExtension.validation).toHaveBeenCalled();
+  });
 });

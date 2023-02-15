@@ -41,6 +41,7 @@ import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps
 import { hasErrors } from './utils';
 import * as FieldOverrides from './FieldOverrides';
 import { Form } from '../Form';
+import { getDefaultFormState } from '@rjsf/utils';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -135,7 +136,15 @@ export const Stepper = (stepperProps: StepperProps) => {
     // to display it's own loading? Or should we grey out the entire form.
     setErrors(undefined);
 
-    const returnedValidation = await validation(formData);
+    const formDataWithDefaults = getDefaultFormState(
+      validator,
+      currentStep.schema,
+      formData,
+      currentStep.mergedSchema,
+      true,
+    );
+
+    const returnedValidation = await validation(formDataWithDefaults);
 
     if (hasErrors(returnedValidation)) {
       setErrors(returnedValidation);
