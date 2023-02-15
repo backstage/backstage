@@ -78,6 +78,6 @@ During the next release we will keep working on migrating the core plugins, as w
 Useful Links:
 
 - [Architecture Docs](https://backstage.io/docs/backend-system/architecture/)
-- [Building Plugin](https://backstage.io/docs/backend-system/building-plugins-and-modules/)
+- [Building Plugins](https://backstage.io/docs/backend-system/building-plugins-and-modules/)
 - [Core Services](https://backstage.io/docs/backend-system/core-services/)
 - [#backend-system](https://discord.com/channels/687207715902193673/1034089724664610938) channel in Discord
