@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginDatabaseManager,
-  TokenManager,
-  UrlReader,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
