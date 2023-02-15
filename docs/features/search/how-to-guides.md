@@ -184,6 +184,49 @@ indexBuilder.addCollator({
 As shown above, you can add a catalog entity filter to narrow down what catalog
 entities are indexed by the search engine.
 
+## How to customize document type in the Software Catalog index
+
+In some cases you might want to have the ability to change the document type in which catalog entities will be indexed by catalog collator.
+Such option gives a possibility to customize SearchPage results and filters depending on which document type you would like to see results for.
+
+You can achieve that by passing additional parameter `type` to the `DefaultCatalogCollatorFactory`.
+
+Let's say that you want to have two different document types for some entities.
+Our example will cover a use case in which we want to:
+
+- Store entities of kind `User` or `Group` under document type `yourCustomDocumentType`,
+- Store rest of entities under default document type `software-catalog`
+
+To achieve that you will have to remove `User` and `Group` from your previous collator `filter` and register new `DefaultCatalogCollatorFactory` with new parameter `type`.
+
+```diff
+// packages/backend/src/plugins/search.ts
+
+  indexBuilder.addCollator({
+    schedule,
+    factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+      discovery: env.discovery,
+      tokenManager: env.tokenManager,
+      filter: {
+-        kind: ['API', 'Component', 'Domain', 'Resource', 'System', 'Template', 'User', 'Group'],
++        kind: ['API', 'Component', 'Domain', 'Resource', 'System', 'Template'],
+      },
+    }),
+  });
+
++  indexBuilder.addCollator({
++    schedule,
++    factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
++      discovery: env.discovery,
++      tokenManager: env.tokenManager,
++      filter: {
++        kind: ['User', 'Group'],
++      },
++      type: 'yourCustomDocumentType',
++    }),
++  });
+```
+
 ## How to customize search results highlighting styling
 
 The default highlighting styling for matched terms in search results is your

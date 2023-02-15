@@ -44,11 +44,12 @@ export type DefaultCatalogCollatorFactoryOptions = {
   batchSize?: number;
   catalogClient?: CatalogApi;
   entityTransformer?: CatalogCollatorEntityTransformer;
+  type?: string;
 };
 
 /** @public */
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
-  public readonly type = 'software-catalog';
+  public readonly type: string;
   public readonly visibilityPermission: Permission =
     catalogEntityReadPermission;
 
@@ -75,6 +76,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
       catalogClient,
       tokenManager,
       entityTransformer,
+      type,
     } = options;
 
     this.locationTemplate =
@@ -86,6 +88,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     this.tokenManager = tokenManager;
     this.entityTransformer =
       entityTransformer ?? defaultCatalogCollatorEntityTransformer;
+    this.type = type ?? 'software-catalog';
   }
 
   async getCollator(): Promise<Readable> {

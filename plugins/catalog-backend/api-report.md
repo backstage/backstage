@@ -368,7 +368,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   getCollator(): Promise<Readable>;
   // (undocumented)
-  readonly type = 'software-catalog';
+  readonly type: string;
   // (undocumented)
   readonly visibilityPermission: Permission;
 }
@@ -382,6 +382,7 @@ export type DefaultCatalogCollatorFactoryOptions = {
   batchSize?: number;
   catalogClient?: CatalogApi;
   entityTransformer?: CatalogCollatorEntityTransformer;
+  type?: string;
 };
 
 export { DeferredEntity };
