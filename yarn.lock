@@ -35714,8 +35714,8 @@ __metadata:
   linkType: hard
 
 "start-server-and-test@npm:^1.10.11":
-  version: 1.15.3
-  resolution: "start-server-and-test@npm:1.15.3"
+  version: 1.15.4
+  resolution: "start-server-and-test@npm:1.15.4"
   dependencies:
     arg: ^5.0.2
     bluebird: 3.7.2
@@ -35729,7 +35729,7 @@ __metadata:
     server-test: src/bin/start.js
     start-server-and-test: src/bin/start.js
     start-test: src/bin/start.js
-  checksum: 3489c5146e26bc3bfa34d12f546f78fa6d883fdd49d0c60cbf4fb76ef627df6cde0a878253f5ca8e2177b938c00f47c613a811f6e7aa519af3be58576fbc2ab0
+  checksum: 0df9a4710ea45ddb1a9f719e0865faa8e26a973beff693dfe244ae2d914bfc6eed4d2db8529cdcad3d53658c4655356e5aca3520485a3ef4d9d9f320956b0e7d
   languageName: node
   linkType: hard
 
