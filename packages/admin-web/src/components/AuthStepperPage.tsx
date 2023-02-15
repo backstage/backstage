@@ -152,7 +152,7 @@ const AuthStepperPage = () => {
       <SimpleStepperStep
         title="Enter your credentials"
         actions={{
-          canNext: () => formIsValid,
+          canNext: () => !!clientId && !!clientSecret,
         }}
       >
         <OAuthCredentials />
