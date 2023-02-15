@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
+import {
+  createBackendPlugin,
+  coreServices,
+  HttpRouterService,
+} from '@backstage/backend-plugin-api';
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
-import express from 'express';
-import Router from 'express-promise-router';
-import { type TodoService, TODO_FIELDS } from './types';
+import express, { Router } from 'express';
 import {
   getBearerToken,
   parseFilterParam,
   parseIntegerParam,
   parseOrderByParam,
 } from '../lib/utils';
+import { todoReaderServiceRef } from './TodoReaderService';
+import { TodoService, TODO_FIELDS } from './types';
 
-/** @public */
-export interface RouterOptions {
-  todoService: TodoService;
-}
+export type TodosPluginDependencies = {
+  todoReader: TodoService;
+  http: HttpRouterService;
+};
 
-/** @public */
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { todoService } = options;
-
+const todosPluginInit = async (params: TodosPluginDependencies) => {
+  const { http, todoReader } = params;
   const router = Router();
   router.use(express.json());
 
@@ -59,7 +60,7 @@ export async function createRouter(
       }
     }
 
-    const todos = await todoService.listTodos(
+    const todos = await todoReader.listTodos(
       {
         entity,
         offset,
@@ -73,6 +74,21 @@ export async function createRouter(
     );
     res.json(todos);
   });
+  http.use(router);
+};
 
-  return router;
-}
+/**
+ * @alpha
+ */
+export const todosPlugin = createBackendPlugin({
+  pluginId: 'todo-backend',
+  register(env) {
+    env.registerInit({
+      deps: {
+        todoReader: todoReaderServiceRef,
+        http: coreServices.httpRouter,
+      },
+      init: todosPluginInit,
+    });
+  },
+});
