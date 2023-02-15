@@ -59,4 +59,3 @@ spec:
 ```
 
 All set , you will be able to see the plugin in action!
-
