@@ -1,13 +1,30 @@
-import {
-  OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION
-} from './constants';
-import {
-  octopusDeployEntityContentRouteRef
-} from './routes';
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION } from './constants';
+import { octopusDeployEntityContentRouteRef } from './routes';
 
 import { OctopusDeployClient, octopusDeployApiRef } from './api';
 
-import { createApiFactory, createPlugin, createRoutableExtension, discoveryApiRef, identityApiRef } from '@backstage/core-plugin-api';
+import {
+  createApiFactory,
+  createPlugin,
+  createRoutableExtension,
+  discoveryApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 
 import { Entity } from '@backstage/catalog-model';
 
@@ -21,9 +38,10 @@ export const octopusDeployPlugin = createPlugin({
     createApiFactory({
       api: octopusDeployApiRef,
       deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ discoveryApi, identityApi }) => new OctopusDeployClient({ discoveryApi, identityApi })
-    })
-  ]
+      factory: ({ discoveryApi, identityApi }) =>
+        new OctopusDeployClient({ discoveryApi, identityApi }),
+    }),
+  ],
 });
 
 /*
@@ -42,8 +60,8 @@ export const EntityOctopusDeployContent = octopusDeployPlugin.provide(
     name: 'EntityOctopusDeployContent',
     component: () =>
       import('./components/EntityPageOctopusDeploy').then(
-        m => m.EntityPageOctopusDeploy
+        m => m.EntityPageOctopusDeploy,
       ),
-    mountPoint: octopusDeployEntityContentRouteRef
-  })
-)
+    mountPoint: octopusDeployEntityContentRouteRef,
+  }),
+);
