@@ -18,7 +18,7 @@ import WelcomePage from './components/WelcomePage';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Paper } from '@material-ui/core';
 import Bar from './components/Bar';
-import StepperPage from './components/StepperPage';
+import StepperPage from './components/AuthStepperPage';
 
 const useStyles = makeStyles(theme => ({
   root: {

@@ -26,7 +26,7 @@ import {
   ListItem,
 } from '@material-ui/core';
 
-const StepperPage = () => {
+const AuthStepperPage = () => {
   const [required, setRequired] = useState<boolean>(false);
 
   const [oauthMethod, setOauthMethod] = useState<string>('');
@@ -47,7 +47,7 @@ const StepperPage = () => {
     return setRequired(event.target.value.length > 0);
   };
 
-  const getStep1Content = () => {
+  const OAuthSelector = () => {
     return (
       <>
         <Typography variant="body1">
@@ -75,7 +75,7 @@ const StepperPage = () => {
     );
   };
 
-  const getStep2Content = () => {
+  const OAuthCredentials = () => {
     if (oauthMethod === 'oauth') {
       return (
         <>
@@ -116,15 +116,38 @@ const StepperPage = () => {
     );
   };
 
+  const OAuthValidation = () => {
+    return (
+      <Typography variant="body1">
+        Your clientID and ClientSecret are valid!
+      </Typography>
+    );
+  };
+
+  const OAuthReview = () => {
+    return (
+      <Typography variant="body1">
+        The following github authentication info will be added to you app.
+        Please review below information:
+        <Typography variant="body2" style={{ color: 'grayText' }}>
+          ClientID: {clientId}
+        </Typography>
+        <Typography variant="body2" style={{ color: 'grayText' }}>
+          ClientSecret: {clientSecret}
+        </Typography>
+      </Typography>
+    );
+  };
+
   return (
     <SimpleStepper>
       <SimpleStepperStep
-        title="Step up Github Authentication"
+        title="Setup Github Authentication"
         actions={{
           canNext: () => required,
         }}
       >
-        {getStep1Content()}
+        <OAuthSelector />
       </SimpleStepperStep>
       <SimpleStepperStep
         title="Enter your credentials"
@@ -132,12 +155,10 @@ const StepperPage = () => {
           canNext: () => required,
         }}
       >
-        {getStep2Content()}
+        <OAuthCredentials />
       </SimpleStepperStep>
       <SimpleStepperStep title="Validation">
-        <Typography variant="body1">
-          Your clientID and ClientSecret are valid!
-        </Typography>
+        <OAuthValidation />
       </SimpleStepperStep>
       <SimpleStepperStep
         title="Review"
@@ -145,18 +166,9 @@ const StepperPage = () => {
           nextText: 'Confirm',
         }}
       >
-        <Typography variant="body1">
-          The following github authentication info will be added to you app.
-          Please review below information:
-          <Typography variant="body2" style={{ color: 'grayText' }}>
-            ClientID: {clientId}
-          </Typography>
-          <Typography variant="body2" style={{ color: 'grayText' }}>
-            ClientSecret: {clientSecret}
-          </Typography>
-        </Typography>
+        <OAuthReview />
       </SimpleStepperStep>
     </SimpleStepper>
   );
 };
-export default StepperPage;
+export default AuthStepperPage;
