@@ -82,7 +82,6 @@ export const scaffolderPlugin = createBackendPlugin(
           database: coreServices.database,
           httpRouter: coreServices.httpRouter,
           catalogClient: catalogServiceRef,
-          tokenManager: coreServices.tokenManager,
         },
         async init({
           logger,
@@ -91,7 +90,6 @@ export const scaffolderPlugin = createBackendPlugin(
           database,
           httpRouter,
           catalogClient,
-          tokenManager,
         }) {
           const {
             additionalTemplateFilters,
@@ -129,7 +127,6 @@ export const scaffolderPlugin = createBackendPlugin(
             taskWorkers,
             additionalTemplateFilters,
             additionalTemplateGlobals,
-            tokenManager,
           });
           httpRouter.use(router);
         },

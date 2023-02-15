@@ -86,7 +86,6 @@ export interface RouterOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   identity?: IdentityApi;
-  tokenManager?: TokenManager;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -100,15 +99,11 @@ function isSupportedTemplate(entity: TemplateEntityV1beta3) {
  * until someone explicitly passes an IdentityApi. When we have reasonable confidence that most backstage deployments
  * are using the IdentityApi, we can remove this function.
  */
-function buildDefaultIdentityClient({
-  options,
-}: {
-  options: RouterOptions;
-}): IdentityApi {
+function buildDefaultIdentityClient(options: RouterOptions): IdentityApi {
   return {
     getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
       const header = request.headers.authorization;
-      const { logger, tokenManager } = options;
+      const { logger } = options;
 
       if (!header) {
         return undefined;
@@ -138,15 +133,12 @@ function buildDefaultIdentityClient({
           throw new TypeError('Expected string sub claim');
         }
 
-        try {
-          // Check that it's a valid ref, otherwise this will throw.
-          parseEntityRef(sub);
-        } catch (e) {
-          if (sub !== 'backstage-server' || !options.tokenManager) {
-            throw e;
-          }
-          await tokenManager?.authenticate(token);
+        if (sub === 'backstage-server') {
+          return undefined;
         }
+
+        // Check that it's a valid ref, otherwise this will throw.
+        parseEntityRef(sub);
 
         return {
           identity: {
@@ -192,7 +184,7 @@ export async function createRouter(
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
   const identity: IdentityApi =
-    options.identity || buildDefaultIdentityClient({ options });
+    options.identity || buildDefaultIdentityClient(options);
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
 

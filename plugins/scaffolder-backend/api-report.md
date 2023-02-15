@@ -32,7 +32,6 @@ import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node'
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
-import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
@@ -643,8 +642,6 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   // @deprecated (undocumented)
   taskWorkers?: number;
-  // (undocumented)
-  tokenManager?: TokenManager;
 }
 
 // @public (undocumented)
