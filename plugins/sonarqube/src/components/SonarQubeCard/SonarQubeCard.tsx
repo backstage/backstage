@@ -18,7 +18,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   sonarQubeApiRef,
   useProjectInfo,
-} from '@backstage/plugin-sonarqube-react/alpha';
+} from '@backstage/plugin-sonarqube-react';
 import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '@backstage/plugin-sonarqube-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';

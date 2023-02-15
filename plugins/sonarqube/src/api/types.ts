@@ -17,7 +17,7 @@
 import {
   MetricKey as NonDeprecatedMetricKey,
   SonarUrlProcessorFunc as NonDeprecatedSonarUrlProcessorFunc,
-} from '@backstage/plugin-sonarqube-react/alpha';
+} from '@backstage/plugin-sonarqube-react';
 
 export interface InstanceUrlWrapper {
   instanceUrl: string;
