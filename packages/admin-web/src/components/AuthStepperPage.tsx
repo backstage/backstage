@@ -27,7 +27,7 @@ import {
 } from '@material-ui/core';
 
 const AuthStepperPage = () => {
-  const [required, setRequired] = useState<boolean>(false);
+  const [formIsValid, setFormIsValid] = useState<boolean>(false);
 
   const [oauthMethod, setOauthMethod] = useState<string>('');
   const [clientId, setClientId] = useState<string>('');
@@ -35,23 +35,23 @@ const AuthStepperPage = () => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setOauthMethod((event.target as HTMLInputElement).value);
-    return setRequired(!!event.target.value);
+    return setFormIsValid(!!event.target.value);
   };
 
   const handleClientId = (event: React.ChangeEvent<HTMLInputElement>) => {
     setClientId((event.target as HTMLInputElement).value);
-    return setRequired(event.target.value.length > 0);
+    return setFormIsValid(event.target.value.length > 0);
   };
   const handleClientSecret = (event: React.ChangeEvent<HTMLInputElement>) => {
     setClientSecret((event.target as HTMLInputElement).value);
-    return setRequired(event.target.value.length > 0);
+    return setFormIsValid(event.target.value.length > 0);
   };
 
   const OAuthSelector = () => {
     return (
       <>
         <Typography variant="body1">
-          Which github Authentication method would you like to add?
+          Which GitHub Authentication method would you like to add?
         </Typography>
         <RadioGroup
           aria-labelledby="github-auth-method"
@@ -67,7 +67,7 @@ const AuthStepperPage = () => {
           <FormControlLabel
             value="github-app"
             control={<Radio />}
-            label="Github app"
+            label="GitHub app"
             onChange={e => handleChange(e)}
           />
         </RadioGroup>
@@ -127,7 +127,7 @@ const AuthStepperPage = () => {
   const OAuthReview = () => {
     return (
       <Typography variant="body1">
-        The following github authentication info will be added to you app.
+        The following GitHub authentication info will be added to you app.
         Please review below information:
         <Typography variant="body2" style={{ color: 'grayText' }}>
           ClientID: {clientId}
@@ -142,9 +142,9 @@ const AuthStepperPage = () => {
   return (
     <SimpleStepper>
       <SimpleStepperStep
-        title="Setup Github Authentication"
+        title="Set up Github Authentication"
         actions={{
-          canNext: () => required,
+          canNext: () => formIsValid,
         }}
       >
         <OAuthSelector />
@@ -152,7 +152,7 @@ const AuthStepperPage = () => {
       <SimpleStepperStep
         title="Enter your credentials"
         actions={{
-          canNext: () => required,
+          canNext: () => formIsValid,
         }}
       >
         <OAuthCredentials />

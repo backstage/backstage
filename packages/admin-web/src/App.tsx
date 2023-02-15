@@ -18,7 +18,7 @@ import WelcomePage from './components/WelcomePage';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Paper } from '@material-ui/core';
 import Bar from './components/Bar';
-import StepperPage from './components/AuthStepperPage';
+import AuthStepperPage from './components/AuthStepperPage';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -42,7 +42,7 @@ const App = () => {
   const getContent = () => {
     switch (page) {
       case 'stepper':
-        return <StepperPage />;
+        return <AuthStepperPage />;
       default:
         return <WelcomePage setPage={setPage} />;
     }

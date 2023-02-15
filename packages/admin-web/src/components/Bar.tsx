@@ -33,7 +33,7 @@ const Bar = () => {
     <AppBar position="static" className={classes.root}>
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
-          Admin tool
+          Onboarding Assistant
         </Typography>
       </Toolbar>
     </AppBar>
