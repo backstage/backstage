@@ -27,25 +27,9 @@ import {
 } from '@material-ui/core';
 
 const AuthStepperPage = () => {
-  const [formIsValid, setFormIsValid] = useState<boolean>(false);
-
   const [oauthMethod, setOauthMethod] = useState<string>('');
   const [clientId, setClientId] = useState<string>('');
   const [clientSecret, setClientSecret] = useState<string>('');
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setOauthMethod((event.target as HTMLInputElement).value);
-    return setFormIsValid(!!event.target.value);
-  };
-
-  const handleClientId = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setClientId((event.target as HTMLInputElement).value);
-    return setFormIsValid(event.target.value.length > 0);
-  };
-  const handleClientSecret = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setClientSecret((event.target as HTMLInputElement).value);
-    return setFormIsValid(event.target.value.length > 0);
-  };
 
   const OAuthSelector = () => {
     return (
@@ -56,19 +40,20 @@ const AuthStepperPage = () => {
         <RadioGroup
           aria-labelledby="github-auth-method"
           defaultValue="oath"
+          value={oauthMethod}
           name="github-auth-method"
         >
           <FormControlLabel
             value="oauth"
             control={<Radio />}
             label="OAuth"
-            onChange={e => handleChange(e)}
+            onChange={e => setOauthMethod((e.target as HTMLInputElement).value)}
           />
           <FormControlLabel
             value="github-app"
             control={<Radio />}
             label="GitHub app"
-            onChange={e => handleChange(e)}
+            onChange={e => setOauthMethod((e.target as HTMLInputElement).value)}
           />
         </RadioGroup>
       </>
@@ -91,7 +76,7 @@ const AuthStepperPage = () => {
                 placeholder="Required*"
                 fullWidth
                 value={clientId}
-                onChange={e => handleClientId(e)}
+                onChange={e => setClientId(e.target.value)}
               />
             </ListItem>
             <ListItem>
@@ -102,7 +87,7 @@ const AuthStepperPage = () => {
                 placeholder="Required*"
                 fullWidth
                 value={clientSecret}
-                onChange={e => handleClientSecret(e)}
+                onChange={e => setClientSecret(e.target.value)}
               />
             </ListItem>
           </List>
@@ -144,7 +129,7 @@ const AuthStepperPage = () => {
       <SimpleStepperStep
         title="Set up Github Authentication"
         actions={{
-          canNext: () => formIsValid,
+          canNext: () => !!oauthMethod,
         }}
       >
         <OAuthSelector />
