@@ -8,10 +8,10 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { FindingSummary } from '@backstage/plugin-sonarqube-react/alpha';
+import { FindingSummary } from '@backstage/plugin-sonarqube-react';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { SonarQubeApi } from '@backstage/plugin-sonarqube-react/alpha';
+import { SonarQubeApi } from '@backstage/plugin-sonarqube-react';
 
 // @public (undocumented)
 export type DuplicationRating = {

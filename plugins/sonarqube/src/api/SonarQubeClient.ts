@@ -19,7 +19,7 @@ import {
   FindingSummary,
   Metrics,
   SonarQubeApi,
-} from '@backstage/plugin-sonarqube-react/alpha';
+} from '@backstage/plugin-sonarqube-react';
 import { InstanceUrlWrapper, FindingsWrapper } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 

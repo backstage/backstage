@@ -20,8 +20,6 @@ import React from 'react';
 import {
   SonarQubeApi,
   sonarQubeApiRef,
-} from '@backstage/plugin-sonarqube-react/alpha';
-import {
   isSonarQubeAvailable,
   SONARQUBE_PROJECT_KEY_ANNOTATION,
 } from '@backstage/plugin-sonarqube-react';
