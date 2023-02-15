@@ -9752,8 +9752,8 @@ __metadata:
   linkType: hard
 
 "@google-cloud/storage@npm:^6.0.0":
-  version: 6.9.2
-  resolution: "@google-cloud/storage@npm:6.9.2"
+  version: 6.9.3
+  resolution: "@google-cloud/storage@npm:6.9.3"
   dependencies:
     "@google-cloud/paginator": ^3.0.7
     "@google-cloud/projectify": ^3.0.0
@@ -9772,7 +9772,7 @@ __metadata:
     retry-request: ^5.0.0
     teeny-request: ^8.0.0
     uuid: ^8.0.0
-  checksum: e4962be29ca3dd722019db95f99b095993534915d663a82b41c95beaf284d878de5b1357102441e4e375de838299f6d82eff55a2c4e9f610f9a12feac21e2735
+  checksum: 32bd3b49509b823504f0007d1d5cb1ec854bbc84e6be1ef397879b99c0f198c6251b85ddec81226428e046a06c0346356d82d26485e9d1f9e7ef943e091db06f
   languageName: node
   linkType: hard
 
