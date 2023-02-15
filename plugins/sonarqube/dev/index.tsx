@@ -24,7 +24,7 @@ import {
   FindingSummary,
   SonarQubeApi,
   sonarQubeApiRef,
-} from '@backstage/plugin-sonarqube-react/alpha';
+} from '@backstage/plugin-sonarqube-react';
 import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '@backstage/plugin-sonarqube-react';
 
 const entity = (name?: string) =>

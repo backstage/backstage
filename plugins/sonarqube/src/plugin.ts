@@ -22,7 +22,7 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { sonarQubeApiRef } from '@backstage/plugin-sonarqube-react/alpha';
+import { sonarQubeApiRef } from '@backstage/plugin-sonarqube-react';
 
 /** @public */
 export const sonarQubePlugin = createPlugin({
