@@ -18,10 +18,12 @@ import { catalogPlugin } from '@backstage/plugin-catalog-backend';
 import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend';
 import { createBackend } from '@backstage/backend-defaults';
 import { appPlugin } from '@backstage/plugin-app-backend';
+import { todosPlugin } from '@backstage/plugin-todo-backend';
 
 const backend = createBackend();
 
 backend.add(catalogPlugin());
 backend.add(catalogModuleTemplateKind());
 backend.add(appPlugin({ appPackageName: 'example-app' }));
+backend.add(todosPlugin());
 backend.start();
