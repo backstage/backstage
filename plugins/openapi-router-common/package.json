@@ -34,6 +34,8 @@
     "json-schema-to-ts": "^2.6.2",
     "openapi-types": "^12.1.0",
     "openapi3-ts": "^3.1.2",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "winston": "^3.8.2",
+    "yn": "^5.0.0"
   }
 }

@@ -5353,6 +5353,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-openapi-router": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
@@ -7446,7 +7447,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-openapi-router@workspace:plugins/openapi-router-common":
+"@backstage/plugin-openapi-router@workspace:^, @backstage/plugin-openapi-router@workspace:plugins/openapi-router-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-openapi-router@workspace:plugins/openapi-router-common"
   dependencies:
@@ -7456,6 +7457,8 @@ __metadata:
     openapi-types: ^12.1.0
     openapi3-ts: ^3.1.2
     ts-node: ^10.9.1
+    winston: ^3.8.2
+    yn: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -40279,7 +40282,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.2.1":
+"winston@npm:^3.2.1, winston@npm:^3.8.2":
   version: 3.8.2
   resolution: "winston@npm:3.8.2"
   dependencies:

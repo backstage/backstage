@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
-import { IRouter, Router } from 'express';
+import { Router } from 'express';
 import core, { ParamsDictionary } from 'express-serve-static-core';
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
 import {
-  DocPath,
   DocPathMethod,
   DocPathTemplate,
   MethodAwareDocPath,
@@ -29,7 +28,9 @@ import {
 } from './types';
 import { ResponseSchemas } from './types/response';
 
-type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
+export type DeepWriteable<T> = {
+  -readonly [P in keyof T]: DeepWriteable<T[P]>;
+};
 
 const doc = {
   openapi: '3.1.0',
@@ -253,12 +254,20 @@ type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
   ? ConvertAll<Rest, [...R, FromSchema<First>]>
   : R;
 
-type ResponseToJsonSchema<
+type ResponseBodyToJsonSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
   Method extends DocPathMethod<Doc, Path>,
 > = ConvertAll<
   TuplifyUnion<ValueOf<ResponseSchemas<Doc, Path, Method>>>
+>[number];
+
+type RequestBodyToJsonSchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ConvertAll<
+  TuplifyUnion<ValueOf<RequestBodySchema<Doc, Path, Method>>>
 >[number];
 
 type DocRequestHandler<
@@ -268,13 +277,13 @@ type DocRequestHandler<
 > = core.RequestHandler<
   core.ParamsDictionary,
   // From https://stackoverflow.com/questions/71393738/typescript-intersection-not-union-type-from-json-schema.
-  ResponseToJsonSchema<Doc, Path, Method>,
-  RequestBodySchema<Doc, Path, Method>,
+  ResponseBodyToJsonSchema<Doc, Path, Method>,
+  RequestBodyToJsonSchema<Doc, Path, Method>,
   ParsedQs,
   Record<string, string>
 >;
 
-export default class ApiRouter<Doc extends RequiredDoc> {
+export class ApiRouter<Doc extends RequiredDoc> {
   private _router = Router();
 
   constructor(private spec: OpenAPIV3_1.Document | OpenAPIV3.Document) {}
@@ -372,7 +381,7 @@ export async function createRouter(options: RouterOptions) {
   router.get('/pets/:uid', (req, res) => {
     res.json({
       id: 1,
-      name: req.params['uid'],
+      name: req.params.uid,
     });
   });
 
