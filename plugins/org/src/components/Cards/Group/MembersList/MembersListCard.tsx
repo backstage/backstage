@@ -44,6 +44,7 @@ import {
   Progress,
   ResponseErrorPanel,
   Link,
+  OverflowTooltip,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -59,14 +60,15 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1',
       minWidth: '0px',
     },
-    overflowingText: {
+    email: {
       overflow: 'hidden',
+      whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
       display: 'inline-block',
       maxWidth: '100%',
       '&:hover': {
         overflow: 'visible',
-        wordBreak: 'break-word',
+        whiteSpace: 'normal',
       },
     },
   }),
@@ -105,22 +107,18 @@ const MemberComponent = (props: { member: UserEntity }) => {
             }}
             textAlign="center"
           >
-            <Typography variant="h5">
+            <Typography variant="h6">
               <Link
-                className={classes.overflowingText}
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
                   entityRouteParams(props.member),
                 )}
               >
-                {displayName}
+                <OverflowTooltip text={displayName} />
               </Link>
             </Typography>
             {profile?.email && (
-              <Link
-                className={classes.overflowingText}
-                to={`mailto:${profile.email}`}
-              >
+              <Link className={classes.email} to={`mailto:${profile.email}`}>
                 {profile.email}
               </Link>
             )}
