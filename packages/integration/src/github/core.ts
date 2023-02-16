@@ -39,7 +39,17 @@ export function getGithubFileFetchUrl(
   credentials: GithubCredentials,
 ): string {
   try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUrl(url);
+    const gitUrlObject = parseGitUrl(url);
+    const { owner, name, filepathtype } = gitUrlObject;
+    let { ref, filepath } = gitUrlObject;
+
+    const searchparams = new URLSearchParams(gitUrlObject.search);
+    const pathAtSearchParams = searchparams.get('path');
+    if (pathAtSearchParams) {
+      ref = `${ref}/${filepath}`;
+      filepath = pathAtSearchParams;
+    }
+
     if (
       !owner ||
       !name ||

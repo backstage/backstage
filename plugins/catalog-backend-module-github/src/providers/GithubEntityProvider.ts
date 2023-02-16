@@ -265,6 +265,11 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const catalogFile = this.config.catalogPath.startsWith('/')
       ? this.config.catalogPath.substring(1)
       : this.config.catalogPath;
+
+    if (branch.includes('/')) {
+      // Fixes https://github.com/backstage/backstage/issues/16403
+      return `${repository.url}/blob/${branch}?path=${catalogFile}`;
+    }
     return `${repository.url}/blob/${branch}/${catalogFile}`;
   }
 

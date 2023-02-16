@@ -176,5 +176,22 @@ describe('github core', () => {
         ),
       ).toEqual('https://ghe.mycompany.net/raw/a/b/branchname/path/to/c.yaml');
     });
+
+    it('should return url for branch names with a /', () => {
+      // Fixes https://github.com/backstage/backstage/issues/16403
+      const config: GithubIntegrationConfig = {
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      expect(
+        getGithubFileFetchUrl(
+          'https://github.com/a/b/blob/release/production?path=path/to/c.yaml',
+          config,
+          tokenCredentials,
+        ),
+      ).toEqual(
+        'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=release/production',
+      );
+    });
   });
 });
