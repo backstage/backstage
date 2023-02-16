@@ -10,7 +10,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "backend-plugin-module"
   },
   "scripts": {
     "start": "backstage-cli package start",
