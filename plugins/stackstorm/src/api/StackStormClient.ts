@@ -75,7 +75,7 @@ export class StackstormClient implements StackstormApi {
   }
 
   async getExecution(id: string): Promise<Execution> {
-    const path = `/executions/${id}`;
+    const path = `/executions/${encodeURIComponent(id)}`;
     return this.get<Execution>(path);
   }
 
@@ -93,10 +93,10 @@ export class StackstormClient implements StackstormApi {
   }
 
   getExecutionHistoryUrl(id: string): string {
-    return `${this.webUrl}/?#/history/${id}`;
+    return `${this.webUrl}/?#/history/${encodeURIComponent(id)}`;
   }
 
   getActionUrl(ref: string): string {
-    return `${this.webUrl}/?#/actions/${ref}`;
+    return `${this.webUrl}/?#/actions/${encodeURIComponent(ref)}`;
   }
 }
