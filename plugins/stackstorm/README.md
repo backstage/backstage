@@ -16,6 +16,7 @@ One of the quickest ways is [running StackStorm with Docker](https://docs.stacks
 1. Install the plugin with `yarn` in the root of your Backstage directory
 
 ```bash
+# From your Backstage root directory
 yarn --cwd packages/app add @backstage/plugin-stackstorm
 ```
 
