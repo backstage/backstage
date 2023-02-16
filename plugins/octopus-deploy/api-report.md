@@ -11,8 +11,6 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "EntityOctopusDeployContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityOctopusDeployContent: (props: {
   defaultLimit?: number | undefined;
@@ -21,8 +19,6 @@ export const EntityOctopusDeployContent: (props: {
 // @public (undocumented)
 export const isOctopusDeployAvailable: (entity: Entity) => boolean;
 
-// Warning: (ae-missing-release-tag) "OctopusDeployApi" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface OctopusDeployApi {
   // (undocumented)
@@ -32,16 +28,11 @@ export interface OctopusDeployApi {
   ): Promise<OctopusProgression>;
 }
 
-// Warning: (ae-missing-release-tag) "octopusDeployApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const octopusDeployApiRef: ApiRef<OctopusDeployApi>;
 
-// Warning: (ae-missing-release-tag) "OctopusDeployClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class OctopusDeployClient implements OctopusDeployApi {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
   constructor(options: Options);
   // (undocumented)
   getReleaseProgression(
@@ -50,50 +41,45 @@ export class OctopusDeployClient implements OctopusDeployApi {
   ): Promise<OctopusProgression>;
 }
 
-// Warning: (ae-missing-release-tag) "OctopusDeployment" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type OctopusDeployment = {
   State: string;
 };
 
-// Warning: (ae-missing-release-tag) "octopusDeployPlugin" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const octopusDeployPlugin: BackstagePlugin<{}, {}, {}>;
 
-// Warning: (ae-missing-release-tag) "OctopusEnvironment" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type OctopusEnvironment = {
   Id: string;
   Name: string;
 };
 
-// Warning: (ae-missing-release-tag) "OctopusProgression" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type OctopusProgression = {
   Environments: OctopusEnvironment[];
   Releases: OctopusReleaseProgression[];
 };
 
-// Warning: (ae-missing-release-tag) "OctopusRelease" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type OctopusRelease = {
   Id: string;
   Version: string;
 };
 
-// Warning: (ae-missing-release-tag) "OctopusReleaseProgression" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type OctopusReleaseProgression = {
   Release: OctopusRelease;
   Deployments: {
     [key: string]: OctopusDeployment[];
   };
+};
+
+// @public (undocumented)
+export type Options = {
+  discoveryApi: DiscoveryApi;
+  identityApi: IdentityApi;
+  proxyPathBase?: string;
 };
 
 // (No @packageDocumentation comment for this package)
