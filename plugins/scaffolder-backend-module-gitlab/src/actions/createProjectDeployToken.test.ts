@@ -18,7 +18,6 @@ import { createGitlabProjectDeployToken } from './createProjectDeployToken';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
-// eslint-disable-next-line no-restricted-imports
 import { PassThrough } from 'stream';
 
 const mockGitlabClient = {

@@ -51,6 +51,4 @@ export const createGitlabProjectVariable: (options: {
   environmentScope: string;
   token?: string | undefined;
 }>;
-
-// (No @packageDocumentation comment for this package)
 ```

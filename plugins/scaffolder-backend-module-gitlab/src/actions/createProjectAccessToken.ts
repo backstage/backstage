@@ -16,8 +16,7 @@
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-backend';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { InputError } from '@backstage/errors';
-import { parseRepoHost } from '../util';
+import { getToken } from '../util';
 
 export const createGitlabProjectAccessToken = (options: {
   integrations: ScmIntegrationRegistry;
@@ -64,26 +63,24 @@ export const createGitlabProjectAccessToken = (options: {
           },
         },
       },
+      output: {
+        type: 'object',
+        properties: {
+          access_token: {
+            title: 'Access Token',
+            type: 'string',
+          },
+        },
+      },
     },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
       const { repoUrl, projectId, name, accessLevel, scopes } = ctx.input;
-
-      const host = parseRepoHost(repoUrl);
-      const integrationConfig = integrations.gitlab.byHost(host);
-
-      if (!integrationConfig) {
-        throw new InputError(
-          `No matching integration configuration for host ${host}, please check your integrations config`,
-        );
-      }
-
-      const token = ctx.input.token || integrationConfig.config.token!;
-      const tokenType = ctx.input.token ? 'oauthToken' : 'token';
-
-      if (tokenType === 'oauthToken') {
-        throw new InputError(`OAuth Token is currently not supported`);
-      }
+      const { token, integrationConfig } = getToken(
+        repoUrl,
+        ctx.input.token,
+        integrations,
+      );
 
       const response = await fetch(
         `${integrationConfig.config.baseUrl}/api/v4/projects/${projectId}/access_tokens`,

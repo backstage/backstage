@@ -6,14 +6,58 @@ Here you can find all Gitlab related features to improve your scaffolder:
 
 ## Getting started
 
+## From your Backstage root directory
+
 ```bash
 # From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-gitlab
 ```
 
-Configure the action (you can check
-the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to
-see all options):
+Configure the action:
+(you can check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to see all options):
+
+```typescript
+// packages/backend/src/plugins/scaffolder.ts
+
+import {
+  createGitlabProjectVariable,
+  createGitlabProjectAccessToken,
+  createGitlabProjectDeployToken,
+} from '@backstage/plugin-scaffolder-backend-module-gitlab';
+
+// Create BuiltIn Actions
+const builtInActions = createBuiltinActions({
+  integrations,
+  catalogClient,
+  config: env.config,
+  reader: env.reader,
+});
+
+// Add Gitlab Actions
+const actions = [
+  ...builtInActions,
+  createGitlabProjectVariable({
+    integrations: integrations,
+  }),
+  createGitlabProjectAccessToken({
+    integrations: integrations,
+  }),
+  createGitlabProjectDeployToken({
+    integrations: integrations,
+  }),
+];
+
+// Create Scaffolder Router
+return await createRouter({
+  containerRunner,
+  catalogClient,
+  actions,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
+});
+```
 
 After that you can use the action in your template:
 

@@ -15,6 +15,10 @@
  */
 
 import { InputError } from '@backstage/errors';
+import {
+  GitLabIntegration,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 
 export const parseRepoHost = (repoUrl: string): string => {
   let parsed;
@@ -26,4 +30,28 @@ export const parseRepoHost = (repoUrl: string): string => {
     );
   }
   return parsed.host;
+};
+
+export const getToken = (
+  repoUrl: string,
+  inputToken: string | null | undefined,
+  integrations: ScmIntegrationRegistry,
+): { token: string; integrationConfig: GitLabIntegration } => {
+  const host = parseRepoHost(repoUrl);
+  const integrationConfig = integrations.gitlab.byHost(host);
+
+  if (!integrationConfig) {
+    throw new InputError(
+      `No matching integration configuration for host ${host}, please check your integrations config`,
+    );
+  }
+
+  const token = inputToken || integrationConfig.config.token!;
+  const tokenType = inputToken ? 'oauthToken' : 'token';
+
+  if (tokenType === 'oauthToken') {
+    throw new InputError(`OAuth Token is currently not supported`);
+  }
+
+  return { token: token, integrationConfig: integrationConfig };
 };
