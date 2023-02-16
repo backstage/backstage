@@ -56,6 +56,11 @@ describe('ActionsList', () => {
   const mockApi: jest.Mocked<StackstormApi> = {
     getPacks: jest.fn().mockResolvedValue(packs),
     getActions: jest.fn().mockResolvedValue(actions),
+    getActionUrl: jest
+      .fn()
+      .mockResolvedValue(
+        'http://stackstorm.example.com:8080/?#/actions/core.action',
+      ),
   } as any;
 
   it('should render all packs', async () => {
