@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
-import { Router } from 'express';
+import { ErrorRequestHandler, RequestHandler, Router } from 'express';
 import core, { ParamsDictionary } from 'express-serve-static-core';
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
 import {
@@ -283,6 +283,17 @@ type DocRequestHandler<
   Record<string, string>
 >;
 
+export type RequestHandlerParams<
+  P = ParamsDictionary,
+  ResBody = any,
+  ReqBody = any,
+  ReqQuery = ParsedQs,
+  LocalsObj extends Record<string, any> = Record<string, any>,
+> =
+  | RequestHandler<P, ResBody, ReqBody, ReqQuery, LocalsObj>
+  | ErrorRequestHandler<P, ResBody, ReqBody, ReqQuery, LocalsObj>
+  | Array<RequestHandler<P> | ErrorRequestHandler<P>>;
+
 export class ApiRouter<Doc extends RequiredDoc> {
   private _router = Router();
 
@@ -298,7 +309,7 @@ export class ApiRouter<Doc extends RequiredDoc> {
     path: Path,
     ...handlers: DocRequestHandler<Doc, Path, 'get'>[]
   ) {
-    console.log(path);
+    console.log(path, this.spec);
     this._router.get(path, ...handlers);
     return this;
   }
@@ -361,8 +372,8 @@ export class ApiRouter<Doc extends RequiredDoc> {
     return this;
   }
 
-  use(...handlers: core.RequestHandler[]) {
-    return this._router.use(handlers);
+  use(...handlers: RequestHandlerParams[]) {
+    return this._router.use(...handlers);
   }
 
   build() {
@@ -373,6 +384,7 @@ export class ApiRouter<Doc extends RequiredDoc> {
 interface RouterOptions {}
 
 export async function createRouter(options: RouterOptions) {
+  console.log(options);
   const router = ApiRouter.fromSpec<DeepWriteable<typeof doc>>(
     // As const forces the doc to readonly which conflicts with imported types.
     doc as DeepWriteable<typeof doc>,

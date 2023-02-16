@@ -189,7 +189,9 @@ export async function createRouter(
           fields: parseEntityTransformParams(req.query, request.fields),
           authorizationToken: token,
         });
-        res.status(200).json(response);
+        // These responses are interacting weirdly with the underlying interface passed to them,
+        //  we just need to re-load the TS server's short term memory.
+        res.status(200).json({ ...response });
       })
       .get('/entity-facets', async (req, res) => {
         const response = await entitiesCatalog.facets({
@@ -197,7 +199,9 @@ export async function createRouter(
           facets: parseEntityFacetParams(req.query),
           authorizationToken: getBearerToken(req.header('authorization')),
         });
-        res.status(200).json(response);
+        // These responses are interacting weirdly with the underlying interface passed to them,
+        //  we just need to re-load the TS server's short term memory.
+        res.status(200).json({ ...response });
       });
   }
 

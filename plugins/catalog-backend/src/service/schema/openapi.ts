@@ -250,7 +250,7 @@ export default {
         },
         required: ['items'],
       },
-      EntityFacets: {
+      EntityFacet: {
         type: 'object',
         properties: {
           value: {
@@ -260,13 +260,22 @@ export default {
             type: 'number',
           },
         },
-        description: 'Construct a type with a set of properties K of type T',
+      },
+      EntityFacets: {
+        type: 'array',
+        items: {
+          $ref: '#/components/schemas/EntityFacet',
+        },
       },
       EntityFacetsResponse: {
         type: 'object',
-        properties: {},
-        additionalProperties: {
-          $ref: '#/components/schemas/EntityFacets',
+        properties: {
+          facets: {
+            type: 'object',
+            additionalProperties: {
+              $ref: '#/components/schemas/EntityFacets',
+            },
+          },
         },
         required: ['facets'],
       },
@@ -320,6 +329,85 @@ export default {
         description:
           "If the folder pointed to already contained catalog info yaml files, they are\nread and emitted like this so that the frontend can inform the user that it\nlocated them and can make sure to register them as well if they weren't\nalready",
       },
+      RecursivePartialEntityRelation: {
+        type: 'object',
+        properties: {
+          targetRef: {
+            type: 'string',
+            description: 'The entity ref of the target of this relation.',
+          },
+          type: {
+            type: 'string',
+            description: 'The type of the relation.',
+          },
+        },
+        description:
+          'A relation of a specific type to another entity in the catalog.',
+      },
+      RecursivePartialEntityMeta: {
+        allOf: [
+          {
+            $ref: '#/components/schemas/JsonObject',
+          },
+          {
+            type: 'object',
+            properties: {
+              links: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/EntityLink',
+                },
+                description:
+                  'A list of external hyperlinks related to the entity.',
+              },
+              tags: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                description:
+                  'A list of single-valued strings, to for example classify catalog entities in\nvarious ways.',
+              },
+              annotations: {
+                $ref: '#/components/schemas/MapStringString',
+              },
+              labels: {
+                $ref: '#/components/schemas/MapStringString',
+              },
+              description: {
+                type: 'string',
+                description:
+                  'A short (typically relatively few words, on one line) description of the\nentity.',
+              },
+              title: {
+                type: 'string',
+                description:
+                  'A display name of the entity, to be presented in user interfaces instead\nof the `name` property above, when available.\nThis field is sometimes useful when the `name` is cumbersome or ends up\nbeing perceived as overly technical. The title generally does not have\nas stringent format requirements on it, so it may contain special\ncharacters and be more explanatory. Do keep it very short though, and\navoid situations where a title can be confused with the name of another\nentity, or where two entities share a title.\nNote that this is only for display purposes, and may be ignored by some\nparts of the code. Entity references still always make use of the `name`\nproperty, not the title.',
+              },
+              namespace: {
+                type: 'string',
+                description: 'The namespace that the entity belongs to.',
+              },
+              name: {
+                type: 'string',
+                description:
+                  'The name of the entity.\nMust be unique within the catalog at any given point in time, for any\ngiven namespace + kind pair. This value is part of the technical\nidentifier of the entity, and as such it will appear in URLs, database\ntables, entity references, and similar. It is subject to restrictions\nregarding what characters are allowed.\nIf you want to use a different, more human readable string with fewer\nrestrictions on it in user interfaces, see the `title` field below.',
+              },
+              etag: {
+                type: 'string',
+                description:
+                  'An opaque string that changes for each update operation to any part of\nthe entity, including metadata.\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, and the server will then reject the\noperation if it does not match the current stored value.',
+              },
+              uid: {
+                type: 'string',
+                description:
+                  'A globally unique ID for the entity.\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, but the server is free to reject requests\nthat do so in such a way that it breaks semantics.',
+              },
+            },
+          },
+        ],
+        description: 'Metadata fields common to all versions/kinds of entity.',
+      },
       RecursivePartial_Entity_: {
         type: 'object',
         properties: {
@@ -333,7 +421,7 @@ export default {
             description: 'The high level entity type being described.',
           },
           metadata: {
-            $ref: '#/components/schemas/EntityMeta',
+            $ref: '#/components/schemas/RecursivePartialEntityMeta',
           },
           spec: {
             $ref: '#/components/schemas/JsonObject',
@@ -341,7 +429,7 @@ export default {
           relations: {
             type: 'array',
             items: {
-              $ref: '#/components/schemas/EntityRelation',
+              $ref: '#/components/schemas/RecursivePartialEntityRelation',
             },
             description:
               'The relations that this entity has with other entities.',
