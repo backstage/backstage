@@ -219,7 +219,7 @@ export class MicrosoftGraphClient {
   ): Promise<Response> {
     // Make sure that we always have a valid access token (might be cached)
     const token = await this.tokenCredential.getToken(
-      `${this.baseUrl}/.default`,
+      'https://graph.microsoft.com/.default',
     );
 
     if (!token) {
