@@ -15,7 +15,7 @@
  */
 import React, { useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import { Link, Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   List,
@@ -72,9 +72,12 @@ export const ActionItems = ({ pack }: ActionItemsProps) => {
         return (
           <ListItem
             key={a.ref}
-            button
+            component={Link}
+            to={st2.getActionUrl(a.ref)}
             className={classes.nested}
-            onClick={() => window.open(st2.getActionUrl(a.ref), '_blank')}
+            underline="none"
+            color="inherit"
+            button
           >
             <ListItemText primary={a.name} secondary={a.description} />
             <ListItemSecondaryAction>{a.runner_type}</ListItemSecondaryAction>
