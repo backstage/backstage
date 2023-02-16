@@ -20,6 +20,7 @@ import { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
 import { ServerSideKubernetesAuthProvider } from './ServerSideAuthProvider';
 import { OAuthApi, OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { OidcKubernetesAuthProvider } from './OidcKubernetesAuthProvider';
+import { AksKubernetesAuthProvider } from './AksKubernetesAuthProvider';
 
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   private readonly kubernetesAuthProviderMap: Map<
@@ -30,6 +31,7 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   constructor(options: {
     googleAuthApi: OAuthApi;
     oidcProviders?: { [key: string]: OpenIdConnectApi };
+    microsoftAuthApi: OAuthApi;
   }) {
     this.kubernetesAuthProviderMap = new Map<string, KubernetesAuthProvider>();
     this.kubernetesAuthProviderMap.set(
@@ -55,6 +57,10 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     this.kubernetesAuthProviderMap.set(
       'localKubectlProxy',
       new ServerSideKubernetesAuthProvider(),
+    );
+    this.kubernetesAuthProviderMap.set(
+      'microsoftaks',
+      new AksKubernetesAuthProvider(options.microsoftAuthApi),
     );
 
     if (options.oidcProviders) {

@@ -44,6 +44,7 @@ describe('KubernetesAuthProviders tests', () => {
     oidcProviders: {
       okta: new MockAuthApi('oktaToken'),
     },
+    microsoftAuthApi: new MockAuthApi('microsoftAksToken'),
   });
 
   it('adds token to request body for google authProvider', async () => {

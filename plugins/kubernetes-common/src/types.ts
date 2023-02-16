@@ -38,6 +38,7 @@ export interface KubernetesRequestAuth {
   oidc?: {
     [key: string]: string;
   };
+  aks?: string;
 }
 
 /** @public */

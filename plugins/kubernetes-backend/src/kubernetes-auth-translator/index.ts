@@ -22,3 +22,4 @@ export * from './KubernetesAuthTranslatorGenerator';
 export * from './NoopKubernetesAuthTranslator';
 export * from './OidcKubernetesAuthTranslator';
 export * from './types';
+export * from './AksKubernetesAuthTranslator';

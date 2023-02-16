@@ -19,3 +19,4 @@ export type { KubernetesAuthProvidersApi } from './types';
 export { KubernetesAuthProviders } from './KubernetesAuthProviders';
 export { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
 export { ServerSideKubernetesAuthProvider } from './ServerSideAuthProvider';
+export { AksKubernetesAuthProvider } from './AksKubernetesAuthProvider';
