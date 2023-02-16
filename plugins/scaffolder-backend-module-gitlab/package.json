@@ -12,6 +12,15 @@
   "backstage": {
     "role": "backend-plugin-module"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/scaffolder-backend-module-gitlab"
+  },
+  "keywords": [
+    "backstage"
+  ],
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
