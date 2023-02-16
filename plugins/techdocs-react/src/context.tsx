@@ -117,10 +117,6 @@ export const TechDocsReaderPageProvider = memo(
     const techdocsApi = useApi(techdocsApiRef);
     const config = useApi(configApiRef);
 
-    const metadata = useAsync(async () => {
-      return techdocsApi.getTechDocsMetadata(entityRef);
-    }, [entityRef]);
-
     const entityMetadata = useAsync(async () => {
       return techdocsApi.getEntityMetadata(entityRef);
     }, [entityRef]);
@@ -131,6 +127,14 @@ export const TechDocsReaderPageProvider = memo(
     );
     const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
       defaultTechDocsReaderPageValue.shadowRoot,
+    );
+
+    const metadata = useAsync(
+      () =>
+        shadowRoot
+          ? techdocsApi.getTechDocsMetadata(entityRef)
+          : new Promise<TechDocsMetadata>(() => {}),
+      [entityRef, shadowRoot],
     );
 
     const value = {
