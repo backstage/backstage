@@ -8,7 +8,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
-import { HttpRouterService } from '@backstage/backend-plugin-api';
+import type { HttpRouterService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
@@ -150,9 +150,7 @@ export interface TodoService {
 // @alpha (undocumented)
 export const todosPlugin: () => BackendFeature;
 
-// Warning: (ae-missing-release-tag) "TodosPluginDependencies" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha (undocumented)
 export type TodosPluginDependencies = {
   todoReader: TodoService;
   http: HttpRouterService;

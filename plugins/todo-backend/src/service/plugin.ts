@@ -17,7 +17,6 @@
 import {
   createBackendPlugin,
   coreServices,
-  HttpRouterService,
 } from '@backstage/backend-plugin-api';
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
@@ -29,12 +28,8 @@ import {
   parseOrderByParam,
 } from '../lib/utils';
 import { todoReaderServiceRef } from './TodoReaderService';
-import { TodoService, TODO_FIELDS } from './types';
-
-export type TodosPluginDependencies = {
-  todoReader: TodoService;
-  http: HttpRouterService;
-};
+import { TODO_FIELDS } from './types';
+import type { TodosPluginDependencies } from './types';
 
 const todosPluginInit = async (params: TodosPluginDependencies) => {
   const { http, todoReader } = params;
