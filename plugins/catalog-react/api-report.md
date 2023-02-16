@@ -393,9 +393,7 @@ export class EntityTagFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityTagPicker: (
-  props: EntityTagPickerProps,
-) => JSX.Element | null;
+export const EntityTagPicker: (props: EntityTagPickerProps) => JSX.Element;
 
 // @public (undocumented)
 export type EntityTagPickerProps = {
@@ -480,12 +478,14 @@ export function InspectEntityDialog(props: {
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
 // @public (undocumented)
-export const MockEntityListContextProvider: ({
+export function MockEntityListContextProvider<
+  T extends DefaultEntityFilters = DefaultEntityFilters,
+>({
   children,
   value,
-}: React_2.PropsWithChildren<{
-  value?: Partial<EntityListContextProps<DefaultEntityFilters>> | undefined;
-}>) => JSX.Element;
+}: PropsWithChildren<{
+  value?: Partial<EntityListContextProps<T>>;
+}>): JSX.Element;
 
 // @public
 export class MockStarredEntitiesApi implements StarredEntitiesApi {
