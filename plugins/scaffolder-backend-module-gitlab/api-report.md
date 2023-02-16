@@ -4,11 +4,9 @@
 
 ```ts
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { TemplateAction } from '@backstage/plugin-scaffolder-backend';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
-// Warning: (ae-missing-release-tag) "createGitlabProjectAccessToken" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const createGitlabProjectAccessToken: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{
@@ -20,9 +18,7 @@ export const createGitlabProjectAccessToken: (options: {
   token?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createGitlabProjectDeployToken" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const createGitlabProjectDeployToken: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{
@@ -34,9 +30,7 @@ export const createGitlabProjectDeployToken: (options: {
   token?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createGitlabProjectVariable" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const createGitlabProjectVariable: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{

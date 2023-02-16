@@ -36,7 +36,7 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
-    "@backstage/plugin-scaffolder-backend": "workspace:^",
+    "@backstage/plugin-scaffolder-node": "workspace:^",
     "@gitbeaker/node": "^35.8.0",
     "fs-extra": "10.1.0"
   },
