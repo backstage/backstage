@@ -162,7 +162,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
           )}
         </Grid>
       </CardContent>
-      <CardActions style={{ padding: '16px' }}>
+      <CardActions style={{ padding: '16px', flex: 1, alignItems: 'flex-end' }}>
         <div className={styles.footer}>
           <div className={styles.ownedBy}>
             {ownedByRelations.length > 0 && (
