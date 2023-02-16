@@ -4796,6 +4796,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/lodash": ^4.14.151
     aws-sdk: ^2.840.0
