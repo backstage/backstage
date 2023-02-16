@@ -39,7 +39,7 @@ export const createGitlabProjectAccessToken = (options: {
     id: 'gitlab:create-project-access-token',
     schema: {
       input: {
-        required: ['projectId'],
+        required: ['projectId', 'repoUrl'],
         type: 'object',
         properties: {
           repoUrl: {
