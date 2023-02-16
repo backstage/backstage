@@ -15542,12 +15542,12 @@ __metadata:
   linkType: hard
 
 "@types/tar@npm:^6.1.1":
-  version: 6.1.3
-  resolution: "@types/tar@npm:6.1.3"
+  version: 6.1.4
+  resolution: "@types/tar@npm:6.1.4"
   dependencies:
     "@types/node": "*"
-    minipass: ^3.3.5
-  checksum: 3a221f74adfcef8555b9c4cc951907dfd567630744ffe5211da1b44caf2a4c3b02297b73c9fb02d171e93a7a7c74fb15c1826e3f0438f0e5e8f4c790db59ddcf
+    minipass: ^4.0.0
+  checksum: 48a1f6b8665ed03f37f74966cfe991a33d6e85cee28aaa6ef42c7ca8448cdbc1e2ca96b473b6b53f1d7bd91423ae0dcfe54a295607d7ac4b4cbb9dbf167df7fa
   languageName: node
   linkType: hard
 
@@ -29574,7 +29574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minipass@npm:^3.0.0, minipass@npm:^3.1.0, minipass@npm:^3.1.1, minipass@npm:^3.1.3, minipass@npm:^3.1.6, minipass@npm:^3.3.5":
+"minipass@npm:^3.0.0, minipass@npm:^3.1.0, minipass@npm:^3.1.1, minipass@npm:^3.1.3, minipass@npm:^3.1.6":
   version: 3.3.5
   resolution: "minipass@npm:3.3.5"
   dependencies:
