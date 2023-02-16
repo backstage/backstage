@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,11 @@
 import { KubernetesAuthProvider } from './types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
+
+/**
+ *
+ * @public
+ */
 
 export class AksKubernetesAuthProvider implements KubernetesAuthProvider {
   authProvider: OAuthApi;

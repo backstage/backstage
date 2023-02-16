@@ -220,6 +220,8 @@ export type KubernetesFetchError = StatusError | RawFetchError;
 // @public (undocumented)
 export interface KubernetesRequestAuth {
   // (undocumented)
+  aks?: string;
+  // (undocumented)
   google?: string;
   // (undocumented)
   oidc?: {

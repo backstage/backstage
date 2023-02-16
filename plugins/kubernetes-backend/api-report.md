@@ -22,6 +22,15 @@ import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
+export class AksKubernetesAuthTranslator implements KubernetesAuthTranslator {
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: AzureClusterDetails,
+    authConfig: KubernetesRequestAuth,
+  ): Promise<AzureClusterDetails>;
+}
+
+// @alpha (undocumented)
 export interface AWSClusterDetails extends ClusterDetails {
   // (undocumented)
   assumeRole?: string;

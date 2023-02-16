@@ -35,6 +35,19 @@ import { V1Service } from '@kubernetes/client-node';
 import { V1StatefulSet } from '@kubernetes/client-node';
 import { WorkloadsByEntityRequest } from '@backstage/plugin-kubernetes-common';
 
+// Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvider" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export class AksKubernetesAuthProvider implements KubernetesAuthProvider {
+  constructor(authProvider: OAuthApi);
+  // (undocumented)
+  authProvider: OAuthApi;
+  // (undocumented)
+  decorateRequestBodyForAuth(
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
+}
+
 // Warning: (ae-forgotten-export) The symbol "ClusterProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Cluster" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -172,7 +185,6 @@ export function formatClusterLink(
   options: FormatClusterLinkOptions,
 ): string | undefined;
 
-// Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvider" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "GoogleKubernetesAuthProvider" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -275,6 +287,7 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     oidcProviders?: {
       [key: string]: OpenIdConnectApi;
     };
+    microsoftAuthApi: OAuthApi;
   });
   // (undocumented)
   decorateRequestBodyForAuth(
