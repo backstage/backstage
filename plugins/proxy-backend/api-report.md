@@ -17,6 +17,7 @@ export const proxyPlugin: (
   options?:
     | {
         skipInvalidProxies?: boolean | undefined;
+        reviveConsumedRequestBodies?: boolean | undefined;
       }
     | undefined,
 ) => BackendFeature;
@@ -29,6 +30,8 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  reviveConsumedRequestBodies?: boolean;
   // (undocumented)
   skipInvalidProxies?: boolean;
 }
