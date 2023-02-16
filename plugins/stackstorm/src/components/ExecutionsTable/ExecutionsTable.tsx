@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useState } from 'react';
-import { Link, Table, TableColumn } from '@backstage/core-components';
-import { useApi, errorApiRef } from '@backstage/core-plugin-api';
+import React, { useState } from 'react';
+import {
+  Link,
+  ResponseErrorPanel,
+  Table,
+  TableColumn,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 import { Execution, stackstormApiRef } from '../../api';
 import { Status } from './Status';
 import { ExecutionPanel } from './ExecutionPanel';
+import useAsync from 'react-use/lib/useAsync';
 
 type DenseTableProps = {
   executions: Execution[];
@@ -89,34 +95,24 @@ export const DenseTable = ({
 
 export const ExecutionsTable = () => {
   const st2 = useApi(stackstormApiRef);
-  const errorApi = useApi(errorApiRef);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [data, setData] = useState<Execution[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const getData = async () => {
-      setLoading(true);
-      await st2
-        .getExecutions(rowsPerPage, page * rowsPerPage)
-        .then(d => {
-          setData(d);
-        })
-        .catch(err => {
-          errorApi.post(err);
-        });
-      setLoading(false);
-    };
-    getData();
-  }, [errorApi, page, rowsPerPage, st2]);
+  const { value, loading, error } = useAsync(async (): Promise<Execution[]> => {
+    const data = await st2.getExecutions(rowsPerPage, page * rowsPerPage);
+    return data;
+  }, [page, rowsPerPage, st2]);
+
+  if (error) {
+    return <ResponseErrorPanel error={error} />;
+  }
 
   return (
     <DenseTable
       page={page}
       pageSize={rowsPerPage}
       loading={loading}
-      executions={data}
+      executions={value || []}
       onRowsPerPageChange={setRowsPerPage}
       onPageChange={setPage}
     />

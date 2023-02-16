@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Progress, Table, TableColumn } from '@backstage/core-components';
-import { Alert } from '@material-ui/lab';
+import {
+  Progress,
+  ResponseErrorPanel,
+  Table,
+  TableColumn,
+} from '@backstage/core-components';
 import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { Pack, stackstormApiRef } from '../../api';
@@ -52,7 +56,7 @@ export const PacksTable = () => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return <DenseTable packs={value || []} />;

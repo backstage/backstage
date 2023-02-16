@@ -15,6 +15,7 @@
  */
 import { Action, Execution, Pack, StackstormApi } from './types';
 import { ConfigApi, DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
+import { ResponseError } from '@backstage/errors';
 
 export class StackstormClient implements StackstormApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -57,28 +58,13 @@ export class StackstormClient implements StackstormApi {
       },
     });
 
-    if (!response.ok) throw new Error(`Unable to get data: ${response.status}`);
+    if (!response.ok) throw await ResponseError.fromResponse(response);
     return (await response.json()) as T;
-  }
-
-  async addProject(bazaarProject: any): Promise<any> {
-    const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
-
-    return await this.fetchApi
-      .fetch(`${baseUrl}/projects`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bazaarProject),
-      })
-      .then(resp => resp.json());
   }
 
   async getExecutions(limit?: number, offset?: number): Promise<Execution[]> {
     const params = {
-      limit: limit?.toString() || '25',
+      limit: limit?.toString() || '10',
       offset: offset?.toString() || '0',
       include_attributes:
         'id,status,start_timestamp,action.ref,action.name,rule.ref',
