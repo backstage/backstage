@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-msgraph': patch
 ---
 
-revert ms graph token as it breaks the graph provider
+Revert using `baseUrl` for MS Graph provider as it breaks token retrieval
