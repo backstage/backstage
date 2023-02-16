@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 export interface Config {
-  stackstorm?: {
+  stackstorm: {
     /**
      * StackStorm Web UI url
      * Used in links to StackStorm web UI
      * @visibility frontend
      */
-    webUrl?: string;
+    webUrl: string;
   };
 }

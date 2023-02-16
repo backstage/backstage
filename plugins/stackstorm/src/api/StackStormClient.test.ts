@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlPatternDiscovery } from '@backstage/core-app-api';
+import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
 import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -177,31 +177,50 @@ describe('StackstormClient', () => {
 
   beforeEach(() => {
     setupHandlers();
-    client = new StackstormClient({
-      discoveryApi: discoveryApi,
-      fetchApi: new MockFetchApi(),
-    });
+    client = StackstormClient.fromConfig(
+      new ConfigReader({
+        stackstorm: {
+          webUrl: 'http://stackstorm.example.com:8080',
+        },
+      }),
+      {
+        discoveryApi: discoveryApi,
+        fetchApi: new MockFetchApi(),
+      },
+    );
   });
 
-  it('get executions should return executions with emulated pagination', async () => {
+  it('getExecutions should return executions with emulated pagination', async () => {
     const got = await client.getExecutions(2, 1);
     expect(got.length).toEqual(2);
     expect(got).toMatchObject(executions.slice(1, 3));
   });
 
-  it('get execution should return one execution', async () => {
+  it('getExecution should return one execution', async () => {
     const got = await client.getExecution('63dcac3e18ba00e09e7bb3b6');
     expect(got).toMatchObject(executionWithDetails);
   });
 
-  it('get packs should return list of all packs', async () => {
+  it('getPacks should return list of all packs', async () => {
     const got = await client.getPacks();
     expect(got.length).toEqual(packs.length);
     expect(got).toMatchObject(packs);
   });
 
-  it('get actions should return list of actions', async () => {
+  it('getActions should return list of actions', async () => {
     const got = await client.getActions('core');
     expect(got).toMatchObject(actions);
+  });
+
+  it('getExecutionHistoryUrl should return webUrl for executions', async () => {
+    const got = client.getExecutionHistoryUrl('123abc');
+    expect(got).toEqual('http://stackstorm.example.com:8080/?#/history/123abc');
+  });
+
+  it('getActionUrl should return webUrl for action', async () => {
+    const got = client.getActionUrl('core.shell');
+    expect(got).toEqual(
+      'http://stackstorm.example.com:8080/?#/actions/core.shell',
+    );
   });
 });

@@ -56,4 +56,6 @@ export interface StackstormApi {
   getExecution(id: string): Promise<Execution>;
   getPacks(): Promise<Pack[]>;
   getActions(pack: string): Promise<Action[]>;
+  getExecutionHistoryUrl(id: string): string;
+  getActionUrl(ref: string): string;
 }

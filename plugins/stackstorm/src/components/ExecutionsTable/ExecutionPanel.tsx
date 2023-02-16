@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { CodeSnippet, Progress } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { Execution, stackstormApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { Alert } from '@material-ui/lab';
@@ -65,10 +65,8 @@ const TRow = withStyles(theme => ({
 }))(TableRow);
 
 const ExecutionCard = ({ e }: { e: Execution }) => {
-  const config = useApi(configApiRef);
+  const st2 = useApi(stackstormApiRef);
   const classes = useStyles();
-
-  const webUrl = `${config.getString('stackstorm.webUrl')}/?#/history/${e.id}`;
 
   return (
     <Card className={classes.card}>
@@ -139,7 +137,11 @@ const ExecutionCard = ({ e }: { e: Execution }) => {
         />
       </CardContent>
       <CardActions>
-        <Button size="small" href={webUrl} target="_blank">
+        <Button
+          size="small"
+          href={`${st2.getExecutionHistoryUrl(e.id)}`}
+          target="_blank"
+        >
           View in ST2
         </Button>
       </CardActions>

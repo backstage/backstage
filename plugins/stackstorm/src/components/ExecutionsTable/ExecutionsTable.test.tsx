@@ -83,19 +83,16 @@ const executions: Execution[] = [
 describe('ExecutionsTable', () => {
   const mockApi: jest.Mocked<StackstormApi> = {
     getExecutions: jest.fn().mockResolvedValue(executions),
+    getExecutionHistoryUrl: jest
+      .fn()
+      .mockResolvedValue(
+        'http://stackstorm.example.com:8080/?#/history/123abc',
+      ),
   } as any;
 
   it('should render all executions', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [stackstormApiRef, mockApi],
-          [
-            configApiRef,
-            new MockConfigApi({ stackstorm: { webUrl: 'http://localhost' } }),
-          ],
-        ]}
-      >
+      <TestApiProvider apis={[[stackstormApiRef, mockApi]]}>
         <ExecutionsTable />
       </TestApiProvider>,
     );
