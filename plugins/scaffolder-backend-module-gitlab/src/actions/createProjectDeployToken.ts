@@ -20,6 +20,12 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { DeployTokenScope } from '@gitbeaker/core/dist/types/templates/ResourceDeployTokens';
 import { getToken } from '../util';
 
+/**
+ * Creates a `gitlab:create-project-deploy-token` Scaffolder action.
+ *
+ * @param options - Templating configuration.
+ * @public
+ */
 export const createGitlabProjectDeployToken = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
