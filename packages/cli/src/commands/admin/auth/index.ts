@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Task } from '../../../lib/tasks';
 import { github } from './github';
@@ -42,4 +43,5 @@ export async function auth(): Promise<void> {
   }
 
   Task.log(`Done setting up ${provider}!`);
+  Task.log(`You can now start you app with ${chalk.inverse('yarn dev')}`);
 }

@@ -17,13 +17,15 @@
 import { OAuthApp } from '@octokit/oauth-app';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import fetch from 'node-fetch';
 import { Task } from '../../../../lib/tasks';
-import { updateConfigFile, updateEnvFile } from '../config';
+import { addUserEntity, updateConfigFile, updateEnvFile } from '../config';
 import {
   APP_CONFIG_FILE,
   APP_TSX_FILE,
   AUTH_BACKEND_PLUGIN_FILE,
   ENV_CONFIG_FILE,
+  USER_ENTITY_FILE,
 } from '../files';
 import { patch } from '../patch';
 import { addSignInPageDiff, replaceSignInResolverDiff } from './diffs';
@@ -53,6 +55,46 @@ const validateCredentials = async (clientId: string, clientSecret: string) => {
   }
 };
 
+const getConfig = (answers: Answers, useEnvForSecrets: boolean) => {
+  const { clientId, clientSecret, hasEnterprise, enterpriseInstanceUrl } =
+    answers;
+
+  return {
+    auth: {
+      providers: {
+        github: {
+          development: {
+            clientId: useEnvForSecrets ? '${AUTH_GITHUB_CLIENT_ID}' : clientId,
+            clientSecret: useEnvForSecrets
+              ? '${AUTH_GITHUB_CLIENT_SECRET}'
+              : clientSecret,
+            ...(hasEnterprise && {
+              enterpriseInstanceUrl: enterpriseInstanceUrl,
+            }),
+          },
+        },
+      },
+    },
+    catalog: {
+      locations: [
+        {
+          type: 'file',
+          target: '../../user-info.yaml',
+          rules: [{ allow: ['User'] }],
+        },
+      ],
+    },
+  };
+};
+
+type Answers = {
+  username: string;
+  clientSecret: string;
+  clientId: string;
+  hasEnterprise: boolean;
+  enterpriseInstanceUrl?: string;
+};
+
 export const oauth = async (useEnvForSecrets: boolean) => {
   Task.log(`
     To add GitHub authentication, you must create an OAuth App from the GitHub developer settings: ${chalk.blue(
@@ -69,12 +111,19 @@ export const oauth = async (useEnvForSecrets: boolean) => {
       'https://backstage.io/docs/auth/github/provider',
     )}`);
 
-  const answers = await inquirer.prompt<{
-    clientSecret: string;
-    clientId: string;
-    hasEnterprise: boolean;
-    enterpriseInstanceUrl?: string;
-  }>([
+  const answers = await inquirer.prompt<Answers>([
+    {
+      type: 'input',
+      name: 'username',
+      message: 'What is your Github username?',
+      validate: async (input: string) => {
+        const response = await fetch(`https://api.github.com/users/${input}`);
+        if (!response.ok) {
+          return chalk.red('Unknown user. Please try again.');
+        }
+        return true;
+      },
+    },
     {
       type: 'input',
       name: 'clientId',
@@ -101,31 +150,18 @@ export const oauth = async (useEnvForSecrets: boolean) => {
     },
   ]);
 
-  const { clientId, clientSecret, hasEnterprise, enterpriseInstanceUrl } =
-    answers;
+  const { username, clientId, clientSecret } = answers;
 
   await validateCredentials(clientId, clientSecret);
 
-  const auth = {
-    providers: {
-      github: {
-        development: {
-          clientId: useEnvForSecrets ? '${AUTH_GITHUB_CLIENT_ID}' : clientId,
-          clientSecret: useEnvForSecrets
-            ? '${AUTH_GITHUB_CLIENT_SECRET}'
-            : clientSecret,
-          ...(hasEnterprise && {
-            enterpriseInstanceUrl: enterpriseInstanceUrl,
-          }),
-        },
-      },
-    },
-  };
+  const config = getConfig(answers, useEnvForSecrets);
+  await updateConfigFile(APP_CONFIG_FILE, config);
 
-  await updateConfigFile(APP_CONFIG_FILE, { auth });
   if (useEnvForSecrets) {
     await updateEnvFile(ENV_CONFIG_FILE, clientId, clientSecret);
   }
+
+  await addUserEntity(USER_ENTITY_FILE, username);
 
   await patch(APP_TSX_FILE, addSignInPageDiff);
   await patch(AUTH_BACKEND_PLUGIN_FILE, replaceSignInResolverDiff);

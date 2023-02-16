@@ -21,6 +21,8 @@ import * as path from 'path';
 const { targetRoot, resolveTargetRoot } = findPaths(__dirname);
 export const APP_CONFIG_FILE = path.join(targetRoot, 'app-config.local.yaml');
 export const ENV_CONFIG_FILE = path.join(targetRoot, '.env.local');
+export const USER_ENTITY_FILE = path.join(targetRoot, 'user-info.yaml');
+
 export const APP_TSX_FILE = path.join(
   resolveTargetRoot('packages/app'),
   'src',

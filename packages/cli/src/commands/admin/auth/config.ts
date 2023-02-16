@@ -29,6 +29,13 @@ type GithubAuthConfig = {
       };
     };
   };
+  catalog?: {
+    locations: Array<{
+      type: string;
+      target: string;
+      rules: Array<{ allow: Array<string> }>;
+    }>;
+  };
 };
 
 const readYaml = async (file: string) => {
@@ -66,4 +73,28 @@ AUTH_GITHUB_CLIENT_SECRET=${clientSecret}`;
   }
 
   return await fs.writeFile(file, content, 'utf8');
+};
+
+export const addUserEntity = async (file: string, username: string) => {
+  const content = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      name: username,
+      annotations: {
+        'github.com/user-login': username,
+      },
+    },
+    spec: {
+      memberOf: [],
+    },
+  };
+
+  return await fs.writeFile(
+    file,
+    yaml.stringify(content, {
+      indent: 2,
+    }),
+    'utf8',
+  );
 };
