@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Grid, IconButton } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
 import {
   Header,
   Page,
@@ -38,29 +38,17 @@ export const StackStormHome = () => (
     <TabbedLayout>
       <TabbedLayout.Route path="/history" title="Executions">
         <Content noPadding>
-          <Grid container spacing={3} direction="column">
-            <Grid>
-              <ExecutionsTable />
-            </Grid>
-          </Grid>
+          <ExecutionsTable />
         </Content>
       </TabbedLayout.Route>
       <TabbedLayout.Route path="/packs" title="Packs">
         <Content noPadding>
-          <Grid container spacing={3} direction="column">
-            <Grid item>
-              <PacksTable />
-            </Grid>
-          </Grid>
+          <PacksTable />
         </Content>
       </TabbedLayout.Route>
       <TabbedLayout.Route path="/actions" title="Actions">
         <Content noPadding>
-          <Grid container spacing={3} direction="column">
-            <Grid item>
-              <ActionsList />
-            </Grid>
-          </Grid>
+          <ActionsList />
         </Content>
       </TabbedLayout.Route>
     </TabbedLayout>
