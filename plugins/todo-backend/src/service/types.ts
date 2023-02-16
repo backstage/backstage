@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { HttpRouterService } from '@backstage/backend-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { TodoItem } from '../lib';
 
@@ -56,3 +57,11 @@ export const TODO_FIELDS = [
   'viewUrl',
   'repoFilePath',
 ] as const;
+
+/**
+ * @alpha
+ */
+export type TodosPluginDependencies = {
+  todoReader: TodoService;
+  http: HttpRouterService;
+};
