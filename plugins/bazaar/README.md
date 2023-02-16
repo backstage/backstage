@@ -12,6 +12,10 @@ Many companies today are of high need to increase the ease of cross-team coopera
 
 The Bazaar allows engineers and teams to open up and announce their new and exciting projects for transparent cooperation in other parts of larger organizations. The Bazaar ensures that new Inner Sourcing friendly projects gain visibility through Backstage and a way for interested engineers to show their interest and in the future contribute with their specific skill set. The Bazaar also provides an easy way to manage, catalog, and browse these Inner Sourcing friendly projects and components.
 
+# Note
+
+You will **need** to also perform the installation instructions in [Bazaar Backend](https://github.com/backstage/backstage/tree/master/plugins/bazaar-backend) in order for this plugin to work.
+
 ## Getting Started
 
 First install the plugin into your app:
@@ -93,7 +97,7 @@ The property `title` is optional and can be used to customize the title in the c
 
 The properties `fullHeight` and `fullWidth` are also optional and can be used to adjust the cards styling.
 
-## How does the Bazaar work?
+# How does the Bazaar work?
 
 ### Layout
 

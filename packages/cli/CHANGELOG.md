@@ -1,5 +1,19 @@
 # @backstage/cli
 
+## 0.22.1-next.2
+
+### Patch Changes
+
+- 7b407b303b: Slightly improve readability of "base URL conflict" error handling code
+- d06a7890c6: Removed unused package `type-fest`
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6-next.0
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
 ## 0.22.1-next.1
 
 ### Patch Changes

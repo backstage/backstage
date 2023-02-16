@@ -208,6 +208,7 @@ export type AppOptions = {
       >;
     }
   >;
+  featureFlags?: (FeatureFlag & Omit<FeatureFlag, 'pluginId'>)[];
   components: AppComponents;
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;

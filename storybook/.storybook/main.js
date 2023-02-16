@@ -12,6 +12,7 @@ const BACKSTAGE_CORE_STORIES = [
   'plugins/search-react',
   'plugins/home',
   'plugins/stack-overflow',
+  'plugins/catalog-react',
 ];
 
 // Some configuration needs to be available directly on the exported object

@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.1.11-next.2
+
+### Patch Changes
+
+- 9f2b786fc9: Provide context for logged errors.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/backend-tasks@0.4.1-next.1
+  - @backstage/plugin-catalog-backend@1.7.0-next.2
+  - @backstage/plugin-catalog-node@1.3.1-next.2
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+
 ## 0.1.11-next.1
 
 ### Patch Changes

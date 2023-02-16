@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
+import { LoggerService } from './LoggerService';
+
 /**
  * @public
  **/
 export type LifecycleServiceShutdownHook = {
   fn: () => void | Promise<void>;
 
-  /** Labels to help identify the shutdown hook */
-  labels?: Record<string, string>;
+  /**
+   * Optional {@link LoggerService} that will be used for logging instead of the default logger.
+   */
+  logger?: LoggerService;
 };
 
 /**

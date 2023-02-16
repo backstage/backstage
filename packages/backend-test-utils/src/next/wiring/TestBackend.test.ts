@@ -20,7 +20,11 @@ import {
   createServiceFactory,
   createServiceRef,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { Router } from 'express';
+import request from 'supertest';
+
 import { startTestBackend } from './TestBackend';
 
 // This bit makes sure that test backends are cleaned up properly
@@ -64,33 +68,34 @@ describe('TestBackend', () => {
     const extensionPoint3 = createExtensionPoint<Obj>({ id: 'b3' });
     const extensionPoint4 = createExtensionPoint<Obj>({ id: 'b4' });
     const extensionPoint5 = createExtensionPoint<Obj>({ id: 'b5' });
-    await startTestBackend({
-      services: [
-        // @ts-expect-error
-        [extensionPoint1, { a: 'a' }],
-        [serviceRef, { a: 'a' }],
-        [serviceRef, { a: 'a', b: 'b' }],
-        // @ts-expect-error
-        [serviceRef, { c: 'c' }],
-        // @ts-expect-error
-        [serviceRef, { a: 'a', c: 'c' }],
-        // @ts-expect-error
-        [serviceRef, { a: 'a', b: 'b', c: 'c' }],
-      ],
-      extensionPoints: [
-        // @ts-expect-error
-        [serviceRef, { a: 'a' }],
-        [extensionPoint1, { a: 'a' }],
-        [extensionPoint2, { a: 'a', b: 'b' }],
-        // @ts-expect-error
-        [extensionPoint3, { c: 'c' }],
-        // @ts-expect-error
-        [extensionPoint4, { a: 'a', c: 'c' }],
-        // @ts-expect-error
-        [extensionPoint5, { a: 'a', b: 'b', c: 'c' }],
-      ],
-    });
-    expect(1).toBe(1);
+    await expect(
+      startTestBackend({
+        services: [
+          // @ts-expect-error
+          [extensionPoint1, { a: 'a' }],
+          [serviceRef, { a: 'a' }],
+          [serviceRef, { a: 'a', b: 'b' }],
+          // @ts-expect-error
+          [serviceRef, { c: 'c' }],
+          // @ts-expect-error
+          [serviceRef, { a: 'a', c: 'c' }],
+          // @ts-expect-error
+          [serviceRef, { a: 'a', b: 'b', c: 'c' }],
+        ],
+        extensionPoints: [
+          // @ts-expect-error
+          [serviceRef, { a: 'a' }],
+          [extensionPoint1, { a: 'a' }],
+          [extensionPoint2, { a: 'a', b: 'b' }],
+          // @ts-expect-error
+          [extensionPoint3, { c: 'c' }],
+          // @ts-expect-error
+          [extensionPoint4, { a: 'a', c: 'c' }],
+          // @ts-expect-error
+          [extensionPoint5, { a: 'a', b: 'b', c: 'c' }],
+        ],
+      }),
+    ).rejects.toThrow();
   });
 
   it('should start the test backend', async () => {
@@ -154,5 +159,67 @@ describe('TestBackend', () => {
     expect(shutdownSpy).not.toHaveBeenCalled();
     await backend.stop();
     expect(shutdownSpy).toHaveBeenCalled();
+  });
+
+  it('should provide a set of default services', async () => {
+    expect.assertions(2);
+
+    const testPlugin = createBackendPlugin({
+      id: 'test',
+      register(env) {
+        env.registerInit({
+          deps: {
+            cache: coreServices.cache,
+            config: coreServices.config,
+            database: coreServices.database,
+            discovery: coreServices.discovery,
+            httpRouter: coreServices.httpRouter,
+            lifecycle: coreServices.lifecycle,
+            logger: coreServices.logger,
+            permissions: coreServices.permissions,
+            pluginMetadata: coreServices.pluginMetadata,
+            rootHttpRouter: coreServices.rootHttpRouter,
+            rootLifecycle: coreServices.rootLifecycle,
+            rootLogger: coreServices.rootLogger,
+            scheduler: coreServices.scheduler,
+            tokenManager: coreServices.tokenManager,
+            urlReader: coreServices.urlReader,
+          },
+          async init(deps) {
+            expect(Object.keys(deps)).toHaveLength(15);
+            expect(Object.values(deps)).not.toContain(undefined);
+          },
+        });
+      },
+    });
+
+    await startTestBackend({
+      services: [],
+      features: [testPlugin()],
+    });
+  });
+
+  it('should allow making requests via supertest', async () => {
+    const testPlugin = createBackendPlugin({
+      id: 'test',
+      register(env) {
+        env.registerInit({
+          deps: {
+            httpRouter: coreServices.httpRouter,
+          },
+          async init({ httpRouter }) {
+            const router = Router();
+            router.use('/ping-me', (_, res) => res.json({ message: 'pong' }));
+            httpRouter.use(router);
+          },
+        });
+      },
+    });
+
+    const { server } = await startTestBackend({ features: [testPlugin()] });
+
+    const res = await request(server).get('/api/test/ping-me');
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual({ message: 'pong' });
   });
 });

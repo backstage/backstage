@@ -18,26 +18,33 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityList: jest.fn(),
 }));
 
-jest.mock('./TemplateGroup', () => ({
+jest.mock('@backstage/plugin-scaffolder-react', () => ({
   TemplateGroup: jest.fn(() => null),
 }));
 
 import React from 'react';
-import { render } from '@testing-library/react';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateGroups } from './TemplateGroups';
-import { TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
-import { TemplateGroup } from './TemplateGroup';
+import { TemplateGroup } from '@backstage/plugin-scaffolder-react';
+import { nextRouteRef } from '../routes';
 
 describe('TemplateGroups', () => {
+  beforeEach(() => jest.clearAllMocks());
+
   it('should return progress if the hook is loading', async () => {
     (useEntityList as jest.Mock).mockReturnValue({ loading: true });
 
-    const { findByTestId } = render(
+    const { findByTestId } = await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/next': nextRouteRef,
+        },
+      },
     );
 
     expect(await findByTestId('progress')).toBeInTheDocument();
@@ -51,10 +58,15 @@ describe('TemplateGroups', () => {
     const errorApi = {
       post: jest.fn(),
     };
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, errorApi]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/next': nextRouteRef,
+        },
+      },
     );
 
     expect(errorApi.post).toHaveBeenCalledWith(mockError);
@@ -67,10 +79,15 @@ describe('TemplateGroups', () => {
       error: null,
     });
 
-    const { findByText } = render(
+    const { findByText } = await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/next': nextRouteRef,
+        },
+      },
     );
 
     expect(await findByText(/No templates found/)).toBeInTheDocument();
@@ -83,10 +100,15 @@ describe('TemplateGroups', () => {
       error: null,
     });
 
-    const { findByText } = render(
+    const { findByText } = await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/next': nextRouteRef,
+        },
+      },
     );
 
     expect(await findByText(/No templates found/)).toBeInTheDocument();
@@ -118,14 +140,23 @@ describe('TemplateGroups', () => {
       error: null,
     });
 
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[{ title: 'all', filter: () => true }]} />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/next': nextRouteRef,
+        },
+      },
     );
 
     expect(TemplateGroup).toHaveBeenCalledWith(
-      expect.objectContaining({ templates: mockEntities }),
+      expect.objectContaining({
+        templates: mockEntities.map(template =>
+          expect.objectContaining({ template }),
+        ),
+      }),
       {},
     );
   });
@@ -156,16 +187,23 @@ describe('TemplateGroups', () => {
       error: null,
     });
 
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups
           groups={[{ title: 'all', filter: e => e.metadata.name === 't1' }]}
         />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/next': nextRouteRef,
+        },
+      },
     );
 
     expect(TemplateGroup).toHaveBeenCalledWith(
-      expect.objectContaining({ templates: [mockEntities[0]] }),
+      expect.objectContaining({
+        templates: [expect.objectContaining({ template: mockEntities[0] })],
+      }),
       {},
     );
   });

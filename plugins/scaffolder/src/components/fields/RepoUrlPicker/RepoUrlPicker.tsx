@@ -30,7 +30,7 @@ import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 import { RepoUrlPickerProps } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
-import { useTemplateSecrets } from '../../secrets';
+import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 
 export { RepoUrlPickerSchema } from './schema';
 

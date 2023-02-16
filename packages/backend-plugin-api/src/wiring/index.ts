@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export type { BackendModuleConfig, BackendPluginConfig } from './factories';
+export type {
+  BackendModuleConfig,
+  BackendPluginConfig,
+  ExtensionPointConfig,
+} from './factories';
 export {
   createBackendModule,
   createBackendPlugin,

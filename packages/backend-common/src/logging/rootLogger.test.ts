@@ -36,12 +36,13 @@ describe('rootLogger', () => {
   });
 
   it('redacts given secrets', () => {
-    const logger = createRootLogger();
-    jest.spyOn(logger, 'write');
+    const transport = new winston.transports.Console();
+    const logger = createRootLogger({ transports: [transport] });
+    jest.spyOn(transport, 'write');
     setRootLoggerRedactionList(['SECRET-1', 'SECRET_2', 'SECRET.3']);
     logger.info('Logging SECRET-1 and SECRET_2 and SECRET.3');
 
-    expect(logger.write).toHaveBeenCalledWith(
+    expect(transport.write).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'Logging [REDACTED] and [REDACTED] and [REDACTED]',
       }),
@@ -49,12 +50,13 @@ describe('rootLogger', () => {
   });
 
   it('redacts but ignores empty and one-character secrets', () => {
-    const logger = createRootLogger();
-    jest.spyOn(logger, 'write');
+    const transport = new winston.transports.Console();
+    const logger = createRootLogger({ transports: [transport] });
+    jest.spyOn(transport, 'write');
     setRootLoggerRedactionList(['SECRET-1', 'SECRET_2', 'Q', '']);
     logger.info('Logging SECRET-1 and SECRET_2 and Q');
 
-    expect(logger.write).toHaveBeenCalledWith(
+    expect(transport.write).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'Logging [REDACTED] and [REDACTED] and Q',
       }),
@@ -124,6 +126,39 @@ describe('rootLogger', () => {
       expect(
         logger.format.transform({ message: 'hello', level: 'info' }),
       ).toBeFalsy();
+    });
+
+    it('can override the service label', () => {
+      const transport = new winston.transports.Console();
+      const logger = createRootLogger({ transports: [transport] });
+      const writeSpy = jest
+        .spyOn(transport, 'write')
+        .mockImplementation((_c, _e) => true);
+
+      logger.info('msg-a');
+      logger.child({ service: 'b' }).info('msg-b');
+      logger.info('msg-c', { service: 'c' });
+
+      expect(writeSpy.mock.calls).toEqual([
+        [
+          expect.objectContaining({
+            message: 'msg-a',
+            service: 'backstage',
+          }),
+        ],
+        [
+          expect.objectContaining({
+            message: 'msg-b',
+            service: 'b',
+          }),
+        ],
+        [
+          expect.objectContaining({
+            message: 'msg-c',
+            service: 'c',
+          }),
+        ],
+      ]);
     });
   });
 });

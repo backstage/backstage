@@ -20,10 +20,8 @@ export class GitlabEventRouter extends SubTopicEventRouter {
 }
 
 // @alpha
-export const gitlabEventRouterEventsModule: (
-  options?: undefined,
-) => BackendFeature;
+export const gitlabEventRouterEventsModule: () => BackendFeature;
 
 // @alpha
-export const gitlabWebhookEventsModule: (options?: undefined) => BackendFeature;
+export const gitlabWebhookEventsModule: () => BackendFeature;
 ```

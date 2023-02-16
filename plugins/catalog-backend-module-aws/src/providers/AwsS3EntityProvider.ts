@@ -131,7 +131,7 @@ export class AwsS3EntityProvider implements EntityProvider {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });

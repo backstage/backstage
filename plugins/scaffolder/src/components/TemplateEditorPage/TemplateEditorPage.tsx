@@ -23,7 +23,7 @@ import { CustomFieldExplorer } from './CustomFieldExplorer';
 import { TemplateEditorIntro } from './TemplateEditorIntro';
 import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
-import { FieldExtensionOptions } from '../../extensions';
+import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import type { LayoutOptions } from '../../layouts';
 
 type Selection =

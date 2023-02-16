@@ -52,7 +52,7 @@ jobs:
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: registry.uffizzi.com/${{ env.UUID_TAG_APP }}
           tags: type=raw,value=60d

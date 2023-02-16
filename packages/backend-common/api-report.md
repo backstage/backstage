@@ -9,10 +9,15 @@
 import aws from 'aws-sdk';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
+import { CacheClient } from '@backstage/backend-plugin-api';
+import { CacheClientOptions } from '@backstage/backend-plugin-api';
+import { CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { ConfigService } from '@backstage/backend-plugin-api';
 import cors from 'cors';
 import Docker from 'dockerode';
 import { Duration } from 'luxon';
@@ -23,13 +28,17 @@ import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
+import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
-import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
+import { PermissionsService } from '@backstage/backend-plugin-api';
+import { CacheService as PluginCacheManager } from '@backstage/backend-plugin-api';
+import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
@@ -42,10 +51,14 @@ import { ReadUrlOptions } from '@backstage/backend-plugin-api';
 import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SearchOptions } from '@backstage/backend-plugin-api';
 import { SearchResponse } from '@backstage/backend-plugin-api';
 import { SearchResponseFile } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
+import { ServiceRef } from '@backstage/backend-plugin-api';
+import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
+import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
@@ -144,7 +157,7 @@ export class BitbucketServerUrlReader implements UrlReader {
 export class BitbucketUrlReader implements UrlReader {
   constructor(
     integration: BitbucketIntegration,
-    logger: Logger,
+    logger: LoggerService,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
@@ -163,26 +176,11 @@ export class BitbucketUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
-export interface CacheClient {
-  delete(key: string): Promise<void>;
-  get(key: string): Promise<JsonValue | undefined>;
-  set(
-    key: string,
-    value: JsonValue,
-    options?: CacheClientSetOptions,
-  ): Promise<void>;
-}
+export { CacheClient };
 
-// @public
-export type CacheClientOptions = {
-  defaultTtl?: number;
-};
+export { CacheClientOptions };
 
-// @public
-export type CacheClientSetOptions = {
-  ttl?: number;
-};
+export { CacheClientSetOptions };
 
 // @public
 export class CacheManager {
@@ -195,7 +193,7 @@ export class CacheManager {
 
 // @public
 export type CacheManagerOptions = {
-  logger?: Logger;
+  logger?: LoggerService;
   onError?: (err: Error) => void;
 };
 
@@ -247,7 +245,7 @@ export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
 // @public
 export function createStatusCheckRouter(options: {
-  logger: Logger;
+  logger: LoggerService;
   path?: string;
   statusCheck?: StatusCheck;
 }): Promise<express.Router>;
@@ -264,7 +262,7 @@ export class DatabaseManager {
 // @public
 export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
-  logger?: Logger;
+  logger?: LoggerService;
 };
 
 // @public
@@ -288,7 +286,7 @@ export function errorHandler(
 // @public
 export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
-  logger?: Logger;
+  logger?: LoggerService;
   logClientErrors?: boolean;
 };
 
@@ -389,7 +387,7 @@ export class Git {
     username?: string;
     password?: string;
     token?: string;
-    logger?: Logger;
+    logger?: LoggerService;
   }) => Git;
   // (undocumented)
   init(options: { dir: string; defaultBranch?: string }): Promise<void>;
@@ -508,35 +506,79 @@ export type KubernetesContainerRunnerOptions = {
   timeoutMs?: number;
 };
 
+// @public (undocumented)
+export type LegacyCreateRouter<TEnv> = (deps: TEnv) => Promise<RequestHandler>;
+
+// @public
+export const legacyPlugin: (
+  name: string,
+  createRouterImport: Promise<{
+    default: LegacyCreateRouter<
+      TransformedEnv<
+        {
+          cache: PluginCacheManager;
+          config: ConfigService;
+          database: PluginDatabaseManager;
+          discovery: PluginEndpointDiscovery;
+          logger: LoggerService;
+          permissions: PermissionsService;
+          scheduler: SchedulerService;
+          tokenManager: TokenManager;
+          reader: UrlReader;
+          identity: IdentityService;
+        },
+        {
+          logger: (log: LoggerService) => Logger;
+        }
+      >
+    >;
+  }>,
+) => BackendFeature;
+
 // @public
 export function loadBackendConfig(options: {
-  logger: Logger;
+  logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config>;
 
+// @public (undocumented)
+export function loggerToWinstonLogger(
+  logger: LoggerService,
+  opts?: TransportStreamOptions,
+): Logger;
+
+// @public
+export function makeLegacyPlugin<
+  TEnv extends Record<string, unknown>,
+  TEnvTransforms extends {
+    [key in keyof TEnv]?: (dep: TEnv[key]) => unknown;
+  },
+>(
+  envMapping: {
+    [key in keyof TEnv]: ServiceRef<TEnv[key]>;
+  },
+  envTransforms: TEnvTransforms,
+): (
+  name: string,
+  createRouterImport: Promise<{
+    default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
+  }>,
+) => BackendFeature;
+
 // @public
 export function notFoundHandler(): RequestHandler;
 
-// @public
-export type PluginCacheManager = {
-  getClient: (options?: CacheClientOptions) => CacheClient;
-};
+export { PluginCacheManager };
 
-// @public
-export interface PluginDatabaseManager {
-  getClient(): Promise<Knex>;
-  migrations?: {
-    skip?: boolean;
-  };
-}
+export { PluginDatabaseManager };
 
 export { PluginEndpointDiscovery };
 
 // @public
 export type ReaderFactory = (options: {
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
@@ -604,10 +646,12 @@ export function redactWinstonLogLine(
 ): winston.Logform.TransformableInfo;
 
 // @public
-export function requestLoggingHandler(logger?: Logger): RequestHandler;
+export function requestLoggingHandler(logger?: LoggerService): RequestHandler;
 
 // @public
-export type RequestLoggingHandlerFactory = (logger?: Logger) => RequestHandler;
+export type RequestLoggingHandlerFactory = (
+  logger?: LoggerService,
+) => RequestHandler;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
@@ -651,7 +695,7 @@ export class ServerTokenManager implements TokenManager {
 
 // @public
 export interface ServerTokenManagerOptions {
-  logger: Logger;
+  logger: LoggerService;
 }
 
 // @public
@@ -659,7 +703,7 @@ export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
   setPort(port: number): ServiceBuilder;
   setHost(host: string): ServiceBuilder;
-  setLogger(logger: Logger): ServiceBuilder;
+  setLogger(logger: LoggerService): ServiceBuilder;
   enableCors(options: cors.CorsOptions): ServiceBuilder;
   setHttpsSettings(settings: {
     certificate:
@@ -710,13 +754,7 @@ export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }
 
-// @public
-export interface TokenManager {
-  authenticate(token: string): Promise<void>;
-  getToken(): Promise<{
-    token: string;
-  }>;
-}
+export { TokenManager };
 
 export { UrlReader };
 
@@ -735,7 +773,7 @@ export class UrlReaders {
 // @public
 export type UrlReadersOptions = {
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   factories?: ReaderFactory[];
 };
 

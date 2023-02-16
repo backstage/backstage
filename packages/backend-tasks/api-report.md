@@ -8,6 +8,7 @@ import { DatabaseManager } from '@backstage/backend-common';
 import { Duration } from 'luxon';
 import { HumanDuration as HumanDuration_2 } from '@backstage/types';
 import { Logger } from 'winston';
+import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @public @deprecated
 export type HumanDuration = HumanDuration_2;
@@ -73,6 +74,12 @@ export interface TaskScheduleDefinitionConfig {
 export class TaskScheduler {
   constructor(databaseManager: DatabaseManager, logger: Logger);
   forPlugin(pluginId: string): PluginTaskScheduler;
+  // (undocumented)
+  static forPlugin(opts: {
+    pluginId: string;
+    databaseManager: PluginDatabaseManager;
+    logger: Logger;
+  }): PluginTaskScheduler;
   // (undocumented)
   static fromConfig(
     config: Config,

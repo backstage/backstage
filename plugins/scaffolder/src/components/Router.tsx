@@ -22,20 +22,21 @@ import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
-import { SecretsContextProvider } from './secrets/SecretsContext';
 import { TemplateEditorPage } from './TemplateEditorPage';
-
-import {
-  DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
-  FIELD_EXTENSION_KEY,
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FieldExtensionOptions,
-} from '../extensions';
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../extensions/default';
 import {
   useElementFilter,
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
+import {
+  FieldExtensionOptions,
+  SecretsContextProvider,
+  useCustomFieldExtensions,
+} from '@backstage/plugin-scaffolder-react';
+import { ListTasksPage } from './ListTasksPage';
+import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
+import { ReviewStepProps } from './types';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -44,9 +45,6 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../routes';
-import { ListTasksPage } from './ListTasksPage';
-import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
-import { ReviewStepProps } from './types';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -95,16 +93,7 @@ export const Router = (props: RouterProps) => {
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
 
-  const customFieldExtensions = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: FIELD_EXTENSION_WRAPPER_KEY,
-      })
-      .findComponentData<FieldExtensionOptions>({
-        key: FIELD_EXTENSION_KEY,
-      }),
-  );
-
+  const customFieldExtensions = useCustomFieldExtensions(outlet);
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
@@ -113,8 +102,9 @@ export const Router = (props: RouterProps) => {
           customFieldExtension => customFieldExtension.name === name,
         ),
     ),
-  ];
+  ] as FieldExtensionOptions[];
 
+  // todo(blam): this should also be moved to a hook in -react
   const customLayouts = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({

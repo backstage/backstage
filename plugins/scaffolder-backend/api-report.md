@@ -625,7 +625,7 @@ export type RunCommandOptions = {
 };
 
 // @alpha
-export const scaffolderCatalogModule: (options?: undefined) => BackendFeature;
+export const scaffolderCatalogModule: () => BackendFeature;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
@@ -855,6 +855,10 @@ export class TaskWorker {
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
   description?: string;
+  examples?: {
+    description: string;
+    example: string;
+  }[];
   supportsDryRun?: boolean;
   schema?: {
     input?: Schema;

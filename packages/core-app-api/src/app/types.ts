@@ -24,6 +24,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
   IdentityApi,
+  FeatureFlag,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 
@@ -212,6 +213,11 @@ export type AppOptions = {
       >; // support for old plugins
     }
   >;
+
+  /**
+   * Application level feature flags.
+   */
+  featureFlags?: (FeatureFlag & Omit<FeatureFlag, 'pluginId'>)[];
 
   /**
    * Supply components to the app to override the default ones.

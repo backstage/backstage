@@ -1,5 +1,24 @@
 # @backstage/backend-plugin-api
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 8e06f3cf00: Moved `loggerToWinstonLogger` to `@backstage/backend-common`.
+
+### Patch Changes
+
+- ecc6bfe4c9: Added `ServiceFactoryOrFunction` type, for use when either a `ServiceFactory` or `() => ServiceFactory` can be used.
+- 02b119ff93: Added a new `rootHttpRouterServiceRef` and `RootHttpRouterService` interface.
+- 5437fe488f: Migrated types related to `TokenManagerService`, `CacheService` and `DatabaseService` into backend-plugin-api.
+- 16054afdec: Documented `coreServices` an all of its members.
+- 62b04bb865: Updates all `create*` methods to simplify their type definitions and ensure they all have configuration interfaces.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.1-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3-next.0
+
 ## 0.2.1-next.0
 
 ### Patch Changes

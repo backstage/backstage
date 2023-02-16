@@ -18,9 +18,11 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import React from 'react';
 import { TemplateTitleColumn } from './TemplateTitleColumn';
-import { scaffolderApiRef } from '../../../api';
-import { ScaffolderApi } from '../../../types';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  scaffolderApiRef,
+  ScaffolderApi,
+} from '@backstage/plugin-scaffolder-react';
 
 describe('<TemplateTitleColumn />', () => {
   const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {

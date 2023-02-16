@@ -31,51 +31,50 @@ import { WrapperProviders } from './WrapperProviders';
  * @alpha
  */
 export const incrementalIngestionEntityProviderCatalogModule =
-  createBackendModule({
-    pluginId: 'catalog',
-    moduleId: 'incrementalIngestionEntityProvider',
-    register(
-      env,
-      options: {
-        providers: Array<{
-          provider: IncrementalEntityProvider<unknown, unknown>;
-          options: IncrementalEntityProviderOptions;
-        }>;
-      },
-    ) {
-      env.registerInit({
-        deps: {
-          catalog: catalogProcessingExtensionPoint,
-          config: coreServices.config,
-          database: coreServices.database,
-          httpRouter: coreServices.httpRouter,
-          logger: coreServices.logger,
-          scheduler: coreServices.scheduler,
-        },
-        async init({
-          catalog,
-          config,
-          database,
-          httpRouter,
-          logger,
-          scheduler,
-        }) {
-          const client = await database.getClient();
-
-          const providers = new WrapperProviders({
+  createBackendModule(
+    (options: {
+      providers: Array<{
+        provider: IncrementalEntityProvider<unknown, unknown>;
+        options: IncrementalEntityProviderOptions;
+      }>;
+    }) => ({
+      pluginId: 'catalog',
+      moduleId: 'incrementalIngestionEntityProvider',
+      register(env) {
+        env.registerInit({
+          deps: {
+            catalog: catalogProcessingExtensionPoint,
+            config: coreServices.config,
+            database: coreServices.database,
+            httpRouter: coreServices.httpRouter,
+            logger: coreServices.logger,
+            scheduler: coreServices.scheduler,
+          },
+          async init({
+            catalog,
             config,
+            database,
+            httpRouter,
             logger,
-            client,
             scheduler,
-          });
+          }) {
+            const client = await database.getClient();
 
-          for (const entry of options.providers) {
-            const wrapped = providers.wrap(entry.provider, entry.options);
-            catalog.addEntityProvider(wrapped);
-          }
+            const providers = new WrapperProviders({
+              config,
+              logger,
+              client,
+              scheduler,
+            });
 
-          httpRouter.use(await providers.adminRouter());
-        },
-      });
-    },
-  });
+            for (const entry of options.providers) {
+              const wrapped = providers.wrap(entry.provider, entry.options);
+              catalog.addEntityProvider(wrapped);
+            }
+
+            httpRouter.use(await providers.adminRouter());
+          },
+        });
+      },
+    }),
+  );

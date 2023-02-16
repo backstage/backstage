@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.8-next.2
+
+### Patch Changes
+
+- 2fadff2a25: Change scaffolder task actions to include markdown to demonstrate the new `ActionsPage` markdown feature.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/plugin-scaffolder-backend@1.10.0-next.2
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+
 ## 0.4.8-next.1
 
 ### Patch Changes

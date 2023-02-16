@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.18.0-next.0",
+  "version": "0.18.0-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -34,6 +34,7 @@
     "test:kubernetes": "backstage-cli package test -t KubernetesContainerRunner --no-watch"
   },
   "dependencies": {
+    "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -83,6 +84,7 @@
     "tar": "^6.1.12",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
+    "winston-transport": "^4.5.0",
     "yauzl": "^2.10.0",
     "yn": "^4.0.0"
   },
@@ -114,7 +116,7 @@
     "@types/webpack-env": "^1.15.2",
     "@types/yauzl": "^2.10.0",
     "aws-sdk-mock": "^5.2.1",
-    "better-sqlite3": "^7.5.0",
+    "better-sqlite3": "^8.0.0",
     "http-errors": "^2.0.0",
     "mock-fs": "^5.1.0",
     "msw": "^0.49.0",

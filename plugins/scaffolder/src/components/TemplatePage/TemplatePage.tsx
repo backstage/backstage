@@ -16,17 +16,14 @@
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import React, { ComponentType, useCallback, useContext, useState } from 'react';
+import React, { ComponentType, useCallback, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
-import { scaffolderApiRef } from '../../api';
-import { FieldExtensionOptions } from '../../extensions';
-import { SecretsContext } from '../secrets/SecretsContext';
 import {
-  rootRouteRef,
-  scaffolderTaskRouteRef,
-  selectedTemplateRouteRef,
-} from '../../routes';
+  FieldExtensionOptions,
+  scaffolderApiRef,
+  useTemplateSecrets,
+} from '@backstage/plugin-scaffolder-react';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from './createValidator';
 
@@ -42,6 +39,11 @@ import {
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LayoutOptions } from '../../layouts';
 import { ReviewStepProps } from '../types';
+import {
+  rootRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -70,7 +72,7 @@ export const TemplatePage = ({
   headerOptions,
 }: Props) => {
   const apiHolder = useApiHolder();
-  const secretsContext = useContext(SecretsContext);
+  const secretsContext = useTemplateSecrets();
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName, namespace } = useRouteRefParams(

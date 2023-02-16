@@ -26,8 +26,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { scaffolderApiRef } from '../../api';
-import { ScaffolderDryRunResponse } from '../../types';
+import {
+  scaffolderApiRef,
+  ScaffolderDryRunResponse,
+} from '@backstage/plugin-scaffolder-react';
 
 const MAX_CONTENT_SIZE = 64 * 1024;
 const CHUNK_SIZE = 32 * 1024;

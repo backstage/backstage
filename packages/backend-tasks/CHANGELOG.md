@@ -1,5 +1,16 @@
 # @backstage/backend-tasks
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- b99c030f1b: Minor internal refactor to avoid import cycle issue.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
 ## 0.4.1-next.0
 
 ### Patch Changes

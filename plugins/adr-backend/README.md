@@ -4,6 +4,8 @@ This ADR backend plugin is primarily responsible for the following:
 
 - Provides a `DefaultAdrCollatorFactory`, which can be used in the search backend to index ADR documents associated with entities to your Backstage Search.
 
+- Provides endpoints that use UrlReaders for getting ADR documents (used in the [ADR frontend plugin](../adr/README.md)).
+
 ## Indexing ADR documents for search
 
 Before you are able to start indexing ADR documents to search, you need to go through the [search getting started guide](https://backstage.io/docs/features/search/getting-started).
@@ -35,7 +37,7 @@ indexBuilder.addCollator({
 
 ### Parsing custom ADR document formats
 
-By default, the `DefaultAdrCollatorFactory` will parse and index documents that follow the [MADR](https://adr.github.io/madr/) standard file name and template format. If you use a different ADR format and file name convention, you can configure `DefaultAdrCollatorFactory` with custom `adrFilePathFilterFn` and `parser` options (see type definitions for details):
+By default, the `DefaultAdrCollatorFactory` will parse and index documents that follow the [MADR v2.x standard file name and template format](https://github.com/adr/madr/tree/2.1.2). If you use a different ADR format and file name convention, you can configure `DefaultAdrCollatorFactory` with custom `adrFilePathFilterFn` and `parser` options (see type definitions for details):
 
 ```ts
 DefaultAdrCollatorFactory.fromConfig({

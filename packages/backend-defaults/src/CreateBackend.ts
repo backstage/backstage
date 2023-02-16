@@ -22,6 +22,7 @@ import {
   databaseFactory,
   discoveryFactory,
   httpRouterFactory,
+  rootHttpRouterFactory,
   lifecycleFactory,
   rootLifecycleFactory,
   loggerFactory,
@@ -30,37 +31,48 @@ import {
   schedulerFactory,
   tokenManagerFactory,
   urlReaderFactory,
+  identityFactory,
 } from '@backstage/backend-app-api';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 
 export const defaultServiceFactories = [
-  cacheFactory,
-  configFactory,
-  databaseFactory,
-  discoveryFactory,
-  loggerFactory,
-  rootLoggerFactory,
-  permissionsFactory,
-  schedulerFactory,
-  tokenManagerFactory,
-  urlReaderFactory,
-  httpRouterFactory,
-  lifecycleFactory,
-  rootLifecycleFactory,
+  cacheFactory(),
+  configFactory(),
+  databaseFactory(),
+  discoveryFactory(),
+  httpRouterFactory(),
+  identityFactory(),
+  lifecycleFactory(),
+  loggerFactory(),
+  permissionsFactory(),
+  rootHttpRouterFactory(),
+  rootLifecycleFactory(),
+  rootLoggerFactory(),
+  schedulerFactory(),
+  tokenManagerFactory(),
+  urlReaderFactory(),
 ];
 
 /**
  * @public
  */
 export interface CreateBackendOptions {
-  services?: (ServiceFactory | (() => ServiceFactory))[];
+  services?: ServiceFactoryOrFunction[];
 }
 
 /**
  * @public
  */
 export function createBackend(options?: CreateBackendOptions): Backend {
+  const providedServices = (options?.services ?? []).map(sf =>
+    typeof sf === 'function' ? sf() : sf,
+  );
+  const providedIds = new Set(providedServices.map(sf => sf.service.id));
+  const neededDefaultFactories = defaultServiceFactories.filter(
+    sf => !providedIds.has(sf.service.id),
+  );
+
   return createSpecializedBackend({
-    services: [...defaultServiceFactories, ...(options?.services ?? [])],
+    services: [...neededDefaultFactories, ...providedServices],
   });
 }

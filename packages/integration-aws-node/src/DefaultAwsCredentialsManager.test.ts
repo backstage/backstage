@@ -252,8 +252,12 @@ describe('DefaultAwsCredentialsManager', () => {
         },
       });
       const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
-      const awsCredentialProvider1 = await provider.getCredentialProvider({});
-      const awsCredentialProvider2 = await provider.getCredentialProvider({});
+      const awsCredentialProvider1 = await provider.getCredentialProvider({
+        accountId: '123456789012',
+      });
+      const awsCredentialProvider2 = await provider.getCredentialProvider({
+        accountId: '123456789012',
+      });
 
       expect(awsCredentialProvider1).toBe(awsCredentialProvider2);
       expect(stsMock).toHaveReceivedCommandTimes(GetCallerIdentityCommand, 1);
@@ -374,7 +378,7 @@ describe('DefaultAwsCredentialsManager', () => {
         arn: 'arn:aws:s3:::bucket_name',
       });
 
-      expect(awsCredentialProvider.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toBeUndefined();
 
       const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
@@ -387,7 +391,7 @@ describe('DefaultAwsCredentialsManager', () => {
       const provider = DefaultAwsCredentialsManager.fromConfig(config);
       const awsCredentialProvider = await provider.getCredentialProvider({});
 
-      expect(awsCredentialProvider.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toBeUndefined();
 
       const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
@@ -400,7 +404,7 @@ describe('DefaultAwsCredentialsManager', () => {
       const provider = DefaultAwsCredentialsManager.fromConfig(config);
       const awsCredentialProvider = await provider.getCredentialProvider();
 
-      expect(awsCredentialProvider.accountId).toEqual('123456789012');
+      expect(awsCredentialProvider.accountId).toBeUndefined();
 
       const creds = await awsCredentialProvider.sdkCredentialProvider();
       expect(creds).toEqual({
@@ -421,10 +425,11 @@ describe('DefaultAwsCredentialsManager', () => {
 
     it('rejects main account that has invalid credentials', async () => {
       stsMock.on(GetCallerIdentityCommand).rejects('No credentials found');
-      const provider = DefaultAwsCredentialsManager.fromConfig(config);
-      await expect(provider.getCredentialProvider({})).rejects.toThrow(
-        /No credentials found/,
-      );
+      const minConfig = new ConfigReader({});
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      await expect(
+        provider.getCredentialProvider({ accountId: '123456789012' }),
+      ).rejects.toThrow(/No credentials found/);
     });
   });
 });

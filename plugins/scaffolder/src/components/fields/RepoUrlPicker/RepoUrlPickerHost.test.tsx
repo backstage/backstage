@@ -16,7 +16,7 @@
 import React from 'react';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { scaffolderApiRef } from '../../../api';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { fireEvent, within } from '@testing-library/react';
 
 describe('RepoUrlPickerHostField', () => {

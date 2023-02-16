@@ -22,10 +22,14 @@ import {
 } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { scaffolderApiRef } from '../../api';
-import { nextRouteRef, rootRouteRef } from '../../routes';
-import { ScaffolderApi } from '../../types';
+import {
+  ScaffolderApi,
+  scaffolderApiRef,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
 import { TemplateWizardPage } from './TemplateWizardPage';
+import { rootRouteRef } from '../../routes';
+import { nextRouteRef } from '../routes';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -73,7 +77,9 @@ describe('TemplateWizardPage', () => {
 
     const { findByRole, getByRole } = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplateWizardPage customFieldExtensions={[]} />,
+        <SecretsContextProvider>
+          <TemplateWizardPage customFieldExtensions={[]} />,
+        </SecretsContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {

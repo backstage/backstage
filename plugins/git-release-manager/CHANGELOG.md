@@ -1,5 +1,16 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.27-next.2
+
+### Patch Changes
+
+- 8024341620: add exports to clear api-report messages
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.3.27-next.1
 
 ### Patch Changes

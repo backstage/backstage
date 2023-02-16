@@ -1,5 +1,16 @@
 # @backstage/backend-defaults
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- ecc6bfe4c9: Use new `ServiceFactoryOrFunction` type.
+- 015a6dced6: Updated to make sure that service implementations replace default service implementations.
+- 02b119ff93: The new root HTTP router service is now installed by default.
+- Updated dependencies
+  - @backstage/backend-app-api@0.3.0-next.1
+  - @backstage/backend-plugin-api@0.3.0-next.1
+
 ## 0.1.5-next.0
 
 ### Patch Changes

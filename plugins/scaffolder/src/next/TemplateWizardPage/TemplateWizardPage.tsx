@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Page,
   Header,
@@ -22,7 +22,6 @@ import {
   InfoCard,
   MarkdownContent,
 } from '@backstage/core-components';
-import { NextFieldExtensionOptions } from '../../extensions';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
@@ -32,21 +31,23 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { scaffolderApiRef } from '../../api';
+import {
+  scaffolderApiRef,
+  useTemplateSecrets,
+} from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
-import { Stepper } from './Stepper';
 import { BackstageTheme } from '@backstage/theme';
 import {
-  nextRouteRef,
-  scaffolderTaskRouteRef,
-  selectedTemplateRouteRef,
-} from '../../routes';
-import { SecretsContext } from '../../components/secrets/SecretsContext';
+  Stepper,
+  NextFieldExtensionOptions,
+} from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
-import type { FormProps } from '../types';
+import { FormProps } from '../types';
+import { nextRouteRef } from '../routes';
+import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 
-export type TemplateWizardPageProps = {
+type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
   FormProps?: FormProps;
 };
@@ -77,7 +78,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const styles = useStyles();
   const rootRef = useRouteRef(nextRouteRef);
   const taskRoute = useRouteRef(scaffolderTaskRouteRef);
-  const { secrets } = useContext(SecretsContext) ?? {};
+  const { secrets } = useTemplateSecrets();
   const scaffolderApi = useApi(scaffolderApiRef);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
