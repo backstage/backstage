@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { configApiRef } from '@backstage/core-plugin-api';
-import {
-  MockConfigApi,
-  renderInTestApp,
-  TestApiProvider,
-} from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { Execution, StackstormApi, stackstormApiRef } from '../../api';
 import { ExecutionsTable } from './ExecutionsTable';
