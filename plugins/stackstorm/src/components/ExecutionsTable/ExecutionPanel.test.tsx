@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { configApiRef } from '@backstage/core-plugin-api';
-import {
-  MockConfigApi,
-  renderInTestApp,
-  TestApiProvider,
-} from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { Execution, StackstormApi, stackstormApiRef } from '../../api';
 import { ExecutionPanel } from './ExecutionPanel';
@@ -54,19 +49,16 @@ const execution: Execution = {
 describe('ExecutionPanel', () => {
   const mockApi: jest.Mocked<StackstormApi> = {
     getExecution: jest.fn().mockResolvedValue(execution),
+    getExecutionHistoryUrl: jest
+      .fn()
+      .mockResolvedValue(
+        'http://stackstorm.example.com:8080/?#/history/63dcac3e18ba00e09e7bb3b6',
+      ),
   } as any;
 
   it('should render execution details', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [stackstormApiRef, mockApi],
-          [
-            configApiRef,
-            new MockConfigApi({ stackstorm: { webUrl: 'http://localhost' } }),
-          ],
-        ]}
-      >
+      <TestApiProvider apis={[[stackstormApiRef, mockApi]]}>
         <ExecutionPanel id="63dcac3e18ba00e09e7bb3b6" />
       </TestApiProvider>,
     );

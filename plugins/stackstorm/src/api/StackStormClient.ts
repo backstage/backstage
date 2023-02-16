@@ -14,21 +14,39 @@
  * limitations under the License.
  */
 import { Action, Execution, Pack, StackstormApi } from './types';
-import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
+import { ConfigApi, DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 
 export class StackstormClient implements StackstormApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
+  private readonly webUrl: string;
 
-  constructor({
+  private constructor({
     discoveryApi,
     fetchApi,
+    webUrl,
   }: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    webUrl: string;
   }) {
     this.discoveryApi = discoveryApi;
     this.fetchApi = fetchApi;
+    this.webUrl = webUrl;
+  }
+
+  static fromConfig(
+    config: ConfigApi,
+    dependencies: {
+      discoveryApi: DiscoveryApi;
+      fetchApi: FetchApi;
+    },
+  ): StackstormClient {
+    return new StackstormClient({
+      discoveryApi: dependencies.discoveryApi,
+      fetchApi: dependencies.fetchApi,
+      webUrl: config.getString('stackstorm.webUrl'),
+    });
   }
 
   private async get<T = any>(input: string): Promise<T> {
@@ -86,5 +104,13 @@ export class StackstormClient implements StackstormApi {
     };
     const path = `/actions?${new URLSearchParams(params)}`;
     return this.get<Action[]>(path);
+  }
+
+  getExecutionHistoryUrl(id: string): string {
+    return `${this.webUrl}/?#/history/${id}`;
+  }
+
+  getActionUrl(ref: string): string {
+    return `${this.webUrl}/?#/actions/${ref}`;
   }
 }

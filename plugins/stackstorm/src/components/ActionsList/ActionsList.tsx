@@ -16,7 +16,7 @@
 import React, { useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { Progress } from '@backstage/core-components';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import {
   List,
   ListItemText,
@@ -55,7 +55,6 @@ type ActionItemsProps = {
 export const ActionItems = ({ pack }: ActionItemsProps) => {
   const classes = useStyles();
   const st2 = useApi(stackstormApiRef);
-  const config = useApi(configApiRef);
 
   const { value, loading, error } = useAsync(async (): Promise<Action[]> => {
     const data = await st2.getActions(pack.ref);
@@ -76,12 +75,7 @@ export const ActionItems = ({ pack }: ActionItemsProps) => {
             key={a.ref}
             button
             className={classes.nested}
-            onClick={() =>
-              window.open(
-                `${config.getString('stackstorm.webUrl')}/?#/actions/${a.ref}`,
-                '_blank',
-              )
-            }
+            onClick={() => window.open(st2.getActionUrl(a.ref), '_blank')}
           >
             <ListItemText primary={a.name} secondary={a.description} />
             <ListItemSecondaryAction>{a.runner_type}</ListItemSecondaryAction>

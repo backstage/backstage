@@ -15,6 +15,7 @@
  */
 
 import {
+  configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
@@ -35,11 +36,12 @@ export const stackstormPlugin = createPlugin({
     createApiFactory({
       api: stackstormApiRef,
       deps: {
+        configApi: configApiRef,
         discoveryApi: discoveryApiRef,
         fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi, fetchApi }) =>
-        new StackstormClient({
+      factory: ({ configApi, discoveryApi, fetchApi }) =>
+        StackstormClient.fromConfig(configApi, {
           discoveryApi,
           fetchApi,
         }),

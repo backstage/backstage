@@ -15,7 +15,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Link, Table, TableColumn } from '@backstage/core-components';
-import { useApi, configApiRef, errorApiRef } from '@backstage/core-plugin-api';
+import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 import { Execution, stackstormApiRef } from '../../api';
 import { Status } from './Status';
 import { ExecutionPanel } from './ExecutionPanel';
@@ -37,7 +37,7 @@ export const DenseTable = ({
   onPageChange,
   onRowsPerPageChange,
 }: DenseTableProps) => {
-  const config = useApi(configApiRef);
+  const st2 = useApi(stackstormApiRef);
 
   const columns: TableColumn<Execution>[] = [
     {
@@ -54,13 +54,7 @@ export const DenseTable = ({
     {
       title: 'Execution ID',
       field: 'id',
-      render: e => (
-        <Link
-          to={`${config.getString('stackstorm.webUrl')}/?#/history/${e.id}`}
-        >
-          {e.id}
-        </Link>
-      ),
+      render: e => <Link to={st2.getExecutionHistoryUrl(e.id)}>{e.id}</Link>,
     },
   ];
 
