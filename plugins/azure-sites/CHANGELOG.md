@@ -1,5 +1,21 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.4
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- 98a00a09d5: Fixed `AzureSites` plugin start and stop issue #15904
+  Fixed `AzureSites` UI load issue #15907
+- 4bdd6bcb3c: Prefer Link over plain anchors
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/plugin-azure-sites-common@0.1.0
+
 ## 0.1.4-next.2
 
 ### Patch Changes

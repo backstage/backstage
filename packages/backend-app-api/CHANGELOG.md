@@ -1,5 +1,38 @@
 # @backstage/backend-app-api
 
+## 0.4.0
+
+### Minor Changes
+
+- 01a075ec1d: **BREAKING**: Renamed `RootHttpRouterConfigureOptions` to `RootHttpRouterConfigureContext`, and removed the unused type `ServiceOrExtensionPoint`.
+- 4ae71b7f2e: **BREAKING** Renaming `*Factory` exports to `*ServiceFactory` instead. For example `configFactory` now is exported as `configServiceFactory`.
+- d31d8e00b3: **BREAKING** `HttpServerCertificateOptions` when specified with a `key` and `cert` should also have the `type: 'pem'` instead of `type: 'plain'`
+
+### Patch Changes
+
+- a18da2f8b5: Fixed an issue were the log redaction didn't properly escape RegExp characters.
+- 5febb216fe: Updated to match the new `CacheService` interface.
+- e716946103: Updated usage of the lifecycle service.
+- f60cca9da1: Updated database factory to pass service deps required for restoring database state during development.
+- 610d65e143: Updates to match new `BackendFeature` type.
+- 725383f69d: Tweaked messaging in the README.
+- b86efa2d04: Updated usage of `ServiceFactory`.
+- ab22515647: The shutdown signal handlers are now installed as part of the backend instance rather than the lifecycle service, and explicitly cause the process to exit.
+- b729f9f31f: Moved the options of the `config` and `rootHttpRouter` services out to the factories themselves, where they belong
+- ed8b5967d7: `HttpRouterFactoryOptions.getPath` is now optional as a default value is always provided in the factory.
+- 71a5ec0f06: Updated usages of `LogMeta`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-permission-node@0.7.5
+
 ## 0.4.0-next.2
 
 ### Minor Changes

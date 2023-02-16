@@ -88,8 +88,22 @@ export const getLocationForEntity: (
   scmIntegration: ScmIntegrationRegistry,
 ) => ParsedLocationAnnotation;
 
-// @public
+// @public @deprecated (undocumented)
 export const getMkDocsYml: (
+  inputDir: string,
+  siteOptions?:
+    | {
+        name?: string | undefined;
+      }
+    | undefined,
+) => Promise<{
+  path: string;
+  content: string;
+  configIsTemporary: boolean;
+}>;
+
+// @public
+export const getMkdocsYml: (
   inputDir: string,
   siteOptions?: {
     name?: string;

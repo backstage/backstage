@@ -158,8 +158,8 @@ describe('createRouter', () => {
         data: [
           {
             type: 'file',
-            name: 'testFile001.txt',
-            path: 'folder/testFile001.txt',
+            name: 'testFile002.txt',
+            path: 'testFile002.txt',
           },
           {
             type: 'file',
@@ -168,8 +168,8 @@ describe('createRouter', () => {
           },
           {
             type: 'file',
-            name: 'testFile002.txt',
-            path: 'testFile002.txt',
+            name: 'testFile001.txt',
+            path: 'folder/testFile001.txt',
           },
         ],
       };

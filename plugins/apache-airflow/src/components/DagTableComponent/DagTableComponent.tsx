@@ -15,6 +15,7 @@
  */
 
 import {
+  Link,
   Progress,
   StatusError,
   StatusOK,
@@ -144,13 +145,14 @@ export const DenseTable = ({ dags, rowClick }: DenseTableProps) => {
     {
       title: 'Link',
       field: 'dagUrl',
-      render: (row: Partial<DagTableRow>) => (
-        <a href={row.dagUrl}>
-          <IconButton aria-label="details">
-            <OpenInBrowserIcon />
-          </IconButton>
-        </a>
-      ),
+      render: (row: Partial<DagTableRow>) =>
+        !row.dagUrl ? null : (
+          <Link to={row.dagUrl}>
+            <IconButton aria-label="details">
+              <OpenInBrowserIcon />
+            </IconButton>
+          </Link>
+        ),
       width: '5%',
       disableClick: true,
       hidden: hiddenColumns.some(field => field === 'dagUrl'),

@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.6.0
+
+### Minor Changes
+
+- 1728c1ef01: **BREAKING**: Renamed misspelled `LimitRangeFetchReponse` to `LimitRangeFetchResponse`.
+
+### Patch Changes
+
+- 2518ef5b8a: New K8s catalog entity annotations added that will replace now deprecated k8s annotations in the catalog-model package. K8s annotation imports should now be made from plugin-kubernetes-common.
+- 628e2bd89a: Updated dependency `@kubernetes/client-node` to `0.18.1`.
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0
+
 ## 0.6.0-next.2
 
 ### Patch Changes

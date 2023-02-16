@@ -33,6 +33,7 @@ Blackbox
 bool
 boolean
 Brex
+bugfixes
 builtins
 callout
 CDNs
@@ -240,6 +241,7 @@ OAuth
 octokit
 oidc
 Okta
+Olausson
 Oldsberg
 onboarding
 Onboarding

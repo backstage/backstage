@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.80-next.2",
+  "version": "0.2.80",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -42,6 +42,8 @@
     "@backstage/plugin-kafka": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-lighthouse": "workspace:^",
+    "@backstage/plugin-linguist": "workspace:^",
+    "@backstage/plugin-linguist-common": "workspace:^",
     "@backstage/plugin-microsoft-calendar": "workspace:^",
     "@backstage/plugin-newrelic": "workspace:^",
     "@backstage/plugin-newrelic-dashboard": "workspace:^",

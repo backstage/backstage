@@ -63,7 +63,7 @@ BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together
 with components and systems will better allow us to visualize resource
 footprint, and create tooling around them.
 
-##Organizational Entities
+## Organizational Entities
 
 ### User
 
@@ -120,7 +120,7 @@ product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
 
-##Other
+## Other
 
 ### Location
 
@@ -128,7 +128,8 @@ A location is a marker that references other places to look for catalog data.
 
 ### Type
 
-The type field in the system has no set meaning. It is up to the user to assign their own types and use them as desired, such as for link validation or creating custom UI components. Some common pre-defined types are depicted in the ecosystem modeling diagram.
+The type field in the system has no set meaning. It is up to the user to assign their own types and use them as desired, such as for link validation or creating custom UI components. Some common pre-defined types are depicted in the
+[ecosystem modeling diagram](#ecosystem-modeling).
 
 ### Template
 

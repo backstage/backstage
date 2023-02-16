@@ -15,7 +15,7 @@
  */
 
 import { FieldValidation } from '@rjsf/utils';
-import type { JsonObject } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { createFieldValidation } from '../../lib';
@@ -44,20 +44,38 @@ export const createAsyncValidators = (
     const parsedSchema = new JSONSchema(rootSchema);
     const formValidation: FormValidation = {};
 
+    const validateForm = async (
+      validatorName: string,
+      key: string,
+      value: JsonValue | undefined,
+    ) => {
+      const validator = validators[validatorName];
+      if (validator) {
+        const fieldValidation = createFieldValidation();
+        try {
+          await validator(value, fieldValidation, { ...context, formData });
+        } catch (ex) {
+          fieldValidation.addError(ex.message);
+        }
+        formValidation[key] = fieldValidation;
+      }
+    };
+
     for (const [key, value] of Object.entries(current)) {
       const path = `${pathPrefix}/${key}`;
       const definitionInSchema = parsedSchema.getSchema(path, formData);
 
       if (definitionInSchema && 'ui:field' in definitionInSchema) {
-        const validator = validators[definitionInSchema['ui:field']];
-        if (validator) {
-          const fieldValidation = createFieldValidation();
-          try {
-            await validator(value, fieldValidation, { ...context, formData });
-          } catch (ex) {
-            fieldValidation.addError(ex.message);
-          }
-          formValidation[key] = fieldValidation;
+        if ('ui:field' in definitionInSchema) {
+          await validateForm(definitionInSchema['ui:field'], key, value);
+        }
+      } else if (
+        definitionInSchema &&
+        definitionInSchema.items &&
+        'ui:field' in definitionInSchema.items
+      ) {
+        if ('ui:field' in definitionInSchema.items) {
+          await validateForm(definitionInSchema.items['ui:field'], key, value);
         }
       } else if (isObject(value)) {
         formValidation[key] = await validate(formData, path, value);

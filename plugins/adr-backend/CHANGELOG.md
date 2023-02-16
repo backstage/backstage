@@ -1,5 +1,24 @@
 # @backstage/plugin-adr-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 0a32911d8a: Display title, status and date in ADR navigation, sourced from ADR content and reverse order.
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/plugin-adr-common@0.2.6
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.2.7-next.2
 
 ### Patch Changes

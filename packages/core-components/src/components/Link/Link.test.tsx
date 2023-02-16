@@ -173,4 +173,24 @@ describe('<Link />', () => {
       });
     });
   });
+
+  it('throws an error when attempting to link to script code', () => {
+    expect(() =>
+      // eslint-disable-next-line no-script-url
+      render(wrapInTestApp(<Link to="javascript:alert('hello')">Script</Link>)),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Link component rejected javascript: URL as a security precaution"`,
+    );
+  });
+});
+
+describe('window.open', () => {
+  it('throws an error when attempting to open script code', () => {
+    expect(() =>
+      // eslint-disable-next-line no-script-url
+      window.open("javascript:alert('hello')"),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Rejected window.open() with a javascript: URL as a security precaution"`,
+    );
+  });
 });

@@ -76,10 +76,9 @@ To index explore tools you will need to register the search collator in the
 ```diff
 +import { ToolDocumentCollatorFactory } from '@backstage/plugin-explore-backend';
 
-async function createSearchEngine(
-  env: PluginEnvironment,
-): Promise<SearchEngine> {
-  ...
+...
+
++ // collator gathers entities from explore.
 +  indexBuilder.addCollator({
 +    schedule,
 +    factory: ToolDocumentCollatorFactory.fromConfig(env.config, {
@@ -87,8 +86,8 @@ async function createSearchEngine(
 +      logger: env.logger,
 +    }),
 +  });
-  ...
-}
+
+...
 ```
 
 ### Wire up the Frontend

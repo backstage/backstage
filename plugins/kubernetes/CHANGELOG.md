@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.8
+
+### Patch Changes
+
+- 145a79a15b: Condenses kubernetes ui plugin to fit more onscreen and increase visibility
+- 628e2bd89a: Updated dependency `@kubernetes/client-node` to `0.18.1`.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.0
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/config@1.0.6
+
 ## 0.7.8-next.2
 
 ### Patch Changes

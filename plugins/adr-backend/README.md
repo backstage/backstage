@@ -19,9 +19,8 @@ Here's how to get the backend up and running:
 1. First we need to add the `@backstage/plugin-adr-backend` package to your backend:
 
 ```sh
-# From the Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-adr-backend
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-adr-backend
 ```
 
 2. Then we will create a new file named `packages/backend/src/plugins/adr.ts`, and add the
