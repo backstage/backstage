@@ -72,6 +72,11 @@ describe('gitlab:create-deploy-token', () => {
   });
 
   it('should work when there is a token provided through ctx.input', async () => {
+    mockGitlabClient.ProjectDeployTokens.add.mockResolvedValue({
+      token: 'TOKEN',
+      username: 'User',
+    });
+
     await action.handler({
       ...mockContext,
       input: {
