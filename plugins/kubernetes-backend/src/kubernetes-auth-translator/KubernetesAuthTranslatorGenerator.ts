@@ -22,6 +22,7 @@ import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator
 import { GoogleServiceAccountAuthTranslator } from './GoogleServiceAccountAuthProvider';
 import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
 import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
+import { AksKubernetesAuthTranslator } from './AksKubernetesAuthTranslator';
 
 /**
  *
@@ -55,6 +56,9 @@ export class KubernetesAuthTranslatorGenerator {
       }
       case 'localKubectlProxy': {
         return new NoopKubernetesAuthTranslator();
+      }
+      case 'microsoftaks': {
+        return new AksKubernetesAuthTranslator();
       }
       default: {
         throw new Error(
