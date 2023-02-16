@@ -13,40 +13,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import WelcomePage from './components/WelcomePage';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Paper } from '@material-ui/core';
-import Breadcrumb from './components/Breadcrumb';
 import Bar from './components/Bar';
+import AuthStepperPage from './components/AuthStepperPage';
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    height: '100%',
-    minHeight: '300px',
-    overflow: 'hidden',
     padding: theme.spacing(3),
+    height: '100%',
+  },
+  content: {
+    padding: '10px',
+  },
+  item: {
+    flexBasis: '100%',
+    width: '50%',
   },
 }));
 
 const App = () => {
   const classes = useStyles();
+  const [page, setPage] = useState('welcome');
+
+  const getContent = () => {
+    switch (page) {
+      case 'stepper':
+        return <AuthStepperPage />;
+      default:
+        return <WelcomePage setPage={setPage} />;
+    }
+  };
+  const Content = () => {
+    return (
+      <Paper elevation={4} className={classes.content}>
+        {getContent()}
+      </Paper>
+    );
+  };
+
   return (
     <Grid
       container
-      spacing={3}
       direction="column"
       justifyContent="center"
       alignItems="center"
       className={classes.root}
     >
-      <Grid item xs={6}>
+      <Grid item className={classes.item}>
         <Bar />
-        <Paper elevation={3}>
-          <Breadcrumb />
-          <WelcomePage />
-        </Paper>
+        <Content />
       </Grid>
     </Grid>
   );

@@ -18,6 +18,10 @@ import { AppBar, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
+  root: {
+    flexGrow: 1,
+    height: '70px',
+  },
   title: {
     flexGrow: 1,
   },
@@ -26,10 +30,10 @@ const useStyles = makeStyles({
 const Bar = () => {
   const classes = useStyles();
   return (
-    <AppBar position="static">
+    <AppBar position="static" className={classes.root}>
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
-          Admin tool
+          Onboarding Assistant
         </Typography>
       </Toolbar>
     </AppBar>

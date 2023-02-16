@@ -3352,6 +3352,7 @@ __metadata:
   resolution: "@backstage/admin-web@workspace:packages/admin-web"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/core-components": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@types/react": "*"
     "@types/react-dom": "*"

@@ -15,34 +15,30 @@
  */
 import React from 'react';
 import { Typography, Grid, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-}));
-
-const WelcomePage = () => {
-  const classes = useStyles();
+const WelcomePage = (props: { setPage: (x: string) => void }) => {
+  const { setPage } = props;
   return (
-    <Grid container direction="column" className={classes.root}>
-      <Grid item>
-        <Typography variant="body1">
-          The Admin tool will help you to configure your Backstage application
-          very fast and easy. This tool will help you to add Github
-          Authentication, Software Catalog and some other plugins to your
-          Backstage.&#127881;
-        </Typography>
-      </Grid>
-      <Grid item spacing={4}>
-        <Grid container justifyContent="flex-end">
-          <Button variant="contained" color="primary">
+    <>
+      <Typography variant="body1">
+        The Admin tool will help you to configure your Backstage application
+        very fast and easy. This tool will help you to add Github
+        Authentication, Software Catalog and some other plugins to your
+        Backstage.&#127881;
+      </Typography>
+
+      <Grid container justifyContent="flex-end">
+        <Grid item>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setPage('stepper')}
+          >
             Start
           </Button>
         </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 };
 
