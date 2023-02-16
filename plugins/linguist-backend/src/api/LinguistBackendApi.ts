@@ -114,6 +114,7 @@ export class LinguistBackendApi {
     );
 
     const entities = entitiesOverview.filteredEntities.slice(
+      0,
       this.batchSize ?? 20,
     );
     entities.forEach(async entityRef => {
