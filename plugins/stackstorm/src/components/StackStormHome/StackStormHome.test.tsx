@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import React from 'react';
-import { StackStormHome } from './StackStormHome';
+import { StackstormHome } from './StackstormHome';
 import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { StackStormApi, stackStormApiRef } from '../../api';
+import { StackstormApi, stackstormApiRef } from '../../api';
 
-describe('StackStormHome', () => {
-  const mockApi: jest.Mocked<StackStormApi> = {
+describe('StackstormHome', () => {
+  const mockApi: jest.Mocked<StackstormApi> = {
     getExecutions: jest.fn().mockResolvedValue([]),
     getExecution: jest.fn().mockResolvedValue({}),
     getPacks: jest.fn().mockResolvedValue([]),
@@ -29,8 +29,8 @@ describe('StackStormHome', () => {
 
   it('should render', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[stackStormApiRef, mockApi]]}>
-        <StackStormHome />
+      <TestApiProvider apis={[[stackstormApiRef, mockApi]]}>
+        <StackstormHome />
       </TestApiProvider>,
     );
     expect(screen.getByText('Welcome to StackStorm!')).toBeInTheDocument();

@@ -20,7 +20,7 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import React from 'react';
-import { Execution, StackStormApi, stackStormApiRef } from '../../api';
+import { Execution, StackstormApi, stackstormApiRef } from '../../api';
 import { ExecutionsTable } from './ExecutionsTable';
 
 const executions: Execution[] = [
@@ -81,7 +81,7 @@ const executions: Execution[] = [
 ];
 
 describe('ExecutionsTable', () => {
-  const mockApi: jest.Mocked<StackStormApi> = {
+  const mockApi: jest.Mocked<StackstormApi> = {
     getExecutions: jest.fn().mockResolvedValue(executions),
   } as any;
 
@@ -89,7 +89,7 @@ describe('ExecutionsTable', () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider
         apis={[
-          [stackStormApiRef, mockApi],
+          [stackstormApiRef, mockApi],
           [
             configApiRef,
             new MockConfigApi({ stackstorm: { webUrl: 'http://localhost' } }),

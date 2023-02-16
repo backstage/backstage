@@ -15,7 +15,7 @@
  */
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
-import { Pack, StackStormApi, stackStormApiRef } from '../../api';
+import { Pack, StackstormApi, stackstormApiRef } from '../../api';
 import { PacksTable } from './PacksTable';
 
 const packs: Pack[] = [
@@ -32,13 +32,13 @@ const packs: Pack[] = [
 ];
 
 describe('PacksTable', () => {
-  const mockApi: jest.Mocked<StackStormApi> = {
+  const mockApi: jest.Mocked<StackstormApi> = {
     getPacks: jest.fn().mockResolvedValue(packs),
   } as any;
 
   it('should render all packs', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider apis={[[stackStormApiRef, mockApi]]}>
+      <TestApiProvider apis={[[stackstormApiRef, mockApi]]}>
         <PacksTable />
       </TestApiProvider>,
     );

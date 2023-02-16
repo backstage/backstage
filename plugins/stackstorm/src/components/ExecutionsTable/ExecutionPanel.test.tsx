@@ -20,7 +20,7 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import React from 'react';
-import { Execution, StackStormApi, stackStormApiRef } from '../../api';
+import { Execution, StackstormApi, stackstormApiRef } from '../../api';
 import { ExecutionPanel } from './ExecutionPanel';
 
 const execution: Execution = {
@@ -52,7 +52,7 @@ const execution: Execution = {
 };
 
 describe('ExecutionPanel', () => {
-  const mockApi: jest.Mocked<StackStormApi> = {
+  const mockApi: jest.Mocked<StackstormApi> = {
     getExecution: jest.fn().mockResolvedValue(execution),
   } as any;
 
@@ -60,7 +60,7 @@ describe('ExecutionPanel', () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider
         apis={[
-          [stackStormApiRef, mockApi],
+          [stackstormApiRef, mockApi],
           [
             configApiRef,
             new MockConfigApi({ stackstorm: { webUrl: 'http://localhost' } }),

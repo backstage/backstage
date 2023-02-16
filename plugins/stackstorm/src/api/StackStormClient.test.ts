@@ -17,7 +17,7 @@ import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { StackStormClient } from './StackStormClient';
+import { StackstormClient } from './StackstormClient';
 import { Action, Execution, Pack } from './types';
 
 const server = setupServer();
@@ -148,12 +148,12 @@ const identityApiMock = () => ({
   getCredentials: jest.fn().mockResolvedValue({ token: undefined }),
 });
 
-describe('StackStormClient', () => {
+describe('StackstormClient', () => {
   setupRequestMockHandlers(server);
 
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
-  let client: StackStormClient;
+  let client: StackstormClient;
 
   const setupHandlers = () => {
     server.use(
@@ -184,7 +184,7 @@ describe('StackStormClient', () => {
 
   beforeEach(() => {
     setupHandlers();
-    client = new StackStormClient({
+    client = new StackstormClient({
       discoveryApi: discoveryApi,
       identityApi: identityApiMock(),
     });

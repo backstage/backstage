@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Action, Execution, Pack, StackStormApi } from './types';
+import { Action, Execution, Pack, StackstormApi } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
-export class StackStormClient implements StackStormApi {
+export class StackstormClient implements StackstormApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
 
