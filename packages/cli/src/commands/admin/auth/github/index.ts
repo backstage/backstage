@@ -32,7 +32,7 @@ export const github = async () => {
     {
       type: 'list',
       name: 'type',
-      message: 'Do you want to use a Github App or a Github OAuth?',
+      message: 'Do you want to use a Github App or Github OAuth?',
       choices: ['GitHub OAuth', 'GitHub App'],
     },
   ]);
@@ -45,7 +45,6 @@ export const github = async () => {
       break;
     }
     case 'GitHub App': {
-      // TODO(tudi2d): Also change integrations
       await app(useEnvForSecrets);
       break;
     }

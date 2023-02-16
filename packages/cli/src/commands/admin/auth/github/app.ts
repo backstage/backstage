@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import chalk from 'chalk';
+
 import inquirer from 'inquirer';
 import { adminCli } from '../../../create-github-app';
-import { updateConfigFile, updateEnvFile } from '../file';
+import { updateConfigFile, updateEnvFile } from '../config';
+import { APP_CONFIG_FILE, ENV_CONFIG_FILE } from '../files';
 
 // TODO(tudi2d): Wrapper for admin CLI around `create-github-app` - potentially to be removed
 export const app = async (useEnvForSecrets: boolean) => {
@@ -25,15 +26,17 @@ export const app = async (useEnvForSecrets: boolean) => {
     {
       type: 'input',
       name: 'org',
-      message: chalk.blue('Enter a GitHub Org [required]'),
+      message: 'Enter a GitHub Org [required]',
     },
   ]);
 
   const { auth } = await adminCli(input.org);
 
-  await updateConfigFile({ auth });
+  // TODO(tudi2d): Also change integrations
+  await updateConfigFile(APP_CONFIG_FILE, { auth });
   if (useEnvForSecrets) {
     await updateEnvFile(
+      ENV_CONFIG_FILE,
       auth.providers.github.development.clientId,
       auth.providers.github.development.clientSecret,
     );

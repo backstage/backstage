@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import * as path from 'path';
 import * as fs from 'fs-extra';
 import yaml from 'yaml';
-import { findPaths } from '@backstage/cli-common';
 
 type GithubAuthConfig = {
   auth: {
@@ -33,22 +31,20 @@ type GithubAuthConfig = {
   };
 };
 
-/* eslint-disable-next-line no-restricted-syntax */
-const { targetRoot } = findPaths(__dirname);
-const APP_CONFIG_FILE = path.join(targetRoot, 'app-config.local.yaml');
-const ENV_CONFIG_FILE = path.join(targetRoot, '.env.local');
-
-const readConfigFile = async (file: string) => {
+const readYaml = async (file: string) => {
   return yaml.parse(await fs.readFile(file, 'utf8'));
 };
 
-export const updateConfigFile = async (config: GithubAuthConfig) => {
-  const content = fs.existsSync(APP_CONFIG_FILE)
-    ? { ...(await readConfigFile(APP_CONFIG_FILE)), ...config }
+export const updateConfigFile = async (
+  file: string,
+  config: GithubAuthConfig,
+) => {
+  const content = fs.existsSync(file)
+    ? { ...(await readYaml(file)), ...config }
     : config;
 
   return await fs.writeFile(
-    APP_CONFIG_FILE,
+    file,
     yaml.stringify(content, {
       indent: 2,
     }),
@@ -56,14 +52,18 @@ export const updateConfigFile = async (config: GithubAuthConfig) => {
   );
 };
 
-export const updateEnvFile = async (clientId: string, clientSecret: string) => {
+export const updateEnvFile = async (
+  file: string,
+  clientId: string,
+  clientSecret: string,
+) => {
   const content = `
 AUTH_GITHUB_CLIENT_ID=${clientId}
 AUTH_GITHUB_CLIENT_SECRET=${clientSecret}`;
 
-  if (fs.existsSync(ENV_CONFIG_FILE)) {
-    await fs.appendFile(ENV_CONFIG_FILE, content, 'utf8');
+  if (fs.existsSync(file)) {
+    return await fs.appendFile(file, content, 'utf8');
   }
 
-  return await fs.writeFile(ENV_CONFIG_FILE, content, 'utf8');
+  return await fs.writeFile(file, content, 'utf8');
 };

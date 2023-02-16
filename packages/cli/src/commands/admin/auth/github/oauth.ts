@@ -18,7 +18,15 @@ import { OAuthApp } from '@octokit/oauth-app';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Task } from '../../../../lib/tasks';
-import { updateConfigFile, updateEnvFile } from '../file';
+import { updateConfigFile, updateEnvFile } from '../config';
+import {
+  APP_CONFIG_FILE,
+  APP_TSX_FILE,
+  AUTH_BACKEND_PLUGIN_FILE,
+  ENV_CONFIG_FILE,
+} from '../files';
+import { patch } from '../patch';
+import { addSignInPageDiff, replaceSignInResolverDiff } from './diffs';
 
 const validateCredentials = async (clientId: string, clientSecret: string) => {
   try {
@@ -64,7 +72,7 @@ export const oauth = async (useEnvForSecrets: boolean) => {
   const answers = await inquirer.prompt<{
     clientSecret: string;
     clientId: string;
-    hasGithubEnterprise: boolean;
+    hasEnterprise: boolean;
     enterpriseInstanceUrl?: string;
   }>([
     {
@@ -81,40 +89,44 @@ export const oauth = async (useEnvForSecrets: boolean) => {
     },
     {
       type: 'confirm',
-      name: 'hasGithubEnterprise',
+      name: 'hasEnterprise',
       message: 'Are you using Github Enterprise?',
     },
     {
       type: 'input',
       name: 'enterpriseInstanceUrl',
       message: 'What is your URL for Github Enterprise?',
-      when: ({ hasGithubEnterprise }) => hasGithubEnterprise,
+      when: ({ hasEnterprise }) => hasEnterprise,
       validate: (input: string) => Boolean(new URL(input)),
     },
   ]);
 
-  await validateCredentials(answers.clientId, answers.clientSecret);
+  const { clientId, clientSecret, hasEnterprise, enterpriseInstanceUrl } =
+    answers;
+
+  await validateCredentials(clientId, clientSecret);
 
   const auth = {
     providers: {
       github: {
         development: {
-          clientId: useEnvForSecrets
-            ? '${AUTH_GITHUB_CLIENT_ID}'
-            : answers.clientId,
+          clientId: useEnvForSecrets ? '${AUTH_GITHUB_CLIENT_ID}' : clientId,
           clientSecret: useEnvForSecrets
             ? '${AUTH_GITHUB_CLIENT_SECRET}'
-            : answers.clientSecret,
-          ...(answers.hasGithubEnterprise && {
-            enterpriseInstanceUrl: answers.enterpriseInstanceUrl,
+            : clientSecret,
+          ...(hasEnterprise && {
+            enterpriseInstanceUrl: enterpriseInstanceUrl,
           }),
         },
       },
     },
   };
 
-  await updateConfigFile({ auth });
+  await updateConfigFile(APP_CONFIG_FILE, { auth });
   if (useEnvForSecrets) {
-    await updateEnvFile(answers.clientId, answers.clientSecret);
+    await updateEnvFile(ENV_CONFIG_FILE, clientId, clientSecret);
   }
+
+  await patch(APP_TSX_FILE, addSignInPageDiff);
+  await patch(AUTH_BACKEND_PLUGIN_FILE, replaceSignInResolverDiff);
 };
