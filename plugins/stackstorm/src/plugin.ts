@@ -19,7 +19,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
-  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { stackstormApiRef, StackstormClient } from './api';
 import { rootRouteRef } from './routes';
@@ -36,12 +36,12 @@ export const stackstormPlugin = createPlugin({
       api: stackstormApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi, identityApi }) =>
+      factory: ({ discoveryApi, fetchApi }) =>
         new StackstormClient({
           discoveryApi,
-          identityApi,
+          fetchApi,
         }),
     }),
   ],

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { StackstormClient } from './StackstormClient';
@@ -141,13 +141,6 @@ const actions: Action[] = [
   },
 ];
 
-const identityApiMock = () => ({
-  signOut: jest.fn(),
-  getProfileInfo: jest.fn(),
-  getBackstageIdentity: jest.fn(),
-  getCredentials: jest.fn().mockResolvedValue({ token: undefined }),
-});
-
 describe('StackstormClient', () => {
   setupRequestMockHandlers(server);
 
@@ -186,7 +179,7 @@ describe('StackstormClient', () => {
     setupHandlers();
     client = new StackstormClient({
       discoveryApi: discoveryApi,
-      identityApi: identityApiMock(),
+      fetchApi: new MockFetchApi(),
     });
   });
 

@@ -14,36 +14,48 @@
  * limitations under the License.
  */
 import { Action, Execution, Pack, StackstormApi } from './types';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 
 export class StackstormClient implements StackstormApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
 
   constructor({
     discoveryApi,
-    identityApi,
+    fetchApi,
   }: {
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
   }) {
     this.discoveryApi = discoveryApi;
-    this.identityApi = identityApi;
+    this.fetchApi = fetchApi;
   }
 
   private async get<T = any>(input: string): Promise<T> {
-    const { token: idToken } = await this.identityApi.getCredentials();
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/stackstorm`;
-    const response = await fetch(`${apiUrl}${input}`, {
-      method: 'GET',
+    const response = await this.fetchApi.fetch(`${apiUrl}${input}`, {
       headers: {
         'Content-Type': 'application/json',
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     });
 
     if (!response.ok) throw new Error(`Unable to get data: ${response.status}`);
-    return await response.json();
+    return (await response.json()) as T;
+  }
+
+  async addProject(bazaarProject: any): Promise<any> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
+
+    return await this.fetchApi
+      .fetch(`${baseUrl}/projects`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bazaarProject),
+      })
+      .then(resp => resp.json());
   }
 
   async getExecutions(limit?: number, offset?: number): Promise<Execution[]> {
