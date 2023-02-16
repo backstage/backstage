@@ -556,7 +556,22 @@ The overrides in a single `package.json` may for example look like this:
   },
 ```
 
-If you want to configure editor integration for tests we recommend executing the bundled configuration directly with Jest rather than running through the Yarn test script. For example, with the Jest extension for VS Code the configuration would look something like this:
+### Debugging Jest Tests
+
+For your productivity working with unit tests it's quite essential to have your debugging configured in IDE. It will help you to identify the root cause of the issue faster.
+
+#### IntelliJ IDEA
+
+1. Update Jest configuration template by:
+
+- Click on "Edit Configurations" on top panel
+- In the modal dialog click on link "Edit configuration templates..." located in the bottom left corner.
+- In "Jest package" you have to point to relative path of jest module (it will be suggested by IntelliJ), i.e. `~/proj/backstage/node_modules/jest`
+- In "Jest config" point to your jest configuration file, use absolute path for that, i.e. `--config /Users/user/proj/backstage/packages/cli/config/jest.js --runInBand`
+
+2. Now you can run any tests by clicking on green arrow located on `describe` or `it`.
+
+#### VS Code
 
 ```jsonc
 {
@@ -571,7 +586,7 @@ If you want to configure editor integration for tests we recommend executing the
 }
 ```
 
-If you also want to enable source maps when debugging tests, you can do so by setting the `ENABLE_SOURCE_MAPS` environment variable. For example, a complete launch configuration for VS Code debugging may look like this:
+A complete launch configuration for VS Code debugging may look like this:
 
 ```json
 {
@@ -583,9 +598,6 @@ If you also want to enable source maps when debugging tests, you can do so by se
   "disableOptimisticBPs": true,
   "program": "${workspaceFolder}/node_modules/.bin/jest",
   "cwd": "${workspaceFolder}",
-  "env": {
-    "ENABLE_SOURCE_MAPS": "true"
-  },
   "args": [
     "--config",
     "node_modules/@backstage/cli/config/jest.js",

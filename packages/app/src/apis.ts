@@ -31,11 +31,18 @@ import {
   AnyApiFactory,
   configApiRef,
   createApiFactory,
+  discoveryApiRef,
   errorApiRef,
   githubAuthApiRef,
 } from '@backstage/core-plugin-api';
+import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
 
 export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: discoveryApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) => AuthProxyDiscoveryApi.fromConfig(configApi),
+  }),
   createApiFactory({
     api: scmIntegrationsApiRef,
     deps: { configApi: configApiRef },

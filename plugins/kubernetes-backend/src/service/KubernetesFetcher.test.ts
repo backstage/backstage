@@ -170,6 +170,71 @@ describe('KubernetesFetcher', () => {
       });
     });
 
+    it('should support clusters with a base path', async () => {
+      worker.use(
+        rest.get(
+          'http://localhost:9999/k8s/clusters/1234/api/v1/pods',
+          (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'pod-name' } }],
+              }),
+            ),
+        ),
+        rest.get(
+          'http://localhost:9999/k8s/clusters/1234/api/v1/services',
+          (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'service-name' } }],
+              }),
+            ),
+        ),
+      );
+
+      const result = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999/k8s/clusters/1234',
+          serviceAccountToken: 'token',
+          authProvider: 'serviceAccount',
+        },
+        objectTypesToFetch: OBJECTS_TO_FETCH,
+        labelSelector: '',
+        customResources: [],
+      });
+
+      expect(result).toStrictEqual({
+        errors: [],
+        responses: [
+          {
+            type: 'pods',
+            resources: [
+              {
+                metadata: {
+                  name: 'pod-name',
+                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                },
+              },
+            ],
+          },
+          {
+            type: 'services',
+            resources: [
+              {
+                metadata: {
+                  name: 'service-name',
+                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
     it('should return pods, services', async () => {
       worker.use(
         rest.get('http://localhost:9999/api/v1/pods', (req, res, ctx) =>
@@ -688,6 +753,7 @@ describe('KubernetesFetcher', () => {
         expect(agent.options.rejectUnauthorized).toBe(false);
       });
     });
+
     it('should use namespace if provided', async () => {
       worker.use(
         rest.get(

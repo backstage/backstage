@@ -1,5 +1,77 @@
 # @backstage/cli
 
+## 0.22.2
+
+### Patch Changes
+
+- 561df21ea3: The `backstage-cli repo test` command now sets a default Jest `--workerIdleMemoryLimit` of 1GB. If needed to ensure that tests are not run in band, `--maxWorkers=2` is set as well. This is the recommended workaround for dealing with Jest workers leaking memory and eventually hitting the heap limit.
+- 2815981057: Show module name causing error during build
+- dd8a9afe66: Replaced several monorepo lint rules with new rules from `@backstage/eslint-plugin`. See the [README](https://github.com/import-js/eslint-plugin-import/blob/main/packages/eslint-plugin/README.md) for a full list of rules.
+- a9c50af76b: Fixed Webpack loader patterns so that they properly match the file suffix only.
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- 6d3abfded1: Switch to inline source maps for test transpilation, simplifying editor setups.
+- 90616df9a8: Added an experimental mode for the `package start` command for backend packages. Enabled by setting `EXPERIMENTAL_BACKEND_START`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2-next.1
+
+### Patch Changes
+
+- dd8a9afe66: Replaced several monorepo lint rules with new rules from `@backstage/eslint-plugin`. See the [README](https://github.com/import-js/eslint-plugin-import/blob/main/packages/eslint-plugin/README.md) for a full list of rules.
+- 90616df9a8: Added an experimental mode for the `package start` command for backend packages. Enabled by setting `EXPERIMENTAL_BACKEND_START`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.0-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2-next.0
+
+### Patch Changes
+
+- 561df21ea3: The `backstage-cli repo test` command now sets a default Jest `--workerIdleMemoryLimit` of 1GB. If needed to ensure that tests are not run in band, `--maxWorkers=2` is set as well. This is the recommended workaround for dealing with Jest workers leaking memory and eventually hitting the heap limit.
+- 2815981057: Show module name causing error during build
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- 6d3abfded1: Switch to inline source maps for test transpilation, simplifying editor setups.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.1
+
+### Patch Changes
+
+- db2e137744: Removed unnecessary usage of `ThemeProvider` from the `ExampleComponent` test in the plugin template.
+- 47c10706df: Fixed an issue where the CLI would fail to function when there was a mix of workspace and non-workspace versions of the same package in `yarn.lock` when using Yarn 3.
+- 2b435be4cf: Updated backend plugin ID during creation to match user-entered input.
+- 4b572126f1: Add experimental environment variable to enable caching for production builds.
+- 7b407b303b: Slightly improve readability of "base URL conflict" error handling code
+- a62a1f9dca: The frontend serve task now filters out allowed package duplicates during its package check, just like `versions:bump` and `versions:check`.
+- d06a7890c6: Removed unused package `type-fest`
+- 7c8a974515: The `repo test`, `repo lint`, and `repo build` commands will now analyze `yarn.lock` for dependency changes when searching for changed packages. This allows you to use the `--since <ref>` flag even if you have `yarn.lock` changes.
+- e1b71e142e: Workspace ranges are no longer considered invalid by version commands.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
 ## 0.22.1-next.2
 
 ### Patch Changes

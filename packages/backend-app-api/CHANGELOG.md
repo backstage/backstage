@@ -1,5 +1,131 @@
 # @backstage/backend-app-api
 
+## 0.4.0
+
+### Minor Changes
+
+- 01a075ec1d: **BREAKING**: Renamed `RootHttpRouterConfigureOptions` to `RootHttpRouterConfigureContext`, and removed the unused type `ServiceOrExtensionPoint`.
+- 4ae71b7f2e: **BREAKING** Renaming `*Factory` exports to `*ServiceFactory` instead. For example `configFactory` now is exported as `configServiceFactory`.
+- d31d8e00b3: **BREAKING** `HttpServerCertificateOptions` when specified with a `key` and `cert` should also have the `type: 'pem'` instead of `type: 'plain'`
+
+### Patch Changes
+
+- a18da2f8b5: Fixed an issue were the log redaction didn't properly escape RegExp characters.
+- 5febb216fe: Updated to match the new `CacheService` interface.
+- e716946103: Updated usage of the lifecycle service.
+- f60cca9da1: Updated database factory to pass service deps required for restoring database state during development.
+- 610d65e143: Updates to match new `BackendFeature` type.
+- 725383f69d: Tweaked messaging in the README.
+- b86efa2d04: Updated usage of `ServiceFactory`.
+- ab22515647: The shutdown signal handlers are now installed as part of the backend instance rather than the lifecycle service, and explicitly cause the process to exit.
+- b729f9f31f: Moved the options of the `config` and `rootHttpRouter` services out to the factories themselves, where they belong
+- ed8b5967d7: `HttpRouterFactoryOptions.getPath` is now optional as a default value is always provided in the factory.
+- 71a5ec0f06: Updated usages of `LogMeta`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-permission-node@0.7.5
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- 01a075ec1d: **BREAKING**: Renamed `RootHttpRouterConfigureOptions` to `RootHttpRouterConfigureContext`, and removed the unused type `ServiceOrExtensionPoint`.
+- 4ae71b7f2e: **BREAKING** Renaming `*Factory` exports to `*ServiceFactory` instead. For example `configFactory` now is exported as `configServiceFactory`.
+- d31d8e00b3: **BREAKING** `HttpServerCertificateOptions` when specified with a `key` and `cert` should also have the `type: 'pem'` instead of `type: 'plain'`
+
+### Patch Changes
+
+- e716946103: Updated usage of the lifecycle service.
+- f60cca9da1: Updated database factory to pass service deps required for restoring database state during development.
+- 610d65e143: Updates to match new `BackendFeature` type.
+- ab22515647: The shutdown signal handlers are now installed as part of the backend instance rather than the lifecycle service, and explicitly cause the process to exit.
+- b729f9f31f: Moved the options of the `config` and `rootHttpRouter` services out to the factories themselves, where they belong
+- 71a5ec0f06: Updated usages of `LogMeta`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/plugin-permission-node@0.7.5-next.2
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-permission-node@0.7.5-next.1
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- a18da2f8b5: Fixed an issue were the log redaction didn't properly escape RegExp characters.
+- ed8b5967d7: `HttpRouterFactoryOptions.getPath` is now optional as a default value is always provided in the factory.
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/backend-tasks@0.4.3-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+  - @backstage/plugin-permission-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 02b119ff93: **BREAKING**: The `httpRouterFactory` now accepts a `getPath` option rather than `indexPlugin`. To set up custom index path, configure the new `rootHttpRouterFactory` with a custom `indexPath` instead.
+
+  Added an implementation for the new `rootHttpRouterServiceRef`.
+
+### Patch Changes
+
+- ecc6bfe4c9: Use new `ServiceFactoryOrFunction` type.
+- b99c030f1b: Moved over implementation of the root HTTP service from `@backstage/backend-common`, and replaced the `middleware` option with a `configure` callback option.
+- 170282ece6: Fixed a bug in the default token manager factory where it created multiple incompatible instances.
+- 843a0a158c: Added service factory for the new core identity service.
+- 150a7dd790: An error will now be thrown if attempting to override the plugin metadata service.
+- 483e907eaf: Internal updates of `createServiceFactory` from `@backstage/backend-plugin-api`.
+- 015a6dced6: The `createSpecializedBackend` function will now throw an error if duplicate service implementations are provided.
+- e3fca10038: Tweaked the plugin logger to use `plugin` as the label for the plugin ID, rather than `pluginId`.
+- ecbec4ec4c: Internal refactor to match new options pattern in the experimental backend system.
+- 51b7a7ed07: Exported the default root HTTP router implementation as `DefaultRootHttpRouter`. It only implements the routing layer and needs to be exposed via an HTTP server similar to the built-in setup in the `rootHttpRouterFactory`.
+- 0e63aab311: Moved over logging and configuration loading implementations from `@backstage/backend-common`. There is a now `WinstonLogger` which implements the `RootLoggerService` through Winston with accompanying utilities. For configuration the `loadBackendConfig` function has been moved over, but it now instead returns an object with a `config` property.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- 3b8fd4169b: Internal folder structure refactor.
+- 6cfd4d7073: Updated implementations for the new `RootLifecycleService`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/backend-tasks@0.4.1
+  - @backstage/config@1.0.6
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+  - @backstage/plugin-permission-node@0.7.3
+
 ## 0.3.0-next.1
 
 ### Minor Changes

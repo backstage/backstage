@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { KeyboardEvent, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogActions,
@@ -22,7 +23,6 @@ import {
   DialogTitle,
   Divider,
   Grid,
-  List,
   Paper,
   useTheme,
 } from '@material-ui/core';
@@ -30,7 +30,6 @@ import Typography from '@material-ui/core/Typography';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  DefaultResultListItem,
   SearchContextProvider,
   SearchBar,
   SearchResult,
@@ -43,7 +42,7 @@ import { rootRouteRef } from '../../plugin';
 
 /**
  * @public
- **/
+ */
 export interface SearchModalChildrenProps {
   /**
    * A function that should be invoked when navigating away from the modal.
@@ -53,7 +52,7 @@ export interface SearchModalChildrenProps {
 
 /**
  * @public
- **/
+ */
 export interface SearchModalProps {
   /**
    * If true, it renders the modal.
@@ -94,27 +93,43 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const Modal = ({ toggleModal }: SearchModalProps) => {
-  const getSearchLink = useRouteRef(rootRouteRef);
   const classes = useStyles();
+  const navigate = useNavigate();
+  const { transitions } = useTheme();
+  const { focusContent } = useContent();
 
   const { term } = useSearch();
-  const { focusContent } = useContent();
-  const { transitions } = useTheme();
+  const searchBarRef = useRef<HTMLInputElement | null>(null);
+  const searchPagePath = `${useRouteRef(rootRouteRef)()}?query=${term}`;
 
-  const handleResultClick = () => {
+  useEffect(() => {
+    searchBarRef?.current?.focus();
+  });
+
+  const handleSearchResultClick = useCallback(() => {
     toggleModal();
     setTimeout(focusContent, transitions.duration.leavingScreen);
-  };
+  }, [toggleModal, focusContent, transitions]);
 
-  const handleKeyPress = () => {
-    handleResultClick();
-  };
+  const handleSearchBarKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      if (e.key === 'Enter') {
+        navigate(searchPagePath);
+        handleSearchResultClick();
+      }
+    },
+    [navigate, handleSearchResultClick, searchPagePath],
+  );
 
   return (
     <>
       <DialogTitle>
         <Paper className={classes.container}>
-          <SearchBar className={classes.input} />
+          <SearchBar
+            className={classes.input}
+            inputProps={{ ref: searchBarRef }}
+            onKeyDown={handleSearchBarKeyDown}
+          />
         </Paper>
       </DialogTitle>
       <DialogContent>
@@ -125,13 +140,7 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
           alignItems="center"
         >
           <Grid item>
-            <Link
-              onClick={() => {
-                toggleModal();
-                setTimeout(focusContent, transitions.duration.leavingScreen);
-              }}
-              to={`${getSearchLink()}?query=${term}`}
-            >
+            <Link to={searchPagePath} onClick={handleSearchResultClick}>
               <Typography component="span" className={classes.viewResultsLink}>
                 View Full Results
               </Typography>
@@ -140,27 +149,10 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
           </Grid>
         </Grid>
         <Divider />
-        <SearchResult>
-          {({ results }) => (
-            <List>
-              {results.map(({ document, highlight }) => (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  key={`${document.location}-btn`}
-                  onClick={handleResultClick}
-                  onKeyPress={handleKeyPress}
-                >
-                  <DefaultResultListItem
-                    key={document.location}
-                    result={document}
-                    highlight={highlight}
-                  />
-                </div>
-              ))}
-            </List>
-          )}
-        </SearchResult>
+        <SearchResult
+          onClick={handleSearchResultClick}
+          onKeyDown={handleSearchResultClick}
+        />
       </DialogContent>
       <DialogActions className={classes.dialogActionsContainer}>
         <Grid container direction="row">

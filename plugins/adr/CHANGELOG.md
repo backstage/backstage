@@ -1,5 +1,96 @@
 # @backstage/plugin-adr
 
+## 0.4.0
+
+### Minor Changes
+
+- 0a32911d8a: Display title, status and date in ADR navigation, sourced from ADR content and reverse order.
+- ec34b535c0: The `AdrSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- ec34b535c0: Support displaying an icon on `AdrSearchResultListItem`
+- 496cf6aff0: Render the common `<MissingAnnotationEmptyState />` component when the `backstage.io/adr-location` annotation is missing from the component
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/integration-react@1.1.10
+  - @backstage/plugin-adr-common@0.2.6
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- ec34b535c0: The `AdrSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- ec34b535c0: Support displaying an icon on `AdrSearchResultListItem`
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-search-react@1.5.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/integration-react@1.1.10-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-adr-common@0.2.6-next.1
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-search-react@1.5.0-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/integration-react@1.1.10-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-adr-common@0.2.6-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 496cf6aff0: Render the common `<MissingAnnotationEmptyState />` component when the `backstage.io/adr-location` annotation is missing from the component
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/plugin-adr-common@0.2.6-next.0
+  - @backstage/integration-react@1.1.9
+
+## 0.3.0
+
+### Minor Changes
+
+- e4469d0ec1: The ADR plugin can now work with sites other than GitHub. Expanded the ADR backend plugin to provide endpoints to facilitate this.
+
+  **BREAKING** The ADR plugin now requires the `@backstage/plugin-adr-backend` plugin to be installed by using the `createRouter` method to add into your `backend`. You read more in the [install instructions](https://github.com/backstage/backstage/blob/master/plugins/adr-backend/README.md#install)
+
+### Patch Changes
+
+- 21ffbdd5ee: Clarify that default ADR parsers support MADR specification v2.x
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/plugin-search-react@1.4.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/integration-react@1.1.9
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-adr-common@0.2.5
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.3.0-next.2
 
 ### Minor Changes

@@ -1,5 +1,58 @@
 # @backstage/create-app
 
+## 0.4.37
+
+### Patch Changes
+
+- 12a7b316ee: Bumped create-app version.
+- 86a8dfd7b0: Added a check to ensure that Yarn v1 is used when creating new projects.
+- 0eaa579f89: Update `SearchPage` template to use `SearchResult` extensions.
+- 02f1316e57: Updated `packages/app/cypress/.eslintrc.json` to remove the unnecessary `import/no-extraneous-dependencies` rule.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.37-next.2
+
+### Patch Changes
+
+- 02f1316e57: Updated `packages/app/cypress/.eslintrc.json` to remove the unnecessary `import/no-extraneous-dependencies` rule.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.37-next.1
+
+### Patch Changes
+
+- 86a8dfd7b0: Added a check to ensure that Yarn v1 is used when creating new projects.
+- 0eaa579f89: Update `SearchPage` template to use `SearchResult` extensions.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.37-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.36
+
+### Patch Changes
+
+- f834622f56: Bumped create-app version.
+- 724b55689b: Avoid potential temporary directory conflict.
+- a2a70504e3: Remove deprecated `create-plugin` script from the `default-app` template's `package.json.hbs`.
+  Also, update the documentation to not mention the `create-plugin` script and instead mention
+  the `new` script.
+- 016a52c28f: Bumped the minimum version of `better-sqlite3`. You can make the following change to your `packages/backend/package.json` to keep your instance of Backstage updated.
+
+  ```diff
+  - "better-sqlite3": "^7.5.0",
+  + "better-sqlite3": "^8.0.0",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
 ## 0.4.36-next.2
 
 ### Patch Changes

@@ -20,6 +20,7 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
+import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { Logger } from 'winston';
 
 /**
@@ -77,63 +78,6 @@ export type FlatTechInsightFact = TechInsightFact & {
    * Reference and unique identifier of the fact row
    */
   id: string;
-};
-
-/**
- * A record type to specify individual fact shapes
- *
- * Used as part of a schema to validate, identify and generically construct usage implementations
- * of individual fact values in the system.
- *
- * @public
- */
-export type FactSchema = {
-  /**
-   * Name of the fact
-   */
-  [name: string]: {
-    /**
-     * Type of the individual fact value
-     *
-     * Numbers are split into integers and floating point values.
-     * `set` indicates a collection of values, `object` indicates JSON serializable value
-     */
-    type:
-      | 'integer'
-      | 'float'
-      | 'string'
-      | 'boolean'
-      | 'datetime'
-      | 'set'
-      | 'object';
-
-    /**
-     * A description of this individual fact value
-     */
-    description: string;
-
-    /**
-     * Optional semver string to indicate when this specific fact definition was added to the schema
-     */
-    since?: string;
-
-    /**
-     * Metadata related to an individual fact.
-     * Can contain links, additional description texts and other actionable data.
-     *
-     * Currently loosely typed, but in the future when patterns emerge, key shapes can be defined
-     *
-     * examples:
-     * ```
-     * \{
-     *   link: 'https://sonarqube.mycompany.com/fix-these-issues',
-     *   suggestion: 'To affect this value, you can do x, y, z',
-     *   minValue: 0
-     * \}
-     * ```
-     */
-    metadata?: Record<string, any>;
-  };
 };
 
 /**
@@ -218,7 +162,7 @@ export interface FactRetriever {
  * \{ timeToLive: 1209600000 \}
  * \{ timeToLive: \{ weeks: 4 \} \}
  *
- **/
+ */
 export type TTL = { timeToLive: DurationLike };
 
 /**
@@ -228,7 +172,7 @@ export type TTL = { timeToLive: DurationLike };
  * @example
  * \{ maxItems: 10 \}
  *
- **/
+ */
 export type MaxItems = { maxItems: number };
 
 /**

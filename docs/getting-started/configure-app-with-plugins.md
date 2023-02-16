@@ -12,56 +12,64 @@ infrastructure needs - CI/CD, monitoring, auditing, and more.
 
 The following steps assume that you have
 [created a Backstage app](./create-an-app.md) and want to add an existing plugin
-to it. We are using the
+to it.
+
+We are using the
 [CircleCI](https://github.com/backstage/backstage/blob/master/plugins/circleci/README.md)
-plugin in this example.
+plugin in this example, which is designed to show CI/CD pipeline information attached
+to an entity in the software catalog.
 
 1. Add the plugin's npm package to the repo:
 
-```bash
-yarn workspace app add @backstage/plugin-circleci
-```
+   ```bash
+   # From your Backstage root directory
+   yarn add --cwd packages/app @backstage/plugin-circleci
+   ```
 
-Note the plugin is added to the `app` package, rather than the root
-package.json. Backstage Apps are set up as monorepos with
-[yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Since
-CircleCI is a frontend UI plugin, it goes in `app` rather than `backend`.
+   Note the plugin is added to the `app` package, rather than the root
+   `package.json`. Backstage Apps are set up as monorepos with
+   [Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Since
+   CircleCI is a frontend UI plugin, it goes in `app` rather than `backend`.
 
 2. Add the `EntityCircleCIContent` extension to the entity pages in the app:
 
-```diff
- // packages/app/src/components/catalog/EntityPage.tsx
-+import {
-+  EntityCircleCIContent,
-+  isCircleCIAvailable,
-+} from '@backstage/plugin-circleci';
+   ```diff
+   // packages/app/src/components/catalog/EntityPage.tsx
+   +import {
+   +  EntityCircleCIContent,
+   +  isCircleCIAvailable,
+   +} from '@backstage/plugin-circleci';
 
-...
- const cicdContent = (
-   <EntitySwitch>
-     ...
-+     <EntitySwitch.Case if={isCircleCIAvailable}>
-+       <EntityCircleCIContent />
-+     </EntitySwitch.Case>;
-   </EntitySwitch>
- );
-```
+   ...
+   const cicdContent = (
+     <EntitySwitch>
+       ...
+   +     <EntitySwitch.Case if={isCircleCIAvailable}>
+   +       <EntityCircleCIContent />
+   +     </EntitySwitch.Case>;
+     </EntitySwitch>
+   );
+   ```
 
-This is just one example, but each Backstage instance may integrate content or
-cards to suit their needs on different pages, tabs, etc. Note that stand-alone
-plugins that are not "attached" to the Software Catalog would be added outside
-the `EntityPage`.
+   This is just one example, but each Backstage instance may integrate content or
+   cards to suit their needs on different pages, tabs, etc. In addition, while some
+   plugins such as this example are designed to annotate or support specific software
+   catalog entities, others may be intended to be used in a stand-alone fashion and
+   would be added outside the `EntityPage`, such as being added to the main navigation.
 
-4. [Optional] Add proxy config:
+3. _[Optional]_ Add a proxy config:
 
-```yaml
-// app-config.yaml
-proxy:
-  '/circleci/api':
-    target: https://circleci.com/api/v1.1
-    headers:
-      Circle-Token: ${CIRCLECI_AUTH_TOKEN}
-```
+   Plugins that collect data off of external services may require the use of a proxy service.
+   This plugin accesses the CircleCI REST API, and thus requires a proxy definition.
+
+   ```yaml
+   // app-config.yaml
+   proxy:
+     '/circleci/api':
+       target: https://circleci.com/api/v1.1
+       headers:
+         Circle-Token: ${CIRCLECI_AUTH_TOKEN}
+   ```
 
 ### Adding a plugin page to the Sidebar
 

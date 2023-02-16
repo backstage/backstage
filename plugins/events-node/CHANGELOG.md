@@ -1,5 +1,42 @@
 # @backstage/plugin-events-node
 
+## 0.2.3
+
+### Patch Changes
+
+- 19d4abf72c: Make `EventParams` typed for implementing tidier event handling.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+
+## 0.2.3-next.2
+
+### Patch Changes
+
+- 19d4abf72c: Make `EventParams` typed for implementing tidier event handling.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.2-next.1
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+
 ## 0.2.1-next.1
 
 ### Patch Changes

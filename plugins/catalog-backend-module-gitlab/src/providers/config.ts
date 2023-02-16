@@ -35,6 +35,13 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const projectPattern = new RegExp(
     config.getOptionalString('projectPattern') ?? /[\s\S]*/,
   );
+  const userPattern = new RegExp(
+    config.getOptionalString('userPattern') ?? /[\s\S]*/,
+  );
+  const groupPattern = new RegExp(
+    config.getOptionalString('groupPattern') ?? /[\s\S]*/,
+  );
+  const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
 
   const schedule = config.has('schedule')
     ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
@@ -47,7 +54,10 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     host,
     catalogFile,
     projectPattern,
+    userPattern,
+    groupPattern,
     schedule,
+    orgEnabled,
   };
 }
 

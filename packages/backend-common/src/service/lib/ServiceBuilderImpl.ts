@@ -102,7 +102,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       this.serverOptions.https = {
         certificate: {
           ...settings.certificate,
-          type: 'plain',
+          type: 'pem',
         },
       };
     }

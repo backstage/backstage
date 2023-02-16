@@ -31,7 +31,7 @@ export interface Config {
           host: string;
           /**
            * (Optional) Gitlab's group[/subgroup] where the discovery is done.
-           * If not defined the whole project will be scanned.
+           * If not defined the whole instance will be scanned.
            */
           group?: string;
           /**
@@ -48,6 +48,18 @@ export interface Config {
            * (Optional) TaskScheduleDefinition for the refresh.
            */
           schedule?: TaskScheduleDefinitionConfig;
+          /**
+           * (Optional) RegExp for the Project Name Pattern
+           */
+          projectPattern?: RegExp;
+          /**
+           * (Optional) RegExp for the User Name Pattern
+           */
+          userPattern?: RegExp;
+          /**
+           * (Optional) RegExp for the Group Name Pattern
+           */
+          groupPattern?: RegExp;
         }
       >;
     };

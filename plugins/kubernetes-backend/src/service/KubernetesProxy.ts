@@ -32,7 +32,7 @@ export const APPLICATION_JSON: string = 'application/json';
 /**
  * The header that is used to specify the cluster name.
  *
- * @alpha
+ * @public
  */
 export const HEADER_KUBERNETES_CLUSTER: string = 'X-Kubernetes-Cluster';
 

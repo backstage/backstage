@@ -1,5 +1,80 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.2.15
+
+### Patch Changes
+
+- d72866f0cc: Internal refactor to use the new `@backstage/plugin-scaffolder-node` package for some functionality
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+
+## 0.2.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.0-next.2
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+
+## 0.2.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-node@0.1.0-next.1
+
+## 0.2.15-next.0
+
+### Patch Changes
+
+- d72866f0cc: Internal refactor to use the new `@backstage/plugin-scaffolder-node` package for some functionality
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.0-next.0
+
+## 0.2.13
+
+### Patch Changes
+
+- e4c0240445: Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+
+  The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
+
+  - Get all entities of kind `Group`
+
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+    ```
+
+  - Get entities of kind `Group` and spec.type `team`
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+            spec.type: team
+    ```
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.10.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+
 ## 0.2.13-next.2
 
 ### Patch Changes

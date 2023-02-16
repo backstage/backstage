@@ -22,3 +22,4 @@
 
 export { airbrakePlugin } from './plugin';
 export { EntityAirbrakeContent } from './extensions';
+export { isAirbrakeAvailable } from './components/isAirbrakeAvailable';

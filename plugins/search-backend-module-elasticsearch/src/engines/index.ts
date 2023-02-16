@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export { ElasticSearchSearchEngine } from './ElasticSearchSearchEngine';
+export {
+  decodePageCursor as decodeElasticSearchPageCursor,
+  ElasticSearchSearchEngine,
+} from './ElasticSearchSearchEngine';
 export { isOpenSearchCompatible } from './ElasticSearchClientOptions';
 export type {
   BaseElasticSearchClientOptions,

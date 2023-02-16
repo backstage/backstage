@@ -34,6 +34,8 @@ The permission framework was designed with a few key properties in mind:
 
 4. An authorization decision is sent to the plugin from the permission backend.
 
+5. The user is either granted access or an error is shown. The plugin is responsible for implementing a response to the user.
+
 ## How do I get started?
 
 See the "[getting started](./getting-started.md)" permission documentation for Backstage integrators.

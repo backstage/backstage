@@ -40,12 +40,12 @@ export const RolloutDrawer = ({
         spacing={0}
       >
         <Grid item>
-          <Typography variant="h5">
+          <Typography variant="body1">
             {rollout.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
         <Grid item>
-          <Typography color="textSecondary" variant="body1">
+          <Typography color="textSecondary" variant="subtitle1">
             Rollout
           </Typography>
         </Grid>

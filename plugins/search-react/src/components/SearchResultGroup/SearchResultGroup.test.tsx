@@ -22,12 +22,17 @@ import { MenuItem } from '@material-ui/core';
 import DocsIcon from '@material-ui/icons/InsertDriveFile';
 
 import {
-  TestApiProvider,
-  renderWithEffects,
   wrapInTestApp,
+  renderWithEffects,
+  TestApiProvider,
+  MockAnalyticsApi,
 } from '@backstage/test-utils';
+import { createPlugin, analyticsApiRef } from '@backstage/core-plugin-api';
 
 import { searchApiRef } from '../../api';
+import { SearchContextProvider } from '../../context';
+import { createSearchResultListItemExtension } from '../../extensions';
+
 import {
   SearchResultGroup,
   SearchResultGroupSelectFilterField,
@@ -36,6 +41,7 @@ import {
 
 const query = jest.fn().mockResolvedValue({ results: [] });
 const searchApiMock = { query };
+const analyticsApiMock = new MockAnalyticsApi();
 
 describe('SearchResultGroup', () => {
   const results = [
@@ -62,9 +68,18 @@ describe('SearchResultGroup', () => {
   });
 
   it('Renders without exploding', async () => {
+    query.mockResolvedValueOnce({
+      results,
+    });
+
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{ types: ['techdocs'] }}
             icon={<DocsIcon titleAccess="Docs icon" />}
@@ -84,10 +99,93 @@ describe('SearchResultGroup', () => {
     });
   });
 
-  it('Defines a default link', async () => {
+  it('Renders search results from context', async () => {
+    query.mockResolvedValueOnce({
+      results,
+    });
+
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
+          <SearchContextProvider>
+            <SearchResultGroup
+              icon={<DocsIcon titleAccess="Docs icon" />}
+              title="Documentation"
+            />
+          </SearchContextProvider>
+        </TestApiProvider>,
+      ),
+    );
+
+    expect(screen.getByText('Search Result 1')).toBeInTheDocument();
+    expect(
+      screen.getByText('Some text from the search result 1'),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText('Search Result 2')).toBeInTheDocument();
+    expect(
+      screen.getByText('Some text from the search result 2'),
+    ).toBeInTheDocument();
+  });
+
+  it('Renders search results using extensions', async () => {
+    query.mockResolvedValueOnce({
+      results,
+    });
+
+    const SearchResultGroupItemExtension = createPlugin({
+      id: 'plugin',
+    }).provide(
+      createSearchResultListItemExtension({
+        name: 'SearchResultGroupItemExtension',
+        component: async () => props => <>Result: {props.result?.title}</>,
+      }),
+    );
+
+    await renderWithEffects(
+      wrapInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
+          <SearchResultGroup
+            query={{ types: ['techdocs'] }}
+            icon={<DocsIcon titleAccess="Docs icon" />}
+            title="Documentation"
+          >
+            <SearchResultGroupItemExtension />
+          </SearchResultGroup>
+        </TestApiProvider>,
+      ),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Result: Search Result 1')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Result: Search Result 2')).toBeInTheDocument();
+  });
+
+  it('Defines a default link', async () => {
+    query.mockResolvedValueOnce({
+      results,
+    });
+
+    await renderWithEffects(
+      wrapInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{ types: ['techdocs'] }}
             icon={<DocsIcon titleAccess="Docs icon" />}
@@ -108,7 +206,12 @@ describe('SearchResultGroup', () => {
 
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{ types: ['techdocs'] }}
             icon={<DocsIcon titleAccess="Docs icon" />}
@@ -132,7 +235,12 @@ describe('SearchResultGroup', () => {
   it('Could be customized with no results text', async () => {
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{ types: ['techdocs'] }}
             icon={<DocsIcon titleAccess="Docs icon" />}
@@ -154,7 +262,12 @@ describe('SearchResultGroup', () => {
 
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{ types: ['techdocs'] }}
             icon={<DocsIcon titleAccess="Docs icon" />}
@@ -184,7 +297,12 @@ describe('SearchResultGroup', () => {
 
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{
               types: ['techdocs'],
@@ -232,7 +350,12 @@ describe('SearchResultGroup', () => {
 
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{
               types: ['techdocs'],
@@ -276,7 +399,12 @@ describe('SearchResultGroup', () => {
     query.mockReturnValueOnce(new Promise(() => {}));
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{ types: ['techdocs'] }}
             icon={<DocsIcon titleAccess="Docs icon" />}
@@ -295,7 +423,12 @@ describe('SearchResultGroup', () => {
     query.mockResolvedValueOnce({ results: [] });
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{ types: ['techdocs'] }}
             icon={<DocsIcon titleAccess="Docs icon" />}
@@ -315,7 +448,12 @@ describe('SearchResultGroup', () => {
     query.mockResolvedValueOnce({ results: [] });
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{ types: ['techdocs'] }}
             icon={<DocsIcon titleAccess="Docs icon" />}
@@ -335,7 +473,12 @@ describe('SearchResultGroup', () => {
     query.mockRejectedValueOnce(new Error());
     await renderWithEffects(
       wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [analyticsApiRef, analyticsApiMock],
+          ]}
+        >
           <SearchResultGroup
             query={{ types: ['techdocs'] }}
             icon={<DocsIcon titleAccess="Docs icon" />}

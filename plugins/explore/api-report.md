@@ -19,6 +19,7 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { TabProps } from '@material-ui/core';
 
 // @public @deprecated (undocumented)
@@ -125,9 +126,9 @@ export const ToolExplorerContent: (props: {
 }) => JSX.Element;
 
 // @public (undocumented)
-export function ToolSearchResultListItem(
-  props: ToolSearchResultListItemProps,
-): JSX.Element;
+export const ToolSearchResultListItem: (
+  props: SearchResultListItemExtensionProps<ToolSearchResultListItemProps>,
+) => JSX.Element | null;
 
 // @public
 export interface ToolSearchResultListItemProps {
@@ -138,6 +139,6 @@ export interface ToolSearchResultListItemProps {
   // (undocumented)
   rank?: number;
   // (undocumented)
-  result: IndexableDocument;
+  result?: IndexableDocument;
 }
 ```

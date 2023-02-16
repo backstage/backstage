@@ -46,7 +46,7 @@ import { getOrganizationRepositories } from '../lib';
  *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
  *
  * @public
- **/
+ */
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
@@ -176,7 +176,7 @@ export function parseUrl(urlString: string): {
   host: string;
 } {
   const url = new URL(urlString);
-  const path = url.pathname.substr(1).split('/');
+  const path = url.pathname.slice(1).split('/');
 
   // /backstage/techdocs-*/blob/master/catalog-info.yaml
   // can also be

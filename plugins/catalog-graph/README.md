@@ -24,9 +24,10 @@ The plugin comes with these features:
 
 To use the catalog graph plugin, you have to add some things to your Backstage app:
 
-1. Add a dependency to your `packages/app/package.json`, run:
+1. Add a dependency to your `packages/app/package.json`:
    ```sh
-    yarn add @backstage/plugin-catalog-graph
+   # From your Backstage root directory
+   yarn add --cwd packages/app @backstage/plugin-catalog-graph
    ```
 2. Add the `CatalogGraphPage` to your `packages/app/src/App.tsx`:
 

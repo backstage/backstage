@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { entityRouteRef } from '../../../routes';
 import { IconButton } from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/Info';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
 
 /**
@@ -26,7 +27,7 @@ import { Link } from '@backstage/core-components';
  *
  * @private
  */
-export const EntityCardActions = ({ entity }: { entity: Entity }) => {
+export const EntityCardActions = (props: { entity: Entity }) => {
   const entityRoute = useRouteRef(entityRouteRef);
 
   return (
@@ -34,11 +35,7 @@ export const EntityCardActions = ({ entity }: { entity: Entity }) => {
       component={Link}
       aria-label="Show"
       title="Show details"
-      to={entityRoute({
-        name: entity.metadata.name,
-        namespace: entity.metadata.namespace || 'default',
-        kind: entity.kind.toLocaleLowerCase('en-US'),
-      })}
+      to={entityRoute(getCompoundEntityRef(props.entity))}
     >
       <InfoIcon />
     </IconButton>

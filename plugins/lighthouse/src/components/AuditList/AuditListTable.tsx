@@ -15,7 +15,8 @@
  */
 import React, { useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
-import { Website, lighthouseApiRef } from '../../api';
+import { Website } from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import useInterval from 'react-use/lib/useInterval';
 import {
   formatTime,

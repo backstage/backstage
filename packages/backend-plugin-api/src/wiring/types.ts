@@ -32,15 +32,33 @@ export type ExtensionPoint<T> = {
 
   toString(): string;
 
-  $$ref: 'extension-point';
+  $$type: '@backstage/ExtensionPoint';
 };
 
-/** @public */
-export interface BackendRegistrationPoints {
+/**
+ * The callbacks passed to the `register` method of a backend plugin.
+ *
+ * @public
+ */
+export interface BackendPluginRegistrationPoints {
   registerExtensionPoint<TExtensionPoint>(
     ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
   ): void;
+  registerInit<Deps extends { [name in string]: unknown }>(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
+}
+
+/**
+ * The callbacks passed to the `register` method of a backend module.
+ *
+ * @public
+ */
+export interface BackendModuleRegistrationPoints {
   registerInit<Deps extends { [name in string]: unknown }>(options: {
     deps: {
       [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
@@ -51,7 +69,36 @@ export interface BackendRegistrationPoints {
 
 /** @public */
 export interface BackendFeature {
-  // TODO(Rugvip): Try to get rid of the ID at this level, allowing for a feature to register multiple features as a bundle
-  id: string;
-  register(reg: BackendRegistrationPoints): void;
+  // NOTE: This type is opaque in order to simplify future API evolution.
+  $$type: '@backstage/BackendFeature';
+}
+
+/** @internal */
+export interface InternalBackendFeature extends BackendFeature {
+  version: 'v1';
+  getRegistrations(): Array<
+    InternalBackendPluginRegistration | InternalBackendModuleRegistration
+  >;
+}
+
+/** @internal */
+export interface InternalBackendPluginRegistration {
+  pluginId: string;
+  type: 'plugin';
+  extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
+  init: {
+    deps: Record<string, ServiceRef<unknown>>;
+    func(deps: Record<string, unknown>): Promise<void>;
+  };
+}
+
+/** @internal */
+export interface InternalBackendModuleRegistration {
+  pluginId: string;
+  moduleId: string;
+  type: 'module';
+  init: {
+    deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
+    func(deps: Record<string, unknown>): Promise<void>;
+  };
 }

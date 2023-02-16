@@ -71,7 +71,7 @@ export type AppPluginOptions = {
  * @alpha
  */
 export const appPlugin = createBackendPlugin((options: AppPluginOptions) => ({
-  id: 'app',
+  pluginId: 'app',
   register(env) {
     env.registerInit({
       deps: {

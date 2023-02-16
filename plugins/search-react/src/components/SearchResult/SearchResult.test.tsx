@@ -16,10 +16,18 @@
 
 import React from 'react';
 import { waitFor } from '@testing-library/react';
+import {
+  wrapInTestApp,
+  renderInTestApp,
+  renderWithEffects,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import { createPlugin } from '@backstage/core-plugin-api';
 
-import { renderInTestApp } from '@backstage/test-utils';
-
+import { searchApiRef } from '../../api';
 import { useSearch } from '../../context';
+import { createSearchResultListItemExtension } from '../../extensions';
+
 import { SearchResult } from './SearchResult';
 
 jest.mock('../../context', () => ({
@@ -30,8 +38,12 @@ jest.mock('../../context', () => ({
 }));
 
 describe('SearchResult', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('Progress rendered on Loading state', async () => {
-    (useSearch as jest.Mock).mockReturnValueOnce({
+    (useSearch as jest.Mock).mockReturnValue({
       result: { loading: true },
     });
 
@@ -46,7 +58,7 @@ describe('SearchResult', () => {
 
   it('Alert rendered on Error state', async () => {
     const error = new Error('some error');
-    (useSearch as jest.Mock).mockReturnValueOnce({
+    (useSearch as jest.Mock).mockReturnValue({
       result: { loading: false, error },
     });
 
@@ -62,7 +74,7 @@ describe('SearchResult', () => {
   });
 
   it('On no result value state', async () => {
-    (useSearch as jest.Mock).mockReturnValueOnce({
+    (useSearch as jest.Mock).mockReturnValue({
       result: { loading: false, error: '', value: undefined },
     });
 
@@ -78,7 +90,7 @@ describe('SearchResult', () => {
   });
 
   it('On empty result value state', async () => {
-    (useSearch as jest.Mock).mockReturnValueOnce({
+    (useSearch as jest.Mock).mockReturnValue({
       result: { loading: false, error: '', value: { results: [] } },
     });
 
@@ -94,7 +106,7 @@ describe('SearchResult', () => {
   });
 
   it('On empty result value state with custom component', async () => {
-    (useSearch as jest.Mock).mockReturnValueOnce({
+    (useSearch as jest.Mock).mockReturnValue({
       result: { loading: false, error: '', value: { results: [] } },
     });
 
@@ -110,7 +122,7 @@ describe('SearchResult', () => {
   });
 
   it('Calls children with results set to result.value', async () => {
-    (useSearch as jest.Mock).mockReturnValueOnce({
+    (useSearch as jest.Mock).mockReturnValue({
       result: {
         loading: false,
         error: '',
@@ -139,5 +151,82 @@ describe('SearchResult', () => {
     );
 
     expect(getByText('Results 1')).toBeInTheDocument();
+  });
+
+  it('Renders results from api', async () => {
+    const results = [
+      {
+        type: 'some-type',
+        document: {
+          title: 'some-title',
+          text: 'some-text',
+          location: 'some-location',
+        },
+      },
+    ];
+    const query = jest.fn().mockResolvedValue({ results });
+    await renderWithEffects(
+      wrapInTestApp(
+        <TestApiProvider apis={[[searchApiRef, { query }]]}>
+          <SearchResult query={{ types: ['techdocs'] }}>
+            {value => {
+              expect(value.results).toStrictEqual(results);
+              return <></>;
+            }}
+          </SearchResult>
+        </TestApiProvider>,
+      ),
+    );
+
+    expect(query).toHaveBeenCalledWith({
+      term: '',
+      filters: {},
+      types: ['techdocs'],
+    });
+  });
+
+  it('Renders using search result item extensions', async () => {
+    (useSearch as jest.Mock).mockReturnValue({
+      result: {
+        loading: false,
+        error: '',
+        value: {
+          totalCount: 1,
+          results: [
+            {
+              type: 'some-type',
+              document: {
+                title: 'some-title',
+                text: 'some-text',
+                location: 'some-location',
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    const { getByText, rerender } = await renderInTestApp(<SearchResult />);
+
+    expect(getByText('some-title')).toBeInTheDocument();
+
+    const SearchResultExtension = createPlugin({
+      id: 'plugin',
+    }).provide(
+      createSearchResultListItemExtension({
+        name: 'SearchResultExtension',
+        component: async () => props => <>Result: {props.result?.title}</>,
+      }),
+    );
+
+    rerender(
+      <SearchResult>
+        <SearchResultExtension />
+      </SearchResult>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Result: some-title')).toBeInTheDocument();
+    });
   });
 });

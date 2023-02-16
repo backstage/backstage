@@ -1,5 +1,81 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.1
+
+### Patch Changes
+
+- acf6c8c10b: Deprecate `RadarEntry.url` - use `RadarEntry.links` instead
+
+  ```diff
+  - url: 'https://www.javascript.com/',
+    key: 'javascript',
+    id: 'javascript',
+    title: 'JavaScript',
+    quadrant: 'languages',
+    links: [
+  +    {
+  +      url: 'https://www.javascript.com/',
+  +      title: 'Learn more',
+  +    },
+    ],
+  ```
+
+- 18024a231c: Allow to set additional links to the entry description.
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- acf6c8c10b: Deprecate `RadarEntry.url` - use `RadarEntry.links` instead
+
+  ```diff
+  - url: 'https://www.javascript.com/',
+    key: 'javascript',
+    id: 'javascript',
+    title: 'JavaScript',
+    quadrant: 'languages',
+    links: [
+  +    {
+  +      url: 'https://www.javascript.com/',
+  +      title: 'Learn more',
+  +    },
+    ],
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- 18024a231c: Allow to set additional links to the entry description.
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
+## 0.6.0
+
+### Minor Changes
+
+- 38fd519fc1: Add highlighting of legend item and show bubble on hover within the Tech Radar
+
+### Patch Changes
+
+- 27a5e90e97: Small updates to some paragraph components to ensure theme typography properties are inherited correctly.
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
 ## 0.6.0-next.2
 
 ### Minor Changes

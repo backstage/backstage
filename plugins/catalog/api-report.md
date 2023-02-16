@@ -19,6 +19,7 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
@@ -107,9 +108,9 @@ export const catalogPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export function CatalogSearchResultListItem(
-  props: CatalogSearchResultListItemProps,
-): JSX.Element;
+export const CatalogSearchResultListItem: (
+  props: SearchResultListItemExtensionProps<CatalogSearchResultListItemProps>,
+) => JSX.Element | null;
 
 // @public
 export interface CatalogSearchResultListItemProps {
@@ -120,7 +121,7 @@ export interface CatalogSearchResultListItemProps {
   // (undocumented)
   rank?: number;
   // (undocumented)
-  result: IndexableDocument;
+  result?: IndexableDocument;
 }
 
 // @public (undocumented)

@@ -19,6 +19,7 @@ import {
   createBackendPlugin,
   createExtensionPoint,
 } from './factories';
+import { InternalBackendFeature } from './types';
 
 describe('createExtensionPoint', () => {
   it('should create an ExtensionPoint', () => {
@@ -33,12 +34,31 @@ describe('createExtensionPoint', () => {
 describe('createBackendPlugin', () => {
   it('should create a BackendPlugin', () => {
     const plugin = createBackendPlugin((_options: { a: string }) => ({
-      id: 'x',
-      register() {},
+      pluginId: 'x',
+      register(r) {
+        r.registerInit({ deps: {}, async init() {} });
+      },
     }));
     expect(plugin).toBeDefined();
     expect(plugin({ a: 'a' })).toBeDefined();
-    expect(plugin({ a: 'a' }).id).toBe('x');
+    expect(plugin({ a: 'a' })).toEqual({
+      $$type: '@backstage/BackendFeature',
+      version: 'v1',
+      getRegistrations: expect.any(Function),
+    });
+    expect(
+      (plugin({ a: 'a' }) as InternalBackendFeature).getRegistrations(),
+    ).toEqual([
+      {
+        type: 'plugin',
+        pluginId: 'x',
+        extensionPoints: [],
+        init: {
+          deps: expect.any(Object),
+          func: expect.any(Function),
+        },
+      },
+    ]);
     // @ts-expect-error
     expect(plugin()).toBeDefined();
     // @ts-expect-error
@@ -47,7 +67,7 @@ describe('createBackendPlugin', () => {
 
   it('should create plugins with optional options', () => {
     const plugin = createBackendPlugin((_options?: { a: string }) => ({
-      id: 'x',
+      pluginId: 'x',
       register() {},
     }));
     expect(plugin).toBeDefined();
@@ -59,7 +79,7 @@ describe('createBackendPlugin', () => {
 
   it('should create plugins without options', () => {
     const plugin = createBackendPlugin({
-      id: 'x',
+      pluginId: 'x',
       register() {},
     });
     expect(plugin).toBeDefined();
@@ -74,12 +94,16 @@ describe('createBackendPlugin', () => {
       a: string;
     }
     const plugin = createBackendPlugin((_options: TestOptions) => ({
-      id: 'x',
+      pluginId: 'x',
       register() {},
     }));
     expect(plugin).toBeDefined();
     expect(plugin({ a: 'a' })).toBeDefined();
-    expect(plugin({ a: 'a' }).id).toBe('x');
+    expect(plugin({ a: 'a' })).toEqual({
+      $$type: '@backstage/BackendFeature',
+      version: 'v1',
+      getRegistrations: expect.any(Function),
+    });
     // @ts-expect-error
     expect(plugin()).toBeDefined();
     // @ts-expect-error
@@ -91,7 +115,7 @@ describe('createBackendPlugin', () => {
       a: string;
     }
     const plugin = createBackendPlugin((_options?: TestOptions) => ({
-      id: 'x',
+      pluginId: 'x',
       register() {},
     }));
     expect(plugin).toBeDefined();
@@ -107,11 +131,30 @@ describe('createBackendModule', () => {
     const mod = createBackendModule((_options: { a: string }) => ({
       pluginId: 'x',
       moduleId: 'y',
-      register() {},
+      register(r) {
+        r.registerInit({ deps: {}, async init() {} });
+      },
     }));
     expect(mod).toBeDefined();
     expect(mod({ a: 'a' })).toBeDefined();
-    expect(mod({ a: 'a' }).id).toBe('x.y');
+    expect(mod({ a: 'a' })).toEqual({
+      $$type: '@backstage/BackendFeature',
+      version: 'v1',
+      getRegistrations: expect.any(Function),
+    });
+    expect(
+      (mod({ a: 'a' }) as InternalBackendFeature).getRegistrations(),
+    ).toEqual([
+      {
+        type: 'module',
+        pluginId: 'x',
+        moduleId: 'y',
+        init: {
+          deps: expect.any(Object),
+          func: expect.any(Function),
+        },
+      },
+    ]);
     // @ts-expect-error
     expect(mod()).toBeDefined();
     // @ts-expect-error
@@ -155,7 +198,11 @@ describe('createBackendModule', () => {
     }));
     expect(mod).toBeDefined();
     expect(mod({ a: 'a' })).toBeDefined();
-    expect(mod({ a: 'a' }).id).toBe('x.y');
+    expect(mod({ a: 'a' })).toEqual({
+      $$type: '@backstage/BackendFeature',
+      version: 'v1',
+      getRegistrations: expect.any(Function),
+    });
     // @ts-expect-error
     expect(mod()).toBeDefined();
     // @ts-expect-error

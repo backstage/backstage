@@ -1,5 +1,159 @@
 # @backstage/backend-plugin-api
 
+## 0.4.0
+
+### Minor Changes
+
+- e716946103: **BREAKING**: Split out the hook for both lifecycle services so that the first parameter of `addShutdownHook` is the hook function, and the second is the options.
+- 0ff03319be: **BREAKING**: The plugin ID option passed to `createBackendPlugin` is now `pluginId`, rather than just `id`. This is to make it match `createBackendModule` more closely.
+- 71a5ec0f06: **BREAKING**: Switched out `LogMeta` type for `JsonObject`.
+- 5febb216fe: **BREAKING**: The `CacheService` has been changed to remove the indirection of `getClient`, instead making the `CacheClient` methods directly available on the `CacheService`. In order to allow for the creation of clients with default options, there is now a new `.withOptions` method that must be implemented as part of the service interface.
+- b86efa2d04: Switch `ServiceFactory` to be an opaque type, keeping only the `service` field as public API, but also adding a type parameter for the service scope.
+- 610d65e143: Switched `BackendFeature` to be an opaque type.
+
+### Patch Changes
+
+- 9c9456fd33: Removed the unused `TypesToServiceRef` type
+- 181c03edb5: Aligned opaque type markers to all use a `$type` property with namespacing.
+- 725383f69d: Tweaked messaging in the README.
+- ae88f61e00: The `register` methods passed to `createBackendPlugin` and `createBackendModule`
+  now have dedicated `BackendPluginRegistrationPoints` and
+  `BackendModuleRegistrationPoints` arguments, respectively. This lets us make it
+  clear on a type level that it's not possible to pass in extension points as
+  dependencies to plugins (should only ever be done for modules). This has no
+  practical effect on code that was already well behaved.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-permission-common@0.7.3
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- e716946103: **BREAKING**: Split out the hook for both lifecycle services so that the first parameter of `addShutdownHook` is the hook function, and the second is the options.
+- 0ff03319be: **BREAKING**: The plugin ID option passed to `createBackendPlugin` is now `pluginId`, rather than just `id`. This is to make it match `createBackendModule` more closely.
+- 71a5ec0f06: **BREAKING**: Switched out `LogMeta` type for `JsonObject`.
+- 610d65e143: Switched `BackendFeature` to be an opaque type.
+
+### Patch Changes
+
+- 9c9456fd33: Removed the unused `TypesToServiceRef` type
+- 181c03edb5: Aligned opaque type markers to all use a `$type` property with namespacing.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- ae88f61e00: The `register` methods passed to `createBackendPlugin` and `createBackendModule`
+  now have dedicated `BackendPluginRegistrationPoints` and
+  `BackendModuleRegistrationPoints` arguments, respectively. This lets us make it
+  clear on a type level that it's not possible to pass in extension points as
+  dependencies to plugins (should only ever be done for modules). This has no
+  practical effect on code that was already well behaved.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.3-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 8e06f3cf00: Moved `loggerToWinstonLogger` to `@backstage/backend-common`.
+- ecbec4ec4c: Updated all factory function creators to accept options as a top-level callback rather than extra parameter to the main factory function.
+
+### Patch Changes
+
+- 6cfd4d7073: Added `RootLifecycleService` and `rootLifecycleServiceRef`, as well as added a `logger` option to the existing `LifecycleServiceShutdownHook`.
+- ecc6bfe4c9: Added `ServiceFactoryOrFunction` type, for use when either a `ServiceFactory` or `() => ServiceFactory` can be used.
+- 5b7bcd3c5e: Added `createSharedEnvironment` for creating a shared environment containing commonly used services in a split backend setup of the backend.
+- 02b119ff93: Added a new `rootHttpRouterServiceRef` and `RootHttpRouterService` interface.
+- 5e2cebe9a3: Migrate `UrlReader` into this package to gradually remove the dependency on backend-common.
+- 843a0a158c: Added new core identity service.
+- 5437fe488f: Migrated types related to `TokenManagerService`, `CacheService` and `DatabaseService` into backend-plugin-api.
+- 6f02d23b01: Moved `PluginEndpointDiscovery` type from backend-common to backend-plugin-api.
+- 483e907eaf: The `createServiceFactory` function has been updated to no longer use a duplicate callback pattern for plugin scoped services. The outer callback is now replaced by an optional `createRootContext` method. This change was made in order to support TypeScript 4.9, but it also simplifies the API surface a bit, especially for plugin scoped service factories that don't need to create a root context. In addition, the factory and root context functions can now be synchronous.
+
+  A factory that previously would have looked like this:
+
+  ```ts
+  createServiceFactory({
+    service: coreServices.cache,
+    deps: {
+      config: coreServices.config,
+      plugin: coreServices.pluginMetadata,
+    },
+    async factory({ config }) {
+      const cacheManager = CacheManager.fromConfig(config);
+      return async ({ plugin }) => {
+        return cacheManager.forPlugin(plugin.getId());
+      };
+    },
+  });
+  ```
+
+  Now instead looks like this:
+
+  ```ts
+  createServiceFactory({
+    service: coreServices.cache,
+    deps: {
+      config: coreServices.config,
+      plugin: coreServices.pluginMetadata,
+    },
+    async createRootContext({ config }) {
+      return CacheManager.fromConfig(config);
+    },
+    async factory({ plugin }, manager) {
+      return manager.forPlugin(plugin.getId());
+    },
+  });
+  ```
+
+  Although in many cases the `createRootContext` isn't needed, for example:
+
+  ```ts
+  createServiceFactory({
+    service: coreServices.logger,
+    deps: {
+      rootLogger: coreServices.rootLogger,
+      plugin: coreServices.pluginMetadata,
+    },
+    factory({ rootLogger, plugin }) {
+      return rootLogger.child({ plugin: plugin.getId() });
+    },
+  });
+  ```
+
+- 16054afdec: Documented `coreServices` an all of its members.
+- 0e63aab311: Updated the `RootLoggerService` to also have an `addRedactions` method.
+- 62b04bb865: Updates all `create*` methods to simplify their type definitions and ensure they all have configuration interfaces.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.1
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.3.0-next.1
 
 ### Minor Changes

@@ -16,6 +16,7 @@
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_VIEW_URL,
+  Entity,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
@@ -61,6 +62,16 @@ const YellowStar = withStyles({
     color: '#f3ba37',
   },
 })(Star);
+
+const refCompare = (a: Entity, b: Entity) => {
+  const toRef = (entity: Entity) =>
+    entity.metadata.title ||
+    humanizeEntityRef(entity, {
+      defaultKind: 'Component',
+    });
+
+  return toRef(a).localeCompare(toRef(b));
+};
 
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
@@ -177,7 +188,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  const rows = entities.map(entity => {
+  const rows = entities.sort(refCompare).map(entity => {
     const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
       kind: 'system',
     });

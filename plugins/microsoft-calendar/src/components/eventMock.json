@@ -1,0 +1,138 @@
+[
+  {
+    "id": "AAMkADQyMDdlODU1LTk4Y2ItNGFmYi04YzYyLWQ4NmEzMmRhZTY5MAFRAAgI2vdUnGxAAEYAAAAABZfL1rFDfUO0G4cMgXCC1gcApFI7gxQldkOLWHDOlgt60AAAAAABDQAApFI7gxQldkOLWHDOlgt60AAAYl_I0AAAEA==",
+    "createdDateTime": "2022-12-22T08:28:36.6131501Z",
+    "lastModifiedDateTime": "2023-01-20T05:24:31.9666518Z",
+    "changeKey": "pFI7gxQldkOLWHDOlgt60AAAd5KhaA==",
+    "categories": [],
+    "transactionId": null,
+    "originalStartTimeZone": "India Standard Time",
+    "originalEndTimeZone": "India Standard Time",
+    "iCalUId": "040000008200E00074C5B7101A82E00807E7011006D3A5A92DC7D80100000000000000001000000002BB709705E28C4493E46124FF07DD89",
+    "reminderMinutesBeforeStart": 15,
+    "isReminderOn": true,
+    "hasAttachments": false,
+    "subject": "Abhay Soni",
+    "bodyPreview": "",
+    "importance": "normal",
+    "sensitivity": "normal",
+    "isAllDay": false,
+    "isCancelled": false,
+    "isOrganizer": false,
+    "responseRequested": true,
+    "seriesMasterId": "AAMkADQyMDdlODU1LTk4Y2ItNGFmYi04YzYyLWQ4NmEzMmRhZTY5MABGAAAAAAAFl8vWsUN9Q7QbhwyBcILWBwCkUjuDFCV2Q4tYcM6WC3rQAAAAAAENAACkUjuDFCV2Q4tYcM6WC3rQAABiX4jQAAA=",
+    "showAs": "tentative",
+    "type": "occurrence",
+    "webLink": "",
+    "onlineMeetingUrl": "",
+    "isOnlineMeeting": true,
+    "onlineMeetingProvider": "teamsForBusiness",
+    "allowNewTimeProposals": true,
+    "occurrenceId": "OID.AAMkADQyMDdlODU1LTk4Y2ItNGFmYi04YzYyLWQ4NmEzMmRhZTY5MABGAAAAAAAFl8vWsUN9Q7QbhwyBcILWBwCkUjuDFCV2Q4tYcM6WC3rQAAAAAAENAACkUjuDFCV2Q4tYcM6WC3rQAABiX4jQAAA=.2023-01-16",
+    "isDraft": false,
+    "hideAttendees": false,
+    "responseStatus": {
+      "response": "notResponded",
+      "time": "0001-01-01T00:00:00Z"
+    },
+    "body": {
+      "contentType": "html",
+      "content": ""
+    },
+    "start": {
+      "dateTime": "2023-01-16T11:00:00.0000000",
+      "timeZone": "Asia/Calcutta"
+    },
+    "end": {
+      "dateTime": "2023-01-16T11:30:00.0000000",
+      "timeZone": "Asia/Calcutta"
+    },
+    "location": {
+      "displayName": "",
+      "locationType": "default",
+      "uniqueIdType": "unknown",
+      "address": {},
+      "coordinates": {}
+    },
+    "locations": [],
+    "recurrence": null,
+    "attendees": [],
+    "organizer": {
+      "emailAddress": {
+        "name": "Abhay Soni",
+        "address": "abhaysoni.developer@gmail.com"
+      }
+    },
+    "onlineMeeting": {
+      "joinUrl": "https://abhay-soni-developer.github.io/MyReusme/"
+    }
+  },
+  {
+    "id": "AAMkADQyMDdlODU1LTk4Y2ItNGFmYi04YzYyLWQ4NmEzMmRhZTY5MAFRAAgI2vdUnGxAAEYAAAAABZfL1rFDfUO0G4cMgXCC1gcApFI7gxQldkOLWHDOlgt60AAAAAABDQAApFI7gxQldkOLWHDOlgt60AAAYl_I0AAAEA==",
+    "createdDateTime": "2022-12-22T08:28:36.6131501Z",
+    "lastModifiedDateTime": "2023-01-20T05:24:31.9666518Z",
+    "changeKey": "pFI7gxQldkOLWHDOlgt60AAAd5KhaA==",
+    "categories": [],
+    "transactionId": null,
+    "originalStartTimeZone": "India Standard Time",
+    "originalEndTimeZone": "India Standard Time",
+    "iCalUId": "040000008200E00074C5B7101A82E00807E7011006D3A5A92DC7D80100000000000000001000000002BB709705E28C4493E46124FF07DD89",
+    "reminderMinutesBeforeStart": 15,
+    "isReminderOn": true,
+    "hasAttachments": false,
+    "subject": "https://abhay-soni-developer.github.io/MyReusme/",
+    "bodyPreview": "",
+    "importance": "normal",
+    "sensitivity": "normal",
+    "isAllDay": false,
+    "isCancelled": false,
+    "isOrganizer": false,
+    "responseRequested": true,
+    "seriesMasterId": "AAMkADQyMDdlODU1LTk4Y2ItNGFmYi04YzYyLWQ4NmEzMmRhZTY5MABGAAAAAAAFl8vWsUN9Q7QbhwyBcILWBwCkUjuDFCV2Q4tYcM6WC3rQAAAAAAENAACkUjuDFCV2Q4tYcM6WC3rQAABiX4jQAAA=",
+    "showAs": "tentative",
+    "type": "occurrence",
+    "webLink": "",
+    "onlineMeetingUrl": "",
+    "isOnlineMeeting": true,
+    "onlineMeetingProvider": "teamsForBusiness",
+    "allowNewTimeProposals": true,
+    "occurrenceId": "OID.AAMkADQyMDdlODU1LTk4Y2ItNGFmYi04YzYyLWQ4NmEzMmRhZTY5MABGAAAAAAAFl8vWsUN9Q7QbhwyBcILWBwCkUjuDFCV2Q4tYcM6WC3rQAAAAAAENAACkUjuDFCV2Q4tYcM6WC3rQAABiX4jQAAA=.2023-01-16",
+    "isDraft": false,
+    "hideAttendees": false,
+    "responseStatus": {
+      "response": "notResponded",
+      "time": "0001-01-01T00:00:00Z"
+    },
+    "body": {
+      "contentType": "html",
+      "content": ""
+    },
+    "start": {
+      "dateTime": "2023-01-16T11:00:00.0000000",
+      "timeZone": "Asia/Calcutta"
+    },
+    "end": {
+      "dateTime": "2023-01-16T11:30:00.0000000",
+      "timeZone": "Asia/Calcutta"
+    },
+    "location": {
+      "displayName": "",
+      "locationType": "default",
+      "uniqueIdType": "unknown",
+      "address": {},
+      "coordinates": {}
+    },
+    "locations": [],
+    "recurrence": null,
+    "attendees": [],
+    "organizer": {
+      "emailAddress": {
+        "name": "Abhay Soni",
+        "address": "abhaysoni.developer@gmail.com"
+      }
+    },
+    "onlineMeeting": {
+      "joinUrl": "https://abhay-soni-developer.github.io/MyReusme/"
+    }
+  }
+]

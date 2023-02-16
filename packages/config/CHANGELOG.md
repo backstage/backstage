@@ -1,5 +1,15 @@
 # @backstage/config
 
+## 1.0.6
+
+### Patch Changes
+
+- ba2d69ee17: Adds the ability to coerce values to their boolean representatives.
+  Values such as `"true"` `1` `on` and `y` will become `true` when using `getBoolean` and the opposites `false`.
+  This happens particularly when such parameters are used with environmental substitution as environment variables are always strings.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
 ## 1.0.6-next.0
 
 ### Patch Changes

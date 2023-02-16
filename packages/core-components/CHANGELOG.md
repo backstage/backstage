@@ -1,5 +1,63 @@
 # @backstage/core-components
 
+## 0.12.4
+
+### Patch Changes
+
+- 68ce7d0417: Added aria labels on the support button and sidebar
+- 5637ebed92: Added a global override for `window.open` that helps prevent security vulnerabilities.
+- 910015f5b7: The Button component has been deprecated in favor of the LinkButton component
+- 20840b36b4: Adds new type, TableOptions, extending Material Table Options.
+- e81a6e0ab5: Updated Link URL validation to be more strict.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- 66e2aab4c4: Navigation items in mobile sidebar now have aria label.
+- Updated dependencies
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.4-next.1
+
+### Patch Changes
+
+- 66e2aab4c4: Navigation items in mobile sidebar now have aria label.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.4-next.0
+
+### Patch Changes
+
+- 910015f5b7: The Button component has been deprecated in favor of the LinkButton component
+- 20840b36b4: Adds new type, TableOptions, extending Material Table Options.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.3
+
+### Patch Changes
+
+- f2ea446de0: Applied fix from v1.9.1
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- f23146520e: Ensure that the "Custom User" sign-in makes use of supplied custom tokens, if any
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
 ## 0.12.3-next.2
 
 ### Patch Changes

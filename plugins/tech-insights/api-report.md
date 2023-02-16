@@ -11,6 +11,7 @@ import { BulkCheckResponse } from '@backstage/plugin-tech-insights-common';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { default as React_2 } from 'react';
@@ -74,6 +75,8 @@ export interface TechInsightsApi {
   // (undocumented)
   getFacts(entity: CompoundEntityRef, facts: string[]): Promise<InsightFacts>;
   // (undocumented)
+  getFactSchemas(): Promise<FactSchema[]>;
+  // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],
     checks?: Check[],
@@ -101,6 +104,8 @@ export class TechInsightsClient implements TechInsightsApi {
   getCheckResultRenderers(types: string[]): CheckResultRenderer[];
   // (undocumented)
   getFacts(entity: CompoundEntityRef, facts: string[]): Promise<InsightFacts>;
+  // (undocumented)
+  getFactSchemas(): Promise<FactSchema[]>;
   // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],

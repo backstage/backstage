@@ -34,7 +34,7 @@ import {
 import {
   patchMkdocsYmlPreBuild,
   pathMkdocsYmlWithTechdocsPlugin,
-} from './mkDocsPatchers';
+} from './mkdocsPatchers';
 import yaml from 'js-yaml';
 
 const mockEntity = {
@@ -42,11 +42,15 @@ const mockEntity = {
   kind: 'TestKind',
   metadata: {
     name: 'testName',
+    title: 'Test site name',
   },
 };
 
 const mkdocsYml = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs.yml'),
+);
+const mkdocsDefaultYml = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_default.yml'),
 );
 const mkdocsYmlWithExtensions = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_extensions.yml'),
@@ -186,6 +190,7 @@ describe('helpers', () => {
     beforeEach(() => {
       mockFs({
         '/mkdocs.yml': mkdocsYml,
+        '/mkdocs_default.yml': mkdocsDefaultYml,
         '/mkdocs_with_repo_url.yml': mkdocsYmlWithRepoUrl,
         '/mkdocs_with_edit_uri.yml': mkdocsYmlWithEditUri,
         '/mkdocs_with_extensions.yml': mkdocsYmlWithExtensions,
@@ -514,28 +519,60 @@ describe('helpers', () => {
 
   describe('getMkdocsYml', () => {
     const inputDir = resolvePath(__filename, '../__fixtures__/');
+    const siteOptions = {
+      name: mockEntity.metadata.title,
+    };
 
     it('returns expected contents when .yml file is present', async () => {
       const key = path.join(inputDir, 'mkdocs.yml');
       mockFs({ [key]: mkdocsYml });
-      const { path: mkdocsPath, content } = await getMkdocsYml(inputDir);
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(inputDir, siteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
     });
 
     it('returns expected contents when .yaml file is present', async () => {
       const key = path.join(inputDir, 'mkdocs.yaml');
       mockFs({ [key]: mkdocsYml });
-      const { path: mkdocsPath, content } = await getMkdocsYml(inputDir);
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(inputDir, siteOptions);
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
     });
 
-    it('throws when neither .yml nor .yaml file is present', async () => {
+    it('returns expected contents when default file is present', async () => {
+      const defaultSiteOptions = {
+        name: 'Default Test site name',
+      };
+      const key = path.join(inputDir, 'mkdocs.yml');
+      const mockPathExists = jest.spyOn(fs, 'pathExists');
+      mockPathExists.mockImplementation(() => Promise.resolve(false));
+      mockFs({ [key]: mkdocsDefaultYml });
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(inputDir, defaultSiteOptions);
+
+      expect(mkdocsPath).toBe(key);
+      expect(content).toBe(mkdocsDefaultYml.toString());
+      expect(configIsTemporary).toBe(true);
+    });
+
+    it('throws when neither .yml nor .yaml nor default file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
-      await expect(getMkdocsYml(invalidInputDir)).rejects.toThrow(
-        /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation/,
+      await expect(getMkdocsYml(invalidInputDir, siteOptions)).rejects.toThrow(
+        /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation/,
       );
     });
   });

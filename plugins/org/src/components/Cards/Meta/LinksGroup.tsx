@@ -23,6 +23,7 @@ import {
   Divider,
 } from '@material-ui/core';
 import React from 'react';
+import { Link } from '@backstage/core-components';
 
 const WebLink = ({
   href,
@@ -33,9 +34,11 @@ const WebLink = ({
   text?: string;
   Icon?: IconComponent;
 }) => (
-  <ListItem button component="a" key={href} href={href}>
+  <ListItem key={href}>
     <ListItemIcon>{Icon ? <Icon /> : <LanguageIcon />}</ListItemIcon>
-    <ListItemText>{text}</ListItemText>
+    <ListItemText>
+      <Link to={href}>{text}</Link>
+    </ListItemText>
   </ListItem>
 );
 

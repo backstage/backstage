@@ -49,7 +49,7 @@ techdocs:
       # will be broken in these scenarios.
       legacyCopyReadmeMdToIndexMd: false
 
-  # techdocs.builder can be either 'local' or 'external.
+  # techdocs.builder can be either 'local' or 'external'.
   # Using the default build strategy, if builder is set to 'local' and you open a TechDocs page,
   # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwords.
   # This is the "Basic" setup of the TechDocs Architecture.

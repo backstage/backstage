@@ -371,14 +371,4 @@ Note: wrapping in the test application **requires** you to do a `find()` or
 
 # Debugging Jest Tests
 
-Currently, debugging Jest tests using IntelliJ or `node-debugger` is possible
-but can be
-[problematic to set up.](https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000634564-Debugging-Jest-unit-tests)
-
-It is possible, but you might spend a decent amount of time configuring your
-IDE.
-
-In most cases, we have found that using `console.log` works well.
-
-Note: if your console.logs are not being displayed, focus your specific unit
-test from the command line by running them like so `yarn test MyTest`.
+You can find it [here](https://backstage.io/docs/local-dev/cli-build-system#debugging-jest-tests)

@@ -1,5 +1,58 @@
 # @backstage/plugin-events-backend
 
+## 0.2.3
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-events-node@0.2.3
+  - @backstage/config@1.0.6
+
+## 0.2.3-next.2
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-events-node@0.2.3-next.2
+  - @backstage/config@1.0.6
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/config@1.0.6
+  - @backstage/plugin-events-node@0.2.3-next.1
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+  - @backstage/plugin-events-node@0.2.3-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 217149ae98: The default event broker will now catch and log errors thrown by the `onEvent` method of subscribers. The returned promise from `publish` method will also not resolve until all subscribers have handled the event.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-events-node@0.2.1
+
 ## 0.2.1-next.1
 
 ### Patch Changes

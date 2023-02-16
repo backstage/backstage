@@ -80,7 +80,11 @@ describe('UnregisterEntityDialog', () => {
 
   it('can cancel', async () => {
     const onClose = jest.fn();
-    stateSpy.mockImplementation(() => ({ type: 'loading' }));
+    stateSpy.mockImplementation(() => ({
+      type: 'bootstrap',
+      location: '',
+      deleteEntity: jest.fn(),
+    }));
 
     await renderInTestApp(
       <Wrapper>

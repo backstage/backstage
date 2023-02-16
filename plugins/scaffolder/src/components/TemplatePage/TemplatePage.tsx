@@ -20,7 +20,8 @@ import React, { ComponentType, useCallback, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import {
-  FieldExtensionOptions,
+  type FieldExtensionOptions,
+  type LayoutOptions,
   scaffolderApiRef,
   useTemplateSecrets,
 } from '@backstage/plugin-scaffolder-react';
@@ -37,7 +38,6 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { LayoutOptions } from '../../layouts';
 import { ReviewStepProps } from '../types';
 import {
   rootRouteRef,

@@ -1107,7 +1107,7 @@ export async function categorizePackageDirs(packageDirs: any[]) {
             });
           const role = pkgJson?.backstage?.role;
           if (!role) {
-            throw new Error(`No backstage.role in ${dir}/package.json`);
+            return; // Ignore packages without roles
           }
           if (role === 'cli') {
             cliPackageDirs.push(dir);

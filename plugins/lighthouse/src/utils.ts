@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import { useLocation } from 'react-router-dom';
-import { Website, Audit, LighthouseCategoryId, AuditCompleted } from './api';
+import {
+  Website,
+  Audit,
+  LighthouseCategoryId,
+  AuditCompleted,
+} from '@backstage/plugin-lighthouse-common';
 
 export function useQuery(): URLSearchParams {
   return new URLSearchParams(useLocation().search);

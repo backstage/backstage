@@ -210,4 +210,21 @@ describe('<EntityLifecyclePicker/>', () => {
       lifecycles: undefined,
     });
   });
+  it('responds to initialFilter prop', () => {
+    const updateFilters = jest.fn();
+    render(
+      <MockEntityListContextProvider
+        value={{
+          entities: sampleEntities,
+          backendEntities: sampleEntities,
+          updateFilters,
+        }}
+      >
+        <EntityLifecyclePicker initialFilter={['production']} />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      lifecycles: new EntityLifecycleFilter(['production']),
+    });
+  });
 });

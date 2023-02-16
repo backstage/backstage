@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { lifecycleFactory } from './lifecycleFactory';
+export { lifecycleServiceFactory } from './lifecycleServiceFactory';

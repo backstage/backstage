@@ -1,0 +1,17 @@
+{
+  "name": "@internal/bar",
+  "exports": {
+    ".": "./src/index.ts",
+    "./BarPage": "./src/components/Bar.tsx",
+    "./package.json": "./package.json"
+  },
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "dependencies": {
+    "react-router": "*"
+  },
+  "devDependencies": {
+    "react-router-dom": "*"
+  }
+}

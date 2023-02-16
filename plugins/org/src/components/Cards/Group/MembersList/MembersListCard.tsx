@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme: Theme) =>
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
       display: 'inline-block',
+      verticalAlign: 'middle',
       maxWidth: '100%',
       '&:hover': {
         overflow: 'visible',

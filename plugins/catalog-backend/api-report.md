@@ -167,6 +167,11 @@ export class CatalogBuilder {
   useLegacySingleProcessorValidation(): this;
 }
 
+// @public (undocumented)
+export type CatalogCollatorEntityTransformer = (
+  entity: Entity,
+) => Omit<CatalogEntityDocument, 'location' | 'authorization'>;
+
 // @alpha
 export const catalogConditions: Conditions<{
   hasAnnotation: PermissionRule<
@@ -351,6 +356,9 @@ export class DefaultCatalogCollator {
 }
 
 // @public (undocumented)
+export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer;
+
+// @public (undocumented)
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   static fromConfig(
@@ -360,7 +368,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   getCollator(): Promise<Readable>;
   // (undocumented)
-  readonly type: string;
+  readonly type = 'software-catalog';
   // (undocumented)
   readonly visibilityPermission: Permission;
 }
@@ -373,6 +381,7 @@ export type DefaultCatalogCollatorFactoryOptions = {
   filter?: GetEntitiesRequest['filter'];
   batchSize?: number;
   catalogClient?: CatalogApi;
+  entityTransformer?: CatalogCollatorEntityTransformer;
 };
 
 export { DeferredEntity };

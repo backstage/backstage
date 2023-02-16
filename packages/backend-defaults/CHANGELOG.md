@@ -1,5 +1,54 @@
 # @backstage/backend-defaults
 
+## 0.1.7
+
+### Patch Changes
+
+- 725383f69d: Tweaked messaging in the README.
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0
+  - @backstage/backend-plugin-api@0.4.0
+
+## 0.1.7-next.2
+
+### Patch Changes
+
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0-next.2
+  - @backstage/backend-plugin-api@0.4.0-next.2
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-app-api@0.3.2-next.1
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.3.2-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 6cfd4d7073: Include implementations for the new `rootLifecycleServiceRef`.
+- ecc6bfe4c9: Use new `ServiceFactoryOrFunction` type.
+- 015a6dced6: Updated to make sure that service implementations replace default service implementations.
+- 843a0a158c: Added factory for the new core identity service to the set of default service factories.
+- 5b7bcd3c5e: Added support to supply a shared environment to `createBackend`, which can be created using `createSharedEnvironment` from `@backstage/backend-plugin-api`.
+- 02b119ff93: The new root HTTP router service is now installed by default.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-app-api@0.3.0
+
 ## 0.1.5-next.1
 
 ### Patch Changes

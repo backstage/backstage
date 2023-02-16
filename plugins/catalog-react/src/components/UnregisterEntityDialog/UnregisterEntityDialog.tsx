@@ -39,14 +39,19 @@ const useStyles = makeStyles({
   advancedButton: {
     fontSize: '0.7em',
   },
+  dialogActions: {
+    display: 'inline-block',
+  },
 });
 
 const Contents = ({
   entity,
   onConfirm,
+  onClose,
 }: {
   entity: Entity;
   onConfirm: () => any;
+  onClose: () => any;
 }) => {
   const alertApi = useApi(alertApiRef);
   const configApi = useApi(configApiRef);
@@ -92,6 +97,14 @@ const Contents = ({
     [alertApi, onConfirm, state],
   );
 
+  const DialogActionsPanel = () => (
+    <DialogActions className={classes.dialogActions}>
+      <Button onClick={onClose} color="primary">
+        Cancel
+      </Button>
+    </DialogActions>
+  );
+
   if (state.type === 'loading') {
     return <Progress />;
   }
@@ -112,15 +125,18 @@ const Contents = ({
 
         <Box marginTop={2}>
           {!showDelete && (
-            <Button
-              variant="text"
-              size="small"
-              color="primary"
-              className={classes.advancedButton}
-              onClick={() => setShowDelete(true)}
-            >
-              Advanced Options
-            </Button>
+            <>
+              <Button
+                variant="text"
+                size="small"
+                color="primary"
+                className={classes.advancedButton}
+                onClick={() => setShowDelete(true)}
+              >
+                Advanced Options
+              </Button>
+              <DialogActionsPanel />
+            </>
           )}
 
           {showDelete && (
@@ -140,6 +156,7 @@ const Contents = ({
               >
                 Delete Entity
               </Button>
+              <DialogActionsPanel />
             </>
           )}
         </Box>
@@ -162,6 +179,7 @@ const Contents = ({
         >
           Delete Entity
         </Button>
+        <DialogActionsPanel />
       </>
     );
   }
@@ -258,13 +276,8 @@ export const UnregisterEntityDialog = (props: UnregisterEntityDialogProps) => {
         Are you sure you want to unregister this entity?
       </DialogTitle>
       <DialogContent>
-        <Contents entity={entity} onConfirm={onConfirm} />
+        <Contents entity={entity} onConfirm={onConfirm} onClose={onClose} />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancel
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };

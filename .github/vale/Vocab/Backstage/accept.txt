@@ -9,6 +9,7 @@ Airbrake
 Airbrakes
 Alaria
 Alef
+allowlisted
 Anddddd
 Apdex
 api
@@ -23,6 +24,7 @@ Avro
 backend's
 backported
 backporting
+BEPs
 Bigtable
 Billett
 bitbucket
@@ -31,6 +33,7 @@ Blackbox
 bool
 boolean
 Brex
+bugfixes
 builtins
 callout
 CDNs
@@ -70,6 +73,7 @@ cron
 cronjobs
 crontab
 css
+daemonsets
 Datadog
 dataflow
 dayjs
@@ -94,6 +98,7 @@ dockerfiles
 Dockerize
 dockerode
 Docusaurus
+Dominik
 DOMPurify
 don'ts
 dynatrace
@@ -118,6 +123,7 @@ Firekube
 Firestore
 Fiverr
 Francesco
+Frontside
 gerrit
 Gerrit
 gitbeaker
@@ -137,6 +143,7 @@ Hackathons
 haproxy
 hardcoded
 Helidon
+Henneke
 Heroku
 hoc
 horizontalpodautoscalers
@@ -166,17 +173,20 @@ jsonnet
 jsx
 JWTs
 Kaewkasi
+Kaswell
 Keyv
 Knex
 KPIs
+Kuang
 kubectl
 kubernetes
-kubernetes
+Lainfiesta
 ldap
 learnings
 Leasot
 lerna
 Lerna
+limitranges
 LocalStack
 lockdown
 lockfile
@@ -231,6 +241,7 @@ OAuth
 octokit
 oidc
 Okta
+Olausson
 Oldsberg
 onboarding
 Onboarding
@@ -334,6 +345,7 @@ subfolders
 subheader
 subheaders
 subkey
+subpath
 subroutes
 subtree
 superfences
@@ -410,8 +422,3 @@ zod
 Zolotusky
 zoomable
 zsh
-Lainfiesta
-allowlisted
-Dominik
-Henneke
-Kuang

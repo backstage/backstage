@@ -33,6 +33,7 @@ Options:
   --no-docker
   --techdocs-ref <HOST_TYPE:URL>
   --etag <ETAG>
+  --site-name
   -v --verbose
   --omitTechdocsCoreMkdocsPlugin
   --legacyCopyReadmeMdToIndexMd
@@ -52,7 +53,6 @@ Options:
   --awsRoleArn <AWS ROLE ARN>
   --awsEndpoint <AWS ENDPOINT>
   --awsS3ForcePathStyle
-  --awsBucketRootPath
   --osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>
   --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>
   --osAuthUrl <OPENSTACK SWIFT AUTHURL>
@@ -79,11 +79,12 @@ Options:
   --awsEndpoint <AWS ENDPOINT>
   --awsS3sse <AWS SSE>
   --awsS3ForcePathStyle
+  --awsBucketRootPath <AWS BUCKET ROOT PATH>
   --osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>
   --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>
   --osAuthUrl <OPENSTACK SWIFT AUTHURL>
   --osSwiftUrl <OPENSTACK SWIFT SWIFTURL>
-  --gcsBucketRootPath
+  --gcsBucketRootPath <GCS BUCKET ROOT PATH>
   --directory <PATH>
   -h, --help
 ```
@@ -98,6 +99,7 @@ Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
   --no-docker
+  --site-name
   --mkdocs-port <PORT>
   -v --verbose
   --preview-app-bundle-path <PATH_TO_BUNDLE>
@@ -115,6 +117,7 @@ Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
   --no-docker
+  --site-name
   -p, --port <PORT>
   -v --verbose
   -h, --help

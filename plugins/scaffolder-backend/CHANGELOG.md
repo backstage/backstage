@@ -1,5 +1,239 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.11.0
+
+### Minor Changes
+
+- 0b2952ee4b: Added the option to overwrite files in the `targetPath` of the `template:fetch` action
+- 127154930f: Renamed the export `scaffolderCatalogModule` to `catalogModuleTemplateKind` in order to follow the new recommended naming patterns of backend system items. This is technically a breaking change but in an alpha export, so take care to change your imports if you have already migrated to the new backend system.
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- ad3edc402d: **Deprecations**: The following are deprecated and should instead be imported from the new package `@backstage/plugin-scaffolder-node`:
+
+  - `ActionContext`
+  - `createTemplateAction`
+  - `TaskSecrets`
+  - `TemplateAction`
+
+- 6c70919f1a: Provide better error messaging when GitHub fails due to missing team definitions
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-scaffolder-node@0.1.0
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-scaffolder-common@1.2.5
+
+## 1.11.0-next.2
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-catalog-backend@1.7.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/plugin-scaffolder-node@0.1.0-next.2
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+
+## 1.11.0-next.1
+
+### Minor Changes
+
+- 127154930f: Renamed the export `scaffolderCatalogModule` to `catalogModuleTemplateKind` in order to follow the new recommended naming patterns of backend system items. This is technically a breaking change but in an alpha export, so take care to change your imports if you have already migrated to the new backend system.
+
+### Patch Changes
+
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2-next.1
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.1
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-scaffolder-node@0.1.0-next.1
+
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 0b2952ee4b: Added the option to overwrite files in the `targetPath` of the `template:fetch` action
+
+### Patch Changes
+
+- ad3edc402d: **Deprecations**: The following are deprecated and should instead be imported from the new package `@backstage/plugin-scaffolder-node`:
+
+  - `ActionContext`
+  - `createTemplateAction`
+  - `TaskSecrets`
+  - `TemplateAction`
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-backend@1.7.2-next.0
+  - @backstage/plugin-catalog-node@1.3.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/backend-tasks@0.4.3-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
+## 1.10.0
+
+### Minor Changes
+
+- a6808b67a7: Implement `Required approving review count`, `Restrictions`, and `Required commit signing` support for `publish:github` action
+- 04a2048fb8: Allow custom repository roles to be configured on github repos
+- c0ad7341f7: Add Scaffolder action `catalog:fetch` to get entity by entity reference from catalog
+- b44eb68bcb: This change adds changes to provide examples alongside scaffolder task actions.
+
+  The `createTemplateAction` function now takes a list of examples e.g.
+
+  ```typescript
+  const actionExamples = [
+    {
+      description: 'Example 1',
+      example: yaml.stringify({
+        steps: [
+          {
+            action: 'test:action',
+            id: 'test',
+            input: {
+              input1: 'value',
+            },
+          },
+        ],
+      }),
+    },
+  ];
+
+  export function createTestAction() {
+    return createTemplateAction({
+        id: 'test:action',
+        examples: [
+            {
+                description: 'Example 1',
+                examples: actionExamples
+            }
+        ],
+        ...,
+    });
+  ```
+
+  These examples can be retrieved later from the api.
+
+  ```bash
+  curl http://localhost:7007/api/scaffolder/v2/actions
+  ```
+
+  ```json
+  [
+    {
+      "id": "test:action",
+      "examples": [
+        {
+          "description": "Example 1",
+          "example": "steps:\n  - action: test:action\n    id: test\n    input:\n      input1: value\n"
+        }
+      ],
+      "schema": {
+        "input": {
+          "type": "object",
+          "properties": {
+            "input1": {
+              "title": "Input 1",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  ]
+  ```
+
+- 72d6b9f4e2: Added ability to override the commit message and author details for the `publish:bitbucketServer` action.
+- a69664faee: Add Github repository support for squash merge commit title and message options
+
+### Patch Changes
+
+- 2fadff2a25: Change scaffolder task actions to include markdown to demonstrate the new `ActionsPage` markdown feature.
+- ecbec4ec4c: Internal refactor to match new options pattern in the experimental backend system.
+- e4c0240445: Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+
+  The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
+
+  - Get all entities of kind `Group`
+
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+    ```
+
+  - Get entities of kind `Group` and spec.type `team`
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+            spec.type: team
+    ```
+
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-scaffolder-common@1.2.4
+  - @backstage/catalog-client@1.3.0
+  - @backstage/backend-tasks@0.4.1
+  - @backstage/plugin-catalog-node@1.3.1
+  - @backstage/plugin-catalog-backend@1.7.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+
 ## 1.10.0-next.2
 
 ### Patch Changes

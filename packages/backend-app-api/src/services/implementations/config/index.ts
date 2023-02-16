@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { configFactory } from './configFactory';
+export { configServiceFactory } from './configServiceFactory';
+export type { ConfigFactoryOptions } from './configServiceFactory';

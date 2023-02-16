@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.79-next.2",
+  "version": "0.2.80",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -30,6 +30,7 @@
     "@backstage/plugin-code-coverage": "workspace:^",
     "@backstage/plugin-cost-insights": "workspace:^",
     "@backstage/plugin-dynatrace": "workspace:^",
+    "@backstage/plugin-entity-feedback": "workspace:^",
     "@backstage/plugin-explore": "workspace:^",
     "@backstage/plugin-gcalendar": "workspace:^",
     "@backstage/plugin-gcp-projects": "workspace:^",
@@ -41,6 +42,9 @@
     "@backstage/plugin-kafka": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-lighthouse": "workspace:^",
+    "@backstage/plugin-linguist": "workspace:^",
+    "@backstage/plugin-linguist-common": "workspace:^",
+    "@backstage/plugin-microsoft-calendar": "workspace:^",
     "@backstage/plugin-newrelic": "workspace:^",
     "@backstage/plugin-newrelic-dashboard": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
@@ -84,7 +88,7 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/cypress": "^8.0.2",
+    "@testing-library/cypress": "^9.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",

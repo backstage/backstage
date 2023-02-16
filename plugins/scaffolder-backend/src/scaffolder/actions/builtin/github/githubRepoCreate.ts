@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from 'octokit';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { parseRepoUrl } from '../publish/util';
 import {
   createGithubRepoWithCollaboratorsAndTopics,
@@ -59,6 +60,12 @@ export function createGithubRepoCreateAction(options: {
       teams?: string[];
       apps?: string[];
     };
+    requiredApprovingReviewCount?: number;
+    restrictions?: {
+      users: string[];
+      teams: string[];
+      apps?: string[];
+    };
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
     requiredConversationResolution?: boolean;
@@ -83,6 +90,7 @@ export function createGithubRepoCreateAction(options: {
     hasIssues?: boolean;
     token?: string;
     topics?: string[];
+    requireCommitSigning?: boolean;
   }>({
     id: 'github:repo:create',
     description: 'Creates a GitHub repository.',
@@ -97,6 +105,8 @@ export function createGithubRepoCreateAction(options: {
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+          restrictions: inputProps.restrictions,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           requiredConversationResolution:
@@ -115,6 +125,7 @@ export function createGithubRepoCreateAction(options: {
           hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
+          requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
       output: {

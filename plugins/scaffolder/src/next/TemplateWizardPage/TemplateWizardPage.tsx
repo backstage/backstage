@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
-import {
-  Page,
-  Header,
-  Content,
-  Progress,
-  InfoCard,
-  MarkdownContent,
-} from '@backstage/core-components';
+import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AnalyticsContext,
-  errorApiRef,
   useApi,
   useRouteRef,
   useRouteRefParams,
@@ -34,55 +25,35 @@ import {
 import {
   scaffolderApiRef,
   useTemplateSecrets,
+  Workflow,
+  type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
-import useAsync from 'react-use/lib/useAsync';
-import { makeStyles } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
 import {
-  Stepper,
   NextFieldExtensionOptions,
+  FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
-import { FormProps } from '../types';
-import { nextRouteRef } from '../routes';
-import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
+import { Header, Page } from '@backstage/core-components';
+import {
+  nextRouteRef,
+  nextScaffolderTaskRouteRef,
+  nextSelectedTemplateRouteRef,
+} from '../routes';
 
-type TemplateWizardPageProps = {
+export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
   FormProps?: FormProps;
 };
 
-const useStyles = makeStyles<BackstageTheme>(() => ({
-  markdown: {
-    /** to make the styles for React Markdown not leak into the description */
-    '& :first-child': {
-      marginTop: 0,
-    },
-    '& :last-child': {
-      marginBottom: 0,
-    },
-  },
-}));
-
-const useTemplateParameterSchema = (templateRef: string) => {
-  const scaffolderApi = useApi(scaffolderApiRef);
-  const { value, loading, error } = useAsync(
-    () => scaffolderApi.getTemplateParameterSchema(templateRef),
-    [scaffolderApi, templateRef],
-  );
-
-  return { manifest: value, loading, error };
-};
-
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
-  const styles = useStyles();
   const rootRef = useRouteRef(nextRouteRef);
-  const taskRoute = useRouteRef(scaffolderTaskRouteRef);
+  const taskRoute = useRouteRef(nextScaffolderTaskRouteRef);
   const { secrets } = useTemplateSecrets();
   const scaffolderApi = useApi(scaffolderApiRef);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
-    selectedTemplateRouteRef,
+    nextSelectedTemplateRouteRef,
   );
 
   const templateRef = stringifyEntityRef({
@@ -91,10 +62,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     name: templateName,
   });
 
-  const errorApi = useApi(errorApiRef);
-  const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
-
-  const onComplete = async (values: Record<string, JsonValue>) => {
+  const onCreate = async (values: Record<string, JsonValue>) => {
     const { taskId } = await scaffolderApi.scaffold({
       templateRef,
       values,
@@ -104,15 +72,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     navigate(taskRoute({ taskId }));
   };
 
-  useEffect(() => {
-    if (error) {
-      errorApi.post(new Error(`Failed to load template, ${error}`));
-    }
-  }, [error, errorApi]);
-
-  if (error) {
-    return <Navigate to={rootRef()} />;
-  }
+  const onError = () => <Navigate to={rootRef()} />;
 
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
@@ -122,29 +82,15 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
         />
-        <Content>
-          {loading && <Progress />}
-          {manifest && (
-            <InfoCard
-              title={manifest.title}
-              subheader={
-                <MarkdownContent
-                  className={styles.markdown}
-                  content={manifest.description ?? 'No description'}
-                />
-              }
-              noPadding
-              titleTypographyProps={{ component: 'h2' }}
-            >
-              <Stepper
-                manifest={manifest}
-                extensions={props.customFieldExtensions}
-                onComplete={onComplete}
-                FormProps={props.FormProps}
-              />
-            </InfoCard>
-          )}
-        </Content>
+        <Workflow
+          namespace={namespace}
+          templateName={templateName}
+          onCreate={onCreate}
+          onError={onError}
+          extensions={props.customFieldExtensions}
+          FormProps={props.FormProps}
+          layouts={props.layouts}
+        />
       </Page>
     </AnalyticsContext>
   );
