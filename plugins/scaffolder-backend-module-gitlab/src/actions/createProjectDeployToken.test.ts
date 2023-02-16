@@ -97,6 +97,5 @@ describe('gitlab:create-deploy-token', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
     expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
-    
   });
 });
