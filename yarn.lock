@@ -7521,7 +7521,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@gitbeaker/node": ^35.8.0
     "@testing-library/jest-dom": ^5.10.1
