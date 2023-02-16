@@ -15,7 +15,7 @@
  */
 import { createApiRef } from '@backstage/core-plugin-api';
 
-export const stackStormApiRef = createApiRef<StackStormApi>({
+export const stackstormApiRef = createApiRef<StackstormApi>({
   id: 'plugin.stackstorm.service',
 });
 
@@ -51,7 +51,7 @@ export type Pack = {
   version: string;
 };
 
-export interface StackStormApi {
+export interface StackstormApi {
   getExecutions(limit: number, offset: number): Promise<Execution[]>;
   getExecution(id: string): Promise<Execution>;
   getPacks(): Promise<Pack[]>;

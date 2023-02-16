@@ -16,7 +16,7 @@
 import React from 'react';
 import { CodeSnippet, Progress } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Execution, stackStormApiRef } from '../../api';
+import { Execution, stackstormApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { Alert } from '@material-ui/lab';
 import {
@@ -148,7 +148,7 @@ const ExecutionCard = ({ e }: { e: Execution }) => {
 };
 
 export const ExecutionPanel = ({ id }: { id: string }) => {
-  const st2 = useApi(stackStormApiRef);
+  const st2 = useApi(stackstormApiRef);
 
   const { value, loading, error } = useAsync(async (): Promise<Execution> => {
     const data = await st2.getExecution(id);

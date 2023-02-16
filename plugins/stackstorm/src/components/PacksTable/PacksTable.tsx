@@ -18,7 +18,7 @@ import { Progress, Table, TableColumn } from '@backstage/core-components';
 import { Alert } from '@material-ui/lab';
 import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
-import { Pack, stackStormApiRef } from '../../api';
+import { Pack, stackstormApiRef } from '../../api';
 
 type DenseTableProps = {
   packs: Pack[];
@@ -42,7 +42,7 @@ export const DenseTable = ({ packs }: DenseTableProps) => {
 };
 
 export const PacksTable = () => {
-  const st2 = useApi(stackStormApiRef);
+  const st2 = useApi(stackstormApiRef);
 
   const { value, loading, error } = useAsync(async (): Promise<Pack[]> => {
     const data = await st2.getPacks();

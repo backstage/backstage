@@ -27,7 +27,7 @@ import { ExecutionsTable } from '../ExecutionsTable';
 import { PacksTable } from '../PacksTable/PacksTable';
 import { ActionsList } from '../ActionsList';
 
-export const StackStormHome = () => (
+export const StackstormHome = () => (
   <Page themeId="tool">
     <Header title="Welcome to StackStorm!" subtitle="Event-driven automation">
       <IconButton aria-label="Docs" href="https://docs.stackstorm.com/">

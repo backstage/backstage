@@ -15,7 +15,7 @@
  */
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
-import { Action, Pack, StackStormApi, stackStormApiRef } from '../../api';
+import { Action, Pack, StackstormApi, stackstormApiRef } from '../../api';
 import { ActionsList, PackListItem } from './ActionsList';
 
 const packs: Pack[] = [
@@ -53,14 +53,14 @@ const actions: Action[] = [
 ];
 
 describe('ActionsList', () => {
-  const mockApi: jest.Mocked<StackStormApi> = {
+  const mockApi: jest.Mocked<StackstormApi> = {
     getPacks: jest.fn().mockResolvedValue(packs),
     getActions: jest.fn().mockResolvedValue(actions),
   } as any;
 
   it('should render all packs', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider apis={[[stackStormApiRef, mockApi]]}>
+      <TestApiProvider apis={[[stackstormApiRef, mockApi]]}>
         <ActionsList />
       </TestApiProvider>,
     );
@@ -73,7 +73,7 @@ describe('ActionsList', () => {
 
   it('should render all pack actions', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider apis={[[stackStormApiRef, mockApi]]}>
+      <TestApiProvider apis={[[stackstormApiRef, mockApi]]}>
         <PackListItem pack={packs[1]} opened onClick={() => {}} />
       </TestApiProvider>,
     );

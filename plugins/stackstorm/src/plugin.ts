@@ -21,8 +21,7 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { stackStormApiRef, StackStormClient } from './api';
-
+import { stackstormApiRef, StackstormClient } from './api';
 import { rootRouteRef } from './routes';
 
 /**
@@ -34,13 +33,13 @@ export const stackstormPlugin = createPlugin({
   id: 'stackstorm',
   apis: [
     createApiFactory({
-      api: stackStormApiRef,
+      api: stackstormApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
       },
       factory: ({ discoveryApi, identityApi }) =>
-        new StackStormClient({
+        new StackstormClient({
           discoveryApi,
           identityApi,
         }),
@@ -60,7 +59,7 @@ export const StackstormPage = stackstormPlugin.provide(
   createRoutableExtension({
     name: 'StackstormPage',
     component: () =>
-      import('./components/StackStormHome').then(m => m.StackStormHome),
+      import('./components/StackstormHome').then(m => m.StackstormHome),
     mountPoint: rootRouteRef,
   }),
 );

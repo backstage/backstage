@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { stackStormApiRef } from './types';
+export { stackstormApiRef } from './types';
 export type {
   Action,
   Execution,
   ExecutionLog,
   Pack,
-  StackStormApi,
+  StackstormApi,
 } from './types';
-export { StackStormClient } from './StackStormClient';
+export { StackstormClient } from './StackstormClient';

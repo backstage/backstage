@@ -29,7 +29,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import { Alert } from '@material-ui/lab';
-import { Action, Pack, stackStormApiRef } from '../../api';
+import { Action, Pack, stackstormApiRef } from '../../api';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -54,7 +54,7 @@ type ActionItemsProps = {
 
 export const ActionItems = ({ pack }: ActionItemsProps) => {
   const classes = useStyles();
-  const st2 = useApi(stackStormApiRef);
+  const st2 = useApi(stackstormApiRef);
   const config = useApi(configApiRef);
 
   const { value, loading, error } = useAsync(async (): Promise<Action[]> => {
@@ -120,7 +120,7 @@ export const PackListItem = ({ pack, opened, onClick }: PackListItemProps) => {
 };
 
 export const ActionsList = () => {
-  const st2 = useApi(stackStormApiRef);
+  const st2 = useApi(stackstormApiRef);
 
   const classes = useStyles();
   const [expanded, setExpanded] = useState<string[]>([]);

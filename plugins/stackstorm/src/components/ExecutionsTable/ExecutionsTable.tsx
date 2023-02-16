@@ -16,7 +16,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Table, TableColumn } from '@backstage/core-components';
 import { useApi, configApiRef, errorApiRef } from '@backstage/core-plugin-api';
-import { Execution, stackStormApiRef } from '../../api';
+import { Execution, stackstormApiRef } from '../../api';
 import { Status } from './Status';
 import { ExecutionPanel } from './ExecutionPanel';
 
@@ -94,7 +94,7 @@ export const DenseTable = ({
 };
 
 export const ExecutionsTable = () => {
-  const st2 = useApi(stackStormApiRef);
+  const st2 = useApi(stackstormApiRef);
   const errorApi = useApi(errorApiRef);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
