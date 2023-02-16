@@ -15,7 +15,7 @@
  */
 import React, { useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { Progress } from '@backstage/core-components';
+import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   List,
@@ -28,7 +28,6 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
-import { Alert } from '@material-ui/lab';
 import { Action, Pack, stackstormApiRef } from '../../api';
 
 const useStyles = makeStyles(theme => ({
@@ -64,7 +63,7 @@ export const ActionItems = ({ pack }: ActionItemsProps) => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (
@@ -133,7 +132,7 @@ export const ActionsList = () => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (

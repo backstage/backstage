@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 import React from 'react';
-import { CodeSnippet, Progress } from '@backstage/core-components';
+import {
+  CodeSnippet,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { Execution, stackstormApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
-import { Alert } from '@material-ui/lab';
 import {
   Button,
   Card,
@@ -160,7 +163,7 @@ export const ExecutionPanel = ({ id }: { id: string }) => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return <ExecutionCard e={value!} />;
