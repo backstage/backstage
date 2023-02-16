@@ -37,17 +37,22 @@ const getTask = async (knex: Knex): Promise<DbTasksRow> => {
 describe('PluginTaskSchedulerJanitor', () => {
   const logger = getVoidLogger();
   const databases = TestDatabases.create({
-    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: [
+      /* 'MYSQL_8' not supported yet */
+      'POSTGRES_13',
+      'POSTGRES_9',
+      'SQLITE_3',
+    ],
   });
 
-  jest.setTimeout(300_000);
+  jest.setTimeout(60_000);
 
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it.each(databases.eachSupportedId())(
-    'Should update date if current_run_expires_at expires , %p',
+    'Should update date if current_run_expires_at expires, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
       await migrateBackendTasks(knex);
@@ -66,19 +71,16 @@ describe('PluginTaskSchedulerJanitor', () => {
       });
 
       const worker = new PluginTaskSchedulerJanitor({
+        waitBetweenRuns: Duration.fromObject({ milliseconds: 20 }),
         knex,
-        waitBetweenRuns: Duration.fromObject({ minutes: 1 }),
         logger,
       });
 
       const abortController = new AbortController();
-
-      await worker.start(abortController.signal);
-
-      const row1 = await getTask(knex);
+      worker.start(abortController.signal);
 
       await waitForExpect(async () => {
-        expect(row1).toEqual(
+        await expect(getTask(knex)).resolves.toEqual(
           expect.objectContaining({
             id: 'task1',
             current_run_ticket: null,
@@ -87,6 +89,8 @@ describe('PluginTaskSchedulerJanitor', () => {
           }),
         );
       });
+
+      abortController.abort();
     },
   );
 });
