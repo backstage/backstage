@@ -20,6 +20,13 @@ import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 // @public (undocumented)
 export const ApiDefinitionCard: () => JSX.Element;
 
+// @public
+export function ApiDefinitionDialog(props: {
+  open: boolean;
+  entity: ApiEntity;
+  onClose: () => void;
+}): JSX.Element;
+
 // @public (undocumented)
 export type ApiDefinitionWidget = {
   type: string;

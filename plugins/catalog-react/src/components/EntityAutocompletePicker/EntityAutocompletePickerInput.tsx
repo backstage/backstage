@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { makeStyles, TextField, TextFieldProps } from '@material-ui/core';
+import React from 'react';
+import classnames from 'classnames';
 
-export * from './ApiExplorerPage';
-export * from './ApiDefinitionCard';
-export * from './ApiDefinitionDialog';
-export * from './ApisCards';
-export * from './AsyncApiDefinitionWidget';
-export * from './ComponentsCards';
-export * from './GraphQlDefinitionWidget';
-export * from './OpenApiDefinitionWidget';
-export * from './PlainApiDefinitionWidget';
-export * from './TrpcDefinitionWidget';
+const useStyles = makeStyles(
+  {
+    input: {},
+  },
+  {
+    name: 'CatalogReactEntityAutocompletePickerInput',
+  },
+);
+
+export function EntityAutocompletePickerInput(params: TextFieldProps) {
+  const classes = useStyles();
+
+  return (
+    <TextField
+      variant="outlined"
+      {...params}
+      className={classnames(classes.input, params.className)}
+    />
+  );
+}
