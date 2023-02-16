@@ -12860,8 +12860,8 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-buildkite@npm:^2.0.8":
-  version: 2.1.3
-  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.1.3"
+  version: 2.1.4
+  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.1.4"
   dependencies:
     "@backstage/catalog-model": ^1.1.5
     "@backstage/core-components": ^0.12.3
@@ -12879,7 +12879,7 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: d7716bc6588863ae845630beac21b2a0ea8e2af4d01af1be432161007576c9c73419b2496ce868062e5af4ef9e3d02e9140eee8840c48223ded79c63d3efbb24
+  checksum: 6f45a9d4fe5429f5052ecae7547e608fe4b4c6b43e5ed7d113e9648d37fbe40ced92f51f29ffe719517de101e7821e14fd7d03cc588860a90392de6fafb6e9f6
   languageName: node
   linkType: hard
 
