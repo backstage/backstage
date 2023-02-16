@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createTemplateAction } from '@backstage/plugin-scaffolder-backend';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { getToken } from '../util';
 import { Gitlab } from '@gitbeaker/node';
