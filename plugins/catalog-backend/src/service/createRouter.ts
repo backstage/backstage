@@ -54,7 +54,6 @@ import { initialize } from 'express-openapi';
 import yaml from 'js-yaml';
 import fs from 'fs';
 import path from 'path';
-import OpenAPIBackend from 'openapi-backend';
 
 class ParsingError extends Error {
   toString() {
@@ -105,23 +104,6 @@ export async function createRouter(
     logger.info('Catalog is running in readonly mode');
   }
 
-  // create api with your definition file or object
-  const api = new OpenAPIBackend({ definition: './petstore.yml' });
-
-  // register your framework specific request handlers here
-  api.register({
-    getPets: (c, req, res) => {
-      return res.status(200).json({ result: 'ok' });
-    },
-    getPetById: (c, req, res) => res.status(200).json({ result: 'ok' }),
-    validationFail: (c, req, res) =>
-      res.status(400).json({ err: c.validation.errors }),
-    notFound: (c, req, res) => res.status(404).json({ err: 'not found' }),
-  });
-
-  // initalize the backend
-  api.init();
-
   const validateDependency = (
     dependency: any,
     next: (req: express.Request, res: express.Response) => any,
@@ -143,6 +125,7 @@ export async function createRouter(
     // NOTE: If using yaml you can provide a path relative to process.cwd() e.g.
     // apiDoc: './api-v1/api-doc.yml',
     apiDoc: yaml.load(
+      // eslint-disable-next-line no-restricted-syntax
       fs.readFileSync(path.resolve(__dirname, '../../openapi.yaml'), 'utf-8'),
     ) as any,
     operations: {
@@ -345,12 +328,18 @@ export async function createRouter(
     },
     enableObjectCoercion: true,
     errorMiddleware: errorHandler(),
-    errorTransformer: (openapiError, ajvError) => {
-      switch (openapiError.errorCode) {
+    errorTransformer: openapiError => {
+      const error = openapiError as {
+        errorCode: string;
+        path: string;
+        message: string;
+      };
+      // eslint-disable-next-line default-case
+      switch (error.errorCode) {
         case 'type.openapi.requestValidation':
           throw new InputError(
-            `Invalid field ${openapiError.path}`,
-            new ParsingError(openapiError.message),
+            `Invalid field ${error.path}`,
+            new ParsingError(error.message),
           );
       }
       return {};

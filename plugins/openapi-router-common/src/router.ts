@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OpenAPIV3_1 } from 'openapi-types';
-import { FieldValues } from './types/fields';
+import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
+import { IRouter, Router } from 'express';
+import core, { ParamsDictionary } from 'express-serve-static-core';
+import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
 import {
-  AppendNonBlankKey,
-  FieldPath,
-  FieldPathValue,
-  Path,
-} from './types/path';
-import { IRouter, Router, IRouterMatcher } from 'express';
-import core, {
-  ParamsDictionary,
-  RequestHandler,
-} from 'express-serve-static-core';
-import { FromSchema } from 'json-schema-to-ts';
+  DocPath,
+  DocPathMethod,
+  DocPathTemplate,
+  MethodAwareDocPath,
+  PathTemplate,
+  RequestBodySchema,
+  RequiredDoc,
+  ValueOf,
+} from './types';
+import { ResponseSchemas } from './types/response';
 
-type RouterFn<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->(
-  name: TFieldName,
-) => null;
+type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
 
 const doc = {
   openapi: '3.1.0',
@@ -201,59 +198,6 @@ const doc = {
   },
 } as const;
 
-const isUndefined = (a: any): a is undefined => a === undefined;
-const isNull = (a: any): a is null => a === null;
-
-const isNullOrUndefined = (a: any): a is undefined | null =>
-  isUndefined(a) || isNull(a);
-
-const isDateObject = (value: unknown): value is Date => value instanceof Date;
-
-const isObjectType = (value: unknown) => typeof value === 'object';
-
-const isObject = <T extends object>(value: unknown): value is T =>
-  !isNullOrUndefined(value) &&
-  !Array.isArray(value) &&
-  isObjectType(value) &&
-  !isDateObject(value);
-
-const compact = <TValue>(value: TValue[]) =>
-  Array.isArray(value) ? value.filter(Boolean) : [];
-
-export const resolve = <T>(
-  obj: T,
-  path: string,
-  defaultValue?: unknown,
-): any => {
-  if (!path || !isObject(obj)) {
-    return defaultValue;
-  }
-
-  const result = compact(path.split(/[,[\].]+?/)).reduce(
-    (result, key) =>
-      isNullOrUndefined(result) ? result : result[key as keyof {}],
-    obj,
-  );
-  if (result === undefined || result === obj) {
-    return obj[path as keyof T] === undefined
-      ? defaultValue
-      : obj[path as keyof T];
-  }
-  return result;
-};
-
-/**
- * We want this to input path and have
- * @param name
- * @returns
- */
-const x: RouterFn<typeof doc.paths> = name => {
-  console.log(resolve(doc, name));
-  return null;
-};
-
-x('/pets/{petId}');
-
 type RemoveTail<
   S extends string,
   Tail extends string,
@@ -279,79 +223,166 @@ export type RouteParameters<Route extends string> = string extends Route
 interface ParsedQs {
   [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
 }
-interface ApiRouterMatcher<
-  TFieldValues extends FieldValues,
+
+// oh boy don't do this
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I,
+) => void
+  ? I
+  : never;
+type LastOf<T> = UnionToIntersection<
+  T extends any ? () => T : never
+> extends () => infer R
+  ? R
+  : never;
+
+// TS4.0+
+type Push<T extends any[], V> = [...T, V];
+
+// TS4.1+
+type TuplifyUnion<
   T,
-  Method extends
-    | 'all'
-    | 'get'
-    | 'post'
-    | 'put'
-    | 'delete'
-    | 'patch'
-    | 'options'
-    | 'head',
-> {
-  <
-    TFieldName extends Path<TFieldValues> = Path<TFieldValues>,
-    P = RouteParameters<TFieldName>,
-    ResBody = any,
-    ReqBody = any,
-    ReqQuery = ParsedQs,
-    Locals extends Record<string, any> = Record<string, any>,
-  >(
-    // (it's used as the default type parameter for P)
-    path: TFieldName,
-    // (This generic is meant to be passed explicitly.)
-    ...handlers: Array<RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals>>
-  ): T;
-}
+  L = LastOf<T>,
+  N = [T] extends [never] ? true : false,
+> = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>;
 
-type path = ApiRouterMatcher<typeof doc.paths, any, 'get'>;
-const test: path = a => {
-  console.log(a);
-};
-test('/pets/{petId}');
+type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
+  infer First extends JSONSchema7,
+  ...infer Rest,
+]
+  ? ConvertAll<Rest, [...R, FromSchema<First>]>
+  : R;
 
-export interface IApiRouter<ApiSpec, PathSpec, T> extends IRouter {
-  all: ApiRouterMatcher<PathSpec, T, 'all'>;
-  get: ApiRouterMatcher<PathSpec, T, 'get'>;
-}
+type ResponseToJsonSchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ConvertAll<
+  TuplifyUnion<ValueOf<ResponseSchemas<Doc, Path, Method>>>
+>[number];
 
-export default class ApiRouter<
-  ApiSpec,
-  PathSpec extends OpenAPIV3_1.Document,
-  T,
-> implements IApiRouter<ApiSpec, PathSpec, T>
-{
+type DocRequestHandler<
+  Doc extends RequiredDoc,
+  Path extends DocPathTemplate<Doc>,
+  Method extends keyof Doc['paths'][Path],
+> = core.RequestHandler<
+  core.ParamsDictionary,
+  // From https://stackoverflow.com/questions/71393738/typescript-intersection-not-union-type-from-json-schema.
+  ResponseToJsonSchema<Doc, Path, Method>,
+  RequestBodySchema<Doc, Path, Method>,
+  ParsedQs,
+  Record<string, string>
+>;
+
+export default class ApiRouter<Doc extends RequiredDoc> {
   private _router = Router();
 
-  constructor(private spec: OpenAPIV3_1.Document) {}
+  constructor(private spec: OpenAPIV3_1.Document | OpenAPIV3.Document) {}
 
-  static fromSpec<ApiSpec, PathSpec, T>(spec: OpenAPIV3_1.Document) {
-    return new ApiRouter<ApiSpec, PathSpec, T>(spec);
+  static fromSpec<Doc extends RequiredDoc>(
+    spec: OpenAPIV3_1.Document | OpenAPIV3.Document,
+  ) {
+    return new ApiRouter<Doc>(spec);
   }
 
-  get<
-    TFieldValues extends FieldValues = PathSpec,
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  >(
-    path: TFieldName,
-    ...handlers: core.RequestHandler<
-      core.ParamsDictionary,
-      any,
-      FieldPathValue<TFieldValues, TFieldName>,
-      ParsedQs,
-      Record<string, string>
-    >[]
+  get<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'get'>>(
+    path: Path,
+    ...handlers: DocRequestHandler<Doc, Path, 'get'>[]
   ) {
     console.log(path);
-    return this._router.get(path, ...handlers);
+    this._router.get(path, ...handlers);
+    return this;
+  }
+
+  post<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'post'>>(
+    path: Path,
+    ...handlers: DocRequestHandler<Doc, Path, 'post'>[]
+  ) {
+    console.log(path);
+    this._router.post(path, ...handlers);
+    return this;
+  }
+
+  all<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'all'>>(
+    path: Path,
+    ...handlers: DocRequestHandler<Doc, Path, 'all'>[]
+  ) {
+    console.log(path);
+    this._router.all(path, ...handlers);
+    return this;
+  }
+
+  put<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'put'>>(
+    path: Path,
+    ...handlers: DocRequestHandler<Doc, Path, 'put'>[]
+  ) {
+    console.log(path);
+    this._router.put(path, ...handlers);
+    return this;
+  }
+  delete<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'delete'>>(
+    path: Path,
+    ...handlers: DocRequestHandler<Doc, Path, 'delete'>[]
+  ) {
+    console.log(path);
+    this._router.delete(path, ...handlers);
+    return this;
+  }
+  patch<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'patch'>>(
+    path: Path,
+    ...handlers: DocRequestHandler<Doc, Path, 'patch'>[]
+  ) {
+    console.log(path);
+    this._router.patch(path, ...handlers);
+    return this;
+  }
+  options<
+    Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'options'>,
+  >(path: Path, ...handlers: DocRequestHandler<Doc, Path, 'options'>[]) {
+    console.log(path);
+    this._router.options(path, ...handlers);
+    return this;
+  }
+  head<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'head'>>(
+    path: Path,
+    ...handlers: DocRequestHandler<Doc, Path, 'head'>[]
+  ) {
+    console.log(path);
+    this._router.head(path, ...handlers);
+    return this;
+  }
+
+  use(...handlers: core.RequestHandler[]) {
+    return this._router.use(handlers);
+  }
+
+  build() {
+    return this._router;
   }
 }
 
-const router = ApiRouter.fromSpec<typeof doc, typeof doc.paths, any>(doc);
+interface RouterOptions {}
 
-router.get('/pets', (req, res) => {
-  req.body.tags;
-});
+export async function createRouter(options: RouterOptions) {
+  const router = ApiRouter.fromSpec<DeepWriteable<typeof doc>>(
+    // As const forces the doc to readonly which conflicts with imported types.
+    doc as DeepWriteable<typeof doc>,
+  );
+
+  router.get('/pets/:uid', (req, res) => {
+    res.json({
+      id: 1,
+      name: req.params['uid'],
+    });
+  });
+
+  // router.get('/pet') will complain with a TS error
+
+  router.post('/pets', (req, res) => {
+    res.json({
+      message: req.path,
+      code: 1,
+    });
+  });
+  return router.build();
+}

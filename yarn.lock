@@ -7454,6 +7454,8 @@ __metadata:
     express: ^4.18.2
     json-schema-to-ts: ^2.6.2
     openapi-types: ^12.1.0
+    openapi3-ts: ^3.1.2
+    ts-node: ^10.9.1
   languageName: unknown
   linkType: soft
 
@@ -32107,6 +32109,15 @@ __metadata:
   version: 12.1.0
   resolution: "openapi-types@npm:12.1.0"
   checksum: d8f3e2bae519aa6bcf2012f4a5592b7283fe928c06f3bdc182776ce637c7ed8d5f9f342724f68c95c9572aefe21ed5e89b18a0295a703da61af5f97bd2aea9a7
+  languageName: node
+  linkType: hard
+
+"openapi3-ts@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "openapi3-ts@npm:3.1.2"
+  dependencies:
+    yaml: ^2.1.3
+  checksum: 77e5064ea9bff119ba8d8398a90246ae99174d6c23b2ed68355bb48be3243b6f4f0041a3fdcd9dba5ffe6ace786a8041d86d8a4049d65d2d40cd4bfca5bba459
   languageName: node
   linkType: hard
 
