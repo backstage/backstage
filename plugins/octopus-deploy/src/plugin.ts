@@ -32,6 +32,7 @@ import { Entity } from '@backstage/catalog-model';
 export const isOctopusDeployAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION]);
 
+/** @public */
 export const octopusDeployPlugin = createPlugin({
   id: 'octopus-deploy',
   apis: [
@@ -55,6 +56,7 @@ export const OctopusDeployPage = octopusDeployPlugin.provide(
 );
 */
 
+/** @public */
 export const EntityOctopusDeployContent = octopusDeployPlugin.provide(
   createRoutableExtension({
     name: 'EntityOctopusDeployContent',

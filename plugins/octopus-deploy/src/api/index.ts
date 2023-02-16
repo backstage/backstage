@@ -19,37 +19,44 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export type OctopusProgression = {
   Environments: OctopusEnvironment[];
   Releases: OctopusReleaseProgression[];
 };
 
+/** @public */
 export type OctopusEnvironment = {
   Id: string;
   Name: string;
 };
 
+/** @public */
 export type OctopusReleaseProgression = {
   Release: OctopusRelease;
   Deployments: { [key: string]: OctopusDeployment[] };
 };
 
+/** @public */
 export type OctopusRelease = {
   Id: string;
   Version: string;
 };
 
+/** @public */
 export type OctopusDeployment = {
   State: string;
 };
 
+/** @public */
 export const octopusDeployApiRef = createApiRef<OctopusDeployApi>({
   id: 'plugin.octopusdeploy.service',
 });
 
 const DEFAULT_PROXY_PATH_BASE = '/octopus-deploy';
 
-type Options = {
+/** @public */
+export type Options = {
   discoveryApi: DiscoveryApi;
   identityApi: IdentityApi;
   /**
@@ -58,6 +65,7 @@ type Options = {
   proxyPathBase?: string;
 };
 
+/** @public */
 export interface OctopusDeployApi {
   getReleaseProgression(
     projectId: string,
@@ -65,6 +73,7 @@ export interface OctopusDeployApi {
   ): Promise<OctopusProgression>;
 }
 
+/** @public */
 export class OctopusDeployClient implements OctopusDeployApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
