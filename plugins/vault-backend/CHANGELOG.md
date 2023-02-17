@@ -1,5 +1,16 @@
 # @backstage/plugin-vault-backend
 
+## 0.2.9
+
+### Patch Changes
+
+- cbd09db1c0: Ignore the `eslint` error
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+
 ## 0.2.8
 
 ### Patch Changes
