@@ -11,7 +11,7 @@ types and how to resolve them.
     - [`@relation`](#relation)
     - [`@inherit`](#inherit)
 - [Integrations](#integrations)
-  - [Codegen/TypeScript](#codegen-typescript)
+  - [@graphql-codegen/TypeScript](#graphql-codegentypescript)
 - [Questions](#questions)
 
 ## Extending your schema with a custom module
@@ -21,7 +21,7 @@ types and how to resolve them.
 > This plugin provide as GraphQL module that allows you to access the
 > software catalog over GraphQL.
 
-To extend your schema, you will define it using the GraphQL Schema Definiition
+To extend your schema, you will define it using the GraphQL Schema Definition
 Language, and then (optionally) write resolvers to handle the various types
 which you defined.
 
@@ -181,7 +181,7 @@ similar to extending types in TypeScript. In TypeScript, when a class
 inherits another class, the child class automatically inherits
 properties and methods of the parent class. This functionality doesn't
 have an equivalent in GraphQL. Without this directive, the `IService`
-interface in GraphQL would need to reimplement many fields that are
+interface in GraphQL would need to re-implement many fields that are
 defined on implemented interfaces which leads to lots of duplication.
 
 > 💡Heads up! your interface must be prefixed with `I` letter\*\*. This is done to
@@ -233,11 +233,11 @@ interface IRepository
 
 ## Integrations
 
-### Codegen/TypeScript
+### `@graphql-codegen`/TypeScript
 
-If you use Codegen to generate an output schema to use it for
+If you use `@graphql-codegen` to generate an output schema to use it for
 validating frontend queries and/or TypeScript to have type checking in
-GraphQL modules resolvers, you'll need modify your codegen config.
+GraphQL modules resolvers, you'll need modify your `@graphql-codegen` config.
 
 1. First of all create a `schema.ts` file with `transformSchema`
    function and pass all your GraphQL files

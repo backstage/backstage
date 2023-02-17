@@ -44,7 +44,7 @@ export default async function createPlugin(
 
 ### Catalog Data Loader (Advanced)
 
-In most use cases, you will not need to create a Catalog dataloader by
+In most use cases, you will not need to create a Catalog `dataloader` by
 hand. However, when writing [custom data loaders for accessing 3rd
 party sources][custom-loader] or [rolling your own GraphQL Server
 implementation][roll-your-own] you will need to provide the Catalog
