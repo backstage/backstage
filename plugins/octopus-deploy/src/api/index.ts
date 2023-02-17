@@ -56,16 +56,6 @@ export const octopusDeployApiRef = createApiRef<OctopusDeployApi>({
 const DEFAULT_PROXY_PATH_BASE = '/octopus-deploy';
 
 /** @public */
-export type Options = {
-  discoveryApi: DiscoveryApi;
-  fetchApi: FetchApi;
-  /**
-   * Path to use for requests via the proxy, defaults to /octopus-deploy
-   */
-  proxyPathBase?: string;
-};
-
-/** @public */
 export interface OctopusDeployApi {
   getReleaseProgression(
     projectId: string,
@@ -79,7 +69,11 @@ export class OctopusDeployClient implements OctopusDeployApi {
   private readonly fetchApi: FetchApi;
   private readonly proxyPathBase: string;
 
-  constructor(options: Options) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    fetchApi: FetchApi;
+    proxyPathBase?: string;
+  }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi;
     this.proxyPathBase = options.proxyPathBase ?? DEFAULT_PROXY_PATH_BASE;
