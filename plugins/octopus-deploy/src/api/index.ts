@@ -117,6 +117,11 @@ export class OctopusDeployClient implements OctopusDeployApi {
 
   private async getApiUrl(projectId: string, releaseHistoryCount: number) {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    return `${proxyUrl}${this.proxyPathBase}/projects/${projectId}/progression?releaseHistoryCount=${releaseHistoryCount}`;
+    const queryParameters = new URLSearchParams({
+      releaseHistoryCount: releaseHistoryCount.toString(),
+    });
+    return `${proxyUrl}${this.proxyPathBase}/projects/${encodeURIComponent(
+      projectId,
+    )}/progression?releaseHistoryCount=${queryParameters}`;
   }
 }
