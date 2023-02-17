@@ -8,9 +8,9 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
-import type { HttpRouterService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
@@ -90,6 +90,9 @@ export type TodoParserResult = {
   lineNumber: number;
 };
 
+// @alpha
+export const todoPlugin: () => BackendFeature;
+
 // @public (undocumented)
 export interface TodoReader {
   readTodos(options: ReadTodosOptions): Promise<ReadTodosResult>;
@@ -136,6 +139,9 @@ export type TodoScmReaderOptions = {
   filePathFilter?: (filePath: string) => boolean;
 };
 
+// @alpha (undocumented)
+export const todoScmReaderRef: ServiceRef<TodoScmReader, 'plugin'>;
+
 // @public (undocumented)
 export interface TodoService {
   // (undocumented)
@@ -146,13 +152,4 @@ export interface TodoService {
     },
   ): Promise<ListTodosResponse>;
 }
-
-// @alpha (undocumented)
-export const todosPlugin: () => BackendFeature;
-
-// @alpha (undocumented)
-export type TodosPluginDependencies = {
-  todoReader: TodoService;
-  http: HttpRouterService;
-};
 ```
