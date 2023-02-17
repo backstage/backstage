@@ -19,6 +19,7 @@ import {
   getVoidLogger,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
+  TokenManager,
   UrlReaders,
 } from '@backstage/backend-common';
 import express from 'express';
@@ -48,6 +49,11 @@ const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
   getExternalBaseUrl: jest.fn(),
 };
 
+const mockedTokenManager: jest.Mocked<TokenManager> = {
+  getToken: jest.fn(),
+  authenticate: jest.fn(),
+};
+
 const mockUrlReader = UrlReaders.default({
   logger: getVoidLogger(),
   config: new ConfigReader({}),
@@ -72,6 +78,7 @@ describe('createRouter', () => {
         database: createDatabase(),
         reader: mockUrlReader,
         logger: getVoidLogger(),
+        tokenManager: mockedTokenManager,
       },
     );
     app = express().use(router);

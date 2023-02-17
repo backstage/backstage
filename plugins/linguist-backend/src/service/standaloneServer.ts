@@ -20,6 +20,7 @@ import {
   SingleHostDiscovery,
   UrlReaders,
   useHotMemoize,
+  ServerTokenManager,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -66,6 +67,7 @@ export async function startStandaloneServer(
       discovery: SingleHostDiscovery.fromConfig(config),
       reader: UrlReaders.default({ logger, config }),
       logger,
+      tokenManager: ServerTokenManager.noop(),
     },
   );
 
