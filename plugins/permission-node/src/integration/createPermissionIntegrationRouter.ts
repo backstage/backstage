@@ -187,7 +187,7 @@ export type CreatePermissionIntegrationRouterResourceOptions<
   // consider any rules whose resource type does not match
   // to be an error.
   rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
-  getResources: GetResourcesFn<TResource>;
+  getResources?: GetResourcesFn<TResource>;
 };
 
 /**
@@ -270,9 +270,12 @@ export const createPermissionIntegrationRouter = <
   router.post(
     '/.well-known/backstage/permissions/apply-conditions',
     async (req, res: Response<ApplyConditionsResponse | string>) => {
-      if (!isCreatePermissionIntegrationRouterResourceOptions(options)) {
+      if (
+        !isCreatePermissionIntegrationRouterResourceOptions(options) ||
+        options.getResources === undefined
+      ) {
         throw new NotImplementedError(
-          'This plugin does not support the apply-conditions API',
+          `This plugin does not expose any permission rule or can't evaluate conditional decisions`,
         );
       }
       const { resourceType, getResources } = options;
