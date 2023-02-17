@@ -25,7 +25,7 @@ export const SONARQUBE_PROJECT_INSTANCE_SEPARATOR = '/';
  *
  * If part or all info are not found, they will default to undefined
  *
- * @alpha
+ * @public
  * @param entity - entity to find the sonarqube information from.
  * @returns a ProjectInfo properly populated.
  */

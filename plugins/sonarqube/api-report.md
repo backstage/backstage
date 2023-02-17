@@ -42,7 +42,7 @@ export const SonarQubeCard: (props: {
   duplicationRatings?: DuplicationRating[];
 }) => JSX.Element;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export class SonarQubeClient implements SonarQubeApi {
   constructor({
     discoveryApi,
