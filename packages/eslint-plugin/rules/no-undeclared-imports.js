@@ -161,6 +161,11 @@ module.exports = {
         return;
       }
 
+      // We skip imports for the package itself
+      if (imp.packageName === localPkg.packageJson.name) {
+        return;
+      }
+
       const modulePath = path.relative(localPkg.dir, filePath);
       const expectedType = getExpectedDepType(
         localPkg.packageJson,
