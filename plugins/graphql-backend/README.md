@@ -125,7 +125,7 @@ export default async function createPlugin(
 By default, your graphql context will contain a `Dataloader` for retrieving
 records from the Catalog by their GraphQL ID. Most of the time this is all you
 will need. However, sometimes you will need to load data not just from the
-Backstage catalog, but from a differnt data source entirely. To do this, you
+Backstage catalog, but from a different data source entirely. To do this, you
 will need to write a custom data loader.
 
 > ⚠️Caution! If you find yourself wanting to load data directly from a
