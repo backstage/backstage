@@ -151,11 +151,18 @@ module.exports = {
     }
 
     return visitImports(context, (node, imp) => {
-      if (imp.type !== 'external') {
+      // We leave checking of type imports to the repo-tools check,
+      // and we skip builtins and local imports
+      if (
+        imp.kind === 'type' ||
+        imp.type === 'builtin' ||
+        imp.type === 'local'
+      ) {
         return;
       }
-      // We leave checking of type imports to the repo-tools check
-      if (imp.kind === 'type') {
+
+      // We skip imports for the package itself
+      if (imp.packageName === localPkg.packageJson.name) {
         return;
       }
 

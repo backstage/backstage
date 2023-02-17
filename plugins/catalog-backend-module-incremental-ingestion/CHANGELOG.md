@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.2.1
+
+### Patch Changes
+
+- cbd09db1c0: Fix missing `dependencies` in `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/backend-defaults@0.1.7
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/catalog-model@1.2.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/plugin-events-node@0.2.3
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.2.0
 
 ### Minor Changes

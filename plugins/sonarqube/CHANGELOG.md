@@ -1,5 +1,18 @@
 # @backstage/plugin-sonarqube
 
+## 0.6.4
+
+### Patch Changes
+
+- cbd09db1c0: Moved imports from `/alpha` to main public exports.
+- Updated dependencies
+  - @backstage/plugin-sonarqube-react@0.1.3
+  - @backstage/catalog-model@1.2.0
+  - @backstage/core-components@0.12.4
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/theme@0.2.17
+  - @backstage/plugin-catalog-react@1.3.0
+
 ## 0.6.3
 
 ### Patch Changes
