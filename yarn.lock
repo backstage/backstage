@@ -7408,6 +7408,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-sonarqube@workspace:plugins/scaffolder-backend-module-sonarqube":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-sonarqube@workspace:plugins/scaffolder-backend-module-sonarqube"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    cross-fetch: ^3.1.5
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman"
