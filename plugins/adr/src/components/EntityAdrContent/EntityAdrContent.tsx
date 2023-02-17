@@ -47,7 +47,7 @@ import {
 
 import { rootRouteRef } from '../../routes';
 import { AdrContentDecorator, AdrReader } from '../AdrReader';
-import { adrApiRef } from '../../api';
+import { adrApiRef, AdrFileInfo } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -68,9 +68,7 @@ export const EntityAdrContent = (props: {
   const classes = useStyles();
   const { entity } = useEntity();
   const rootLink = useRouteRef(rootRouteRef);
-  const [adrList, setAdrList] = useState<
-    { name: string; title?: string; status?: string; date?: string }[]
-  >([]);
+  const [adrList, setAdrList] = useState<AdrFileInfo[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrApi = useApi(adrApiRef);
@@ -82,7 +80,8 @@ export const EntityAdrContent = (props: {
   }, [entity, scmIntegrations]);
 
   const selectedAdr =
-    adrList.find(adr => adr.name === searchParams.get('record'))?.name ?? '';
+    adrList.find(adr => adr.name === searchParams.get('record'))?.path ?? '';
+
   useEffect(() => {
     if (adrList.length && !selectedAdr) {
       searchParams.set('record', adrList[0].name);
@@ -95,15 +94,13 @@ export const EntityAdrContent = (props: {
       return;
     }
 
-    const adrs = value.data
-      .filter(
-        (item: { type: string; name: string }) =>
-          item.type === 'file' &&
-          (filePathFilterFn
-            ? filePathFilterFn(item.name)
-            : madrFilePathFilter(item.name)),
-      )
-      .map(({ name, title, status, date }) => ({ name, title, status, date }));
+    const adrs: AdrFileInfo[] = value.data.filter(
+      (item: AdrFileInfo) =>
+        item.type === 'file' &&
+        (filePathFilterFn
+          ? filePathFilterFn(item.name)
+          : madrFilePathFilter(item.name)),
+    );
 
     setAdrList(adrs);
   }, [filePathFilterFn, value]);
@@ -148,7 +145,7 @@ export const EntityAdrContent = (props: {
                     button
                     component={Link}
                     to={`${rootLink()}?record=${adr.name}`}
-                    selected={selectedAdr === adr.name}
+                    selected={selectedAdr === adr.path}
                   >
                     <ListItemText
                       primaryTypographyProps={{
