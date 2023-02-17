@@ -35,6 +35,14 @@ export function createPgDatabaseClient(
 ) {
   const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
   const database = knexFactory(knexConfig);
+
+  const owner = dbConfig.getOptionalString('setOwner')
+
+  if (owner) {
+    database.client.pool.on('createSuccess', (_event: any, pgClient: any) => {
+      pgClient.query(`SET ROLE ${owner}`, () => { });
+    });
+  }
   return database;
 }
 
@@ -147,10 +155,18 @@ export async function ensurePgSchemaExists(
   ...schemas: Array<string>
 ): Promise<void> {
   const admin = createPgDatabaseClient(dbConfig);
+  const setOwner = dbConfig.getOptionalString('setOwner');
 
   try {
     const ensureSchema = async (database: string) => {
-      await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [database]);
+      if (setOwner) {
+        await admin.raw(`CREATE SCHEMA IF NOT EXISTS ?? AUTHORIZATION ??`, [
+          database,
+          setOwner,
+        ]);
+      } else {
+        await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [database]);
+      }
     };
 
     await Promise.all(schemas.map(ensureSchema));
