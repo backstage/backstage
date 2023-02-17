@@ -1,6 +1,6 @@
 ---
 id: testing-scaffolder-alpha
-title: 'Experimental: Testing out the `alpha` Scaffolder plugin'
+title: 'Experimental: Testing out the alpha Scaffolder plugin'
 # prettier-ignore
 description: Docs on the upcoming breaking release for the scaffolder plugin
 ---
