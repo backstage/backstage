@@ -26,7 +26,6 @@ import {
   MenuItem,
   FormLabel,
 } from '@material-ui/core';
-import { JsonValue } from '@backstage/types';
 
 import { useSearch } from '../../context';
 import {
@@ -48,6 +47,11 @@ const useStyles = makeStyles(
 /**
  * @public
  */
+export type SearchFilterValue = string | string[];
+
+/**
+ * @public
+ */
 export type SearchFilterComponentProps = {
   className?: string;
   name: string;
@@ -59,7 +63,7 @@ export type SearchFilterComponentProps = {
    * function is debounced and values cached.
    */
   values?: string[] | ((partial: string) => Promise<string[]>);
-  defaultValue?: string[] | string | null;
+  defaultValue?: SearchFilterValue | null;
   /**
    * Debounce time in milliseconds, used when values is an async callback.
    * Defaults to 250ms.
@@ -78,14 +82,22 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 /**
  * @public
  */
-export interface SelectFilterProps<T extends JsonValue = string>
+export interface SelectFilterProps<T extends SearchFilterValue = string>
   extends SearchFilterComponentProps {
   multiple?: boolean;
-  emptyItemLabel?: string;
-  placeholder?: string;
-  renderValue?: (selected: T) => string;
+  allOptionLabel?: React.ReactNode;
+  placeholder?: React.ReactNode;
+  renderValue?: (selected: T) => React.ReactNode;
   fullWidth?: boolean;
 }
+
+/**
+ * @public
+ */
+export type MultiselectFilterProps<T extends SearchFilterValue = string> = Omit<
+  SelectFilterProps<T>,
+  'multiple' | 'renderValue' | 'allOptionLabel'
+>;
 
 /**
  * @public
@@ -154,7 +166,7 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
 /**
  * @public
  */
-export function SelectFilter<T extends JsonValue = string>(
+export function SelectFilter<T extends SearchFilterValue = string>(
   props: SelectFilterProps<T>,
 ) {
   const {
@@ -168,13 +180,12 @@ export function SelectFilter<T extends JsonValue = string>(
     renderValue,
     fullWidth = true,
     multiple = false,
-    emptyItemLabel = 'All',
+    allOptionLabel = 'All',
   } = props;
 
   const classes = useStyles();
   useDefaultFilterValue(name, defaultValue);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const { value: values = [], loading } = useAsyncFilterValues(
     givenValues,
     '',
@@ -189,11 +200,11 @@ export function SelectFilter<T extends JsonValue = string>(
     } = e;
 
     setFilters(prevFilters => {
-      const { [props.name]: filter, ...others } = prevFilters;
+      const { [name]: filter, ...others } = prevFilters;
 
       return (value as any[]).length === 0
         ? others
-        : { ...others, [props.name]: value as T };
+        : { ...others, [name]: value as T };
     });
   };
 
@@ -241,8 +252,8 @@ export function SelectFilter<T extends JsonValue = string>(
           getContentAnchorEl: null,
         }}
       >
-        {!multiple && emptyItemLabel && (
-          <MenuItem value="">{emptyItemLabel}</MenuItem>
+        {!multiple && allOptionLabel && (
+          <MenuItem value="">{allOptionLabel}</MenuItem>
         )}
         {values.map((value: string) => (
           <MenuItem key={value} value={value}>
@@ -257,7 +268,7 @@ export function SelectFilter<T extends JsonValue = string>(
 /**
  * @public
  */
-export const MultiSelectFilter = (props: SearchFilterComponentProps) => {
+export const MultiSelectFilter = (props: MultiselectFilterProps) => {
   return (
     <SelectFilter<string[]>
       {...props}
@@ -285,8 +296,7 @@ SearchFilter.Select = (
 ) => <SearchFilter {...props} component={SelectFilter} />;
 
 SearchFilter.MultiSelect = (
-  props: Omit<SearchFilterWrapperProps, 'component'> &
-    SearchFilterComponentProps,
+  props: Omit<SearchFilterWrapperProps, 'component'> & MultiselectFilterProps,
 ) => <SearchFilter {...props} component={MultiSelectFilter} />;
 
 /**

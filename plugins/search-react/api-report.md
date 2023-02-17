@@ -83,9 +83,13 @@ export class MockSearchApi implements SearchApi {
 }
 
 // @public (undocumented)
-export const MultiSelectFilter: (
-  props: SearchFilterComponentProps,
-) => JSX.Element;
+export const MultiSelectFilter: (props: MultiselectFilterProps) => JSX.Element;
+
+// @public (undocumented)
+export type MultiselectFilterProps<T extends SearchFilterValue = string> = Omit<
+  SelectFilterProps<T>,
+  'multiple' | 'renderValue' | 'allOptionLabel'
+>;
 
 // @public (undocumented)
 export interface SearchApi {
@@ -207,8 +211,7 @@ export const SearchFilter: {
     props: Omit<SearchFilterWrapperProps, 'component'> & SelectFilterProps,
   ): JSX.Element;
   MultiSelect(
-    props: Omit<SearchFilterWrapperProps, 'component'> &
-      SearchFilterComponentProps,
+    props: Omit<SearchFilterWrapperProps, 'component'> & MultiselectFilterProps,
   ): JSX.Element;
   Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
 };
@@ -219,9 +222,12 @@ export type SearchFilterComponentProps = {
   name: string;
   label?: string;
   values?: string[] | ((partial: string) => Promise<string[]>);
-  defaultValue?: string[] | string | null;
+  defaultValue?: SearchFilterValue | null;
   valuesDebounceMs?: number;
 };
+
+// @public (undocumented)
+export type SearchFilterValue = string | string[];
 
 // @public (undocumented)
 export type SearchFilterWrapperProps = SearchFilterComponentProps & {
@@ -462,23 +468,23 @@ export type SearchResultStateProps = SearchResultContextProps &
   Partial<SearchResultApiProps>;
 
 // @public (undocumented)
-export function SelectFilter<T extends JsonValue = string>(
+export function SelectFilter<T extends SearchFilterValue = string>(
   props: SelectFilterProps<T>,
 ): JSX.Element;
 
 // @public (undocumented)
-export interface SelectFilterProps<T extends JsonValue = string>
+export interface SelectFilterProps<T extends SearchFilterValue = string>
   extends SearchFilterComponentProps {
   // (undocumented)
-  emptyItemLabel?: string;
+  allOptionLabel?: React_2.ReactNode;
   // (undocumented)
   fullWidth?: boolean;
   // (undocumented)
   multiple?: boolean;
   // (undocumented)
-  placeholder?: string;
+  placeholder?: React_2.ReactNode;
   // (undocumented)
-  renderValue?: (selected: T) => string;
+  renderValue?: (selected: T) => React_2.ReactNode;
 }
 
 // @public

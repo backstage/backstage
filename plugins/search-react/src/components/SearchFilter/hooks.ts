@@ -39,7 +39,6 @@ export const useAsyncFilterValues = (
   const valuesMemo = useRef<Record<string, string[] | Promise<string[]>>>({});
   const definiteFn = fn || (() => Promise.resolve([]));
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const [state, callback] = useAsyncFn(definiteFn, [inputValue], {
     loading: true,
   });

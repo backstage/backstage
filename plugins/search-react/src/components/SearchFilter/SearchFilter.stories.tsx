@@ -64,6 +64,45 @@ export const SelectFilter = () => {
   );
 };
 
+export const PlaceholderSelectFilter = () => {
+  return (
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Select
+        placeholder="Search Select Filter"
+        name="select_filter"
+        values={['value1', 'value2']}
+      />
+    </Paper>
+  );
+};
+
+export const RenderValueSelectFilter = () => {
+  return (
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Select
+        label="Search Select Filter"
+        name="select_filter"
+        values={['value1', 'value2']}
+        renderValue={value => <i>{value}</i>}
+      />
+    </Paper>
+  );
+};
+
+export const AllOptionSelectFilter = () => {
+  return (
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Select
+        allOptionLabel="Any value"
+        label="Search Select Filter"
+        name="select_filter"
+        values={['value1', 'value2']}
+        renderValue={value => <i>{value}</i>}
+      />
+    </Paper>
+  );
+};
+
 export const MultiSelectFilter = () => {
   return (
     <Paper style={{ padding: 10 }}>

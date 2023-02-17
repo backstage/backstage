@@ -25,5 +25,7 @@ export type {
   SearchFilterComponentProps,
   SearchFilterWrapperProps,
   SelectFilterProps,
+  MultiselectFilterProps,
+  SearchFilterValue,
 } from './SearchFilter';
 export type { SearchAutocompleteFilterProps } from './SearchFilter.Autocomplete';
