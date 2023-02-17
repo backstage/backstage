@@ -71,15 +71,31 @@ Afterwards, add the following code snippet to use `AdrSearchResultListItem` when
 import { AdrSearchResultListItem } from '@backstage/plugin-adr';
 
 ...
+<SearchType.Accordion
+  name="Result Type"
+  defaultValue="software-catalog"
+  types={[
+    ...
+    {
+      value: 'adrs',
+      name: 'Architecture Decision Records',
+      icon: <DocsIcon />,
+    },
+  ]}
+/>
 
-case 'adr':
+...
+
+case 'adrs':
   return (
     <AdrSearchResultListItem
       key={document.location}
-      result={document}
+      result={document as AdrDocument}
     />
   );
 ```
+
+> Note the `AdrDocument` might not be needed in newer versions https://github.com/backstage/backstage/issues/13723
 
 ## Custom ADR formats
 
