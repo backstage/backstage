@@ -20,15 +20,15 @@ import {
   getEntitySourceLocation,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { TodoReader, TodoScmReader } from '../lib';
-import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
 import {
-  coreServices,
   createServiceFactory,
   createServiceRef,
+  ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+
+import { TodoReader, todoScmReaderRef } from '../lib';
+import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
 
 const DEFAULT_DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_MAX_PAGE_SIZE = 50;
@@ -138,28 +138,22 @@ export class TodoReaderService implements TodoService {
   }
 }
 
-export const todoReaderServiceRef = createServiceRef<TodoService>({
-  id: 'todo-client',
-  defaultFactory: async service =>
-    createServiceFactory({
-      service,
-      deps: {
-        catalogApi: catalogServiceRef,
-        logger: coreServices.logger,
-        reader: coreServices.urlReader,
-        config: coreServices.config,
-      },
-      async factory({ catalogApi, logger, reader, config }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
-        const todoReader = TodoScmReader.fromConfig(config, {
-          reader: reader,
-          logger: winstonLogger,
-        });
-        return new TodoReaderService({
-          catalogClient: catalogApi,
-          todoReader,
-          // TODO: override defaults here
-        });
-      },
-    }),
-});
+export const todoReaderServiceRef: ServiceRef<TodoService> =
+  createServiceRef<TodoService>({
+    id: 'todo.client',
+    defaultFactory: async service =>
+      createServiceFactory({
+        service,
+        deps: {
+          catalogApi: catalogServiceRef,
+          todoReader: todoScmReaderRef,
+        },
+        async factory({ catalogApi, todoReader }) {
+          const todoReaderService = new TodoReaderService({
+            catalogClient: catalogApi,
+            todoReader,
+          });
+          return todoReaderService;
+        },
+      }),
+  });

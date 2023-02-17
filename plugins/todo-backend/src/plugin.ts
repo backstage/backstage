@@ -18,23 +18,15 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
-import { InputError } from '@backstage/errors';
-import express, { Router } from 'express';
-import {
-  getBearerToken,
-  parseFilterParam,
-  parseIntegerParam,
-  parseOrderByParam,
-} from './lib/utils';
+
 import { todoReaderServiceRef } from './service/TodoReaderService';
-import { TODO_FIELDS } from './service/types';
+import { createRouter } from './service/router';
 
 /**
  * The Todos plugin is responsible for aggregating todo comments within source.
  * @alpha
  */
-export const todosPlugin = createBackendPlugin({
+export const todoPlugin = createBackendPlugin({
   pluginId: 'todo-backend',
   register(env) {
     env.registerInit({
@@ -43,43 +35,11 @@ export const todosPlugin = createBackendPlugin({
         http: coreServices.httpRouter,
       },
       async init({ http, todoReader }) {
-        const router = Router();
-        router.use(express.json());
-
-        router.get('/v1/todos', async (req, res) => {
-          const offset = parseIntegerParam(req.query.offset, 'offset query');
-          const limit = parseIntegerParam(req.query.limit, 'limit query');
-          const orderBy = parseOrderByParam(req.query.orderBy, TODO_FIELDS);
-          const filters = parseFilterParam(req.query.filter, TODO_FIELDS);
-
-          const entityRef = req.query.entity;
-          if (entityRef && typeof entityRef !== 'string') {
-            throw new InputError(`entity query must be a string`);
-          }
-          let entity: CompoundEntityRef | undefined = undefined;
-          if (entityRef) {
-            try {
-              entity = parseEntityRef(entityRef);
-            } catch (error) {
-              throw new InputError(`Invalid entity ref, ${error}`);
-            }
-          }
-
-          const todos = await todoReader.listTodos(
-            {
-              entity,
-              offset,
-              limit,
-              orderBy,
-              filters,
-            },
-            {
-              token: getBearerToken(req.headers.authorization),
-            },
-          );
-          res.json(todos);
-        });
-        http.use(router);
+        http.use(
+          await createRouter({
+            todoService: todoReader,
+          }),
+        );
       },
     });
   },
