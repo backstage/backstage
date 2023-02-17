@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
 import { ErrorRequestHandler, RequestHandler, Router } from 'express';
 import core, { ParamsDictionary } from 'express-serve-static-core';
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
@@ -269,6 +268,15 @@ type RequestBodyToJsonSchema<
 > = ConvertAll<
   TuplifyUnion<ValueOf<RequestBodySchema<Doc, Path, Method>>>
 >[number];
+export type RequestHandlerParams<
+  P,
+  ResBody,
+  ReqBody,
+  ReqQuery,
+  LocalsObj extends Record<string, any>,
+> =
+  | RequestHandler<P, ResBody, ReqBody, ReqQuery, LocalsObj>
+  | ErrorRequestHandler<P, ResBody, ReqBody, ReqQuery, LocalsObj>;
 
 type DocRequestHandler<
   Doc extends RequiredDoc,
@@ -283,112 +291,63 @@ type DocRequestHandler<
   Record<string, string>
 >;
 
-export type RequestHandlerParams<
-  P = ParamsDictionary,
-  ResBody = any,
-  ReqBody = any,
-  ReqQuery = ParsedQs,
-  LocalsObj extends Record<string, any> = Record<string, any>,
-> =
-  | RequestHandler<P, ResBody, ReqBody, ReqQuery, LocalsObj>
-  | ErrorRequestHandler<P, ResBody, ReqBody, ReqQuery, LocalsObj>
-  | Array<RequestHandler<P> | ErrorRequestHandler<P>>;
+export interface ApiRouterMatcher<
+  Doc extends RequiredDoc,
+  Path extends DocPathTemplate<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
+  T,
+> {
+  (
+    path: MethodAwareDocPath<Doc, Path, Method>,
+    ...handlers: Array<DocRequestHandler<Doc, Path, Method>>
+  ): T;
+}
 
-export class ApiRouter<Doc extends RequiredDoc> {
-  private _router = Router();
-
-  constructor(private spec: OpenAPIV3_1.Document | OpenAPIV3.Document) {}
-
-  static fromSpec<Doc extends RequiredDoc>(
-    spec: OpenAPIV3_1.Document | OpenAPIV3.Document,
-  ) {
-    return new ApiRouter<Doc>(spec);
-  }
-
+export interface ApiRouter<Doc extends RequiredDoc> extends Router {
   get<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'get'>>(
     path: Path,
     ...handlers: DocRequestHandler<Doc, Path, 'get'>[]
-  ) {
-    console.log(path, this.spec);
-    this._router.get(path, ...handlers);
-    return this;
-  }
+  ): this;
 
   post<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'post'>>(
     path: Path,
     ...handlers: DocRequestHandler<Doc, Path, 'post'>[]
-  ) {
-    console.log(path);
-    this._router.post(path, ...handlers);
-    return this;
-  }
+  ): this;
 
   all<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'all'>>(
     path: Path,
     ...handlers: DocRequestHandler<Doc, Path, 'all'>[]
-  ) {
-    console.log(path);
-    this._router.all(path, ...handlers);
-    return this;
-  }
+  ): this;
 
   put<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'put'>>(
     path: Path,
     ...handlers: DocRequestHandler<Doc, Path, 'put'>[]
-  ) {
-    console.log(path);
-    this._router.put(path, ...handlers);
-    return this;
-  }
+  ): this;
   delete<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'delete'>>(
     path: Path,
     ...handlers: DocRequestHandler<Doc, Path, 'delete'>[]
-  ) {
-    console.log(path);
-    this._router.delete(path, ...handlers);
-    return this;
-  }
+  ): this;
   patch<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'patch'>>(
     path: Path,
     ...handlers: DocRequestHandler<Doc, Path, 'patch'>[]
-  ) {
-    console.log(path);
-    this._router.patch(path, ...handlers);
-    return this;
-  }
+  ): this;
   options<
     Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'options'>,
-  >(path: Path, ...handlers: DocRequestHandler<Doc, Path, 'options'>[]) {
-    console.log(path);
-    this._router.options(path, ...handlers);
-    return this;
-  }
+  >(
+    path: Path,
+    ...handlers: DocRequestHandler<Doc, Path, 'options'>[]
+  ): this;
   head<Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, 'head'>>(
     path: Path,
     ...handlers: DocRequestHandler<Doc, Path, 'head'>[]
-  ) {
-    console.log(path);
-    this._router.head(path, ...handlers);
-    return this;
-  }
-
-  use(...handlers: RequestHandlerParams[]) {
-    return this._router.use(...handlers);
-  }
-
-  build() {
-    return this._router;
-  }
+  ): this;
 }
 
 interface RouterOptions {}
 
 export async function createRouter(options: RouterOptions) {
   console.log(options);
-  const router = ApiRouter.fromSpec<DeepWriteable<typeof doc>>(
-    // As const forces the doc to readonly which conflicts with imported types.
-    doc as DeepWriteable<typeof doc>,
-  );
+  const router = Router() as ApiRouter<DeepWriteable<typeof doc>>;
 
   router.get('/pets/:uid', (req, res) => {
     res.json({
@@ -400,10 +359,10 @@ export async function createRouter(options: RouterOptions) {
   // router.get('/pet') will complain with a TS error
 
   router.post('/pets', (req, res) => {
-    res.json({
+    res.send({
       message: req.path,
       code: 1,
     });
   });
-  return router.build();
+  return router;
 }

@@ -24,7 +24,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError, serializeError } from '@backstage/errors';
-import express from 'express';
+import express, { Router } from 'express';
 import { Logger } from 'winston';
 import yn from 'yn';
 import { z } from 'zod';
@@ -86,9 +86,7 @@ export async function createRouter(
     logger,
     permissionIntegrationRouter,
   } = options;
-  const router = new ApiRouter<DeepWriteable<typeof spec>>(
-    spec as DeepWriteable<typeof spec>,
-  );
+  const router = Router() as ApiRouter<DeepWriteable<typeof spec>>;
   router.use(express.json());
 
   const readonlyEnabled =
@@ -312,7 +310,7 @@ export async function createRouter(
   }
 
   router.use(errorHandler());
-  return router.build();
+  return router;
 }
 
 function getBearerToken(
