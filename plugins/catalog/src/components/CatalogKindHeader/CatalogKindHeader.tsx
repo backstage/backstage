@@ -25,7 +25,7 @@ import {
 } from '@material-ui/core';
 import {
   EntityKindFilter,
-  useEntityList,
+  useEntityFilter,
 } from '@backstage/plugin-catalog-react';
 import pluralize from 'pluralize';
 import { filterKinds, useAllKinds } from './kindFilterUtils';
@@ -68,7 +68,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
     filters,
     updateFilters,
     queryParameters: { kind: kindParameter },
-  } = useEntityList();
+  } = useEntityFilter();
 
   const queryParamKind = useMemo(
     () => [kindParameter].flat()[0],

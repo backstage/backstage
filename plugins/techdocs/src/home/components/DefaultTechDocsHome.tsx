@@ -22,6 +22,7 @@ import {
 } from '@backstage/core-components';
 import {
   CatalogFilterLayout,
+  EntityFilterProvider,
   EntityListProvider,
   EntityOwnerPicker,
   EntityTagPicker,
@@ -55,19 +56,21 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
             Discover documentation in your ecosystem.
           </SupportButton>
         </ContentHeader>
-        <EntityListProvider>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <TechDocsPicker />
-              <UserListPicker initialFilter={initialFilter} />
-              <EntityOwnerPicker />
-              <EntityTagPicker />
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <EntityListDocsTable actions={actions} columns={columns} />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
+        <EntityFilterProvider>
+          <EntityListProvider>
+            <CatalogFilterLayout>
+              <CatalogFilterLayout.Filters>
+                <TechDocsPicker />
+                <UserListPicker initialFilter={initialFilter} />
+                <EntityOwnerPicker />
+                <EntityTagPicker />
+              </CatalogFilterLayout.Filters>
+              <CatalogFilterLayout.Content>
+                <EntityListDocsTable actions={actions} columns={columns} />
+              </CatalogFilterLayout.Content>
+            </CatalogFilterLayout>
+          </EntityListProvider>
+        </EntityFilterProvider>
       </Content>
     </TechDocsPageWrapper>
   );

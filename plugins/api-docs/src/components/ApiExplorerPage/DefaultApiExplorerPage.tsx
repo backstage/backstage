@@ -28,13 +28,14 @@ import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
 import {
   EntityKindPicker,
   EntityLifecyclePicker,
-  EntityListProvider,
   EntityOwnerPicker,
   EntityTagPicker,
   EntityTypePicker,
   UserListFilterKind,
   UserListPicker,
   CatalogFilterLayout,
+  EntityFilterProvider,
+  EntityStreamProvider,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { registerComponentRouteRef } from '../../routes';
@@ -88,24 +89,26 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
           />
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
-        <EntityListProvider>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter="api" hidden />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <CatalogTable
-                columns={columns || defaultColumns}
-                actions={actions}
-              />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
+        <EntityFilterProvider>
+          <EntityStreamProvider>
+            <CatalogFilterLayout>
+              <CatalogFilterLayout.Filters>
+                <EntityKindPicker initialFilter="api" hidden />
+                <EntityTypePicker />
+                <UserListPicker initialFilter={initiallySelectedFilter} />
+                <EntityOwnerPicker />
+                <EntityLifecyclePicker />
+                <EntityTagPicker />
+              </CatalogFilterLayout.Filters>
+              <CatalogFilterLayout.Content>
+                <CatalogTable
+                  columns={columns || defaultColumns}
+                  actions={actions}
+                />
+              </CatalogFilterLayout.Content>
+            </CatalogFilterLayout>
+          </EntityStreamProvider>
+        </EntityFilterProvider>
       </Content>
     </PageWithHeader>
   );

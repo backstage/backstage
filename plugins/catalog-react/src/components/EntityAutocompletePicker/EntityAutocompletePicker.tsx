@@ -23,11 +23,12 @@ import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityAutocompletePickerOption } from './EntityAutocompletePickerOption';
 import { EntityAutocompletePickerInput } from './EntityAutocompletePickerInput';
-import {
-  DefaultEntityFilters,
-  useEntityList,
-} from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
+import _ from 'lodash';
+import {
+  useEntityFilter,
+  DefaultEntityFilters,
+} from '../../hooks/useEntityFilter';
 
 type KeysMatchingCondition<T, V, K> = T extends V ? K : never;
 type KeysMatching<T, V> = {
@@ -67,7 +68,7 @@ export function EntityAutocompletePicker<
     updateFilters,
     filters,
     queryParameters: { [name]: queryParameter },
-  } = useEntityList<T>();
+  } = useEntityFilter<T>();
 
   const catalogApi = useApi(catalogApiRef);
   const { value: availableValues } = useAsync(async () => {

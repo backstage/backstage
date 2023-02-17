@@ -20,8 +20,8 @@ import isEqual from 'lodash/isEqual';
 import sortBy from 'lodash/sortBy';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
-import { useEntityList } from './useEntityListProvider';
 import { EntityTypeFilter } from '../filters';
+import { useEntityFilter } from './useEntityFilter';
 
 /**
  * A hook built on top of `useEntityList` for enabling selection of valid `spec.type` values
@@ -40,7 +40,7 @@ export function useEntityTypeFilter(): {
     filters: { kind: kindFilter, type: typeFilter },
     queryParameters: { type: typeParameter },
     updateFilters,
-  } = useEntityList();
+  } = useEntityFilter();
 
   const flattenedQueryTypes = useMemo(
     () => [typeParameter].flat().filter(Boolean) as string[],

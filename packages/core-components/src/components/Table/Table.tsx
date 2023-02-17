@@ -210,7 +210,7 @@ function removeDefaultValues(state: any, defaultState: any): any {
 const defaultInitialState = {
   search: '',
   filtersOpen: false,
-  filters: {},
+  filters: {} as SelectedFilters,
 };
 
 export interface TableColumn<T extends object = {}> extends Column<T> {
@@ -375,7 +375,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       const newData = (data as any[]).filter(
         el =>
           !!Object.entries(selectedFilters)
-            .filter(([, value]) => !!(value as { length?: number }).length)
+            .filter(([, value]) => !!value.length)
             .every(([key, filterValue]) => {
               const fieldValue = extractValueByField(
                 el,

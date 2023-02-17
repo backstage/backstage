@@ -17,9 +17,9 @@
 import React from 'react';
 import { fireEvent, render, waitFor, screen } from '@testing-library/react';
 import { EntitySearchBar } from './EntitySearchBar';
-import { DefaultEntityFilters } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { DefaultEntityFilters } from '../../hooks';
 
 describe('EntitySearchBar', () => {
   it('should display search value and execute set callback', async () => {

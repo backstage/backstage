@@ -28,8 +28,10 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useEntityList } from '../../hooks/useEntityListProvider';
+import useDeepCompareEffect from 'react-use/lib/useDeepCompareEffect';
 import { EntityLifecycleFilter } from '../../filters';
+import { useEntityFilter } from '../../hooks';
+import { useEntities } from '../../hooks/useEntities';
 
 /** @public */
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
@@ -50,12 +52,12 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
   const { initialFilter = [] } = props;
   const classes = useStyles();
+  const { backendEntities } = useEntities();
   const {
     updateFilters,
-    backendEntities,
     filters,
     queryParameters: { lifecycles: lifecyclesParameter },
-  } = useEntityList();
+  } = useEntityFilter();
 
   const queryParamLifecycles = useMemo(
     () => [lifecyclesParameter].flat().filter(Boolean) as string[],
@@ -88,7 +90,7 @@ export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
     [backendEntities],
   );
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     updateFilters({
       lifecycles:
         selectedLifecycles.length && availableLifecycles.length

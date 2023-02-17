@@ -36,10 +36,11 @@ import { compact } from 'lodash';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { UserListFilter } from '../../filters';
 import {
-  useEntityList,
   useStarredEntities,
   useEntityOwnership,
+  useEntityFilter,
 } from '../../hooks';
+import { useEntities } from '../../hooks/useEntities';
 import { UserListFilterKind } from '../../types';
 import { reduceEntityFilters } from '../../utils';
 
@@ -130,13 +131,12 @@ export const UserListPicker = (props: UserListPickerProps) => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
+  const { backendEntities, loading: loadingBackendEntities } = useEntities();
   const {
     filters,
     updateFilters,
-    backendEntities,
     queryParameters: { kind: kindParameter, user: userParameter },
-    loading: loadingBackendEntities,
-  } = useEntityList();
+  } = useEntityFilter();
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.

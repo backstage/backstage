@@ -29,10 +29,22 @@ export {
   EntityListProvider,
   useEntityList,
 } from './useEntityListProvider';
+export type { EntityListContextProps } from './useEntityListProvider';
+export {
+  useEntityStream,
+  EntityStreamContext,
+  EntityStreamProvider,
+} from './useEntityStreamProvider';
+export type {
+  EntityStreamContextProps,
+  EntityPageOptions,
+} from './useEntityStreamProvider';
+export { EntityFilterProvider, useEntityFilter } from './useEntityFilter';
 export type {
   DefaultEntityFilters,
-  EntityListContextProps,
-} from './useEntityListProvider';
+  EntityFilterContextProps,
+} from './useEntityFilter';
+export { useEntities } from './useEntities';
 export { useEntityTypeFilter } from './useEntityTypeFilter';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';

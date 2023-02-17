@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 export { CatalogTable } from './CatalogTable';
 export type { CatalogTableProps } from './CatalogTable';
 export type { CatalogTableRow } from './types';

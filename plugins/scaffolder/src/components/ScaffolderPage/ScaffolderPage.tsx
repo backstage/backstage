@@ -26,6 +26,7 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
+  EntityFilterProvider,
   EntityKindPicker,
   EntityListProvider,
   EntitySearchBar,
@@ -147,13 +148,17 @@ export const ScaffolderPage = ({
   contextMenu,
   headerOptions,
 }: ScaffolderPageProps) => (
-  <EntityListProvider>
-    <ScaffolderPageContents
-      TemplateCardComponent={TemplateCardComponent}
-      groups={groups}
-      templateFilter={templateFilter}
-      contextMenu={contextMenu}
-      headerOptions={headerOptions}
-    />
-  </EntityListProvider>
+  <EntityFilterProvider>
+    <EntityFilterProvider>
+      <EntityListProvider>
+        <ScaffolderPageContents
+          TemplateCardComponent={TemplateCardComponent}
+          groups={groups}
+          templateFilter={templateFilter}
+          contextMenu={contextMenu}
+          headerOptions={headerOptions}
+        />
+      </EntityListProvider>
+    </EntityFilterProvider>
+  </EntityFilterProvider>
 );

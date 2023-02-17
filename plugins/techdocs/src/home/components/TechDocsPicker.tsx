@@ -19,7 +19,7 @@ import {
   CATALOG_FILTER_EXISTS,
   DefaultEntityFilters,
   EntityFilter,
-  useEntityList,
+  useEntityFilter,
 } from '@backstage/plugin-catalog-react';
 
 class TechDocsFilter implements EntityFilter {
@@ -40,7 +40,7 @@ type CustomFilters = DefaultEntityFilters & {
  * @public
  */
 export const TechDocsPicker = () => {
-  const { updateFilters } = useEntityList<CustomFilters>();
+  const { updateFilters } = useEntityFilter<CustomFilters>();
 
   useEffect(() => {
     updateFilters({

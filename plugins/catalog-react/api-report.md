@@ -12,6 +12,7 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { EntityOrderQuery } from '@backstage/catalog-client';
 import { IconButton } from '@material-ui/core';
 import { InfoCardVariants } from '@backstage/core-components';
 import { LinkProps } from '@backstage/core-components';
@@ -156,6 +157,28 @@ export type EntityFilter = {
   toQueryValue?: () => string | string[];
 };
 
+// @public (undocumented)
+export type EntityFilterContextProps<
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
+> = {
+  filters: EntityFilters;
+  updateFilters: (
+    filters:
+      | Partial<EntityFilters>
+      | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
+  ) => void;
+  queryParameters: Partial<Record<keyof EntityFilters, string | string[]>>;
+  entityFilter: (entity: Entity) => boolean;
+  backendEntityFilter: (entity: Entity) => boolean;
+};
+
+// @public
+export const EntityFilterProvider: <
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
+>({
+  children,
+}: PropsWithChildren<{}>) => JSX.Element;
+
 // @public
 export class EntityKindFilter implements EntityFilter {
   constructor(value: string);
@@ -207,22 +230,24 @@ export type EntityListContextProps<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 > = {
   filters: EntityFilters;
-  entities: Entity[];
-  backendEntities: Entity[];
   updateFilters: (
     filters:
       | Partial<EntityFilters>
       | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
   ) => void;
   queryParameters: Partial<Record<keyof EntityFilters, string | string[]>>;
+  entities: Entity[];
+  backendEntities: Entity[];
   loading: boolean;
   error?: Error;
 };
 
 // @public
-export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
-  props: PropsWithChildren<{}>,
-) => JSX.Element;
+export const EntityListProvider: <
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
+>({
+  children,
+}: PropsWithChildren<{}>) => JSX.Element;
 
 // @public (undocumented)
 export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
@@ -267,6 +292,21 @@ export class EntityOwnerFilter implements EntityFilter {
 
 // @public (undocumented)
 export const EntityOwnerPicker: () => JSX.Element | null;
+
+// @public (undocumented)
+export interface EntityPageOptions {
+  // (undocumented)
+  from: number;
+  // (undocumented)
+  search: {
+    term: string;
+    fields: string[];
+  };
+  // (undocumented)
+  sortBy?: EntityOrderQuery;
+  // (undocumented)
+  to: number;
+}
 
 // @public
 export const EntityPeekAheadPopover: (
@@ -350,6 +390,33 @@ export type EntitySourceLocation = {
   locationTargetUrl: string;
   integrationType?: string;
 };
+
+// @public
+export const EntityStreamContext: React_2.Context<
+  EntityStreamContextProps | undefined
+>;
+
+// @public (undocumented)
+export type EntityStreamContextProps = {
+  entities: Entity[];
+  backendEntities: Entity[];
+  loading: boolean;
+  error?: Error;
+  hasMoreData: boolean;
+  getEntities: (pageConfig: EntityPageOptions) => Promise<{
+    data: Entity[];
+    hasMoreData: boolean;
+    count: number;
+  } | null>;
+  count: number;
+};
+
+// @public
+export const EntityStreamProvider: <
+  EntityFilters extends DefaultEntityFilters,
+>({
+  children,
+}: PropsWithChildren<{}>) => JSX.Element;
 
 // @public
 export const EntityTable: {
@@ -495,6 +562,16 @@ export function MockEntityListContextProvider<
   }>,
 ): JSX.Element;
 
+// @public (undocumented)
+export function MockEntityStreamContextProvider<
+  T extends DefaultEntityFilters = DefaultEntityFilters,
+>(
+  props: PropsWithChildren<{
+    value?: Partial<EntityStreamContextProps> &
+      Partial<EntityFilterContextProps<T>>;
+  }>,
+): JSX.Element;
+
 // @public
 export class MockStarredEntitiesApi implements StarredEntitiesApi {
   // (undocumented)
@@ -531,9 +608,19 @@ export function useAsyncEntity<
 >(): EntityLoadingStatus<TEntity>;
 
 // @public
+export function useEntities():
+  | EntityListContextProps
+  | EntityStreamContextProps;
+
+// @public
 export function useEntity<TEntity extends Entity = Entity>(): {
   entity: TEntity;
 };
+
+// @public
+export function useEntityFilter<
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
+>(): EntityFilterContextProps<EntityFilters>;
 
 // @public
 export function useEntityList<
@@ -545,6 +632,9 @@ export function useEntityOwnership(): {
   loading: boolean;
   isOwnedEntity: (entity: Entity) => boolean;
 };
+
+// @public
+export function useEntityStream(): EntityStreamContextProps;
 
 // @public
 export function useEntityTypeFilter(): {

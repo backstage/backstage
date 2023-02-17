@@ -19,7 +19,7 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Box } from '@material-ui/core';
 import React, { useEffect, useMemo, useState } from 'react';
 import { EntityKindFilter } from '../../filters';
-import { useEntityList } from '../../hooks';
+import { useEntityFilter } from '../../hooks';
 import { filterKinds, useAllKinds } from './kindFilterUtils';
 
 function useEntityKindFilter(opts: { initialFilter: string }): {
@@ -33,7 +33,7 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
     filters,
     queryParameters: { kind: kindParameter },
     updateFilters,
-  } = useEntityList();
+  } = useEntityFilter();
 
   const queryParamKind = useMemo(
     () => [kindParameter].flat()[0],

@@ -59,14 +59,31 @@ describe('DefaultCatalogPage', () => {
   });
 
   const catalogApi: Partial<CatalogApi> = {
-    getEntities: () =>
-      Promise.resolve({
+    getLocationByRef: () =>
+      Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
+    getEntityByRef: async entityRef => {
+      return {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: { name: parseEntityRef(entityRef).name },
+        relations: [
+          {
+            type: RELATION_MEMBER_OF,
+            targetRef: 'group:default/tools',
+            target: { namespace: 'default', kind: 'Group', name: 'tools' },
+          },
+        ],
+      };
+    },
+    queryEntities: async () => {
+      return {
         items: [
           {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Component',
             metadata: {
               name: 'Entity1',
+              uid: '2',
             },
             spec: {
               owner: 'tools',
@@ -84,6 +101,7 @@ describe('DefaultCatalogPage', () => {
             kind: 'Component',
             metadata: {
               name: 'Entity2',
+              uid: '1',
             },
             spec: {
               owner: 'not-tools',
@@ -102,21 +120,8 @@ describe('DefaultCatalogPage', () => {
             ],
           },
         ] as Entity[],
-      }),
-    getLocationByRef: () =>
-      Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
-    getEntityByRef: async entityRef => {
-      return {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'User',
-        metadata: { name: parseEntityRef(entityRef).name },
-        relations: [
-          {
-            type: RELATION_MEMBER_OF,
-            targetRef: 'group:default/tools',
-            target: { namespace: 'default', kind: 'Group', name: 'tools' },
-          },
-        ],
+        totalItems: 2,
+        pageInfo: {},
       };
     },
     /**

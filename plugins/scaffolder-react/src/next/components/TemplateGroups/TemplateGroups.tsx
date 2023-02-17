@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import React, { useCallback } from 'react';
-
-import { useEntityList } from '@backstage/plugin-catalog-react';
 import {
   isTemplateEntityV1beta3,
   TemplateEntityV1beta3,
@@ -24,6 +22,7 @@ import { Progress, Link } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
+import { useEntities } from '@backstage/plugin-catalog-react';
 
 /**
  * @alpha
@@ -54,7 +53,7 @@ export interface TemplateGroupsProps {
  * @alpha
  */
 export const TemplateGroups = (props: TemplateGroupsProps) => {
-  const { loading, error, entities } = useEntityList();
+  const { loading, error, entities } = useEntities();
   const { groups, templateFilter, TemplateCardComponent, onTemplateSelected } =
     props;
   const errorApi = useApi(errorApiRef);

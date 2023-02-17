@@ -33,13 +33,14 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { getEntityRelations } from '../../utils';
 import useAsync from 'react-use/lib/useAsync';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../../api';
 import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
+import { useEntityFilter, useEntities } from '../../hooks';
+import useDeepCompareEffect from 'react-use/lib/useDeepCompareEffect';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -59,12 +60,13 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /** @public */
 export const EntityOwnerPicker = () => {
   const classes = useStyles();
+  const { backendEntities } = useEntities();
   const {
     updateFilters,
-    backendEntities,
     filters,
     queryParameters: { owners: ownersParameter },
-  } = useEntityList();
+  } = useEntityFilter();
+
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -159,6 +161,32 @@ export const EntityOwnerPicker = () => {
       });
     }
   }, [selectedOwners, updateFilters, ownerEntities, loading]);
+  const availableOwners = useMemo(
+    () =>
+      [
+        ...new Set(
+          backendEntities
+            .flatMap((e: Entity) =>
+              getEntityRelations(e, RELATION_OWNED_BY).map(o =>
+                humanizeEntityRef(o, { defaultKind: 'group' }),
+              ),
+            )
+            .filter(Boolean) as string[],
+        ),
+      ].sort(),
+    [backendEntities],
+  );
+
+  useDeepCompareEffect(() => {
+    if (!loading && ownerEntities) {
+      updateFilters({
+        owners:
+          selectedOwners.length && availableOwners.length
+            ? new EntityOwnerFilter(selectedOwners)
+            : undefined,
+      });
+    }
+  }, [selectedOwners, updateFilters, availableOwners, loading]);
 
   if (!loading && !ownerEntities?.length) return null;
 

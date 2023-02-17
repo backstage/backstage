@@ -34,6 +34,7 @@ import {
   EntityTagPicker,
   CatalogFilterLayout,
   UserListPicker,
+  EntityFilterProvider,
 } from '@backstage/plugin-catalog-react';
 import {
   ScaffolderPageContextMenu,
@@ -41,7 +42,6 @@ import {
   TemplateGroupFilter,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
-
 import { RegisterExistingButton } from './RegisterExistingButton';
 import {
   actionsRouteRef,
@@ -150,51 +150,52 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   );
 
   return (
-    <EntityListProvider>
-      <Page themeId="website">
-        <Header
-          pageTitleOverride="Create a new component"
-          title="Create a new component"
-          subtitle="Create new software components using standard templates in your organization"
-        >
-          <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
-        </Header>
-        <Content>
-          <ContentHeader title="Available Templates">
-            <RegisterExistingButton
-              title="Register Existing Component"
-              to={registerComponentLink && registerComponentLink()}
-            />
-            <SupportButton>
-              Create new software components using standard templates. Different
-              templates create different kinds of components (services,
-              websites, documentation, ...).
-            </SupportButton>
-          </ContentHeader>
-
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <EntitySearchBar />
-              <EntityKindPicker initialFilter="template" hidden />
-              <UserListPicker
-                initialFilter="all"
-                availableFilters={['all', 'starred']}
+    <EntityFilterProvider>
+      <EntityListProvider>
+        <Page themeId="website">
+          <Header
+            pageTitleOverride="Create a new component"
+            title="Create a new component"
+            subtitle="Create new software components using standard templates in your organization"
+          >
+            <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
+          </Header>
+          <Content>
+            <ContentHeader title="Available Templates">
+              <RegisterExistingButton
+                title="Register Existing Component"
+                to={registerComponentLink && registerComponentLink()}
               />
-              <TemplateCategoryPicker />
-              <EntityTagPicker />
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <TemplateGroups
-                groups={groups}
-                templateFilter={templateFilter}
-                TemplateCardComponent={TemplateCardComponent}
-                onTemplateSelected={onTemplateSelected}
-                additionalLinksForEntity={additionalLinksForEntity}
-              />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </Content>
-      </Page>
-    </EntityListProvider>
+              <SupportButton>
+                Create new software components using standard templates.
+                Different templates create different kinds of components
+                (services, websites, documentation, ...).
+              </SupportButton>
+            </ContentHeader>
+            <CatalogFilterLayout>
+              <CatalogFilterLayout.Filters>
+                <EntitySearchBar />
+                <EntityKindPicker initialFilter="template" hidden />
+                <UserListPicker
+                  initialFilter="all"
+                  availableFilters={['all', 'starred']}
+                />
+                <TemplateCategoryPicker />
+                <EntityTagPicker />
+              </CatalogFilterLayout.Filters>
+              <CatalogFilterLayout.Content>
+                <TemplateGroups
+                  groups={groups}
+                  templateFilter={templateFilter}
+                  TemplateCardComponent={TemplateCardComponent}
+                  onTemplateSelected={onTemplateSelected}
+                  additionalLinksForEntity={additionalLinksForEntity}
+                />
+              </CatalogFilterLayout.Content>
+            </CatalogFilterLayout>
+          </Content>
+        </Page>
+      </EntityListProvider>
+    </EntityFilterProvider>
   );
 };

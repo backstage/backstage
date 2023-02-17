@@ -26,8 +26,8 @@ import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
 import React, { useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
-import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
+import { useEntityFilter } from '../../hooks';
 
 /** @public */
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
@@ -52,7 +52,7 @@ const useStyles = makeStyles(
 export const EntitySearchBar = () => {
   const classes = useStyles();
 
-  const { filters, updateFilters } = useEntityList();
+  const { filters, updateFilters } = useEntityFilter();
   const [search, setSearch] = useState(filters.text?.value ?? '');
 
   useDebounce(

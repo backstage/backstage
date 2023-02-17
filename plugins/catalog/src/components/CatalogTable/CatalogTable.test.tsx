@@ -23,7 +23,7 @@ import { ApiProvider } from '@backstage/core-app-api';
 import {
   EntityKindFilter,
   entityRouteRef,
-  MockEntityListContextProvider,
+  MockEntityStreamContextProvider,
   MockStarredEntitiesApi,
   starredEntitiesApiRef,
   UserListFilter,
@@ -68,9 +68,9 @@ describe('CatalogTable component', () => {
   it('should render error message', async () => {
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider value={{ error: new Error('error') }}>
+        <MockEntityStreamContextProvider value={{ error: new Error('error') }}>
           <CatalogTable />
-        </MockEntityListContextProvider>
+        </MockEntityStreamContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -86,7 +86,7 @@ describe('CatalogTable component', () => {
   it('should display entity names when loading has finished and no error occurred', async () => {
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider
+        <MockEntityStreamContextProvider
           value={{
             entities,
             filters: {
@@ -99,7 +99,7 @@ describe('CatalogTable component', () => {
           }}
         >
           <CatalogTable />
-        </MockEntityListContextProvider>
+        </MockEntityStreamContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -125,9 +125,9 @@ describe('CatalogTable component', () => {
 
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider value={{ entities: [entity] }}>
+        <MockEntityStreamContextProvider value={{ entities: [entity] }}>
           <CatalogTable />
-        </MockEntityListContextProvider>
+        </MockEntityStreamContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -157,9 +157,9 @@ describe('CatalogTable component', () => {
 
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider value={{ entities: [entity] }}>
+        <MockEntityStreamContextProvider value={{ entities: [entity] }}>
           <CatalogTable />
-        </MockEntityListContextProvider>
+        </MockEntityStreamContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -284,7 +284,7 @@ describe('CatalogTable component', () => {
     async ({ kind, expectedColumns }) => {
       await renderInTestApp(
         <ApiProvider apis={mockApis}>
-          <MockEntityListContextProvider
+          <MockEntityStreamContextProvider
             value={{
               entities,
               filters: {
@@ -293,7 +293,7 @@ describe('CatalogTable component', () => {
             }}
           >
             <CatalogTable />
-          </MockEntityListContextProvider>
+          </MockEntityStreamContextProvider>
         </ApiProvider>,
         {
           mountedRoutes: {
@@ -323,9 +323,9 @@ describe('CatalogTable component', () => {
 
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider value={{ entities: [entity] }}>
+        <MockEntityStreamContextProvider value={{ entities: [entity] }}>
           <CatalogTable subtitle="Should be rendered" />
-        </MockEntityListContextProvider>
+        </MockEntityStreamContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -354,9 +354,9 @@ describe('CatalogTable component', () => {
 
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider value={{ entities: [entity] }}>
+        <MockEntityStreamContextProvider value={{ entities: [entity] }}>
           <CatalogTable columns={columns} />
-        </MockEntityListContextProvider>
+        </MockEntityStreamContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {

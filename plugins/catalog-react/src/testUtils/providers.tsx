@@ -21,10 +21,18 @@ import React, {
   useState,
 } from 'react';
 import {
-  DefaultEntityFilters,
   EntityListContext,
   EntityListContextProps,
 } from '../hooks/useEntityListProvider';
+import {
+  DefaultEntityFilters,
+  EntityFilterContext,
+  EntityFilterContextProps,
+} from '../hooks/useEntityFilter';
+import {
+  EntityStreamContext,
+  EntityStreamContextProps,
+} from '../hooks/useEntityStreamProvider';
 
 /** @public */
 export function MockEntityListContextProvider<
@@ -75,9 +83,96 @@ export function MockEntityListContextProvider<
     [value, defaultValues, filters, updateFilters],
   );
 
+  const filterContext: EntityFilterContextProps<T> = useMemo(
+    () => ({
+      updateFilters: value?.updateFilters ?? updateFilters,
+      filters,
+      queryParameters: value?.queryParameters ?? defaultValues.queryParameters,
+      entityFilter: () => false,
+      backendEntityFilter: () => false,
+    }),
+    [filters, updateFilters, defaultValues, value],
+  );
+
   return (
-    <EntityListContext.Provider value={resolvedValue}>
-      {children}
-    </EntityListContext.Provider>
+    <EntityFilterContext.Provider value={filterContext}>
+      <EntityListContext.Provider value={resolvedValue}>
+        {children}
+      </EntityListContext.Provider>
+    </EntityFilterContext.Provider>
+  );
+}
+
+/** @public */
+export function MockEntityStreamContextProvider<
+  T extends DefaultEntityFilters = DefaultEntityFilters,
+>(
+  props: PropsWithChildren<{
+    value?: Partial<EntityStreamContextProps> &
+      Partial<EntityFilterContextProps<T>>;
+  }>,
+) {
+  const { children, value } = props;
+
+  // Provides a default implementation that stores filter state, for testing components that
+  // reflect filter state.
+  const [filters, setFilters] = useState<T>(value?.filters ?? ({} as T));
+
+  const updateFilters = useCallback(
+    (update: Partial<T> | ((prevFilters: T) => Partial<T>)) => {
+      setFilters(prevFilters => {
+        const newFilters =
+          typeof update === 'function' ? update(prevFilters) : update;
+        return { ...prevFilters, ...newFilters };
+      });
+    },
+    [],
+  );
+
+  // Memoize the default values since pickers have useEffect triggers on these; naively defaulting
+  // below with `?? <X>` breaks referential equality on subsequent updates.
+  const defaultValues = useMemo(
+    () => ({
+      entities: [],
+      backendEntities: [],
+      queryParameters: {},
+    }),
+    [],
+  );
+
+  const resolvedValue: EntityStreamContextProps = useMemo(
+    () => ({
+      entities: value?.entities ?? defaultValues.entities,
+      backendEntities: value?.backendEntities ?? defaultValues.backendEntities,
+      loading: value?.loading ?? false,
+      error: value?.error,
+      hasMoreData: false,
+      count: (value?.entities ?? defaultValues.entities).length,
+      getEntities: async () => ({
+        hasMoreData: false,
+        count: (value?.entities ?? defaultValues.entities).length,
+        data: value?.entities ?? defaultValues.entities,
+      }),
+    }),
+    [value, defaultValues],
+  );
+
+  const filterContext: EntityFilterContextProps<T> = useMemo(
+    () => ({
+      updateFilters: value?.updateFilters ?? updateFilters,
+      filters,
+      queryParameters: value?.queryParameters ?? defaultValues.queryParameters,
+      entityFilter: () => false,
+      backendEntityFilter: () => false,
+    }),
+    [filters, updateFilters, defaultValues, value],
+  );
+
+  return (
+    <EntityFilterContext.Provider value={filterContext}>
+      <EntityStreamContext.Provider value={resolvedValue}>
+        {children}
+      </EntityStreamContext.Provider>
+    </EntityFilterContext.Provider>
   );
 }

@@ -27,7 +27,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React, { useState } from 'react';
-import { useEntityList } from '../../hooks';
+import { useEntityFilter } from '../../hooks';
 import { Autocomplete } from '@material-ui/lab';
 
 /** @public */
@@ -48,7 +48,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /** @public */
 export const EntityProcessingStatusPicker = () => {
   const classes = useStyles();
-  const { updateFilters } = useEntityList();
+  const { updateFilters } = useEntityFilter();
 
   const [selectedAdvancedItems, setSelectedAdvancedItems] = useState<string[]>(
     [],

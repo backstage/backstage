@@ -27,7 +27,6 @@ import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
   EntityLifecyclePicker,
-  EntityListProvider,
   EntityProcessingStatusPicker,
   EntityOwnerPicker,
   EntityTagPicker,
@@ -36,6 +35,8 @@ import {
   UserListPicker,
   EntityKindPicker,
   EntityNamespacePicker,
+  EntityStreamProvider,
+  EntityFilterProvider,
 } from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
@@ -81,28 +82,30 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
           />
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
-        <EntityListProvider>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter={initialKind} />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
-              <EntityProcessingStatusPicker />
-              <EntityNamespacePicker />
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <CatalogTable
-                columns={columns}
-                actions={actions}
-                tableOptions={tableOptions}
-                emptyContent={emptyContent}
-              />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
+        <EntityFilterProvider>
+          <EntityStreamProvider>
+            <CatalogFilterLayout>
+              <CatalogFilterLayout.Filters>
+                <EntityKindPicker initialFilter={initialKind} />
+                <EntityTypePicker />
+                <UserListPicker initialFilter={initiallySelectedFilter} />
+                <EntityOwnerPicker />
+                <EntityLifecyclePicker />
+                <EntityTagPicker />
+                <EntityProcessingStatusPicker />
+                <EntityNamespacePicker />
+              </CatalogFilterLayout.Filters>
+              <CatalogFilterLayout.Content>
+                <CatalogTable
+                  columns={columns}
+                  actions={actions}
+                  tableOptions={tableOptions}
+                  emptyContent={emptyContent}
+                />
+              </CatalogFilterLayout.Content>
+            </CatalogFilterLayout>
+          </EntityStreamProvider>
+        </EntityFilterProvider>
       </Content>
     </PageWithHeader>
   );
