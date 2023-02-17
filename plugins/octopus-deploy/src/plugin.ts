@@ -45,17 +45,6 @@ export const octopusDeployPlugin = createPlugin({
   ],
 });
 
-/*
-export const OctopusDeployPage = octopusDeployPlugin.provide(
-  createRoutableExtension({
-    name: 'OctopusDeployPage',
-    component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
-    mountPoint: rootRouteRef,
-  }),
-);
-*/
-
 /** @public */
 export const EntityOctopusDeployContent = octopusDeployPlugin.provide(
   createRoutableExtension({
