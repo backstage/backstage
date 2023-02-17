@@ -20,6 +20,9 @@ export const EntityOctopusDeployContent: (props: {
 export const isOctopusDeployAvailable: (entity: Entity) => boolean;
 
 // @public (undocumented)
+export const OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION = 'octopus.com/project-id';
+
+// @public (undocumented)
 export interface OctopusDeployApi {
   // (undocumented)
   getReleaseProgression(
