@@ -186,6 +186,13 @@ export class DatabaseManager {
     };
   }
 
+  private getSetOwnerConfig(pluginId: string): string | undefined {
+    return (
+      this.config.getOptionalString(`${pluginPath(pluginId)}.setOwner`) ??
+      this.config.getOptionalString('setOwner')
+    );
+  }
+
   /**
    * Provides the knexConfig which should be used for a given plugin.
    *
@@ -283,6 +290,7 @@ export class DatabaseManager {
       ...this.getAdditionalKnexConfig(pluginId),
       client,
       connection: this.getConnectionConfig(pluginId),
+      setOwner: this.getSetOwnerConfig(pluginId),
     };
   }
 
