@@ -20,3 +20,5 @@ export {
 } from './plugin';
 
 export * from './api';
+
+export { OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION } from './constants';
