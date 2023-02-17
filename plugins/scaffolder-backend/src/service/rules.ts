@@ -28,6 +28,7 @@ import {
 
 import { z } from 'zod';
 import { JsonObject } from '@backstage/types';
+import { get } from 'lodash';
 
 export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
@@ -91,6 +92,36 @@ export const matchesInput = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
+export const hasInputProperty = createActionPermissionRule({
+  name: 'HAS_INPUT',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  description: `Matches the key and value of the input of an action`,
+  paramsSchema: z.object({
+    action: z.string().describe('Name of the actionId to match on'),
+    key: z.string().describe('Name of the property to match on'),
+    value: z.string().describe('Value of the property to match on').optional(),
+  }),
+  apply: (resource, { action, key, value }) => {
+    if (resource.action !== action) {
+      return true;
+    }
+
+    const foundValue = get(resource.input, key);
+
+    if (Array.isArray(foundValue)) {
+      if (value !== undefined) {
+        return foundValue.includes(value);
+      }
+      return foundValue.length > 0;
+    }
+    if (value !== undefined) {
+      return value === foundValue;
+    }
+    return !!foundValue;
+  },
+  toQuery: () => ({}),
+});
+
 export const hasTag = createTemplatePermissionRule({
   name: 'HAS_TAG',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
@@ -105,4 +136,4 @@ export const hasTag = createTemplatePermissionRule({
 });
 
 export const scaffolderTemplateRules = { hasTag };
-export const scaffolderActionRules = { matchesInput };
+export const scaffolderActionRules = { matchesInput, hasInputProperty };
