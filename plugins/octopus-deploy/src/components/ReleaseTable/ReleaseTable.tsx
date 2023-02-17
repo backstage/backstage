@@ -96,11 +96,7 @@ export const ReleaseTable = ({
   error,
 }: ReleaseTableProps) => {
   if (error) {
-    return (
-      <div>
-        <ResponseErrorPanel error={error} />
-      </div>
-    );
+    return <ResponseErrorPanel error={error} />;
   }
 
   const columns: TableColumn[] = [
