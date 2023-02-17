@@ -17,10 +17,10 @@
 set -e
 
 SCRIPT_DIR=$(dirname $0)
-BACKSTAGE_CLI_DIR="$SCRIPT_DIR"/..
-ADMIN_WEB_DIR="$BACKSTAGE_CLI_DIR"/../admin-web
+CLI_DIR="$SCRIPT_DIR"/..
+ADMIN_WEB_DIR="$CLI_DIR"/../admin-web
 
-echo "🚚 Copying admin-web into dist/admin-web"
-rm -rf "$BACKSTAGE_CLI_DIR"/dist/admin-web
-cp -r "$ADMIN_WEB_DIR"/dist "$BACKSTAGE_CLI_DIR"/dist/admin-web
-echo "🏁 Finished copying admin-web into dist/admin-web!"
+echo "🚚 Copying admin-web into cli/dist/admin-web"
+rm -rf "$CLI_DIR"/dist/admin-web
+cp -r "$ADMIN_WEB_DIR"/dist "$CLI_DIR"/dist/admin-web
+echo "🏁 Finished copying admin-web into cli/dist/admin-web!"
