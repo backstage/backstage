@@ -24,6 +24,7 @@ import {
 import { JsonObject } from '@backstage/types';
 import Ajv from 'ajv';
 import { z } from 'zod';
+import { get } from 'lodash';
 
 const ajv = new Ajv({ allErrors: true });
 export const createScaffolderActionPermissionRule = makeCreatePermissionRule<
@@ -87,6 +88,36 @@ export const matchesInput = createScaffolderActionPermissionRule({
   toQuery: () => ({}),
 });
 
+export const hasInputProperty = createScaffolderActionPermissionRule({
+  name: 'HAS_INPUT',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  description: `Matches the key and value of the input of an action`,
+  paramsSchema: z.object({
+    action: z.string().describe('Name of the actionId to match on'),
+    key: z.string().describe('Name of the property to match on'),
+    value: z.string().describe('Value of the property to match on').optional(),
+  }),
+  apply: (resource, { action, key, value }) => {
+    if (resource.action !== action) {
+      return true;
+    }
+
+    const foundValue = get(resource.input, key);
+
+    if (Array.isArray(foundValue)) {
+      if (value !== undefined) {
+        return foundValue.includes(value);
+      }
+      return foundValue.length > 0;
+    }
+    if (value !== undefined) {
+      return value === foundValue;
+    }
+    return !!foundValue;
+  },
+  toQuery: () => ({}),
+});
+
 export const hasTag = createScaffolderTemplatePermissionRule({
   name: 'HAS_TAG',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
@@ -101,4 +132,4 @@ export const hasTag = createScaffolderTemplatePermissionRule({
 });
 
 export const scaffolderStepRules = { hasTag };
-export const scaffolderActionRules = { matchesInput };
+export const scaffolderActionRules = { matchesInput, hasInputProperty };

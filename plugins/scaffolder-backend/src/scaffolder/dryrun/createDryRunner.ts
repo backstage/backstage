@@ -35,6 +35,7 @@ import {
   createTemplateAction,
   TaskSecrets,
 } from '@backstage/plugin-scaffolder-node';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 interface DryRunInput {
   spec: TaskSpec;
@@ -53,6 +54,7 @@ export type TemplateTesterCreateOptions = {
   logger: Logger;
   integrations: ScmIntegrations;
   actionRegistry: TemplateActionRegistry;
+  permissionApi: PermissionEvaluator;
   workingDirectory: string;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;

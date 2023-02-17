@@ -57,10 +57,15 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     if (isPermission(request.permission, actionExecutePermission)) {
       return createScaffolderActionConditionalDecision(
         request.permission,
-        scaffolderActionConditions.matchesInput({
+        scaffolderActionConditions.hasInputProperty({
           action: 'debug:log',
-          schema: inputSchema,
+          key: 'message',
+          value: 'Test',
         }),
+        // scaffolderActionConditions.matchesInput({
+        //   action: 'debug:log',
+        //   schema: inputSchema,
+        // }),
       );
     }
 

@@ -67,9 +67,6 @@ import {
 import { scaffolderActionRules, scaffolderStepRules } from './rules';
 
 const isAuthorized = createIsAuthorized(Object.values(scaffolderStepRules));
-const isActionAuthorized = createIsAuthorized(
-  Object.values(scaffolderActionRules),
-);
 
 /**
  * RouterOptions
@@ -256,6 +253,7 @@ export async function createRouter(
       additionalTemplateFilters,
       additionalTemplateGlobals,
       concurrentTasksLimit,
+      permissionApi,
     });
     workers.push(worker);
   }
@@ -281,6 +279,7 @@ export async function createRouter(
     workingDirectory,
     additionalTemplateFilters,
     additionalTemplateGlobals,
+    permissionApi,
   });
 
   router
@@ -356,16 +355,27 @@ export async function createRouter(
         }
       }
 
-      const taskSpec = await authorizeActions(
-        {
-          parameters: values,
-          template,
-          templateRef: { kind, name, namespace },
-          user: userEntity as UserEntity,
-          userEntityRef,
+      const taskSpec: TaskSpec = {
+        apiVersion: template.apiVersion,
+        steps: template.spec.steps.map((step, index) => ({
+          ...step,
+          id: step.id ?? `step-${index + 1}`,
+          name: step.name ?? step.action,
+        })),
+        output: template.spec.output ?? {},
+        parameters: values,
+        user: {
+          entity: userEntity as UserEntity,
+          ref: userEntityRef,
         },
-        { token },
-      );
+        templateInfo: {
+          entityRef: stringifyEntityRef({ kind, name, namespace }),
+          baseUrl: getEntityBaseUrl(template),
+          entity: {
+            metadata: template.metadata,
+          },
+        },
+      };
 
       const result = await taskBroker.dispatch({
         spec: taskSpec,

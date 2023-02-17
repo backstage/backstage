@@ -34,6 +34,7 @@ import {
   TemplateGlobal,
 } from '../../lib/templating/SecureTemplater';
 import {
+  actionExecutePermission,
   TaskSpec,
   TaskSpecV1beta3,
   TaskStep,
@@ -41,6 +42,9 @@ import {
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { scaffolderActionRules } from '../../service/rules';
+import { createIsAuthorized } from '@backstage/plugin-permission-node';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -49,6 +53,7 @@ type NunjucksWorkflowRunnerOptions = {
   logger: winston.Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissionApi: PermissionEvaluator;
 };
 
 type TemplateContext = {
@@ -97,6 +102,10 @@ const createStepLogger = ({
 
   return { taskLogger, streamLogger };
 };
+
+const isActionAuthorized = createIsAuthorized(
+  Object.values(scaffolderActionRules),
+);
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {}
@@ -297,6 +306,24 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                 `Invalid input passed to action ${action.id}, ${errors}`,
               );
             }
+          }
+
+          const [decision] =
+            await this.options.permissionApi.authorizeConditional(
+              [{ permission: actionExecutePermission }],
+              { token: task.secrets?.backstageToken },
+            );
+
+          if (!isActionAuthorized(decision, { action: action.id, input })) {
+            throw new InputError(
+              `Unauthorized action: ${
+                action.id
+              }. The input is not allowed. Input: ${JSON.stringify(
+                input,
+                null,
+                2,
+              )}`,
+            );
           }
 
           const tmpDirs = new Array<string>();

@@ -2,29 +2,33 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: my-custom-template
+spec:
+  type: service
   parameters:
-    - title: Provide some simple information
-      metadata:
-        tags:
-          - bang
+    - title: Basic information
       properties:
         description:
           title: Description
           type: string
-            metadata:
-              tags:
-                - bar
+    - title: Extra information
+      backstage:accessControl:
+        tags:
+          - foo
+      properties:
+        name:
+          title: Your name
+          type: string
   steps:
     - id: step-one
       name: First log
       action: debug:log
       input:
-        message: hello
-      metadata:
-        tags:
-          - foo
+        message: Test
     - id: step-two
       name: Second log
       action: debug:log
       input:
-        message: world
+        message: Hello ${{ parameters.name }}
+      backstage:accessControl:
+        tags:
+          - foo
