@@ -100,7 +100,7 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
 Pass the `permissions` object to the plugin in `packages/backend/src/plugins/todolist.ts`:
 
 ```diff
-  import { IdentityClient } from '@backstage/plugin-auth-backend';
+  import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
   import { createRouter } from '@internal/plugin-todo-list-backend';
   import { Router } from 'express';
   import { PluginEnvironment } from '../types';
@@ -112,7 +112,7 @@ Pass the `permissions` object to the plugin in `packages/backend/src/plugins/tod
   }: PluginEnvironment): Promise<Router> {
     return await createRouter({
       logger,
-      identity: new IdentityClient({
+      identity: DefaultIdentityClient.create({
         discovery,
         issuer: await discovery.getExternalBaseUrl('auth'),
       }),
