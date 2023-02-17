@@ -34,6 +34,7 @@ const getPackages = require('./getPackages');
  * @property {'value' | 'type'} kind
  * @property {string} path
  * @property {import('./getPackages').ExtendedPackage} package
+ * @property {string} packageName
  */
 
 /**
@@ -160,6 +161,7 @@ module.exports = function visitImports(context, visitor) {
       kind: info.kind,
       path: subPath,
       package: pkg,
+      packageName,
     });
   }
 
