@@ -22,7 +22,7 @@ export function getAnnotationFromEntity(entity: Entity): string {
     entity.metadata.annotations?.[OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION];
   if (!annotation) {
     throw new Error(
-      'Value for annotation octopus.com/project-id was not found',
+      `Value for annotation ${OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION} was not found`,
     );
   }
 
