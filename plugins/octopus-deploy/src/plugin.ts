@@ -23,7 +23,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
-  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 import { Entity } from '@backstage/catalog-model';
@@ -38,9 +38,9 @@ export const octopusDeployPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: octopusDeployApiRef,
-      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ discoveryApi, identityApi }) =>
-        new OctopusDeployClient({ discoveryApi, identityApi }),
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new OctopusDeployClient({ discoveryApi, fetchApi }),
     }),
   ],
 });

@@ -16,7 +16,7 @@
 import {
   createApiRef,
   DiscoveryApi,
-  IdentityApi,
+  FetchApi,
 } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -58,7 +58,7 @@ const DEFAULT_PROXY_PATH_BASE = '/octopus-deploy';
 /** @public */
 export type Options = {
   discoveryApi: DiscoveryApi;
-  identityApi: IdentityApi;
+  fetchApi: FetchApi;
   /**
    * Path to use for requests via the proxy, defaults to /octopus-deploy
    */
@@ -76,12 +76,12 @@ export interface OctopusDeployApi {
 /** @public */
 export class OctopusDeployClient implements OctopusDeployApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
   private readonly proxyPathBase: string;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
     this.proxyPathBase = options.proxyPathBase ?? DEFAULT_PROXY_PATH_BASE;
   }
 
@@ -91,10 +91,7 @@ export class OctopusDeployClient implements OctopusDeployApi {
   ): Promise<OctopusProgression> {
     const url = await this.getApiUrl(projectId, releaseHistoryCount);
 
-    const { token: idToken } = await this.identityApi.getCredentials();
-    const response = await fetch(url, {
-      headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
-    });
+    const response = await this.fetchApi.fetch(url);
 
     let responseJson;
 
@@ -122,6 +119,6 @@ export class OctopusDeployClient implements OctopusDeployApi {
     });
     return `${proxyUrl}${this.proxyPathBase}/projects/${encodeURIComponent(
       projectId,
-    )}/progression?releaseHistoryCount=${queryParameters}`;
+    )}/progression?${queryParameters}`;
   }
 }
