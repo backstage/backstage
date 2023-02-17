@@ -4262,6 +4262,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-analytics-module-ga4@workspace:plugins/analytics-module-ga4":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-analytics-module-ga4@workspace:plugins/analytics-module-ga4"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": 4.0.0-alpha.57
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    "@types/node": ^16.11.26
+    cross-fetch: ^3.1.5
+    msw: ^0.49.0
+    react-ga4: ^2.0.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-analytics-module-ga@workspace:plugins/analytics-module-ga":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-analytics-module-ga@workspace:plugins/analytics-module-ga"
@@ -33098,6 +33126,13 @@ __metadata:
   version: 3.2.0
   resolution: "react-fast-compare@npm:3.2.0"
   checksum: 8ef272c825ae329f61633ce4ce7f15aa5b84e5214d88bc0823880236e03e985a13195befa2c7a4eda7db3b017dc7985729152d88445823f652403cf36c2b86aa
+  languageName: node
+  linkType: hard
+
+"react-ga4@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "react-ga4@npm:2.0.0"
+  checksum: 7cb9f2d7863466f429e0256ed4903c84e3e7c3f21d913455716555ea7649240d142ad36586994daece67d1a8383482f58a35898d432fb43e4884ce0234235e68
   languageName: node
   linkType: hard
 
