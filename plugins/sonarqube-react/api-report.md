@@ -6,7 +6,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 
-// @alpha (undocumented)
+// @public (undocumented)
 export interface FindingSummary {
   // (undocumented)
   getComponentMeasuresUrl: SonarUrlProcessorFunc;
@@ -25,7 +25,7 @@ export interface FindingSummary {
 // @public (undocumented)
 export const isSonarQubeAvailable: (entity: Entity) => boolean;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type MetricKey =
   | 'alert_status'
   | 'bugs'
@@ -39,7 +39,7 @@ export type MetricKey =
   | 'coverage'
   | 'duplicated_lines_density';
 
-// @alpha
+// @public
 export type Metrics = {
   [key in MetricKey]: string | undefined;
 };
@@ -47,7 +47,7 @@ export type Metrics = {
 // @public (undocumented)
 export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type SonarQubeApi = {
   getFindingSummary(options: {
     componentKey?: string;
@@ -55,13 +55,13 @@ export type SonarQubeApi = {
   }): Promise<FindingSummary | undefined>;
 };
 
-// @alpha (undocumented)
+// @public (undocumented)
 export const sonarQubeApiRef: ApiRef<SonarQubeApi>;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type SonarUrlProcessorFunc = (identifier: string) => string;
 
-// @alpha
+// @public
 export const useProjectInfo: (entity: Entity) => {
   projectInstance: string | undefined;
   projectKey: string | undefined;
