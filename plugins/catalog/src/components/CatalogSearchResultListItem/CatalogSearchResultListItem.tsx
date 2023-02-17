@@ -50,7 +50,7 @@ const useStyles = makeStyles(
  * @public
  */
 export interface CatalogSearchResultListItemProps {
-  icon?: ReactNode;
+  icon?: ReactNode | ((result: IndexableDocument) => ReactNode);
   result?: IndexableDocument;
   highlight?: ResultHighlight;
   rank?: number;
@@ -69,7 +69,11 @@ export function CatalogSearchResultListItem(
 
   return (
     <div className={classes.item}>
-      {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
+      {props.icon && (
+        <ListItemIcon>
+          {typeof props.icon === 'function' ? props.icon(result) : props.icon}
+        </ListItemIcon>
+      )}
       <div className={classes.flexContainer}>
         <ListItemText
           className={classes.itemText}

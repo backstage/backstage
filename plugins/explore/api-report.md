@@ -135,7 +135,7 @@ export interface ToolSearchResultListItemProps {
   // (undocumented)
   highlight?: ResultHighlight;
   // (undocumented)
-  icon?: ReactNode;
+  icon?: ReactNode | ((result: IndexableDocument) => ReactNode);
   // (undocumented)
   rank?: number;
   // (undocumented)
