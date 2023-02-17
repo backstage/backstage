@@ -9,7 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { IdentityApi } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const EntityOctopusDeployContent: (props: {
@@ -36,7 +36,11 @@ export const octopusDeployApiRef: ApiRef<OctopusDeployApi>;
 
 // @public (undocumented)
 export class OctopusDeployClient implements OctopusDeployApi {
-  constructor(options: Options);
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    fetchApi: FetchApi;
+    proxyPathBase?: string;
+  });
   // (undocumented)
   getReleaseProgression(
     projectId: string,
@@ -76,13 +80,6 @@ export type OctopusReleaseProgression = {
   Deployments: {
     [key: string]: OctopusDeployment[];
   };
-};
-
-// @public (undocumented)
-export type Options = {
-  discoveryApi: DiscoveryApi;
-  identityApi: IdentityApi;
-  proxyPathBase?: string;
 };
 
 // (No @packageDocumentation comment for this package)
