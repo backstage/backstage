@@ -568,7 +568,7 @@ describe('createPermissionIntegrationRouter', () => {
 
       expect(response.status).toEqual(501);
       expect(response.body.error.message).toEqual(
-        'This plugin does not support the apply-conditions API',
+        `This plugin does not expose any permission rule or can't evaluate conditional decisions`,
       );
     });
   });
