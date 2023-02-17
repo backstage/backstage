@@ -23,7 +23,7 @@ import {
 import { InstanceUrlWrapper, FindingsWrapper } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
-/** @alpha */
+/** @public */
 export class SonarQubeClient implements SonarQubeApi {
   discoveryApi: DiscoveryApi;
   identityApi: IdentityApi;
