@@ -112,25 +112,33 @@ export const createConditionTransformer: <
 ) => ConditionTransformer<TQuery>;
 
 // @public
-export const createIsAuthorized: <TResource, TQuery>(
-  rules: PermissionRule<TResource, TQuery, string, PermissionRuleParams>[],
-) => (decision: PolicyDecision, resource: TResource | undefined) => boolean;
-
-// @public
 export const createPermissionIntegrationRouter: <
   TResourceType extends string,
   TResource,
->(options: {
+>(
+  options: CreatePermissionIntegrationRouterOptions<TResourceType, TResource>,
+) => express.Router;
+
+// @public
+export type CreatePermissionIntegrationRouterOptions<
+  TResourceType extends string,
+  TResource,
+> =
+  | {
+      permissions: Array<Permission>;
+    }
+  | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>;
+
+// @public
+export type CreatePermissionIntegrationRouterResourceOptions<
+  TResourceType extends string,
+  TResource,
+> = {
   resourceType: TResourceType;
-  permissions?: Permission[] | undefined;
-  rules: PermissionRule<
-    TResource,
-    any,
-    NoInfer<TResourceType>,
-    PermissionRuleParams
-  >[];
-  getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
-}) => express.Router;
+  permissions?: Array<Permission>;
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
+  getResources?: GetResourcesFn<TResource>;
+};
 
 // @public
 export const createPermissionRule: <
@@ -141,6 +149,11 @@ export const createPermissionRule: <
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
+
+// @public
+export type GetResourcesFn<TResource> = (
+  resourceRefs: string[],
+) => Promise<Array<TResource | undefined>>;
 
 // @alpha
 export const isAndCriteria: <T>(

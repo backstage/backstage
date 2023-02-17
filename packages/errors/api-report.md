@@ -85,6 +85,9 @@ export class NotAllowedError extends CustomErrorBase {}
 export class NotFoundError extends CustomErrorBase {}
 
 // @public
+export class NotImplementedError extends CustomErrorBase {}
+
+// @public
 export class NotModifiedError extends CustomErrorBase {}
 
 // @public
