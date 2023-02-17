@@ -14,6 +14,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ProcessedEntity } from '@backstage/plugin-linguist-common';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
@@ -29,6 +30,7 @@ export class LinguistBackendApi {
     store: LinguistBackendStore,
     urlReader: UrlReader,
     discovery: PluginEndpointDiscovery,
+    tokenManager: TokenManager,
     age?: HumanDuration,
     batchSize?: number,
     useSourceLocation?: boolean,
@@ -96,6 +98,8 @@ export interface RouterOptions {
   reader: UrlReader;
   // (undocumented)
   scheduler?: PluginTaskScheduler;
+  // (undocumented)
+  tokenManager: TokenManager;
 }
 
 // (No @packageDocumentation comment for this package)

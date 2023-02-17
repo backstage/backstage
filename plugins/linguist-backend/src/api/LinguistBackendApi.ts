@@ -25,7 +25,11 @@ import {
   CatalogClient,
   GetEntitiesRequest,
 } from '@backstage/catalog-client';
-import { PluginEndpointDiscovery, UrlReader } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+  UrlReader,
+} from '@backstage/backend-common';
 
 import { DateTime } from 'luxon';
 import { LINGUIST_ANNOTATION } from '@backstage/plugin-linguist-common';
@@ -46,6 +50,8 @@ export class LinguistBackendApi {
   private readonly store: LinguistBackendStore;
   private readonly urlReader: UrlReader;
   private readonly discovery: PluginEndpointDiscovery;
+  private readonly tokenManager: TokenManager;
+
   private readonly catalogClient: CatalogClient;
   private readonly age?: HumanDuration;
   private readonly batchSize?: number;
@@ -55,6 +61,7 @@ export class LinguistBackendApi {
     store: LinguistBackendStore,
     urlReader: UrlReader,
     discovery: PluginEndpointDiscovery,
+    tokenManager: TokenManager,
     age?: HumanDuration,
     batchSize?: number,
     useSourceLocation?: boolean,
@@ -63,8 +70,8 @@ export class LinguistBackendApi {
     this.store = store;
     this.urlReader = urlReader;
     this.discovery = discovery;
+    this.tokenManager = tokenManager;
     this.catalogClient = new CatalogClient({ discoveryApi: this.discovery });
-
     this.batchSize = batchSize;
     this.age = age;
     this.useSourceLocation = useSourceLocation;
@@ -98,7 +105,8 @@ export class LinguistBackendApi {
       fields: ['kind', 'metadata'],
     };
 
-    const response = await this.catalogClient.getEntities(request);
+    const { token } = await this.tokenManager.getToken();
+    const response = await this.catalogClient.getEntities(request, { token });
     const entities = response.items;
 
     entities.forEach(entity => {
@@ -118,7 +126,10 @@ export class LinguistBackendApi {
       this.batchSize ?? 20,
     );
     entities.forEach(async entityRef => {
-      const entity = await this.catalogClient.getEntityByRef(entityRef);
+      const { token } = await this.tokenManager.getToken();
+      const entity = await this.catalogClient.getEntityByRef(entityRef, {
+        token,
+      });
       const annotationKey = this.useSourceLocation
         ? ANNOTATION_SOURCE_LOCATION
         : LINGUIST_ANNOTATION;

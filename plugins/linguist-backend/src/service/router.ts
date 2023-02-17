@@ -18,6 +18,7 @@ import {
   errorHandler,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
+  TokenManager,
   UrlReader,
 } from '@backstage/backend-common';
 import express from 'express';
@@ -44,6 +45,7 @@ export interface RouterOptions {
   linguistBackendApi?: LinguistBackendApi;
   logger: Logger;
   reader: UrlReader;
+  tokenManager: TokenManager;
   database: PluginDatabaseManager;
   discovery: PluginEndpointDiscovery;
   scheduler?: PluginTaskScheduler;
@@ -56,7 +58,8 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { schedule, age, batchSize, useSourceLocation } = pluginOptions;
 
-  const { logger, reader, database, discovery, scheduler } = routerOptions;
+  const { logger, reader, database, discovery, scheduler, tokenManager } =
+    routerOptions;
 
   const linguistBackendStore = await LinguistBackendDatabase.create(
     await database.getClient(),
@@ -69,6 +72,7 @@ export async function createRouter(
       linguistBackendStore,
       reader,
       discovery,
+      tokenManager,
       age,
       batchSize,
       useSourceLocation,
