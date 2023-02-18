@@ -89,6 +89,16 @@ export type TechDocsMetadata = {
 };
 
 /**
+ * Response for the techdocs deletion process
+ * @public
+ */
+export type DeleteResponse = {
+  isDeleted: boolean;
+  remoteFolder?: string;
+  status: number;
+};
+
+/**
  * TechDocs entity triplet migration request
  * @public
  */
@@ -156,4 +166,8 @@ export interface PublisherBase {
    * after version `{0.x.y}` of `techdocs-node`.
    */
   migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;
+
+  deleteTechDocsFromBucket?(
+    folderPath: string | undefined,
+  ): Promise<DeleteResponse>;
 }

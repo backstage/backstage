@@ -21,9 +21,10 @@ import {
   ANNOTATION_ORIGIN_LOCATION,
 } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
+import { techdocsApiRef } from '@backstage/plugin-techdocs-react';
 
 /**
  * Each distinct state that the dialog can be in at any given time.
@@ -47,6 +48,7 @@ export type UseUnregisterEntityDialogState =
       colocatedEntities: CompoundEntityRef[];
       unregisterLocation: () => Promise<void>;
       deleteEntity: () => Promise<void>;
+      deleteEntityTechdocs?: () => Promise<void>;
     }
   | {
       type: 'only-delete';
@@ -60,9 +62,20 @@ export function useUnregisterEntityDialogState(
   entity: Entity,
 ): UseUnregisterEntityDialogState {
   const catalogApi = useApi(catalogApiRef);
+  const techdocsApi = useApi(techdocsApiRef);
   const locationRef = entity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
   const uid = entity.metadata.uid;
   const isBootstrap = locationRef === 'bootstrap:bootstrap';
+
+  let deleteEntityTechdocs = undefined;
+  const entityRef = useMemo(
+    () => ({
+      kind: entity.kind,
+      namespace: entity.metadata.namespace!,
+      name: entity.metadata.name,
+    }),
+    [entity],
+  );
 
   // Load the prerequisite data: what entities that are colocated with us, and
   // what location that spawned us
@@ -112,6 +125,17 @@ export function useUnregisterEntityDialogState(
       await catalogApi.removeEntityByUid(uid!);
     },
     [catalogApi, uid],
+  );
+
+  deleteEntityTechdocs = useCallback(
+    async function deleteEntityTechdocsFn() {
+      if (typeof techdocsApi.deleteTechdocsFromS3Bucket !== 'undefined') {
+        if (entity.metadata.annotations?.['backstage.io/techdocs-ref'] !== '') {
+          await techdocsApi.deleteTechdocsFromS3Bucket(entityRef);
+        }
+      }
+    },
+    [techdocsApi, entityRef, entity],
   );
 
   // If this is a bootstrap location entity, don't even block on loading
