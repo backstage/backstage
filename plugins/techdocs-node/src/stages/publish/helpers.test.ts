@@ -158,6 +158,16 @@ describe('getStaleFiles', () => {
     expect(staleFiles).toHaveLength(1);
     expect(staleFiles).toEqual(expect.arrayContaining(['stale_file.png']));
   });
+
+  it('should not return directories as stale files if they are parent directories of new files', () => {
+    const oldFiles = [...defaultFiles, 'default/Component/backstage/foo'];
+    const newFiles = [
+      ...defaultFiles,
+      'default/Component/backstage/foo/bar/index.html',
+    ];
+    const staleFiles = getStaleFiles(newFiles, oldFiles);
+    expect(staleFiles).toHaveLength(0);
+  });
 });
 
 describe('getCloudPathForLocalPath', () => {
