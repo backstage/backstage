@@ -29,6 +29,7 @@ export interface TechDocsApi {
   getEntityMetadata(
     entityId: CompoundEntityRef,
   ): Promise<TechDocsEntityMetadata>;
+  deleteTechdocsFromS3Bucket?(entityId: CompoundEntityRef): Promise<any>;
 }
 
 /**

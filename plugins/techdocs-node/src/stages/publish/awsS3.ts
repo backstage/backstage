@@ -30,6 +30,7 @@ import {
   ListObjectsV2CommandOutput,
   ListObjectsV2Command,
   S3Client,
+  DeleteObjectsCommand,
 } from '@aws-sdk/client-s3';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { Upload } from '@aws-sdk/lib-storage';
@@ -52,6 +53,7 @@ import {
   normalizeExternalStorageRootPath,
 } from './helpers';
 import {
+  DeleteResponse,
   PublisherBase,
   PublishRequest,
   PublishResponse,
@@ -563,5 +565,87 @@ export class AwsS3Publish implements PublisherBase {
     } while (nextContinuation);
 
     return objects;
+  }
+
+  async deleteTechDocsFromBucket(folderPath: string): Promise<DeleteResponse> {
+    const remoteFolder: string = folderPath;
+
+    try {
+      const prefixes = await this.getAllDirectoriesAndObjectsPrefixes(
+        remoteFolder,
+        false,
+      );
+
+      if (prefixes.length > 0) {
+        const prefixesToDelete = prefixes.map(prefix => ({ Key: prefix }));
+
+        const deleteParams = {
+          Bucket: this.bucketName,
+          Delete: { Objects: prefixesToDelete },
+        };
+
+        const deleteCommand = new DeleteObjectsCommand(deleteParams);
+        await this.storageClient.send(deleteCommand);
+
+        this.logger.info(
+          `Successfully deleted files for techDocs ${remoteFolder}.`,
+        );
+
+        return { isDeleted: true, remoteFolder, status: 200 };
+      }
+      return { isDeleted: false, remoteFolder, status: 404 };
+    } catch (error) {
+      const errorMessage = `Unable to delete file(s) from AWS S3. ${error}`;
+      this.logger.error(errorMessage);
+      return { isDeleted: false, status: 500 };
+    }
+  }
+
+  /**
+   * Get recursively all bucket's directories prefixes and their files' prefixes
+   * @param s3Path Folder path
+   * @param includeDirectories Set default as `false`
+   */
+  protected async getAllDirectoriesAndObjectsPrefixes(
+    s3Path: string,
+    includeDirectories: boolean = false,
+  ): Promise<any[]> {
+    const prefixes: any[] = [];
+    const promises: any[] = [];
+    const listParams = {
+      Bucket: this.bucketName,
+      Prefix: s3Path,
+      ...(includeDirectories ? { Delimiter: '/' } : {}),
+    };
+
+    const listCommand = new ListObjectsV2Command(listParams);
+
+    const listedObjects = await this.storageClient.send(listCommand);
+
+    if (listedObjects.Contents && listedObjects.Contents.length > 0) {
+      listedObjects.Contents.forEach(({ Key }) => {
+        prefixes.push(Key);
+      });
+    }
+
+    if (
+      listedObjects.CommonPrefixes &&
+      listedObjects.CommonPrefixes.length > 0
+    ) {
+      listedObjects.CommonPrefixes.forEach(({ Prefix }) => {
+        prefixes.push(Prefix);
+        promises.push(this.getAllDirectoriesAndObjectsPrefixes(Prefix!, false));
+      });
+    }
+
+    const subPrefixes = await Promise.all(promises);
+
+    subPrefixes.map(arrPrefixes => {
+      arrPrefixes.map((prefix: any) => {
+        prefixes.push(prefix);
+      });
+    });
+
+    return prefixes;
   }
 }

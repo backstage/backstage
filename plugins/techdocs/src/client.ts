@@ -100,6 +100,21 @@ export class TechDocsClient implements TechDocsApi {
 
     return await request.json();
   }
+
+  async deleteTechdocsFromS3Bucket(entityId: CompoundEntityRef): Promise<any> {
+    const { kind, namespace, name } = entityId;
+
+    const apiOrigin = await this.getApiOrigin();
+    const requestUrl = `${apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
+    const request = await this.fetchApi.fetch(`${requestUrl}`, {
+      method: 'DELETE',
+    });
+    if (!request.ok) {
+      throw await ResponseError.fromResponse(request);
+    }
+
+    return await request.json();
+  }
 }
 
 /**

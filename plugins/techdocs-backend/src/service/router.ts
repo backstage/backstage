@@ -18,7 +18,10 @@ import {
   PluginCacheManager,
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  stringifyEntityRef,
+  DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import {
@@ -174,6 +177,46 @@ export async function createRouter(
       );
     }
   });
+
+  router.delete(
+    '/metadata/techdocs/:namespace/:kind/:name',
+    async (req, res) => {
+      const { kind, namespace, name } = req.params;
+      const entityName = { kind, namespace, name };
+      const token = getBearerToken(req.headers.authorization);
+
+      // Verify that the related entity exists and the current user has permission to view it.
+      const entity = await entityLoader.load(entityName, token);
+
+      if (!entity) {
+        throw new NotFoundError(
+          `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
+        );
+      }
+
+      try {
+        const techdocsRootDir = `${
+          entity.metadata?.namespace ?? DEFAULT_NAMESPACE
+        }/${entity.kind}/${entity.metadata.name}`;
+
+        const techdocsMetadata = await publisher.deleteTechDocsFromBucket!(
+          techdocsRootDir,
+        );
+
+        res.json(techdocsMetadata);
+      } catch (err) {
+        logger.info(
+          `Unable to get metadata for '${stringifyEntityRef(
+            entityName,
+          )}' with error ${err}`,
+        );
+        throw new NotFoundError(
+          `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
+          err,
+        );
+      }
+    },
+  );
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
