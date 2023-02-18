@@ -31,22 +31,67 @@ export const madrParser = (content: string, dateFormat = MADR_DATE_FORMAT) => {
     ) as marked.Tokens.Heading
   )?.text;
 
-  // First list should contain status & date metadata (if defined)
+  // MADRv2: First list should contain status & date metadata (if defined)
   const listTokens = (tokens.find(t => t.type === 'list') as marked.Tokens.List)
     ?.items;
-  const adrStatus = listTokens
-    ?.find(t => /^status:/i.test(t.text))
-    ?.text.replace(/^status:/i, '')
-    .trim()
-    .toLocaleLowerCase('en-US');
 
-  const adrDateTime = DateTime.fromFormat(
-    listTokens
-      ?.find(t => /^date:/i.test(t.text))
-      ?.text.replace(/^date:/i, '')
-      .trim() ?? '',
-    dateFormat,
-  );
+  let adrStatus: string | undefined;
+  // MADRv3: Heading of depth 2 should contain status:
+  const statusLineV3 = (
+    tokens.find(
+      t =>
+        t.type === 'heading' &&
+        t.depth === 2 &&
+        t.text.toLowerCase().includes('status:'),
+    ) as marked.Tokens.Text
+  )?.text
+    .toLowerCase()
+    .split('\n')
+    .find(l => /^status:/.test(l));
+  if (statusLineV3) {
+    adrStatus = statusLineV3
+      .replace(/^status:/i, '')
+      .trim()
+      .toLocaleLowerCase('en-US');
+  } else {
+    // try MADRv2 format
+    adrStatus = listTokens
+      ?.find(t => /^status:/i.test(t.text))
+      ?.text.replace(/^status:/i, '')
+      .trim()
+      .toLocaleLowerCase('en-US');
+  }
+
+  let adrDateTime: DateTime | undefined;
+  // MADRv3: Heading of depth 2 should contain date:
+  const dateLineV3 = (
+    tokens.find(
+      t =>
+        t.type === 'heading' &&
+        t.depth === 2 &&
+        t.text.toLowerCase().includes('date:'),
+    ) as marked.Tokens.Text
+  )?.text
+    .toLowerCase()
+    .split('\n')
+    .find(l => /^date:/.test(l));
+
+  if (dateLineV3) {
+    adrDateTime = DateTime.fromFormat(
+      dateLineV3.replace(/^date:/i, '').trim(),
+      dateFormat,
+    );
+  } else {
+    // try MADRv2 format
+    adrDateTime = DateTime.fromFormat(
+      listTokens
+        ?.find(t => /^date:/i.test(t.text))
+        ?.text.replace(/^date:/i, '')
+        .trim() ?? '',
+      dateFormat,
+    );
+  }
+
   const adrDate = adrDateTime?.isValid
     ? adrDateTime.toFormat(MADR_DATE_FORMAT)
     : undefined;
