@@ -34,7 +34,8 @@ const useStyles = makeStyles<BackstageTheme>(
     code: {
       borderRadius: 6,
       margin: `${theme.spacing(2)}px 0px`,
-      background: theme.palette.type === 'dark' ? '#444' : '#fff',
+      background:
+        theme.palette.type === 'dark' ? '#444' : theme.palette.common.white,
     },
   }),
   { name: 'PluginCatalogEntityLinksEmptyState' },

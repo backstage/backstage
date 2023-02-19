@@ -41,7 +41,7 @@ export type FeatureCalloutCircleClassKey =
   | 'text';
 
 const useStyles = makeStyles(
-  {
+  theme => ({
     '@keyframes pulsateSlightly': {
       '0%': { transform: 'scale(1.0)' },
       '100%': { transform: 'scale(1.1)' },
@@ -78,7 +78,7 @@ const useStyles = makeStyles(
       height: '100%',
       backgroundColor: 'transparent',
       borderRadius: '100%',
-      border: '2px solid white',
+      border: `2px solid ${theme.palette.common.white}`,
       zIndex: 2001,
       transformOrigin: 'center center',
       animation:
@@ -86,10 +86,10 @@ const useStyles = makeStyles(
     },
     text: {
       position: 'absolute',
-      color: 'white',
+      color: theme.palette.common.white,
       zIndex: 2003,
     },
-  },
+  }),
   { name: 'BackstageFeatureCalloutCircular' },
 );
 

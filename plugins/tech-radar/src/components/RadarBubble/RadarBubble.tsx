@@ -24,7 +24,7 @@ export type Props = {
   y: number;
 };
 
-const useStyles = makeStyles<Theme>(() => ({
+const useStyles = makeStyles<Theme>(theme => ({
   bubble: {
     pointerEvents: 'none',
     userSelect: 'none',
@@ -42,7 +42,7 @@ const useStyles = makeStyles<Theme>(() => ({
     pointerEvents: 'none',
     userSelect: 'none',
     fontSize: '10px',
-    fill: '#fff',
+    fill: theme.palette.common.white,
   },
 }));
 

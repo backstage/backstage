@@ -20,32 +20,32 @@ import { Link } from '@backstage/core-components';
 import { Box, makeStyles, Typography } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
-const letterStyle = {
-  color: 'white',
+const letterStyle = (theme: BackstageTheme) => ({
+  color: theme.palette.common.white,
   border: 0,
   borderRadius: '3px',
   fontSize: '40px',
   padding: '5px 20px',
-};
+});
 
 const fontSize = {
   fontSize: '25px',
 };
 
-const letterColor = (letter: string) => {
+const letterColor = (letter: string, theme: BackstageTheme) => {
   if (letter === 'A') {
-    return '#45d298';
+    return theme.palette.success.main || '#45d298';
   } else if (letter === 'B') {
-    return '#a5d86e';
+    return theme.palette.success.light || '#a5d86e';
   } else if (letter === 'C') {
-    return '#f1ce0c';
+    return theme.palette.warning.light || '#f1ce0c';
   } else if (letter === 'D') {
-    return '#f29141';
+    return theme.palette.warning.main || '#f29141';
   } else if (letter === 'F') {
-    return '#df5869';
+    return theme.palette.error.light || '#df5869';
   }
 
-  return '#45d298';
+  return theme.palette.success.main || '#45d298';
 };
 
 const useStyles = makeStyles<
@@ -54,7 +54,7 @@ const useStyles = makeStyles<
     maintainabilityLetter: string;
     testCoverageLetter: string;
   }
->({
+>(theme => ({
   spaceAround: {
     display: 'flex',
     justifyContent: 'space-around',
@@ -65,12 +65,12 @@ const useStyles = makeStyles<
     alignItems: 'center',
   },
   maintainabilityLetterColor: {
-    ...letterStyle,
-    backgroundColor: props => letterColor(props.maintainabilityLetter),
+    ...letterStyle(theme),
+    backgroundColor: props => letterColor(props.maintainabilityLetter, theme),
   },
   testCoverageLetterColor: {
-    ...letterStyle,
-    backgroundColor: props => letterColor(props.testCoverageLetter),
+    ...letterStyle(theme),
+    backgroundColor: props => letterColor(props.testCoverageLetter, theme),
   },
   fontSize: {
     ...fontSize,
@@ -82,7 +82,7 @@ const useStyles = makeStyles<
   paddingSides20: {
     padding: '0px 20px',
   },
-});
+}));
 
 export const CodeClimateTable = ({
   codeClimateData,

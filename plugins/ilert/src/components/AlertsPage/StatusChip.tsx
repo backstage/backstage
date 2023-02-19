@@ -17,28 +17,28 @@ import { Chip, withStyles } from '@material-ui/core';
 import React from 'react';
 import { ACCEPTED, Alert, PENDING, RESOLVED } from '../../types';
 
-const ResolvedChip = withStyles({
+const ResolvedChip = withStyles(theme => ({
   root: {
     backgroundColor: '#4caf50',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
+}))(Chip);
 
-const AcceptedChip = withStyles({
+const AcceptedChip = withStyles(theme => ({
   root: {
     backgroundColor: '#ffb74d',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
-const PendingChip = withStyles({
+}))(Chip);
+const PendingChip = withStyles(theme => ({
   root: {
     backgroundColor: '#d32f2f',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
+}))(Chip);
 
 export const alertStatusLabels = {
   [RESOLVED]: 'Resolved',

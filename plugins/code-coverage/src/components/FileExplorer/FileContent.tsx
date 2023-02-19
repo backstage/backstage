@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     margin: 'auto',
     top: '2em',
     width: '80%',
-    border: '2px solid #000',
+    border: `2px solid ${theme.palette.common.black}`,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     overflow: 'scroll',

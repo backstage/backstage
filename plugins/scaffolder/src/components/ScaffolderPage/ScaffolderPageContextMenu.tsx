@@ -34,11 +34,11 @@ import {
   scaffolderListTaskRouteRef,
 } from '../../routes';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   button: {
-    color: 'white',
+    color: theme.palette.common.white,
   },
-});
+}));
 
 export type ScaffolderPageContextMenuProps = {
   editor?: boolean;

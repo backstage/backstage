@@ -35,7 +35,8 @@ const useStyles = makeStyles<BackstageTheme>(
       height: 48,
       width: '100%',
       '&:hover': {
-        background: '#6f6f6f',
+        background:
+          theme.palette.navigation.navItem?.hoverBackground || '#6f6f6f',
         color: theme.palette.navigation.selectedColor,
       },
       display: 'flex',
@@ -52,7 +53,7 @@ const useStyles = makeStyles<BackstageTheme>(
     },
     selected: {
       background: '#6f6f6f',
-      color: '#FFF',
+      color: theme.palette.common.white,
     },
     label: {
       margin: theme.spacing(1.75),
@@ -82,7 +83,8 @@ const useStyles = makeStyles<BackstageTheme>(
       width: '100%',
       padding: '10px 0 10px 0',
       '&:hover': {
-        background: '#6f6f6f',
+        background:
+          theme.palette.navigation.navItem?.hoverBackground || '#6f6f6f',
         color: theme.palette.navigation.selectedColor,
       },
     },

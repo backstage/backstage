@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: 'black',
+    color: theme.palette.common.black,
   },
   legend: {
     position: 'absolute',

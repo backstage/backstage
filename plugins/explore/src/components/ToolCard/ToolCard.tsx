@@ -41,7 +41,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
   lifecycle: {
     lineHeight: '0.8em',
-    color: 'white',
+    color: theme.palette.common.white,
   },
   ga: {
     backgroundColor: theme.palette.status.ok,

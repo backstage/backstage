@@ -33,12 +33,12 @@ export type Props = {
   onClick?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
 };
 
-const useStyles = makeStyles<Theme>(() => ({
+const useStyles = makeStyles<Theme>(theme => ({
   text: {
     pointerEvents: 'none',
     userSelect: 'none',
     fontSize: '9px',
-    fill: '#fff',
+    fill: theme.palette.common.white,
     textAnchor: 'middle',
   },
 

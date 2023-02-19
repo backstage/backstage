@@ -24,19 +24,18 @@ import { extractInitials, stringToColor } from './utils';
 export type AvatarClassKey = 'avatar';
 
 const useStyles = makeStyles(
-  (theme: Theme) =>
-    createStyles({
-      avatar: {
-        width: '4rem',
-        height: '4rem',
-        color: '#fff',
-      },
-      avatarText: {
-        fontWeight: theme.typography.fontWeightBold,
-        letterSpacing: '1px',
-        textTransform: 'uppercase',
-      },
-    }),
+  (theme: Theme) => ({
+    avatar: {
+      width: '4rem',
+      height: '4rem',
+      color: theme.palette.common.white,
+    },
+    avatarText: {
+      fontWeight: theme.typography.fontWeightBold,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+    },
+  }),
   { name: 'BackstageAvatar' },
 );
 
