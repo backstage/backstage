@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { HttpRouterService } from '@backstage/backend-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { TodoItem } from '../lib';
 
