@@ -33,7 +33,7 @@ const FORM_PAGE = `
 </html>
 `;
 
-export type GithubAppConfig = {
+type GithubAppConfig = {
   appId: number;
   slug?: string;
   name?: string;
@@ -117,11 +117,8 @@ export class GithubCreateAppServer {
         ...(this.permissions.includes('members') && { members: 'read' }),
         ...(this.permissions.includes('read') && { contents: 'read' }),
         ...(this.permissions.includes('write') && {
-          administration: 'write',
           contents: 'write',
-          pull_requests: 'write',
-          issues: 'write',
-          workflows: 'write',
+          actions: 'write',
         }),
       },
       name: 'Backstage-<changeme>',
