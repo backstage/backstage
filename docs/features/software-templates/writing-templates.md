@@ -287,9 +287,11 @@ const entityMetadataEditUrl = `/create/template/default/my-template?formData=${e
 2. Defining the initial state of templates via `initialTemplateStates` in `TemplatePage`.
 
 ```typescript jsx
+// MyTemplateState.tsx
 import { CatalogApi } from '@backstage/catalog-client';
 
-const MyTemplateState = async (catalogApi: CatalogApi) => {
+const MyTemplateState = async (apis: Record<string, any>) => {
+  const { catalogApi } = apis;
   const query = qs.parse(window.location.search, {
     ignoreQueryPrefix: true,
   });
@@ -318,7 +320,16 @@ const MyTemplateState = async (catalogApi: CatalogApi) => {
   };
 };
 
+// Router.tsx
+import { useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+
+const catalogApi = useApi(catalogApiRef);
+
 <TemplatePage
+  initialTemplateApis={{
+    catalogApi,
+  }}
   initialTemplateStates={{
     'template:default/my-template': MyTemplateState,
   }}

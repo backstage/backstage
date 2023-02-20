@@ -16,8 +16,6 @@
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import { CatalogApi } from '@backstage/catalog-client';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { ComponentType, useCallback, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
@@ -65,7 +63,8 @@ type Props = {
     title?: string;
     subtitle?: string;
   };
-  initialTemplateStates: Record<string, (catalogApi: CatalogApi) => any>;
+  initialTemplateApis?: Record<string, any>;
+  initialTemplateStates?: Record<string, ({}: Record<string, any>) => any>;
 };
 
 export const TemplatePage = ({
@@ -73,12 +72,12 @@ export const TemplatePage = ({
   customFieldExtensions = [],
   layouts = [],
   headerOptions,
+  initialTemplateApis = {},
   initialTemplateStates = {},
 }: Props) => {
   const apiHolder = useApiHolder();
   const secretsContext = useTemplateSecrets();
   const errorApi = useApi(errorApiRef);
-  const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
@@ -106,11 +105,13 @@ export const TemplatePage = ({
 
   useEffect(() => {
     if (initialTemplateStates[templateRef]) {
-      initialTemplateStates[templateRef](catalogApi).then((data: any) => {
-        setFormState(data);
-      });
+      initialTemplateStates[templateRef](initialTemplateApis).then(
+        (data: any) => {
+          setFormState(data);
+        },
+      );
     }
-  }, [catalogApi, initialTemplateStates, templateRef]);
+  }, [initialTemplateApis, initialTemplateStates, templateRef]);
 
   const handleFormReset = () => setFormState({});
   const handleChange = useCallback(
