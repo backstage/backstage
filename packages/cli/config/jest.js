@@ -62,45 +62,34 @@ function getRoleConfig(role) {
 async function getProjectConfig(targetPath, extraConfig) {
   const configJsPath = path.resolve(targetPath, 'jest.config.js');
   const configTsPath = path.resolve(targetPath, 'jest.config.ts');
-  // If the package has it's own jest config, we use that instead.
+  // If the package has it's own Jest config, we use that instead.
   if (await fs.pathExists(configJsPath)) {
     return require(configJsPath);
   } else if (await fs.pathExists(configTsPath)) {
     return require(configTsPath);
   }
 
-  // We read all "jest" config fields in package.json files all the way to the filesystem root.
-  // All configs are merged together to create the final config, with longer paths taking precedence.
-  // The merging of the configs is shallow, meaning e.g. all transforms are replaced if new ones are defined.
+  // We read the "jest" config fields from the current path 'package.json' file.
   const pkgJsonConfigs = [];
   let closestPkgJson = undefined;
-  let currentPath = targetPath;
 
   // Some confidence check to avoid infinite loop
-  for (let i = 0; i < 100; i++) {
-    const packagePath = path.resolve(currentPath, 'package.json');
-    const exists = fs.pathExistsSync(packagePath);
-    if (exists) {
-      try {
-        const data = fs.readJsonSync(packagePath);
-        if (!closestPkgJson) {
-          closestPkgJson = data;
-        }
-        if (data.jest) {
-          pkgJsonConfigs.unshift(data.jest);
-        }
-      } catch (error) {
-        throw new Error(
-          `Failed to parse package.json file reading jest configs, ${error}`,
-        );
+  const packagePath = path.resolve(targetPath, 'package.json');
+  const exists = fs.pathExistsSync(packagePath);
+  if (exists) {
+    try {
+      const data = fs.readJsonSync(packagePath);
+      if (!closestPkgJson) {
+        closestPkgJson = data;
       }
+      if (data.jest) {
+        pkgJsonConfigs.unshift(data.jest);
+      }
+    } catch (error) {
+      throw new Error(
+        `Failed to parse package.json file reading Jest configs, ${error}`,
+      );
     }
-
-    const newPath = path.dirname(currentPath);
-    if (newPath === currentPath) {
-      break;
-    }
-    currentPath = newPath;
   }
 
   // This is an old deprecated option that is no longer used.
@@ -114,7 +103,7 @@ async function getProjectConfig(targetPath, extraConfig) {
     .join('|');
   if (transformModules.length > 0) {
     console.warn(
-      'The Backstage CLI jest transformModules option is no longer used and will be ignored. All modules are now always transformed.',
+      'The Backstage CLI Jest transformModules option is no longer used and will be ignored. All modules are now always transformed.',
     );
   }
 
@@ -201,7 +190,7 @@ async function getProjectConfig(targetPath, extraConfig) {
 
   const config = Object.assign(options, ...pkgJsonConfigs);
 
-  // The config id is a cache key that lets us share the jest cache across projects.
+  // The config id is a cache key that lets us share the Jest cache across projects.
   // If no explicit id was configured, generated one based on the configuration.
   if (!config.id) {
     const configHash = crypto
@@ -216,7 +205,7 @@ async function getProjectConfig(targetPath, extraConfig) {
   return config;
 }
 
-// This loads the root jest config, which in turn will either refer to a single
+// This loads the root Jest config, which in turn will either refer to a single
 // configuration for the current package, or a collection of configurations for
 // the target workspace packages
 async function getRootConfig() {
@@ -242,7 +231,7 @@ async function getRootConfig() {
   }
 
   // If the target package is a workspace root, we find all packages in the
-  // workspace and load those in as separate jest projects instead.
+  // workspace and load those in as separate Jest projects instead.
   const projectPaths = await Promise.all(
     workspacePatterns.map(pattern => glob(path.join(targetPath, pattern))),
   ).then(_ => _.flat());
@@ -262,8 +251,6 @@ async function getRootConfig() {
         testScript?.includes('backstage-cli test') ||
         testScript?.includes('backstage-cli package test');
       if (testScript && isSupportedTestScript) {
-        // Some global Jest config might be invalid for a 'project' level config and output warnings
-        // See: https://github.com/facebook/jest/blob/main/packages/jest-types/src/Config.ts
         return await getProjectConfig(projectPath, {
           displayName: packageData.name,
         });
@@ -276,10 +263,8 @@ async function getRootConfig() {
   const rootBaseConfig = await getProjectConfig(targetPath, coverageConfig);
   return {
     ...rootBaseConfig,
-    ...{
-      rootDir: targetPath,
-      projects: configs,
-    },
+    rootDir: targetPath,
+    projects: configs,
   };
 }
 
