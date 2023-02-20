@@ -9738,11 +9738,11 @@ __metadata:
   linkType: hard
 
 "@google-cloud/container@npm:^4.0.0":
-  version: 4.4.0
-  resolution: "@google-cloud/container@npm:4.4.0"
+  version: 4.7.1
+  resolution: "@google-cloud/container@npm:4.7.1"
   dependencies:
     google-gax: ^3.5.2
-  checksum: 39e7ba3b8cd7e50908315eee5c42461b8cee909c5653ffc817503757e867d63815c5ca8f540b7566f38be9ae0454ed89d2efe95b64961a8692a9348ddf92074f
+  checksum: e622ddc2522fcffadd72a0cc6fa3f12e6a337b9e53ff1886a2057a8d4f3f0fc13b60b806c35946da0a1211fe52d66f65b4ab59c06b5e7cd725cd588477c0bde1
   languageName: node
   linkType: hard
 
