@@ -17,9 +17,10 @@
 import * as fs from 'fs-extra';
 import * as differ from 'diff';
 
-export const patch = async (file: string, diff: string) => {
+export const patch = async (file: string, patchFile: string) => {
+  const patchContent = await fs.readFile(patchFile, 'utf8');
   const oldContent = await fs.readFile(file, 'utf8');
-  const newContent = differ.applyPatch(oldContent, diff);
+  const newContent = differ.applyPatch(oldContent, patchContent);
 
   return await fs.writeFile(file, newContent, 'utf8');
 };

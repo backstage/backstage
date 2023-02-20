@@ -18,17 +18,18 @@ import { OAuthApp } from '@octokit/oauth-app';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { Task } from '../../../../lib/tasks';
 import { addUserEntity, updateConfigFile, updateEnvFile } from '../config';
 import {
   APP_CONFIG_FILE,
-  APP_TSX_FILE,
-  AUTH_BACKEND_PLUGIN_FILE,
   ENV_CONFIG_FILE,
+  patchMap,
+  PATCH_FOLDER,
   USER_ENTITY_FILE,
 } from '../files';
 import { patch } from '../patch';
-import { addSignInPageDiff, replaceSignInResolverDiff } from './diffs';
 
 const validateCredentials = async (clientId: string, clientSecret: string) => {
   try {
@@ -50,7 +51,7 @@ const validateCredentials = async (clientId: string, clientSecret: string) => {
       error.response.status !== 200 &&
       error.response.data.error !== 'bad_verification_code'
     ) {
-      throw new Error(`Validating Github Credentials failed.`);
+      throw new Error(`Validating GitHub Credentials failed.`);
     }
   }
 };
@@ -109,13 +110,14 @@ export const oauth = async (useEnvForSecrets: boolean) => {
 
     You can find the full documentation page here: ${chalk.blue(
       'https://backstage.io/docs/auth/github/provider',
-    )}`);
+    )}
+    `);
 
   const answers = await inquirer.prompt<Answers>([
     {
       type: 'input',
       name: 'username',
-      message: 'What is your Github username?',
+      message: 'What is your GitHub username?',
       validate: async (input: string) => {
         const response = await fetch(`https://api.github.com/users/${input}`);
         if (!response.ok) {
@@ -139,30 +141,53 @@ export const oauth = async (useEnvForSecrets: boolean) => {
     {
       type: 'confirm',
       name: 'hasEnterprise',
-      message: 'Are you using Github Enterprise?',
+      message: 'Are you using GitHub Enterprise?',
     },
     {
       type: 'input',
       name: 'enterpriseInstanceUrl',
-      message: 'What is your URL for Github Enterprise?',
+      message: 'What is your URL for GitHub Enterprise?',
       when: ({ hasEnterprise }) => hasEnterprise,
       validate: (input: string) => Boolean(new URL(input)),
     },
   ]);
 
   const { username, clientId, clientSecret } = answers;
-
-  await validateCredentials(clientId, clientSecret);
-
   const config = getConfig(answers, useEnvForSecrets);
-  await updateConfigFile(APP_CONFIG_FILE, config);
 
+  Task.log('Setting up GitHub Authentication for you...');
+
+  await Task.forItem(
+    'Validating',
+    'credentials',
+    async () => await validateCredentials(clientId, clientSecret),
+  );
+  await Task.forItem(
+    'Updating',
+    APP_CONFIG_FILE,
+    async () => await updateConfigFile(APP_CONFIG_FILE, config),
+  );
   if (useEnvForSecrets) {
-    await updateEnvFile(ENV_CONFIG_FILE, clientId, clientSecret);
+    await Task.forItem(
+      'Updating',
+      ENV_CONFIG_FILE,
+      async () => await updateEnvFile(ENV_CONFIG_FILE, clientId, clientSecret),
+    );
   }
+  await Task.forItem(
+    'Creating',
+    USER_ENTITY_FILE,
+    async () => await addUserEntity(USER_ENTITY_FILE, username),
+  );
 
-  await addUserEntity(USER_ENTITY_FILE, username);
+  const patches = await fs.readdir(PATCH_FOLDER);
+  for (const patchFile of patches) {
+    const target = patchFile
+      .replace(/[0-9]+-github\./, '')
+      .replace('.patch', '');
 
-  await patch(APP_TSX_FILE, addSignInPageDiff);
-  await patch(AUTH_BACKEND_PLUGIN_FILE, replaceSignInResolverDiff);
+    await Task.forItem('Pactching', target, async () => {
+      await patch(patchMap[target], path.join(PATCH_FOLDER, patchFile));
+    });
+  }
 };

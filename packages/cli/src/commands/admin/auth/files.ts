@@ -18,19 +18,33 @@ import { findPaths } from '@backstage/cli-common';
 import * as path from 'path';
 
 /* eslint-disable-next-line no-restricted-syntax */
-const { targetRoot, resolveTargetRoot } = findPaths(__dirname);
+const { targetRoot, ownDir, resolveTargetRoot } = findPaths(__dirname);
 export const APP_CONFIG_FILE = path.join(targetRoot, 'app-config.local.yaml');
 export const ENV_CONFIG_FILE = path.join(targetRoot, '.env.local');
 export const USER_ENTITY_FILE = path.join(targetRoot, 'user-info.yaml');
 
-export const APP_TSX_FILE = path.join(
+const APP_TSX_FILE = path.join(
   resolveTargetRoot('packages/app'),
   'src',
   'App.tsx',
 );
-export const AUTH_BACKEND_PLUGIN_FILE = path.join(
+const AUTH_BACKEND_PLUGIN_FILE = path.join(
   resolveTargetRoot('packages/backend'),
   'src',
   'plugins',
   'auth.ts',
 );
+
+export const PATCH_FOLDER = path.join(
+  ownDir,
+  'src',
+  'commands',
+  'admin',
+  'auth',
+  'patches',
+);
+
+export const patchMap: Record<string, string> = {
+  'App.tsx': APP_TSX_FILE,
+  'auth.ts': AUTH_BACKEND_PLUGIN_FILE,
+};

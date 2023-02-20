@@ -43,5 +43,7 @@ export async function auth(): Promise<void> {
   }
 
   Task.log(`Done setting up ${provider}!`);
-  Task.log(`You can now start you app with ${chalk.inverse('yarn dev')}`);
+  Task.log(
+    `You can now start you app with ${chalk.inverse(chalk.italic('yarn dev'))}`,
+  );
 }
