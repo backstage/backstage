@@ -33,6 +33,8 @@ A detailed project roadmap, including already delivered milestones, is available
 
 ## Getting Started
 
+[![Demo](https://cdn.uffizzi.com/demo-button.svg)](https://app.uffizzi.com/demo/github.com/backstage/backstage)
+
 Check out [the documentation](https://backstage.io/docs/getting-started) on how to start using Backstage.
 
 ## Documentation
