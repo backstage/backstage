@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   DEFAULT_NAMESPACE,
   Entity,
@@ -22,9 +23,9 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
-  Button,
   ItemCardHeader,
   Link,
+  LinkButton,
   MarkdownContent,
 } from '@backstage/core-components';
 import {
@@ -291,13 +292,13 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
             </Tooltip>
           ))}
         </div>
-        <Button
+        <LinkButton
           color="primary"
           to={href}
           aria-label={`Choose ${templateProps.title}`}
         >
           Choose
-        </Button>
+        </LinkButton>
       </CardActions>
     </Card>
   );

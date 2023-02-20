@@ -15,8 +15,8 @@
  */
 
 import {
-  Button,
   ItemCardHeader,
+  LinkButton,
   MarkdownContent,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -118,13 +118,13 @@ export const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         </Box>
       </CardContent>
       <CardActions>
-        <Button
+        <LinkButton
           color="primary"
           aria-label={`Choose ${playlist.name}`}
           to={playlistRoute({ playlistId: playlist.id })}
         >
           Choose
-        </Button>
+        </LinkButton>
       </CardActions>
     </Card>
   );
