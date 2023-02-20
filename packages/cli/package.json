@@ -67,7 +67,7 @@
     "buffer": "^6.0.3",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
-    "cli-admin-web": "link:../cli-admin-web",
+    "cli-admin-web": "link:../admin-web",
     "commander": "^9.1.0",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",

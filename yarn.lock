@@ -3720,7 +3720,7 @@ __metadata:
     buffer: ^6.0.3
     chalk: ^4.0.0
     chokidar: ^3.3.1
-    cli-admin-web: "link:../cli-admin-web"
+    cli-admin-web: "link:../admin-web"
     commander: ^9.1.0
     cross-spawn: ^7.0.3
     css-loader: ^6.5.1
@@ -18518,9 +18518,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli-admin-web@link:../cli-admin-web::locator=%40backstage%2Fcli%40workspace%3Apackages%2Fcli":
+"cli-admin-web@link:../admin-web::locator=%40backstage%2Fcli%40workspace%3Apackages%2Fcli":
   version: 0.0.0-use.local
-  resolution: "cli-admin-web@link:../cli-admin-web::locator=%40backstage%2Fcli%40workspace%3Apackages%2Fcli"
+  resolution: "cli-admin-web@link:../admin-web::locator=%40backstage%2Fcli%40workspace%3Apackages%2Fcli"
   languageName: node
   linkType: soft
 
