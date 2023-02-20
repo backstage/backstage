@@ -18,6 +18,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { Item, SelectComponent } from './Select';
 import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 
 describe('Select', () => {
   const testLabel = 'Date Select';
@@ -29,7 +30,7 @@ describe('Select', () => {
   const user = userEvent.setup();
 
   it('should render', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <SelectComponent
         value="lastMonth"
         items={testItems}
@@ -37,12 +38,12 @@ describe('Select', () => {
         onChange={() => undefined}
       />,
     );
-    expect(rendered.getAllByText(testLabel)).toHaveLength(2);
+    expect(screen.getAllByText(testLabel)).toHaveLength(2);
   });
 
   describe("when the user hasn't clicked on it", () => {
     it('should only render the current select item', async () => {
-      const rendered = await renderInTestApp(
+      await renderInTestApp(
         <SelectComponent
           value="lastMonth"
           items={testItems}
@@ -50,14 +51,14 @@ describe('Select', () => {
           onChange={() => undefined}
         />,
       );
-      expect(rendered.getByText(testItems[0].label)).toBeInTheDocument();
-      expect(rendered.queryByText(testItems[1].label)).toBeNull();
+      expect(screen.getByText(testItems[0].label)).toBeInTheDocument();
+      expect(screen.queryByText(testItems[1].label)).toBeNull();
     });
   });
 
   describe('when the user clicked on it', () => {
     it('should render all the items', async () => {
-      const rendered = await renderInTestApp(
+      await renderInTestApp(
         <SelectComponent
           value="lastMonth"
           items={testItems}
@@ -65,11 +66,11 @@ describe('Select', () => {
           onChange={() => undefined}
         />,
       );
-      user.tab();
-      userEvent.keyboard('{enter}');
+      await user.tab();
+      await user.keyboard('{enter}');
 
-      expect(rendered.getAllByText(testItems[0].label)).toHaveLength(2);
-      expect(rendered.getByText(testItems[1].label)).toBeInTheDocument();
+      expect(screen.getAllByText(testItems[0].label)).toHaveLength(2);
+      expect(screen.getByText(testItems[1].label)).toBeInTheDocument();
     });
   });
 });
