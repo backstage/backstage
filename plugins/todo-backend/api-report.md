@@ -118,6 +118,9 @@ export type TodoReaderServiceOptions = {
   defaultPageSize?: number;
 };
 
+// @alpha (undocumented)
+export const todoReaderServiceRef: ServiceRef<TodoReader, 'plugin'>;
+
 // @public (undocumented)
 export class TodoScmReader implements TodoReader {
   constructor(options: TodoScmReaderOptions);
@@ -138,9 +141,6 @@ export type TodoScmReaderOptions = {
   parser?: TodoParser;
   filePathFilter?: (filePath: string) => boolean;
 };
-
-// @alpha (undocumented)
-export const todoScmReaderRef: ServiceRef<TodoScmReader, 'plugin'>;
 
 // @public (undocumented)
 export interface TodoService {
