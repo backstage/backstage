@@ -57,11 +57,3 @@ export const TODO_FIELDS = [
   'viewUrl',
   'repoFilePath',
 ] as const;
-
-/**
- * @alpha
- */
-export type TodosPluginDependencies = {
-  todoReader: TodoService;
-  http: HttpRouterService;
-};

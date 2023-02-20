@@ -176,8 +176,8 @@ export class TodoScmReader implements TodoReader {
 /**
  * @alpha
  */
-export const todoScmReaderRef = createServiceRef<TodoScmReader>({
-  id: 'todoScmReaderFactory',
+export const todoReaderServiceRef = createServiceRef<TodoReader>({
+  id: 'todo.todoReader',
   defaultFactory: async service =>
     createServiceFactory({
       service,

@@ -19,7 +19,7 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 
-import { todoReaderServiceRef } from './service/TodoReaderService';
+import { todoServiceRef } from './service/TodoReaderService';
 import { createRouter } from './service/router';
 
 /**
@@ -31,7 +31,7 @@ export const todoPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        todoReader: todoReaderServiceRef,
+        todoReader: todoServiceRef,
         http: coreServices.httpRouter,
       },
       async init({ http, todoReader }) {
