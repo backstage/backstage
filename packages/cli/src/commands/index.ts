@@ -210,6 +210,19 @@ export function registerMigrateCommand(program: Command) {
     );
 }
 
+export function registerDeployCommand(program: Command) {
+  const command = program
+    .command('deploy [command]')
+    .description(
+      'Deploy your Backstage instance on a specified cloud provider [EXPERIMENTAL]',
+    );
+
+  command
+    .command('aws')
+    .description('Deploys Backstage on AWS Lightsail')
+    .action(lazy(() => import('./deploy/aws').then(m => m.default)));
+}
+
 export function registerCommands(program: Command) {
   program
     .command('new')
@@ -353,6 +366,7 @@ export function registerCommands(program: Command) {
   registerRepoCommand(program);
   registerScriptCommand(program);
   registerMigrateCommand(program);
+  registerDeployCommand(program);
 
   program
     .command('versions:bump')
