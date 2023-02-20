@@ -6885,7 +6885,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@microsoft/microsoft-graph-types": ^2.25.0
+    "@microsoft/microsoft-graph-types": ^2.6.0
     "@tanstack/react-query": ^4.1.3
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
@@ -11665,7 +11665,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/microsoft-graph-types@npm:^2.25.0, @microsoft/microsoft-graph-types@npm:^2.6.0":
+"@microsoft/microsoft-graph-types@npm:^2.6.0":
   version: 2.25.0
   resolution: "@microsoft/microsoft-graph-types@npm:2.25.0"
   checksum: b311385e0a51f827082af5a016f35b1d6cd4d861121e8767b3279ab1a17475977cddbbdcc208abdddf0f953fd6ce4634d3c302e317cf50af4cb6111385347b4f
