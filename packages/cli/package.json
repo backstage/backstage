@@ -31,7 +31,6 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/admin-web": "0.0.0",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",
@@ -68,6 +67,7 @@
     "buffer": "^6.0.3",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
+    "cli-admin-web": "link:../cli-admin-web",
     "commander": "^9.1.0",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",

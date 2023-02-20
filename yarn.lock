@@ -3347,20 +3347,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/admin-web@0.0.0, @backstage/admin-web@workspace:packages/admin-web":
-  version: 0.0.0-use.local
-  resolution: "@backstage/admin-web@workspace:packages/admin-web"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/core-components": "workspace:^"
-    "@material-ui/core": ^4.12.2
-    "@types/react": "*"
-    "@types/react-dom": "*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
-  languageName: unknown
-  linkType: soft
-
 "@backstage/app-defaults@workspace:^, @backstage/app-defaults@workspace:packages/app-defaults":
   version: 0.0.0-use.local
   resolution: "@backstage/app-defaults@workspace:packages/app-defaults"
@@ -3674,7 +3660,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/cli@workspace:packages/cli"
   dependencies:
-    "@backstage/admin-web": 0.0.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -3735,6 +3720,7 @@ __metadata:
     buffer: ^6.0.3
     chalk: ^4.0.0
     chokidar: ^3.3.1
+    cli-admin-web: "link:../cli-admin-web"
     commander: ^9.1.0
     cross-spawn: ^7.0.3
     css-loader: ^6.5.1
@@ -18531,6 +18517,26 @@ __metadata:
   checksum: 2ac8cd2b2f5ec986a3c743935ec85b07bc174d5421a5efc8017e1f146a1cf5f781ae962618f416352103b32c9cd7e203276e8c28241bbe946160cab16149fb68
   languageName: node
   linkType: hard
+
+"cli-admin-web@link:../cli-admin-web::locator=%40backstage%2Fcli%40workspace%3Apackages%2Fcli":
+  version: 0.0.0-use.local
+  resolution: "cli-admin-web@link:../cli-admin-web::locator=%40backstage%2Fcli%40workspace%3Apackages%2Fcli"
+  languageName: node
+  linkType: soft
+
+"cli-admin-web@workspace:packages/admin-web":
+  version: 0.0.0-use.local
+  resolution: "cli-admin-web@workspace:packages/admin-web"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+  languageName: unknown
+  linkType: soft
 
 "cli-cursor@npm:^3.1.0":
   version: 3.1.0

@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/admin-web",
+  "name": "cli-admin-web",
   "version": "0.0.0",
   "private": true,
   "backstage": {
@@ -7,6 +7,7 @@
   },
   "main": "src/index.tsx",
   "bundled": true,
+  "prettier": "@spotify/prettier-config",
   "dependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-components": "workspace:^",
