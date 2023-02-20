@@ -27,7 +27,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
-import { TodoReader, todoScmReaderRef } from '../lib';
+import { TodoReader, todoReaderServiceRef } from '../lib';
 import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
 
 const DEFAULT_DEFAULT_PAGE_SIZE = 10;
@@ -138,7 +138,7 @@ export class TodoReaderService implements TodoService {
   }
 }
 
-export const todoReaderServiceRef: ServiceRef<TodoService> =
+export const todoServiceRef: ServiceRef<TodoService> =
   createServiceRef<TodoService>({
     id: 'todo.client',
     defaultFactory: async service =>
@@ -146,7 +146,7 @@ export const todoReaderServiceRef: ServiceRef<TodoService> =
         service,
         deps: {
           catalogApi: catalogServiceRef,
-          todoReader: todoScmReaderRef,
+          todoReader: todoReaderServiceRef,
         },
         async factory({ catalogApi, todoReader }) {
           const todoReaderService = new TodoReaderService({
