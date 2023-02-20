@@ -27,14 +27,14 @@ export async function auth(): Promise<void> {
       type: 'list',
       name: 'provider',
       message: 'Please select a provider:',
-      choices: ['Github'],
+      choices: ['GitHub'],
     },
   ]);
 
   const { provider } = answers;
 
   switch (provider) {
-    case 'Github': {
+    case 'GitHub': {
       await github();
       break;
     }

@@ -15,7 +15,6 @@
  */
 
 import inquirer from 'inquirer';
-import { app } from './app';
 import { oauth } from './oauth';
 
 export const github = async () => {
@@ -29,26 +28,9 @@ export const github = async () => {
       message:
         'Would you like to store sensitive configuration details such as secrets as environment variables? (recommended)',
     },
-    {
-      type: 'list',
-      name: 'type',
-      message: 'Do you want to use a Github App or Github OAuth?',
-      choices: ['GitHub OAuth', 'GitHub App'],
-    },
   ]);
 
-  const { type, useEnvForSecrets } = answers;
+  const { useEnvForSecrets } = answers;
 
-  switch (type) {
-    case 'GitHub OAuth': {
-      await oauth(useEnvForSecrets);
-      break;
-    }
-    case 'GitHub App': {
-      await app(useEnvForSecrets);
-      break;
-    }
-    default:
-      throw new Error(`Unknown selection: ${type}.`);
-  }
+  await oauth(useEnvForSecrets);
 };
