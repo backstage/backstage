@@ -90,7 +90,7 @@ describe('catalog:fetch', () => {
     expect(mockContext.output).toHaveBeenCalledWith('entity', null);
   });
 
-  it('should throw error if entity not in catalog and optional is false', async () => {
+  it('should throw error if entity fetch fails from catalog and optional is false', async () => {
     getEntityByRef.mockImplementationOnce(() => {
       throw new Error('Not found');
     });
@@ -103,6 +103,24 @@ describe('catalog:fetch', () => {
         },
       }),
     ).rejects.toThrow('Not found');
+
+    expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
+      token: 'secret',
+    });
+    expect(mockContext.output).not.toHaveBeenCalled();
+  });
+
+  it('should throw error if entity not in catalog and optional is false', async () => {
+    getEntityByRef.mockReturnValueOnce(null);
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          entityRef: 'component:default/test',
+        },
+      }),
+    ).rejects.toThrow('Entity component:default/test not found');
 
     expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
       token: 'secret',

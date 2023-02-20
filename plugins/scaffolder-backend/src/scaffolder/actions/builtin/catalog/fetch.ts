@@ -93,6 +93,11 @@ export function createFetchCatalogEntityAction(options: {
           throw e;
         }
       }
+
+      if (!entity && !optional) {
+        throw new Error(`Entity ${entityRef} not found`);
+      }
+
       ctx.output('entity', entity ?? null);
     },
   });
