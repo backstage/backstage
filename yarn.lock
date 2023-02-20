@@ -8383,6 +8383,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
