@@ -16,7 +16,9 @@
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import React, { ComponentType, useCallback, useState } from 'react';
+import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import React, { ComponentType, useCallback, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import {
@@ -63,6 +65,7 @@ type Props = {
     title?: string;
     subtitle?: string;
   };
+  initialTemplateStates: Record<string, (catalogApi: CatalogApi) => any>;
 };
 
 export const TemplatePage = ({
@@ -70,10 +73,12 @@ export const TemplatePage = ({
   customFieldExtensions = [],
   layouts = [],
   headerOptions,
+  initialTemplateStates = {},
 }: Props) => {
   const apiHolder = useApiHolder();
   const secretsContext = useTemplateSecrets();
   const errorApi = useApi(errorApiRef);
+  const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
@@ -98,6 +103,15 @@ export const TemplatePage = ({
       return query.formData ?? {};
     }
   });
+
+  useEffect(() => {
+    if (initialTemplateStates[templateRef]) {
+      initialTemplateStates[templateRef](catalogApi).then((data: any) => {
+        setFormState(data);
+      });
+    }
+  }, [catalogApi, initialTemplateStates, templateRef]);
+
   const handleFormReset = () => setFormState({});
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),
@@ -111,16 +125,18 @@ export const TemplatePage = ({
       secrets: secretsContext?.secrets,
     });
 
-    const formParams = qs.stringify(
-      { formData: formState },
-      { addQueryPrefix: true },
-    );
-    const newUrl = `${window.location.pathname}${formParams}`;
-    // We use direct history manipulation since useSearchParams and
-    // useNavigate in react-router-dom cause unnecessary extra rerenders.
-    // Also make sure to replace the state rather than pushing to avoid
-    // extra back/forward slots.
-    window.history?.replaceState(null, document.title, newUrl);
+    if (!initialTemplateStates[templateRef]) {
+      const formParams = qs.stringify(
+        { formData: formState },
+        { addQueryPrefix: true },
+      );
+      const newUrl = `${window.location.pathname}${formParams}`;
+      // We use direct history manipulation since useSearchParams and
+      // useNavigate in react-router-dom cause unnecessary extra rerenders.
+      // Also make sure to replace the state rather than pushing to avoid
+      // extra back/forward slots.
+      window.history?.replaceState(null, document.title, newUrl);
+    }
 
     navigate(scaffolderTaskRoute({ taskId }));
   };
