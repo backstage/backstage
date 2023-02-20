@@ -131,7 +131,7 @@ export type BreadcrumbsStyledBoxClassKey = 'root';
 export function BrokenImageIcon(props: IconComponentProps): JSX.Element;
 
 // @public @deprecated (undocumented)
-export const Button: (props: ButtonProps) => JSX.Element;
+export const Button: (props: LinkButtonProps) => JSX.Element;
 
 // @public @deprecated (undocumented)
 export type ButtonProps = LinkButtonProps;
@@ -631,7 +631,7 @@ export function LinearGauge(props: Props_11): JSX.Element | null;
 export const Link: (props: LinkProps) => JSX.Element;
 
 // @public
-export const LinkButton: (props: ButtonProps) => JSX.Element;
+export const LinkButton: (props: LinkButtonProps) => JSX.Element;
 
 // @public
 export type LinkButtonProps = ButtonProps_2 &
