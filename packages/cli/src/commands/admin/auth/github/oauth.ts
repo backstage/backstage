@@ -16,15 +16,14 @@
 
 import { OAuthApp } from '@octokit/oauth-app';
 import chalk from 'chalk';
+import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import { Task } from '../../../../lib/tasks';
-import { addUserEntity, updateConfigFile, updateEnvFile } from '../config';
+import { addUserEntity, updateConfigFile } from '../config';
 import {
   APP_CONFIG_FILE,
-  ENV_CONFIG_FILE,
   patchMap,
   PATCH_FOLDER,
   USER_ENTITY_FILE,
@@ -56,7 +55,7 @@ const validateCredentials = async (clientId: string, clientSecret: string) => {
   }
 };
 
-const getConfig = (answers: Answers, useEnvForSecrets: boolean) => {
+const getConfig = (answers: Answers) => {
   const { clientId, clientSecret, hasEnterprise, enterpriseInstanceUrl } =
     answers;
 
@@ -65,12 +64,10 @@ const getConfig = (answers: Answers, useEnvForSecrets: boolean) => {
       providers: {
         github: {
           development: {
-            clientId: useEnvForSecrets ? '${AUTH_GITHUB_CLIENT_ID}' : clientId,
-            clientSecret: useEnvForSecrets
-              ? '${AUTH_GITHUB_CLIENT_SECRET}'
-              : clientSecret,
+            clientId,
+            clientSecret,
             ...(hasEnterprise && {
-              enterpriseInstanceUrl: enterpriseInstanceUrl,
+              enterpriseInstanceUrl,
             }),
           },
         },
@@ -96,7 +93,7 @@ type Answers = {
   enterpriseInstanceUrl?: string;
 };
 
-export const oauth = async (useEnvForSecrets: boolean) => {
+export const oauth = async () => {
   Task.log(`
     To add GitHub authentication, you must create an OAuth App from the GitHub developer settings: ${chalk.blue(
       'https://github.com/settings/developers',
@@ -153,7 +150,7 @@ export const oauth = async (useEnvForSecrets: boolean) => {
   ]);
 
   const { username, clientId, clientSecret } = answers;
-  const config = getConfig(answers, useEnvForSecrets);
+  const config = getConfig(answers);
 
   Task.log('Setting up GitHub Authentication for you...');
 
@@ -167,13 +164,6 @@ export const oauth = async (useEnvForSecrets: boolean) => {
     APP_CONFIG_FILE,
     async () => await updateConfigFile(APP_CONFIG_FILE, config),
   );
-  if (useEnvForSecrets) {
-    await Task.forItem(
-      'Updating',
-      ENV_CONFIG_FILE,
-      async () => await updateEnvFile(ENV_CONFIG_FILE, clientId, clientSecret),
-    );
-  }
   await Task.forItem(
     'Creating',
     USER_ENTITY_FILE,

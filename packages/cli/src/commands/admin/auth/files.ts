@@ -20,7 +20,6 @@ import * as path from 'path';
 /* eslint-disable-next-line no-restricted-syntax */
 const { targetRoot, ownDir, resolveTargetRoot } = findPaths(__dirname);
 export const APP_CONFIG_FILE = path.join(targetRoot, 'app-config.local.yaml');
-export const ENV_CONFIG_FILE = path.join(targetRoot, '.env.local');
 export const USER_ENTITY_FILE = path.join(targetRoot, 'user-info.yaml');
 
 const APP_TSX_FILE = path.join(

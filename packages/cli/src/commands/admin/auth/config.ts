@@ -59,22 +59,6 @@ export const updateConfigFile = async (
   );
 };
 
-export const updateEnvFile = async (
-  file: string,
-  clientId: string,
-  clientSecret: string,
-) => {
-  const content = `
-AUTH_GITHUB_CLIENT_ID=${clientId}
-AUTH_GITHUB_CLIENT_SECRET=${clientSecret}`;
-
-  if (fs.existsSync(file)) {
-    return await fs.appendFile(file, content, 'utf8');
-  }
-
-  return await fs.writeFile(file, content, 'utf8');
-};
-
 export const addUserEntity = async (file: string, username: string) => {
   const content = {
     apiVersion: 'backstage.io/v1alpha1',

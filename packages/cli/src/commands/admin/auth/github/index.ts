@@ -14,23 +14,6 @@
  * limitations under the License.
  */
 
-import inquirer from 'inquirer';
 import { oauth } from './oauth';
 
-export const github = async () => {
-  const answers = await inquirer.prompt<{
-    useEnvForSecrets: boolean;
-    type: string;
-  }>([
-    {
-      type: 'confirm',
-      name: 'useEnvForSecrets',
-      message:
-        'Would you like to store sensitive configuration details such as secrets as environment variables? (recommended)',
-    },
-  ]);
-
-  const { useEnvForSecrets } = answers;
-
-  await oauth(useEnvForSecrets);
-};
+export const github = async () => await oauth();
