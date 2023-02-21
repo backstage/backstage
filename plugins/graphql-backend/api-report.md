@@ -10,7 +10,7 @@ import express from 'express';
 import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
 import { Plugin as Plugin_2 } from 'graphql-yoga';
-import { ResolverContext } from '@backstage/plugin-graphql-common';
+import { ResolverContext } from '@backstage/plugin-graphql-catalog';
 
 // @public (undocumented)
 export function createRouter({

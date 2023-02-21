@@ -16,6 +16,13 @@
 
 export * from './createGraphQLApp';
 export * from './core';
-export * from './refToId';
 export { transformSchema } from './transformSchema';
-export type { ResolverContext } from './types';
+export { createDirectiveMapperProvider } from './mapperProvider';
+export type {
+  ResolverContext,
+  FieldDirectiveMapper,
+  DirectiveMapperAPI,
+  OmitFirst,
+  Logger,
+  LogLevel,
+} from './types';

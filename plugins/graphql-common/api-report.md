@@ -4,13 +4,15 @@
 
 ```ts
 import { Application } from 'graphql-modules';
-import type { CatalogClient } from '@backstage/catalog-client';
-import { CompoundEntityRef } from '@backstage/catalog-model';
 import DataLoader from 'dataloader';
+import { getDirective } from '@graphql-tools/utils';
+import { GraphQLFieldConfig } from 'graphql';
+import { GraphQLNamedType } from 'graphql';
+import { GraphQLObjectType } from 'graphql';
 import { GraphQLSchema } from 'graphql';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { Module } from 'graphql-modules';
-import { TypeSource } from '@graphql-tools/utils';
+import { TypeProvider } from 'graphql-modules';
 
 // @public (undocumented)
 export const Core: Module;
@@ -19,31 +21,78 @@ export const Core: Module;
 export const coreSchema: any[];
 
 // @public (undocumented)
+export function createDirectiveMapperProvider(
+  name: string,
+  mapper: FieldDirectiveMapper,
+): TypeProvider<any>;
+
+// @public (undocumented)
 export function createGraphQLApp(options: createGraphQLAppOptions): Application;
 
 // @public (undocumented)
 export type createGraphQLAppOptions = {
   modules?: Module[];
-  logger?: Logger;
+  logger?: Logger_2;
 };
 
 // @public (undocumented)
-export const refToId: (ref: CompoundEntityRef | string) => string;
+export interface DirectiveMapperAPI {
+  // (undocumented)
+  getDirective: (
+    ...args: OmitFirst<Parameters<typeof getDirective>>
+  ) => ReturnType<typeof getDirective>;
+  // (undocumented)
+  getImplementingTypes: (interfaceName: string) => GraphQLObjectType[];
+  // (undocumented)
+  typeMap: Partial<Record<string, GraphQLNamedType>>;
+}
+
+// @public (undocumented)
+export type FieldDirectiveMapper = (
+  field: GraphQLFieldConfig<
+    {
+      id: string;
+    },
+    ResolverContext
+  >,
+  directive: Record<string, any>,
+  api: DirectiveMapperAPI,
+  options?: {
+    logger?: Logger;
+  },
+) => void;
+
+// @public (undocumented)
+export type Logger = Record<LogLevel, (...args: any[]) => void>;
+
+// @public (undocumented)
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+
+// @public (undocumented)
+export type OmitFirst<T extends Array<any>> = T extends [
+  x: any,
+  ...args: infer R,
+]
+  ? R
+  : [];
 
 // @public (undocumented)
 export interface ResolverContext {
   // (undocumented)
   application: Application;
   // (undocumented)
-  catalog: CatalogClient;
-  // (undocumented)
   loader: DataLoader<any, any>;
-  // (undocumented)
-  refToId?: (ref: CompoundEntityRef | string) => string;
 }
 
 // @public (undocumented)
-export function transformSchema(source: TypeSource): GraphQLSchema;
+export function transformSchema(
+  modules?: Module[],
+  {
+    logger,
+  }?: {
+    logger?: Logger;
+  },
+): GraphQLSchema;
 
 // (No @packageDocumentation comment for this package)
 ```
