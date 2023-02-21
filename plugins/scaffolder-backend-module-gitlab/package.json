@@ -31,23 +31,15 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
-    "@backstage/config": "workspace:^",
-    "@backstage/core-components": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@gitbeaker/node": "^35.8.0",
-    "fs-extra": "10.1.0"
+    "@gitbeaker/node": "^35.8.0"
   },
   "devDependencies": {
+    "@backstage/backend-common": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
-    "@backstage/dev-utils": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
-    "@types/node": "*",
-    "cross-fetch": "^3.1.5",
-    "msw": "^0.49.0"
+    "@backstage/core-app-api": "workspace:^"
   },
   "files": [
     "dist"
