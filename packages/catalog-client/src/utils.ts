@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-export { CATALOG_FILTER_EXISTS } from './api';
-export type {
-  AddLocationRequest,
-  AddLocationResponse,
-  CatalogApi,
-  CatalogRequestOptions,
-  EntityFieldsQuery,
-  EntityFilterQuery,
-  EntityOrderQuery,
-  GetEntitiesByRefsRequest,
-  GetEntitiesByRefsResponse,
-  GetEntitiesRequest,
-  GetEntitiesResponse,
-  GetEntityAncestorsRequest,
-  GetEntityAncestorsResponse,
-  GetEntityFacetsRequest,
-  GetEntityFacetsResponse,
-  Location,
-  ValidateEntityResponse,
+import {
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
-  QueryEntitiesResponse,
-} from './api';
-export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';
+} from './types/api';
+
+export function isQueryEntitiesInitialRequest(
+  request: QueryEntitiesInitialRequest,
+): request is QueryEntitiesInitialRequest {
+  return !(request as QueryEntitiesCursorRequest).cursor;
+}
+
+export function isQueryEntitiesCursorRequest(
+  request: QueryEntitiesRequest,
+): request is QueryEntitiesCursorRequest {
+  return !isQueryEntitiesInitialRequest(request);
+}
