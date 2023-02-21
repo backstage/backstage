@@ -48,12 +48,17 @@ export const createAsyncValidators = (
       validatorName: string,
       key: string,
       value: JsonValue | undefined,
+      schema: JsonObject,
     ) => {
       const validator = validators[validatorName];
       if (validator) {
         const fieldValidation = createFieldValidation();
         try {
-          await validator(value, fieldValidation, { ...context, formData });
+          await validator(value, fieldValidation, {
+            ...context,
+            formData,
+            schema,
+          });
         } catch (ex) {
           fieldValidation.addError(ex.message);
         }
@@ -67,7 +72,12 @@ export const createAsyncValidators = (
 
       if (definitionInSchema && 'ui:field' in definitionInSchema) {
         if ('ui:field' in definitionInSchema) {
-          await validateForm(definitionInSchema['ui:field'], key, value);
+          await validateForm(
+            definitionInSchema['ui:field'],
+            key,
+            value,
+            definitionInSchema,
+          );
         }
       } else if (
         definitionInSchema &&
@@ -75,7 +85,12 @@ export const createAsyncValidators = (
         'ui:field' in definitionInSchema.items
       ) {
         if ('ui:field' in definitionInSchema.items) {
-          await validateForm(definitionInSchema.items['ui:field'], key, value);
+          await validateForm(
+            definitionInSchema.items['ui:field'],
+            key,
+            value,
+            definitionInSchema.items,
+          );
         }
       } else if (isObject(value)) {
         formValidation[key] = await validate(formData, path, value);
