@@ -15,12 +15,23 @@
  */
 
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import * as differ from 'diff';
+import { PATCH_FOLDER } from './files';
+import { findPaths } from '@backstage/cli-common';
 
-export const patch = async (file: string, patchFile: string) => {
-  const patchContent = await fs.readFile(patchFile, 'utf8');
-  const oldContent = await fs.readFile(file, 'utf8');
+/* eslint-disable-next-line no-restricted-syntax */
+const { targetRoot } = findPaths(__dirname);
+
+export const patch = async (patchFile: string) => {
+  const patchContent = await fs.readFile(
+    path.join(PATCH_FOLDER, patchFile),
+    'utf8',
+  );
+  const targetName = patchContent.split('\n')[0].replace('--- a', '');
+  const targetFile = path.join(targetRoot, targetName);
+  const oldContent = await fs.readFile(targetFile, 'utf8');
   const newContent = differ.applyPatch(oldContent, patchContent);
 
-  return await fs.writeFile(file, newContent, 'utf8');
+  return await fs.writeFile(targetFile, newContent, 'utf8');
 };

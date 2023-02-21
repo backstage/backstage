@@ -1,3 +1,5 @@
+--- a/packages/app/src/App.tsx
++++ b/packages/app/src/App.tsx
 @@ -30 +30,5 @@ import { Root } from './components/Root';
 -import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
 +import {

@@ -1,3 +1,5 @@
+--- a/packages/backend/src/plugins/auth.ts
++++ b/packages/backend/src/plugins/auth.ts
 @@ -40,10 +40 @@ export default async function createPlugin(
 -          resolver(_, ctx) {
 -            const userRef = 'user:default/guest'; // Must be a full entity reference

@@ -19,15 +19,9 @@ import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
-import * as path from 'path';
 import { Task } from '../../../../lib/tasks';
 import { addUserEntity, updateConfigFile } from '../config';
-import {
-  APP_CONFIG_FILE,
-  patchMap,
-  PATCH_FOLDER,
-  USER_ENTITY_FILE,
-} from '../files';
+import { APP_CONFIG_FILE, PATCH_FOLDER, USER_ENTITY_FILE } from '../files';
 import { patch } from '../patch';
 
 const validateCredentials = async (clientId: string, clientSecret: string) => {
@@ -172,12 +166,8 @@ export const oauth = async () => {
 
   const patches = await fs.readdir(PATCH_FOLDER);
   for (const patchFile of patches) {
-    const target = patchFile
-      .replace(/[0-9]+-github\./, '')
-      .replace('.patch', '');
-
-    await Task.forItem('Pactching', target, async () => {
-      await patch(patchMap[target], path.join(PATCH_FOLDER, patchFile));
+    await Task.forItem('Patching', patchFile, async () => {
+      await patch(patchFile);
     });
   }
 };
