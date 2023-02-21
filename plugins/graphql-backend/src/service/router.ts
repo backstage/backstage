@@ -19,11 +19,11 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
+import { createGraphQLApp } from '@backstage/plugin-graphql-common';
 import {
-  createGraphQLApp,
   ResolverContext,
-} from '@backstage/plugin-graphql-common';
-import { createLoader as createCatalogLoader } from '@backstage/plugin-graphql-catalog';
+  createLoader as createCatalogLoader,
+} from '@backstage/plugin-graphql-catalog';
 import helmet from 'helmet';
 import DataLoader from 'dataloader';
 import { CatalogClient } from '@backstage/catalog-client';

@@ -13,8 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { transformSchema } from '@backstage/plugin-graphql-common';
-import { printSchemaWithDirectives } from '@graphql-tools/utils';
-import { Catalog } from './catalog';
+import 'reflect-metadata';
+import { Injectable, TypeProvider } from 'graphql-modules';
+import { FieldDirectiveMapper } from './types';
 
-export default printSchemaWithDirectives(transformSchema([Catalog]));
+export function toPrivateProp(name: string) {
+  return `__${name}_directive_mapper__`;
+}
+
+/** @public */
+export function createDirectiveMapperProvider(
+  name: string,
+  mapper: FieldDirectiveMapper,
+): TypeProvider<any> {
+  return Injectable()(
+    class {
+      // @ts-expect-error a computed property mast be a simple literal type or a unique symbol
+      static readonly [toPrivateProp(name)]: typeof mapper = mapper;
+    },
+  ) as TypeProvider<any>;
+}

@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { transformSchema } from '@backstage/plugin-graphql-common';
-import { printSchemaWithDirectives } from '@graphql-tools/utils';
-import { Catalog } from './catalog';
+import { resolvePackagePath } from '@backstage/backend-common';
+import { loadFilesSync } from '@graphql-tools/load-files';
 
-export default printSchemaWithDirectives(transformSchema([Catalog]));
+/** @public */
+export const relationSchema = loadFilesSync(
+  resolvePackagePath(
+    '@backstage/plugin-graphql-catalog',
+    'src/relation/relation.graphql',
+  ),
+);

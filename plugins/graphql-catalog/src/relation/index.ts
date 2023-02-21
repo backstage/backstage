@@ -13,8 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { transformSchema } from '@backstage/plugin-graphql-common';
-import { printSchemaWithDirectives } from '@graphql-tools/utils';
-import { Catalog } from './catalog';
-
-export default printSchemaWithDirectives(transformSchema([Catalog]));
+export * from './relation';
+export * from './schema';

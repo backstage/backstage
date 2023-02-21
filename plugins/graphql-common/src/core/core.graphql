@@ -1,23 +1,15 @@
 directive @field(
-  at: FieldAtArgument!
-  default: FieldDefaultArgument
-) on FIELD_DEFINITION
-directive @relation(
-  name: String
-  nodeType: String
-  kind: String
+  at: _DirectiveArgument_!
+  default: _DirectiveArgument_
 ) on FIELD_DEFINITION
 directive @inherit(
   interface: String
   generatedTypeName: String
-  when: ExtendWhenArgument
-  is: ExtendIsArgument
+  when: _DirectiveArgument_
+  is: _DirectiveArgument_
 ) on INTERFACE
 
-scalar FieldAtArgument
-scalar FieldDefaultArgument
-scalar ExtendWhenArgument
-scalar ExtendIsArgument
+scalar _DirectiveArgument_
 
 interface Node {
   id: ID!

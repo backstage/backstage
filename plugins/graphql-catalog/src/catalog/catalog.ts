@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ResolverContext,
-  refToId as defaultRefToId,
-} from '@backstage/plugin-graphql-common';
 import { createModule } from 'graphql-modules';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
+import { ResolverContext } from '../types';
+import { refToId as defaultRefToId } from '../refToId';
 import { catalogSchema } from './schema';
+import { relationDirectiveMapper } from '../relationDirectiveMapper';
+import { createDirectiveMapperProvider } from '@backstage/plugin-graphql-common';
 
 /** @public */
 export const Catalog = createModule({
@@ -45,4 +45,7 @@ export const Catalog = createModule({
       ): { id: string } => ({ id: refToId({ name, kind, namespace }) }),
     },
   },
+  providers: [
+    createDirectiveMapperProvider('relation', relationDirectiveMapper),
+  ],
 });

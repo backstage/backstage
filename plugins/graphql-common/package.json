@@ -33,19 +33,19 @@
     "generate:types": "graphql-codegen",
     "clean": "backstage-cli package clean"
   },
+  "peerDependencies": {
+    "graphql-modules": "^2.1.0"
+  },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
-    "@backstage/catalog-client": "workspace:^",
-    "@backstage/catalog-model": "workspace:^",
     "@graphql-tools/load-files": "^6.6.1",
     "@graphql-tools/merge": "^8.3.15",
     "@graphql-tools/schema": "^9.0.13",
     "@graphql-tools/utils": "^9.1.4",
     "dataloader": "^2.1.0",
     "graphql": "^16.6.0",
-    "graphql-modules": "^2.1.0",
-    "graphql-relay": "^0.10.0",
     "lodash": "^4.17.21",
+    "reflect-metadata": "^0.1.13",
     "winston": "^3.2.1"
   },
   "devDependencies": {
@@ -62,7 +62,8 @@
     "@graphql-codegen/schema-ast": "^3.0.0",
     "@graphql-codegen/typescript": "^3.0.0",
     "@graphql-codegen/typescript-resolvers": "^3.0.0",
-    "effection": "^2.0.6"
+    "effection": "^2.0.6",
+    "graphql-modules": "^2.1.0"
   },
   "files": [
     "dist",

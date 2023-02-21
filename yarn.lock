@@ -6494,6 +6494,10 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-graphql-common": "workspace:^"
+    "@effection/jest": ^2.0.4
+    "@envelop/core": ^3.0.4
+    "@envelop/dataloader": ^4.0.4
+    "@envelop/graphql-modules": 4.0.4
     "@graphql-codegen/add": ^4.0.0
     "@graphql-codegen/cli": ^3.0.0
     "@graphql-codegen/graphql-modules-preset": ^3.0.0
@@ -6505,6 +6509,7 @@ __metadata:
     dataloader: ^2.1.0
     graphql: ^16.6.0
     graphql-modules: ^2.1.0
+    graphql-relay: ^0.10.0
     graphql-type-json: ^0.3.2
   languageName: unknown
   linkType: soft
@@ -6514,8 +6519,6 @@ __metadata:
   resolution: "@backstage/plugin-graphql-common@workspace:plugins/graphql-common"
   dependencies:
     "@backstage/backend-common": "workspace:^"
-    "@backstage/catalog-client": "workspace:^"
-    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@effection/jest": ^2.0.4
@@ -6537,9 +6540,11 @@ __metadata:
     effection: ^2.0.6
     graphql: ^16.6.0
     graphql-modules: ^2.1.0
-    graphql-relay: ^0.10.0
     lodash: ^4.17.21
+    reflect-metadata: ^0.1.13
     winston: ^3.2.1
+  peerDependencies:
+    graphql-modules: ^2.1.0
   languageName: unknown
   linkType: soft
 
@@ -9566,7 +9571,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/graphql-modules@npm:^4.0.4":
+"@envelop/graphql-modules@npm:4.0.4, @envelop/graphql-modules@npm:^4.0.4":
   version: 4.0.4
   resolution: "@envelop/graphql-modules@npm:4.0.4"
   dependencies:
@@ -34153,7 +34158,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reflect-metadata@npm:0.1.13":
+"reflect-metadata@npm:0.1.13, reflect-metadata@npm:^0.1.13":
   version: 0.1.13
   resolution: "reflect-metadata@npm:0.1.13"
   checksum: 798d379a7b6f6455501145419505c97dd11cbc23857a386add2b9ef15963ccf15a48d9d15507afe01d4cd74116df8a213247200bac00320bd7c11ddeaa5e8fb4

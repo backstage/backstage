@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { transformSchema } from '@backstage/plugin-graphql-common';
-import { printSchemaWithDirectives } from '@graphql-tools/utils';
-import { Catalog } from './catalog';
+import type { CatalogClient } from '@backstage/catalog-client';
+import type { CompoundEntityRef } from '@backstage/catalog-model';
+import type { ResolverContext as CommonResolverContext } from '@backstage/plugin-graphql-common';
 
-export default printSchemaWithDirectives(transformSchema([Catalog]));
+export type PromiseOrValue<T> = T | Promise<T>;
+
+/** @public */
+export interface ResolverContext extends CommonResolverContext {
+  catalog: CatalogClient;
+  refToId?: (ref: CompoundEntityRef | string) => string;
+}
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+export type Logger = Record<LogLevel, (...args: any[]) => void>;
