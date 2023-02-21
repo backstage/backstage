@@ -1,5 +1,19 @@
 # @backstage/plugin-jenkins
 
+## 0.7.15-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-jenkins-common@0.1.14-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.17
+
 ## 0.7.14
 
 ### Patch Changes

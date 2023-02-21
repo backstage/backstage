@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- a061c466d6: Fixing a bug that we should check internal dependencies too
+
 ## 0.1.0
 
 ### Minor Changes

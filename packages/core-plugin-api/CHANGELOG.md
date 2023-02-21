@@ -1,5 +1,15 @@
 # @backstage/core-plugin-api
 
+## 1.4.1-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
 ## 1.4.0
 
 ### Minor Changes

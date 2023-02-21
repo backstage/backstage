@@ -1,5 +1,15 @@
 # @backstage/plugin-sonarqube-react
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- 8ae65a0bc1: Moved imports from `/alpha` to main public exports.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+
 ## 0.1.2
 
 ### Patch Changes
