@@ -36,11 +36,11 @@ export function createPgDatabaseClient(
   const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
   const database = knexFactory(knexConfig);
 
-  const owner = dbConfig.getOptionalString('setOwner')
+  const owner = dbConfig.getOptionalString('setOwner');
 
   if (owner) {
     database.client.pool.on('createSuccess', (_event: any, pgClient: any) => {
-      pgClient.query(`SET ROLE ${owner}`, () => { });
+      pgClient.query(`SET ROLE ${owner}`, () => {});
     });
   }
   return database;
