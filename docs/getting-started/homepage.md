@@ -82,16 +82,9 @@ const routes = (
 
 Let's update the route for "Home" in the Backstage sidebar to point to the new homepage. We'll also add a Sidebar item to quickly open Catalog.
 
-<table>
-  <tr>
-    <th><img data-zoomable src="../assets/getting-started/sidebar-without-catalog.png" alt="Sidebar without Catalog" /></th>
-    <th><img data-zoomable src="../assets/getting-started/sidebar-with-catalog.png" alt="Sidebar with Catalog" /></th>
-  </tr>
-  <tr align="center">
-    <td>Before</td>
-    <td>After</td>
-  </tr>
-</table>
+| Before                                                                            | After                                                                       |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| ![Sidebar without Catalog](../assets/getting-started/sidebar-without-catalog.png) | ![Sidebar with Catalog](../assets/getting-started/sidebar-with-catalog.png) |
 
 The code for the Backstage sidebar is most likely inside your [`packages/app/src/components/Root/Root.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/components/Root/Root.tsx).
 
@@ -121,7 +114,9 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
 
 That's it! You should now have _(although slightly boring)_ a homepage!
 
-<img data-zoomable src="../assets/getting-started/simple-homepage.png" alt="Screenshot of a blank homepage" />
+<!-- todo: Needs zoomable plugin -->
+
+![Screenshot of a blank homepage](../assets/getting-started/simple-homepage.png)
 
 In the next steps, we will make it interesting and useful!
 
