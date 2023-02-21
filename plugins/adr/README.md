@@ -69,33 +69,68 @@ Afterwards, add the following code snippet to use `AdrSearchResultListItem` when
 ```tsx
 // In packages/app/src/components/search/SearchPage.tsx
 import { AdrSearchResultListItem } from '@backstage/plugin-adr';
+import { AdrDocument } from '@backstage/plugin-adr-common';
 
 ...
+
 <SearchType.Accordion
   name="Result Type"
   defaultValue="software-catalog"
   types={[
     ...
     {
-      value: 'adrs',
+      value: 'adr',
       name: 'Architecture Decision Records',
       icon: <DocsIcon />,
     },
   ]}
 />
-
+  
 ...
 
-case 'adrs':
-  return (
-    <AdrSearchResultListItem
-      key={document.location}
-      result={document as AdrDocument}
+// In filters
+<Paper className={classes.filters}>
+
+...
+  // ADR specific type
+  {types.includes('adr') && (
+    <SearchFilter.Select
+      className={classes.filter}
+      label="Entity"
+      name="name"
+      values={async () => {
+        // Return a list of entities which have ADRs.
+        const { items } = await catalogApi.getEntities({
+          fields: ['metadata.name'],
+          filter: {
+            'metadata.annotations.backstage.io/adr-location':
+            CATALOG_FILTER_EXISTS,
+          },
+        });
+  
+        const names = items.map(entity => entity.metadata.name);
+        names.sort();
+        return names;
+      }}
     />
-  );
+  )}
+
+...
+  
+// In results
+<Grid item xs={9}>
+  <SearchResult>
+    {({ results }) => (
+      case 'adr':
+        return (
+          <AdrSearchResultListItem
+            key={document.location}
+            // Note the cast to AdrDocument is not required if you're leveraging the new search results extensions available in v1.11 + : https://backstage.io/docs/features/search/how-to-guides#2-using-an-extension-in-your-backstage-app
+            result={document as AdrDocument}
+          />
+        );
 ```
 
-> Note the `AdrDocument` might not be needed in newer versions https://github.com/backstage/backstage/issues/13723
 
 ## Custom ADR formats
 
