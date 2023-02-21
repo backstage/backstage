@@ -174,7 +174,7 @@ export class TodoScmReader implements TodoReader {
 }
 
 /**
- * @alpha
+ * @public
  */
 export const todoReaderServiceRef = createServiceRef<TodoReader>({
   id: 'todo.todoReader',
