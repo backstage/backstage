@@ -1,5 +1,13 @@
 # @backstage/plugin-events-node
 
+## 0.2.4-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+
 ## 0.2.3
 
 ### Patch Changes

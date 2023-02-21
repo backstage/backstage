@@ -1,5 +1,17 @@
 # @backstage/plugin-org
 
+## 0.6.6-next.0
+
+### Patch Changes
+
+- 36bccb5252: Fix small UI-glitch in MemberListCard
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/theme@0.2.17
+
 ## 0.6.5
 
 ### Patch Changes

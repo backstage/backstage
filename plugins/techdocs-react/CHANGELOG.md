@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.4-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/version-bridge@1.0.3
+
 ## 1.1.3
 
 ### Patch Changes

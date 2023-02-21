@@ -1,5 +1,28 @@
 # @backstage/plugin-techdocs
 
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 3f75b7607c: Add ability to pass icon as function to have ability to customize it by search item
+
+### Patch Changes
+
+- f320c299c6: The HTML tag attributes in the documentation content inserted to shadow DOM is preserved to improve accessibility
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-techdocs-react@1.1.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.11-next.0
+  - @backstage/theme@0.2.17
+  - @backstage/plugin-search-common@1.2.1
+  - @backstage/plugin-search-react@1.5.1-next.0
+
 ## 1.5.0
 
 ### Minor Changes
