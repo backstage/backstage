@@ -15,13 +15,13 @@
  */
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { GithubEventRouter } from '../router/GithubEventRouter';
 
 /**
  * Module for the events-backend plugin, adding an event router for GitHub.
  *
- * Registers the {@link GithubEventRouter}.
+ * Registers the `GithubEventRouter`.
  *
  * @alpha
  */

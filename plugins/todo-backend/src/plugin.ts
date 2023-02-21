@@ -24,7 +24,7 @@ import { createRouter } from './service/router';
 
 /**
  * The Todos plugin is responsible for aggregating todo comments within source.
- * @alpha
+ * @public
  */
 export const todoPlugin = createBackendPlugin({
   pluginId: 'todo-backend',

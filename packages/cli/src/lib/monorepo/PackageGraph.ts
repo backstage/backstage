@@ -20,10 +20,15 @@ import { paths } from '../paths';
 import { PackageRole } from '../role';
 import { listChangedFiles, readFileAtRef } from '../git';
 import { Lockfile } from '../versioning';
+import { JsonValue } from '@backstage/types';
 
 type PackageJSON = Package['packageJson'];
 
 export interface ExtendedPackageJSON extends PackageJSON {
+  main?: string;
+  module?: string;
+  types?: string;
+
   scripts?: {
     [key: string]: string;
   };
@@ -33,6 +38,19 @@ export interface ExtendedPackageJSON extends PackageJSON {
 
   backstage?: {
     role?: PackageRole;
+  };
+
+  exports?: JsonValue;
+  typesVersions?: Record<string, Record<string, string[]>>;
+
+  files?: string[];
+
+  publishConfig?: {
+    access?: 'public' | 'restricted';
+    directory?: string;
+    registry?: string;
+    alphaTypes?: string;
+    betaTypes?: string;
   };
 }
 

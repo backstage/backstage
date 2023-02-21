@@ -7,8 +7,7 @@
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts",
-    "alphaTypes": "dist/index.alpha.d.ts"
+    "types": "dist/index.d.ts"
   },
   "backstage": {
     "role": "node-library"
@@ -24,7 +23,7 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "backstage-cli package build --experimental-type-build",
+    "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",

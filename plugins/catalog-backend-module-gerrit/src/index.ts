@@ -15,4 +15,3 @@
  */
 
 export { GerritEntityProvider } from './providers/GerritEntityProvider';
-export { gerritEntityProviderCatalogModule } from './service/GerritEntityProviderCatalogModule';

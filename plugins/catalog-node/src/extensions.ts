@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { EntityProvider } from './api';
-import { CatalogProcessor } from './api/processor';
+import {
+  EntityProvider,
+  CatalogProcessor,
+} from '@backstage/plugin-catalog-node';
 
 /**
  * @alpha

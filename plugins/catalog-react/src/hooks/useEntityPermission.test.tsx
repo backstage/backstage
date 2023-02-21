@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
+import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { renderHook } from '@testing-library/react-hooks';
 import { useEntityPermission } from './useEntityPermission';
 import { useAsyncEntity } from './useEntity';

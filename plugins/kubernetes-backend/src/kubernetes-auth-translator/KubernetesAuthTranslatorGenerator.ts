@@ -25,7 +25,7 @@ import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 
 /**
  *
- * @alpha
+ * @public
  */
 export class KubernetesAuthTranslatorGenerator {
   static getKubernetesAuthTranslatorInstance(

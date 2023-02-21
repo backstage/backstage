@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { usePluginOptions } from '@backstage/core-plugin-api';
+import { usePluginOptions } from '@backstage/core-plugin-api/alpha';
 
 export type CostInsightsPluginOptions = {
   hideTrendLine?: boolean;

@@ -22,8 +22,8 @@ import {
 import {
   catalogProcessingExtensionPoint,
   catalogServiceRef,
-} from '@backstage/plugin-catalog-node';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+} from '@backstage/plugin-catalog-node/alpha';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { BitbucketCloudEntityProvider } from '../BitbucketCloudEntityProvider';
 
 /**

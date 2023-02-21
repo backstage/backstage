@@ -19,7 +19,7 @@ import {
   createVersionedValueMap,
   useVersionedContext,
 } from '@backstage/version-bridge';
-import { BackstagePlugin } from '../plugin';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import React, { ReactNode } from 'react';
 
 const contextKey: string = 'plugin-context';

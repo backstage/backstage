@@ -649,17 +649,6 @@ export type PluginFeatureFlagConfig = {
   name: string;
 };
 
-// @alpha
-export interface PluginOptionsProviderProps {
-  // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  plugin?: BackstagePlugin;
-}
-
-// @alpha
-export const PluginProvider: (props: PluginOptionsProviderProps) => JSX.Element;
-
 // @public
 export type ProfileInfo = {
   email?: string;
@@ -759,11 +748,6 @@ export function useElementFilter<T>(
   filterFn: (arg: ElementCollection) => T,
   dependencies?: any[],
 ): T;
-
-// @alpha
-export function usePluginOptions<
-  TPluginOptions extends {} = {},
->(): TPluginOptions;
 
 // @public
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
