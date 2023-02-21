@@ -89,11 +89,15 @@ const AppRoutes = () => {
 
 I know, you're curious to see how it looks, aren't you? See the image below:
 
-<img data-zoomable src="../../assets/techdocs/report-issue-addon.png" alt="TechDocs Report Issue Add-on" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Report Issue Add-on](../../assets/techdocs/report-issue-addon.png)
 
 By clicking the open new issue button, you will be redirected to the new issue page according to the source code provider you are using:
 
-<img data-zoomable src="../../assets/techdocs/report-issue-template.png" alt="TechDocs Report Issue Template" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Report Issue Template](../../assets/techdocs/report-issue-template.png)
 
 That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 

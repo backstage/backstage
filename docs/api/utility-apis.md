@@ -290,9 +290,7 @@ The figure below shows the relationship between
 <span class="textPurple" className="textPurple"> FooApi</span> via the
 <span class="textRed" className="textRed"> fooApiRef</span>.
 
-<div className="textAlignCenter" class="textAlignCenter">
-<img src="../assets/utility-apis-fig1.svg" alt="Figure showing the relationship between utility APIs, the apps that provide them, and the plugins that consume them" />
-</div>
+![Figure showing the relationship between utility APIs, the apps that provide them, and the plugins that consume them](../assets/utility-apis-fig1.svg)
 
 The current method for connecting Utility API providers and consumers is via the
 React tree using an `ApiProvider`, which is added to the `AppProvider` of the
