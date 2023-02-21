@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
     "@types/mock-fs": "^4.13.0",
     "mock-fs": "^5.1.0"
