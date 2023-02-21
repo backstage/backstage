@@ -2,7 +2,7 @@ import Link from '@docusaurus/Link';
 import clsx from 'clsx';
 import React, { FC, PropsWithChildren, ReactNode } from 'react';
 
-import contentBlockStyles from './content-block.module.scss';
+import contentBlockStyles from './contentBlock.module.scss';
 
 export interface ContentBlockActionButtonProps {
   label: string;

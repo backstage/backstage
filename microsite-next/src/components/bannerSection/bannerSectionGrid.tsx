@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React, { PropsWithChildren, ReactNode } from 'react';
 
-import bannerGridStyles from './banner-section-grid.module.scss';
+import bannerGridStyles from './bannerSectionGrid.module.scss';
 
 export type IBannerSectionColumnsProps = PropsWithChildren<{
   header?: ReactNode;

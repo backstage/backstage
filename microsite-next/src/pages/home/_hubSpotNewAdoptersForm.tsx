@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 
-import hubSpotStyles from './hub-spot-new-adopters-form.module.scss';
+import hubSpotStyles from './hubSpotNewAdoptersForm.module.scss';
 
 export const HubSpotNewAdoptersForm = () => {
   const [isClosed, setClosed] = useState(true);
