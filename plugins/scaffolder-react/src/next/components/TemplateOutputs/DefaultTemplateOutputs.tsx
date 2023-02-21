@@ -16,7 +16,7 @@
 import React from 'react';
 import { Box, Paper } from '@material-ui/core';
 import { LinkOutputs } from './LinkOutputs';
-import { ScaffolderTaskOutput } from '../../../api';
+import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 
 /**
  * The DefaultOutputs renderer for the scaffolder task output
