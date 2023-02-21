@@ -22,6 +22,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RJSFSchema } from '@rjsf/utils';
+import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
@@ -216,10 +217,6 @@ export type WorkflowProps = {
   | 'initialState'
   | 'layouts'
 >;
-
-// Warnings were encountered during analysis:
-//
-// src/next/components/TemplateOutputs/DefaultTemplateOutputs.d.ts:9:5 - (ae-forgotten-export) The symbol "ScaffolderTaskOutput" needs to be exported by the entry point alpha.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```
