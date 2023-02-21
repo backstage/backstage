@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type FormValidation } from './createAsyncValidators';
 import { hasErrors } from './utils';
 
 describe('hasErrors', () => {
