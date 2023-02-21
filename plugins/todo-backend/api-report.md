@@ -90,7 +90,7 @@ export type TodoParserResult = {
   lineNumber: number;
 };
 
-// @alpha
+// @public
 export const todoPlugin: () => BackendFeature;
 
 // @public (undocumented)
@@ -118,7 +118,7 @@ export type TodoReaderServiceOptions = {
   defaultPageSize?: number;
 };
 
-// @alpha (undocumented)
+// @public (undocumented)
 export const todoReaderServiceRef: ServiceRef<TodoReader, 'plugin'>;
 
 // @public (undocumented)
