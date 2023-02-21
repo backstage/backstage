@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, Fragment } from 'react';
+import React, { ReactElement } from 'react';
 
 // Shadow DOM support for the simple and complete DOM testing utilities
 // https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
