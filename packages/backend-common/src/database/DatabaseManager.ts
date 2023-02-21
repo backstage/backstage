@@ -285,12 +285,13 @@ export class DatabaseManager {
    */
   private getConfigForPlugin(pluginId: string): Knex.Config {
     const { client } = this.getClientType(pluginId);
+    const setOwner = this.getSetOwnerConfig(pluginId);
 
     return {
       ...this.getAdditionalKnexConfig(pluginId),
       client,
       connection: this.getConnectionConfig(pluginId),
-      setOwner: this.getSetOwnerConfig(pluginId),
+      ...(setOwner && { setOwner }),
     };
   }
 
