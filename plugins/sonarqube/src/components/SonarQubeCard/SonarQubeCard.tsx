@@ -203,7 +203,11 @@ export const SonarQubeCard = (props: {
               />
               <RatingCard
                 titleIcon={
-                  value.metrics.vulnerabilities === '0' ? <Lock /> : <LockOpen />
+                  value.metrics.vulnerabilities === '0' ? (
+                    <Lock />
+                  ) : (
+                    <LockOpen />
+                  )
                 }
                 title="Vulnerabilities"
                 link={value.getIssuesUrl('VULNERABILITY')}
