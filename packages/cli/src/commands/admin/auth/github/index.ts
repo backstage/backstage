@@ -14,6 +14,160 @@
  * limitations under the License.
  */
 
-import { oauth } from './oauth';
+import { OAuthApp } from '@octokit/oauth-app';
+import chalk from 'chalk';
+import * as fs from 'fs-extra';
+import inquirer from 'inquirer';
+import fetch from 'node-fetch';
+import { Task } from '../../../../lib/tasks';
+import { addUserEntity, updateConfigFile } from '../config';
+import { APP_CONFIG_FILE, PATCH_FOLDER, USER_ENTITY_FILE } from '../files';
+import { patch } from '../patch';
 
-export const github = async () => await oauth();
+const validateCredentials = async (clientId: string, clientSecret: string) => {
+  try {
+    const app = new OAuthApp({
+      clientId,
+      clientSecret,
+    });
+    await app.createToken({
+      code: '%NOT-VALID-CODE%',
+    });
+  } catch (error) {
+    // @octokit/request returns a error.response object when a request is rejected.
+    // We can check it to see what kind of error we received.
+
+    // If error.response is successful we can double-check that the error itself was due to the bad code.
+    // If that's the case then we can assume that the client id and secret exists as we otherwise would
+    // have gotten a 400/404.
+    if (
+      error.response.status !== 200 &&
+      error.response.data.error !== 'bad_verification_code'
+    ) {
+      throw new Error(`Validating GitHub Credentials failed.`);
+    }
+  }
+};
+
+const getConfig = (answers: Answers) => {
+  const { clientId, clientSecret, hasEnterprise, enterpriseInstanceUrl } =
+    answers;
+
+  return {
+    auth: {
+      providers: {
+        github: {
+          development: {
+            clientId,
+            clientSecret,
+            ...(hasEnterprise && {
+              enterpriseInstanceUrl,
+            }),
+          },
+        },
+      },
+    },
+    catalog: {
+      locations: [
+        {
+          type: 'file',
+          target: '../../user-info.yaml',
+          rules: [{ allow: ['User'] }],
+        },
+      ],
+    },
+  };
+};
+
+type Answers = {
+  username: string;
+  clientSecret: string;
+  clientId: string;
+  hasEnterprise: boolean;
+  enterpriseInstanceUrl?: string;
+};
+
+export const github = async () => {
+  Task.log(`
+    To add GitHub authentication, you must create an OAuth App from the GitHub developer settings: ${chalk.blue(
+      'https://github.com/settings/developers',
+    )}
+    The Homepage URL should point to Backstage's frontend, while the Authorization callback URL will point to the auth backend.
+
+    Settings for local development:
+    ${chalk.cyan(`
+      Homepage URL: http://localhost:3000
+      Authorization callback URL: http://localhost:7007/api/auth/github/handler/frame`)}
+
+    You can find the full documentation page here: ${chalk.blue(
+      'https://backstage.io/docs/auth/github/provider',
+    )}
+    `);
+
+  const answers = await inquirer.prompt<Answers>([
+    {
+      type: 'input',
+      name: 'username',
+      message: 'What is your GitHub username?',
+      validate: async (input: string) => {
+        const response = await fetch(`https://api.github.com/users/${input}`);
+        if (!response.ok) {
+          return chalk.red('Unknown user. Please try again.');
+        }
+        return true;
+      },
+    },
+    {
+      type: 'input',
+      name: 'clientId',
+      message: 'What is your Client Id?',
+      validate: (input: string) => (input.length ? true : false),
+    },
+    {
+      type: 'input',
+      name: 'clientSecret',
+      message: 'What is your Client Secret?',
+      validate: (input: string) => (input.length ? true : false),
+    },
+    {
+      type: 'confirm',
+      name: 'hasEnterprise',
+      message: 'Are you using GitHub Enterprise?',
+    },
+    {
+      type: 'input',
+      name: 'enterpriseInstanceUrl',
+      message: 'What is your URL for GitHub Enterprise?',
+      when: ({ hasEnterprise }) => hasEnterprise,
+      validate: (input: string) => Boolean(new URL(input)),
+    },
+  ]);
+
+  const { username, clientId, clientSecret } = answers;
+  const config = getConfig(answers);
+
+  Task.log('Setting up GitHub Authentication for you...');
+
+  await Task.forItem(
+    'Validating',
+    'credentials',
+    async () => await validateCredentials(clientId, clientSecret),
+  );
+  await Task.forItem(
+    'Updating',
+    APP_CONFIG_FILE,
+    async () => await updateConfigFile(APP_CONFIG_FILE, config),
+  );
+  await Task.forItem(
+    'Creating',
+    USER_ENTITY_FILE,
+    async () => await addUserEntity(USER_ENTITY_FILE, username),
+  );
+
+  const patches = await fs.readdir(PATCH_FOLDER);
+  for (const patchFile of patches) {
+    await Task.forItem('Patching', patchFile, async () => {
+      await patch(patchFile);
+    });
+  }
+};
