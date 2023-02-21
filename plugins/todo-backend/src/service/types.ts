@@ -48,3 +48,11 @@ export interface TodoService {
     options?: { token?: string },
   ): Promise<ListTodosResponse>;
 }
+
+export const TODO_FIELDS = [
+  'text',
+  'tag',
+  'author',
+  'viewUrl',
+  'repoFilePath',
+] as const;

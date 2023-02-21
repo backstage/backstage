@@ -8407,12 +8407,14 @@ __metadata:
   resolution: "@backstage/plugin-todo-backend@workspace:plugins/todo-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -22505,6 +22507,7 @@ __metadata:
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-todo-backend": "workspace:^"
   languageName: unknown
   linkType: soft
 
