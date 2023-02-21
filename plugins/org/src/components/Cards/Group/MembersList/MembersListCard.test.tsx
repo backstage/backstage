@@ -28,6 +28,19 @@ import {
 import React from 'react';
 import { MembersListCard } from './MembersListCard';
 
+// Mock needed because jsdom doesn't correctly implement box-sizing
+// https://github.com/ShinyChang/React-Text-Truncate/issues/70
+// https://stackoverflow.com/questions/71916701/how-to-mock-a-react-function-component-that-takes-a-ref-prop
+jest.mock('react-text-truncate', () => {
+  const { forwardRef } = jest.requireActual('react');
+  return {
+    __esModule: true,
+    default: forwardRef((props: any, ref: any) => (
+      <div ref={ref}>{props.text}</div>
+    )),
+  };
+});
+
 describe('MemberTab Test', () => {
   const groupEntity: GroupEntity = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -95,7 +108,7 @@ describe('MemberTab Test', () => {
     expect(
       rendered.getByText('tara-macgovern@example.com'),
     ).toBeInTheDocument();
-    expect(rendered.getByText('Tara MacGovern')).toHaveAttribute(
+    expect(rendered.getByText('Tara MacGovern').closest('a')).toHaveAttribute(
       'href',
       '/catalog/foo-bar/user/tara.macgovern',
     );
