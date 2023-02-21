@@ -25,7 +25,7 @@ export const PATCH_FOLDER = path.join(
   ownDir,
   'src',
   'commands',
-  'admin',
+  'onboard',
   'auth',
   'patches',
 );

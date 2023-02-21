@@ -25,11 +25,11 @@ const configOption = [
   Array<string>(),
 ] as const;
 
-export function registerAdminCommand(program: Command) {
+export function registerOnboardCommand(program: Command) {
   program
-    .command('admin', { hidden: true })
+    .command('onboard', { hidden: true })
     .description('Get help setting up your Backstage App.')
-    .action(lazy(() => import('./admin').then(m => m.command)));
+    .action(lazy(() => import('./onboard').then(m => m.command)));
 }
 
 export function registerRepoCommand(program: Command) {
@@ -367,7 +367,7 @@ export function registerCommands(program: Command) {
   registerRepoCommand(program);
   registerScriptCommand(program);
   registerMigrateCommand(program);
-  registerAdminCommand(program);
+  registerOnboardCommand(program);
 
   program
     .command('versions:bump')
