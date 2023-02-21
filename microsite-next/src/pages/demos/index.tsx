@@ -1,8 +1,8 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { BannerSection } from '@site/src/components/banner-section/banner-section';
-import { BannerSectionGrid } from '@site/src/components/banner-section/banner-section-grid';
-import { ContentBlock } from '@site/src/components/content-block/content-block';
+import { BannerSection } from '@site/src/components/bannerSection/bannerSection';
+import { BannerSectionGrid } from '@site/src/components/bannerSection/bannerSectionGrid';
+import { ContentBlock } from '@site/src/components/contentBlock/contentBlock';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
 import React from 'react';

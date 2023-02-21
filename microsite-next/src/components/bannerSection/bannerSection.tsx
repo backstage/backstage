@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React, { PropsWithChildren } from 'react';
 
-import bannerStyles from './banner-section.module.scss';
+import bannerStyles from './bannerSection.module.scss';
 
 export type IBannerSectionProps = PropsWithChildren<{
   className?: string;

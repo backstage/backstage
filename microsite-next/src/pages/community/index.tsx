@@ -1,12 +1,12 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { BannerSection } from '@site/src/components/banner-section/banner-section';
-import { BannerSectionGrid } from '@site/src/components/banner-section/banner-section-grid';
+import { BannerSection } from '@site/src/components/bannerSection/bannerSection';
+import { BannerSectionGrid } from '@site/src/components/bannerSection/bannerSectionGrid';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
 import React from 'react';
 
-import { ContentBlock } from '../../components/content-block/content-block';
+import { ContentBlock } from '../../components/contentBlock/contentBlock';
 import communityStyles from './community.module.scss';
 
 interface ICollectionItem {
