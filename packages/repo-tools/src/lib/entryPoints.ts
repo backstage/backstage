@@ -15,7 +15,7 @@
  */
 
 import { extname } from 'path';
-import { JsonObject } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 
 export function getPackageExportNames(pkg: JsonObject): string[] | undefined {
   if (pkg.exports && typeof pkg.exports !== 'string') {
