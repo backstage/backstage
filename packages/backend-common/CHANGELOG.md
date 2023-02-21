@@ -1,5 +1,21 @@
 # @backstage/backend-common
 
+## 0.18.3-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.0
+  - @backstage/backend-dev-utils@0.1.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
 ## 0.18.2
 
 ### Patch Changes
