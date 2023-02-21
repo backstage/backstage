@@ -212,7 +212,7 @@ export function registerMigrateCommand(program: Command) {
 
 export function registerDeployCommand(program: Command) {
   const command = program
-    .command('deploy [command]')
+    .command('deploy [command]', { hidden: true })
     .description(
       'Deploy your Backstage instance on a specified cloud provider [EXPERIMENTAL]',
     );
