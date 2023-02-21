@@ -6,7 +6,6 @@ import bannerGridStyles from './bannerSectionGrid.module.scss';
 export type IBannerSectionColumnsProps = PropsWithChildren<{
   header?: ReactNode;
   className?: string;
-  // children: ReactNode | ReactNode[];
 }>;
 
 export const BannerSectionGrid = ({
@@ -14,8 +13,6 @@ export const BannerSectionGrid = ({
   children,
   className,
 }: IBannerSectionColumnsProps) => {
-  console.log('Header: ', header);
-
   return (
     <div className={clsx(bannerGridStyles.sectionGridContainer, className)}>
       {header && <div className="gridHeader">{header}</div>}
