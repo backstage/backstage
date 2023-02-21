@@ -104,7 +104,7 @@ export const EntityOwnerPicker = () => {
   const {
     loading,
     error,
-    value: owners,
+    value: ownerEntities,
   } = useAsync(async () => {
     const { items } = await catalogApi.getEntitiesByRefs({
       entityRefs: availableOwners.map(ref =>
@@ -143,9 +143,9 @@ export const EntityOwnerPicker = () => {
           multiple
           disableCloseOnSelect
           loading={loading}
-          options={owners || []}
+          options={ownerEntities || []}
           value={
-            owners?.filter(e =>
+            ownerEntities?.filter(e =>
               selectedOwners.some(
                 f => f === humanizeEntityRef(e, { defaultKind: 'Group' }),
               ),
