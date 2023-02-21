@@ -218,8 +218,8 @@ module.exports = {
           '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2022 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
       },
       algolia: {
-        apiKey: '10b9e6c92a4513c1cf390f50e53aad1f',
-        indexName: 'backstage_io',
+        apiKey: '1f0ba86672ccfc3576faa94583e5b318',
+        indexName: 'crawler_Backstage Docusaurus 2',
         appId: 'JCMFNHCHI8',
         searchParameters: {},
       },
