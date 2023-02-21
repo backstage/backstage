@@ -48,10 +48,15 @@
     "dataloader": "^2.1.0",
     "graphql": "^16.6.0",
     "graphql-modules": "^2.1.0",
+    "graphql-relay": "^0.10.0",
     "graphql-type-json": "^0.3.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@effection/jest": "^2.0.4",
+    "@envelop/core": "^3.0.4",
+    "@envelop/dataloader": "^4.0.4",
+    "@envelop/graphql-modules": "4.0.4",
     "@graphql-codegen/add": "^4.0.0",
     "@graphql-codegen/cli": "^3.0.0",
     "@graphql-codegen/graphql-modules-preset": "^3.0.0",

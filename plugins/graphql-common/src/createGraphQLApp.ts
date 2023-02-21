@@ -15,9 +15,8 @@
  */
 import { Logger } from 'winston';
 import { createApplication, Module } from 'graphql-modules';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { Core } from './core/core';
-import { mapDirectives } from './mapDirectives';
+import { Core } from './core';
+import { transformSchema } from './transformSchema';
 
 /** @public */
 export type createGraphQLAppOptions = {
@@ -27,9 +26,9 @@ export type createGraphQLAppOptions = {
 
 /** @public */
 export function createGraphQLApp(options: createGraphQLAppOptions) {
-  const { modules } = options;
+  const modules = [Core, ...(options.modules ?? [])];
   return createApplication({
-    schemaBuilder: input => mapDirectives(makeExecutableSchema(input), options),
-    modules: [Core, ...(modules ?? [])],
+    schemaBuilder: _ => transformSchema(modules, options),
+    modules,
   });
 }

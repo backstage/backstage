@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 export * from './catalog';
+export * from './relation';
 export * from './createLoader';
+export type { ResolverContext } from './types';

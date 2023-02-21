@@ -4,10 +4,12 @@
 
 ```ts
 import type { CatalogClient } from '@backstage/catalog-client';
+import type { CompoundEntityRef } from '@backstage/catalog-model';
 import { default as default_2 } from 'dataloader';
 import { Entity } from '@backstage/catalog-model';
 import { Module } from 'graphql-modules';
 import { Options } from 'dataloader';
+import type { ResolverContext as ResolverContext_2 } from '@backstage/plugin-graphql-common';
 
 // @public (undocumented)
 export const Catalog: Module;
@@ -24,6 +26,20 @@ export function createLoader(
   },
   options?: Options<string, Entity>,
 ): default_2<string, Entity, string>;
+
+// @public (undocumented)
+export const Relation: Module;
+
+// @public (undocumented)
+export const relationSchema: any[];
+
+// @public (undocumented)
+export interface ResolverContext extends ResolverContext_2 {
+  // (undocumented)
+  catalog: CatalogClient;
+  // (undocumented)
+  refToId?: (ref: CompoundEntityRef | string) => string;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -13,17 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mergeTypeDefs } from '@graphql-tools/merge';
-import { TypeSource } from '@graphql-tools/utils';
-import { buildASTSchema, validateSchema } from 'graphql';
-import { coreSchema } from './core';
+import { DocumentNode, Kind } from 'graphql';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { validateSchema } from 'graphql';
+import { Module, Resolvers } from 'graphql-modules';
+import { Core } from './core';
 import { mapDirectives } from './mapDirectives';
+import { FieldDirectiveMapper, Logger } from './types';
+import { toPrivateProp } from './mapperProvider';
 
 /** @public */
-export function transformSchema(source: TypeSource) {
-  const schema = mapDirectives(
-    buildASTSchema(mergeTypeDefs([coreSchema, source])),
+export function transformSchema(
+  modules: Module[] = [],
+  { logger }: { logger?: Logger } = {},
+) {
+  const directiveMappers: Record<string, FieldDirectiveMapper> = {};
+  const allModules = [Core, ...modules];
+  const typeDefs: DocumentNode[] = allModules.flatMap(module => {
+    const documents = module.typeDefs;
+    documents.forEach(document => {
+      document.definitions.forEach(definition => {
+        if (definition.kind !== Kind.DIRECTIVE_DEFINITION) return;
+        const directiveName = definition.name.value;
+        const provider = module.providers?.find(
+          p => toPrivateProp(directiveName) in p,
+        );
+        if (provider)
+          directiveMappers[directiveName] = (provider as any)[
+            toPrivateProp(directiveName)
+          ];
+      });
+    });
+    return documents;
+  });
+  const resolvers: Resolvers = allModules.flatMap(
+    module => module.config.resolvers ?? [],
   );
+
+  const schema = mapDirectives(makeExecutableSchema({ typeDefs, resolvers }), {
+    directiveMappers,
+    logger,
+  });
+
   const errors = validateSchema(schema);
 
   if (errors.length > 0) {

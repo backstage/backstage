@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 import { createModule } from 'graphql-modules';
+import { createDirectiveMapperProvider } from '../mapperProvider';
 import { ResolverContext } from '../types';
+import { fieldDirectiveMapper } from './fieldDirectiveMapper';
 import { coreSchema } from './schema';
 
 /** @public */
@@ -37,4 +39,5 @@ export const Core = createModule({
       node: (_: any, { id }: { id: string }): { id: string } => ({ id }),
     },
   },
+  providers: [createDirectiveMapperProvider('field', fieldDirectiveMapper)],
 });

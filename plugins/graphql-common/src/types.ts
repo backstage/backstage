@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { CatalogClient } from '@backstage/catalog-client';
-import type { CompoundEntityRef } from '@backstage/catalog-model';
+import { getDirective } from '@graphql-tools/utils';
 import DataLoader from 'dataloader';
+import {
+  GraphQLFieldConfig,
+  GraphQLNamedType,
+  GraphQLObjectType,
+} from 'graphql';
 import { Application } from 'graphql-modules';
 
 export type PromiseOrValue<T> = T | Promise<T>;
@@ -24,9 +28,34 @@ export type PromiseOrValue<T> = T | Promise<T>;
 export interface ResolverContext {
   application: Application;
   loader: DataLoader<any, any>;
-  catalog: CatalogClient;
-  refToId?: (ref: CompoundEntityRef | string) => string;
 }
 
+/** @public */
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+/** @public */
 export type Logger = Record<LogLevel, (...args: any[]) => void>;
+
+/** @public */
+export type OmitFirst<T extends Array<any>> = T extends [
+  x: any,
+  ...args: infer R,
+]
+  ? R
+  : [];
+
+/** @public */
+export interface DirectiveMapperAPI {
+  getImplementingTypes: (interfaceName: string) => GraphQLObjectType[];
+  getDirective: (
+    ...args: OmitFirst<Parameters<typeof getDirective>>
+  ) => ReturnType<typeof getDirective>;
+  typeMap: Partial<Record<string, GraphQLNamedType>>;
+}
+
+/** @public */
+export type FieldDirectiveMapper = (
+  field: GraphQLFieldConfig<{ id: string }, ResolverContext>,
+  directive: Record<string, any>,
+  api: DirectiveMapperAPI,
+  options?: { logger?: Logger },
+) => void;
