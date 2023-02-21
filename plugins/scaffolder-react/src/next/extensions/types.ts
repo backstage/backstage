@@ -46,7 +46,11 @@ export interface NextFieldExtensionComponentProps<
 export type NextCustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
   field: FieldValidationV5,
-  context: { apiHolder: ApiHolder; formData: JsonObject },
+  context: {
+    apiHolder: ApiHolder;
+    formData: JsonObject;
+    schema?: JsonObject;
+  },
 ) => void | Promise<void>;
 
 /**
