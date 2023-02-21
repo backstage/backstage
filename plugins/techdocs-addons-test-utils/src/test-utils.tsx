@@ -236,9 +236,9 @@ export class TechDocsAddonTester {
               element={<TechDocsReaderPage />}
             >
               <TechDocsAddons>
-                {this.addons.map((addon, index) => (
-                  <Fragment key={index}>{addon}</Fragment>
-                ))}
+                {this.addons.map((addon, index) =>
+                  React.cloneElement(addon, { key: index }),
+                )}
               </TechDocsAddons>
             </Route>
           </FlatRoutes>
