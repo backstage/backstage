@@ -53,6 +53,7 @@ describe('config', () => {
       expect(r).toStrictEqual({
         id: 'test',
         group: 'group',
+        fallbackBranch: undefined,
         fallbackBranch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',
@@ -74,6 +75,7 @@ describe('config', () => {
               group: 'group',
               host: 'host',
               branch: 'not-master',
+              fallbackBranch: 'main',
               entityFilename: 'custom-file.yaml',
             },
           },
@@ -88,6 +90,7 @@ describe('config', () => {
         id: 'test',
         group: 'group',
         fallbackBranch: 'not-master',
+        fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
         projectPattern: /[\s\S]*/,
@@ -125,6 +128,7 @@ describe('config', () => {
       expect(r).toStrictEqual({
         id: 'test',
         group: 'group',
+        fallbackBranch: undefined,
         fallbackBranch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',

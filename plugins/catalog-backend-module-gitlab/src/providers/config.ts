@@ -36,15 +36,7 @@ function readGitlabConfig(
   const group = config.getOptionalString('group') ?? '';
   const host = config.getString('host');
   const branch = config.getOptionalString('branch');
-
-  if (branch) {
-    logger.warn(
-      'The configuration key `branch` has been deprecated in favor of the configuration key `fallbackBranch`.',
-    );
-  }
-
-  const fallbackBranch =
-    config.getOptionalString('fallbackBranch') ?? branch ?? 'master';
+  const fallbackBranch = config.getOptionalString('fallbackBranch') ?? 'master';
   const catalogFile =
     config.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
   const projectPattern = new RegExp(
@@ -65,6 +57,7 @@ function readGitlabConfig(
   return {
     id,
     group,
+    branch,
     fallbackBranch,
     host,
     catalogFile,

@@ -70,11 +70,12 @@ export type GitlabProviderConfig = {
   group: string;
   id: string;
   /**
-   * @deprecated use `fallbackBranch` instead
+   * The name of the branch to be used, to discover catalog files.
    */
   branch?: string;
   /**
-   * If there is no default branch defined at the project, this fallback is used to discover catalog files.
+   * If no `branch` is configured and there is no default branch defined at the project as well, this fallback is used
+   * to discover catalog files.
    * Defaults to: `master`
    */
   fallbackBranch: string;
