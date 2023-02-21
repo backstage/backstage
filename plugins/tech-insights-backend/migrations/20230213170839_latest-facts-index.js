@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-export { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
-export type { DefaultCatalogCollatorFactoryOptions } from './DefaultCatalogCollatorFactory';
-export type { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
-export { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
+const indexName = 'fact_id_entity_timestamp_idx';
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
+exports.up = async knex => {
+  await knex.schema.alterTable('facts', table => {
+    table.index(['id', 'entity', 'timestamp'], indexName);
+  });
+};
 
 /**
- * todo(backstage/techdocs-core): stop exporting this in a future release.
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
  */
-export { DefaultCatalogCollator } from './DefaultCatalogCollator';
+exports.down = async knex => {
+  await knex.schema.alterTable('facts', table => {
+    table.dropIndex(indexName);
+  });
+};
