@@ -49,7 +49,7 @@ export type NextCustomFieldValidator<TFieldReturnValue> = (
   context: {
     apiHolder: ApiHolder;
     formData: JsonObject;
-    schema?: JsonObject;
+    schema: JsonObject;
   },
 ) => void | Promise<void>;
 
