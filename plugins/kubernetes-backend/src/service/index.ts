@@ -21,5 +21,8 @@ export {
   KubernetesProxy,
   HEADER_KUBERNETES_AUTH,
 } from './KubernetesProxy';
-export type { KubernetesProxyCreateRequestHandlerOptions } from './KubernetesProxy';
+export type {
+  KubernetesProxyCreateRequestHandlerOptions,
+  KubernetesProxyOptions,
+} from './KubernetesProxy';
 export * from './router';

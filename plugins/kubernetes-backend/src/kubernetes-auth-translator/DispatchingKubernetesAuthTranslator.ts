@@ -22,7 +22,7 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
  *
  * @public
  */
-export type KubernetesAuthTranslatorGeneratorOptions = {
+export type DispatchingKubernetesAuthTranslatorOptions = {
   authTranslatorMap: {
     [key: string]: KubernetesAuthTranslator;
   };
@@ -36,7 +36,7 @@ export class DispatchingKubernetesAuthTranslator
 {
   private readonly translatorMap: { [key: string]: KubernetesAuthTranslator };
 
-  constructor(options: KubernetesAuthTranslatorGeneratorOptions) {
+  constructor(options: DispatchingKubernetesAuthTranslatorOptions) {
     this.translatorMap = options.authTranslatorMap;
   }
 

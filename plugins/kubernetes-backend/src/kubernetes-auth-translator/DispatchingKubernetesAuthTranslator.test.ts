@@ -31,7 +31,7 @@ describe('decorateClusterDetailsWithAuth', () => {
     });
   });
 
-  it('can decorate cluster details if the auth provider is in the translator map', () => {
+  it('can decorate cluster details if the auth provider is in the translator map', async () => {
     const expectedClusterDetails: ClusterDetails = {
       url: 'notanything.com',
       name: 'randomName',
@@ -39,11 +39,11 @@ describe('decorateClusterDetailsWithAuth', () => {
       serviceAccountToken: 'added by mock translator',
     };
 
-    mockTranslator.decorateClusterDetailsWithAuth.mockReturnValue(
-      expectedClusterDetails as unknown as Promise<ClusterDetails>,
+    mockTranslator.decorateClusterDetailsWithAuth.mockResolvedValue(
+      expectedClusterDetails,
     );
 
-    const returnedValue = authTranslator.decorateClusterDetailsWithAuth(
+    const returnedValue = await authTranslator.decorateClusterDetailsWithAuth(
       { name: 'googleCluster', url: 'anything.com', authProvider: 'google' },
       authObject,
     );
