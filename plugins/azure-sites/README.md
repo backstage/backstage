@@ -14,7 +14,7 @@ The following sections will help you get the Azure plugin setup and running
 
 ### Azure Sites Backend
 
-You need to set up the Azure Sites Backend plugin before you move forward with any of these steps if you haven't already.
+You need to set up the [Azure Sites Backend plugin](https://github.com/backstage/backstage/tree/master/plugins/azure-sites-backend) before you move forward with any of these steps if you haven't already.
 
 ### Entity Annotation
 

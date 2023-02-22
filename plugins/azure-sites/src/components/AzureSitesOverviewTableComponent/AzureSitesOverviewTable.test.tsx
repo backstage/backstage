@@ -22,6 +22,11 @@ import {
   errorApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  PermissionApi,
+  permissionApiRef,
+} from '@backstage/plugin-permission-react';
 import { rest } from 'msw';
 import {
   setupRequestMockHandlers,
@@ -41,15 +46,30 @@ const identityApiMock = (getCredentials: any) => ({
 });
 const azureSitesApiMock = {};
 
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  useEntity: () => {
+    return { loading: true, entity: undefined };
+  },
+  useEntityPermission: () => {
+    return { loading: false, allowed: true };
+  },
+}));
+
 const config = {
   getString: (_: string) => 'https://test-url',
 };
+
+const mockAuthorize = jest
+  .fn()
+  .mockImplementation(async () => ({ result: AuthorizeResult.ALLOW }));
+const permissionApi: Partial<PermissionApi> = { authorize: mockAuthorize };
 
 const apis: [AnyApiRef, Partial<unknown>][] = [
   [errorApiRef, errorApiMock],
   [configApiRef, config],
   [azureSiteApiRef, azureSitesApiMock],
   [identityApiRef, identityApiMock],
+  [permissionApiRef, permissionApi],
 ];
 
 describe('AzureSitesOverviewWidget', () => {

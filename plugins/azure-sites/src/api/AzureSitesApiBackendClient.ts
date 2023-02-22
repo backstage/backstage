@@ -39,12 +39,16 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
       request.subscription
     }/${request.resourceGroup}/${request.name}/stop`;
     const { token: accessToken } = await this.identityApi.getCredentials();
+    const entity = request.entity;
     await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
+      body: JSON.stringify({
+        entity,
+      }),
     });
   }
   async start(request: AzureSiteStartStopRequest): Promise<void> {
@@ -52,12 +56,16 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
       request.subscription
     }/${request.resourceGroup}/${request.name}/start`;
     const { token: accessToken } = await this.identityApi.getCredentials();
+    const entity = request.entity;
     await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
+      body: JSON.stringify({
+        entity,
+      }),
     });
   }
 
