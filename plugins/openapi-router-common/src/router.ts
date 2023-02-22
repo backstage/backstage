@@ -23,17 +23,17 @@ export type DeepWriteable<T> = {
 export interface ApiRouter<Doc extends RequiredDoc> extends Router {
   get: DocRequestMatcher<Doc, this, 'get'>;
 
-  post: DocRequestMatcher<Doc, this, 'get'>;
+  post: DocRequestMatcher<Doc, this, 'post'>;
 
-  all: DocRequestMatcher<Doc, this, 'get'>;
+  all: DocRequestMatcher<Doc, this, 'all'>;
 
-  put: DocRequestMatcher<Doc, this, 'get'>;
+  put: DocRequestMatcher<Doc, this, 'put'>;
 
-  delete: DocRequestMatcher<Doc, this, 'get'>;
+  delete: DocRequestMatcher<Doc, this, 'delete'>;
 
-  patch: DocRequestMatcher<Doc, this, 'get'>;
+  patch: DocRequestMatcher<Doc, this, 'patch'>;
 
-  options: DocRequestMatcher<Doc, this, 'get'>;
+  options: DocRequestMatcher<Doc, this, 'options'>;
 
-  head: DocRequestMatcher<Doc, this, 'get'>;
+  head: DocRequestMatcher<Doc, this, 'head'>;
 }

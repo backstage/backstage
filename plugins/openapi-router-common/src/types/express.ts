@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Application } from 'express';
 import core from 'express-serve-static-core';
 import { DocPathTemplate, MethodAwareDocPath, RequiredDoc } from './common';
 import { RequestBodyToJsonSchema } from './requests';
@@ -60,27 +59,14 @@ export interface DocRequestMatcher<
     | 'delete'
     | 'patch'
     | 'options'
-    | 'head' = any,
+    | 'head',
 > {
   <Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, Method>>(
     path: Path,
-    ...handlers: DocRequestHandler<Doc, Path, Method>[]
-  ): T;
-  <Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, Method>>(
-    path: Path,
     ...handlers: Array<DocRequestHandler<Doc, Path, Method>>
   ): T;
   <Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, Method>>(
     path: Path,
     ...handlers: Array<DocRequestHandlerParams<Doc, Path, Method>>
   ): T;
-  <Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, Method>>(
-    path: PathParams,
-    ...handlers: Array<DocRequestHandler<Doc, Path, Method>>
-  ): T;
-  <Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, Method>>(
-    path: PathParams,
-    ...handlers: Array<DocRequestHandlerParams<Doc, Path, Method>>
-  ): T;
-  (path: PathParams, subApplication: Application): T;
 }

@@ -6,6 +6,7 @@ info:
   description: The Backstage backend plugin that provides the Backstage catalog
   license:
     name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
   contact: {}
 
 servers:
@@ -18,17 +19,6 @@ components:
   requestBodies: {}
   responses: {}
   schemas:
-    RefreshOptions:
-      type: object
-      properties:
-        authorizationToken:
-          type: string
-        entityRef:
-          type: string
-          description: The reference to a single entity that should be refreshed
-      required:
-        - entityRef
-      description: Options for requesting a refresh of entities in the catalog.
     JsonObject:
       type: object
       properties: {}
@@ -57,6 +47,7 @@ components:
       required:
         - url
       description: A link to external information that is related to the entity.
+      additionalProperties: false
     EntityMeta:
       allOf:
         - $ref: '#/components/schemas/JsonObject'
@@ -133,6 +124,7 @@ components:
           required:
             - name
       description: Metadata fields common to all versions/kinds of entity.
+      additionalProperties: false
     EntityRelation:
       type: object
       properties:
@@ -146,6 +138,7 @@ components:
         - targetRef
         - type
       description: A relation of a specific type to another entity in the catalog.
+      additionalProperties: false
     Entity:
       type: object
       properties:
@@ -171,6 +164,7 @@ components:
         - kind
         - apiVersion
       description: The parts of the format that's common to all versions/kinds of entity.
+      additionalProperties: false
     EntityAncestryResponse:
       type: object
       properties:
@@ -193,6 +187,7 @@ components:
       required:
         - items
         - rootEntityRef
+      additionalProperties: false
     EntitiesBatchResponse:
       type: object
       properties:
@@ -207,6 +202,7 @@ components:
             that are null signify that no entity existed with that ref.
       required:
         - items
+      additionalProperties: false
     EntityFacet:
       type: object
       properties:
@@ -214,6 +210,7 @@ components:
           type: string
         count:
           type: number
+      additionalProperties: false
     EntityFacets:
       type: array
       items:
@@ -227,6 +224,7 @@ components:
             $ref: '#/components/schemas/EntityFacets'
       required:
         - facets
+      additionalProperties: false
     Location:
       type: object
       properties:
@@ -241,6 +239,7 @@ components:
         - type
         - id
       description: Entity location for a specific entity.
+      additionalProperties: false
     LocationSpec:
       type: object
       properties:
@@ -257,6 +256,7 @@ components:
         - target
         - type
       description: Holds the entity location information.
+      additionalProperties: false
     AnalyzeLocationExistingEntity:
       type: object
       properties:
@@ -275,6 +275,7 @@ components:
         read and emitted like this so that the frontend can inform the user that it
         located them and can make sure to register them as well if they weren't
         already
+      additionalProperties: false
     RecursivePartialEntityRelation:
       type: object
       properties:
@@ -285,6 +286,7 @@ components:
           type: string
           description: The type of the relation.
       description: A relation of a specific type to another entity in the catalog.
+      additionalProperties: false
     RecursivePartialEntityMeta:
       allOf:
         - $ref: '#/components/schemas/JsonObject'
@@ -360,6 +362,7 @@ components:
                 update or delete operations, but the server is free to reject requests
                 that do so in such a way that it breaks semantics.
           description: Metadata fields common to all versions/kinds of entity.
+      additionalProperties: false
     RecursivePartial_Entity_:
       type: object
       properties:
@@ -381,6 +384,7 @@ components:
             $ref: '#/components/schemas/RecursivePartialEntityRelation'
           description: The relations that this entity has with other entities.
       description: Makes all keys of an entire hierarchy optional.
+      additionalProperties: false
     AnalyzeLocationEntityField:
       type: object
       properties:
@@ -411,6 +415,7 @@ components:
         - value
         - state
         - field
+      additionalProperties: false
     AnalyzeLocationGenerateEntity:
       type: object
       properties:
@@ -429,6 +434,7 @@ components:
         the frontend. It'll probably contain a (possibly incomplete) entity, plus
         enough info for the frontend to know what form data to show to the user
         for overriding/completing the info.
+      additionalProperties: false
     AnalyzeLocationResponse:
       type: object
       properties:
@@ -443,6 +449,7 @@ components:
       required:
         - generateEntities
         - existingEntityFiles
+      additionalProperties: false
     LocationInput:
       type: object
       properties:
@@ -459,6 +466,7 @@ components:
         - type
         - target
         - presence
+      additionalProperties: false
     SerializedError:
       allOf:
         - $ref: '#/components/schemas/JsonObject'
@@ -480,13 +488,14 @@ components:
             - message
             - name
       description: The serialized form of an Error.
+      additionalProperties: false
     EntitiesQueryResponse:
       type: object
       properties:
         items:
           type: array
           items:
-            - $ref: '#/components/schemas/Entity'
+            $ref: '#/components/schemas/Entity'
           description: |-
             The list of entities paginated by a specific filter.
         totalItems:
@@ -502,6 +511,7 @@ components:
               type: string
               description: |-
                 Base64 encoded database query for the previous page.
+      additionalProperties: false
   securitySchemes:
     JWT:
       type: http
@@ -523,7 +533,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshOptions'
+              type: object
+              properties:
+                authorizationToken:
+                  type: string
+                entityRef:
+                  type: string
+                  description: The reference to a single entity that should be refreshed
+              required:
+                - entityRef
+              description: Options for requesting a refresh of entities in the catalog.
+              additionalProperties: false
   /entities:
     get:
       operationId: GetEntities

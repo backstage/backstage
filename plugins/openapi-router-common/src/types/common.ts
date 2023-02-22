@@ -131,7 +131,7 @@ export type ObjectWithContentSchema<
   Object extends { content?: ContentObject },
 > = Object['content'] extends ContentObject
   ? SchemaRef<Doc, Object['content']['application/json']['schema']>
-  : unknown;
+  : never;
 
 /**
  * From https://stackoverflow.com/questions/71393738/typescript-intersection-not-union-type-from-json-schema.
@@ -164,3 +164,7 @@ export type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
 ]
   ? ConvertAll<Rest, [...R, FromSchema<First>]>
   : R;
+
+type UnknownIfNever<P> = [P] extends [never] ? unknown : P;
+
+export type ToTypeSafe<T> = UnknownIfNever<ConvertAll<TuplifyUnion<T>>[number]>;

@@ -25,14 +25,22 @@ export async function createRouter(
   console.log(options);
   const router = Router() as ApiRouter<DeepWriteable<typeof doc>>;
 
-  router.get('/pets/:uid', (req, res) => {
+  router.get('/pets/:uid', (_, res) => {
     res.json({
       id: 1,
-      name: req.params.uid,
+      name: 'test',
     });
   });
 
-  // router.get('/pet') will complain with a TS error
+  router.get('/pets', (_, res) => {
+    res.json([
+      {
+        id: 1,
+        tag: '123',
+        name: 'test',
+      },
+    ]);
+  });
 
   router.post('/pets', (_, res) => {
     res.send();

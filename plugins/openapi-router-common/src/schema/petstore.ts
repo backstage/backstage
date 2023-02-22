@@ -156,6 +156,7 @@ export default {
             type: 'string',
           },
         },
+        additionalProperties: false,
       },
       Pets: {
         type: 'array',
@@ -175,6 +176,7 @@ export default {
             type: 'string',
           },
         },
+        additionalProperties: false,
       },
     },
   },
