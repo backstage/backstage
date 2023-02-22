@@ -14803,11 +14803,11 @@ __metadata:
   linkType: hard
 
 "@types/http-proxy@npm:*, @types/http-proxy@npm:^1.17.4, @types/http-proxy@npm:^1.17.8":
-  version: 1.17.9
-  resolution: "@types/http-proxy@npm:1.17.9"
+  version: 1.17.10
+  resolution: "@types/http-proxy@npm:1.17.10"
   dependencies:
     "@types/node": "*"
-  checksum: 7a6746d00729b2a9fe9f9dd3453430b099931df879ec8f7a7b5f07b1795f6d99b0512640c45a67390b1e4bacb9401e36824952aeeaf089feba8627a063cf8e00
+  checksum: 8fabee5d01715e338f426715325121d6c4b7a9694dee716ab61c874e0aaccee9a0fff7ccc3c9d7e37a8feeaab7c783c17aaa9943efbc8849c5e79ecd7eaf02ab
   languageName: node
   linkType: hard
 
