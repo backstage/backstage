@@ -43,7 +43,7 @@
     "@backstage/cli": "workspace:^",
     "@types/jenkins": "^0.23.1",
     "@types/supertest": "^2.0.8",
-    "msw": "^0.49.0",
+    "msw": "^1.0.0",
     "supertest": "^6.1.6"
   },
   "files": [

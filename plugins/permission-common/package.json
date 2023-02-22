@@ -50,6 +50,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "msw": "^0.49.0"
+    "msw": "^1.0.0"
   }
 }
