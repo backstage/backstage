@@ -29,7 +29,10 @@ import { GitlabProviderConfig } from '../lib';
 function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const group = config.getOptionalString('group') ?? '';
   const host = config.getString('host');
-  const branch = config.getOptionalString('branch') ?? 'master';
+  const fallbackBranch =
+    config.getOptionalString('fallbackBranch') ??
+    config.getOptionalString('branch') ??
+    'master';
   const catalogFile =
     config.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
   const projectPattern = new RegExp(
@@ -50,7 +53,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   return {
     id,
     group,
-    branch,
+    fallbackBranch,
     host,
     catalogFile,
     projectPattern,

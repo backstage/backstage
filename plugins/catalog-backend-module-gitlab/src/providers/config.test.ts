@@ -50,7 +50,7 @@ describe('config', () => {
       expect(r).toStrictEqual({
         id: 'test',
         group: 'group',
-        branch: 'master',
+        fallbackBranch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',
         projectPattern: /[\s\S]*/,
@@ -84,7 +84,7 @@ describe('config', () => {
       expect(r).toStrictEqual({
         id: 'test',
         group: 'group',
-        branch: 'not-master',
+        fallbackBranch: 'not-master',
         host: 'host',
         catalogFile: 'custom-file.yaml',
         projectPattern: /[\s\S]*/,
@@ -122,7 +122,7 @@ describe('config', () => {
       expect(r).toStrictEqual({
         id: 'test',
         group: 'group',
-        branch: 'master',
+        fallbackBranch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',
         projectPattern: /[\s\S]*/,
