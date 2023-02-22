@@ -24,8 +24,7 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   return await createRouter({
-    logger: env.logger,
+    ...env,
     azureSitesApi: AzureSitesApi.fromConfig(env.config),
-    permissions: env.permissions,
   });
 }

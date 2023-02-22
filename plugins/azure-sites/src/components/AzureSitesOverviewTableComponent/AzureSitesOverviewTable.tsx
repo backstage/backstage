@@ -114,26 +114,22 @@ const ActionButtons = ({
     setAnchorEl(null);
   };
   const start = () => {
-    azureApi.start(
-      {
-        name: value.name,
-        resourceGroup: value.resourceGroup,
-        subscription: value.subscription,
-      },
-      entity,
-    );
+    azureApi.start({
+      name: value.name,
+      resourceGroup: value.resourceGroup,
+      subscription: value.subscription,
+      entity: entity,
+    });
     onMenuItemClick('Starting, this may take some time...');
     handleClose();
   };
   const stop = async () => {
-    azureApi.stop(
-      {
-        name: value.name,
-        resourceGroup: value.resourceGroup,
-        subscription: value.subscription,
-      },
-      entity,
-    );
+    azureApi.stop({
+      name: value.name,
+      resourceGroup: value.resourceGroup,
+      subscription: value.subscription,
+      entity: entity,
+    });
     onMenuItemClick('Stopping, this may take some time...');
     handleClose();
   };

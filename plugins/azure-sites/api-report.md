@@ -21,8 +21,8 @@ export const azureSiteApiRef: ApiRef<AzureSitesApi>;
 // @public (undocumented)
 export type AzureSitesApi = {
   list: (request: AzureSiteListRequest) => Promise<AzureSiteListResponse>;
-  start: (request: AzureSiteStartStopRequest, entity: Entity) => Promise<void>;
-  stop: (request: AzureSiteStartStopRequest, entity: Entity) => Promise<void>;
+  start: (request: AzureSiteStartStopRequest) => Promise<void>;
+  stop: (request: AzureSiteStartStopRequest) => Promise<void>;
 };
 
 // @public (undocumented)
@@ -34,9 +34,9 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
   // (undocumented)
   list(request: AzureSiteListRequest): Promise<AzureSiteListResponse>;
   // (undocumented)
-  start(request: AzureSiteStartStopRequest, entity: Entity): Promise<void>;
+  start(request: AzureSiteStartStopRequest): Promise<void>;
   // (undocumented)
-  stop(request: AzureSiteStartStopRequest, entity: Entity): Promise<void>;
+  stop(request: AzureSiteStartStopRequest): Promise<void>;
 }
 
 // @public (undocumented)

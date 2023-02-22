@@ -21,7 +21,6 @@ import {
   AzureSiteStartStopRequest,
 } from '@backstage/plugin-azure-sites-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-import { Entity } from '@backstage/catalog-model';
 
 /** @public */
 export class AzureSitesApiBackendClient implements AzureSitesApi {
@@ -35,14 +34,12 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
     this.identityApi = options.identityApi;
   }
 
-  async stop(
-    request: AzureSiteStartStopRequest,
-    entity: Entity,
-  ): Promise<void> {
+  async stop(request: AzureSiteStartStopRequest): Promise<void> {
     const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/${
       request.subscription
     }/${request.resourceGroup}/${request.name}/stop`;
     const { token: accessToken } = await this.identityApi.getCredentials();
+    const entity = request.entity;
     await fetch(url, {
       method: 'POST',
       headers: {
@@ -54,14 +51,12 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
       }),
     });
   }
-  async start(
-    request: AzureSiteStartStopRequest,
-    entity: Entity,
-  ): Promise<void> {
+  async start(request: AzureSiteStartStopRequest): Promise<void> {
     const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/${
       request.subscription
     }/${request.resourceGroup}/${request.name}/start`;
     const { token: accessToken } = await this.identityApi.getCredentials();
+    const entity = request.entity;
     await fetch(url, {
       method: 'POST',
       headers: {

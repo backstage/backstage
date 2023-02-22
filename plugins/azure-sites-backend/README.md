@@ -82,6 +82,7 @@ Here's how to get the backend plugin up and running:
    ```
 
 4. Setup plugin permissions, if you need to control you action(start/stop), edit you `packages/backend/src/plugins/permission.ts`
+
    ```diff
    // packages/backend/src/plugins/permission.ts
    + import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
@@ -95,14 +96,15 @@ Here's how to get the backend plugin up and running:
           catalogConditions.isEntityOwner({
             claims: user?.identity.ownershipEntityRefs ??  [],
           }),
-      );
-    }
-       ...
-       return {
-         result: AuthorizeResult.ALLOW,
-       };
+        );
+      }
+      ...
+      return {
+        result: AuthorizeResult.ALLOW,
+      };
    }
    ```
+
 5. Now run `yarn start-backend` from the repo root.
 
 6. Finally, open `http://localhost:7007/api/azure/health` in a browser, it should return `{"status":"ok"}`.
