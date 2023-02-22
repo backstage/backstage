@@ -356,7 +356,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   }
 
   private groupName(full_path: string): string {
-    return full_path.replace(`${this.config.group}/`, '').replaceAll('/', '-');
+    if (this.config.group && full_path.startsWith(`${this.config.group}/`)) {
+      return full_path
+        .replace(`${this.config.group}/`, '')
+        .replaceAll('/', '-');
+    }
+    return full_path.replaceAll('/', '-');
   }
 
   private createGroupEntity(group: GitLabGroup, host: string): GroupEntity {

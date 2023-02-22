@@ -184,7 +184,6 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
           gitlab: {
             'test-id': {
               host: 'test-gitlab',
-              group: 'test-group',
               orgEnabled: true,
             },
           },
@@ -376,9 +375,9 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
           metadata: {
             annotations: {
               'backstage.io/managed-by-location':
-                'url:https://test-gitlab/teams/group1-group2',
+                'url:https://test-gitlab/group1/group2',
               'backstage.io/managed-by-origin-location':
-                'url:https://test-gitlab/teams/group1-group2',
+                'url:https://test-gitlab/group1/group2',
               'test-gitlab/team-path': 'group1/group2',
             },
             description: 'Group2',
