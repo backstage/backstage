@@ -7798,6 +7798,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-openapi-router@workspace:plugins/openapi-router-common"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     express: ^4.17.1
     json-schema-to-ts: ^2.6.2
