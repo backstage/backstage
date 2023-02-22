@@ -21,6 +21,7 @@ import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
 import {
   PluginTaskScheduler,
+  TaskDescriptor,
   TaskInvocationDefinition,
   TaskRunner,
   TaskScheduleDefinition,
@@ -32,6 +33,7 @@ import { validateId } from './util';
  */
 export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
   private readonly localTasksById = new Map<string, LocalTaskWorker>();
+  private readonly allScheduledTasks: TaskDescriptor[] = [];
 
   constructor(
     private readonly databaseFactory: () => Promise<Knex>,
@@ -94,6 +96,8 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
 
       this.localTasksById.set(task.id, worker);
     }
+    const { fn: _, signal: __, ...descriptor } = task;
+    this.allScheduledTasks.push(descriptor as TaskDescriptor);
   }
 
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner {
@@ -102,6 +106,10 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
         await this.scheduleTask({ ...task, ...schedule });
       },
     };
+  }
+
+  getScheduledTasks(): TaskDescriptor[] {
+    return this.allScheduledTasks;
   }
 }
 

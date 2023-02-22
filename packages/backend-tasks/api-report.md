@@ -16,6 +16,7 @@ export type HumanDuration = HumanDuration_2;
 // @public
 export interface PluginTaskScheduler {
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
+  getScheduledTasks(): TaskDescriptor[];
   scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void>;
@@ -26,6 +27,10 @@ export interface PluginTaskScheduler {
 export function readTaskScheduleDefinitionFromConfig(
   config: Config,
 ): TaskScheduleDefinition;
+
+// @public
+export type TaskDescriptor = TaskScheduleDefinition &
+  Exclude<TaskInvocationDefinition, 'fn' | 'signal'>;
 
 // @public
 export type TaskFunction =

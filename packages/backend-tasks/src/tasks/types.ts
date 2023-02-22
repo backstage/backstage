@@ -32,6 +32,14 @@ export type TaskFunction =
   | (() => void | Promise<void>);
 
 /**
+ * A type to describe a scheduled task.
+ *
+ * @public
+ */
+export type TaskDescriptor = TaskScheduleDefinition &
+  Exclude<TaskInvocationDefinition, 'fn' | 'signal'>;
+
+/**
  * Options that control the scheduling of a task.
  *
  * @public
@@ -307,6 +315,19 @@ export interface PluginTaskScheduler {
    * @param schedule - The task schedule
    */
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
+
+  /**
+   * Returns all scheduled tasks registered to this scheduler.
+   *
+   * @remarks
+   *
+   * This method is useful for triggering tasks manually using the triggerTask
+   * functionality. Note that the returned tasks contain only tasks that have
+   * been initialized in this instance of the scheduler.
+   *
+   * @returns Scheduled tasks
+   */
+  getScheduledTasks(): TaskDescriptor[];
 }
 
 function isValidOptionalDurationString(d: string | undefined): boolean {
