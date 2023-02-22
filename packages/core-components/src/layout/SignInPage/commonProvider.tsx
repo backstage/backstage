@@ -28,21 +28,25 @@ import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 import { GridItem } from './styles';
 import { ForwardedError } from '@backstage/errors';
 import { UserIdentity } from './UserIdentity';
-import { PROVIDER_STORAGE_KEY } from './providers';
 
-const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
-  const { apiRef, title, message, id } = config as SignInProviderConfig;
+const Component: ProviderComponent = ({
+  config,
+  onSignInStarted,
+  onSignInSuccess,
+  onSignInFailure,
+}) => {
+  const { apiRef, title, message } = config as SignInProviderConfig;
   const authApi = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
 
   const handleLogin = async () => {
     try {
-      localStorage.setItem(PROVIDER_STORAGE_KEY, id);
+      onSignInStarted();
       const identityResponse = await authApi.getBackstageIdentity({
         instantPopup: true,
       });
       if (!identityResponse) {
-        localStorage.removeItem(PROVIDER_STORAGE_KEY);
+        onSignInFailure();
         throw new Error(
           `The ${title} provider is not configured to support sign-in`,
         );
@@ -58,7 +62,7 @@ const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
         }),
       );
     } catch (error) {
-      localStorage.removeItem(PROVIDER_STORAGE_KEY);
+      onSignInFailure();
       errorApi.post(new ForwardedError('Login failed', error));
     }
   };

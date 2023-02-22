@@ -91,7 +91,7 @@ export type OAuthState = {
   origin?: string;
   scope?: string;
   redirectUrl?: string;
-  authFlow?: string;
+  flow?: string;
 };
 
 /** @public */

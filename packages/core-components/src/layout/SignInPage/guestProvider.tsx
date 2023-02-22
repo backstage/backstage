@@ -22,7 +22,7 @@ import { GridItem } from './styles';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import { GuestUserIdentity } from './GuestUserIdentity';
 
-const Component: ProviderComponent = ({ onSignInSuccess }) => (
+const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => (
   <GridItem>
     <InfoCard
       title="Guest"
@@ -31,7 +31,10 @@ const Component: ProviderComponent = ({ onSignInSuccess }) => (
         <Button
           color="primary"
           variant="outlined"
-          onClick={() => onSignInSuccess(new GuestUserIdentity())}
+          onClick={() => {
+            onSignInStarted();
+            onSignInSuccess(new GuestUserIdentity());
+          }}
         >
           Enter
         </Button>

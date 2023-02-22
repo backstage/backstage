@@ -107,7 +107,6 @@ export async function createRouter(
     ...providerFactories,
   };
   const providersConfig = config.getConfig('auth.providers');
-
   const configuredProviders = providersConfig.keys();
 
   const isOriginAllowed = createOriginFilter(config);

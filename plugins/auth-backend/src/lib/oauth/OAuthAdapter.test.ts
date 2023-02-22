@@ -178,7 +178,7 @@ describe('OAuthAdapter', () => {
     const state = {
       ...defaultState,
       redirectUrl: 'http://localhost:3000',
-      authFlow: 'redirect',
+      flow: 'redirect',
     };
     const mockRequest = createEncodedQueryMockRequest(state);
 
@@ -506,7 +506,7 @@ describe('OAuthAdapter', () => {
     expect(mockResponse.redirect).not.toHaveBeenCalled();
   });
 
-  it('executed a response redirect when authFlow query string is set to "redirect"', async () => {
+  it('executed a response redirect when flow query string is set to "redirect"', async () => {
     const handlers = {
       start: jest.fn(async (_req: { state: OAuthState }) => ({
         url: '/url',
@@ -531,7 +531,7 @@ describe('OAuthAdapter', () => {
       ...defaultState,
       origin: 'http://other.domain',
       redirectUrl: 'http://domain.org',
-      authFlow: 'redirect',
+      flow: 'redirect',
     };
 
     const mockRequest = {

@@ -55,7 +55,6 @@ export type OAuthAdapterOptions = {
   providerId: string;
   persistScopes?: boolean;
   appOrigin: string;
-  redirectUrl?: string;
   baseUrl: string;
   cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
@@ -69,7 +68,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     handlers: OAuthHandlers,
     options: Pick<
       OAuthAdapterOptions,
-      'providerId' | 'persistScopes' | 'callbackUrl' | 'redirectUrl'
+      'providerId' | 'persistScopes' | 'callbackUrl'
     >,
   ): OAuthAdapter {
     const { appUrl, baseUrl, isOriginAllowed } = config;
@@ -104,7 +103,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     const env = req.query.env?.toString();
     const origin = req.query.origin?.toString();
     const redirectUrl = req.query.redirectUrl?.toString();
-    const authFlow = req.query.authFlow?.toString();
+    const flow = req.query.authFlow?.toString();
     if (!env) {
       throw new InputError('No env provided in request query parameters');
     }
@@ -115,7 +114,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce, cookieConfig);
 
-    const state: OAuthState = { nonce, env, origin, redirectUrl, authFlow };
+    const state: OAuthState = { nonce, env, origin, redirectUrl, flow: flow };
 
     // If scopes are persisted then we pass them through the state so that we
     // can set the cookie on successful auth
@@ -142,7 +141,6 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
     try {
       const state: OAuthState = readState(req.query.state?.toString() ?? '');
-      const redirectUrl = state.redirectUrl ?? '';
 
       if (state.origin) {
         try {
@@ -181,8 +179,13 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         response: { ...response, backstageIdentity: identity },
       };
 
-      if (state.authFlow === 'redirect') {
-        res.redirect(redirectUrl);
+      if (state.flow === 'redirect') {
+        if (!state.redirectUrl) {
+          throw new InputError(
+            'No redirectUrl provided in request query parameters',
+          );
+        }
+        res.redirect(state.redirectUrl);
       }
       // post message back to popup if successful
       return postMessageResponse(res, appOrigin, responseObj);

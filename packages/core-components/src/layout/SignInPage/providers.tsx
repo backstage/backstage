@@ -176,11 +176,21 @@ export const useSignInProviders = (
           handleWrappedResult(result);
         };
 
+        const handleSignInStarted = () => {
+          localStorage.setItem(PROVIDER_STORAGE_KEY, provider.config!.id);
+        };
+
+        const handleSignInFailure = () => {
+          localStorage.removeItem(PROVIDER_STORAGE_KEY);
+        };
+
         return (
           <Component
             key={provider.id}
             config={provider.config!}
+            onSignInStarted={handleSignInStarted}
             onSignInSuccess={handleSignInSuccess}
+            onSignInFailure={handleSignInFailure}
           />
         );
       }),
