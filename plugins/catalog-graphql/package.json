@@ -48,10 +48,10 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@graphql-codegen/cli": "^2.3.1",
-    "@graphql-codegen/graphql-modules-preset": "^2.3.2",
-    "@graphql-codegen/typescript": "^2.4.2",
-    "@graphql-codegen/typescript-resolvers": "^2.4.3",
+    "@graphql-codegen/cli": "^3.0.0",
+    "@graphql-codegen/graphql-modules-preset": "^3.0.0",
+    "@graphql-codegen/typescript": "^3.0.0",
+    "@graphql-codegen/typescript-resolvers": "^3.0.0",
     "@graphql-tools/schema": "^9.0.0",
     "msw": "^1.0.0"
   },
