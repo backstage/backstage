@@ -295,7 +295,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private withLocations(host: string, baseUrl: string, entity: Entity): Entity {
     const location =
       entity.kind === 'Group'
-        ? `url:${baseUrl}/${entity.metadata.annotations[`${host}/team-path`]}`
+        ? `url:${baseUrl}/${entity.metadata.annotations?.[`${host}/team-path`]}`
         : `url:${baseUrl}/${entity.metadata.name}`;
     return merge(
       {
