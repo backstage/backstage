@@ -48,8 +48,11 @@ const azureSitesApiMock = {};
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {
-    return { loading: true, entity: undefined };
+    return { loading: false, entity: undefined };
   },
+}));
+
+jest.mock('@backstage/plugin-catalog-react/alpha', () => ({
   useEntityPermission: () => {
     return { loading: false, allowed: true };
   },

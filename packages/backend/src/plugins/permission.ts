@@ -19,11 +19,11 @@ import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
   PolicyDecision,
+  isPermission,
 } from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
   PolicyQuery,
-  isPermission,
 } from '@backstage/plugin-permission-node';
 import {
   DefaultPlaylistPermissionPolicy,
@@ -35,7 +35,7 @@ import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common
 import {
   catalogConditions,
   createCatalogConditionalDecision,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-backend/alpha';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();

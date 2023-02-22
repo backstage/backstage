@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * @public
+ */
 export const AZURE_WEB_SITE_NAME_ANNOTATION = 'azure.com/microsoft-web-sites';
