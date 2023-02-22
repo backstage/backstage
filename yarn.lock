@@ -4570,7 +4570,7 @@ __metadata:
     "@types/passport-auth0": ^1.0.5
     "@types/passport-github2": ^1.2.4
     "@types/passport-google-oauth20": ^2.0.3
-    "@types/passport-microsoft": ^0.0.0
+    "@types/passport-microsoft": ^1.0.0
     "@types/passport-saml": ^1.1.3
     "@types/passport-strategy": ^0.2.35
     "@types/xml2js": ^0.4.7
@@ -15070,12 +15070,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-microsoft@npm:^0.0.0":
-  version: 0.0.0
-  resolution: "@types/passport-microsoft@npm:0.0.0"
+"@types/passport-microsoft@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@types/passport-microsoft@npm:1.0.0"
   dependencies:
     "@types/passport-oauth2": "*"
-  checksum: fee27b238975ba86982616d713247bd9f8ab4e325270dd42841c140710ece3f32655b2536fcbffe0166f25b51e1b25316006718f037b5a88018406c64351ae27
+  checksum: d7c8b439b18cddcf707ea0c575748ecb344b6fb3c78a847aaad83246abf081c8b485efa86a3788cd5f49f4ca84a1444d813697a433fab9d04f35fb67d628cb23
   languageName: node
   linkType: hard
 
