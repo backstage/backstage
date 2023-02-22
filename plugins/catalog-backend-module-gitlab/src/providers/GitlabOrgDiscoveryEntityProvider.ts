@@ -199,7 +199,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         continue;
       }
 
-      if (!group.full_path.startsWith(this.config.group)) {
+      if (
+        this.config.group &&
+        !group.full_path.startsWith(`${this.config.group}/`)
+      ) {
         continue;
       }
 
