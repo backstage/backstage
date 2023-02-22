@@ -28,6 +28,10 @@ import type {
   DocPath,
   DocPathMethod,
   DocPathTemplate,
+  PathTemplate,
+  ConvertAll,
+  TuplifyUnion,
+  ValueOf,
 } from './common';
 
 type RequestBody<
@@ -50,4 +54,12 @@ export type RequestBodySchema<
   Method extends DocPathMethod<Doc, Path>,
 > = RequestBody<Doc, DocPath<Doc, Path>, Method> extends RequestBodyObject
   ? ObjectWithContentSchema<Doc, RequestBody<Doc, DocPath<Doc, Path>, Method>>
-  : never;
+  : unknown;
+
+export type RequestBodyToJsonSchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ConvertAll<
+  TuplifyUnion<ValueOf<RequestBodySchema<Doc, Path, Method>>>
+>[number];

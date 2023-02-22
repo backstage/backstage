@@ -18,6 +18,7 @@
  * Pulled from https://github.com/varanauskas/oatx.
  */
 
+import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
 import type {
   ContentObject,
   OpenAPIObject,
@@ -25,7 +26,8 @@ import type {
 } from 'openapi3-ts';
 
 export type RequiredDoc = Pick<OpenAPIObject, 'paths' | 'components'>;
-export type PathDoc = { paths: Record<string, unknown> };
+
+export type PathDoc = Pick<OpenAPIObject, 'paths'>;
 
 /**
  * Get value types of `T`
@@ -129,4 +131,36 @@ export type ObjectWithContentSchema<
   Object extends { content?: ContentObject },
 > = Object['content'] extends ContentObject
   ? SchemaRef<Doc, Object['content']['application/json']['schema']>
+  : unknown;
+
+/**
+ * From https://stackoverflow.com/questions/71393738/typescript-intersection-not-union-type-from-json-schema.
+ *
+ * StackOverflow says not to do this, but union types aren't possible any other way.
+ */
+
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I,
+) => void
+  ? I
   : never;
+type LastOf<T> = UnionToIntersection<
+  T extends any ? () => T : never
+> extends () => infer R
+  ? R
+  : never;
+
+type Push<T extends any[], V> = [...T, V];
+
+export type TuplifyUnion<
+  T,
+  L = LastOf<T>,
+  N = [T] extends [never] ? true : false,
+> = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>;
+
+export type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
+  infer First extends JSONSchema7,
+  ...infer Rest,
+]
+  ? ConvertAll<Rest, [...R, FromSchema<First>]>
+  : R;

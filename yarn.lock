@@ -7809,7 +7809,7 @@ __metadata:
   resolution: "@backstage/plugin-openapi-router@workspace:plugins/openapi-router-common"
   dependencies:
     "@backstage/cli": "workspace:^"
-    express: ^4.18.2
+    express: ^4.17.1
     json-schema-to-ts: ^2.6.2
     openapi-types: ^12.1.0
     openapi3-ts: ^3.1.2
@@ -24164,7 +24164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.17.1, express@npm:^4.17.3, express@npm:^4.18.1, express@npm:^4.18.2":
+"express@npm:^4.17.1, express@npm:^4.17.3, express@npm:^4.18.1":
   version: 4.18.2
   resolution: "express@npm:4.18.2"
   dependencies:

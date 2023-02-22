@@ -17,7 +17,7 @@
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createServiceBuilder } from '@backstage/backend-common';
-import { createRouter } from './router';
+import { createRouter } from './example';
 
 export interface ServerOptions {
   port: number;

@@ -28,6 +28,10 @@ import type {
   DocPath,
   DocPathMethod,
   DocPathTemplate,
+  PathTemplate,
+  ConvertAll,
+  ValueOf,
+  TuplifyUnion,
 } from './common';
 
 type Response<
@@ -81,5 +85,13 @@ export type ResponseSchemas<
         Doc,
         Responses<Doc, DocPath<Doc, Path>, Method>[StatusCode]
       >
-    : never;
+    : unknown;
 };
+
+export type ResponseBodyToJsonSchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ConvertAll<
+  TuplifyUnion<ValueOf<ResponseSchemas<Doc, Path, Method>>>
+>[number];

@@ -352,6 +352,7 @@ export default {
           {
             type: 'object',
             properties: {
+              properties: null,
               links: {
                 type: 'array',
                 items: {
@@ -404,9 +405,10 @@ export default {
                   'A globally unique ID for the entity.\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, but the server is free to reject requests\nthat do so in such a way that it breaks semantics.',
               },
             },
+            description:
+              'Metadata fields common to all versions/kinds of entity.',
           },
         ],
-        description: 'Metadata fields common to all versions/kinds of entity.',
       },
       RecursivePartial_Entity_: {
         type: 'object',
@@ -443,7 +445,7 @@ export default {
           description: {
             type: 'string',
             description:
-              'A text to show to the user to inform about the choices made. Like, it could say\n"Found a CODEOWNERS file that covers this target, so we suggest leaving this\nfield empty; which would currently make it owned by X" where X is taken from the\ncodeowners file.',
+              'A text to show to the user to inform about the choices made. Like, it could say\n"Found a CODEOWNERS file that covers this target, so we suggest leaving this \nfield empty; which would currently make it owned by X" where X is taken from the\ncodeowners file.',
           },
           value: {
             type: 'string',
@@ -548,6 +550,37 @@ export default {
           },
         ],
         description: 'The serialized form of an Error.',
+      },
+      EntitiesQueryResponse: {
+        type: 'object',
+        properties: {
+          items: {
+            type: 'array',
+            items: [
+              {
+                $ref: '#/components/schemas/Entity',
+              },
+            ],
+            description: 'The list of entities paginated by a specific filter.',
+          },
+          totalItems: {
+            type: 'number',
+          },
+          pageInfo: {
+            type: 'object',
+            properties: {
+              nextCursor: {
+                type: 'string',
+                description: 'Base64 encoded database query for the next page.',
+              },
+              prevCursor: {
+                type: 'string',
+                description:
+                  'Base64 encoded database query for the previous page.',
+              },
+            },
+          },
+        },
       },
     },
     securitySchemes: {
@@ -819,6 +852,52 @@ export default {
               'application/json': {
                 schema: {
                   $ref: '#/components/schemas/EntitiesBatchResponse',
+                },
+              },
+            },
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        parameters: [
+          {
+            in: 'query',
+            name: 'fields',
+            required: false,
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/entities/by-query': {
+      get: {
+        operationId: 'GetEntitiesByQuery',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/EntitiesQueryResponse',
                 },
               },
             },
