@@ -94,6 +94,7 @@ export class PublisherConfig {
         ...(opts.awsEndpoint && { endpoint: opts.awsEndpoint }),
         ...(opts.awsS3ForcePathStyle && { s3ForcePathStyle: true }),
         ...(opts.awsS3sse && { sse: opts.awsS3sse }),
+        ...(opts.awsProxy && { httpsProxy: opts.awsProxy }),
       },
     };
   }

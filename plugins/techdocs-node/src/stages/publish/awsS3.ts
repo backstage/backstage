@@ -32,8 +32,10 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
 import { Upload } from '@aws-sdk/lib-storage';
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
+import { HttpsProxyAgent } from 'hpagent';
 import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
@@ -150,6 +152,11 @@ export class AwsS3Publish implements PublisherBase {
       'techdocs.publisher.awsS3.endpoint',
     );
 
+    // AWS HTTPS proxy is an optional config. If missing, no proxy is used
+    const httpsProxy = config.getOptionalString(
+      'techdocs.publisher.awsS3.httpsProxy',
+    );
+
     // AWS forcePathStyle is an optional config. If missing, it defaults to false. Needs to be enabled for cases
     // where endpoint url points to locally hosted S3 compatible storage like Localstack
     const forcePathStyle = config.getOptionalBoolean(
@@ -162,6 +169,11 @@ export class AwsS3Publish implements PublisherBase {
       ...(region && { region }),
       ...(endpoint && { endpoint }),
       ...(forcePathStyle && { forcePathStyle }),
+      ...(httpsProxy && {
+        requestHandler: new NodeHttpHandler({
+          httpsAgent: new HttpsProxyAgent({ proxy: httpsProxy }),
+        }),
+      }),
     });
 
     const legacyPathCasing =
