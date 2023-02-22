@@ -47,8 +47,6 @@ module.exports = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       {
         docs: {
-          showLastUpdateAuthor: true,
-          showLastUpdateTime: true,
           editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
           path: '../docs',
           sidebarPath: 'sidebars.json',
@@ -65,6 +63,23 @@ module.exports = {
       },
     ],
   ],
+  webpack: {
+    jsLoader: isServer => ({
+      loader: require.resolve('swc-loader'),
+      options: {
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+            tsx: true,
+          },
+          target: 'es2017',
+        },
+        module: {
+          type: isServer ? 'commonjs' : 'es6',
+        },
+      },
+    }),
+  },
   plugins: [
     'docusaurus-plugin-sass',
     () => ({

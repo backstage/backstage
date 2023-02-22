@@ -17,6 +17,7 @@ jobs:
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
+      DOCUSAURUS_SSR_CONCURRENCY: 5
 
     steps:
       - uses: actions/checkout@v3
@@ -28,9 +29,15 @@ jobs:
 
         # Skip caching of microsite dependencies, it keeps the global cache size
         # smaller, which make Windows builds a lot faster for the rest of the project.
+      - name: top-level install
+        run: yarn install --immutable
+
       - name: yarn install
         run: yarn install --immutable
         working-directory: microsite-next
+
+      - name: build API reference
+        run: yarn build:api-docs
 
       - name: verify yarn dependency duplicates
         run: node scripts/verify-lockfile-duplicates.js
