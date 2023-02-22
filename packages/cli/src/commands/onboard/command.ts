@@ -21,7 +21,6 @@ import { auth } from './auth';
 export async function command(): Promise<void> {
   const answers = await inquirer.prompt<{
     shouldSetupAuth: boolean;
-    provider?: string;
   }>([
     {
       type: 'confirm',
