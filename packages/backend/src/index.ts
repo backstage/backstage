@@ -68,6 +68,7 @@ import linguist from './plugins/linguist';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import toolkit from './plugins/toolkit';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -124,6 +125,7 @@ async function main() {
 
   const createEnv = makeCreateEnv(config);
 
+  const toolkitEnv = useHotMemoize(module, () => createEnv('toolkit'));
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const codeCoverageEnv = useHotMemoize(module, () =>
@@ -188,6 +190,8 @@ async function main() {
   apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
   apiRouter.use('/adr', await adr(adrEnv));
   apiRouter.use('/linguist', await linguist(linguistEnv));
+  apiRouter.use('/toolkit', await toolkit(toolkitEnv));
+
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);
