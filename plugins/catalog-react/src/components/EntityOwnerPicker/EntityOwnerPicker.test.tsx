@@ -57,6 +57,15 @@ const ownerEntities: Entity[] = [
       title: 'Another Owner',
     },
   },
+  {
+    apiVersion: '1',
+    kind: 'Group',
+    metadata: {
+      namespace: 'test-namespace',
+      name: 'another-owner-2',
+      title: 'Another Owner in Another Namespace',
+    },
+  },
 ];
 
 const sampleEntities: Entity[] = [
@@ -87,6 +96,10 @@ const sampleEntities: Entity[] = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/another-owner',
+      },
+      {
+        type: 'ownedBy',
+        targetRef: 'group:test-namespace/another-owner-2',
       },
     ],
   },
@@ -134,7 +147,12 @@ describe('<EntityOwnerPicker/>', () => {
     expect(screen.getByText('Owner')).toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
-    ['Another Owner', 'some-owner', 'Some Owner 2'].forEach(owner => {
+    [
+      'Another Owner',
+      'some-owner',
+      'Some Owner 2',
+      'Another Owner in Another Namespace',
+    ].forEach(owner => {
       expect(screen.getByText(owner)).toBeInTheDocument();
     });
   });
@@ -155,6 +173,7 @@ describe('<EntityOwnerPicker/>', () => {
 
     expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
       'Another Owner',
+      'Another Owner in Another Namespace',
       'some-owner',
       'Some Owner 2',
     ]);
