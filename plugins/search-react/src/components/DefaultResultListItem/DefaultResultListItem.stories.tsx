@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from '@backstage/core-components';
+import { LinkButton } from '@backstage/core-components';
 import { lightTheme } from '@backstage/theme';
 import { Grid } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -66,7 +66,7 @@ export const WithSecondaryAction = () => {
     <DefaultResultListItem
       result={mockSearchResult}
       secondaryAction={
-        <Button
+        <LinkButton
           to="#"
           size="small"
           aria-label="owner"
@@ -75,7 +75,7 @@ export const WithSecondaryAction = () => {
           style={{ textTransform: 'lowercase' }}
         >
           {mockSearchResult.owner}
-        </Button>
+        </LinkButton>
       }
     />
   );
