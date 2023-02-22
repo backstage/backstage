@@ -20,5 +20,5 @@
  * @packageDocumentation
  */
 
-export type { ApiRouter } from './router';
+export type { ApiRouter, DeepWriteable } from './router';
 export * from './types';

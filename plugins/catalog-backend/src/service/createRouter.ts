@@ -24,7 +24,8 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError, serializeError } from '@backstage/errors';
-import express, { Router } from 'express';
+import express from 'express';
+import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
 import { z } from 'zod';

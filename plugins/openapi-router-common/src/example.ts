@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import express, { Router } from 'express';
+import express from 'express';
+import Router from 'express-promise-router';
 import { ApiRouter, DeepWriteable } from './router';
 import doc from './schema/petstore';
 

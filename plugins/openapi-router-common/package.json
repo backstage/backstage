@@ -32,6 +32,7 @@
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
     "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
     "json-schema-to-ts": "^2.6.2",
     "openapi-types": "^12.1.0",
     "openapi3-ts": "^3.1.2",
