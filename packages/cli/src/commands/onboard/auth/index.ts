@@ -42,8 +42,11 @@ export async function auth(): Promise<void> {
       throw new Error(`Provider ${provider} not implemented yet.`);
   }
 
-  Task.log(`Done setting up ${provider}!`);
+  Task.log(`Done setting up ${provider} Authentication!`);
+  Task.log();
   Task.log(
-    `You can now start you app with ${chalk.inverse(chalk.italic('yarn dev'))}`,
+    `You can now start your app with ${chalk.inverse(
+      chalk.italic('yarn dev'),
+    )}`,
   );
 }
