@@ -133,6 +133,26 @@ export async function createRouter(
         // TODO(freben): encode the pageInfo in the response
         res.json(entities);
       })
+      .get('/entities/by-query', async (req, res) => {
+        const { items, pageInfo, totalItems } =
+          await entitiesCatalog.queryEntities({
+            ...parseQueryEntitiesParams(req.query),
+            authorizationToken: getBearerToken(req.header('authorization')),
+          });
+
+        res.json({
+          items,
+          totalItems,
+          pageInfo: {
+            ...(pageInfo.nextCursor && {
+              nextCursor: encodeCursor(pageInfo.nextCursor),
+            }),
+            ...(pageInfo.prevCursor && {
+              prevCursor: encodeCursor(pageInfo.prevCursor),
+            }),
+          },
+        });
+      })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
         const { entities } = await entitiesCatalog.entities({
@@ -187,9 +207,7 @@ export async function createRouter(
           fields: parseEntityTransformParams(req.query, request.fields),
           authorizationToken: token,
         });
-        // These responses are interacting weirdly with the underlying interface passed to them,
-        //  we just need to re-load the TS server's short term memory.
-        res.status(200).json({ ...response });
+        res.status(200).json(response);
       })
       .get('/entity-facets', async (req, res) => {
         const response = await entitiesCatalog.facets({
@@ -197,9 +215,7 @@ export async function createRouter(
           facets: parseEntityFacetParams(req.query),
           authorizationToken: getBearerToken(req.header('authorization')),
         });
-        // These responses are interacting weirdly with the underlying interface passed to them,
-        //  we just need to re-load the TS server's short term memory.
-        res.status(200).json({ ...response });
+        res.status(200).json(response);
       });
   }
 
