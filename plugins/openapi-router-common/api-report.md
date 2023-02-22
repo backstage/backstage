@@ -62,6 +62,11 @@ export type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
   ? ConvertAll<Rest, [...R, FromSchema<First>]>
   : R;
 
+// @public
+export type DeepWriteable<T> = {
+  -readonly [P in keyof T]: DeepWriteable<T[P]>;
+};
+
 // @public (undocumented)
 export type DocOperation<
   Doc extends RequiredDoc,
