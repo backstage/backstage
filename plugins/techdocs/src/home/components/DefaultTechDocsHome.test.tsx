@@ -38,6 +38,7 @@ import { DefaultTechDocsHome } from './DefaultTechDocsHome';
 
 const mockCatalogApi = {
   getEntityByRef: () => Promise.resolve(),
+  getEntitiesByRefs: () => Promise.resolve({ items: [] }),
   getEntities: async () => ({
     items: [
       {
