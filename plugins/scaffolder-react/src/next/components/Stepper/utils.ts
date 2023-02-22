@@ -35,7 +35,9 @@ export function hasErrors(errors?: FormValidation): boolean {
       continue;
     }
 
-    return hasErrors(error);
+    if (hasErrors(error)) {
+      return true;
+    }
   }
 
   return false;

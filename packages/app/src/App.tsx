@@ -59,9 +59,9 @@ import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
+import { NextScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
 import {
   ScaffolderPage,
-  NextScaffolderPage,
   scaffolderPlugin,
   ScaffolderLayouts,
 } from '@backstage/plugin-scaffolder';
@@ -104,7 +104,7 @@ import * as plugins from './plugins';
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { PlaylistIndexPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';

@@ -56,6 +56,79 @@ describe('createAsyncValidators', () => {
     expect(validators.AddressField).toHaveBeenCalled();
   });
 
+  it('should call the validator function with the correct schema in the context', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          'ui:options': {
+            bob: true,
+          },
+          pattern: 'lols',
+          'ui:field': 'NameField',
+        },
+        address: {
+          type: 'object',
+          'ui:field': 'AddressField',
+          properties: {
+            street: {
+              type: 'string',
+            },
+            postcode: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    };
+
+    const validators = { NameField: jest.fn(), AddressField: jest.fn() };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      name: 'asd',
+      address: { street: 'street', postcode: 'postcode' },
+    });
+
+    expect(validators.NameField).toHaveBeenCalledWith(
+      'asd',
+      expect.anything(),
+      expect.objectContaining({
+        schema: {
+          type: 'string',
+          'ui:options': {
+            bob: true,
+          },
+          pattern: 'lols',
+          'ui:field': 'NameField',
+        },
+      }),
+    );
+
+    expect(validators.AddressField).toHaveBeenCalledWith(
+      { street: 'street', postcode: 'postcode' },
+      expect.anything(),
+      expect.objectContaining({
+        schema: {
+          type: 'object',
+          'ui:field': 'AddressField',
+          properties: {
+            street: {
+              type: 'string',
+            },
+            postcode: {
+              type: 'string',
+            },
+          },
+        },
+      }),
+    );
+  });
+
   it('should return the correct errors to the frontend', async () => {
     const schema: JsonObject = {
       type: 'object',

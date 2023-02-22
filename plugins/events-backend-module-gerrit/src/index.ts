@@ -22,4 +22,3 @@
  */
 
 export { GerritEventRouter } from './router/GerritEventRouter';
-export { gerritEventRouterEventsModule } from './service/GerritEventRouterEventsModule';

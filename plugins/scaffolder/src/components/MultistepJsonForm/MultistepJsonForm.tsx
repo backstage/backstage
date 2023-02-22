@@ -37,11 +37,9 @@ import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { ReviewStepProps } from '../types';
 import { ReviewStep } from './ReviewStep';
-import {
-  extractSchemaFromStep,
-  type LayoutOptions,
-} from '@backstage/plugin-scaffolder-react';
+import { extractSchemaFromStep } from '@backstage/plugin-scaffolder-react/alpha';
 import { selectedTemplateRouteRef } from '../../routes';
+import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 
 const Form = withTheme(MuiTheme);
 

@@ -43,7 +43,7 @@ import { KubernetesProxy } from './KubernetesProxy';
 
 /**
  *
- * @alpha
+ * @public
  */
 export interface KubernetesEnvironment {
   logger: Logger;
@@ -54,7 +54,7 @@ export interface KubernetesEnvironment {
 /**
  * The return type of the `KubernetesBuilder.build` method
  *
- * @alpha
+ * @public
  */
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
@@ -68,7 +68,7 @@ export type KubernetesBuilderReturn = Promise<{
 
 /**
  *
- * @alpha
+ * @public
  */
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;

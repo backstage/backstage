@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ParsedTemplateSchema } from './useTemplateSchema';
-import { type LayoutOptions } from '../../layouts';
+import { type LayoutOptions } from '@backstage/plugin-scaffolder-react';
 
 interface Options {
   layouts?: LayoutOptions[];

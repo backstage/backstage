@@ -1,5 +1,22 @@
 # @backstage/backend-app-api
 
+## 0.4.1-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.12-next.0
+  - @backstage/plugin-permission-node@0.7.6-next.0
+
 ## 0.4.0
 
 ### Minor Changes

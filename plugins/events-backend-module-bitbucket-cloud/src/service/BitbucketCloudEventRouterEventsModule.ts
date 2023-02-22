@@ -15,13 +15,13 @@
  */
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { BitbucketCloudEventRouter } from '../router/BitbucketCloudEventRouter';
 
 /**
  * Module for the events-backend plugin, adding an event router for Bitbucket Cloud.
  *
- * Registers the {@link BitbucketCloudEventRouter}.
+ * Registers the `BitbucketCloudEventRouter`.
  *
  * @alpha
  */

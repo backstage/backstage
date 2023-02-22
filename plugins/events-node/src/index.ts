@@ -21,5 +21,3 @@
  */
 
 export * from './api';
-export type { EventsExtensionPoint } from './extensions';
-export { eventsExtensionPoint } from './extensions';

@@ -22,4 +22,3 @@
  */
 
 export { AzureDevOpsEventRouter } from './router/AzureDevOpsEventRouter';
-export { azureDevOpsEventRouterEventsModule } from './service/AzureDevOpsEventRouterEventsModule';

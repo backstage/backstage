@@ -15,7 +15,7 @@
  */
 
 import { get } from 'lodash';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 import { createCatalogPermissionRule } from './util';
 import { z } from 'zod';
 

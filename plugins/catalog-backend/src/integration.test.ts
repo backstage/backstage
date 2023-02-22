@@ -268,7 +268,11 @@ class TestHarness {
       legacySingleProcessorValidation: false,
     });
     const stitcher = new Stitcher(db, logger);
-    const catalog = new DefaultEntitiesCatalog(db, stitcher);
+    const catalog = new DefaultEntitiesCatalog({
+      database: db,
+      logger,
+      stitcher,
+    });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
     );

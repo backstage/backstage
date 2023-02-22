@@ -15,7 +15,8 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { createPlugin, PluginProvider } from '@backstage/core-plugin-api';
+import { PluginProvider } from '@backstage/core-plugin-api/alpha';
+import { createPlugin } from '@backstage/core-plugin-api';
 
 /**
  * Mock for PluginProvider to use in unit tests

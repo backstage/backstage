@@ -120,7 +120,6 @@ Build a package for production deployment or publishing
 Options:
   --role &lt;name&gt;              Run the command with an explicit package role
   --minify                   Minify the generated code. Does not apply to app or backend packages.
-  --experimental-type-build  Enable experimental type build. Does not apply to app or backend packages.
   --skip-build-dependencies  Skip the automatic building of local dependencies. Applies to backend packages only.
   --stats                    If bundle stats are available, write them to the output directory. Applies to app packages only.
   --config &lt;path&gt;            Config files to load instead of app-config.yaml. Applies to app packages only. (default: [])

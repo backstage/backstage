@@ -33,6 +33,7 @@ type Options = {
   allowWarnings?: string;
   allowAllWarnings?: boolean;
   omitMessages?: string;
+  validateReleaseTags?: boolean;
 } & OptionValues;
 
 export const buildApiReports = async (paths: string[] = [], opts: Options) => {
@@ -90,6 +91,7 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
       tsconfigFilePath,
       allowWarnings: allowAllWarnings || allowWarnings,
       omitMessages: Array.isArray(omitMessages) ? omitMessages : [],
+      validateReleaseTags: opts.validateReleaseTags,
     });
   }
   if (cliPackageDirs.length > 0) {

@@ -51,7 +51,7 @@ techdocs:
 
   # techdocs.builder can be either 'local' or 'external'.
   # Using the default build strategy, if builder is set to 'local' and you open a TechDocs page,
-  # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwords.
+  # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwards.
   # This is the "Basic" setup of the TechDocs Architecture.
   # Using the default build strategy, if builder is set to 'external' (or anything other than 'local'), techdocs-backend
   # will only fetch the docs and will NOT try to generate and publish.
