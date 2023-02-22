@@ -86,7 +86,7 @@
     "@types/passport-auth0": "^1.0.5",
     "@types/passport-github2": "^1.2.4",
     "@types/passport-google-oauth20": "^2.0.3",
-    "@types/passport-microsoft": "^0.0.0",
+    "@types/passport-microsoft": "^1.0.0",
     "@types/passport-saml": "^1.1.3",
     "@types/passport-strategy": "^0.2.35",
     "@types/xml2js": "^0.4.7",
