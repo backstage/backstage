@@ -1,7 +1,7 @@
 ---
 id: index
 title: Backend System Architecture
-sidebar_label: System Architecture
+sidebar_label: Overview
 # prettier-ignore
 description: The structure and architecture of the new Backend System and its component parts
 ---

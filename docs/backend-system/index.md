@@ -1,7 +1,7 @@
 ---
 id: index
 title: The Backend System
-sidebar_label: Overview
+sidebar_label: Introduction
 # prettier-ignore
 description: The Backend System
 ---
