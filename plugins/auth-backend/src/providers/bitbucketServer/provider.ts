@@ -216,7 +216,7 @@ export class BitbucketServerAuthProvider implements OAuthHandlers {
       throw new Error(`Failed to retrieve the user '${username}'`);
     }
 
-    const user = (await userResponse.json()) as any;
+    const user = await userResponse.json();
 
     const passportProfile = {
       provider: 'bitbucketServer',
