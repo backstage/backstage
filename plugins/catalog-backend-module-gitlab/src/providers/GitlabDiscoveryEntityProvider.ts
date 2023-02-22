@@ -177,11 +177,15 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         continue;
       }
 
-      if (this.config.branch === '*' && project.default_branch === undefined) {
+      if (
+        this.config.fallbackBranch === '*' &&
+        project.default_branch === undefined
+      ) {
         continue;
       }
 
-      const project_branch = project.default_branch ?? this.config.branch;
+      const project_branch =
+        project.default_branch ?? this.config.fallbackBranch;
 
       const projectHasFile: boolean = await client.hasFile(
         project.path_with_namespace ?? '',
@@ -204,7 +208,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   }
 
   private createLocationSpec(project: GitLabProject): LocationSpec {
-    const project_branch = project.default_branch ?? this.config.branch;
+    const project_branch = project.default_branch ?? this.config.fallbackBranch;
     return {
       type: 'url',
       target: `${project.web_url}/-/blob/${project_branch}/${this.config.catalogFile}`,
