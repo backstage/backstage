@@ -33,7 +33,10 @@ import type {
   ValueOf,
 } from './common';
 
-type Response<
+/**
+ * @public
+ */
+export type Response<
   Doc extends RequiredDoc,
   Path extends keyof Doc['paths'],
   Method extends keyof Doc['paths'][Path],
@@ -52,7 +55,10 @@ type Response<
     : never
   : DocOperation<Doc, Path, Method>['responses'][StatusCode];
 
-type Responses<
+/**
+ * @public
+ */
+export type Responses<
   Doc extends RequiredDoc,
   Path extends keyof Doc['paths'],
   Method extends keyof Doc['paths'][Path],
@@ -65,11 +71,17 @@ type Responses<
   >;
 };
 
+/**
+ * @public
+ */
 export type ResponseSchema<
   Doc extends RequiredDoc,
   Object extends ResponseObject,
 > = ObjectWithContentSchema<Doc, Object>;
 
+/**
+ * @public
+ */
 export type ResponseSchemas<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
@@ -87,6 +99,10 @@ export type ResponseSchemas<
     : never;
 };
 
+/**
+ * Transform the OpenAPI request body schema to a typesafe JSON schema.
+ * @public
+ */
 export type ResponseBodyToJsonSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,

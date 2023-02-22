@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 import { Router } from 'express';
-import { RequiredDoc } from './types';
-import { DocRequestMatcher } from './types/express';
+import { RequiredDoc, DocRequestMatcher } from './types';
 
+/**
+ * Helper to transform readonly `as const` API specs for the ApiRouter.
+ * @public
+ */
 export type DeepWriteable<T> = {
   -readonly [P in keyof T]: DeepWriteable<T[P]>;
 };
+
+/**
+ * Typed Express router based on an OpenAPI 3.1 spec.
+ * @public
+ */
 export interface ApiRouter<Doc extends RequiredDoc> extends Router {
   get: DocRequestMatcher<Doc, this, 'get'>;
 

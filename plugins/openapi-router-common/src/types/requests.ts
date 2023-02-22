@@ -32,7 +32,10 @@ import type {
   ToTypeSafe,
 } from './common';
 
-type RequestBody<
+/**
+ * @public
+ */
+export type RequestBody<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
@@ -46,6 +49,9 @@ type RequestBody<
     : never
   : DocOperation<Doc, Path, Method>['requestBody'];
 
+/**
+ * @public
+ */
 export type RequestBodySchema<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
@@ -54,6 +60,10 @@ export type RequestBodySchema<
   ? ObjectWithContentSchema<Doc, RequestBody<Doc, DocPath<Doc, Path>, Method>>
   : never;
 
+/**
+ * Transform the OpenAPI request body schema to a typesafe JSON schema.
+ * @public
+ */
 export type RequestBodyToJsonSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,

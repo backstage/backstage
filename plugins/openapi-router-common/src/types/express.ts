@@ -16,12 +16,20 @@
 import core from 'express-serve-static-core';
 import { DocPathTemplate, MethodAwareDocPath, RequiredDoc } from './common';
 import { RequestBodyToJsonSchema } from './requests';
-import { ResponseBodyToJsonSchema } from './response';
+import { ResponseBodyToJsonSchema } from './responses';
 
-interface ParsedQs {
+/**
+ * Pulled from the express library.
+ * @public
+ */
+export interface ParsedQs {
   [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
 }
 
+/**
+ * Typed express request handler.
+ * @public
+ */
 export type DocRequestHandler<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
@@ -34,6 +42,10 @@ export type DocRequestHandler<
   Record<string, string>
 >;
 
+/**
+ * Typed express error handler / request handler union type.
+ * @public
+ */
 export type DocRequestHandlerParams<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
@@ -46,8 +58,10 @@ export type DocRequestHandlerParams<
   Record<string, string>
 >;
 
-export type PathParams = string | RegExp | Array<string | RegExp>;
-
+/**
+ * Superset of the express router path matcher that enforces typed request and response bodies.
+ * @public
+ */
 export interface DocRequestMatcher<
   Doc extends RequiredDoc,
   T,

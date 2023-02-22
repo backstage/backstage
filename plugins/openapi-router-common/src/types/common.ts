@@ -25,21 +25,37 @@ import type {
   ReferenceObject,
 } from 'openapi3-ts';
 
+/**
+ * Basic OpenAPI spec with paths and components properties enforced.
+ *
+ * @public
+ */
 export type RequiredDoc = Pick<OpenAPIObject, 'paths' | 'components'>;
 
+/**
+ * @public
+ */
 export type PathDoc = Pick<OpenAPIObject, 'paths'>;
 
 /**
  * Get value types of `T`
+ *
+ * @public
  */
 export type ValueOf<T> = T[keyof T];
 
 /**
- * Validate a string against OpenAPI path template
- * ```
+ * Validate a string against OpenAPI path template, {@link https://spec.openapis.org/oas/v3.1.0#path-templating-matching}.
+ *
+ * @example
+ * ```ts
  * const path = PathTemplate<"/posts/{postId}/comments/{commentId}"> = "/posts/1/comments/2"const pathWithParams: PathTemplate<"/posts/{postId}/comments/{commentId}"> = "/posts/1/comments/2";
- * const pathWithoutParams: PathTemplate<"/posts/comments"> = "/posts/comments";```
- * https://spec.openapis.org/oas/v3.1.0#path-templating-matching
+ * const pathWithoutParams: PathTemplate<"/posts/comments"> = "/posts/comments";
+ * ```
+ *
+ *
+ *
+ * @public
  */
 export type PathTemplate<Path extends string> =
   Path extends `${infer Prefix}{${string}}${infer Suffix}`
@@ -48,7 +64,8 @@ export type PathTemplate<Path extends string> =
 
 /**
  * Extract path as specified in OpenAPI `Doc` based on request path
- * ```
+ * @example
+ * ```ts
  * const spec = {
  *   paths: {
  *       "/posts/{postId}/comments/{commentId}": {},
@@ -58,6 +75,8 @@ export type PathTemplate<Path extends string> =
  * const specPathWithParams: DocPath<typeof spec, "/posts/1/comments/2"> = "/posts/{postId}/comments/{commentId}";
  * const specPathWithoutParams: DocPath<typeof spec, "/posts/comments"> = "/posts/comments";
  * ```
+ *
+ * @public
  */
 export type DocPath<
   Doc extends PathDoc,
@@ -69,15 +88,24 @@ export type DocPath<
   >]: Path extends PathTemplate<Template> ? Template : never;
 }>;
 
+/**
+ * @public
+ */
 export type DocPathTemplate<Doc extends PathDoc> = PathTemplate<
   Extract<keyof Doc['paths'], string>
 >;
 
+/**
+ * @public
+ */
 export type DocPathMethod<
   Doc extends Pick<RequiredDoc, 'paths'>,
   Path extends DocPathTemplate<Doc>,
 > = keyof Doc['paths'][DocPath<Doc, Path>];
 
+/**
+ * @public
+ */
 export type MethodAwareDocPath<
   Doc extends PathDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
@@ -93,17 +121,26 @@ export type MethodAwareDocPath<
     : never;
 }>;
 
+/**
+ * @public
+ */
 export type DocOperation<
   Doc extends RequiredDoc,
   Path extends keyof Doc['paths'],
   Method extends keyof Doc['paths'][Path],
 > = Doc['paths'][Path][Method];
 
+/**
+ * @public
+ */
 export type ComponentTypes<Doc extends RequiredDoc> = Extract<
   keyof Doc['components'],
   string
 >;
 
+/**
+ * @public
+ */
 export type ComponentRef<
   Doc extends RequiredDoc,
   Type extends ComponentTypes<Doc>,
@@ -116,6 +153,9 @@ export type ComponentRef<
     : never
   : never;
 
+/**
+ * @public
+ */
 export type SchemaRef<Doc extends RequiredDoc, Schema> = Schema extends {
   $ref: `#/components/schemas/${infer Name}`;
 }
@@ -126,6 +166,9 @@ export type SchemaRef<Doc extends RequiredDoc, Schema> = Schema extends {
     : never
   : { [Key in keyof Schema]: SchemaRef<Doc, Schema[Key]> };
 
+/**
+ * @public
+ */
 export type ObjectWithContentSchema<
   Doc extends RequiredDoc,
   Object extends { content?: ContentObject },
@@ -134,30 +177,43 @@ export type ObjectWithContentSchema<
   : never;
 
 /**
- * From https://stackoverflow.com/questions/71393738/typescript-intersection-not-union-type-from-json-schema.
+ * From {@link https://stackoverflow.com/questions/71393738/typescript-intersection-not-union-type-from-json-schema}
  *
  * StackOverflow says not to do this, but union types aren't possible any other way.
+ * @public
  */
-
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
-  k: infer I,
-) => void
+export type UnionToIntersection<U> = (
+  U extends any ? (k: U) => void : never
+) extends (k: infer I) => void
   ? I
   : never;
-type LastOf<T> = UnionToIntersection<
+
+/**
+ * @public
+ */
+export type LastOf<T> = UnionToIntersection<
   T extends any ? () => T : never
 > extends () => infer R
   ? R
   : never;
 
-type Push<T extends any[], V> = [...T, V];
+/**
+ * @public
+ */
+export type Push<T extends any[], V> = [...T, V];
 
+/**
+ * @public
+ */
 export type TuplifyUnion<
   T,
   L = LastOf<T>,
   N = [T] extends [never] ? true : false,
 > = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>;
 
+/**
+ * @public
+ */
 export type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
   infer First extends JSONSchema7,
   ...infer Rest,
@@ -165,6 +221,12 @@ export type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
   ? ConvertAll<Rest, [...R, FromSchema<First>]>
   : R;
 
-type UnknownIfNever<P> = [P] extends [never] ? unknown : P;
+/**
+ * @public
+ */
+export type UnknownIfNever<P> = [P] extends [never] ? unknown : P;
 
+/**
+ * @public
+ */
 export type ToTypeSafe<T> = UnknownIfNever<ConvertAll<TuplifyUnion<T>>[number]>;

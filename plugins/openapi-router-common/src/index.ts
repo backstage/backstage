@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
-export * from './router';
+export type { ApiRouter } from './router';
+export * from './types';
