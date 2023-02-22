@@ -72,6 +72,10 @@ export const EntityOwnerPicker = () => {
     [ownersParameter],
   );
 
+  const [selectedOwners, setSelectedOwners] = useState(
+    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
+  );
+
   const {
     loading,
     error,
@@ -98,27 +102,17 @@ export const EntityOwnerPicker = () => {
         'spec.profile.displayName',
       ],
     });
-    return (
-      availableOwners
-        .map(
-          (e, i) =>
-            items[i] || ({ metadata: { name: e }, kind: 'Group' } as Entity),
-        )
-        // Keep the previous sorting logic.
-        .sort((a, b) => {
-          const nameA = humanizeEntity(a).toLocaleUpperCase('en-US'); // ignore upper and lowercase
-          const nameB = humanizeEntity(b).toLocaleUpperCase('en-US'); // ignore upper and lowercase
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-
-          // names must be equal
-          return 0;
-        })
-    );
+    return availableOwners
+      .map(
+        (e, i) =>
+          items[i] || ({ metadata: { name: e }, kind: 'Group' } as Entity),
+      )
+      .sort((a, b) =>
+        new Intl.Collator().compare(
+          humanizeEntity(a).toLocaleUpperCase('en-US'),
+          humanizeEntity(b).toLocaleUpperCase('en-US'),
+        ),
+      );
   }, [backendEntities]);
 
   useEffect(() => {
@@ -132,10 +126,6 @@ export const EntityOwnerPicker = () => {
       );
     }
   }, [error, errorApi]);
-
-  const [selectedOwners, setSelectedOwners] = useState(
-    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
-  );
 
   // Set selected owners on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
@@ -156,6 +146,8 @@ export const EntityOwnerPicker = () => {
     }
   }, [selectedOwners, updateFilters, ownerEntities, loading]);
 
+  if (!loading && !ownerEntities?.length) return null;
+
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button" component="label">
@@ -168,7 +160,8 @@ export const EntityOwnerPicker = () => {
           value={
             ownerEntities?.filter(e =>
               selectedOwners.some(
-                f => f === humanizeEntityRef(e, { defaultKind: 'Group' }),
+                (f: string) =>
+                  f === humanizeEntityRef(e, { defaultKind: 'Group' }),
               ),
             ) ?? []
           }
@@ -198,7 +191,6 @@ export const EntityOwnerPicker = () => {
           renderInput={params => (
             <TextField
               {...params}
-              error={!!error}
               className={classes.input}
               variant="outlined"
             />
