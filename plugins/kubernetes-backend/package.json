@@ -71,7 +71,7 @@
     "@types/http-proxy-middleware": "^0.19.3",
     "aws-sdk-mock": "^5.2.1",
     "mock-fs": "^5.2.0",
-    "msw": "^0.49.0",
+    "msw": "^1.0.0",
     "supertest": "^6.1.3"
   },
   "files": [
