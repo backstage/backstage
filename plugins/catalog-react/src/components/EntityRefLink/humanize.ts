@@ -18,8 +18,8 @@ import {
   Entity,
   CompoundEntityRef,
   DEFAULT_NAMESPACE,
-  UserEntity,
 } from '@backstage/catalog-model';
+import get from 'lodash/get';
 
 /**
  * @param defaultNamespace - if set to false then namespace is never omitted,
@@ -88,14 +88,12 @@ export function humanizeEntity(
     defaultNamespace?: string | false;
   },
 ) {
-  let title: string | undefined = undefined;
-  switch (entity.kind) {
-    case 'User':
-    case 'Group':
-      title = (entity as UserEntity).spec?.profile?.displayName;
-      break;
-    default:
-      title = entity.metadata.title;
+  for (const path of ['spec.profile.displayName', 'metadata.title']) {
+    const value = get(entity, path);
+    if (value && typeof value === 'string') {
+      return value;
+    }
   }
-  return title || humanizeEntityRef(entity, opts);
+
+  return humanizeEntityRef(entity, opts);
 }

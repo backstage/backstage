@@ -16,7 +16,6 @@
 
 import {
   Entity,
-  parseEntityRef,
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -36,11 +35,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { getEntityRelations } from '../../utils';
-import { humanizeEntityRef } from '../EntityRefLink';
 import useAsync from 'react-use/lib/useAsync';
-import { useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../../api';
-import { humanizeEntity } from '../EntityRefLink/humanize';
+import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -67,11 +65,73 @@ export const EntityOwnerPicker = () => {
     queryParameters: { owners: ownersParameter },
   } = useEntityList();
   const catalogApi = useApi(catalogApiRef);
+  const errorApi = useApi(errorApiRef);
 
   const queryParamOwners = useMemo(
     () => [ownersParameter].flat().filter(Boolean) as string[],
     [ownersParameter],
   );
+
+  const {
+    loading,
+    error,
+    value: ownerEntities,
+  } = useAsync(async () => {
+    const availableOwners = [
+      ...new Set(
+        backendEntities
+          .flatMap((e: Entity) =>
+            getEntityRelations(e, RELATION_OWNED_BY).map(o =>
+              stringifyEntityRef(o),
+            ),
+          )
+          .filter(Boolean) as string[],
+      ),
+    ];
+    const { items } = await catalogApi.getEntitiesByRefs({
+      entityRefs: availableOwners,
+      fields: [
+        'kind',
+        'metadata.name',
+        'metadata.title',
+        'metadata.namespace',
+        'spec.profile.displayName',
+      ],
+    });
+    return (
+      availableOwners
+        .map(
+          (e, i) =>
+            items[i] || ({ metadata: { name: e }, kind: 'Group' } as Entity),
+        )
+        // Keep the previous sorting logic.
+        .sort((a, b) => {
+          const nameA = humanizeEntity(a).toLocaleUpperCase('en-US'); // ignore upper and lowercase
+          const nameB = humanizeEntity(b).toLocaleUpperCase('en-US'); // ignore upper and lowercase
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
+        })
+    );
+  }, [backendEntities]);
+
+  useEffect(() => {
+    if (error) {
+      errorApi.post(
+        {
+          ...error,
+          message: `EntityOwnerPicker failed to initialize: ${error.message}`,
+        },
+        {},
+      );
+    }
+  }, [error, errorApi]);
 
   const [selectedOwners, setSelectedOwners] = useState(
     queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
@@ -85,55 +145,16 @@ export const EntityOwnerPicker = () => {
     }
   }, [queryParamOwners]);
 
-  const availableOwners = useMemo(
-    () =>
-      [
-        ...new Set(
-          backendEntities
-            .flatMap((e: Entity) =>
-              getEntityRelations(e, RELATION_OWNED_BY).map(o =>
-                humanizeEntityRef(o, { defaultKind: 'group' }),
-              ),
-            )
-            .filter(Boolean) as string[],
-        ),
-      ].sort(),
-    [backendEntities],
-  );
-
-  const {
-    loading,
-    error,
-    value: ownerEntities,
-  } = useAsync(async () => {
-    const { items } = await catalogApi.getEntitiesByRefs({
-      entityRefs: availableOwners.map(ref =>
-        stringifyEntityRef(parseEntityRef(ref, { defaultKind: 'Group' })),
-      ),
-      fields: [
-        'kind',
-        'metadata.name',
-        'metadata.title',
-        'spec.profile.displayName',
-      ],
-    });
-    return availableOwners.map(
-      (e, i) =>
-        items.at(i) || ({ metadata: { name: e }, kind: 'Group' } as Entity),
-    );
-  }, [availableOwners]);
-
   useEffect(() => {
-    updateFilters({
-      owners:
-        selectedOwners.length && availableOwners.length
-          ? new EntityOwnerFilter(selectedOwners)
-          : undefined,
-    });
-  }, [selectedOwners, updateFilters, availableOwners]);
-
-  if (!availableOwners.length) return null;
-  if (error) throw error;
+    if (!loading && ownerEntities) {
+      updateFilters({
+        owners:
+          selectedOwners.length && ownerEntities.length
+            ? new EntityOwnerFilter(selectedOwners)
+            : undefined,
+      });
+    }
+  }, [selectedOwners, updateFilters, ownerEntities, loading]);
 
   return (
     <Box pb={1} pt={1}>
@@ -152,7 +173,9 @@ export const EntityOwnerPicker = () => {
             ) ?? []
           }
           onChange={(_: object, value: Entity[]) =>
-            setSelectedOwners(value.map(e => e.metadata.name))
+            setSelectedOwners(
+              value.map(e => humanizeEntityRef(e, { defaultKind: 'Group' })),
+            )
           }
           getOptionLabel={option =>
             humanizeEntity(option, { defaultKind: 'Group' })
@@ -175,6 +198,7 @@ export const EntityOwnerPicker = () => {
           renderInput={params => (
             <TextField
               {...params}
+              error={!!error}
               className={classes.input}
               variant="outlined"
             />

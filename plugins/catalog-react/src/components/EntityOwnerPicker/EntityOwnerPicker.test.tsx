@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityOwnerFilter } from '../../filters';
 import { EntityOwnerPicker } from './EntityOwnerPicker';
 import { ApiProvider } from '@backstage/core-app-api';
-import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
+import {
+  MockErrorApi,
+  renderWithEffects,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import { catalogApiRef, CatalogApi } from '../..';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 const ownerEntities: Entity[] = [
   {
@@ -38,12 +43,18 @@ const ownerEntities: Entity[] = [
     metadata: {
       name: 'some-owner-2',
     },
+    spec: {
+      profile: {
+        displayName: 'Some Owner 2',
+      },
+    },
   },
   {
     apiVersion: '1',
     kind: 'Group',
     metadata: {
       name: 'another-owner',
+      title: 'Another Owner',
     },
   },
 ];
@@ -96,57 +107,20 @@ const sampleEntities: Entity[] = [
 
 const getEntitiesByRefs = jest.fn(async ({ entityRefs }) => ({
   items: entityRefs.map((e: string) =>
-    ownerEntities.find(f => f.metadata.name === e),
+    ownerEntities.find(f => stringifyEntityRef(f) === e),
   ),
 }));
 const mockCatalogApi: Partial<CatalogApi> = {
   getEntitiesByRefs,
 };
+const mockErrorApi = new MockErrorApi();
 
 describe('<EntityOwnerPicker/>', () => {
-  const mockApis = TestApiRegistry.from([catalogApiRef, mockCatalogApi]);
+  const mockApis = TestApiRegistry.from(
+    [catalogApiRef, mockCatalogApi],
+    [errorApiRef, mockErrorApi],
+  );
 
-  it('renders display name when available', async () => {
-    const names: Record<string, string> = {
-      'some-owner': 'Some Team',
-      'some-owner-2': 'Other Team',
-      'another-owner': 'AnotherTeam',
-    };
-    getEntitiesByRefs.mockResolvedValueOnce({
-      items: ownerEntities.map(e => {
-        e.spec = {
-          ...e.spec,
-          profile: {
-            displayName: names[e.metadata.name],
-          },
-        };
-        return e;
-      }),
-    });
-    await renderWithEffects(
-      <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider
-          value={{ entities: sampleEntities, backendEntities: sampleEntities }}
-        >
-          <EntityOwnerPicker />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-    );
-    expect(screen.getByText('Owner')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByTestId('owner-picker-expand'));
-    sampleEntities
-      .flatMap(e => e.relations?.map(r => parseEntityRef(r.targetRef).name))
-      .forEach(owner => {
-        expect(screen.getByText(names[owner as string])).toBeInTheDocument();
-      });
-  });
-
-  /**
-   * All previous test cases are still applicable for the case where there is no
-   *  owner entity returned from the API or the owner entity returned does not have
-   *  a display name.
-   */
   it('renders all owners', async () => {
     await renderWithEffects(
       <ApiProvider apis={mockApis}>
@@ -160,11 +134,9 @@ describe('<EntityOwnerPicker/>', () => {
     expect(screen.getByText('Owner')).toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
-    sampleEntities
-      .flatMap(e => e.relations?.map(r => parseEntityRef(r.targetRef).name))
-      .forEach(owner => {
-        expect(screen.getByText(owner as string)).toBeInTheDocument();
-      });
+    ['Another Owner', 'some-owner', 'Some Owner 2'].forEach(owner => {
+      expect(screen.getByText(owner)).toBeInTheDocument();
+    });
   });
 
   it('renders unique owners in alphabetical order', async () => {
@@ -182,9 +154,9 @@ describe('<EntityOwnerPicker/>', () => {
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
 
     expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
-      'another-owner',
+      'Another Owner',
       'some-owner',
-      'some-owner-2',
+      'Some Owner 2',
     ]);
   });
 
