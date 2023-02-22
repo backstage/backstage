@@ -12,9 +12,10 @@ At a minimum, you should install the [graphql-catalog][] which adds basic
 schema elements to access the [Backstage Catalog][backstage-catalog] via GraphQL
 
 - [Getting started](#getting-started)
+- [GraphQL Modules](#graphql-modules)
 - [Extending Schema](../graphql-common/README.md#extending-schema)
 - [Envelop Plugins](#envelop-plugins)
-- [Custom loader](#custom-loader)
+- [Custom Data loaders](#custom-data-loaders-advanced)
 - [Integrations](#integrations)
   - [Backstage GraphiQL Plugin](#backstage-graphiql-plugin)
   - [Backstage API Docs](#backstage-api-docs)

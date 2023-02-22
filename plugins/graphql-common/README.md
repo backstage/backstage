@@ -5,7 +5,7 @@ provide an empty Schema. The way to add functionality to it, however,
 is to augment it with [GraphQL modules][graphql-modules] defining new
 types and how to resolve them.
 
-- [Extending Schema](#extending-schema)
+- [Extending Schema](#extending-your-schema-with-a-custom-module)
   - [Directives API](#directives-api)
     - [`@field`](#field)
     - [`@relation`](#relation)
