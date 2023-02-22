@@ -32,6 +32,12 @@ export const patch = async (patchFile: string) => {
   const targetFile = path.join(targetRoot, targetName);
   const oldContent = await fs.readFile(targetFile, 'utf8');
   const newContent = differ.applyPatch(oldContent, patchContent);
+  if (!newContent) {
+    throw new Error(
+      `Patch ${patchFile} was not applied correctly.
+       Did you change ${targetName} manually before running this command?`,
+    );
+  }
 
   return await fs.writeFile(targetFile, newContent, 'utf8');
 };
