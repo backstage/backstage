@@ -14,13 +14,10 @@ Some key features are currently missing. These features may change the schema in
 1. `filter` query for filtering `nodes/entities`.
 1. `viewer` query for retrieving data for the current user.
 
-- [Getting started](#getting-started)
-  - [Catalog module](#catalog-module)
-  - [Catalog loader](#catalog-loader)
+- [Catalog module](#catalog-module)
+- [Catalog Data loader](#catalog-data-loader-advanced)
 
-## Getting started
-
-### Catalog module
+## Catalog module
 
 The `Catalog` module is installed just as any other [GraphQL
 Module][graphql-modules]: pass it to `modules` options of
@@ -42,7 +39,7 @@ export default async function createPlugin(
 }
 ```
 
-### Catalog Data Loader (Advanced)
+## Catalog Data Loader (Advanced)
 
 In most use cases, you will not need to create a Catalog `dataloader` by
 hand. However, when writing [custom data loaders for accessing 3rd
