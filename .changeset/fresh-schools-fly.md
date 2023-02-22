@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-gitlab': major
+'@backstage/plugin-catalog-backend-module-gitlab': minor
 ---
 
 The configuration of the `GitlabDiscoveryEntityProvider` has changed as follows:
