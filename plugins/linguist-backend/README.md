@@ -67,6 +67,14 @@ return createRouter({ schedule: schedule, batchSize: 40 }, { ...env });
 
 **Note:** The default batch size is 20
 
+## Kind
+
+The default setup only processes entities of kind `['API', 'Component', 'Template']`. To control the `kind` that are processed provide that to the `createRouter` function in your `packages/backend/src/plugins/linguist.ts` like this:
+
+```ts
+return createRouter({ schedule: schedule, kind: ['Component'] }, { ...env });
+```
+
 ## Refresh
 
 The default setup will only generate the language breakdown for entities with the linguist annotation that have not been generated yet. If you want this process to also refresh the data you can do so by adding the `age` (as a `HumanDuration`) in your `packages/backend/src/plugins/linguist.ts` when you call `createRouter`:
