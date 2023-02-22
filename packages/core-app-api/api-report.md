@@ -545,7 +545,9 @@ export class SamlAuth
 
 // @public
 export type SignInPageProps = {
+  onSignInStarted(): void;
   onSignInSuccess(identityApi: IdentityApi): void;
+  onSignInFailure(): void;
 };
 
 // @public

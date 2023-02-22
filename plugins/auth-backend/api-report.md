@@ -268,7 +268,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     handlers: OAuthHandlers,
     options: Pick<
       OAuthAdapterOptions,
-      'providerId' | 'persistScopes' | 'callbackUrl' | 'redirectUrl'
+      'providerId' | 'persistScopes' | 'callbackUrl'
     >,
   ): OAuthAdapter;
   // (undocumented)
@@ -284,7 +284,6 @@ export type OAuthAdapterOptions = {
   providerId: string;
   persistScopes?: boolean;
   appOrigin: string;
-  redirectUrl?: string;
   baseUrl: string;
   cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
@@ -387,7 +386,7 @@ export type OAuthState = {
   origin?: string;
   scope?: string;
   redirectUrl?: string;
-  authFlow?: string;
+  flow?: string;
 };
 
 // @public
