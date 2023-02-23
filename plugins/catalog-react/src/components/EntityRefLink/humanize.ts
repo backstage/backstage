@@ -18,7 +18,6 @@ import {
   Entity,
   CompoundEntityRef,
   DEFAULT_NAMESPACE,
-  UserEntity,
 } from '@backstage/catalog-model';
 
 /**
