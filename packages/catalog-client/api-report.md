@@ -58,6 +58,10 @@ export interface CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  queryEntities(
+    request?: QueryEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryEntitiesResponse>;
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
@@ -124,6 +128,10 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  queryEntities(
+    request?: QueryEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryEntitiesResponse>;
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
@@ -219,10 +227,7 @@ export interface GetEntityAncestorsResponse {
 // @public
 export interface GetEntityFacetsRequest {
   facets: string[];
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
+  filter?: EntityFilterQuery;
 }
 
 // @public
@@ -243,6 +248,40 @@ type Location_2 = {
   target: string;
 };
 export { Location_2 as Location };
+
+// @public
+export type QueryEntitiesCursorRequest = {
+  fields?: string[];
+  limit?: number;
+  cursor: string;
+};
+
+// @public
+export type QueryEntitiesInitialRequest = {
+  fields?: string[];
+  limit?: number;
+  filter?: EntityFilterQuery;
+  orderFields?: EntityOrderQuery;
+  fullTextFilter?: {
+    term: string;
+    fields?: string[];
+  };
+};
+
+// @public
+export type QueryEntitiesRequest =
+  | QueryEntitiesInitialRequest
+  | QueryEntitiesCursorRequest;
+
+// @public
+export type QueryEntitiesResponse = {
+  items: Entity[];
+  totalItems: number;
+  pageInfo: {
+    nextCursor?: string;
+    prevCursor?: string;
+  };
+};
 
 // @public
 export type ValidateEntityResponse =

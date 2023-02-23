@@ -236,5 +236,16 @@ ruleTester.run(RULE, rule, {
         ),
       ],
     },
+    {
+      code: `import '@internal/foo'`,
+      filename: joinPath(FIXTURE, 'packages/bar/src/index.ts'),
+      errors: [
+        ERR_UNDECLARED(
+          '@internal/foo',
+          'dependencies',
+          joinPath('packages', 'bar'),
+        ),
+      ],
+    },
   ],
 });

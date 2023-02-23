@@ -15,12 +15,12 @@
  */
 
 import DOMPurify from 'dompurify';
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { Transformer } from '../transformer';
-import { removeUnsafeLinks, removeUnsafeIframes } from './hooks';
+import { removeUnsafeIframes, removeUnsafeLinks } from './hooks';
 
 /**
  * Returns html sanitizer configuration
@@ -34,7 +34,7 @@ const useSanitizerConfig = () => {
 };
 
 /**
- * Returns a transformer that sanitizes the dom's internal html.
+ * Returns a transformer that sanitizes the dom
  */
 export const useSanitizerTransformer = (): Transformer => {
   const config = useSanitizerConfig();
@@ -51,7 +51,8 @@ export const useSanitizerTransformer = (): Transformer => {
         DOMPurify.addHook('beforeSanitizeElements', removeUnsafeIframes(hosts));
       }
 
-      return DOMPurify.sanitize(dom.innerHTML, {
+      // using outerHTML as we want to preserve the html tag attributes (lang)
+      return DOMPurify.sanitize(dom.outerHTML, {
         ADD_TAGS: tags,
         FORBID_TAGS: ['style'],
         WHOLE_DOCUMENT: true,

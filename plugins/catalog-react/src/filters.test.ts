@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AlphaEntity, Entity } from '@backstage/catalog-model';
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
+import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   EntityErrorFilter,

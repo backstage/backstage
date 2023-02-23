@@ -51,7 +51,7 @@ import {
 
 /**
  *
- * @alpha
+ * @public
  */
 export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   {

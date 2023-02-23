@@ -53,7 +53,7 @@ describe('MicrosoftGraphClient', () => {
     expect(await response.json()).toEqual({ value: 'example' });
     expect(tokenCredential.getToken).toHaveBeenCalledTimes(1);
     expect(tokenCredential.getToken).toHaveBeenCalledWith(
-      'https://example.com/.default',
+      'https://other.example.com/.default',
     );
   });
 

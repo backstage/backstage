@@ -1,0 +1,35 @@
+.bannerSection {
+  display: block;
+
+  &:global(.greyBackground) {
+    background: linear-gradient(90.49deg, #121212 15.36%, #282828 70.44%);
+  }
+
+  &:global(.greenGradientBackground) {
+    background: linear-gradient(70.44deg, #121212 55%, #5d817b);
+  }
+
+  &:global(.greenBottomGradientBackground) {
+    background: linear-gradient(
+        178.64deg,
+        hsla(0, 0%, 100%, 0) 57.61%,
+        hsla(0, 0%, 100%, 0.17) 127.71%
+      ),
+      linear-gradient(
+        144.35deg,
+        rgba(98, 197, 179, 0) 56.68%,
+        rgba(98, 197, 179, 0.59) 109.25%
+      ),
+      linear-gradient(
+        192.29deg,
+        rgba(155, 240, 225, 0) 54.17%,
+        rgba(155, 240, 225, 0.67) 137.34%
+      );
+  }
+
+  &:global(.greenCallToActionGradientBackground) {
+    background: linear-gradient(87.29deg, #9bf0e1 17.71%, #36baa2 80.85%);
+
+    color: var(--ifm-color-gray-900);
+  }
+}

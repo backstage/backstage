@@ -56,6 +56,79 @@ describe('createAsyncValidators', () => {
     expect(validators.AddressField).toHaveBeenCalled();
   });
 
+  it('should call the validator function with the correct schema in the context', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          'ui:options': {
+            bob: true,
+          },
+          pattern: 'lols',
+          'ui:field': 'NameField',
+        },
+        address: {
+          type: 'object',
+          'ui:field': 'AddressField',
+          properties: {
+            street: {
+              type: 'string',
+            },
+            postcode: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    };
+
+    const validators = { NameField: jest.fn(), AddressField: jest.fn() };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      name: 'asd',
+      address: { street: 'street', postcode: 'postcode' },
+    });
+
+    expect(validators.NameField).toHaveBeenCalledWith(
+      'asd',
+      expect.anything(),
+      expect.objectContaining({
+        schema: {
+          type: 'string',
+          'ui:options': {
+            bob: true,
+          },
+          pattern: 'lols',
+          'ui:field': 'NameField',
+        },
+      }),
+    );
+
+    expect(validators.AddressField).toHaveBeenCalledWith(
+      { street: 'street', postcode: 'postcode' },
+      expect.anything(),
+      expect.objectContaining({
+        schema: {
+          type: 'object',
+          'ui:field': 'AddressField',
+          properties: {
+            street: {
+              type: 'string',
+            },
+            postcode: {
+              type: 'string',
+            },
+          },
+        },
+      }),
+    );
+  });
+
   it('should return the correct errors to the frontend', async () => {
     const schema: JsonObject = {
       type: 'object',
@@ -271,5 +344,60 @@ describe('createAsyncValidators', () => {
         }),
       },
     });
+  });
+
+  it('should call a validator for array property from a custom field extension', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        tags: {
+          title: 'Tags',
+          type: 'array',
+          items: {
+            type: 'string',
+            'ui:field': 'TagField',
+          },
+        },
+      },
+    };
+
+    const validators = { TagField: jest.fn() };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      tags: ['tag-1', 'tag-2'],
+    });
+
+    expect(validators.TagField).toHaveBeenCalled();
+  });
+
+  it('should does not call a validator if no ui field specified', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        tags: {
+          title: 'Tags',
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+        },
+      },
+    };
+
+    const validators = { TagField: jest.fn() };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      tags: ['asd', 'asd$'],
+    });
+
+    expect(validators.TagField).not.toHaveBeenCalled();
   });
 });

@@ -10,7 +10,6 @@ import { AnalyzeLocationExistingEntity as AnalyzeLocationExistingEntity_2 } from
 import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
-import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
@@ -23,8 +22,6 @@ import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorRefreshKeysResult } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorRelationResult } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
-import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
-import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
@@ -41,8 +38,6 @@ import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-import { PermissionCondition } from '@backstage/plugin-permission-common';
-import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
@@ -50,7 +45,6 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { processingResult } from '@backstage/plugin-catalog-node';
 import { Readable } from 'stream';
-import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -128,10 +122,9 @@ export class CatalogBuilder {
   addLocationAnalyzers(
     ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
   ): CatalogBuilder;
-  // @alpha
   addPermissionRules(
     ...permissionRules: Array<
-      CatalogPermissionRule | Array<CatalogPermissionRule>
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
     >
   ): this;
   addProcessor(
@@ -172,61 +165,6 @@ export type CatalogCollatorEntityTransformer = (
   entity: Entity,
 ) => Omit<CatalogEntityDocument, 'location' | 'authorization'>;
 
-// @alpha
-export const catalogConditions: Conditions<{
-  hasAnnotation: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      value?: string | undefined;
-      annotation: string;
-    }
-  >;
-  hasLabel: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      label: string;
-    }
-  >;
-  hasMetadata: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      value?: string | undefined;
-      key: string;
-    }
-  >;
-  hasSpec: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      value?: string | undefined;
-      key: string;
-    }
-  >;
-  isEntityKind: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      kinds: string[];
-    }
-  >;
-  isEntityOwner: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      claims: string[];
-    }
-  >;
-}>;
-
 // @public (undocumented)
 export type CatalogEnvironment = {
   logger: Logger;
@@ -236,13 +174,10 @@ export type CatalogEnvironment = {
   permissions: PermissionEvaluator | PermissionAuthorizer;
 };
 
-// @alpha
-export type CatalogPermissionRule<
+// @public
+export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
-
-// @alpha
-export const catalogPlugin: () => BackendFeature;
 
 // @public
 export interface CatalogProcessingEngine {
@@ -292,21 +227,6 @@ export class CodeOwnersProcessor implements CatalogProcessor {
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec_2): Promise<Entity>;
 }
-
-// @alpha
-export const createCatalogConditionalDecision: (
-  permission: ResourcePermission<'catalog-entity'>,
-  conditions: PermissionCriteria<
-    PermissionCondition<'catalog-entity', PermissionRuleParams>
-  >,
-) => ConditionalPolicyDecision;
-
-// @alpha
-export const createCatalogPermissionRule: <
-  TParams extends PermissionRuleParams = undefined,
->(
-  rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
-) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @public
 export function createRandomProcessingInterval(options: {
@@ -465,61 +385,6 @@ export function parseEntityYaml(
   data: Buffer,
   location: LocationSpec_2,
 ): Iterable<CatalogProcessorResult>;
-
-// @alpha
-export const permissionRules: {
-  hasAnnotation: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      value?: string | undefined;
-      annotation: string;
-    }
-  >;
-  hasLabel: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      label: string;
-    }
-  >;
-  hasMetadata: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      value?: string | undefined;
-      key: string;
-    }
-  >;
-  hasSpec: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      value?: string | undefined;
-      key: string;
-    }
-  >;
-  isEntityKind: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      kinds: string[];
-    }
-  >;
-  isEntityOwner: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    'catalog-entity',
-    {
-      claims: string[];
-    }
-  >;
-};
 
 // @public
 export class PlaceholderProcessor implements CatalogProcessor {

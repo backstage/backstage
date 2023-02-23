@@ -1,5 +1,24 @@
 # @backstage/backend-defaults
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- 725383f69d: Tweaked messaging in the README.
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0
+  - @backstage/backend-plugin-api@0.4.0
+
 ## 0.1.7-next.2
 
 ### Patch Changes

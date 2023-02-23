@@ -17,6 +17,11 @@
 import { Entity, stringifyEntityRef } from '../entity';
 import { ANNOTATION_LOCATION, ANNOTATION_SOURCE_LOCATION } from './annotation';
 
+// See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
+const scriptProtocolPattern =
+  // eslint-disable-next-line no-control-regex
+  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i;
+
 /**
  * Parses a string form location reference.
  *
@@ -56,6 +61,12 @@ export function parseLocationRef(ref: string): {
     );
   }
 
+  if (scriptProtocolPattern.test(target)) {
+    throw new TypeError(
+      `Invalid location ref '${ref}', target is a javascript: URL`,
+    );
+  }
+
   return { type, target };
 }
 
@@ -76,6 +87,12 @@ export function stringifyLocationRef(ref: {
     throw new TypeError(`Unable to stringify location ref, empty type`);
   } else if (!target) {
     throw new TypeError(`Unable to stringify location ref, empty target`);
+  }
+
+  if (scriptProtocolPattern.test(target)) {
+    throw new TypeError(
+      `Invalid location ref '${type}:${target}', target is a javascript: URL`,
+    );
   }
 
   return `${type}:${target}`;

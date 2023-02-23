@@ -1,5 +1,32 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.11.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-node@0.1.1-next.0
+
+## 0.4.10
+
+### Patch Changes
+
+- d72866f0cc: Internal refactor to use the new `@backstage/plugin-scaffolder-node` package for some functionality
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-scaffolder-node@0.1.0
+  - @backstage/plugin-scaffolder-backend@1.11.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
 ## 0.4.10-next.2
 
 ### Patch Changes

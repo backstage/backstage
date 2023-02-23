@@ -218,8 +218,9 @@ export class MicrosoftGraphClient {
     headers?: Record<string, string>,
   ): Promise<Response> {
     // Make sure that we always have a valid access token (might be cached)
+    const urlObj = new URL(url);
     const token = await this.tokenCredential.getToken(
-      `${this.baseUrl}/.default`,
+      `${urlObj.protocol}//${urlObj.hostname}/.default`,
     );
 
     if (!token) {

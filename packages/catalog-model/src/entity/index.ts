@@ -16,19 +16,8 @@
 
 export * from './conditions';
 export * from './constants';
-export type {
-  AlphaEntity,
-  Entity,
-  EntityLink,
-  EntityMeta,
-  EntityRelation,
-} from './Entity';
+export type { Entity, EntityLink, EntityMeta, EntityRelation } from './Entity';
 export type { EntityEnvelope } from './EntityEnvelope';
-export type {
-  EntityStatus,
-  EntityStatusItem,
-  EntityStatusLevel,
-} from './EntityStatus';
 export * from './policies';
 export {
   getCompoundEntityRef,

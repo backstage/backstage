@@ -21,8 +21,8 @@ instance or cluster.
 With infrastructure defined as code or data (Terraform, AWS CloudFormation,
 etc.), you may have database credentials which lack permissions to create new
 databases or you do not have control over the database names. In these
-instances, you can set the database connection configuration on a [per plugin basis]
-(#connection-configuration-per-plugin).
+instances, you can set the database connection configuration on a
+[per plugin basis](#connection-configuration-per-plugin).
 
 Backstage supports all of these use cases with the `DatabaseManager` provided by
 `@backstage/backend-common`. We will now cover how to use and configure
@@ -37,7 +37,7 @@ package. If you intend to use both PostgreSQL and SQLite, you can install
 both of them.
 
 ```bash
-# From the Backstage root directory
+# From your Backstage root directory
 # install pg if you need PostgreSQL
 yarn add --cwd packages/backend pg
 

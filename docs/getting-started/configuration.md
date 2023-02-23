@@ -136,9 +136,7 @@ frontend, in our tutorial it would be `http://localhost:3000`. The
 `Authorization callback URL` will point to the auth backend, which will most
 likely be `http://localhost:7007/api/auth/github/handler/frame`.
 
-<p align='center'>
-  <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page' />
-</p>
+![Screenshot of the GitHub OAuth creation page](../assets/getting-started/gh-oauth.png)
 
 Take note of the `Client ID` and the `Client Secret`. Open `app-config.yaml`,
 and add your `clientId` and `clientSecret` to this file. It should end up
@@ -214,9 +212,7 @@ name to identify this token and put it in the notes field. Choose a number of
 days for expiration. If you have a hard time picking a number, we suggest to go
 for 7 days, it's a lucky number.
 
-<p align='center'>
-  <img src='../assets/getting-started/gh-pat.png' alt='Screenshot of the GitHub Personal Access Token creation page' />
-</p>
+![Screenshot of the GitHub Personal Access Token creation page](../assets/getting-started/gh-pat.png)
 
 Set the scope to your likings. For this tutorial, selecting `repo` and `workflow` is required as the scaffolding job in this guide configures a GitHub actions workflow for the newly created project.
 
@@ -262,21 +258,18 @@ otherwise something went terribly wrong.
 - Register a new component, by going to `create` and choose
   `Register existing component`
 
-<p align='center'>
-  <img data-zoomable src='../assets/getting-started/b-existing-1.png' alt='Software template main screen, with a blue button to add an existing component' />
-</p>
+  <!-- todo: Needs zoomable plugin -->
+
+  ![Software template main screen, with a blue button to add an existing component](../assets/getting-started/b-existing-1.png)
 
 - As URL use `https://github.com/backstage/demo/blob/master/catalog-info.yaml`.
   This is used by our [demo site](https://demo.backstage.io).
 
-<p align='center'>
-  <img src='../assets/getting-started/b-existing-2.png' alt='Register a new component wizard, asking for an URL to the existing component YAML file' />
-</p>
-- Hit `Analyze` and review the changes. Apply them if correct
+  ![Register a new component wizard, asking for an URL to the existing component YAML file](../assets/getting-started/b-existing-2.png)
 
-<p align='center'>
-  <img src='../assets/getting-started/b-existing-3.png' alt='Register a new component wizard, showing the metadata for the component YAML we use in this tutorial' />
-</p>
+- Hit `Analyze` and review the changes. Apply them if correct.
+
+  ![Register a new component wizard, showing the metadata for the component YAML we use in this tutorial](../assets/getting-started/b-existing-3.png)
 
 - You should receive a message that your entities have been added.
 - If you go back to `Home`, you should be able to find `demo`. You should be
@@ -286,14 +279,12 @@ otherwise something went terribly wrong.
 
 - Go to `create` and choose to create a website with the `Example Node.js Template`
 - Type in a name, let's use `tutorial` and click `Next Step`
-<p align='center'>
-  <img src='../assets/getting-started/b-scaffold-1.png' alt='Software template deployment input screen asking for a name' />
-</p>
+
+![Software template deployment input screen asking for a name](../assets/getting-started/b-scaffold-1.png)
 
 - You should see the following screen:
-<p align='center'>
-  <img src='../assets/getting-started/b-scaffold-2.png' alt='Software template deployment input screen asking for the GitHub username, and name of the new repo to create' />
-</p>
+
+![Software template deployment input screen asking for the GitHub username, and name of the new repo to create](../assets/getting-started/b-scaffold-2.png)
 
 - For host, it should default to github.com
 - As owner, type your GitHub username
@@ -308,7 +299,7 @@ Achievement unlocked. You've set up an installation of the core Backstage App,
 made it persistent, and configured it so you are now able to use software
 templates.
 
-Let us know how your experience was: [on discord](https://discord.gg/EBHEGzX),
+Let us know how your experience was: [on discord](https://discord.gg/backstage-687207715902193673),
 file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or

@@ -52,6 +52,9 @@ export type AdrFileInfo = {
   type: string;
   path: string;
   name: string;
+  title?: string;
+  status?: string;
+  date?: string;
 };
 
 // @public

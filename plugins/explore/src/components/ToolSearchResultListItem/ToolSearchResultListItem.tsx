@@ -46,7 +46,7 @@ const useStyles = makeStyles({
  * @public
  */
 export interface ToolSearchResultListItemProps {
-  icon?: ReactNode;
+  icon?: ReactNode | ((result: IndexableDocument) => ReactNode);
   result?: IndexableDocument;
   highlight?: ResultHighlight;
   rank?: number;
@@ -62,7 +62,11 @@ export function ToolSearchResultListItem(props: ToolSearchResultListItemProps) {
 
   return (
     <>
-      {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
+      {props.icon && (
+        <ListItemIcon>
+          {typeof props.icon === 'function' ? props.icon(result) : props.icon}
+        </ListItemIcon>
+      )}
       <div className={classes.flexContainer}>
         <ListItemText
           className={classes.itemText}

@@ -4,9 +4,11 @@ author: Paul Cowan & Taras Mankovski
 authorURL: https://frontside.com/
 ---
 
-At the heart of [Backstage](https://backstage.io/) is the [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview), which is a data store that allows an organization to centralize and visualize its many software services and components. Backstage inspects and transforms an organization's disparate software services and parts into a centralized data store.
+At the heart of [Backstage](https://backstage.io/) is the [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview), which is a data store that allows an organization to centralize and visualize its many software services and components. Backstage inspects and transforms an organization's disparate software services and parts into a centralized data store. This blog post introduces the concept of incremental entity providers, which allow Backstage to scale ingestion to even larger datasets.
 
 ![catalog pipeline](assets/2023-01-31/catalog-pipeline.png)
+
+<!--truncate-->
 
 A common use case is for an organization to want to surface ownership and metadata about repositories. Backstage provides a mechanism for discovering and transforming repository information into a standard data structure and persisting it into the Backstage [Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview). This process is known as ingestion, where all data is transformed into a standard Backstage data structure known as an entity. Entities in the Catalog’s data store are accessible to the Backstage App via the REST API.
 

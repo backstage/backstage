@@ -15,7 +15,7 @@
  */
 
 import { NotAllowedError } from '@backstage/errors';
-import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common';
+import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
 import {
   AuthorizeResult,
   PermissionEvaluator,

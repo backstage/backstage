@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.11.0",
       "releases/v1.10.0",
       "releases/v1.9.0",
       "releases/v1.8.0",
@@ -104,6 +105,7 @@
           "features/software-templates/writing-custom-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
+          "features/software-templates/testing-scaffolder-alpha",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },

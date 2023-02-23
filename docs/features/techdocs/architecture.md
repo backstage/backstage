@@ -9,7 +9,9 @@ description: Documentation on TechDocs Architecture
 When you deploy Backstage (with TechDocs enabled by default), you get a basic
 out-of-the box experience.
 
-<img data-zoomable src="../../assets/techdocs/architecture-basic.drawio.svg" alt="TechDocs Architecture diagram" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Architecture diagram](../../assets/techdocs/architecture-basic.drawio.svg)
 
 > Note: See below for our recommended deployment architecture which takes care
 > of stability, scalability and speed. Also look at the
@@ -42,7 +44,9 @@ storage system (e.g. AWS S3, GCS or Azure Blob Storage). Read more in
 
 This is how we recommend deploying TechDocs in a production environment.
 
-<img data-zoomable src="../../assets/techdocs/architecture-recommended.drawio.svg" alt="TechDocs Architecture diagram" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Architecture diagram](../../assets/techdocs/architecture-recommended.drawio.svg)
 
 The key difference in the recommended deployment approach is where the docs are
 built.

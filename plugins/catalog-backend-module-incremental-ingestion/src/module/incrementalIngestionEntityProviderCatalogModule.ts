@@ -18,11 +18,11 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
-} from '../types';
+} from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 import { WrapperProviders } from './WrapperProviders';
 
 /**
