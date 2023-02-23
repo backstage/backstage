@@ -17,7 +17,7 @@ app:
       - title: Discord Chatroom
         icon: chat
         links:
-          - url: https://discord.gg/MUpMjP2
+          - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
 
 backend:

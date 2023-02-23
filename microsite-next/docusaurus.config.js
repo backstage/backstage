@@ -187,7 +187,7 @@ module.exports = {
             items: [
               {
                 label: 'Support chatroom',
-                to: 'https://discord.gg/MUpMjP2',
+                to: 'https://discord.gg/backstage-687207715902193673',
               },
               {
                 label: 'Contributing',

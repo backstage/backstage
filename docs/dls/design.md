@@ -26,7 +26,7 @@ that growth, check out the issues in this GitHub repo!
 The Backstage Design Team is small but mighty, and we truly cherish the amazing
 opportunity we have to work with the Backstage Open Source community! Have an
 idea? A component request? Feel free to communicate with us via
-[Discord](https://discord.gg/EBHEGzX) (_#design_ channel). Collaboration trumps
+[Discord](https://discord.gg/backstage-687207715902193673) (_#design_ channel). Collaboration trumps
 individual speed, and we want to work with you to make Backstage work for all of
 our users.
 
@@ -38,7 +38,7 @@ loop! Keep an eye on our
 where we're headed and review the
 [open design issues](https://github.com/backstage/backstage/issues?q=is%3Aopen+is%3Aissue+label%3Adesign),
 to see if you can help. We'll also be posting updates in the _#design_ channel
-on [Discord](https://discord.gg/EBHEGzX). Not only that, we want to keep you
+on [Discord](https://discord.gg/backstage-687207715902193673). Not only that, we want to keep you
 informed on the decisions we've made and why we've made them.
 
 ## 🛠 Our Practice
@@ -101,14 +101,14 @@ focused on building up our core Backstage user experience. We’ll be labeling o
 issues in GitHub with ‘design’ and/or ‘storybook’ - so feel free to browse and
 tackle the tasks that interest you. If you have any questions regarding an
 issue, you can ask them in the comments section of the issue or on
-[Discord](https://discord.gg/EBHEGzX). We absolutely adore our external
+[Discord](https://discord.gg/backstage-687207715902193673). We absolutely adore our external
 contributors and will send you virtual
 [semlas](https://en.wikipedia.org/wiki/Semla) for your contributions!
 
 ### Request a component
 
 Create an issue (label it design and assign it to katz95) or send us a message
-on [Discord](https://discord.gg/EBHEGzX) (_#design_ channel) with details of
+on [Discord](https://discord.gg/backstage-687207715902193673) (_#design_ channel) with details of
 what the component is and its relevant use cases. Your request will be reviewed
 by our design team and you should hear back from us within 1-2 business days.
 We’ll get back to you and let you know whether your requested component will get
@@ -124,7 +124,7 @@ components we’ve designed to the Storybook as well.
 Community to share our design assets. You can duplicate our UI Kit and design
 your own plugin for Backstage.
 
-**[Discord](https://discord.gg/EBHEGzX)** - all design questions should be
+**[Discord](https://discord.gg/backstage-687207715902193673)** - all design questions should be
 directed to the _#design_ channel.
 
 **[Customize Backstage's look and feel](https://backstage.io/docs/getting-started/app-custom-theme)** -
@@ -142,4 +142,4 @@ scenes, we’re setting up a few foundational elements to make sure that
 contributing to Backstage as a designer is easy. From styling guidelines to UX
 principles to Figma documents, we’ll make sure you’re equipped to chip in on
 this project. We’re excited to work with you! In the meantime, we’d love to hear
-from you on [Discord](https://discord.gg/EBHEGzX).
+from you on [Discord](https://discord.gg/backstage-687207715902193673).

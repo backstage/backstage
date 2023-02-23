@@ -58,7 +58,9 @@ const Background = props => {
             <Block.Paragraph>
               Main community channels
               <br />- Chat and get support on our{' '}
-              <a href="https://discord.gg/MUpMjP2">Discord</a>
+              <a href="https://discord.gg/backstage-687207715902193673">
+                Discord
+              </a>
               <br />- Get into contributing with the{' '}
               <a href="https://github.com/backstage/backstage/contribute">
                 Good First Issues

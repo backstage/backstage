@@ -211,7 +211,7 @@ input:
 
 ### Summary
 
-Of course, we're always available on [discord](https://discord.gg/MUpMjP2) if
+Of course, we're always available on [discord](https://discord.gg/backstage-687207715902193673) if
 you're stuck or something's not working as expected. You can also
 [raise an issue](https://github.com/backstage/backstage/issues/new/choose) with
 feedback or bugs!
