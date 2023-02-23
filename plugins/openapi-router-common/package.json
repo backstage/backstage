@@ -24,15 +24,15 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@types/express": "^4.17.6",
-    "@types/express-serve-static-core": "^4.17.33"
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@types/express": "^4.17.6",
+    "@types/express-serve-static-core": "^4.17.33",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "json-schema-to-ts": "^2.6.2",
