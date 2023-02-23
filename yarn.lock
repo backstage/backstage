@@ -27430,15 +27430,15 @@ __metadata:
   linkType: hard
 
 "json-schema-library@npm:^7.3.9":
-  version: 7.4.6
-  resolution: "json-schema-library@npm:7.4.6"
+  version: 7.4.7
+  resolution: "json-schema-library@npm:7.4.7"
   dependencies:
     "@sagold/json-pointer": ^5.0.0
     "@sagold/json-query": ^6.0.0
     deepmerge: ^4.2.2
     fast-deep-equal: ^3.1.3
     valid-url: ^1.0.9
-  checksum: 4639464c3c25cc6ca04b1aea081c97426598f2477bdd20e4df57e39408bcf2de7a5f54f3e108c497b3e63f41904a251fbb5444451cf7a60fd83020941c55cdda
+  checksum: e738f0b149d52949d854a4de718e79576fabbae206bffdb1cf895ed0b87bbf255f80f162f1924fb89311f6ac1a8e3ed0a5940b709bc3a091ad217f64de70cf60
   languageName: node
   linkType: hard
 
