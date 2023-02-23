@@ -78,6 +78,10 @@ export type SearchPaginationBaseProps = {
    */
   cursor?: string;
   /**
+   * Whether a next page exists
+   */
+  hasNextPage?: boolean;
+  /**
    * Callback fired when the current page cursor is changed.
    */
   onCursorChange?: (pageCursor: string) => void;
@@ -118,6 +122,7 @@ export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
   const {
     total: count = -1,
     cursor: pageCursor,
+    hasNextPage,
     onCursorChange: onPageCursorChange,
     limit: rowsPerPage = 25,
     limitLabel: labelRowsPerPage = 'Results per page:',
@@ -151,6 +156,9 @@ export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
       component="div"
       count={count}
       page={page}
+      nextIconButtonProps={{
+        ...(hasNextPage !== undefined && { disabled: !hasNextPage }),
+      }}
       onPageChange={handlePageChange}
       rowsPerPage={rowsPerPage}
       labelRowsPerPage={labelRowsPerPage}
@@ -167,7 +175,11 @@ export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
  */
 export type SearchPaginationProps = Omit<
   SearchPaginationBaseProps,
-  'pageLimit' | 'onPageLimitChange' | 'pageCursor' | 'onPageCursorChange'
+  | 'pageLimit'
+  | 'onPageLimitChange'
+  | 'pageCursor'
+  | 'onPageCursorChange'
+  | 'hasNextPage'
 >;
 
 /**
@@ -176,11 +188,13 @@ export type SearchPaginationProps = Omit<
  * @public
  */
 export const SearchPagination = (props: SearchPaginationProps) => {
-  const { pageLimit, setPageLimit, pageCursor, setPageCursor } = useSearch();
+  const { pageLimit, setPageLimit, pageCursor, setPageCursor, fetchNextPage } =
+    useSearch();
 
   return (
     <SearchPaginationBase
       {...props}
+      hasNextPage={!!fetchNextPage}
       limit={pageLimit}
       onLimitChange={setPageLimit}
       cursor={pageCursor}

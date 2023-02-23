@@ -234,6 +234,7 @@ export type SearchPaginationBaseProps = {
   className?: string;
   total?: number;
   cursor?: string;
+  hasNextPage?: boolean;
   onCursorChange?: (pageCursor: string) => void;
   limit?: number;
   limitLabel?: ReactNode;
@@ -264,7 +265,11 @@ export type SearchPaginationLimitText = (params: {
 // @public
 export type SearchPaginationProps = Omit<
   SearchPaginationBaseProps,
-  'pageLimit' | 'onPageLimitChange' | 'pageCursor' | 'onPageCursorChange'
+  | 'pageLimit'
+  | 'onPageLimitChange'
+  | 'pageCursor'
+  | 'onPageCursorChange'
+  | 'hasNextPage'
 >;
 
 // @public
