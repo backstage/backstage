@@ -17,6 +17,9 @@
 import { ConfigReader } from '@backstage/config';
 import { Duration } from 'luxon';
 import { readGitlabConfigs } from './config';
+import { getVoidLogger } from '@backstage/backend-common';
+
+const logger = getVoidLogger();
 
 describe('config', () => {
   it('empty gitlab config', () => {
@@ -26,7 +29,7 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config);
+    const result = readGitlabConfigs(config, logger);
     expect(result).toHaveLength(0);
   });
 
@@ -44,7 +47,7 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config);
+    const result = readGitlabConfigs(config, logger);
     expect(result).toHaveLength(1);
     result.forEach(r =>
       expect(r).toStrictEqual({
@@ -78,7 +81,7 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config);
+    const result = readGitlabConfigs(config, logger);
     expect(result).toHaveLength(1);
     result.forEach(r =>
       expect(r).toStrictEqual({
@@ -116,7 +119,7 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config);
+    const result = readGitlabConfigs(config, logger);
     expect(result).toHaveLength(1);
     result.forEach(r =>
       expect(r).toStrictEqual({
@@ -155,7 +158,7 @@ describe('config', () => {
       },
     });
 
-    expect(() => readGitlabConfigs(config)).toThrow(
+    expect(() => readGitlabConfigs(config, logger)).toThrow(
       "Missing required config value at 'catalog.providers.gitlab.test.host'",
     );
   });
@@ -174,7 +177,7 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config);
+    const result = readGitlabConfigs(config, logger);
     expect(result).toHaveLength(1);
     expect(result[0].group).toEqual('');
   });
