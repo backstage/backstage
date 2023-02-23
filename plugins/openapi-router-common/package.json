@@ -24,7 +24,9 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@types/express": "^4.17.17",
+    "@types/express-serve-static-core": "^4.17.33"
   },
   "files": [
     "dist"
