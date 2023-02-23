@@ -40,6 +40,7 @@ const useStyles = makeStyles<Theme>(theme => ({
     fill: theme.palette.text.primary,
     fontSize: '25px',
     fontWeight: 800,
+    opacity: 0.35,
   },
 }));
 
@@ -62,6 +63,7 @@ const RadarGrid = (props: Props) => {
       y={ringRadius !== undefined ? -ringRadius + 42 : undefined}
       textAnchor="middle"
       className={classes.text}
+      style={{ fill: rings[ringIndex].color }}
     >
       {rings[ringIndex].name}
     </text>,
