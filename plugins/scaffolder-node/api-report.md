@@ -36,9 +36,10 @@ export type ActionContext<TInput extends JsonObject> = {
 export const createTemplateAction: <
   TParams,
   TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
+  TOutputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
 >(
-  templateAction: TemplateAction<TParams, TInputSchema>,
-) => TemplateAction<TParams, TInputSchema>;
+  templateAction: TemplateAction<TParams, TInputSchema, TOutputSchema>,
+) => TemplateAction<TParams, TInputSchema, TOutputSchema>;
 
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
@@ -56,8 +57,9 @@ export type TaskSecrets = Record<string, string> & {
 
 // @public (undocumented)
 export type TemplateAction<
-  TParams,
+  TParams = {},
   TInputSchema extends Schema | z.ZodType = {},
+  TOutputSchema extends Schema | z.ZodType = {},
 > = {
   id: string;
   description?: string;
@@ -68,7 +70,7 @@ export type TemplateAction<
   supportsDryRun?: boolean;
   schema?: {
     input?: TInputSchema;
-    output?: Schema;
+    output?: TOutputSchema;
   };
   handler: (
     ctx: ActionContext<

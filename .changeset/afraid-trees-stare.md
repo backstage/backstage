@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': minor
 ---
 
-zod to json conversion funcitonality for action template schema
+Added the ability to be able to define actions input schema using `zod` instead of hand writing types and jsonschema for the input of actions.

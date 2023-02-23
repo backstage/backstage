@@ -71,6 +71,7 @@ export function createCatalogRegisterAction(options: {
       catalogInfoPath?: string | undefined;
       optional?: boolean | undefined;
     },
+  {},
   {}
 >;
 
@@ -93,7 +94,8 @@ export function createCatalogWriteAction(): TemplateAction_2<
       filePath?: string | undefined;
       entity?: {} | undefined;
     }
-  >
+  >,
+  {}
 >;
 
 // @public
@@ -102,6 +104,7 @@ export function createDebugLogAction(): TemplateAction_2<
     message?: string | undefined;
     listWorkspace?: boolean | undefined;
   },
+  {},
   {}
 >;
 
@@ -113,6 +116,7 @@ export function createFetchCatalogEntityAction(options: {
     entityRef: string;
     optional?: boolean | undefined;
   },
+  {},
   {}
 >;
 
@@ -125,6 +129,7 @@ export function createFetchPlainAction(options: {
     url: string;
     targetPath?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -145,6 +150,7 @@ export function createFetchTemplateAction(options: {
     cookiecutterCompat?: boolean | undefined;
     replace?: boolean | undefined;
   },
+  {},
   {}
 >;
 
@@ -153,6 +159,7 @@ export const createFilesystemDeleteAction: () => TemplateAction_2<
   {
     files: string[];
   },
+  {},
   {}
 >;
 
@@ -165,6 +172,7 @@ export const createFilesystemRenameAction: () => TemplateAction_2<
       overwrite?: boolean;
     }>;
   },
+  {},
   {}
 >;
 
@@ -184,6 +192,7 @@ export function createGithubActionsDispatchAction(options: {
       | undefined;
     token?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -198,6 +207,7 @@ export function createGithubIssuesLabelAction(options: {
     labels: string[];
     token?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -286,6 +296,7 @@ export function createGithubRepoCreateAction(options: {
     topics?: string[] | undefined;
     requireCommitSigning?: boolean | undefined;
   },
+  {},
   {}
 >;
 
@@ -328,6 +339,7 @@ export function createGithubRepoPushAction(options: {
     token?: string | undefined;
     requiredCommitSigning?: boolean | undefined;
   },
+  {},
   {}
 >;
 
@@ -347,6 +359,7 @@ export function createGithubWebhookAction(options: {
     insecureSsl?: boolean | undefined;
     token?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -365,6 +378,7 @@ export function createPublishAzureAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -385,6 +399,7 @@ export function createPublishBitbucketAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -401,6 +416,7 @@ export function createPublishBitbucketCloudAction(options: {
     sourcePath?: string | undefined;
     token?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -421,6 +437,7 @@ export function createPublishBitbucketServerAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -438,6 +455,7 @@ export function createPublishGerritAction(options: {
     gitAuthorEmail?: string | undefined;
     sourcePath?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -454,6 +472,7 @@ export function createPublishGerritReviewAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -530,6 +549,7 @@ export function createPublishGithubAction(options: {
     topics?: string[] | undefined;
     requiredCommitSigning?: boolean | undefined;
   },
+  {},
   {}
 >;
 
@@ -551,6 +571,7 @@ export const createPublishGithubPullRequestAction: ({
     reviewers?: string[] | undefined;
     teamReviewers?: string[] | undefined;
   },
+  {},
   {}
 >;
 
@@ -571,6 +592,7 @@ export function createPublishGitlabAction(options: {
     setUserAsOwner?: boolean | undefined;
     topics?: string[] | undefined;
   },
+  {},
   {}
 >;
 
@@ -591,6 +613,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
   },
+  {},
   {}
 >;
 
@@ -601,9 +624,10 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export const createTemplateAction: <
   TParams,
   TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
+  TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
 >(
-  templateAction: TemplateAction_2<TParams, TInputSchema>,
-) => TemplateAction_2<TParams, TInputSchema>;
+  templateAction: TemplateAction_2<TParams, TInputSchema, TOutputSchema>,
+) => TemplateAction_2<TParams, TInputSchema, TOutputSchema>;
 
 // @public
 export type CreateWorkerOptions = {
@@ -950,11 +974,11 @@ export type TemplateAction<TInput extends JsonObject> =
 // @public
 export class TemplateActionRegistry {
   // (undocumented)
-  get(actionId: string): TemplateAction_2<JsonObject>;
+  get(actionId: string): TemplateAction_2;
   // (undocumented)
-  list(): TemplateAction_2<JsonObject>[];
+  list(): TemplateAction_2[];
   // (undocumented)
-  register<TInput extends JsonObject>(action: TemplateAction_2<TInput>): void;
+  register(action: TemplateAction_2): void;
 }
 
 // @public (undocumented)

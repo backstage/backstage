@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import zodToJsonSchema from 'zod-to-json-schema';
@@ -23,9 +22,9 @@ import zodToJsonSchema from 'zod-to-json-schema';
  * @public
  */
 export class TemplateActionRegistry {
-  private readonly actions = new Map<string, TemplateAction<any>>();
+  private readonly actions = new Map<string, TemplateAction>();
 
-  register<TInput extends JsonObject>(action: TemplateAction<TInput>) {
+  register(action: TemplateAction) {
     if (this.actions.has(action.id)) {
       throw new ConflictError(
         `Template action with ID '${action.id}' has already been registered`,
@@ -35,21 +34,29 @@ export class TemplateActionRegistry {
     // It's better to convert the zod here, and just deal with jsonschema everywhere
     // rather than adding the zod check everywhere like the nunjucks engine, and the /actions/list
     // endpoint to create jsonschema for the frontend.
-    const templateAction =
+    const inputSchema =
       action.schema?.input && 'safeParseAsync' in action.schema.input
-        ? {
-            ...action,
-            schema: {
-              ...action.schema,
-              input: zodToJsonSchema(action.schema.input),
-            },
-          }
-        : action;
+        ? zodToJsonSchema(action.schema.input)
+        : action.schema?.input;
+
+    const outputSchema =
+      action.schema?.output && 'safeParseAsync' in action.schema.output
+        ? zodToJsonSchema(action.schema.output)
+        : action.schema?.output;
+
+    const templateAction = {
+      ...action,
+      schema: {
+        ...action.schema,
+        input: inputSchema,
+        output: outputSchema,
+      },
+    };
 
     this.actions.set(action.id, templateAction);
   }
 
-  get(actionId: string): TemplateAction<JsonObject> {
+  get(actionId: string): TemplateAction {
     const action = this.actions.get(actionId);
     if (!action) {
       throw new NotFoundError(
@@ -59,7 +66,7 @@ export class TemplateActionRegistry {
     return action;
   }
 
-  list(): TemplateAction<JsonObject>[] {
+  list(): TemplateAction[] {
     return [...this.actions.values()];
   }
 }

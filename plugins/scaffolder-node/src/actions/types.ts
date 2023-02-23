@@ -64,8 +64,9 @@ export type ActionContext<TInput extends JsonObject> = {
 
 /** @public */
 export type TemplateAction<
-  TParams,
+  TParams = {},
   TInputSchema extends Schema | z.ZodType = {},
+  TOutputSchema extends Schema | z.ZodType = {},
 > = {
   id: string;
   description?: string;
@@ -73,7 +74,7 @@ export type TemplateAction<
   supportsDryRun?: boolean;
   schema?: {
     input?: TInputSchema;
-    output?: Schema;
+    output?: TOutputSchema;
   };
   handler: (
     ctx: ActionContext<

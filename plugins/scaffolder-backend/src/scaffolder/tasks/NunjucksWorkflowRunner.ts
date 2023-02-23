@@ -25,7 +25,6 @@ import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
-import zodToJsonSchema from 'zod-to-json-schema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
 import {
