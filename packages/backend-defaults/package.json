@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^"
   },
   "devDependencies": {
