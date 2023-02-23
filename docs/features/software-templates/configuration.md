@@ -93,3 +93,11 @@ You can also further customize groups by passing in a `titleComponent` instead
 of a `title` which will be a component to use as the header instead of just the
 default `ContentHeader` with the `title` set as it's value.
 ![Grouped Templates](../../assets/software-templates/grouped-templates.png)
+
+## Hiding the templates under a feature flag
+
+If you would like to develop a template but not to make it visible to all user yet, you can place it under
+feature flag. Your template has to contain an "alpha" tag.
+
+To make alpha templates visible you have to enable a feature flag "experimental-scaffolder-templates-alpha" in
+"Settings -> Feature Flags" panel.
