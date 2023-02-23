@@ -97,7 +97,7 @@ default `ContentHeader` with the `title` set as it's value.
 ## Hiding the templates under a feature flag
 
 If you would like to develop a template but not to make it visible to all user yet, you can place it under
-feature flag. Your template has to contain an "alpha" tag.
+feature flag. Your template has to contain an "experimental" tag.
 
-To make alpha templates visible you have to enable a feature flag "experimental-scaffolder-templates-alpha" in
+To make experimental templates visible you have to enable a feature flag "experimental-scaffolder-templates" in
 "Settings -> Feature Flags" panel.
