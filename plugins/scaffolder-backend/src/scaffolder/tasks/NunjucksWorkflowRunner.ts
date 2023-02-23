@@ -42,7 +42,6 @@ import {
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
-import { z } from 'zod';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -288,8 +287,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             {};
 
           if (action.schema?.input) {
+            // Check to see if the input is a zod schema without using instanceof.
             const inputSchema =
-              action.schema.input instanceof z.ZodSchema
+              'safeParseAsync' in action.schema.input
                 ? zodToJsonSchema(action.schema.input)
                 : action.schema.input;
 
