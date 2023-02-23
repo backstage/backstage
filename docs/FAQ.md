@@ -231,7 +231,7 @@ We take security seriously. When it comes to packages and code we scan our
 repositories periodically and update our packages to the latest versions. When
 it comes to deployment of Backstage within an organisation it depends on the
 deployment and security setup in your organisation. Reach out to us on
-[Discord](https://discord.gg/MUpMjP2) if you have specific queries.
+[Discord](https://discord.gg/backstage-687207715902193673) if you have specific queries.
 
 Please report sensitive security issues via Spotify's
 [bug-bounty program](https://hackerone.com/spotify) rather than GitHub.

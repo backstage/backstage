@@ -61,4 +61,4 @@ Backstage is a CNCF Incubation project after graduating from Sandbox. Read the a
   administrators together in one place.
 
 If you have questions or want support, please join our
-[Discord chatroom](https://discord.gg/EBHEGzX).
+[Discord chatroom](https://discord.gg/backstage-687207715902193673).
