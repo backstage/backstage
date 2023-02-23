@@ -28,7 +28,7 @@ import {
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
-import { FeatureFlagged } from '@backstage/core-app-api';
+import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 
 /**
  * @internal
@@ -52,9 +52,18 @@ export const TemplateList = ({
 }: TemplateListProps) => {
   const { loading, error, entities } = useEntityList();
   const Card = TemplateCardComponent || TemplateCard;
-  const maybeFilteredEntities = group
-    ? entities.filter(e => group.filter(e))
-    : entities;
+  const featureFlagApi = useApi(featureFlagsApiRef);
+  const showExperimentalTemplates = featureFlagApi.isActive(
+    'experimental-scaffolder-templates',
+  );
+
+  const maybeFilteredEntities = (
+    group ? entities.filter(e => group.filter(e)) : entities
+  ).filter(
+    template =>
+      showExperimentalTemplates ||
+      !template.metadata.tags?.includes('experimental'),
+  );
 
   const titleComponent: React.ReactNode = (() => {
     if (group && group.title) {
@@ -95,24 +104,13 @@ export const TemplateList = ({
         <ItemCardGrid>
           {maybeFilteredEntities &&
             maybeFilteredEntities?.length > 0 &&
-            maybeFilteredEntities.map((template: Entity) => {
-              const card = (
-                <Card
-                  key={stringifyEntityRef(template)}
-                  template={template as TemplateEntityV1beta3}
-                  deprecated={template.apiVersion === 'backstage.io/v1beta2'}
-                />
-              );
-
-              if (template.metadata.tags?.find(tag => tag === 'alpha')) {
-                return (
-                  <FeatureFlagged with="experimental-scaffolder-templates-alpha">
-                    {card}
-                  </FeatureFlagged>
-                );
-              }
-              return card;
-            })}
+            maybeFilteredEntities.map((template: Entity) => (
+              <Card
+                key={stringifyEntityRef(template)}
+                template={template as TemplateEntityV1beta3}
+                deprecated={template.apiVersion === 'backstage.io/v1beta2'}
+              />
+            ))}
         </ItemCardGrid>
       </Content>
     </>

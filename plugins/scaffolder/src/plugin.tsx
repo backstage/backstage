@@ -96,7 +96,7 @@ export const scaffolderPlugin = createPlugin({
     registerComponent: registerComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   },
-  featureFlags: [{ name: 'experimental-scaffolder-templates-alpha' }],
+  featureFlags: [{ name: 'experimental-scaffolder-templates' }],
 });
 
 /**
