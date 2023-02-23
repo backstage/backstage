@@ -3485,7 +3485,7 @@ __metadata:
     minimist: ^1.2.5
     mock-fs: ^5.1.0
     morgan: ^1.10.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     mysql2: ^2.2.5
     node-fetch: ^2.6.7
     node-forge: ^1.3.1
@@ -3583,7 +3583,7 @@ __metadata:
     better-sqlite3: ^8.0.0
     express: ^4.17.1
     knex: ^2.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     mysql2: ^2.2.5
     pg: ^8.3.0
     supertest: ^6.1.3
@@ -3611,7 +3611,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -3755,7 +3755,7 @@ __metadata:
     mini-css-extract-plugin: ^2.4.2
     minimatch: ^5.1.1
     mock-fs: ^5.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     node-libs-browser: ^2.2.1
     nodemon: ^2.0.2
@@ -3837,7 +3837,7 @@ __metadata:
     json-schema-merge-allof: ^0.8.1
     json-schema-traverse: ^1.0.0
     mock-fs: ^5.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     typescript-json-schema: ^0.55.0
     yaml: ^2.0.0
@@ -3875,7 +3875,7 @@ __metadata:
     "@types/prop-types": ^15.7.3
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     prop-types: ^15.7.2
     react-router-beta: "npm:react-router@6.0.0-beta.0"
     react-router-dom-beta: "npm:react-router-dom@6.0.0-beta.0"
@@ -3987,7 +3987,7 @@ __metadata:
     history: ^5.0.0
     immer: ^9.0.1
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     pluralize: ^8.0.0
     prop-types: ^15.7.2
     qs: ^6.9.4
@@ -4049,7 +4049,7 @@ __metadata:
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
     history: ^5.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     prop-types: ^15.7.2
     zen-observable: ^0.10.0
   peerDependencies:
@@ -4195,7 +4195,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -4218,7 +4218,7 @@ __metadata:
     git-url-parse: ^13.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -4242,7 +4242,7 @@ __metadata:
     express-promise-router: ^4.1.0
     luxon: ^3.0.0
     marked: ^4.0.14
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.5
     supertest: ^6.1.3
     winston: ^3.2.1
@@ -4287,7 +4287,7 @@ __metadata:
     "@types/git-url-parse": ^9.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-markdown: ^8.0.0
     react-use: ^17.2.4
     remark-gfm: ^3.0.1
@@ -4311,7 +4311,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     supertest: ^6.1.6
     winston: ^3.2.1
     yn: ^4.0.0
@@ -4339,7 +4339,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -4368,7 +4368,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -4396,7 +4396,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-ga: ^3.3.0
     react-use: ^17.2.4
   peerDependencies:
@@ -4422,7 +4422,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.10.1
     react-use: ^17.2.4
   peerDependencies:
@@ -4471,7 +4471,7 @@ __metadata:
     graphql: ^16.0.0
     graphql-ws: ^5.4.1
     isomorphic-form-data: ^2.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
     swagger-ui-react: ^4.11.1
   peerDependencies:
@@ -4501,7 +4501,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
     use-deep-compare-effect: ^1.8.1
   peerDependencies:
@@ -4532,7 +4532,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     mock-fs: ^5.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
     winston: ^3.2.1
@@ -4584,7 +4584,7 @@ __metadata:
     luxon: ^3.0.0
     minimatch: ^5.0.0
     morgan: ^1.10.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-cache: ^5.1.2
     node-fetch: ^2.6.7
     openid-client: ^5.2.1
@@ -4618,7 +4618,7 @@ __metadata:
     express: ^4.17.1
     jose: ^4.6.0
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
     winston: ^3.2.1
@@ -4639,7 +4639,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     mime-types: ^2.1.27
-    msw: ^0.49.0
+    msw: ^1.0.0
     p-limit: ^3.1.0
     supertest: ^6.1.6
     winston: ^3.2.1
@@ -4680,7 +4680,7 @@ __metadata:
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.0
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -4703,7 +4703,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     winston: ^3.2.1
     yn: ^4.0.0
@@ -4741,7 +4741,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -4792,7 +4792,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -4858,7 +4858,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@openapitools/openapi-generator-cli": ^2.4.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     ts-morph: ^17.0.0
   languageName: unknown
   linkType: soft
@@ -4887,7 +4887,7 @@ __metadata:
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.9.6
     react-use: ^17.2.4
     recharts: ^2.0.0
@@ -4945,7 +4945,7 @@ __metadata:
     "@types/lodash": ^4.14.151
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
     winston: ^3.2.1
@@ -4971,7 +4971,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     uuid: ^8.0.0
     winston: ^3.2.1
   languageName: unknown
@@ -4994,7 +4994,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
     winston: ^3.2.1
@@ -5017,7 +5017,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/lodash": ^4.14.151
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     winston: ^3.2.1
   languageName: unknown
@@ -5041,7 +5041,7 @@ __metadata:
     "@types/fs-extra": ^9.0.1
     fs-extra: 10.1.0
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
     winston: ^3.2.1
@@ -5074,7 +5074,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^5.1.2
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
     winston: ^3.2.1
@@ -5101,7 +5101,7 @@ __metadata:
     "@types/uuid": ^8.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
     winston: ^3.2.1
@@ -5177,7 +5177,7 @@ __metadata:
     "@types/node-fetch": ^2.5.12
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.0.2
     qs: ^6.9.4
@@ -5247,7 +5247,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^5.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.0.2
     prom-client: ^14.0.1
@@ -5337,7 +5337,7 @@ __metadata:
     graphql-modules: ^2.0.0
     graphql-tag: ^2.11.0
     graphql-type-json: ^0.3.2
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     winston: ^3.2.1
   languageName: unknown
@@ -5373,7 +5373,7 @@ __metadata:
     git-url-parse: ^13.0.0
     js-base64: ^3.6.0
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-hook-form: ^7.12.2
     react-use: ^17.2.4
     yaml: ^2.0.0
@@ -5589,7 +5589,7 @@ __metadata:
     humanize-duration: ^3.27.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -5619,7 +5619,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
@@ -5652,7 +5652,7 @@ __metadata:
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.1
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -5678,7 +5678,7 @@ __metadata:
     express-promise-router: ^4.1.0
     express-xml-bodyparser: ^0.3.0
     knex: ^2.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     supertest: ^6.1.6
     uuid: ^8.3.2
     winston: ^3.2.1
@@ -5715,7 +5715,7 @@ __metadata:
     cross-fetch: ^3.1.5
     highlight.js: ^10.6.0
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
     recharts: ^2.0.0
   peerDependencies:
@@ -5745,7 +5745,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     rc-progress: 3.4.1
     react-use: ^17.2.4
   peerDependencies:
@@ -5777,7 +5777,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     jsonschema: ^1.2.6
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
@@ -5825,7 +5825,7 @@ __metadata:
     cross-fetch: ^3.1.5
     history: ^5.0.0
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     pluralize: ^8.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
@@ -5859,7 +5859,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     express: ^4.18.1
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -5884,7 +5884,7 @@ __metadata:
     express: ^4.18.1
     express-promise-router: ^4.1.0
     knex: ^2.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     winston: ^3.2.1
@@ -5924,7 +5924,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -5963,7 +5963,7 @@ __metadata:
     "@uiw/react-codemirror": ^4.9.3
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
     yaml: ^2.0.0
   peerDependencies:
@@ -6116,7 +6116,7 @@ __metadata:
     express: ^4.18.1
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     winston: ^3.2.1
@@ -6146,7 +6146,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -6178,7 +6178,7 @@ __metadata:
     "@types/node": ^16.11.26
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6208,7 +6208,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6238,7 +6238,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     p-limit: ^3.0.2
     react-use: ^17.2.4
   peerDependencies:
@@ -6275,7 +6275,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     material-ui-popup-state: ^1.9.3
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6302,7 +6302,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6333,7 +6333,7 @@ __metadata:
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.10.1
     react-use: ^17.2.4
     recharts: ^2.0.0
@@ -6368,7 +6368,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6402,7 +6402,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6435,7 +6435,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     octokit: ^2.0.4
     react-use: ^17.4.0
   peerDependencies:
@@ -6467,7 +6467,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     p-limit: ^4.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -6495,7 +6495,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6529,7 +6529,7 @@ __metadata:
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.10.1
     react-use: ^17.2.4
   peerDependencies:
@@ -6560,7 +6560,7 @@ __metadata:
     graphiql: ^1.5.12
     graphql: ^16.0.0
     graphql-ws: ^5.4.1
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6586,7 +6586,7 @@ __metadata:
     graphql: ^16.0.0
     graphql-modules: ^2.0.0
     helmet: ^6.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     reflect-metadata: ^0.1.13
     supertest: ^6.1.3
     winston: ^3.2.1
@@ -6614,7 +6614,7 @@ __metadata:
     "@types/node": "*"
     cross-fetch: ^3.1.5
     graphql-voyager: ^1.0.0-rc.31
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6667,7 +6667,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6702,7 +6702,7 @@ __metadata:
     cross-fetch: ^3.1.5
     humanize-duration: ^3.26.0
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6728,7 +6728,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     jenkins: ^1.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     supertest: ^6.1.6
     winston: ^3.2.1
     yn: ^4.0.0
@@ -6770,7 +6770,7 @@ __metadata:
     "@types/testing-library__jest-dom": ^5.9.1
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6825,7 +6825,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     jest-when: ^3.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6868,7 +6868,7 @@ __metadata:
     luxon: ^3.0.0
     mock-fs: ^5.2.0
     morgan: ^1.10.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     stream-buffers: ^3.0.2
     supertest: ^6.1.3
@@ -6917,7 +6917,7 @@ __metadata:
     js-yaml: ^4.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -6975,7 +6975,7 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -7005,7 +7005,7 @@ __metadata:
     knex: ^2.0.0
     linguist-js: ^2.5.3
     luxon: ^2.0.2
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     uuid: ^8.3.2
@@ -7046,7 +7046,7 @@ __metadata:
     "@types/node": "*"
     cross-fetch: ^3.1.5
     luxon: ^2.0.2
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
     slugify: ^1.6.4
   peerDependencies:
@@ -7080,7 +7080,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     material-ui-popup-state: ^1.9.3
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -7129,7 +7129,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -7157,7 +7157,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -7186,7 +7186,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -7215,7 +7215,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     p-limit: ^3.1.0
     pluralize: ^8.0.0
     qs: ^6.10.1
@@ -7250,7 +7250,7 @@ __metadata:
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7271,7 +7271,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.6
     winston: ^3.2.1
@@ -7303,7 +7303,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -7329,7 +7329,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.6
     winston: ^3.2.1
@@ -7347,7 +7347,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     uuid: ^8.0.0
     zod: ~3.18.0
   languageName: unknown
@@ -7368,7 +7368,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     supertest: ^6.1.3
     zod: ~3.18.0
     zod-to-json-schema: ~3.18.0
@@ -7434,7 +7434,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^2.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
     uuid: ^8.2.0
@@ -7482,7 +7482,7 @@ __metadata:
     "@types/node": "*"
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.9.4
     react-hook-form: ^7.13.0
     react-use: ^17.2.4
@@ -7510,7 +7510,7 @@ __metadata:
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
     morgan: ^1.10.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     supertest: ^6.1.3
     uuid: ^8.0.0
     winston: ^3.2.1
@@ -7538,7 +7538,7 @@ __metadata:
     fs-extra: 10.1.0
     lodash: ^4.17.21
     morgan: ^1.10.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
     winston: ^3.2.1
@@ -7570,7 +7570,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-sparklines: ^1.7.0
     react-use: ^17.2.4
   peerDependencies:
@@ -7597,7 +7597,7 @@ __metadata:
     command-exists: ^1.2.9
     fs-extra: 10.1.0
     mock-fs: ^5.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -7701,7 +7701,7 @@ __metadata:
     luxon: ^3.0.0
     mock-fs: ^5.1.0
     morgan: ^1.10.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     nunjucks: ^3.2.3
     octokit: ^2.0.0
@@ -7845,7 +7845,7 @@ __metadata:
     json-schema-library: ^7.3.9
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
     use-immer: ^0.8.0
@@ -8016,7 +8016,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
@@ -8051,7 +8051,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-sparklines: ^1.7.0
     react-use: ^17.2.4
   peerDependencies:
@@ -8081,7 +8081,7 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/zen-observable": ^0.8.2
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-hook-form: ^7.12.2
     react-use: ^17.2.4
     uuid: ^8.3.2
@@ -8105,7 +8105,7 @@ __metadata:
     "@types/supertest": ^2.0.12
     express: ^4.18.1
     express-promise-router: ^4.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     winston: ^3.2.1
@@ -8148,7 +8148,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     rc-progress: 3.4.1
     react-use: ^17.2.4
   peerDependencies:
@@ -8180,7 +8180,7 @@ __metadata:
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -8198,7 +8198,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     qs: ^6.9.4
     winston: ^3.2.1
@@ -8228,7 +8228,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
@@ -8257,7 +8257,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -8366,7 +8366,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
@@ -8400,7 +8400,7 @@ __metadata:
     color: ^4.0.1
     cross-fetch: ^3.1.5
     d3-force: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     prop-types: ^15.7.2
     react-use: ^17.2.4
   peerDependencies:
@@ -8432,7 +8432,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
     testing-library__dom: ^7.29.4-beta.1
   peerDependencies:
@@ -8468,7 +8468,7 @@ __metadata:
     fs-extra: 10.1.0
     knex: ^2.0.0
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
     supertest: ^6.1.3
@@ -8502,7 +8502,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     git-url-parse: ^13.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     photoswipe: ^5.3.5
     react-use: ^17.2.4
   peerDependencies:
@@ -8620,7 +8620,7 @@ __metadata:
     git-url-parse: ^13.0.0
     jss: ~10.9.0
     lodash: ^4.17.21
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-helmet: 6.1.0
     react-use: ^17.2.4
   peerDependencies:
@@ -8649,7 +8649,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     leasot: ^12.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     supertest: ^6.1.3
     winston: ^3.2.1
     yn: ^4.0.0
@@ -8678,7 +8678,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -8732,7 +8732,7 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
@@ -8759,7 +8759,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     helmet: ^6.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
     supertest: ^6.1.6
@@ -8790,7 +8790,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -8820,7 +8820,7 @@ __metadata:
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
     recharts: ^2.0.0
   peerDependencies:
@@ -8836,7 +8836,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@types/node": ^16.0.0
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -8894,7 +8894,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
     zen-observable: ^0.10.0
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -10942,7 +10942,7 @@ __metadata:
     "@types/uuid": ^8.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    msw: ^0.49.0
+    msw: ^1.0.0
     supertest: ^6.1.6
     uuid: ^8.3.2
     winston: ^3.2.1
@@ -10961,7 +10961,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    msw: ^0.49.0
+    msw: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -10983,7 +10983,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
-    msw: ^0.49.0
+    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -29978,41 +29978,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^0.49.0":
-  version: 0.49.3
-  resolution: "msw@npm:0.49.3"
-  dependencies:
-    "@mswjs/cookies": ^0.2.2
-    "@mswjs/interceptors": ^0.17.5
-    "@open-draft/until": ^1.0.3
-    "@types/cookie": ^0.4.1
-    "@types/js-levenshtein": ^1.1.1
-    chalk: 4.1.1
-    chokidar: ^3.4.2
-    cookie: ^0.4.2
-    graphql: ^15.0.0 || ^16.0.0
-    headers-polyfill: ^3.1.0
-    inquirer: ^8.2.0
-    is-node-process: ^1.0.1
-    js-levenshtein: ^1.1.6
-    node-fetch: ^2.6.7
-    outvariant: ^1.3.0
-    path-to-regexp: ^6.2.0
-    strict-event-emitter: ^0.4.3
-    type-fest: ^2.19.0
-    yargs: ^17.3.1
-  peerDependencies:
-    typescript: ">= 4.4.x <= 4.9.x"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  bin:
-    msw: cli/index.js
-  checksum: 8322cd42cd69f289c05517d02bde22fc2f10e86fc2d0d209d9df54bd03d10b8123723c5587a2654dcd2cd0f314a016f9eccac88cffa30fafd1f9fead16db639e
-  languageName: node
-  linkType: hard
-
-"msw@npm:^1.0.1":
+"msw@npm:^1.0.0, msw@npm:^1.0.1":
   version: 1.0.1
   resolution: "msw@npm:1.0.1"
   dependencies:

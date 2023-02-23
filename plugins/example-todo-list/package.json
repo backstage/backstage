@@ -43,7 +43,7 @@
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",
     "@types/node": "^16.11.26",
-    "msw": "^0.49.0"
+    "msw": "^1.0.0"
   },
   "files": [
     "dist"

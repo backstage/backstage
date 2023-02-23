@@ -60,7 +60,7 @@
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^9.0.1",
     "luxon": "^3.0.0",
-    "msw": "^0.49.0"
+    "msw": "^1.0.0"
   },
   "files": [
     "dist",
