@@ -287,13 +287,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             {};
 
           if (action.schema?.input) {
-            // Check to see if the input is a zod schema without using instanceof.
-            const inputSchema =
-              'safeParseAsync' in action.schema.input
-                ? zodToJsonSchema(action.schema.input)
-                : action.schema.input;
-
-            const validateResult = validateJsonSchema(input, inputSchema);
+            const validateResult = validateJsonSchema(
+              input,
+              action.schema.input,
+            );
             if (!validateResult.valid) {
               const errors = validateResult.errors.join(', ');
               throw new InputError(
