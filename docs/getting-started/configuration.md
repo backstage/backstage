@@ -299,7 +299,7 @@ Achievement unlocked. You've set up an installation of the core Backstage App,
 made it persistent, and configured it so you are now able to use software
 templates.
 
-Let us know how your experience was: [on discord](https://discord.gg/EBHEGzX),
+Let us know how your experience was: [on discord](https://discord.gg/backstage-687207715902193673),
 file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or
