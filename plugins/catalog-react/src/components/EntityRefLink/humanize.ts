@@ -37,19 +37,11 @@ export function humanizeEntityRef(
   let kind;
   let namespace;
   let name;
-  console.log(entityRef);
 
   if ('metadata' in entityRef) {
     kind = entityRef.kind;
     namespace = entityRef.metadata.namespace;
     name = entityRef.metadata.name;
-
-    // Escapes when we know more about an entity.
-    if (entityRef.metadata.title) {
-      return entityRef.metadata.title;
-    } else if ((entityRef as UserEntity).spec?.profile?.displayName) {
-      return (entityRef as UserEntity).spec?.profile?.displayName;
-    }
   } else {
     kind = entityRef.kind;
     namespace = entityRef.namespace;

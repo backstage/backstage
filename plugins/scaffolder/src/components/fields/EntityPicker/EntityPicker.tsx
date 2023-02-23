@@ -58,7 +58,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
     (allowedKinds && { kind: allowedKinds });
 
   const defaultKind = uiSchema['ui:options']?.defaultKind;
-  const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
+  const defaultNamespace =
+    uiSchema['ui:options']?.defaultNamespace || undefined;
 
   const catalogApi = useApi(catalogApiRef);
 
@@ -71,13 +72,30 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
 
+  const getLabel = useCallback(
+    (ref: string) => {
+      try {
+        return humanizeEntityRef(
+          parseEntityRef(ref, { defaultKind, defaultNamespace }),
+          {
+            defaultKind,
+            defaultNamespace,
+          },
+        );
+      } catch (err) {
+        return ref;
+      }
+    },
+    [defaultKind, defaultNamespace],
+  );
+
   const onSelect = useCallback(
     (_: any, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
-      // if ref == string
+      // ref can either be a string from free solo entry or
       if (typeof ref !== 'string') {
         onChange(ref ? stringifyEntityRef(ref as Entity) : '');
       } else {
-        if (reason === 'blur') {
+        if (reason === 'blur' || reason === 'create-option') {
           // Add in default namespace, etc.
           let entityRef = ref;
           try {
@@ -85,19 +103,20 @@ export const EntityPicker = (props: EntityPickerProps) => {
             entityRef = stringifyEntityRef(
               parseEntityRef(ref as string, {
                 defaultKind,
-                defaultNamespace: defaultNamespace || undefined,
+                defaultNamespace,
               }),
             );
           } catch (err) {
             // If the passed in value isn't an entity ref, do nothing.
           }
-          if (formData !== entityRef) {
-            onChange(ref);
+          // We need to check against formData here as that's the previous value for this field.
+          if (formData !== ref || allowArbitraryValues) {
+            onChange(entityRef);
           }
         }
       }
     },
-    [onChange, formData, defaultKind, defaultNamespace],
+    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
   );
 
   useEffect(() => {
@@ -116,9 +135,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
         disabled={entities?.length === 1}
         id={idSchema?.$id}
         value={
-          // Since free solo is usually enabled, attempt to
+          // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
+          //  back to the given value.
           entities?.find(e => stringifyEntityRef(e) === formData) ??
-          (allowArbitraryValues ? formData : '')
+          (allowArbitraryValues && formData ? getLabel(formData) : '')
         }
         loading={loading}
         onChange={onSelect}
