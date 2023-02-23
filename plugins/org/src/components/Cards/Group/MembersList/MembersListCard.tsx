@@ -60,17 +60,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1',
       minWidth: '0px',
     },
-    email: {
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      display: 'inline-block',
-      maxWidth: '100%',
-      '&:hover': {
-        overflow: 'visible',
-        whiteSpace: 'normal',
-      },
-    },
   }),
 );
 
@@ -103,7 +92,7 @@ const MemberComponent = (props: { member: UserEntity }) => {
           <Box
             pt={2}
             sx={{
-              maxWidth: '100%',
+              width: '100%',
             }}
             textAlign="center"
           >
@@ -118,8 +107,8 @@ const MemberComponent = (props: { member: UserEntity }) => {
               </Link>
             </Typography>
             {profile?.email && (
-              <Link className={classes.email} to={`mailto:${profile.email}`}>
-                {profile.email}
+              <Link to={`mailto:${profile.email}`}>
+                <OverflowTooltip text={profile.email} />
               </Link>
             )}
             {description && (
