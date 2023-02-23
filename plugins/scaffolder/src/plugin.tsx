@@ -33,7 +33,7 @@ import {
   OwnerPicker,
   OwnerPickerSchema,
 } from './components/fields/OwnerPicker/OwnerPicker';
-import { repoPickerValidation } from './components/fields/RepoUrlPicker';
+import { repoPickerValidation } from './components';
 import {
   RepoUrlPicker,
   RepoUrlPickerSchema,
