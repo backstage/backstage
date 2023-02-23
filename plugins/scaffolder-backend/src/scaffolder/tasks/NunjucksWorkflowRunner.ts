@@ -25,6 +25,7 @@ import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
+import zodToJsonSchema from 'zod-to-json-schema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
 import {
@@ -41,6 +42,7 @@ import {
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
+import { z } from 'zod';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -286,10 +288,12 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             {};
 
           if (action.schema?.input) {
-            const validateResult = validateJsonSchema(
-              input,
-              action.schema.input,
-            );
+            const inputSchema =
+              action.schema.input instanceof z.ZodSchema
+                ? zodToJsonSchema(action.schema.input)
+                : action.schema.input;
+
+            const validateResult = validateJsonSchema(input, inputSchema);
             if (!validateResult.valid) {
               const errors = validateResult.errors.join(', ');
               throw new InputError(

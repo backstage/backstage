@@ -175,7 +175,7 @@ describe('DefaultWorkflowRunner', () => {
       });
 
       await expect(runner.execute(task)).rejects.toThrow(
-        /Invalid input passed to action jest-validated-action, instance requires property \"foo\"/,
+        /Invalid input passed to action jest-zod-validated-action, instance requires property \"foo\"/,
       );
     });
 
