@@ -24,7 +24,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { scaffolderApiRef, ScaffolderClient } from '../src';
-import { ScaffolderPage } from '../src/plugin';
+import { NextScaffolderPage, ScaffolderPage } from '../src/plugin';
 import {
   discoveryApiRef,
   fetchApiRef,
@@ -67,5 +67,46 @@ createDevApp()
     path: '/create',
     title: 'Create',
     element: <ScaffolderPage />,
+  })
+  .addPage({
+    path: '/next-create',
+    title: 'Create (next)',
+    element: <NextScaffolderPage />,
+  })
+  .addPage({
+    path: '/create-groups',
+    title: 'Groups',
+    element: (
+      <ScaffolderPage
+        groups={[
+          {
+            filter: e => e.metadata.tags?.includes('techdocs') || false,
+            title: 'Techdocs',
+          },
+          {
+            filter: e => e.metadata.tags?.includes('react') || false,
+            title: 'React',
+          },
+        ]}
+      />
+    ),
+  })
+  .addPage({
+    path: '/next-create-groups',
+    title: 'Groups (next)',
+    element: (
+      <NextScaffolderPage
+        groups={[
+          {
+            filter: e => e.metadata.tags?.includes('techdocs') || false,
+            title: 'Techdocs',
+          },
+          {
+            filter: e => e.metadata.tags?.includes('react') || false,
+            title: 'React',
+          },
+        ]}
+      />
+    ),
   })
   .render();
