@@ -99,4 +99,4 @@ We’ve built the foundation for the Backstage Search platform, and we can't wai
 
 You can check out our [project roadmap](https://backstage.io/docs/features/search/search-overview#project-roadmap) in our search documentation or track the progress of our [Beta milestone](https://github.com/backstage/backstage/milestone/27) and [GA milestone](https://github.com/backstage/backstage/milestone/28).
 
-For any questions, feedback or ideas about the Backstage Search platform, join us in the #search channel on [Discord](https://discord.gg/MUpMjP2)!
+For any questions, feedback or ideas about the Backstage Search platform, join us in the #search channel on [Discord](https://discord.gg/backstage-687207715902193673)!
