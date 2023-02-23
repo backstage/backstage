@@ -20,5 +20,10 @@
  * @packageDocumentation
  */
 
+// This import is here as a workaround for a cyclic dependency bug where
+// backend-common must be loaded before backend-app-api
+// TODO(Rugvip): Remove this once backend-common is no longer used by backend-app-api
+import '@backstage/backend-common';
+
 export type { CreateBackendOptions } from './CreateBackend';
 export { createBackend } from './CreateBackend';

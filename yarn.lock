@@ -3514,6 +3514,7 @@ __metadata:
   resolution: "@backstage/backend-defaults@workspace:packages/backend-defaults"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
