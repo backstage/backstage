@@ -270,8 +270,11 @@ You can do so by including the following lines right above `USER node` of your
 `Dockerfile`:
 
 ```Dockerfile
-RUN apt-get update && apt-get install -y python3 python3-pip
+RUN apt-get update && apt-get install -y python3 python3-pip gcc musl-dev openjdk-17-jdk curl graphviz fonts-dejavu fontconfig
+RUN curl -o plantuml.jar -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2022.4.jar/download && echo "246d1ed561ebbcac14b2798b45712a9d018024c0  plantuml.jar" | sha1sum -c - && mv plantuml.jar /opt/plantuml.jar
 RUN pip3 install mkdocs-techdocs-core==1.1.7
+RUN echo '#!/bin/sh\n\njava -jar '/opt/plantuml.jar' ${@}' >> /usr/local/bin/plantuml
+RUN chmod 755 /usr/local/bin/plantuml
 ```
 
 Please be aware that the version requirement could change, you need to check our
