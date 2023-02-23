@@ -91,13 +91,13 @@ top of the page above any other templates not filtered by this group or others.
 
 You can also further customize groups by passing in a `titleComponent` instead
 of a `title` which will be a component to use as the header instead of just the
-default `ContentHeader` with the `title` set as it's value.
+default `ContentHeader` with the `title` set as its value.
 ![Grouped Templates](../../assets/software-templates/grouped-templates.png)
 
 ## Hiding the templates under a feature flag
 
 If you would like to develop a template but not to make it visible to all user yet, you can place it under
-a feature flag. Your template has to contain an "experimental" tag.
+a feature flag. Your template has to have "experimental" lifecycle.
 
 To make experimental templates visible you have to enable a feature flag "experimental-scaffolder-templates" in
 "Settings -> Feature Flags" panel.

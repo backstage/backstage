@@ -15,9 +15,8 @@
  */
 
 import { TemplateList } from './TemplateList';
-import { ApiProvider, LocalStorageFeatureFlags } from '@backstage/core-app-api';
 import React from 'react';
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { SecretsContextProvider } from '@backstage/plugin-scaffolder-react';
 import {
   FeatureFlagsApi,
@@ -27,6 +26,7 @@ import { useEntityList } from '@backstage/plugin-catalog-react';
 import { rootRouteRef } from '../../routes';
 import { TemplateCardProps } from '../TemplateCard';
 import { Box } from '@material-ui/core';
+import { FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES } from '../constants';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityList: jest.fn(),
@@ -43,6 +43,11 @@ const MockTemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   );
 };
 
+const featureFlag = {
+  name: FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES,
+  pluginId: 'scaffolder',
+};
+
 describe('TemplateList', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -52,42 +57,49 @@ describe('TemplateList', () => {
       entities: [
         {
           kind: 'Template',
-          spec: { type: 'service' },
+          spec: { type: 'service', lifecycle: 'production' },
           metadata: { name: 'template1' },
         },
         {
           kind: 'Template',
-          spec: { type: 'service' },
-          metadata: { name: 'template2', tags: ['alpha'] },
+          spec: { type: 'service', lifecycle: 'production' },
+          metadata: { name: 'template2' },
         },
         {
           kind: 'Template',
-          spec: { type: 'service' },
-          metadata: { name: 'template3', tags: ['experimental'] },
+          spec: { type: 'service', lifecycle: 'experimental' },
+          metadata: { name: 'template3' },
         },
       ],
     });
   });
 
-  it('should display all non-experimental templates', async () => {
-    const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
-    const apis = TestApiRegistry.from([
-      featureFlagsApiRef,
-      mockFeatureFlagsApi,
-    ]);
-
-    const rendered = await renderInTestApp(
-      <ApiProvider apis={apis}>
+  const renderMe = async (
+    featureFlagsApiMock: jest.Mocked<FeatureFlagsApi>,
+  ) => {
+    return await renderInTestApp(
+      <TestApiProvider apis={[[featureFlagsApiRef, featureFlagsApiMock]]}>
         <SecretsContextProvider>
           <TemplateList TemplateCardComponent={MockTemplateCard} />
         </SecretsContextProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/create': rootRouteRef,
         },
       },
     );
+  };
+
+  it('should display all non-experimental templates', async () => {
+    const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
+      isActive: jest.fn((_: string) => false),
+      registerFlag: jest.fn(),
+      getRegisteredFlags: jest.fn(() => [featureFlag]),
+      save: jest.fn(),
+    };
+
+    const rendered = await renderMe(featureFlagsApiMock);
 
     expect(rendered.queryByText('template1')).toBeInTheDocument();
     expect(rendered.queryByText('template2')).toBeInTheDocument();
@@ -98,27 +110,26 @@ describe('TemplateList', () => {
     const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
       isActive: jest.fn((_: string) => true),
       registerFlag: jest.fn(),
-      getRegisteredFlags: jest.fn(),
+      getRegisteredFlags: jest.fn(() => [featureFlag]),
       save: jest.fn(),
     };
 
-    const apis = TestApiRegistry.from([
-      featureFlagsApiRef,
-      featureFlagsApiMock,
-    ]);
+    const rendered = await renderMe(featureFlagsApiMock);
 
-    const rendered = await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <SecretsContextProvider>
-          <TemplateList TemplateCardComponent={MockTemplateCard} />
-        </SecretsContextProvider>
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/create': rootRouteRef,
-        },
-      },
-    );
+    expect(rendered.queryByText('template1')).toBeInTheDocument();
+    expect(rendered.queryByText('template2')).toBeInTheDocument();
+    expect(rendered.queryByText('template3')).toBeInTheDocument();
+  });
+
+  it('should display all templates cause feature flag option is not enabled by user', async () => {
+    const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
+      isActive: jest.fn((_: string) => true),
+      registerFlag: jest.fn(),
+      getRegisteredFlags: jest.fn(() => []),
+      save: jest.fn(),
+    };
+
+    const rendered = await renderMe(featureFlagsApiMock);
 
     expect(rendered.queryByText('template1')).toBeInTheDocument();
     expect(rendered.queryByText('template2')).toBeInTheDocument();

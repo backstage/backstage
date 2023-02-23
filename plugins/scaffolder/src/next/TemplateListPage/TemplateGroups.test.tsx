@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES } from '../../components/constants';
+
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityList: jest.fn(),
 }));
@@ -26,9 +28,14 @@ import React from 'react';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateGroups } from './TemplateGroups';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { errorApiRef } from '@backstage/core-plugin-api';
+import {
+  errorApiRef,
+  FeatureFlagsApi,
+  featureFlagsApiRef,
+} from '@backstage/core-plugin-api';
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
 import { nextRouteRef } from '../routes';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 describe('TemplateGroups', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -203,6 +210,145 @@ describe('TemplateGroups', () => {
     expect(TemplateGroup).toHaveBeenCalledWith(
       expect.objectContaining({
         templates: [expect.objectContaining({ template: mockEntities[0] })],
+      }),
+      {},
+    );
+  });
+
+  it('should filter out experimental templates', async () => {
+    const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
+      isActive: jest.fn((_: string) => false),
+      registerFlag: jest.fn(),
+      getRegisteredFlags: jest.fn(() => [
+        {
+          name: FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES,
+          pluginId: 'scaffolder',
+        },
+      ]),
+      save: jest.fn(),
+    };
+
+    const mockEntities = [
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't1',
+        },
+        spec: {
+          lifecycle: 'experimental',
+        },
+      } as TemplateEntityV1beta3,
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't2',
+        },
+        spec: {
+          lifecycle: 'production',
+        },
+      } as TemplateEntityV1beta3,
+    ];
+
+    (useEntityList as jest.Mock).mockReturnValue({
+      entities: mockEntities,
+      loading: false,
+      error: null,
+    });
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [errorApiRef, {}],
+          [featureFlagsApiRef, featureFlagsApiMock],
+        ]}
+      >
+        <TemplateGroups
+          groups={[{ title: 'all', filter: e => e.kind === 'Template' }]}
+        />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/next': nextRouteRef,
+        },
+      },
+    );
+
+    expect(TemplateGroup).toHaveBeenCalledWith(
+      expect.objectContaining({
+        templates: [expect.objectContaining({ template: mockEntities[1] })],
+      }),
+      {},
+    );
+  });
+
+  it('should display all templates including experimental', async () => {
+    const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
+      isActive: jest.fn((_: string) => true),
+      registerFlag: jest.fn(),
+      getRegisteredFlags: jest.fn(() => [
+        {
+          name: FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES,
+          pluginId: 'scaffolder',
+        },
+      ]),
+      save: jest.fn(),
+    };
+
+    const mockEntities = [
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't1',
+        },
+        spec: {
+          lifecycle: 'experimental',
+        },
+      },
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't2',
+        },
+        spec: {
+          lifecycle: 'production',
+        },
+      },
+    ];
+
+    (useEntityList as jest.Mock).mockReturnValue({
+      entities: mockEntities,
+      loading: false,
+      error: null,
+    });
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [errorApiRef, {}],
+          [featureFlagsApiRef, featureFlagsApiMock],
+        ]}
+      >
+        <TemplateGroups
+          groups={[{ title: 'all', filter: e => e.kind === 'Template' }]}
+        />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/next': nextRouteRef,
+        },
+      },
+    );
+
+    expect(TemplateGroup).toHaveBeenCalledWith(
+      expect.objectContaining({
+        templates: [
+          expect.objectContaining({ template: mockEntities[0] }),
+          expect.objectContaining({ template: mockEntities[1] }),
+        ],
       }),
       {},
     );
