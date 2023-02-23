@@ -13,7 +13,7 @@ _TLDR;_ The Spotify team recently announced [Backstage Upgrade Helper](https://b
 
 ## Upgrading Backstage was a common pain point
 
-Without a doubt, one of the most exciting things about Backstage is our community. Step into our daily [Discord conversations](https://discord.gg/sBEF5VkG) and the monthly [Community Sessions](https://www.youtube.com/watch?v=0QMQYSTKAx0) and you’ll find a ton of great ideas, problem-solving, and support for one another.
+Without a doubt, one of the most exciting things about Backstage is our community. Step into our daily [Discord conversations](https://discord.gg/backstage-687207715902193673) and the monthly [Community Sessions](https://www.youtube.com/watch?v=0QMQYSTKAx0) and you’ll find a ton of great ideas, problem-solving, and support for one another.
 
 During one of these discussions, we realized we all shared the same pain point — upgrading a Backstage application.
 

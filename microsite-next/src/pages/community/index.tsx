@@ -24,7 +24,7 @@ const Community = () => {
     {
       content: 'Chat and get support on our',
       label: 'Discord',
-      link: 'https://discord.gg/MUpMjP2',
+      link: 'https://discord.gg/backstage-687207715902193673',
     },
     {
       content: 'Get into contributing with the',
