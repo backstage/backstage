@@ -100,7 +100,7 @@ export async function createConfig(
       }),
       new ESLintPlugin({
         context: paths.targetPath,
-        files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
+        files: ['**/*.(ts|tsx|mts|cts|js|jsx|mjs|cjs)'],
       }),
     );
   }
@@ -325,7 +325,7 @@ export async function createBackendConfig(
               typescript: { configFile: paths.targetTsConfig },
             }),
             new ESLintPlugin({
-              files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
+              files: ['**/*.(ts|tsx|mts|cts|js|jsx|mjs|cjs)'],
             }),
           ]
         : []),
