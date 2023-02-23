@@ -28,7 +28,7 @@ yarn --cwd packages/app add @backstage/plugin-adr
 import { EntityAdrContent, isAdrAvailable } from '@backstage/plugin-adr';
 
 ...
-
+// Note: Add to any other Pages as well (e.g. defaultEntityPage and websiteEntityPage)
 const serviceEntityPage = (
   <EntityLayout>
     {/* other tabs... */}
@@ -72,7 +72,7 @@ import { AdrSearchResultListItem } from '@backstage/plugin-adr';
 import { AdrDocument } from '@backstage/plugin-adr-common';
 
 ...
-
+// Optional - Add type to side pane
 <SearchType.Accordion
   name="Result Type"
   defaultValue="software-catalog"
@@ -85,52 +85,31 @@ import { AdrDocument } from '@backstage/plugin-adr-common';
     },
   ]}
 />
-  
 ...
 
-// In filters
-<Paper className={classes.filters}>
-
-...
-  // ADR specific type
-  {types.includes('adr') && (
-    <SearchFilter.Select
-      className={classes.filter}
-      label="Entity"
-      name="name"
-      values={async () => {
-        // Return a list of entities which have ADRs.
-        const { items } = await catalogApi.getEntities({
-          fields: ['metadata.name'],
-          filter: {
-            'metadata.annotations.backstage.io/adr-location':
-            CATALOG_FILTER_EXISTS,
-          },
-        });
-  
-        const names = items.map(entity => entity.metadata.name);
-        names.sort();
-        return names;
-      }}
-    />
-  )}
-
-...
-  
 // In results
-<Grid item xs={9}>
-  <SearchResult>
-    {({ results }) => (
-      case 'adr':
-        return (
-          <AdrSearchResultListItem
-            key={document.location}
-            // Note the cast to AdrDocument is not required if you're leveraging the new search results extensions available in v1.11 + : https://backstage.io/docs/features/search/how-to-guides#2-using-an-extension-in-your-backstage-app
-            result={document as AdrDocument}
-          />
-        );
+<SearchResult>
+  {({ results }) => (
+    <List>
+      {results.map(({ type, document, highlight, rank }) => {
+        switch (type) {
+          ...
+          case 'adr':
+            return (
+              <AdrSearchResultListItem
+                key={document.location}
+                // Not required if you're leveraging the new search results extensions available in v1.11+
+                // https://backstage.io/docs/features/search/how-to-guides#2-using-an-extension-in-your-backstage-app
+                result={document as AdrDocument}
+              />
+            );
+          ...
+        }
+      })}
+    </List>
+  )}
+</SearchResult>
 ```
-
 
 ## Custom ADR formats
 
