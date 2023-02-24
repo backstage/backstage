@@ -28,6 +28,7 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core-components';
+import { OctopusDeployIcon } from '../OctopusDeployIcon';
 
 type ReleaseTableProps = {
   environments?: OctopusEnvironment[];
@@ -141,6 +142,8 @@ export const ReleaseTable = ({
       }}
       title={
         <Box display="flex" alignItems="center">
+          <OctopusDeployIcon style={{ fontSize: 30 }} />
+          <Box mr={1} />
           Octopus Deploy - Releases ({releases ? releases.length : 0})
         </Box>
       }
