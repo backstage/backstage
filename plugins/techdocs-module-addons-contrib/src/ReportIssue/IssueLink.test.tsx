@@ -26,7 +26,7 @@ import {
 
 import { IssueLink } from './IssueLink';
 
-const defaultProps = {
+const defaultGithubProps = {
   repository: {
     type: 'github',
     name: 'backstage',
@@ -40,14 +40,28 @@ const defaultProps = {
   },
 };
 
+const defaultGitlabProps = {
+  repository: {
+    type: 'gitlab',
+    name: 'backstageSubgroup/backstage',
+    owner: 'backstage',
+    protocol: 'https',
+    resource: 'gitlab.com',
+  },
+  template: {
+    title: 'Documentation feedback',
+    body: '## Documentation Feedback 📝',
+  },
+};
+
 describe('FeedbackLink', () => {
   const apiSpy = new MockAnalyticsApi();
 
-  it('Should open new issue tab', () => {
+  it('Should open new Github issue tab', () => {
     render(
       wrapInTestApp(
         <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
-          <IssueLink {...defaultProps} />
+          <IssueLink {...defaultGithubProps} />
         </TestApiProvider>,
       ),
     );
@@ -55,11 +69,31 @@ describe('FeedbackLink', () => {
     const link = screen.getByText(/Open new Github issue/);
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute('target', '_blank');
-    const encodedTitle = encodeURIComponent(defaultProps.template.title);
-    const encodedBody = encodeURIComponent(defaultProps.template.body);
+    const encodedTitle = encodeURIComponent(defaultGithubProps.template.title);
+    const encodedBody = encodeURIComponent(defaultGithubProps.template.body);
     expect(link).toHaveAttribute(
       'href',
       `https://github.com/backstage/backstage/issues/new?title=${encodedTitle}&body=${encodedBody}`,
+    );
+  });
+
+  it('Should open new Gitlab issue tab', () => {
+    render(
+      wrapInTestApp(
+        <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
+          <IssueLink {...defaultGitlabProps} />
+        </TestApiProvider>,
+      ),
+    );
+
+    const link = screen.getByText(/Open new Gitlab issue/);
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('target', '_blank');
+    const encodedTitle = encodeURIComponent(defaultGithubProps.template.title);
+    const encodedBody = encodeURIComponent(defaultGithubProps.template.body);
+    expect(link).toHaveAttribute(
+      'href',
+      `https://gitlab.com/backstage/backstageSubgroup/backstage/issues/new?issue[title]=${encodedTitle}&issue[description]=${encodedBody}`,
     );
   });
 
@@ -67,7 +101,7 @@ describe('FeedbackLink', () => {
     render(
       wrapInTestApp(
         <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
-          <IssueLink {...defaultProps} />
+          <IssueLink {...defaultGithubProps} />
         </TestApiProvider>,
       ),
     );
