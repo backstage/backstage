@@ -64,6 +64,7 @@ const RadarGrid = (props: Props) => {
       textAnchor="middle"
       className={classes.text}
       style={{ fill: rings[ringIndex].color }}
+      data-testid="radar-ring-heading"
     >
       {rings[ringIndex].name}
     </text>,

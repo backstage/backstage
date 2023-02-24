@@ -37,7 +37,11 @@ export const RadarLegendRing = ({
 }: RadarLegendRingProps) => {
   return (
     <div data-testid="radar-ring" key={ring.id} className={classes.ring}>
-      <h3 className={classes.ringHeading} style={{ color: ring.color }}>
+      <h3
+        className={classes.ringHeading}
+        style={{ color: ring.color }}
+        data-testid="radar-legend-heading"
+      >
         {ring.name}
       </h3>
       {entries.length === 0 ? (
