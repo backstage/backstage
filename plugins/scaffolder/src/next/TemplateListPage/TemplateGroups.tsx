@@ -36,6 +36,7 @@ import { viewTechDocRouteRef } from '../../routes';
 import { nextSelectedTemplateRouteRef } from '../routes';
 import { useNavigate } from 'react-router-dom';
 import { FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES } from '../../components/constants';
+import { useScaffolderOptions } from '../../options';
 
 /**
  * @alpha
@@ -60,11 +61,7 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(nextSelectedTemplateRouteRef);
   const featureFlagApi = useApi(featureFlagsApiRef);
-  const experimentalTemplatesFeatureEnabled =
-    featureFlagApi
-      .getRegisteredFlags()
-      .find(f => f.name === FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES) !==
-    undefined;
+  const { activateExperimentalTemplatesFeature } = useScaffolderOptions();
   const showExperimentalTemplates = featureFlagApi.isActive(
     FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES,
   );
@@ -105,7 +102,7 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
           .filter((e): e is TemplateEntityV1beta3 => filter(e))
           .filter(
             template =>
-              !experimentalTemplatesFeatureEnabled ||
+              !activateExperimentalTemplatesFeature ||
               showExperimentalTemplates ||
               template.spec?.lifecycle !== 'experimental',
           )

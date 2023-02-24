@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+jest.mock('../../options');
 import { TemplateList } from './TemplateList';
 import React from 'react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -26,13 +27,16 @@ import { useEntityList } from '@backstage/plugin-catalog-react';
 import { rootRouteRef } from '../../routes';
 import { TemplateCardProps } from '../TemplateCard';
 import { Box } from '@material-ui/core';
-import { FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES } from '../constants';
+import { ScaffolderPluginOptions, useScaffolderOptions } from '../../options';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityList: jest.fn(),
   getEntityRelations: () => [],
   getEntitySourceLocation: () => ({}),
 }));
+
+const mockedUseScaffolderOptions =
+  useScaffolderOptions as jest.Mock<ScaffolderPluginOptions>;
 
 const MockTemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   return (
@@ -41,11 +45,6 @@ const MockTemplateCard = ({ template, deprecated }: TemplateCardProps) => {
       {deprecated}
     </Box>
   );
-};
-
-const featureFlag = {
-  name: FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES,
-  pluginId: 'scaffolder',
 };
 
 describe('TemplateList', () => {
@@ -92,10 +91,13 @@ describe('TemplateList', () => {
   };
 
   it('should display all non-experimental templates', async () => {
+    mockedUseScaffolderOptions.mockImplementation(() => ({
+      activateExperimentalTemplatesFeature: true,
+    }));
     const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
       isActive: jest.fn((_: string) => false),
       registerFlag: jest.fn(),
-      getRegisteredFlags: jest.fn(() => [featureFlag]),
+      getRegisteredFlags: jest.fn(),
       save: jest.fn(),
     };
 
@@ -107,10 +109,13 @@ describe('TemplateList', () => {
   });
 
   it('should display all templates including experimental', async () => {
+    mockedUseScaffolderOptions.mockImplementation(() => ({
+      activateExperimentalTemplatesFeature: true,
+    }));
     const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
       isActive: jest.fn((_: string) => true),
       registerFlag: jest.fn(),
-      getRegisteredFlags: jest.fn(() => [featureFlag]),
+      getRegisteredFlags: jest.fn(),
       save: jest.fn(),
     };
 
@@ -122,6 +127,9 @@ describe('TemplateList', () => {
   });
 
   it('should display all templates cause feature flag option is not enabled by user', async () => {
+    mockedUseScaffolderOptions.mockImplementation(() => ({
+      activateExperimentalTemplatesFeature: false,
+    }));
     const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
       isActive: jest.fn((_: string) => true),
       registerFlag: jest.fn(),

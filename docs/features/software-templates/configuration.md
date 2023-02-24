@@ -48,7 +48,8 @@ add the `repoVisibility` key within a software template:
 
 Software templates use the `fetch:template` action by default, which requires no
 external dependencies and offers a
-[Cookiecutter-compatible mode](https://backstage.io/docs/features/software-templates/builtin-actions#using-cookiecuttercompat-mode).
+[Cookiecutter-compatible mode](https://backstage.io/docs/features/software-templates/builtin-actions#using-cookiecuttercompat-mode)
+.
 There is also a `fetch:cookiecutter` action, which uses
 [Cookiecutter](https://github.com/cookiecutter/cookiecutter) directly for
 templating. By default, the `fetch:cookiecutter` action will use the
@@ -101,3 +102,13 @@ a feature flag. Your template has to have "experimental" lifecycle.
 
 To make experimental templates visible you have to enable a feature flag "experimental-scaffolder-templates" in
 "Settings -> Feature Flags" panel.
+
+By default, the feature is opt-in, so you have also to activate it. You can do it like this:
+
+```typescript jsx
+import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
+
+scaffolderPlugin.__experimentalReconfigure({
+  activateExperimentalTemplatesFeature: true,
+});
+```
