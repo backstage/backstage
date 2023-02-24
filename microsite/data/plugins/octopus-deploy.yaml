@@ -1,0 +1,10 @@
+---
+title: 'Octopus Deploy'
+author: jmezach
+authorUrl: https://jmezach.github.io/
+category: CI/CD
+description: Easily view your Octopus Deploy releases within the Software Catalog
+documentation: https://github.com/backstage/backstage/blob/master/plugins/octopus-deploy/README.md
+iconUrl: img/octopus-deploy.svg
+npmPackageName: '@backstage/plugin-octopus-deploy'
+addedDate: '2023-02-24'
