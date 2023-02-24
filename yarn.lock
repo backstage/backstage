@@ -6843,7 +6843,7 @@ __metadata:
     "@effection/jest": ^2.0.4
     "@envelop/core": ^3.0.4
     "@envelop/dataloader": ^4.0.4
-    "@envelop/graphql-modules": 4.0.4
+    "@envelop/graphql-modules": ^4.0.4
     "@faker-js/faker": ^7.2.0
     "@graphql-codegen/add": ^4.0.0
     "@graphql-codegen/cli": ^3.0.0
@@ -10396,7 +10396,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/graphql-modules@npm:4.0.4, @envelop/graphql-modules@npm:^4.0.4":
+"@envelop/graphql-modules@npm:^4.0.4":
   version: 4.0.4
   resolution: "@envelop/graphql-modules@npm:4.0.4"
   dependencies:
@@ -23204,14 +23204,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dataloader@npm:2.1.0, dataloader@npm:^2.1.0":
+"dataloader@npm:2.1.0":
   version: 2.1.0
   resolution: "dataloader@npm:2.1.0"
   checksum: bbd43496c41697766f8611f60ed3bae437b450985499140b9603a2447c10d45975d3a0661caaebaa9750bc1bc9fd154676a314423294916c8b8ca1a59a08d139
   languageName: node
   linkType: hard
 
-"dataloader@npm:^2.0.0, dataloader@npm:^2.2.2":
+"dataloader@npm:^2.0.0, dataloader@npm:^2.1.0, dataloader@npm:^2.2.2":
   version: 2.2.2
   resolution: "dataloader@npm:2.2.2"
   checksum: 4dabd247089c29f194e94d5434d504f99156c5c214a03463c20f3f17f40398d7e179edee69a27c16e315519ac8739042a810090087ae26449a0e685156a02c65
