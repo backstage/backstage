@@ -11,10 +11,10 @@
     "build:backend": "yarn workspace backend build",
     "build:all": "backstage-cli repo build --all",
     "build:api-reports": "yarn build:api-reports:only --tsc",
-    "build:api-reports:only": "node ./scripts/add-ts-nocheck && backstage-repo-tools api-reports --allow-warnings 'packages/core-components,plugins/+(catalog|catalog-import|git-release-manager|jenkins|kubernetes)' -o ae-wrong-input-file-type --validate-release-tags",
+    "build:api-reports:only": "yarn add-nocheck && backstage-repo-tools api-reports --allow-warnings 'packages/core-components,plugins/+(catalog|catalog-import|git-release-manager|jenkins|kubernetes)' -o ae-wrong-input-file-type --validate-release-tags",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs",
     "tsc": "tsc",
-    "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false",
+    "tsc:full": "yarn add-nocheck && backstage-cli repo clean && tsc --skipLibCheck false --incremental false",
     "clean": "backstage-cli repo clean",
     "test": "backstage-cli repo test",
     "test:all": "backstage-cli repo test --coverage",
@@ -35,7 +35,8 @@
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
     "prepare": "husky install",
-    "postinstall": "husky install || true"
+    "postinstall": "husky install || true",
+    "add-nocheck": "node ./scripts/add-ts-nocheck"
   },
   "workspaces": {
     "packages": [
