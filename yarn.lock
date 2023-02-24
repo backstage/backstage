@@ -8570,7 +8570,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
-    jss: ~10.9.0
+    jss: ~10.10.0
     lodash: ^4.17.21
     react-helmet: 6.1.0
     react-use: ^17.2.4
@@ -8618,7 +8618,7 @@ __metadata:
     dompurify: ^2.2.9
     event-source-polyfill: 1.0.25
     git-url-parse: ^13.0.0
-    jss: ~10.9.0
+    jss: ~10.10.0
     lodash: ^4.17.21
     msw: ^1.0.0
     react-helmet: 6.1.0
@@ -27819,15 +27819,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jss@npm:^10.5.1, jss@npm:~10.9.0":
-  version: 10.9.2
-  resolution: "jss@npm:10.9.2"
+"jss@npm:^10.5.1, jss@npm:~10.10.0":
+  version: 10.10.0
+  resolution: "jss@npm:10.10.0"
   dependencies:
     "@babel/runtime": ^7.3.1
     csstype: ^3.0.2
     is-in-browser: ^1.1.3
     tiny-warning: ^1.0.2
-  checksum: 7ae5cd2f8602bf197ec90251d774b9f10d55eb2db0854ac78dc7fb6983828c202e8eb0d5c8c59c73b2f64718ebd33d6063afa799d625a995986a22dc1cc27230
+  checksum: ecf71971df42729668c283e432e841349b7fdbe52e520f7704991cf4a738fd2451ec0feeb25c12cdc5addf7facecf838e74e62936fd461fb4c99f23d54a4792d
   languageName: node
   linkType: hard
 
