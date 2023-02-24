@@ -153,6 +153,15 @@ export class IncrementalProviderRouter {
       }
     });
 
+    router.get(`/incremental/providers/`, async (_req, res) => {
+      const providers = await this.manager.listProviders();
+
+      res.json({
+        success: true,
+        providers,
+      });
+    });
+
     // Stop the provider and pause it for 24 hours
     router.post(`/incremental/providers/:provider/cancel`, async (req, res) => {
       const { provider } = req.params;
