@@ -23,7 +23,7 @@ import {
   Box,
 } from '@material-ui/core';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
-import { Step } from '../../../components/hooks/useEventStream';
+import { type Step } from '@backstage/plugin-scaffolder-react';
 import { StepIcon } from './StepIcon';
 import { StepTime } from './StepTime';
 

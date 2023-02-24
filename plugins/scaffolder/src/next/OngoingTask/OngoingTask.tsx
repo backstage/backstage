@@ -15,7 +15,6 @@
  */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Page, Header, Content, ErrorPanel } from '@backstage/core-components';
-import { useTaskEventStream } from '../../components/hooks/useEventStream';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, makeStyles, Paper } from '@material-ui/core';
 import { TaskSteps } from './TaskSteps';
@@ -25,7 +24,10 @@ import { nextSelectedTemplateRouteRef } from '../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
-import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
+import {
+  ScaffolderTaskOutput,
+  useTaskEventStream,
+} from '@backstage/plugin-scaffolder-react';
 import { DefaultTemplateOutputs } from '@backstage/plugin-scaffolder-react/alpha';
 
 const useStyles = makeStyles({

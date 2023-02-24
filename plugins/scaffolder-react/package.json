@@ -66,11 +66,13 @@
     "@rjsf/validator-ajv8": "5.1.0",
     "@types/json-schema": "^7.0.9",
     "classnames": "^2.2.6",
+    "immer": "^9.0.1",
     "json-schema": "^0.4.0",
     "json-schema-library": "^7.3.9",
     "lodash": "^4.17.21",
     "qs": "^6.9.4",
     "react-use": "^17.2.4",
+    "use-immer": "^0.8.0",
     "zen-observable": "^0.10.0",
     "zod": "~3.18.0",
     "zod-to-json-schema": "~3.18.0"
