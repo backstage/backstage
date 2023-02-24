@@ -8,8 +8,8 @@ types and how to resolve them.
 - [Extending Schema](#extending-your-schema-with-a-custom-module)
   - [Directives API](#directives-api)
     - [`@field`](#field)
-    - [`@relation`](#relation)
     - [`@inherit`](#inherit)
+    - [`@relation`](#../graphql-catalog/README.md#relation-directive)
 - [Integrations](#integrations)
   - [@graphql-codegen/TypeScript](#graphql-codegentypescript)
 - [Questions](#questions)
@@ -124,51 +124,6 @@ type Entity {
 ```graphql
 type Entity {
   tag: String! @field(at: "spec.tag", default: "N/A")
-}
-```
-
-#### `@relation`
-
-`@relation` directive allows you to resolve relationships between
-entities. Similar to `@field` directive, it writes a resolver for you
-so you do not have to write a resolver yourself. It assumes that
-relationships are defined as standard `Entity` relationships. The
-`name` argument allows you to specify the type of the relationship. It
-will automatically look up the entity in the catalog.
-
-1. To define a `User` that is the `owner` of a `Component`:
-
-```graphql
-type Component {
-  owner: User @relation(name: "ownedBy")
-}
-```
-
-2. The GraphQL server has baked in support for [Relay][relay]. By
-   default, collections defined by a `@relation` directive are modeled as
-   arrays. However, if the relationship is large, and should be
-   paginated, you can specify it with `Connection` as the field type and
-   use the `nodeType` argument to specify what the target of the
-   collection should be.
-
-```graphql
-type Repository {
-  contributors: Connection @relation(name: "contributedBy", nodeType: "User")
-
-  # Or you can just use an array of entities
-  contributors: [User] @relation(name: "contributedBy")
-}
-```
-
-3. If you have different kinds of relationships with the same type you
-   can filter them by `kind` argument:
-
-```graphql
-type System {
-  components: Connection
-    @relation(name: "hasPart", nodeType: "Component", kind: "component")
-  resources: Connection
-    @relation(name: "hasPart", nodeType: "Resource", kind: "resource")
 }
 ```
 
@@ -331,5 +286,4 @@ approach, both variants work similar.
 
 [graphql-backend]: ../graphql-backend/README.md
 [graphql-modules]: https://the-guild.dev/graphql/modules
-[relay]: https://relay.dev/docs/guides/graphql-server-specification
 [relay connection]: https://relay.dev/docs/guides/graphql-server-specification/#connections
