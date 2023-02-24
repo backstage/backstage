@@ -15,12 +15,12 @@ import { Writable } from 'stream';
 import { z } from 'zod';
 
 // @public
-export type ActionContext<TInput = unknown> = {
+export type ActionContext<TActionInput = unknown> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: TInput;
+  input: TActionInput;
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
@@ -36,9 +36,12 @@ export const createTemplateAction: <
   TParams,
   TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
   TOutputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
+  TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
+    ? IReturn
+    : TParams,
 >(
-  action: TemplateActionOptions<TParams, TInputSchema, TOutputSchema>,
-) => TemplateAction<TParams, TInputSchema, TOutputSchema>;
+  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
+) => TemplateAction<TActionInput>;
 
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
@@ -55,11 +58,7 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 // @public (undocumented)
-export type TemplateAction<
-  TParams = unknown,
-  TInputSchema extends Schema | unknown = unknown,
-  TOutputSchema extends Schema | unknown = unknown,
-> = {
+export type TemplateAction<TActionInput = unknown> = {
   id: string;
   description?: string;
   examples?: {
@@ -68,15 +67,15 @@ export type TemplateAction<
   }[];
   supportsDryRun?: boolean;
   schema?: {
-    input?: TInputSchema;
-    output?: TOutputSchema;
+    input?: Schema;
+    output?: Schema;
   };
-  handler: (ctx: ActionContext<TParams>) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
 };
 
 // @public (undocumented)
 export type TemplateActionOptions<
-  TParams = {},
+  TActionInput = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
 > = {
@@ -91,12 +90,6 @@ export type TemplateActionOptions<
     input?: TInputSchema;
     output?: TOutputSchema;
   };
-  handler: (
-    ctx: ActionContext<
-      TInputSchema extends z.ZodType<any, any, infer IReturn>
-        ? IReturn
-        : TParams
-    >,
-  ) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
 };
 ```

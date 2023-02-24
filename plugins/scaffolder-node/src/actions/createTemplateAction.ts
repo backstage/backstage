@@ -21,7 +21,7 @@ import zodToJsonSchema from 'zod-to-json-schema';
 
 /** @public */
 export type TemplateActionOptions<
-  TParams = {},
+  TActionInput = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
 > = {
@@ -33,13 +33,7 @@ export type TemplateActionOptions<
     input?: TInputSchema;
     output?: TOutputSchema;
   };
-  handler: (
-    ctx: ActionContext<
-      TInputSchema extends z.ZodType<any, any, infer IReturn>
-        ? IReturn
-        : TParams
-    >,
-  ) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
 };
 
 /**
@@ -51,9 +45,12 @@ export const createTemplateAction = <
   TParams,
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
+  TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
+    ? IReturn
+    : TParams,
 >(
-  action: TemplateActionOptions<TParams, TInputSchema, TOutputSchema>,
-): TemplateAction<TParams> => {
+  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
+): TemplateAction<TActionInput> => {
   const inputSchema =
     action.schema?.input && 'safeParseAsync' in action.schema.input
       ? zodToJsonSchema(action.schema.input)
@@ -73,5 +70,5 @@ export const createTemplateAction = <
     },
   };
 
-  return templateAction as TemplateAction<TParams>;
+  return templateAction;
 };

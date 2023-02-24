@@ -9,17 +9,13 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 // @public
 export function createSentryCreateProjectAction(options: {
   config: Config;
-}): TemplateAction<
-  {
-    organizationSlug: string;
-    teamSlug: string;
-    name: string;
-    slug?: string | undefined;
-    authToken?: string | undefined;
-  },
-  {},
-  {}
->;
+}): TemplateAction<{
+  organizationSlug: string;
+  teamSlug: string;
+  name: string;
+  slug?: string | undefined;
+  authToken?: string | undefined;
+}>;
 
 // (No @packageDocumentation comment for this package)
 ```

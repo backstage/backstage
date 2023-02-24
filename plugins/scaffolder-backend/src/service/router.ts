@@ -66,8 +66,7 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   scheduler?: PluginTaskScheduler;
-
-  actions?: TemplateAction[];
+  actions?: TemplateAction<any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
    * @defaultValue 1

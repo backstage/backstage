@@ -16,16 +16,12 @@ export function createFetchCookiecutterAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   containerRunner: ContainerRunner;
-}): TemplateAction<
-  {
-    url: string;
-    targetPath?: string | undefined;
-    values: JsonObject;
-    copyWithoutRender?: string[] | undefined;
-    extensions?: string[] | undefined;
-    imageName?: string | undefined;
-  },
-  {},
-  {}
->;
+}): TemplateAction<{
+  url: string;
+  targetPath?: string | undefined;
+  values: JsonObject;
+  copyWithoutRender?: string[] | undefined;
+  extensions?: string[] | undefined;
+  imageName?: string | undefined;
+}>;
 ```

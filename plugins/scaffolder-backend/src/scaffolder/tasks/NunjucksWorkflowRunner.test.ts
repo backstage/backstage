@@ -27,6 +27,7 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   createTemplateAction,
   TaskSecrets,
+  TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { z } from 'zod';
@@ -111,14 +112,14 @@ describe('DefaultWorkflowRunner', () => {
       createTemplateAction({
         id: 'jest-zod-validated-action',
         description: 'Mock action for testing',
-        supportsDryRun: true,
         handler: fakeActionHandler,
+        supportsDryRun: true,
         schema: {
           input: z.object({
             foo: z.number(),
           }),
         },
-      }),
+      }) as TemplateAction<unknown>,
     );
 
     actionRegistry.register({

@@ -25,12 +25,12 @@ import { Schema } from 'jsonschema';
  * ActionContext is passed into scaffolder actions.
  * @public
  */
-export type ActionContext<TInput = unknown> = {
+export type ActionContext<TActionInput = unknown> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: TInput;
+  input: TActionInput;
   output(name: string, value: JsonValue): void;
 
   /**
@@ -62,7 +62,7 @@ export type ActionContext<TInput = unknown> = {
 };
 
 /** @public */
-export type TemplateAction<TParams = unknown> = {
+export type TemplateAction<TActionInput = unknown> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];
@@ -71,5 +71,5 @@ export type TemplateAction<TParams = unknown> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TParams>) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
 };
