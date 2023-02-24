@@ -6521,7 +6521,7 @@ __metadata:
     "@effection/jest": ^2.0.4
     "@envelop/core": ^3.0.4
     "@envelop/dataloader": ^4.0.4
-    "@envelop/graphql-modules": 4.0.4
+    "@envelop/graphql-modules": ^4.0.4
     "@faker-js/faker": ^7.2.0
     "@graphql-codegen/add": ^4.0.0
     "@graphql-codegen/cli": ^3.0.0
@@ -9566,7 +9566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/graphql-modules@npm:4.0.4, @envelop/graphql-modules@npm:^4.0.4":
+"@envelop/graphql-modules@npm:^4.0.4":
   version: 4.0.4
   resolution: "@envelop/graphql-modules@npm:4.0.4"
   dependencies:
@@ -10929,7 +10929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:9.2.1":
+"@graphql-tools/utils@npm:9.2.1, @graphql-tools/utils@npm:^9.0.0, @graphql-tools/utils@npm:^9.0.1, @graphql-tools/utils@npm:^9.1.1, @graphql-tools/utils@npm:^9.1.4":
   version: 9.2.1
   resolution: "@graphql-tools/utils@npm:9.2.1"
   dependencies:
@@ -10938,18 +10938,6 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 94ed12df5f49e5c338322ffd931236a687a3d5c443bf499f9baab5d4fcd9792234111142be8aa506a01ca2e82732996c4e1d8f6159ff9cc7fdc5c97f63e55226
-  languageName: node
-  linkType: hard
-
-"@graphql-tools/utils@npm:^9.0.0, @graphql-tools/utils@npm:^9.0.1, @graphql-tools/utils@npm:^9.1.1, @graphql-tools/utils@npm:^9.1.4":
-  version: 9.2.0
-  resolution: "@graphql-tools/utils@npm:9.2.0"
-  dependencies:
-    "@graphql-typed-document-node/core": ^3.1.1
-    tslib: ^2.4.0
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 9754f8c6d52490df395626cef224542f37ca040ced6688c8ad80b1e0498006186529a50ac21979465123debba093db33dbfe8f1f7a9101f969dec0f31dc9a45b
   languageName: node
   linkType: hard
 
@@ -20582,14 +20570,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dataloader@npm:2.1.0, dataloader@npm:^2.1.0":
+"dataloader@npm:2.1.0":
   version: 2.1.0
   resolution: "dataloader@npm:2.1.0"
   checksum: bbd43496c41697766f8611f60ed3bae437b450985499140b9603a2447c10d45975d3a0661caaebaa9750bc1bc9fd154676a314423294916c8b8ca1a59a08d139
   languageName: node
   linkType: hard
 
-"dataloader@npm:^2.0.0":
+"dataloader@npm:^2.0.0, dataloader@npm:^2.1.0":
   version: 2.2.2
   resolution: "dataloader@npm:2.2.2"
   checksum: 4dabd247089c29f194e94d5434d504f99156c5c214a03463c20f3f17f40398d7e179edee69a27c16e315519ac8739042a810090087ae26449a0e685156a02c65
