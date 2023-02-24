@@ -49,7 +49,7 @@ export class IncrementalProviderRouter {
     });
 
     // Clean up and pause all providers
-    router.post('/incremental/health', async (_, res) => {
+    router.post('/incremental/cleanup', async (_, res) => {
       const result = await this.manager.cleanupProviders();
       res.json(result);
     });
@@ -204,7 +204,7 @@ export class IncrementalProviderRouter {
     });
 
     // Get the ingestion marks for the current cycle
-    router.get(`$/incremental/providers/:provider/marks`, async (req, res) => {
+    router.get(`/incremental/providers/:provider/marks`, async (req, res) => {
       const { provider } = req.params;
       const record = await this.manager.getCurrentIngestionRecord(provider);
       if (record) {
