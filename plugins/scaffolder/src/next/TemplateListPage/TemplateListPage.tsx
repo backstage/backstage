@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+jest.mock('../../options');
 import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
@@ -38,6 +38,14 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
 import { registerComponentRouteRef } from '../../routes';
 import { ContextMenu } from './ContextMenu';
+import { ScaffolderPluginOptions, useScaffolderOptions } from '../../options';
+
+const mockedUseScaffolderOptions =
+  useScaffolderOptions as jest.Mock<ScaffolderPluginOptions>;
+
+mockedUseScaffolderOptions.mockImplementation(() => ({
+  activateExperimentalTemplatesFeature: false,
+}));
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{

@@ -44,6 +44,7 @@ export interface TemplateEntityV1beta3 extends Entity {
   spec: {
     type: string;
     parameters?: JsonObject | JsonObject[];
+    lifecycle?: string;
     steps: Array<{
       id?: string;
       name?: string;
