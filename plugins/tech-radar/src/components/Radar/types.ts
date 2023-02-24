@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Quadrant, Ring, Entry } from '../../utils/types';
+import { Color } from 'csstype';
 
-import { Entry, Quadrant, Ring } from '../../utils/types';
-import { RadarProps } from '../Radar/types';
-
-export type Segments = {
-  [k: number]: { [k: number]: Entry[] };
-};
-
-export type RadarLegendProps = {
+export type RadarProps = {
+  width: number;
+  height: number;
   quadrants: Quadrant[];
   rings: Ring[];
   entries: Entry[];
-  onEntryMouseEnter?: (entry: Entry) => void;
-  onEntryMouseLeave?: (entry: Entry) => void;
-
-  getRingColor?: RadarProps['getRingColor'];
+  svgProps?: object;
+  getRingColor?: (ring: Ring) => Color;
 };

@@ -15,18 +15,10 @@
  */
 
 import React, { useMemo, useRef, useState } from 'react';
-import type { Entry, Quadrant, Ring } from '../../utils/types';
+import type { Entry } from '../../utils/types';
 import RadarPlot from '../RadarPlot';
+import { RadarProps } from './types';
 import { adjustEntries, adjustQuadrants, adjustRings } from './utils';
-
-export type Props = {
-  width: number;
-  height: number;
-  quadrants: Quadrant[];
-  rings: Ring[];
-  entries: Entry[];
-  svgProps?: object;
-};
 
 const Radar = ({
   width,
@@ -34,8 +26,9 @@ const Radar = ({
   quadrants,
   rings,
   entries,
+  getRingColor,
   ...props
-}: Props): JSX.Element => {
+}: RadarProps): JSX.Element => {
   const radius = Math.min(width, height) / 2;
 
   // State
@@ -66,6 +59,7 @@ const Radar = ({
   return (
     <svg ref={node} width={width} height={height} {...props.svgProps}>
       <RadarPlot
+        getRingColor={getRingColor}
         width={width}
         height={height}
         radius={radius}

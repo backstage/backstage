@@ -22,6 +22,7 @@ import RadarEntry from '../RadarEntry';
 import RadarBubble from '../RadarBubble';
 import RadarFooter from '../RadarFooter';
 import RadarLegend from '../RadarLegend';
+import { RadarProps } from '../Radar/types';
 
 export type Props = {
   width: number;
@@ -33,6 +34,8 @@ export type Props = {
   activeEntry?: Entry;
   onEntryMouseEnter?: (entry: Entry) => void;
   onEntryMouseLeave?: (entry: Entry) => void;
+
+  getRingColor?: RadarProps['getRingColor'];
 };
 
 // A component that draws the radar circle.
@@ -47,6 +50,7 @@ const RadarPlot = (props: Props): JSX.Element => {
     activeEntry,
     onEntryMouseEnter,
     onEntryMouseLeave,
+    getRingColor,
   } = props;
 
   return (
@@ -61,9 +65,10 @@ const RadarPlot = (props: Props): JSX.Element => {
         onEntryMouseLeave={
           onEntryMouseLeave && (entry => onEntryMouseLeave(entry))
         }
+        getRingColor={getRingColor}
       />
       <g transform={`translate(${width / 2}, ${height / 2})`}>
-        <RadarGrid radius={radius} rings={rings} />
+        <RadarGrid radius={radius} rings={rings} getRingColor={getRingColor} />
         <RadarFooter x={-0.5 * width} y={0.5 * height} />
         {entries.map(entry => (
           <RadarEntry

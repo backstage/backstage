@@ -17,10 +17,12 @@
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import type { Ring } from '../../utils/types';
+import { RadarProps } from '../Radar/types';
 
 export type Props = {
   radius: number;
   rings: Ring[];
+  getRingColor?: RadarProps['getRingColor'];
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -47,7 +49,7 @@ const useStyles = makeStyles<Theme>(theme => ({
 // A component for the background grid of the radar, with axes, rings etc.  It will render around the origin, i.e.
 // assume that (0, 0) is in the middle of the drawing.
 const RadarGrid = (props: Props) => {
-  const { radius, rings } = props;
+  const { radius, rings, getRingColor } = props;
   const classes = useStyles(props);
 
   const makeRingNode = (ringIndex: number, ringRadius?: number) => [
@@ -63,7 +65,9 @@ const RadarGrid = (props: Props) => {
       y={ringRadius !== undefined ? -ringRadius + 42 : undefined}
       textAnchor="middle"
       className={classes.text}
-      style={{ fill: rings[ringIndex].color }}
+      style={{
+        fill: getRingColor ? getRingColor(rings[ringIndex]) : undefined,
+      }}
     >
       {rings[ringIndex].name}
     </text>,

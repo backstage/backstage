@@ -28,6 +28,7 @@ type RadarLegendQuadrantProps = {
   classes: ClassNameMap<string>;
   onEntryMouseEnter: RadarLegendProps['onEntryMouseEnter'];
   onEntryMouseLeave: RadarLegendProps['onEntryMouseLeave'];
+  getRingColor: RadarLegendProps['getRingColor'];
 };
 
 export const RadarLegendQuadrant = ({
@@ -37,6 +38,7 @@ export const RadarLegendQuadrant = ({
   classes,
   onEntryMouseEnter,
   onEntryMouseLeave,
+  getRingColor,
 }: RadarLegendQuadrantProps) => {
   return (
     <foreignObject
@@ -55,6 +57,7 @@ export const RadarLegendQuadrant = ({
               key={ring.id}
               ring={ring}
               classes={classes}
+              getRingColor={getRingColor}
               entries={getSegment(segments, quadrant, ring)}
               onEntryMouseEnter={onEntryMouseEnter}
               onEntryMouseLeave={onEntryMouseLeave}

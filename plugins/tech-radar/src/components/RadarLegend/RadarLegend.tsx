@@ -88,6 +88,7 @@ const RadarLegend = ({
   entries,
   onEntryMouseEnter,
   onEntryMouseLeave,
+  getRingColor,
   ...props
 }: RadarLegendProps): JSX.Element => {
   const classes = useStyles(props);
@@ -96,6 +97,7 @@ const RadarLegend = ({
     <g data-testid="radar-legend">
       {quadrants.map(quadrant => (
         <RadarLegendQuadrant
+          getRingColor={getRingColor}
           key={quadrant.id}
           segments={setupSegments(entries)}
           quadrant={quadrant}

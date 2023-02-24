@@ -18,9 +18,10 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import Radar, { Props } from './Radar';
+import Radar from './Radar';
+import type { RadarProps } from './types';
 
-const minProps: Props = {
+const minProps: RadarProps = {
   width: 500,
   height: 200,
   quadrants: [{ id: 'languages', name: 'Languages' }],
