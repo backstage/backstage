@@ -1,7 +1,7 @@
 ---
 id: index
 title: Core Backend Service APIs
-sidebar_label: Core Services
+sidebar_label: Overview
 # prettier-ignore
 description: Core backend service APIs
 ---

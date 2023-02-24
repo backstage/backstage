@@ -11,11 +11,9 @@ description: Building backend plugins and modules using the new backend system
 > NOTE: If you have an existing backend and/or backend plugins that are not yet
 > using the new backend system, see [migrating](./08-migrating.md).
 
-## Overview
-
-Backend [plugins](../architecture/04-plugins.md) and
-[modules](../architecture/06-modules.md), sometimes collectively referred to as
-backend _features_, are the building blocks that adopters add to their
+This section covers how to build your own backend [plugins](../architecture/04-plugins.md) and
+[modules](../architecture/06-modules.md). They are sometimes collectively referred to as
+backend _features_, and are the building blocks that adopters add to their
 [backends](../architecture/02-backends.md).
 
 ## Creating a new Plugin
@@ -74,7 +72,7 @@ Backend modules are used to extend [plugins](../architecture/04-plugins.md) with
 additional features or change existing behavior. They must always be installed
 in the same backend instance as the plugin that they extend, and may only extend
 a single plugin. Modules interact with their target plugin using the [extension
-points](./05-extension-points.md) registered by the plugin, while also being
+points](../architecture/05-extension-points.md) registered by the plugin, while also being
 able to depend on the [services](../architecture/03-services.md) of that plugin.
 That last point is worth reiterating: injected `plugin` scoped services will be
 the exact

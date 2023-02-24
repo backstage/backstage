@@ -1,5 +1,14 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/theme@0.2.17
+
 ## 0.3.34
 
 ### Patch Changes

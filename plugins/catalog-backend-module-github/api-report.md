@@ -4,7 +4,6 @@
 
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-backend';
-import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
@@ -99,9 +98,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   // (undocumented)
   supportsEventTopics(): string[];
 }
-
-// @alpha
-export const githubEntityProviderCatalogModule: () => BackendFeature;
 
 // @public (undocumented)
 export class GithubLocationAnalyzer implements ScmLocationAnalyzer {

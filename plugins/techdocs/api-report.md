@@ -406,7 +406,7 @@ export const TechDocsSearchResultListItem: (
 
 // @public
 export type TechDocsSearchResultListItemProps = {
-  icon?: ReactNode;
+  icon?: ReactNode | ((result: any) => ReactNode);
   result?: any;
   highlight?: ResultHighlight;
   rank?: number;

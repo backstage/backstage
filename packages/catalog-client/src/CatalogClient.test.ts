@@ -18,7 +18,11 @@ import { Entity } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
-import { CATALOG_FILTER_EXISTS, GetEntitiesResponse } from './types/api';
+import {
+  CATALOG_FILTER_EXISTS,
+  GetEntitiesResponse,
+  QueryEntitiesResponse,
+} from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
 const server = setupServer();
@@ -246,6 +250,185 @@ describe('CatalogClient', () => {
       );
 
       expect(response).toEqual({ items: [entity, null] });
+    });
+  });
+
+  describe('queryEntities', () => {
+    const defaultResponse: QueryEntitiesResponse = {
+      items: [
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test2',
+            namespace: 'test1',
+          },
+        },
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test1',
+            namespace: 'test1',
+          },
+        },
+      ],
+      pageInfo: {
+        nextCursor: 'next',
+        prevCursor: 'prev',
+      },
+      totalItems: 10,
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/entities/by-query`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+    });
+
+    it('should fetch entities from correct endpoint', async () => {
+      const response = await client.queryEntities({}, { token });
+      expect(response?.items).toEqual(defaultResponse.items);
+      expect(response?.totalItems).toEqual(defaultResponse.totalItems);
+      expect(response?.pageInfo.nextCursor).toBeDefined();
+      expect(response?.pageInfo.prevCursor).toBeDefined();
+    });
+
+    it('builds multiple entity search filters properly', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities(
+        {
+          filter: [
+            {
+              a: '1',
+              b: ['2', '3'],
+              ö: '=',
+            },
+            {
+              a: '2',
+            },
+            {
+              c: CATALOG_FILTER_EXISTS,
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [], totalItems: 0 });
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
+      );
+    });
+
+    it('should send query params correctly on initial request', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        fields: ['a', 'b'],
+        limit: 100,
+        fullTextFilter: {
+          term: 'query',
+        },
+        orderFields: [
+          { field: 'metadata.name', order: 'asc' },
+          { field: 'metadata.uid', order: 'desc' },
+        ],
+      });
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?limit=100&sortField=metadata.name,asc&sortField=metadata.uid,desc&fields=a,b&fullTextFilterTerm=query',
+      );
+    });
+
+    it('should ignore initial query params if cursor is passed', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        fields: ['a', 'b'],
+        limit: 100,
+        fullTextFilter: {
+          term: 'query',
+        },
+        orderFields: [{ field: 'metadata.name', order: 'asc' }],
+        cursor: 'cursor',
+      });
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?cursor=cursor&limit=100&fields=a,b',
+      );
+    });
+
+    it('should return paginated functions if next and prev cursors are present', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((_req, res, ctx) =>
+        res(
+          ctx.json({
+            items: [
+              {
+                apiVersion: 'v1',
+                kind: 'CustomKind',
+                metadata: {
+                  namespace: 'default',
+                  name: 'e1',
+                },
+              },
+              {
+                apiVersion: 'v1',
+                kind: 'CustomKind',
+                metadata: {
+                  namespace: 'default',
+                  name: 'e2',
+                },
+              },
+            ],
+            pageInfo: {
+              nextCursor: 'nextcursor',
+              prevCursor: 'prevcursor',
+            },
+            totalItems: 100,
+          } as QueryEntitiesResponse),
+        ),
+      );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities({
+        limit: 2,
+      });
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe('?limit=2');
+
+      expect(response?.pageInfo.nextCursor).toBeDefined();
+      expect(response?.pageInfo.prevCursor).toBeDefined();
+
+      await client.queryEntities({ cursor: response!.pageInfo.nextCursor! });
+      expect(mockedEndpoint.mock.calls[1][0].url.search).toBe(
+        '?cursor=nextcursor',
+      );
+
+      await client.queryEntities({ cursor: response!.pageInfo.prevCursor! });
+      expect(mockedEndpoint.mock.calls[2][0].url.search).toBe(
+        '?cursor=prevcursor',
+      );
     });
   });
 

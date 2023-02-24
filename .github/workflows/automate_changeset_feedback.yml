@@ -1,6 +1,7 @@
 name: Automate changeset feedback
 on:
   pull_request_target:
+    branches: ['master']
 
 permissions:
   pull-requests: write

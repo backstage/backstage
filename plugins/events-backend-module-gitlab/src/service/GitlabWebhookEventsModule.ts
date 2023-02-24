@@ -18,7 +18,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
 
 /**
@@ -26,7 +26,7 @@ import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
  * registering an HTTP POST ingress with request validator
  * which verifies the webhook token based on a secret.
  *
- * Registers the {@link GitlabEventRouter}.
+ * Registers the `GitlabEventRouter`.
  *
  * @alpha
  */

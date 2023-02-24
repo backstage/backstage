@@ -37,6 +37,7 @@ export async function buildBackend(options: BuildBackendOptions) {
   // We build the target package without generating type declarations.
   await buildPackage({
     targetDir: options.targetDir,
+    packageJson: pkg,
     outputs: new Set([Output.cjs]),
   });
 

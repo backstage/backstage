@@ -116,7 +116,7 @@ export function registerScriptCommand(program: Command) {
     )
     .option(
       '--experimental-type-build',
-      'Enable experimental type build. Does not apply to app or backend packages.',
+      'Enable experimental type build. Does not apply to app or backend packages. [DEPRECATED]',
     )
     .option(
       '--skip-build-dependencies',
@@ -189,6 +189,13 @@ export function registerMigrateCommand(program: Command) {
     .description('Set package scripts according to each package role')
     .action(
       lazy(() => import('./migrate/packageScripts').then(m => m.command)),
+    );
+
+  command
+    .command('package-exports')
+    .description('Synchronize package subpath export definitions')
+    .action(
+      lazy(() => import('./migrate/packageExports').then(m => m.command)),
     );
 
   command

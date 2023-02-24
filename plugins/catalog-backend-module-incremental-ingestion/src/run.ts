@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// Think this file will probably go away once we move to backend system
+// And restructure into the /dev folder
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import { createBackend } from '@backstage/backend-defaults';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-import {
-  IncrementalEntityProvider,
-  incrementalIngestionEntityProviderCatalogModule,
-} from '.';
+import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
+import { IncrementalEntityProvider } from '.';
+import { incrementalIngestionEntityProviderCatalogModule } from './alpha';
 
 const provider: IncrementalEntityProvider<number, {}> = {
   getProviderName: () => 'test-provider',

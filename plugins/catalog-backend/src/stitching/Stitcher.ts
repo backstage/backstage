@@ -15,12 +15,11 @@
  */
 
 import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
+import { AlphaEntity, EntityStatusItem } from '@backstage/catalog-model/alpha';
 import {
-  AlphaEntity,
   ANNOTATION_EDIT_URL,
   ANNOTATION_VIEW_URL,
   EntityRelation,
-  EntityStatusItem,
 } from '@backstage/catalog-model';
 import { SerializedError, stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';

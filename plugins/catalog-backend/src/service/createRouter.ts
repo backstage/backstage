@@ -39,12 +39,14 @@ import {
   parseEntityFilterParams,
   parseEntityPaginationParams,
   parseEntityTransformParams,
+  parseQueryEntitiesParams,
 } from './request';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { LocationService, RefreshOptions, RefreshService } from './types';
 import {
   disallowReadonlyMode,
+  encodeCursor,
   locationInput,
   validateRequestBody,
 } from './util';
@@ -129,6 +131,26 @@ export async function createRouter(
 
         // TODO(freben): encode the pageInfo in the response
         res.json(entities);
+      })
+      .get('/entities/by-query', async (req, res) => {
+        const { items, pageInfo, totalItems } =
+          await entitiesCatalog.queryEntities({
+            ...parseQueryEntitiesParams(req.query),
+            authorizationToken: getBearerToken(req.header('authorization')),
+          });
+
+        res.json({
+          items,
+          totalItems,
+          pageInfo: {
+            ...(pageInfo.nextCursor && {
+              nextCursor: encodeCursor(pageInfo.nextCursor),
+            }),
+            ...(pageInfo.prevCursor && {
+              prevCursor: encodeCursor(pageInfo.prevCursor),
+            }),
+          },
+        });
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;

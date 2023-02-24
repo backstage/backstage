@@ -54,9 +54,7 @@ npx @backstage/create-app@latest
 
 The wizard will ask you for the name of the app, which will also be the name of the directory
 
-<p align='center'>
-  <img src='../assets/getting-started/wizard.png' alt='Screenshot of the wizard asking for a name for the app.' />
-</p>
+![Screenshot of the wizard asking for a name for the app.](../assets/getting-started/wizard.png)
 
 ### Run the Backstage app
 
@@ -69,9 +67,7 @@ cd my-backstage-app
 yarn dev
 ```
 
-<p align='center'>
-  <img src='../assets/getting-started/startup.png' alt='Screenshot of the command output, with the message web pack compiled successfully.'/>
-</p>
+![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)
 
 It might take a little while, but as soon as the message
 `[0] webpack compiled successfully` appears, you can open a browser and directly
@@ -80,16 +76,14 @@ You can start exploring the demo immediately. Please note that the in-memory
 database will be cleared when you restart the app, so you'll most likely want to
 carry on with the database steps.
 
-<p align='center'>
-  <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal.'/>
-</p>
+![Screenshot of the Backstage portal.](../assets/getting-started/portal.png)
 
 In the next part of this tutorial, you'll learn how to change to a persistent
 database, configure authentication, and add your first integration. Continue
 with [getting started: Configuring Backstage](configuration.md).
 
 Share your experiences, comments, or suggestions with us:
-[on discord](https://discord.gg/EBHEGzX), file issues for any
+[on discord](https://discord.gg/backstage-687207715902193673), file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or
 [plugin suggestions](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),

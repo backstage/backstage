@@ -22,10 +22,8 @@ import {
 import { CustomFieldExplorer } from './CustomFieldExplorer';
 import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
-import {
-  NextFieldExtensionOptions,
-  type LayoutOptions,
-} from '@backstage/plugin-scaffolder-react';
+import { type LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import { TemplateEditorIntro } from '../../components/TemplateEditorPage/TemplateEditorIntro';
 
 type Selection =

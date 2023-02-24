@@ -21,7 +21,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import React from 'react';
 import { Link as RouterLink, LinkProps } from 'react-router-dom';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 
 /**
