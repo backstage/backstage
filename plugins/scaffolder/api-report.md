@@ -342,6 +342,7 @@ export type RouterProps = {
     editor?: boolean;
     actions?: boolean;
   };
+  getTemplateInitialState?(templateRef: string): Promise<any>;
 };
 
 // @public @deprecated (undocumented)
