@@ -62,6 +62,10 @@ import {
   scaffolderTaskRouteRef,
 } from './routes';
 import { nextRouteRef } from './next';
+import {
+  ScaffolderInputPluginOptions,
+  ScaffolderPluginOptions,
+} from './options';
 
 /**
  * The main plugin export for the scaffolder.
@@ -97,6 +101,14 @@ export const scaffolderPlugin = createPlugin({
     viewTechDoc: viewTechDocRouteRef,
   },
   featureFlags: [{ name: 'experimental-scaffolder-templates' }],
+  __experimentalConfigure(
+    options?: ScaffolderInputPluginOptions,
+  ): ScaffolderPluginOptions {
+    const defaultOptions = {
+      activateExperimentalTemplatesFeature: false,
+    };
+    return { ...defaultOptions, ...options };
+  },
 });
 
 /**

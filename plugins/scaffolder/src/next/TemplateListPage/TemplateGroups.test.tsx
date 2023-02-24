@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+jest.mock('../../options');
 import { FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES } from '../../components/constants';
+import { ScaffolderPluginOptions, useScaffolderOptions } from '../../options';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityList: jest.fn(),
@@ -37,8 +39,17 @@ import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
 import { nextRouteRef } from '../routes';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
+const mockedUseScaffolderOptions =
+  useScaffolderOptions as jest.Mock<ScaffolderPluginOptions>;
+
 describe('TemplateGroups', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    mockedUseScaffolderOptions.mockImplementation(() => ({
+      activateExperimentalTemplatesFeature: false,
+    }));
+  });
 
   it('should return progress if the hook is loading', async () => {
     (useEntityList as jest.Mock).mockReturnValue({ loading: true });
@@ -216,6 +227,9 @@ describe('TemplateGroups', () => {
   });
 
   it('should filter out experimental templates', async () => {
+    mockedUseScaffolderOptions.mockImplementation(() => ({
+      activateExperimentalTemplatesFeature: true,
+    }));
     const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
       isActive: jest.fn((_: string) => false),
       registerFlag: jest.fn(),
@@ -284,6 +298,9 @@ describe('TemplateGroups', () => {
   });
 
   it('should display all templates including experimental', async () => {
+    mockedUseScaffolderOptions.mockImplementation(() => ({
+      activateExperimentalTemplatesFeature: true,
+    }));
     const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
       isActive: jest.fn((_: string) => true),
       registerFlag: jest.fn(),

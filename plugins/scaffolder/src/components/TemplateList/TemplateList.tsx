@@ -30,6 +30,7 @@ import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 import { FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES } from '../constants';
+import { useScaffolderOptions } from '../../options';
 
 /**
  * @internal
@@ -55,9 +56,7 @@ export const TemplateList = ({
   const Card = TemplateCardComponent || TemplateCard;
   const featureFlagApi = useApi(featureFlagsApiRef);
 
-  const experimentalTemplatesFeatureEnabled = featureFlagApi
-    .getRegisteredFlags()
-    .find(f => f.name === FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES);
+  const { activateExperimentalTemplatesFeature } = useScaffolderOptions();
 
   const showExperimentalTemplates = featureFlagApi.isActive(
     FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES,
@@ -67,7 +66,7 @@ export const TemplateList = ({
     group ? entities.filter(e => group.filter(e)) : entities
   ).filter(
     template =>
-      !experimentalTemplatesFeatureEnabled ||
+      !activateExperimentalTemplatesFeature ||
       showExperimentalTemplates ||
       template.spec?.lifecycle !== 'experimental',
   );
