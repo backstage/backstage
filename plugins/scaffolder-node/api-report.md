@@ -6,7 +6,6 @@
 /// <reference types="node" />
 
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { Schema } from 'jsonschema';
@@ -16,7 +15,7 @@ import { Writable } from 'stream';
 import { z } from 'zod';
 
 // @public
-export type ActionContext<TInput extends JsonObject> = {
+export type ActionContext<TInput = unknown> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
@@ -38,7 +37,7 @@ export const createTemplateAction: <
   TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
   TOutputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
 >(
-  templateAction: TemplateAction<TParams, TInputSchema, TOutputSchema>,
+  action: TemplateActionOptions<TParams, TInputSchema, TOutputSchema>,
 ) => TemplateAction<TParams, TInputSchema, TOutputSchema>;
 
 // @alpha
@@ -57,6 +56,26 @@ export type TaskSecrets = Record<string, string> & {
 
 // @public (undocumented)
 export type TemplateAction<
+  TParams = unknown,
+  TInputSchema extends Schema | unknown = unknown,
+  TOutputSchema extends Schema | unknown = unknown,
+> = {
+  id: string;
+  description?: string;
+  examples?: {
+    description: string;
+    example: string;
+  }[];
+  supportsDryRun?: boolean;
+  schema?: {
+    input?: TInputSchema;
+    output?: TOutputSchema;
+  };
+  handler: (ctx: ActionContext<TParams>) => Promise<void>;
+};
+
+// @public (undocumented)
+export type TemplateActionOptions<
   TParams = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},

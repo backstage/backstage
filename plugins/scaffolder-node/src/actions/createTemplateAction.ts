@@ -14,12 +14,37 @@
  * limitations under the License.
  */
 
-import { TemplateAction } from './types';
+import { ActionContext, TemplateAction } from './types';
 import { z } from 'zod';
 import { Schema } from 'jsonschema';
+import zodToJsonSchema from 'zod-to-json-schema';
+
+/** @public */
+export type TemplateActionOptions<
+  TParams = {},
+  TInputSchema extends Schema | z.ZodType = {},
+  TOutputSchema extends Schema | z.ZodType = {},
+> = {
+  id: string;
+  description?: string;
+  examples?: { description: string; example: string }[];
+  supportsDryRun?: boolean;
+  schema?: {
+    input?: TInputSchema;
+    output?: TOutputSchema;
+  };
+  handler: (
+    ctx: ActionContext<
+      TInputSchema extends z.ZodType<any, any, infer IReturn>
+        ? IReturn
+        : TParams
+    >,
+  ) => Promise<void>;
+};
+
 /**
  * This function is used to create new template actions to get type safety.
- *
+ * Will convert zod schemas to json schemas for use throughout the system.
  * @public
  */
 export const createTemplateAction = <
@@ -27,7 +52,26 @@ export const createTemplateAction = <
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
 >(
-  templateAction: TemplateAction<TParams, TInputSchema, TOutputSchema>,
-): TemplateAction<TParams, TInputSchema, TOutputSchema> => {
-  return templateAction;
+  action: TemplateActionOptions<TParams, TInputSchema, TOutputSchema>,
+): TemplateAction<TParams> => {
+  const inputSchema =
+    action.schema?.input && 'safeParseAsync' in action.schema.input
+      ? zodToJsonSchema(action.schema.input)
+      : action.schema?.input;
+
+  const outputSchema =
+    action.schema?.output && 'safeParseAsync' in action.schema.output
+      ? zodToJsonSchema(action.schema.output)
+      : action.schema?.output;
+
+  const templateAction = {
+    ...action,
+    schema: {
+      ...action.schema,
+      input: inputSchema,
+      output: outputSchema,
+    },
+  };
+
+  return templateAction as TemplateAction<TParams>;
 };

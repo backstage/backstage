@@ -16,7 +16,6 @@
 
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import zodToJsonSchema from 'zod-to-json-schema';
 /**
  * Registry of all registered template actions.
  * @public
@@ -31,29 +30,7 @@ export class TemplateActionRegistry {
       );
     }
 
-    // It's better to convert the zod here, and just deal with jsonschema everywhere
-    // rather than adding the zod check everywhere like the nunjucks engine, and the /actions/list
-    // endpoint to create jsonschema for the frontend.
-    const inputSchema =
-      action.schema?.input && 'safeParseAsync' in action.schema.input
-        ? zodToJsonSchema(action.schema.input)
-        : action.schema?.input;
-
-    const outputSchema =
-      action.schema?.output && 'safeParseAsync' in action.schema.output
-        ? zodToJsonSchema(action.schema.output)
-        : action.schema?.output;
-
-    const templateAction = {
-      ...action,
-      schema: {
-        ...action.schema,
-        input: inputSchema,
-        output: outputSchema,
-      },
-    };
-
-    this.actions.set(action.id, templateAction);
+    this.actions.set(action.id, action);
   }
 
   get(actionId: string): TemplateAction {

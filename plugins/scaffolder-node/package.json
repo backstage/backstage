@@ -30,7 +30,8 @@
     "@backstage/types": "workspace:^",
     "jsonschema": "^1.2.6",
     "winston": "^3.2.1",
-    "zod": "~3.18.0"
+    "zod": "~3.18.0",
+    "zod-to-json-schema": "~3.18.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

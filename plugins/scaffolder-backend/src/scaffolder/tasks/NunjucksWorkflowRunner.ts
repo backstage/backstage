@@ -24,7 +24,7 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
-import { validate as validateJsonSchema } from 'jsonschema';
+import { Schema, validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
 import {
@@ -380,10 +380,7 @@ function scaffoldingTracker() {
       template,
     });
 
-    async function skipDryRun(
-      step: TaskStep,
-      action: TemplateAction<JsonObject>,
-    ) {
+    async function skipDryRun(step: TaskStep, action: TemplateAction) {
       task.emitLog(`Skipping because ${action.id} does not support dry-run`, {
         stepId: step.id,
         status: 'skipped',

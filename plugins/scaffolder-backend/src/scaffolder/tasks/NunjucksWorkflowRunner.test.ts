@@ -24,7 +24,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { TaskContext } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  TaskSecrets,
+} from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { z } from 'zod';
 
@@ -104,17 +107,19 @@ describe('DefaultWorkflowRunner', () => {
       },
     });
 
-    actionRegistry.register({
-      id: 'jest-zod-validated-action',
-      description: 'Mock action for testing',
-      supportsDryRun: true,
-      handler: fakeActionHandler,
-      schema: {
-        input: z.object({
-          foo: z.number(),
-        }),
-      },
-    });
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-zod-validated-action',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: fakeActionHandler,
+        schema: {
+          input: z.object({
+            foo: z.number(),
+          }),
+        },
+      }),
+    );
 
     actionRegistry.register({
       id: 'output-action',

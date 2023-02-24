@@ -16,17 +16,16 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonValue, JsonObject } from '@backstage/types';
-import { Schema } from 'jsonschema';
+import { JsonValue } from '@backstage/types';
 import { TaskSecrets } from '../tasks/types';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
-import { z } from 'zod';
+import { Schema } from 'jsonschema';
 /**
  * ActionContext is passed into scaffolder actions.
  * @public
  */
-export type ActionContext<TInput extends JsonObject> = {
+export type ActionContext<TInput = unknown> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
@@ -63,24 +62,14 @@ export type ActionContext<TInput extends JsonObject> = {
 };
 
 /** @public */
-export type TemplateAction<
-  TParams = {},
-  TInputSchema extends Schema | z.ZodType = {},
-  TOutputSchema extends Schema | z.ZodType = {},
-> = {
+export type TemplateAction<TParams = unknown> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];
   supportsDryRun?: boolean;
   schema?: {
-    input?: TInputSchema;
-    output?: TOutputSchema;
+    input?: Schema;
+    output?: Schema;
   };
-  handler: (
-    ctx: ActionContext<
-      TInputSchema extends z.ZodType<any, any, infer IReturn>
-        ? IReturn
-        : TParams
-    >,
-  ) => Promise<void>;
+  handler: (ctx: ActionContext<TParams>) => Promise<void>;
 };

@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { createTemplateAction } from './createTemplateAction';
+export {
+  createTemplateAction,
+  type TemplateActionOptions,
+} from './createTemplateAction';
 export { type ActionContext, type TemplateAction } from './types';

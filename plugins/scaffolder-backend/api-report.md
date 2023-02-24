@@ -32,6 +32,7 @@ import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node'
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 import { z } from 'zod';
@@ -44,7 +45,7 @@ export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
 // @public
 export const createBuiltinActions: (
   options: CreateBuiltInActionsOptions,
-) => TemplateAction_2<JsonObject>[];
+) => TemplateAction_2[];
 
 // @public
 export interface CreateBuiltInActionsOptions {
@@ -626,7 +627,7 @@ export const createTemplateAction: <
   TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
   TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
 >(
-  templateAction: TemplateAction_2<TParams, TInputSchema, TOutputSchema>,
+  action: TemplateActionOptions<TParams, TInputSchema, TOutputSchema>,
 ) => TemplateAction_2<TParams, TInputSchema, TOutputSchema>;
 
 // @public
@@ -725,7 +726,7 @@ export type OctokitWithPullRequestPluginClient = Octokit & {
 // @public
 export interface RouterOptions {
   // (undocumented)
-  actions?: TemplateAction_2<any>[];
+  actions?: TemplateAction_2[];
   // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   // (undocumented)

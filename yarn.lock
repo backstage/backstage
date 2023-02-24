@@ -7716,7 +7716,6 @@ __metadata:
     yaml: ^2.0.0
     zen-observable: ^0.10.0
     zod: ~3.18.0
-    zod-to-json-schema: ~3.18.0
   languageName: unknown
   linkType: soft
 
@@ -7742,6 +7741,7 @@ __metadata:
     jsonschema: ^1.2.6
     winston: ^3.2.1
     zod: ~3.18.0
+    zod-to-json-schema: ~3.18.0
   languageName: unknown
   linkType: soft
 
