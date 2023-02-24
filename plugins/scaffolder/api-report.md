@@ -69,7 +69,7 @@ export type CustomFieldValidator<TReturnFieldData> =
 export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
   string,
   {}
->;
+  >;
 
 // @public
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
@@ -84,7 +84,7 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
       | Record<string, string | string[]>[]
       | undefined;
   }
->;
+  >;
 
 // @public (undocumented)
 export const EntityPickerFieldSchema: FieldSchema<
@@ -99,7 +99,7 @@ export const EntityPickerFieldSchema: FieldSchema<
       | Record<string, string | string[]>[]
       | undefined;
   }
->;
+  >;
 
 // @public
 export type EntityPickerUiOptions =
@@ -113,7 +113,7 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
     kinds?: string[] | undefined;
     helperText?: string | undefined;
   }
->;
+  >;
 
 // @public (undocumented)
 export const EntityTagsPickerFieldSchema: FieldSchema<
@@ -123,7 +123,7 @@ export const EntityTagsPickerFieldSchema: FieldSchema<
     kinds?: string[] | undefined;
     helperText?: string | undefined;
   }
->;
+  >;
 
 // @public
 export type EntityTagsPickerUiOptions =
@@ -137,7 +137,7 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> =
 export type FieldExtensionComponentProps<
   TFieldReturnValue,
   TUiOptions extends {} = {},
-> = FieldExtensionComponentProps_2<TFieldReturnValue, TUiOptions>;
+  > = FieldExtensionComponentProps_2<TFieldReturnValue, TUiOptions>;
 
 // @public @deprecated (undocumented)
 export type FieldExtensionOptions = FieldExtensionOptions_2;
@@ -168,7 +168,7 @@ export type LogEvent = LogEvent_2;
 export function makeFieldSchemaFromZod<
   TReturnSchema extends z.ZodType,
   TUiOptionsSchema extends z.ZodType = z.ZodType<any, any, {}>,
->(
+  >(
   returnSchema: TReturnSchema,
   uiOptionsSchema?: TUiOptionsSchema,
 ): FieldSchema<
@@ -176,7 +176,7 @@ export function makeFieldSchemaFromZod<
   TUiOptionsSchema extends z.ZodType<any, any, infer IUiOptions>
     ? IUiOptions
     : never
->;
+  >;
 
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
@@ -187,7 +187,7 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
   }
->;
+  >;
 
 // @public (undocumented)
 export const OwnedEntityPickerFieldSchema: FieldSchema<
@@ -198,7 +198,7 @@ export const OwnedEntityPickerFieldSchema: FieldSchema<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
   }
->;
+  >;
 
 // @public
 export type OwnedEntityPickerUiOptions =
@@ -216,7 +216,7 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
       | Record<string, string | string[]>[]
       | undefined;
   }
->;
+  >;
 
 // @public (undocumented)
 export const OwnerPickerFieldSchema: FieldSchema<
@@ -230,7 +230,7 @@ export const OwnerPickerFieldSchema: FieldSchema<
       | Record<string, string | string[]>[]
       | undefined;
   }
->;
+  >;
 
 // @public
 export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
@@ -255,20 +255,20 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
     allowedRepos?: string[] | undefined;
     requestUserCredentials?:
       | {
-          additionalScopes?:
-            | {
-                azure?: string[] | undefined;
-                github?: string[] | undefined;
-                gitlab?: string[] | undefined;
-                bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
-              }
-            | undefined;
-          secretsKey: string;
-        }
+      additionalScopes?:
+        | {
+        azure?: string[] | undefined;
+        github?: string[] | undefined;
+        gitlab?: string[] | undefined;
+        bitbucket?: string[] | undefined;
+        gerrit?: string[] | undefined;
+      }
+        | undefined;
+      secretsKey: string;
+    }
       | undefined;
   }
->;
+  >;
 
 // @public (undocumented)
 export const RepoUrlPickerFieldSchema: FieldSchema<
@@ -281,20 +281,20 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
     allowedRepos?: string[] | undefined;
     requestUserCredentials?:
       | {
-          additionalScopes?:
-            | {
-                azure?: string[] | undefined;
-                github?: string[] | undefined;
-                gitlab?: string[] | undefined;
-                bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
-              }
-            | undefined;
-          secretsKey: string;
-        }
+      additionalScopes?:
+        | {
+        azure?: string[] | undefined;
+        github?: string[] | undefined;
+        gitlab?: string[] | undefined;
+        bitbucket?: string[] | undefined;
+        gerrit?: string[] | undefined;
+      }
+        | undefined;
+      secretsKey: string;
+    }
       | undefined;
   }
->;
+  >;
 
 // @public
 export type RepoUrlPickerUiOptions =
@@ -323,8 +323,8 @@ export type RouterProps = {
     ReviewStepComponent?: ComponentType<ReviewStepProps>;
     TemplateCardComponent?:
       | ComponentType<{
-          template: TemplateEntityV1beta3;
-        }>
+      template: TemplateEntityV1beta3;
+    }>
       | undefined;
     TaskPageComponent?: ComponentType<{}>;
   };
@@ -342,6 +342,7 @@ export type RouterProps = {
     editor?: boolean;
     actions?: boolean;
   };
+  getTemplateInitialState?(templateRef: string): Promise<any>;
 };
 
 // @public @deprecated (undocumented)
@@ -421,7 +422,7 @@ export const scaffolderPlugin: BackstagePlugin<
     root: RouteRef<undefined>;
     selectedTemplate: SubRouteRef<
       PathParams<'/templates/:namespace/:templateName'>
-    >;
+      >;
     ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
   },
   {
@@ -433,10 +434,10 @@ export const scaffolderPlugin: BackstagePlugin<
         namespace: string;
       },
       true
-    >;
+      >;
   },
   {}
->;
+  >;
 
 // @public @deprecated (undocumented)
 export type ScaffolderScaffoldOptions = ScaffolderScaffoldOptions_2;

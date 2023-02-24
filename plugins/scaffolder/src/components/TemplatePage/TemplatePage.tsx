@@ -16,7 +16,7 @@
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import React, { ComponentType, useCallback, useState } from 'react';
+import React, { ComponentType, useCallback, useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import {
@@ -44,6 +44,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
+import lodash from 'lodash';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -63,6 +64,7 @@ type Props = {
     title?: string;
     subtitle?: string;
   };
+  getTemplateInitialState?(templateRef: string): Promise<any>;
 };
 
 export const TemplatePage = ({
@@ -70,6 +72,7 @@ export const TemplatePage = ({
   customFieldExtensions = [],
   layouts = [],
   headerOptions,
+  getTemplateInitialState,
 }: Props) => {
   const apiHolder = useApiHolder();
   const secretsContext = useTemplateSecrets();
@@ -98,6 +101,14 @@ export const TemplatePage = ({
       return query.formData ?? {};
     }
   });
+
+  useMemo(() => {
+    getTemplateInitialState?.(templateRef).then((data: any) => {
+      setFormState(lodash.merge(JSON.parse(data), formState));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleFormReset = () => setFormState({});
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),
@@ -111,16 +122,18 @@ export const TemplatePage = ({
       secrets: secretsContext?.secrets,
     });
 
-    const formParams = qs.stringify(
-      { formData: formState },
-      { addQueryPrefix: true },
-    );
-    const newUrl = `${window.location.pathname}${formParams}`;
-    // We use direct history manipulation since useSearchParams and
-    // useNavigate in react-router-dom cause unnecessary extra rerenders.
-    // Also make sure to replace the state rather than pushing to avoid
-    // extra back/forward slots.
-    window.history?.replaceState(null, document.title, newUrl);
+    if (!getTemplateInitialState) {
+      const formParams = qs.stringify(
+        { formData: formState },
+        { addQueryPrefix: true },
+      );
+      const newUrl = `${window.location.pathname}${formParams}`;
+      // We use direct history manipulation since useSearchParams and
+      // useNavigate in react-router-dom cause unnecessary extra rerenders.
+      // Also make sure to replace the state rather than pushing to avoid
+      // extra back/forward slots.
+      window.history?.replaceState(null, document.title, newUrl);
+    }
 
     navigate(scaffolderTaskRoute({ taskId }));
   };

@@ -146,7 +146,7 @@ this:
       "type": "string",
       "title": "Last name"
     },
-    "nicknames":{
+    "nicknames": {
       "type": "array",
       "items": {
         "type": "string"
@@ -172,7 +172,7 @@ this:
     "ui:autocomplete": "family-name"
   },
   "nicknames": {
-    "ui:options":{
+    "ui:options": {
       "orderable": false
     }
   },
@@ -258,9 +258,88 @@ use `ui:widget: password` or set some properties of `ui:backstage`:
           show: false # won't print any info about 'hidden' property on Review Step
 ```
 
+### Initial state
+
+By default, the initial state of the template is empty. Though, if you would like to pre-fill it with some data you have
+two options for that:
+
+1. Supplying the data via `formData` parameter, when opening a template via GET request.
+
+For example:
+
+```typescript jsx
+const formData = { tags: ['tag-1', 'tag-2'] };
+const entityMetadataEditUrl = `/create/template/default/my-template?formData=${encodeURIComponent(
+  JSON.stringify(formData),
+)}`;
+
+<IconButton
+  component={Link}
+  aria-label="Edit"
+  disabled={!entityMetadataEditUrl}
+  title="Edit Metadata"
+  to={entityMetadataEditUrl ?? '#'}
+>
+  <EditIcon />
+</IconButton>;
+```
+
+2. Defining the initial state of templates via `initialTemplateStates` in `TemplatePage`.
+
+```typescript jsx
+// templateStates.tsx
+import { CatalogApi } from '@backstage/catalog-client';
+import { useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+
+const MyTemplateState = async (): Promise<any> => {
+  const catalogApi = useApi(catalogApiRef);
+  const query = qs.parse(window.location.search, {
+    ignoreQueryPrefix: true,
+  });
+  const { projectId } = query;
+  if (typeof projectId !== 'string') {
+    return query.formData ?? {};
+  }
+
+  const result = await catalogApi.getEntities({
+    filter: {
+      kind: 'Component',
+      [`metadata.annotations.projectId`]: projectId,
+      'metadata.namespace': 'default',
+    },
+  });
+
+  if (result.items.length === 0) {
+    return {};
+  }
+
+  const entity = result.items[0];
+
+  return {
+    description: entity.metadata.description,
+    tags: entity.metadata.tags,
+  };
+};
+
+export const templateStates = async (templateRef: string) => {
+  const map: Record<string, any> = {
+    'template:default/my-template': MyTemplateState,
+  };
+  return await map[templateRef]?.();
+};
+
+// App.tsx
+
+const catalogApi = useApi(catalogApiRef);
+
+<ScaffolderPage getTemplateInitialState={templateStates} />;
+```
+
 ### Custom step layouts
 
-If you find that the default layout of the form used in a particular step does not meet your needs then you can supply your own [custom step layout](./writing-custom-step-layouts.md).
+If you find that the default layout of the form used in a particular step does not meet your needs then you can supply
+your own [custom step layout](./writing-custom-step-layouts.md).
 
 ### Remove sections or fields based on feature flags
 
@@ -408,7 +487,7 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
+        allowedHosts: [ 'github.com' ]
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
         # here's where the secret can be used
@@ -429,28 +508,35 @@ There's also the ability to pass additional scopes when requesting the `oauth`
 token from the user, which you can do on a per-provider basis, in case your
 template can be published to multiple providers.
 
-Note, that you will need to configure an [authentication provider](../../auth/index.md#configuring-authentication-providers), alongside the
-[`ScmAuthApi`](../../auth/index.md#scaffolder-configuration-software-templates) for your source code management (SCM) service to make this feature work.
+Note, that you will need to configure
+an [authentication provider](../../auth/index.md#configuring-authentication-providers), alongside the
+[`ScmAuthApi`](../../auth/index.md#scaffolder-configuration-software-templates) for your source code management (SCM)
+service to make this feature work.
 
 ### Accessing the signed-in users details
 
-Sometimes when authoring templates, you'll want to access the user that is running the template, and get details from the profile or the users `Entity` in the Catalog.
+Sometimes when authoring templates, you'll want to access the user that is running the template, and get details from
+the profile or the users `Entity` in the Catalog.
 
-If you have enabled a sign in provider and have a [sign in resolver](../../auth/identity-resolver.md) that points to a user in the Catalog, then you can use the `${{ user.entity }}` templating expression to access the raw entity from the Catalog.
+If you have enabled a sign in provider and have a [sign in resolver](../../auth/identity-resolver.md) that points to a
+user in the Catalog, then you can use the `${{ user.entity }}` templating expression to access the raw entity from the
+Catalog.
 
-This can be particularly useful if you have processors setup in the Catalog to write `spec.profile.email` of the `User Entities` to reference them and pass them into actions like below:
+This can be particularly useful if you have processors setup in the Catalog to write `spec.profile.email` of
+the `User Entities` to reference them and pass them into actions like below:
 
 ```yaml
   steps:
     action: publish:github
     ...
     input:
-        ...
-        gitAuthorName: ${{ user.entity.metadata.name }}
-        gitAuthorEmail: ${{ user.entity.spec.profile.email }}
+      ...
+      gitAuthorName: ${{ user.entity.metadata.name }}
+      gitAuthorEmail: ${{ user.entity.spec.profile.email }}
 ```
 
-You also have access to `user.entity.metadata.annotations` too, so if you have some other additional information stored in there, you reference those too.
+You also have access to `user.entity.metadata.annotations` too, so if you have some other additional information stored
+in there, you reference those too.
 
 ### The Owner Picker
 
