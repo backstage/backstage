@@ -13,28 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { LogViewer } from '@backstage/core-components';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-  },
-});
-
-export const TaskLogStream = (props: { logs: { [k: string]: string[] } }) => {
-  const styles = useStyles();
-  return (
-    <div className={styles.root}>
-      <LogViewer
-        text={Object.values(props.logs)
-          .map(l => l.join('\n'))
-          .filter(Boolean)
-          .join('\n')}
-      />
-    </div>
-  );
-};
+export { TaskSteps, type StepperProps } from './TaskSteps';

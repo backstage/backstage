@@ -26,6 +26,11 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
+/**
+ * The visual progress of the task event stream
+ *
+ * @public
+ */
 export const TaskBorder = (props: {
   isComplete: boolean;
   isError: boolean;

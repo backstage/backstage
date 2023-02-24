@@ -17,6 +17,10 @@ import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ScaffolderTask as ScaffolderTask_2 } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderTaskOutput as ScaffolderTaskOutput_2 } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderTaskStatus as ScaffolderTaskStatus_2 } from '@backstage/plugin-scaffolder-react';
+import { Step as Step_2 } from '@backstage/plugin-scaffolder-react';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 
@@ -278,6 +282,53 @@ export const SecretsContextProvider: ({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @public
+export type Step = {
+  id: string;
+  status: ScaffolderTaskStatus_2;
+  endedAt?: string;
+  startedAt?: string;
+};
+
+// @public (undocumented)
+export interface StepperProps {
+  // (undocumented)
+  activeStep?: number;
+  // (undocumented)
+  steps: (TaskStep & Step_2)[];
+}
+
+// @public
+export const TaskBorder: (props: {
+  isComplete: boolean;
+  isError: boolean;
+}) => JSX.Element;
+
+// @public
+export const TaskLogStream: (props: {
+  logs: {
+    [k: string]: string[];
+  };
+}) => JSX.Element;
+
+// @public
+export const TaskSteps: (props: StepperProps) => JSX.Element;
+
+// @public
+export type TaskStream = {
+  loading: boolean;
+  error?: Error;
+  stepLogs: {
+    [stepId in string]: string[];
+  };
+  completed: boolean;
+  task?: ScaffolderTask_2;
+  steps: {
+    [stepId in string]: Step;
+  };
+  output?: ScaffolderTaskOutput_2;
+};
+
+// @public
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
@@ -299,6 +350,9 @@ export const useCustomFieldExtensions: <
 export const useCustomLayouts: <TComponentDataType = LayoutOptions<any>>(
   outlet: React.ReactNode,
 ) => TComponentDataType[];
+
+// @public
+export const useTaskEventStream: (taskId: string) => TaskStream;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
