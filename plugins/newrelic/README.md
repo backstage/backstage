@@ -48,7 +48,7 @@ APIs.
     ```
 3.  Add the `NewRelicPage` to your `packages/app/src/App.tsx`:
 
-    ```typescript
+    ```tsx
     <FlatRoutes>
       …
       <Route path="/newrelic" element={<NewRelicPage />} />
