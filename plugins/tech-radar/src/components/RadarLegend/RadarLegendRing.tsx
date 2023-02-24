@@ -26,7 +26,6 @@ type RadarLegendRingProps = {
   classes: ClassNameMap<string>;
   onEntryMouseEnter?: RadarLegendProps['onEntryMouseEnter'];
   onEntryMouseLeave?: RadarLegendProps['onEntryMouseEnter'];
-  getRingColor?: RadarLegendProps['getRingColor'];
 };
 
 export const RadarLegendRing = ({
@@ -35,14 +34,10 @@ export const RadarLegendRing = ({
   classes,
   onEntryMouseEnter,
   onEntryMouseLeave,
-  getRingColor,
 }: RadarLegendRingProps) => {
   return (
     <div data-testid="radar-ring" key={ring.id} className={classes.ring}>
-      <h3
-        className={classes.ringHeading}
-        style={{ color: getRingColor ? getRingColor(ring) : undefined }}
-      >
+      <h3 className={classes.ringHeading} style={{ color: ring.color }}>
         {ring.name}
       </h3>
       {entries.length === 0 ? (

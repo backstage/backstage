@@ -15,7 +15,6 @@
  */
 
 import { Entry, Quadrant, Ring } from '../../utils/types';
-import { RadarProps } from '../Radar/types';
 
 export type Segments = {
   [k: number]: { [k: number]: Entry[] };
@@ -27,6 +26,4 @@ export type RadarLegendProps = {
   entries: Entry[];
   onEntryMouseEnter?: (entry: Entry) => void;
   onEntryMouseLeave?: (entry: Entry) => void;
-
-  getRingColor?: RadarProps['getRingColor'];
 };

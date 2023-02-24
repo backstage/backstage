@@ -20,8 +20,7 @@ import React, { useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { RadarEntry, techRadarApiRef, TechRadarLoaderResponse } from '../api';
 import Radar from '../components/Radar';
-import { Entry, Ring } from '../utils/types';
-import { RadarProps } from './Radar/types';
+import { Entry } from '../utils/types';
 
 const useTechRadarLoader = (id: string | undefined) => {
   const errorApi = useApi(errorApiRef);
@@ -90,8 +89,6 @@ export interface TechRadarComponentProps {
    * Text to filter {@link RadarEntry} inside Tech Radar
    */
   searchText?: string;
-
-  getRingColor?: RadarProps['getRingColor'];
 }
 
 /**
@@ -105,7 +102,6 @@ export interface TechRadarComponentProps {
  */
 export function RadarComponent(props: TechRadarComponentProps) {
   const { loading, error, value: data } = useTechRadarLoader(props.id);
-  const { getRingColor = (ring: Ring) => ring.color } = props;
 
   const mapToEntries = (
     loaderResponse: TechRadarLoaderResponse,
@@ -140,7 +136,6 @@ export function RadarComponent(props: TechRadarComponentProps) {
       {!loading && !error && data && (
         <Radar
           {...props}
-          getRingColor={getRingColor}
           rings={data.rings}
           quadrants={data.quadrants}
           entries={mapToEntries(data)}
