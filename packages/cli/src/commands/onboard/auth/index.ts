@@ -18,6 +18,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Task } from '../../../lib/tasks';
 import { github } from './github';
+import { gitlab } from './gitlab';
 
 export async function auth(): Promise<void> {
   const answers = await inquirer.prompt<{
@@ -27,7 +28,7 @@ export async function auth(): Promise<void> {
       type: 'list',
       name: 'provider',
       message: 'Please select a provider:',
-      choices: ['GitHub'],
+      choices: ['GitHub', 'GitLab'],
     },
   ]);
 
@@ -36,6 +37,10 @@ export async function auth(): Promise<void> {
   switch (provider) {
     case 'GitHub': {
       await github();
+      break;
+    }
+    case 'GitLab': {
+      await gitlab();
       break;
     }
     default:

@@ -8,17 +8,17 @@
 +  SignInPage,
 +} from '@backstage/core-components';
 @@ -35,0 +40 @@ import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/
-+import { githubAuthApiRef } from '@backstage/core-plugin-api';
++import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 @@ -38,0 +44,14 @@ const app = createApp({
 +  components: {
 +    SignInPage: props => (
 +      <SignInPage
 +        {...props}
 +        provider={{
-+          id: 'github-auth-provider',
-+          title: 'GitHub',
-+          message: 'Sign in using GitHub',
-+          apiRef: githubAuthApiRef,
++          id: 'gitlab-auth-provider',
++          title: 'GitLab',
++          message: 'Sign in using GitLab',
++          apiRef: gitlabAuthApiRef,
 +        }}
 +      />
 +    ),

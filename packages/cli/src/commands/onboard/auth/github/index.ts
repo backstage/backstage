@@ -67,15 +67,6 @@ const getConfig = (answers: Answers) => {
         },
       },
     },
-    catalog: {
-      locations: [
-        {
-          type: 'file',
-          target: '../../user-info.yaml',
-          rules: [{ allow: ['User'] }],
-        },
-      ],
-    },
   };
 };
 
@@ -161,11 +152,14 @@ export const github = async () => {
   await Task.forItem(
     'Creating',
     USER_ENTITY_FILE,
-    async () => await addUserEntity(USER_ENTITY_FILE, username),
+    async () =>
+      await addUserEntity(USER_ENTITY_FILE, username, {
+        'github.com/user-login': username,
+      }),
   );
 
   const patches = await fs.readdir(PATCH_FOLDER);
-  for (const patchFile of patches) {
+  for (const patchFile of patches.filter(p => p.includes('github'))) {
     await Task.forItem('Patching', patchFile, async () => {
       await patch(patchFile);
     });

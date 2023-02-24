@@ -14,28 +14,35 @@
  * limitations under the License.
  */
 
+import { UserEntity } from '@backstage/catalog-model';
 import * as fs from 'fs-extra';
 import yaml from 'yaml';
 
-type GithubAuthConfig = {
+type AuthConfig = {
   auth: {
     providers: {
-      github: {
+      [key: string]: {
         development: {
           clientId: string;
           clientSecret: string;
           enterpriseInstanceUrl?: string;
+          audience?: string;
         };
       };
     };
   };
-  catalog?: {
-    locations: Array<{
-      type: string;
-      target: string;
-      rules: Array<{ allow: Array<string> }>;
-    }>;
-  };
+};
+
+const catalogUserLocation = {
+  catalog: {
+    locations: [
+      {
+        type: 'file',
+        target: '../../user-info.yaml',
+        rules: [{ allow: ['User'] }],
+      },
+    ],
+  },
 };
 
 const readYaml = async (file: string) => {
@@ -44,11 +51,11 @@ const readYaml = async (file: string) => {
 
 export const updateConfigFile = async (
   file: string,
-  config: GithubAuthConfig,
+  authConfig: AuthConfig,
 ) => {
   const content = fs.existsSync(file)
-    ? { ...(await readYaml(file)), ...config }
-    : config;
+    ? { ...(await readYaml(file)), ...authConfig, ...catalogUserLocation }
+    : { ...authConfig, ...catalogUserLocation };
 
   return await fs.writeFile(
     file,
@@ -59,15 +66,17 @@ export const updateConfigFile = async (
   );
 };
 
-export const addUserEntity = async (file: string, username: string) => {
-  const content = {
+export const addUserEntity = async (
+  file: string,
+  username: string,
+  annotations?: Record<string, string>,
+) => {
+  const content: UserEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'User',
     metadata: {
       name: username,
-      annotations: {
-        'github.com/user-login': username,
-      },
+      annotations: { ...annotations },
     },
     spec: {
       memberOf: [],
