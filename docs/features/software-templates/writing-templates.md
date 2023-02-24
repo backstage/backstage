@@ -287,11 +287,13 @@ const entityMetadataEditUrl = `/create/template/default/my-template?formData=${e
 2. Defining the initial state of templates via `initialTemplateStates` in `TemplatePage`.
 
 ```typescript jsx
-// MyTemplateState.tsx
+// templateStates.tsx
 import { CatalogApi } from '@backstage/catalog-client';
+import { useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
-const MyTemplateState = async (apis: Record<string, any>) => {
-  const { catalogApi } = apis;
+const MyTemplateState = async (): Promise<any> => {
+  const catalogApi = useApi(catalogApiRef);
   const query = qs.parse(window.location.search, {
     ignoreQueryPrefix: true,
   });
@@ -320,20 +322,18 @@ const MyTemplateState = async (apis: Record<string, any>) => {
   };
 };
 
-// Router.tsx
-import { useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+export const templateStates = async (templateRef: string) => {
+  const map: Record<string, any> = {
+    'template:default/my-template': MyTemplateState,
+  };
+  return await map[templateRef]?.();
+};
+
+// App.tsx
 
 const catalogApi = useApi(catalogApiRef);
 
-<TemplatePage
-  initialTemplateApis={{
-    catalogApi,
-  }}
-  initialTemplateStates={{
-    'template:default/my-template': MyTemplateState,
-  }}
-/>;
+<ScaffolderPage getTemplateInitialState={templateStates} />;
 ```
 
 ### Custom step layouts

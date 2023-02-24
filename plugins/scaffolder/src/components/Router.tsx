@@ -73,6 +73,12 @@ export type RouterProps = {
     /** Whether to show a link to the actions documentation */
     actions?: boolean;
   };
+  /**
+   * Optional function returning the initial state for a specific template.
+   *
+   * @param templateRef - reference to a template, i.e. template:default/my-template
+   */
+  getTemplateInitialState?(templateRef: string): Promise<any>;
 };
 
 /**
@@ -81,7 +87,12 @@ export type RouterProps = {
  * @public
  */
 export const Router = (props: RouterProps) => {
-  const { groups, components = {}, defaultPreviewTemplate } = props;
+  const {
+    groups,
+    components = {},
+    defaultPreviewTemplate,
+    getTemplateInitialState,
+  } = props;
 
   const { ReviewStepComponent, TemplateCardComponent, TaskPageComponent } =
     components;
@@ -145,6 +156,7 @@ export const Router = (props: RouterProps) => {
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
               headerOptions={props.headerOptions}
+              getTemplateInitialState={getTemplateInitialState}
             />
           </SecretsContextProvider>
         }
