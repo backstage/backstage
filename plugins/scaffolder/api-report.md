@@ -435,7 +435,7 @@ export const scaffolderPlugin: BackstagePlugin<
       true
     >;
   },
-  {}
+  ScaffolderInputPluginOptions
 >;
 
 // @public @deprecated (undocumented)
