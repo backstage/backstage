@@ -153,7 +153,7 @@ export class IncrementalProviderRouter {
       }
     });
 
-    router.get(`/incremental/providers/`, async (_req, res) => {
+    router.get(`/incremental/providers`, async (_req, res) => {
       const providers = await this.manager.listProviders();
 
       res.json({
