@@ -59,7 +59,7 @@ const examples = [
 
 export function createCatalogWriteAction() {
   return createTemplateAction({
-    id: 'catalog:write',
+    id,
     description: 'Writes the catalog-info.yaml for your template',
     schema: {
       input: z.object({
@@ -67,9 +67,9 @@ export function createCatalogWriteAction() {
           .string()
           .optional()
           .describe('Defaults to catalog-info.yaml'),
+        // TODO: this should reference an zod entity validator if it existed.
         entity: z
           .object({})
-          .optional()
           .describe(
             'You can provide the same values used in the Entity schema.',
           ),

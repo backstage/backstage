@@ -76,7 +76,7 @@ export function createCatalogRegisterAction(options: {
 // @public
 export function createCatalogWriteAction(): TemplateAction_2<{
   filePath?: string | undefined;
-  entity?: {} | undefined;
+  entity: {};
 }>;
 
 // @public
