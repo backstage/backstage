@@ -98,7 +98,9 @@ export interface EntitiesBatchRequest {
    */
   entityRefs: string[];
   /**
-   * Any additional filters to apply in the selection of the entities.
+   * Any additional filters to apply in the selection of the entities. Entities
+   * that do not match the filter result in a null entry in the response, as if
+   * they did not exist.
    */
   filter?: EntityFilter;
   /**
