@@ -354,7 +354,7 @@ package. This essentially calls `yarn pack` in each included package and unpacks
 the resulting archive in the target `workspace-dir`.
 
 ```text
-Usage: backstage-cli build-workspace [options] &lt;workspace-dir&gt;
+Usage: backstage-cli build-workspace [options] <workspace-dir>
 ```
 
 ## create-github-app
@@ -367,7 +367,7 @@ Launches a browser to create the App through GitHub and saves the result as a
 YAML file that can be referenced in the GitHub integration configuration.
 
 ```text
-Usage: backstage-cli create-github-app &lt;github-org&gt;
+Usage: backstage-cli create-github-app <github-org>
 ```
 
 ## info
