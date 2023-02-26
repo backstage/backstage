@@ -44,6 +44,9 @@ export const EntityPicker = (props: EntityPickerProps) => {
     formData,
     idSchema,
   } = props;
+
+  const multipleSelect = uiSchema['ui:options']?.multipleSelect;
+
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
 
   const catalogFilter: EntityFilterQuery | undefined =
@@ -66,7 +69,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   );
 
   const onSelect = useCallback(
-    (_: any, value: string | null) => {
+    (_: any, value: string[] | string | null) => {
       onChange(value ?? undefined);
     },
     [onChange],
@@ -85,9 +88,15 @@ export const EntityPicker = (props: EntityPickerProps) => {
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
+        multiple={multipleSelect}
+        filterSelectedOptions
         disabled={entityRefs?.length === 1}
         id={idSchema?.$id}
-        value={(formData as string) || ''}
+        value={
+          multipleSelect
+            ? (formData as string[]) || []
+            : (formData as string) || ''
+        }
         loading={loading}
         onChange={onSelect}
         options={entityRefs || []}

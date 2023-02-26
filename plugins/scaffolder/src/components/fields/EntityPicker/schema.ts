@@ -27,7 +27,7 @@ export const entityQueryFilterExpressionSchema = z.record(
  * @public
  */
 export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
-  z.string(),
+  z.string().or(z.array(z.string())),
   z.object({
     /**
      * @deprecated Use `catalogFilter` instead.
@@ -54,6 +54,10 @@ export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
       .describe(
         'The default namespace. Options with this namespace will not be prefixed.',
       ),
+    multipleSelect: z
+      .boolean()
+      .optional()
+      .describe('Whether to allow multiple values. Defaults to false'),
     catalogFilter: z
       .array(entityQueryFilterExpressionSchema)
       .or(entityQueryFilterExpressionSchema)

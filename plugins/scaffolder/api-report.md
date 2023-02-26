@@ -73,12 +73,13 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
 
 // @public
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
-  string,
+  string | string[],
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    multipleSelect?: boolean | undefined;
     catalogFilter?:
       | Record<string, string | string[]>
       | Record<string, string | string[]>[]
@@ -88,12 +89,13 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 
 // @public (undocumented)
 export const EntityPickerFieldSchema: FieldSchema<
-  string,
+  string | string[],
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    multipleSelect?: boolean | undefined;
     catalogFilter?:
       | Record<string, string | string[]>
       | Record<string, string | string[]>[]
