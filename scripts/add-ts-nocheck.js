@@ -20,6 +20,11 @@ const ADDED_STR = '// @ts-nocheck\n\n';
 const FILES = [
   `${path.dirname(require.resolve('cross-fetch'))}/../index.d.ts`,
   `${path.dirname(require.resolve('@whatwg-node/fetch'))}/index.d.ts`,
+  `${path.dirname(
+    require.resolve('@whatwg-node/fetch', {
+      paths: [path.dirname(require.resolve('@whatwg-node/server'))],
+    }),
+  )}/index.d.ts`,
 ];
 
 Promise.allSettled(FILES.map(addTsNoCheck)).then(results => {
