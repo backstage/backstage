@@ -28,6 +28,7 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   >;
 
   constructor(options: {
+    microsoftAuthApi: OAuthApi;
     googleAuthApi: OAuthApi;
     oidcProviders?: { [key: string]: OpenIdConnectApi };
   }) {
@@ -56,6 +57,19 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       'localKubectlProxy',
       new ServerSideKubernetesAuthProvider(),
     );
+    this.kubernetesAuthProviderMap.set('aks', {
+      decorateRequestBodyForAuth: async (
+        requestBody: KubernetesRequestBody,
+      ) => ({
+        ...requestBody,
+        auth: {
+          ...requestBody.auth,
+          aks: await options.microsoftAuthApi.getAccessToken(
+            '6dae42f8-4368-4678-94ff-3960e28e3630/user.read',
+          ),
+        },
+      }),
+    });
 
     if (options.oidcProviders) {
       Object.keys(options.oidcProviders).forEach(provider => {

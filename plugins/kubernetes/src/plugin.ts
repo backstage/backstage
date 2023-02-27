@@ -67,7 +67,11 @@ export const kubernetesPlugin = createPlugin({
           onelogin: oneloginAuthApi,
         };
 
-        return new KubernetesAuthProviders({ googleAuthApi, oidcProviders });
+        return new KubernetesAuthProviders({
+          microsoftAuthApi,
+          googleAuthApi,
+          oidcProviders,
+        });
       },
     }),
   ],
