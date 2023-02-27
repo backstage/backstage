@@ -105,6 +105,7 @@ export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
         Lifecycle
         <Autocomplete
           multiple
+          disableCloseOnSelect
           options={availableLifecycles}
           value={selectedLifecycles}
           onChange={(_: object, value: string[]) =>

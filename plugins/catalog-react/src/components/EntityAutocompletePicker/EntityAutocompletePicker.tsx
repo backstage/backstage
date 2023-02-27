@@ -127,6 +127,7 @@ export function EntityAutocompletePicker<
         {label}
         <Autocomplete
           multiple
+          disableCloseOnSelect
           options={availableOptions}
           value={selectedOptions}
           onChange={(_event: object, options: string[]) =>
