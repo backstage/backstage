@@ -30,5 +30,5 @@ export type {
   TemplateEntityV1beta3,
   TemplateEntityStepV1beta3,
   TemplateParameter,
-  TemplateAccessControl as TemplateSpecValuesMetadata,
+  TemplatePermissions as TemplateSpecValuesMetadata,
 } from './TemplateEntityV1beta3';

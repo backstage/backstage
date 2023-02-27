@@ -78,7 +78,7 @@ export interface TemplateEntityStepV1beta3 extends JsonObject {
   action: string;
   input?: JsonObject;
   if?: string | boolean;
-  'backstage:accessControl'?: TemplateAccessControl;
+  'backstage:permissions'?: TemplatePermissions;
 }
 
 /**
@@ -87,7 +87,7 @@ export interface TemplateEntityStepV1beta3 extends JsonObject {
  * @public
  */
 export interface TemplateParameter extends JsonObject {
-  'backstage:accessControl'?: TemplateAccessControl;
+  'backstage:permissions'?: TemplatePermissions;
   properties?: { [name: string]: JsonObject };
 }
 
@@ -96,7 +96,7 @@ export interface TemplateParameter extends JsonObject {
  *
  * @public
  */
-export interface TemplateAccessControl extends JsonObject {
+export interface TemplatePermissions extends JsonObject {
   tags?: string[];
 }
 

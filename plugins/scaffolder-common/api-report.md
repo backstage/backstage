@@ -52,7 +52,7 @@ export interface TaskStep {
 // @public
 export interface TemplateEntityStepV1beta3 extends JsonObject {
   // (undocumented)
-  'backstage:accessControl'?: TemplateSpecValuesMetadata;
+  'backstage:permissions'?: TemplateSpecValuesMetadata;
   // (undocumented)
   action: string;
   // (undocumented)
@@ -95,7 +95,7 @@ export type TemplateInfo = {
 // @public
 export interface TemplateParameter extends JsonObject {
   // (undocumented)
-  'backstage:accessControl'?: TemplateSpecValuesMetadata;
+  'backstage:permissions'?: TemplateSpecValuesMetadata;
   // (undocumented)
   properties?: {
     [name: string]: JsonObject;
