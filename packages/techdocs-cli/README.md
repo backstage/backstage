@@ -40,13 +40,6 @@ yarn start
 yarn techdocs-cli:dev [...options]
 ```
 
-### Connecting behind a proxy
-```sh 
-# Prior to executing the techdocs-cli command
-export GLOBAL_AGENT_HTTPS_PROXY=${HTTP_PROXY}
-export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}
-```
-
 ### Using an example docs project
 
 For the purpose of local development, we have created an example documentation project. You are of course also free to create your own local test site - all it takes is a `docs/index.md` and an `mkdocs.yml` in a directory.
