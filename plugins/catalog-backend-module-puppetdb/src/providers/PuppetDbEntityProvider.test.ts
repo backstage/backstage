@@ -166,10 +166,10 @@ describe('PuppetEntityProvider', () => {
                   [ANNOTATION_PUPPET_CERTNAME]: 'node1',
                   [ANNOTATION_LOCATION]: `url:${config.getString(
                     'catalog.providers.puppetdb.host',
-                  )}${ENDPOINT_NODES}/node1`,
+                  )}/${ENDPOINT_NODES}/node1`,
                   [ANNOTATION_ORIGIN_LOCATION]: `url:${config.getString(
                     'catalog.providers.puppetdb.host',
-                  )}${ENDPOINT_NODES}/node1`,
+                  )}/${ENDPOINT_NODES}/node1`,
                 },
                 tags: ['windows'],
                 description: 'Description 1',
@@ -194,10 +194,10 @@ describe('PuppetEntityProvider', () => {
                   [ANNOTATION_PUPPET_CERTNAME]: 'node2',
                   [ANNOTATION_LOCATION]: `url:${config.getString(
                     'catalog.providers.puppetdb.host',
-                  )}${ENDPOINT_NODES}/node2`,
+                  )}/${ENDPOINT_NODES}/node2`,
                   [ANNOTATION_ORIGIN_LOCATION]: `url:${config.getString(
                     'catalog.providers.puppetdb.host',
-                  )}${ENDPOINT_NODES}/node2`,
+                  )}/${ENDPOINT_NODES}/node2`,
                 },
                 tags: ['linux'],
                 description: 'Description 2',

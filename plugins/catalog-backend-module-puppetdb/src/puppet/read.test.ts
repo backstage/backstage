@@ -222,7 +222,7 @@ describe('readPuppetNodes', () => {
       it('should return matched results', async () => {
         const entities = await readPuppetNodes(config);
         expect(mockFetch).toHaveBeenCalledWith(
-          `${config.host}${ENDPOINT_FACTSETS}?query=%5B%22%3D%22%2C+%22certname%22%2C+%22node1%22%5D`,
+          `${config.host}/${ENDPOINT_FACTSETS}?query=%5B%22%3D%22%2C+%22certname%22%2C+%22node1%22%5D`,
           {
             headers: {
               Accept: 'application/json',

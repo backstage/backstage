@@ -24,12 +24,12 @@ export const ANNOTATION_PUPPET_CERTNAME = 'puppet.com/certname';
 /**
  * Path of PuppetDB FactSets endpoint.
  */
-export const ENDPOINT_FACTSETS = '/pdb/query/v4/factsets';
+export const ENDPOINT_FACTSETS = 'pdb/query/v4/factsets';
 
 /**
  * Path of PuppetDB Nodes endpoint.
  */
-export const ENDPOINT_NODES = '/pdb/query/v4/nodes';
+export const ENDPOINT_NODES = 'pdb/query/v4/nodes';
 
 /**
  * Default owner for entities created by the PuppetDB provider.
