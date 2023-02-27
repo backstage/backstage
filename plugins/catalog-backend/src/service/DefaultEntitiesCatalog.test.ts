@@ -87,6 +87,9 @@ describe('DefaultEntitiesCatalog', () => {
       });
     }
 
+    const search = await buildEntitySearch(id, entity);
+    await knex<DbSearchRow>('search').insert(search);
+
     return id;
   }
 
@@ -717,6 +720,51 @@ describe('DefaultEntitiesCatalog', () => {
           null,
           null,
           'k:default/two',
+        ]);
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'queries for entities by ref, including filtering, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await addEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'one' },
+            spec: {},
+            relations: [],
+          },
+          [],
+        );
+        await addEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'two' },
+            spec: { owner: 'me' },
+            relations: [],
+          },
+          [],
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
+
+        const { items } = await catalog.entitiesBatch({
+          entityRefs: ['k:default/two', 'k:default/one'],
+          filter: { key: 'spec.owner', values: ['me'] },
+        });
+
+        expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
+          'k:default/two',
+          null,
         ]);
       },
       60_000,

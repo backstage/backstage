@@ -13,4 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { TaskSteps } from './TaskSteps';
+export { TaskSteps, type StepperProps } from './TaskSteps';
+export { TaskBorder } from './TaskBorder';
+export { TaskLogStream } from './TaskLogStream';

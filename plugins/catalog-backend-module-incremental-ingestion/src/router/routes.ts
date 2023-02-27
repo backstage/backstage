@@ -19,7 +19,6 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
-import { PROVIDER_BASE_PATH, PROVIDER_CLEANUP, PROVIDER_HEALTH } from './paths';
 
 export class IncrementalProviderRouter {
   private manager: IncrementalIngestionDatabaseManager;
@@ -35,7 +34,7 @@ export class IncrementalProviderRouter {
     router.use(express.json());
 
     // Get the overall health of all incremental providers
-    router.get(PROVIDER_HEALTH, async (_, res) => {
+    router.get('/incremental/health', async (_, res) => {
       const records = await this.manager.healthcheck();
       const providers = records.map(record => record.provider_name);
       const duplicates = [
@@ -50,13 +49,13 @@ export class IncrementalProviderRouter {
     });
 
     // Clean up and pause all providers
-    router.post(PROVIDER_CLEANUP, async (_, res) => {
+    router.post('/incremental/cleanup', async (_, res) => {
       const result = await this.manager.cleanupProviders();
       res.json(result);
     });
 
     // Get basic status of the provider
-    router.get(PROVIDER_BASE_PATH, async (req, res) => {
+    router.get('/incremental/providers/:provider', async (req, res) => {
       const { provider } = req.params;
       const record = await this.manager.getCurrentIngestionRecord(provider);
       if (record) {
@@ -91,35 +90,38 @@ export class IncrementalProviderRouter {
     });
 
     // Trigger the provider's next action
-    router.post(`${PROVIDER_BASE_PATH}/trigger`, async (req, res) => {
-      const { provider } = req.params;
-      const record = await this.manager.getCurrentIngestionRecord(provider);
-      if (record) {
-        await this.manager.triggerNextProviderAction(provider);
-        res.json({
-          success: true,
-          message: `${provider}: Next action triggered.`,
-        });
-      } else {
-        const providers: string[] = await this.manager.listProviders();
-        if (providers.includes(provider)) {
-          this.logger.debug(`${provider} - Ingestion record found`);
+    router.post(
+      `/incremental/providers/:provider/trigger`,
+      async (req, res) => {
+        const { provider } = req.params;
+        const record = await this.manager.getCurrentIngestionRecord(provider);
+        if (record) {
+          await this.manager.triggerNextProviderAction(provider);
           res.json({
             success: true,
-            message: 'Unable to trigger next action (provider is restarting)',
+            message: `${provider}: Next action triggered.`,
           });
         } else {
-          res.status(404).json({
-            success: false,
-            message: `Provider '${provider}' not found`,
-          });
+          const providers: string[] = await this.manager.listProviders();
+          if (providers.includes(provider)) {
+            this.logger.debug(`${provider} - Ingestion record found`);
+            res.json({
+              success: true,
+              message: 'Unable to trigger next action (provider is restarting)',
+            });
+          } else {
+            res.status(404).json({
+              success: false,
+              message: `Provider '${provider}' not found`,
+            });
+          }
         }
-      }
-    });
+      },
+    );
 
     // Start a brand-new ingestion cycle for the provider.
     // (Cancel's the current run if active, or marks it complete if resting)
-    router.post(`${PROVIDER_BASE_PATH}/start`, async (req, res) => {
+    router.post(`/incremental/providers/:provider/start`, async (req, res) => {
       const { provider } = req.params;
 
       const record = await this.manager.getCurrentIngestionRecord(provider);
@@ -151,8 +153,17 @@ export class IncrementalProviderRouter {
       }
     });
 
+    router.get(`/incremental/providers`, async (_req, res) => {
+      const providers = await this.manager.listProviders();
+
+      res.json({
+        success: true,
+        providers,
+      });
+    });
+
     // Stop the provider and pause it for 24 hours
-    router.post(`${PROVIDER_BASE_PATH}/cancel`, async (req, res) => {
+    router.post(`/incremental/providers/:provider/cancel`, async (req, res) => {
       const { provider } = req.params;
       const record = await this.manager.getCurrentIngestionRecord(provider);
       if (record) {
@@ -186,14 +197,14 @@ export class IncrementalProviderRouter {
     });
 
     // Wipe out all ingestion records for the provider and pause for 24 hours
-    router.delete(PROVIDER_BASE_PATH, async (req, res) => {
+    router.delete('/incremental/providers/:provider', async (req, res) => {
       const { provider } = req.params;
       const result = await this.manager.purgeAndResetProvider(provider);
       res.json(result);
     });
 
     // Get the ingestion marks for the current cycle
-    router.get(`${PROVIDER_BASE_PATH}/marks`, async (req, res) => {
+    router.get(`/incremental/providers/:provider/marks`, async (req, res) => {
       const { provider } = req.params;
       const record = await this.manager.getCurrentIngestionRecord(provider);
       if (record) {
@@ -221,16 +232,19 @@ export class IncrementalProviderRouter {
       }
     });
 
-    router.delete(`${PROVIDER_BASE_PATH}/marks`, async (req, res) => {
-      const { provider } = req.params;
-      const deletions = await this.manager.clearFinishedIngestions(provider);
+    router.delete(
+      `/incremental/providers/:provider/marks`,
+      async (req, res) => {
+        const { provider } = req.params;
+        const deletions = await this.manager.clearFinishedIngestions(provider);
 
-      res.json({
-        success: true,
-        message: `Expired marks for provider '${provider}' removed.`,
-        deletions,
-      });
-    });
+        res.json({
+          success: true,
+          message: `Expired marks for provider '${provider}' removed.`,
+          deletions,
+        });
+      },
+    );
 
     router.use(errorHandler());
 

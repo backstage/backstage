@@ -5,7 +5,7 @@ authorUrl: https://github.com/spotify
 category: Core Feature
 description: Manage all your services and software components, all in one place.
 documentation: https://backstage.io/docs/features/software-catalog/
-iconUrl: img/backstage-software-catalog.svg
+iconUrl: /img/backstage-software-catalog.svg
 npmPackageName: '@backstage/plugin-catalog'
 order: 1
 addedDate: '2021-06-17'

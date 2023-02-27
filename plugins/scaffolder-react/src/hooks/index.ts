@@ -16,3 +16,8 @@
 
 export { useCustomFieldExtensions } from './useCustomFieldExtensions';
 export { useCustomLayouts } from './useCustomLayouts';
+export {
+  useTaskEventStream,
+  type TaskStream,
+  type Step,
+} from './useEventStream';

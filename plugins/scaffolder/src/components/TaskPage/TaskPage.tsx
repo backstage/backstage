@@ -50,8 +50,8 @@ import useInterval from 'react-use/lib/useInterval';
 import {
   ScaffolderTaskStatus,
   ScaffolderTaskOutput,
+  useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
-import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskErrors } from './TaskErrors';
 import { TaskPageLinks } from './TaskPageLinks';
 import {
