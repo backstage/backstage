@@ -69,7 +69,7 @@ export const customResourceTransformer: ResourceTransformer = async (
   node,
   config,
 ): Promise<GroupEntity | undefined> => {
-  // Transofrmations may change namespace, owner, change entity naming pattern, add labels, annotations, etc.
+  // Transformations may change namespace, owner, change entity naming pattern, add labels, annotations, etc.
 
   // Create the Resource Entity on your own, or wrap the default transformer
   return await defaultResourceTransformer(node, config);
