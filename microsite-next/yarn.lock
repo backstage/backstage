@@ -1813,6 +1813,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@docusaurus/plugin-client-redirects@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@docusaurus/plugin-client-redirects@npm:2.3.1"
+  dependencies:
+    "@docusaurus/core": 2.3.1
+    "@docusaurus/logger": 2.3.1
+    "@docusaurus/utils": 2.3.1
+    "@docusaurus/utils-common": 2.3.1
+    "@docusaurus/utils-validation": 2.3.1
+    eta: ^2.0.0
+    fs-extra: ^10.1.0
+    lodash: ^4.17.21
+    tslib: ^2.4.0
+  peerDependencies:
+    react: ^16.8.4 || ^17.0.0
+    react-dom: ^16.8.4 || ^17.0.0
+  checksum: bb730359c7f9015108a3d4ec8a570e9c73847349747bf71711f522a7dc40007786b7cd25cebc845eeb16b3505e8068242559a2eda790f4c07d4083d9014a6f84
+  languageName: node
+  linkType: hard
+
 "@docusaurus/plugin-content-blog@npm:2.3.1":
   version: 2.3.1
   resolution: "@docusaurus/plugin-content-blog@npm:2.3.1"
@@ -3708,6 +3728,7 @@ __metadata:
   dependencies:
     "@docusaurus/core": 2.3.1
     "@docusaurus/module-type-aliases": 2.3.1
+    "@docusaurus/plugin-client-redirects": ^2.3.1
     "@docusaurus/preset-classic": 2.3.1
     "@spotify/prettier-config": ^14.0.0
     "@swc/core": ^1.3.36

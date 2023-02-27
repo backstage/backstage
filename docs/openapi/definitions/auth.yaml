@@ -19,7 +19,7 @@ info:
   version: 0.1.1-alpha.8
 externalDocs:
   description: Backstage official documentation
-  url: https://github.com/backstage/backstage/blob/master/docs/README.md
+  url: https://backstage.io/docs
 servers:
   - url: http://localhost:7007/api/auth/
 tags:
