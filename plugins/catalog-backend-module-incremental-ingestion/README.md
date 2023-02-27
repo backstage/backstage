@@ -102,6 +102,7 @@ If you want to manage your incremental entity providers via REST endpoints, the 
 | Method | Path                                       | Description                                                                                                                 |
 | ------ | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | GET    | `/incremental/health`                      | Checks the health of all incremental providers. Returns array of any unhealthy ones.                                        |
+| GET    | `/incremental/providers`                   | Get a list of all known incremental entity providers                                                                        |
 | GET    | `/incremental/providers/:provider`         | Checks the status of an incremental provider (resting, interstitial, etc).                                                  |
 | POST   | `/incremental/providers/:provider/trigger` | Triggers a provider's next action immediately. E.g., if it's currently interstitial, it will trigger the next burst.        |
 | POST   | `/incremental/providers/:provider/start`   | Stop the current ingestion cycle and start a new one immediately.                                                           |
