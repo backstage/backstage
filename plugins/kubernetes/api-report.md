@@ -281,6 +281,7 @@ export const kubernetesApiRef: ApiRef<KubernetesApi>;
 // @public (undocumented)
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   constructor(options: {
+    microsoftAuthApi: OAuthApi;
     googleAuthApi: OAuthApi;
     oidcProviders?: {
       [key: string]: OpenIdConnectApi;
