@@ -16,6 +16,7 @@
 
 import { assertError } from '@backstage/errors';
 import { Command } from 'commander';
+import { resolve } from 'path';
 import { exitWithError } from '../lib/errors';
 
 const configOption = [
@@ -234,6 +235,15 @@ export function registerDeployCommand(program: Command) {
   command
     .command('aws')
     .description('Deploys Backstage on AWS Lightsail')
+    .option(
+      '--dockerfile <path>',
+      'path of dockerfile',
+      resolve('./packages/backend/Dockerfile'),
+    )
+    .option('--pulumiConfigFile <path>', 'config file of pulumi')
+    .option('--stack <name>', 'name of the stack', 'backstage')
+    .option('--destroy <stack>', 'name of the stack to destroy')
+    .option('--region <region>', 'region of your aws console', 'us-east-1')
     .action(lazy(() => import('./deploy/aws').then(m => m.default)));
 }
 

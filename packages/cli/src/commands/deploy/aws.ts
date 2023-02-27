@@ -14,6 +14,42 @@
  * limitations under the License.
  */
 
-export default async () => {
-  console.info('This command under progress');
+import chalk from 'chalk';
+import * as pulumi from '@pulumi/pulumi';
+
+import { OptionValues } from 'commander';
+import { AWSProgram } from './programs';
+
+const chalkOutput = (message?: any) => {
+  return process.stderr.write(chalk.blueBright(message));
+};
+
+export default async (opts: OptionValues) => {
+  const args = {
+    stackName: opts.stack,
+    projectName: opts.stack,
+    program: AWSProgram(opts),
+  };
+
+  const stack = await pulumi.automation.LocalWorkspace.createOrSelectStack(
+    args,
+  );
+
+  process.stderr.write(chalk.greenBright('successfully initialized stack\n'));
+  process.stderr.write(chalk.greenBright('installing aws plugin...\n'));
+  await stack.workspace.installPlugin('aws', 'v4.0.0');
+  process.stderr.write(chalk.greenBright('plugins installed\n'));
+  process.stderr.write(chalk.greenBright('setting up config\n'));
+  await stack.setConfig('aws:region', { value: opts.region });
+  process.stderr.write(chalk.greenBright('refreshing stack...\n'));
+  await stack.refresh({ onOutput: chalkOutput });
+  process.stderr.write(chalk.greenBright('refresh complete\n'));
+
+  if (opts.destroy) {
+    process.stderr.write(chalk.redBright(`destroying stack ${opts.destroy}\n`));
+    await stack.destroy({ onOutput: chalk.blueBright });
+  }
+
+  process.stderr.write(chalk.greenBright('updating stack...\n'));
+  await stack.up({ onOutput: chalkOutput });
 };
