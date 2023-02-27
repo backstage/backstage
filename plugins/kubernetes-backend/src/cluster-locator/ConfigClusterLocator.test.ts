@@ -256,4 +256,19 @@ describe('ConfigClusterLocator', () => {
       },
     ]);
   });
+
+  it('supports aks authProvider', async () => {
+    const cluster = {
+      name: 'aks-cluster',
+      url: 'https://aks.test',
+      authProvider: 'aks',
+    };
+    const sut = ConfigClusterLocator.fromConfig(
+      new ConfigReader({ clusters: [cluster] }),
+    );
+
+    const result = await sut.getClusters();
+
+    expect(result).toMatchObject([cluster]);
+  });
 });
