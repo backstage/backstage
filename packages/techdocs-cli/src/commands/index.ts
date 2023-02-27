@@ -173,6 +173,10 @@ export function registerCommands(program: Command) {
       '--awsEndpoint <AWS ENDPOINT>',
       'Optional AWS endpoint to send requests to.',
     )
+    .option(
+      '--awsProxy <HTTPS Proxy>',
+      'Optional Proxy to use for AWS requests.',
+    )
     .option('--awsS3sse <AWS SSE>', 'Optional AWS S3 Server Side Encryption.')
     .option(
       '--awsS3ForcePathStyle',
