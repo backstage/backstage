@@ -22,6 +22,8 @@ import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator
 import { GoogleServiceAccountAuthTranslator } from './GoogleServiceAccountAuthProvider';
 import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
 import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
+import { ClusterDetails } from '../types/types';
+import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
  *
@@ -55,6 +57,14 @@ export class KubernetesAuthTranslatorGenerator {
       }
       case 'localKubectlProxy': {
         return new NoopKubernetesAuthTranslator();
+      }
+      case 'aks': {
+        return {
+          decorateClusterDetailsWithAuth: async (
+            clusterDetails: ClusterDetails,
+            auth: KubernetesRequestAuth,
+          ) => ({ ...clusterDetails, serviceAccountToken: auth.aks }),
+        };
       }
       default: {
         throw new Error(

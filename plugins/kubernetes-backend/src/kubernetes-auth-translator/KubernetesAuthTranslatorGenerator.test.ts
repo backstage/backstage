@@ -51,6 +51,20 @@ describe('getKubernetesAuthTranslatorInstance', () => {
     expect(authTranslator instanceof OidcKubernetesAuthTranslator).toBe(true);
   });
 
+  it('can return an auth translator for aks auth', () => {
+    const authTranslator: KubernetesAuthTranslator =
+      sut.getKubernetesAuthTranslatorInstance('aks', { logger });
+
+    const decorated = authTranslator.decorateClusterDetailsWithAuth(
+      { name: '', url: '', authProvider: '' },
+      { aks: 'aks_token' },
+    );
+
+    return expect(decorated).resolves.toMatchObject({
+      serviceAccountToken: 'aks_token',
+    });
+  });
+
   it('throws an error when asked for an auth translator for an unsupported auth type', () => {
     expect(() =>
       sut.getKubernetesAuthTranslatorInstance('linode', { logger }),
