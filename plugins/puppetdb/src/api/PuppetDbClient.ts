@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PuppetDbApi, PuppetDbNode } from './types';
+import { PuppetDbApi, PuppetDbNode, PuppetDbReport } from './types';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 
@@ -38,7 +38,7 @@ export class PuppetDbClient implements PuppetDbApi {
   ): Promise<T | undefined> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/puppetdb`;
     const response = await this.fetchApi.fetch(
-      `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
+      `${apiUrl}${path}?${new URLSearchParams(query).toString()}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -62,5 +62,37 @@ export class PuppetDbClient implements PuppetDbApi {
       `/pdb/query/v4/nodes/${encodeURIComponent(puppetDbCertName)}`,
       {},
     );
+  }
+
+  async getPuppetDbReport(
+    puppetDbReportHash: string,
+  ): Promise<PuppetDbReport | undefined> {
+    if (!puppetDbReportHash) {
+      throw new Error('PuppetDB report hash is required');
+    }
+
+    const reports = (await this.callApi(`/pdb/query/v4/reports`, {
+      query: `["=","hash","${puppetDbReportHash}"]`,
+    })) as PuppetDbReport[];
+
+    if (!reports || reports.length === 0) {
+      return undefined;
+    }
+
+    return reports[0];
+  }
+
+  async getPuppetDbNodeReports(
+    puppetDbCertName: string,
+  ): Promise<PuppetDbReport[] | undefined> {
+    if (!puppetDbCertName) {
+      throw new Error('PuppetDB certname is required');
+    }
+
+    return this.callApi(`/pdb/query/v4/reports`, {
+      query: `["=","certname","${puppetDbCertName}"]`,
+      order_by: `[{"field": "start_time", "order": "desc"},{"field": "end_time", "order": "desc"}]`,
+      limit: 30,
+    });
   }
 }

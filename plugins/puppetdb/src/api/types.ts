@@ -85,10 +85,157 @@ export type PuppetDbNode = {
   expired?: boolean;
 };
 
+/**
+ * Report from a PuppetDB.
+ */
+export type PuppetDbReport = {
+  /**
+   * The name of the node that the report was received from.
+   */
+  certname: string;
+  /**
+   * The ID of the report.
+   */
+  hash: string;
+  /**
+   * The environment assigned to the node that submitted the report.
+   */
+  environment: string;
+  /**
+   * The status associated to report's node.
+   */
+  status: string;
+  /**
+   * The job id associated with the report.
+   */
+  job_id?: string;
+  /**
+   *  A flag indicating whether the report was produced by a noop run.
+   */
+  noop: boolean;
+  /**
+   *  A flag indicating whether the report contains noop events.
+   */
+  noop_pending?: boolean;
+  /**
+   * The version of Puppet that generated the report.
+   */
+  puppet_version: string;
+  /**
+   * The version number of the report format that Puppet used to generate the original report data.
+   */
+  report_format: number;
+  /**
+   * An identifier string that Puppet uses to match a specific catalog for a node to a specific Puppet run.
+   */
+  configuration_version: string;
+  /**
+   * The time on the agent at which the Puppet run began.
+   */
+  start_time: string;
+  /**
+   * The time on the agent at which the Puppet run ended.
+   */
+  end_time: string;
+  /**
+   * The time of catalog submission from the Puppet Server to PuppetDB.
+   */
+  producer_timestamp: string;
+  /**
+   * The time at which PuppetDB received the report.
+   */
+  receive_time: string;
+  /**
+   * The certname of the Puppet Server that sent the report to PuppetDB.
+   */
+  producer: string;
+  /**
+   * A string used to identify a Puppet run.
+   */
+  transaction_uuid: string;
+  /**
+   * A string used to tie a catalog to a report to the catalog used from that Puppet run.
+   */
+  catalog_uuid: string;
+  /**
+   * A string used to tie a catalog to the Puppet code which generated the catalog.
+   */
+  code_id: string;
+  /**
+   * A string used to identify whether the Puppet run used a cached catalogs.
+   */
+  cached_catalog_status: string;
+  /**
+   * Either "agent", "plan", or "any" to restrict the results to reports submitted from that source.
+   */
+  type: string;
+  /**
+   * A flag indicating whether any of the report's events remediated configuration drift.
+   */
+  corrective_change: boolean;
+  /**
+   * Report metrics.
+   */
+  metrics: {
+    /**
+     * Metrics data.
+     */
+    data: PuppetDbReportMetric[];
+    /**
+     * Link to the metrics endpoint.
+     */
+    href: string;
+  };
+};
+
+/**
+ * A metric from a PuppetDB report.
+ */
+export type PuppetDbReportMetric = {
+  /**
+   * The name of the metric.
+   */
+  name: string;
+  /**
+   * The value of the metric.
+   */
+  value: string;
+  /**
+   * The category of the metric.
+   */
+  category: string;
+};
+
 export const puppetDbApiRef = createApiRef<PuppetDbApi>({
   id: 'plugin.puppetdb.service',
 });
 
+/**
+ * The API provided by the PuppetDB plugin.
+ */
 export type PuppetDbApi = {
+  /**
+   *
+   * @param puppetDbCertName - The name of the PuppetDB node.
+   * @returns A PuppetDB node.
+   */
   getPuppetDbNode(puppetDbCertName: string): Promise<PuppetDbNode | undefined>;
+  /**
+   * Get a list of PuppetDB reports for the specified node.
+   *
+   * @param puppetDbCertName - The name of the node that the report was received from.
+   * @returns A list of PuppetDB reports for the specified node.
+   */
+  getPuppetDbNodeReports(
+    puppetDbCertName: string,
+  ): Promise<PuppetDbReport[] | undefined>;
+  /**
+   * Get a specific PuppetDB report.
+   *
+   * @param puppetDbReportHash - The ID of the report.
+   * @returns A specific PuppetDB report.
+   */
+  getPuppetDbReport(
+    puppetDbReportHash: string,
+  ): Promise<PuppetDbReport | undefined>;
 };

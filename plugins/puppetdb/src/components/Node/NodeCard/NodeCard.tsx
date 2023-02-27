@@ -18,18 +18,18 @@ import useAsync from 'react-use/lib/useAsync';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { InfoCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { puppetDbApiRef } from '../../api';
+import { puppetDbApiRef } from '../../../api';
 
 type PuppetDbNodeCardProps = {
   certName: string;
 };
 
-export const PuppetDbNodeCard = (props: PuppetDbNodeCardProps) => {
+export const NodeCard = (props: PuppetDbNodeCardProps) => {
   const { certName } = props;
   const puppetDbApi = useApi(puppetDbApiRef);
 
   const { value, loading, error } = useAsync(async () => {
-    return puppetDbApi.getPuppetDbNode(certName);
+    return puppetDbApi.getPuppetDbReport(certName);
   }, [puppetDbApi, certName]);
 
   if (loading) {
@@ -39,11 +39,8 @@ export const PuppetDbNodeCard = (props: PuppetDbNodeCardProps) => {
   }
 
   return (
-    <InfoCard
-      title="PuppetDB Node"
-      subheader={`Details about PuppetDB node ${certName}`}
-    >
-      <text>${JSON.stringify(value)}</text>
+    <InfoCard title={`Puppet node: ${certName}`}>
+      <pre>{JSON.stringify(value, null, 2)}</pre>
     </InfoCard>
   );
 };

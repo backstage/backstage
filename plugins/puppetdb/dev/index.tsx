@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
+import { createDevApp } from '@backstage/dev-utils';
+import { puppetdbPlugin } from '../src';
 
-export const rootRouteRef = createRouteRef({
-  id: 'puppetdb',
-});
-
-export const buildRouteRef = createSubRouteRef({
-  id: 'puppetdb/report',
-  path: '/:hash',
-  parent: rootRouteRef,
-});
+createDevApp().registerPlugin(puppetdbPlugin).render();

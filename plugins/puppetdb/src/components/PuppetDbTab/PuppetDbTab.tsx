@@ -22,7 +22,8 @@ import {
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { isPuppetDbAvailable } from '../../plugin';
 import { ANNOTATION_PUPPET_CERTNAME } from '../../constants';
-import { PuppetDbNodeCard } from '../PuppetDbNodeCard';
+import { ReportsTable } from '../Reports/ReportsTable/ReportsTable';
+import { NodeCard } from '../Node';
 
 export const PuppetDbTab = () => {
   const { entity } = useEntity();
@@ -34,12 +35,13 @@ export const PuppetDbTab = () => {
   }
 
   // @ts-ignore
+  // TODO(tdabasinskas): Remove the static value after the testing.
   const certName = entity.metadata.annotations[ANNOTATION_PUPPET_CERTNAME];
 
   return (
     <Page themeId="tool">
       <Content>
-        <PuppetDbNodeCard certName={certName} />
+        <ReportsTable certName={certName} />
       </Content>
     </Page>
   );

@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type { PuppetDbNode } from './types';
+export type { PuppetDbNode, PuppetDbReport } from './types';
 export { puppetDbApiRef } from './types';
 export { PuppetDbClient } from './PuppetDbClient';
