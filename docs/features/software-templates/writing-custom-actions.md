@@ -63,7 +63,7 @@ The `createTemplateAction` takes an object which specifies the following:
   in some way so that they won't collide with future built-in actions that we
   may ship with the `scaffolder-backend` plugin.
 - `schema.input` - A `zod` or JSON schema object for input values to your function
-- `schema.output` - A `zod` or JSON schema object for values which are outputted from the
+- `schema.output` - A `zod` or JSON schema object for values which are output from the
   function using `ctx.output`
 - `handler` - the actual code which is run part of the action, with a context
 
