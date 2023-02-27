@@ -31,7 +31,7 @@ catalog:
       yourProviderId:
         host: gitlab.com
         orgEnabled: true
-        group: org/teams # Optional. Must not end with slash. Accepts only groups under the provided path (excluded)
+        group: org/teams # Optional. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
 ```
 
