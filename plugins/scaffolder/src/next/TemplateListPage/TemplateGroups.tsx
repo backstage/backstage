@@ -26,6 +26,7 @@ import { Progress, Link, DocsIcon } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 import {
   errorApiRef,
+  featureFlagsApiRef,
   useApi,
   useApp,
   useRouteRef,
@@ -34,6 +35,8 @@ import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
 import { viewTechDocRouteRef } from '../../routes';
 import { nextSelectedTemplateRouteRef } from '../routes';
 import { useNavigate } from 'react-router-dom';
+import { FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES } from '../../components/constants';
+import { useScaffolderOptions } from '../../options';
 
 /**
  * @alpha
@@ -57,6 +60,11 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
   const app = useApp();
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(nextSelectedTemplateRouteRef);
+  const featureFlagApi = useApi(featureFlagsApiRef);
+  const { activateExperimentalTemplatesFeature } = useScaffolderOptions();
+  const showExperimentalTemplates = featureFlagApi.isActive(
+    FEATURE_FLAG_FOR_EXPERIMENTAL_TEMPLATES,
+  );
   const navigate = useNavigate();
   const onSelected = useCallback(
     (template: TemplateEntityV1beta3) => {
@@ -92,6 +100,12 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
       {groups.map(({ title, filter }, index) => {
         const templates = entities
           .filter((e): e is TemplateEntityV1beta3 => filter(e))
+          .filter(
+            template =>
+              !activateExperimentalTemplatesFeature ||
+              showExperimentalTemplates ||
+              template.spec?.lifecycle !== 'experimental',
+          )
           .map(template => {
             const { kind, namespace, name } = parseEntityRef(
               stringifyEntityRef(template),

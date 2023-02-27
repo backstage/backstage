@@ -33,7 +33,7 @@ import {
   OwnerPicker,
   OwnerPickerSchema,
 } from './components/fields/OwnerPicker/OwnerPicker';
-import { repoPickerValidation } from './components/fields/RepoUrlPicker';
+import { repoPickerValidation } from './components';
 import {
   RepoUrlPicker,
   RepoUrlPickerSchema,
@@ -62,6 +62,10 @@ import {
   scaffolderTaskRouteRef,
 } from './routes';
 import { nextRouteRef } from './next';
+import {
+  ScaffolderInputPluginOptions,
+  ScaffolderPluginOptions,
+} from './options';
 
 /**
  * The main plugin export for the scaffolder.
@@ -95,6 +99,15 @@ export const scaffolderPlugin = createPlugin({
   externalRoutes: {
     registerComponent: registerComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
+  },
+  featureFlags: [{ name: 'experimental-scaffolder-templates' }],
+  __experimentalConfigure(
+    options?: ScaffolderInputPluginOptions,
+  ): ScaffolderPluginOptions {
+    const defaultOptions = {
+      activateExperimentalTemplatesFeature: false,
+    };
+    return { ...defaultOptions, ...options };
   },
 });
 
