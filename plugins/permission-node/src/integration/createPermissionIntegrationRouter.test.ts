@@ -65,16 +65,14 @@ const createApp = (
     | typeof defaultMockedGetResources
     | null = defaultMockedGetResources,
 ) => {
-  const router = createPermissionIntegrationRouter(
-    mockedGetResources
-      ? {
-          resourceType: 'test-resource',
-          permissions: [testPermission],
-          getResources: mockedGetResources,
-          rules: [testRule1, testRule2],
-        }
-      : { permissions: [testPermission] },
-  );
+  const router = mockedGetResources
+    ? createPermissionIntegrationRouter({
+        resourceType: 'test-resource',
+        permissions: [testPermission],
+        getResources: mockedGetResources,
+        rules: [testRule1, testRule2],
+      })
+    : createPermissionIntegrationRouter({ permissions: [testPermission] });
 
   return express().use(router);
 };

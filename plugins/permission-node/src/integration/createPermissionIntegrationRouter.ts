@@ -183,25 +183,14 @@ export type CreatePermissionIntegrationRouterResourceOptions<
 };
 
 /**
- * Options for creating a permission integration router.
- *
- * @public
- */
-export type CreatePermissionIntegrationRouterOptions<
-  TResourceType extends string,
-  TResource,
-> =
-  | {
-      permissions: Array<Permission>;
-    }
-  | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>;
-
-/**
  * Create an express Router which provides an authorization route to allow
  * integration between the permission backend and other Backstage backend
  * plugins. Plugin owners that wish to support conditional authorization for
  * their resources should add the router created by this function to their
  * express app inside their `createRouter` implementation.
+ *
+ * In case the `permissions` option is provided, the router also
+ * provides a route that exposes permissions and routes of a plugin.
  *
  * @remarks
  *
@@ -231,12 +220,40 @@ export type CreatePermissionIntegrationRouterOptions<
  *
  * @public
  */
-export const createPermissionIntegrationRouter = <
+export function createPermissionIntegrationRouter<
   TResourceType extends string,
   TResource,
 >(
-  options: CreatePermissionIntegrationRouterOptions<TResourceType, TResource>,
-): express.Router => {
+  options: CreatePermissionIntegrationRouterResourceOptions<
+    TResourceType,
+    TResource
+  >,
+): express.Router;
+
+/**
+ *
+ * Create an express Router which provides a route that exposes
+ * permissions and routes of a plugin.
+ * @public
+ */
+export function createPermissionIntegrationRouter(options: {
+  permissions: Array<Permission>;
+}): express.Router;
+
+/**
+ * @public
+ */
+export function createPermissionIntegrationRouter<
+  TResourceType extends string,
+  TResource,
+>(
+  options:
+    | { permissions: Array<Permission> }
+    | CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType,
+        TResource
+      >,
+): express.Router {
   const router = Router();
   router.use(express.json());
 
@@ -326,13 +343,18 @@ export const createPermissionIntegrationRouter = <
   router.use(errorHandler());
 
   return router;
-};
+}
 
 function isCreatePermissionIntegrationRouterResourceOptions<
   TResourceType extends string,
   TResource,
 >(
-  options: CreatePermissionIntegrationRouterOptions<TResourceType, TResource>,
+  options:
+    | { permissions: Array<Permission> }
+    | CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType,
+        TResource
+      >,
 ): options is CreatePermissionIntegrationRouterResourceOptions<
   TResourceType,
   TResource
