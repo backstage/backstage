@@ -1,6 +1,5 @@
 ---
-'@backstage/backend-app-api': patch
 '@backstage/errors': patch
 ---
 
-Add NotImplementedError
+Added `NotImplementedError`, which can be used when the server does not recognize the request method and is incapable of supporting it for any resource.
