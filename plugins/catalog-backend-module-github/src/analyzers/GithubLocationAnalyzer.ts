@@ -63,7 +63,8 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
     return integration?.type === 'github';
   }
 
-  async analyze({ url, catalogFilename }: AnalyzeOptions) {
+  async analyze(options: AnalyzeOptions) {
+    const { url, catalogFilename } = options;
     const { owner, name: repo } = parseGitUrl(url);
 
     const catalogFile = catalogFilename || 'catalog-info.yaml';

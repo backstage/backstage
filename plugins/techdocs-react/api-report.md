@@ -91,7 +91,7 @@ export type TechDocsMetadata = {
 
 // @public
 export const TechDocsReaderPageProvider: React_2.MemoExoticComponent<
-  ({ entityRef, children }: TechDocsReaderPageProviderProps) => JSX.Element
+  (props: TechDocsReaderPageProviderProps) => JSX.Element
 >;
 
 // @public
@@ -120,11 +120,7 @@ export type TechDocsReaderPageValue = {
 };
 
 // @public
-export const TechDocsShadowDom: ({
-  element,
-  onAppend,
-  children,
-}: TechDocsShadowDomProps) => JSX.Element;
+export const TechDocsShadowDom: (props: TechDocsShadowDomProps) => JSX.Element;
 
 // @public
 export type TechDocsShadowDomProps = PropsWithChildren<{
