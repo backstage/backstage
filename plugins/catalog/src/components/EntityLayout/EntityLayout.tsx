@@ -150,13 +150,27 @@ interface EntityContextMenuOptions {
   disableUnregister: boolean | VisibleType;
 }
 
-/** @public */
-export interface EntityLayoutProps {
-  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
-  UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
-  children?: React.ReactNode;
+interface EntityLayoutDefaultProps {
+  children: React.ReactNode;
   NotFoundComponent?: React.ReactNode;
 }
+
+interface EntityLayoutDefaultActions extends EntityLayoutDefaultProps {
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
+  actions?: never;
+}
+
+interface EntityLayoutCustomActions extends EntityLayoutDefaultProps {
+  UNSTABLE_extraContextMenuItems?: never;
+  UNSTABLE_contextMenuOptions?: never;
+  actions?: React.ReactNode;
+}
+
+/** @public */
+export type EntityLayoutProps =
+  | EntityLayoutDefaultActions
+  | EntityLayoutCustomActions;
 
 /**
  * EntityLayout is a compound component, which allows you to define a layout for
@@ -179,6 +193,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
+    actions,
     children,
     NotFoundComponent,
   } = props;
@@ -245,17 +260,20 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         pageTitleOverride={headerTitle}
         type={headerType}
       >
-        {entity && (
-          <>
-            <EntityLabels entity={entity} />
-            <EntityContextMenu
-              UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-              UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-              onUnregisterEntity={() => setConfirmationDialogOpen(true)}
-              onInspectEntity={() => setInspectionDialogOpen(true)}
-            />
-          </>
-        )}
+        {entity &&
+          (Boolean(actions) ? (
+            actions
+          ) : (
+            <>
+              <EntityLabels entity={entity} />
+              <EntityContextMenu
+                UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+                UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
+                onUnregisterEntity={() => setConfirmationDialogOpen(true)}
+                onInspectEntity={() => setInspectionDialogOpen(true)}
+              />
+            </>
+          ))}
       </Header>
 
       {loading && <Progress />}
