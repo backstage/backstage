@@ -31,4 +31,10 @@ catalog:
       yourProviderId:
         host: gitlab.com
         orgEnabled: true
+        group: org/teams # Optional. Must not end with slash. Accepts only groups under the provided path (excluded)
+        groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
 ```
+
+When the `group` parameter is provided, the corresponding path prefix will be stripped out from each matching group
+when computing the unique entity name. e.g. If `group` is `org/teams`, the name for `org/teams/avengers/gotg` will
+be `avengers-gotg`.
