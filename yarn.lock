@@ -36730,13 +36730,13 @@ __metadata:
   linkType: hard
 
 "swr@npm:^2.0.0":
-  version: 2.0.3
-  resolution: "swr@npm:2.0.3"
+  version: 2.0.4
+  resolution: "swr@npm:2.0.4"
   dependencies:
     use-sync-external-store: ^1.2.0
   peerDependencies:
     react: ^16.11.0 || ^17.0.0 || ^18.0.0
-  checksum: 968071e3336b81194879fd94553777793314e773cd2a27665617131403dca6b7e4d3697ab00d0b0aa456c107c0c8d86f9ce52bac22f8533e8421099870d46b17
+  checksum: 2fd26baed9a0ad3ecf24d7a64c4929f9c3be71c942e883ab369c3929aa297a47b0512c29ed8cdfd0ce2e3f5ee3f181d80c16b2b95128a0ae58bc133b4a0ea5a8
   languageName: node
   linkType: hard
 
