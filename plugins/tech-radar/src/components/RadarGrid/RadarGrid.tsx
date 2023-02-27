@@ -23,26 +23,29 @@ export type Props = {
   rings: Ring[];
 };
 
-const useStyles = makeStyles<Theme>(theme => ({
-  ring: {
-    fill: 'none',
-    stroke: '#bbb',
-    strokeWidth: '1px',
-  },
-  axis: {
-    fill: 'none',
-    stroke: '#bbb',
-    strokeWidth: '1px',
-  },
-  text: {
-    pointerEvents: 'none',
-    userSelect: 'none',
-    fill: theme.palette.text.primary,
-    fontSize: '25px',
-    fontWeight: 800,
-    opacity: 0.35,
-  },
-}));
+const useStyles = makeStyles<Theme>(
+  theme => ({
+    ring: {
+      fill: 'none',
+      stroke: '#bbb',
+      strokeWidth: '1px',
+    },
+    axis: {
+      fill: 'none',
+      stroke: '#bbb',
+      strokeWidth: '1px',
+    },
+    text: {
+      pointerEvents: 'none',
+      userSelect: 'none',
+      fill: theme.palette.text.primary,
+      fontSize: '25px',
+      fontWeight: 800,
+      opacity: 0.7,
+    },
+  }),
+  { name: 'PluginTechRadarGrid' },
+);
 
 // A component for the background grid of the radar, with axes, rings etc.  It will render around the origin, i.e.
 // assume that (0, 0) is in the middle of the drawing.
