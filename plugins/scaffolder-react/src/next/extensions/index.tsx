@@ -18,6 +18,7 @@ import {
   NextCustomFieldValidator,
   NextFieldExtensionOptions,
   NextFieldExtensionComponentProps,
+  NextFieldExtensionUiSchema,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { UIOptionsType } from '@rjsf/utils';
@@ -55,4 +56,5 @@ export type {
   NextCustomFieldValidator,
   NextFieldExtensionOptions,
   NextFieldExtensionComponentProps,
+  NextFieldExtensionUiSchema,
 };

@@ -64,13 +64,17 @@ export type FormProps = Pick<
 >;
 
 // @alpha
-export type NextCustomFieldValidator<TFieldReturnValue> = (
+export type NextCustomFieldValidator<
+  TFieldReturnValue,
+  TUiOptions = unknown,
+> = (
   data: TFieldReturnValue,
   field: FieldValidation,
   context: {
     apiHolder: ApiHolder;
     formData: JsonObject;
     schema: JsonObject;
+    uiSchema?: NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
   },
 ) => void | Promise<void>;
 
@@ -80,23 +84,28 @@ export interface NextFieldExtensionComponentProps<
   TUiOptions = {},
 > extends PropsWithChildren<FieldProps<TFieldReturnValue>> {
   // (undocumented)
-  uiSchema?: UiSchema<TFieldReturnValue> & {
-    'ui:options'?: TUiOptions & UIOptionsType;
-  };
+  uiSchema?: NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
 }
 
 // @alpha
 export type NextFieldExtensionOptions<
   TFieldReturnValue = unknown,
-  TInputProps = unknown,
+  TUiOptions = unknown,
 > = {
   name: string;
   component: (
-    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+    props: NextFieldExtensionComponentProps<TFieldReturnValue, TUiOptions>,
   ) => JSX.Element | null;
-  validation?: NextCustomFieldValidator<TFieldReturnValue>;
+  validation?: NextCustomFieldValidator<TFieldReturnValue, TUiOptions>;
   schema?: CustomFieldExtensionSchema;
 };
+
+// @alpha
+export interface NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
+  extends UiSchema<TFieldReturnValue> {
+  // (undocumented)
+  'ui:options'?: TUiOptions & UIOptionsType;
+}
 
 // @alpha
 export interface ParsedTemplateSchema {
