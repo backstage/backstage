@@ -139,21 +139,25 @@ import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
 
 const techDocsTabsConfig = [
   {
-    label: "Recommended Documentation",
+    label: 'Recommended Documentation',
     panels: [
       {
         title: 'Golden Path',
         description: 'Documentation about standards to follow',
         panelType: 'DocsCardGrid',
-        filterPredicate: entity => entity?.metadata?.tags?.includes('recommended') ?? false,
-      }
-    ]
-  }
-]
+        filterPredicate: entity =>
+          entity?.metadata?.tags?.includes('recommended') ?? false,
+      },
+    ],
+  },
+];
 
 const AppRoutes = () => {
   <FlatRoutes>
-    <Route path="/docs" element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}>
+    <Route
+      path="/docs"
+      element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}
+    />
   </FlatRoutes>;
 };
 ```
