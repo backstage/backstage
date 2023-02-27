@@ -22,7 +22,7 @@ describe('hasTag', () => {
       expect(
         hasTag.apply(
           {
-            'backstage:accessControl': {
+            'backstage:permissions': {
               tags: ['foo', 'bar'],
             },
           },
@@ -33,7 +33,7 @@ describe('hasTag', () => {
       ).toEqual(false);
     });
 
-    it('returns false when accessControl is missing', () => {
+    it('returns false when backstage:permissions is missing', () => {
       expect(
         hasTag.apply(
           {},
@@ -51,7 +51,7 @@ describe('hasTag', () => {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Component',
             metadata: {
-              'backstage:accessControl': {
+              'backstage:permissions': {
                 tags: [],
               },
             },
@@ -67,7 +67,7 @@ describe('hasTag', () => {
       expect(
         hasTag.apply(
           {
-            'backstage:accessControl': {
+            'backstage:permissions': {
               tags: ['foo', 'bar'],
             },
           },

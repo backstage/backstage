@@ -36,7 +36,7 @@ export const hasTag = createScaffolderPermissionRule({
     tag: z.string().describe('Name of the tag to match on'),
   }),
   apply: (resource, { tag }) => {
-    return resource['backstage:accessControl']?.tags?.includes(tag) ?? false;
+    return resource['backstage:permissions']?.tags?.includes(tag) ?? false;
   },
   toQuery: () => ({}),
 });
