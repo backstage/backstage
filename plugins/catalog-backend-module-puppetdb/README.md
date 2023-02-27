@@ -62,7 +62,6 @@ ingested resources. In case you want to customize the ingested entities, the pro
 of overriding the default transformer.
 
 1. Create a transformer:
-2.
 
 ```ts
 export const customResourceTransformer: ResourceTransformer = async (
