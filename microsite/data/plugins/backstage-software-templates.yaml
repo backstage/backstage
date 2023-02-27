@@ -5,7 +5,7 @@ authorUrl: https://github.com/spotify
 category: Core Feature
 description: Create new software components in just a few steps, with your standards built-in (Scaffolder).
 documentation: https://backstage.io/docs/features/software-templates/
-iconUrl: img/backstage-software-templates.svg
+iconUrl: /img/backstage-software-templates.svg
 npmPackageName: '@backstage/plugin-scaffolder'
 order: 2
 addedDate: '2021-03-29'

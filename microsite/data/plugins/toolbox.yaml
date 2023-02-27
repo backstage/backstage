@@ -5,6 +5,6 @@ authorUrl: https://github.com/drodil
 category: Tools
 description: Development related tools within Backstage
 documentation: https://github.com/drodil/backstage-plugin-toolbox
-iconUrl: img/toolbox-logo.png
+iconUrl: /img/toolbox-logo.png
 npmPackageName: '@drodil/backstage-plugin-toolbox'
 addedDate: '2023-01-09'
