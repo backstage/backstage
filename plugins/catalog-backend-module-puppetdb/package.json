@@ -41,7 +41,6 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@types/node-fetch": "^2.5.12",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "node-fetch": "^2.6.7",
