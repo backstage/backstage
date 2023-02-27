@@ -126,16 +126,6 @@ export type MetadataResponse = {
   rules: MetadataResponseSerializedRule[];
 };
 
-/**
- * Function type for returning an array of resources
- * matching the given resourceRefs.
- *
- * @public
- */
-export type GetResourcesFn<TResource> = (
-  resourceRefs: string[],
-) => Promise<Array<TResource | undefined>>;
-
 const applyConditions = <TResourceType extends string, TResource>(
   criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
   resource: TResource | undefined,
@@ -187,7 +177,9 @@ export type CreatePermissionIntegrationRouterResourceOptions<
   // consider any rules whose resource type does not match
   // to be an error.
   rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
-  getResources?: GetResourcesFn<TResource>;
+  getResources?: (
+    resourceRefs: string[],
+  ) => Promise<Array<TResource | undefined>>;
 };
 
 /**

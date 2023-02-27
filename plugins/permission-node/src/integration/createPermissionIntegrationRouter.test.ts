@@ -24,7 +24,7 @@ import request, { Response } from 'supertest';
 import { z } from 'zod';
 import {
   createPermissionIntegrationRouter,
-  GetResourcesFn,
+  CreatePermissionIntegrationRouterResourceOptions,
 } from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -53,8 +53,11 @@ const testRule2 = createPermissionRule({
   toQuery: () => ({}),
 });
 
-const defaultMockedGetResources: GetResourcesFn<{ id: string }> = jest.fn(
-  async resourceRefs => resourceRefs.map(resourceRef => ({ id: resourceRef })),
+const defaultMockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
+  string,
+  { id: string }
+>['getResources'] = jest.fn(async resourceRefs =>
+  resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
 const createApp = (
@@ -415,8 +418,11 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('returns 200/DENY when resource is not found', async () => {
-      const mockedGetResources: GetResourcesFn<{ id: string }> = jest.fn(
-        async resourceRefs => resourceRefs.map(() => undefined),
+      const mockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
+        string,
+        { id: string }
+      >['getResources'] = jest.fn(async resourceRefs =>
+        resourceRefs.map(() => undefined),
       );
 
       const response = await request(createApp(mockedGetResources))
@@ -448,13 +454,15 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('interleaves responses for present and missing resources', async () => {
-      const mockedGetResources: GetResourcesFn<{ id: string }> = jest.fn(
-        async resourceRefs =>
-          resourceRefs.map(resourceRef =>
-            resourceRef === 'default:test/missing-resource'
-              ? undefined
-              : { id: resourceRef },
-          ),
+      const mockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
+        string,
+        { id: string }
+      >['getResources'] = jest.fn(async resourceRefs =>
+        resourceRefs.map(resourceRef =>
+          resourceRef === 'default:test/missing-resource'
+            ? undefined
+            : { id: resourceRef },
+        ),
       );
 
       const response = await request(createApp(mockedGetResources))

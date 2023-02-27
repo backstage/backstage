@@ -137,7 +137,9 @@ export type CreatePermissionIntegrationRouterResourceOptions<
   resourceType: TResourceType;
   permissions?: Array<Permission>;
   rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
-  getResources?: GetResourcesFn<TResource>;
+  getResources?: (
+    resourceRefs: string[],
+  ) => Promise<Array<TResource | undefined>>;
 };
 
 // @public
@@ -149,11 +151,6 @@ export const createPermissionRule: <
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
-
-// @public
-export type GetResourcesFn<TResource> = (
-  resourceRefs: string[],
-) => Promise<Array<TResource | undefined>>;
 
 // @alpha
 export const isAndCriteria: <T>(
