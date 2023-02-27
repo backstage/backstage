@@ -20,4 +20,3 @@ export * from './secrets';
 export * from './api';
 export * from './hooks';
 export * from './layouts';
-export * from './components';

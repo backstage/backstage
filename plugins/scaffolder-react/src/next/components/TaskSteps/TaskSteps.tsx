@@ -24,10 +24,10 @@ import {
   Paper,
 } from '@material-ui/core';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
-import { type Step } from '@backstage/plugin-scaffolder-react';
 import { StepIcon } from './StepIcon';
 import { StepTime } from './StepTime';
 import { TaskBorder } from './TaskBorder';
+import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 
 /**
  * Props for the TaskSteps component
@@ -35,7 +35,7 @@ import { TaskBorder } from './TaskBorder';
  * @alpha
  */
 export interface TaskStepsProps {
-  steps: (TaskStep & Step)[];
+  steps: (TaskStep & ScaffolderStep)[];
   activeStep?: number;
   isComplete?: boolean;
   isError?: boolean;
