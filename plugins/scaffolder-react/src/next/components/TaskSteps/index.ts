@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { TaskSteps, type StepperProps } from './TaskSteps';
+export { TaskSteps, type TaskStepsProps } from './TaskSteps';

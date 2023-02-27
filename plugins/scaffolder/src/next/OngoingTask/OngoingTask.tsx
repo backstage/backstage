@@ -18,9 +18,6 @@ import { Page, Header, Content, ErrorPanel } from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, makeStyles, Paper } from '@material-ui/core';
 import {
-  TaskSteps,
-  TaskBorder,
-  TaskLogStream,
   ScaffolderTaskOutput,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
@@ -28,7 +25,11 @@ import { nextSelectedTemplateRouteRef } from '../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
-import { DefaultTemplateOutputs } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  DefaultTemplateOutputs,
+  TaskLogStream,
+  TaskSteps,
+} from '@backstage/plugin-scaffolder-react/alpha';
 
 const useStyles = makeStyles({
   contentWrapper: {
@@ -132,15 +133,12 @@ export const OngoingTask = (props: {
         ) : null}
 
         <Box paddingBottom={2}>
-          <Paper style={{ position: 'relative', overflow: 'hidden' }}>
-            <TaskBorder
-              isComplete={taskStream.completed}
-              isError={Boolean(taskStream.error)}
-            />
-            <Box padding={2}>
-              <TaskSteps steps={steps} activeStep={activeStep} />
-            </Box>
-          </Paper>
+          <TaskSteps
+            steps={steps}
+            activeStep={activeStep}
+            isComplete={taskStream.completed}
+            isError={Boolean(taskStream.error)}
+          />
         </Box>
 
         <Outputs output={taskStream.output} />
