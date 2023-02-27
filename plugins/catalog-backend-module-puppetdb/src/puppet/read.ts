@@ -18,6 +18,7 @@ import { PuppetDbEntityProviderConfig } from '../providers';
 import { PuppetNode, ResourceTransformer } from './types';
 import { ResourceEntity } from '@backstage/catalog-model/';
 import { defaultResourceTransformer } from './transformers';
+import fetch from 'node-fetch';
 import { ResponseError } from '@backstage/errors';
 import { ENDPOINT_FACTSETS } from './constants';
 import { Logger } from 'winston';

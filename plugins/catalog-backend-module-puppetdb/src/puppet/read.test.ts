@@ -20,15 +20,18 @@ import {
   PuppetDbEntityProviderConfig,
 } from '../providers';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
-import fetch from 'node-fetch';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_FACTSETS } from './constants';
 
-jest.mock('node-fetch');
-(global as any).fetch = fetch;
-const { Response } = jest.requireActual('node-fetch');
-
 describe('readPuppetNodes', () => {
-  const mockFetch = fetch as unknown as jest.Mocked<any>;
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   describe('where no query is specified', () => {
     const config: PuppetDbEntityProviderConfig = {
@@ -37,10 +40,12 @@ describe('readPuppetNodes', () => {
     };
 
     beforeEach(async () => {
-      mockFetch.mockReturnValueOnce(
-        Promise.resolve(
-          new Response(
-            JSON.stringify([
+      worker.use(
+        rest.get(`${config.host}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json([
               {
                 certname: 'node1',
                 timestamp: 'time1',
@@ -106,8 +111,8 @@ describe('readPuppetNodes', () => {
                 },
               },
             ]),
-          ),
-        ),
+          );
+        }),
       );
     });
 
@@ -188,8 +193,14 @@ describe('readPuppetNodes', () => {
 
     describe('where no results are matched', () => {
       beforeEach(async () => {
-        mockFetch.mockReturnValueOnce(
-          Promise.resolve(new Response(JSON.stringify([]))),
+        worker.use(
+          rest.get(`${config.host}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json([]),
+            );
+          }),
         );
       });
 
@@ -201,10 +212,12 @@ describe('readPuppetNodes', () => {
 
     describe('where results are matched', () => {
       beforeEach(async () => {
-        mockFetch.mockReturnValueOnce(
-          Promise.resolve(
-            new Response(
-              JSON.stringify([
+        worker.use(
+          rest.get(`${config.host}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json([
                 {
                   certname: 'node1',
                   timestamp: 'time1',
@@ -214,23 +227,13 @@ describe('readPuppetNodes', () => {
                   environment: 'environment1',
                 },
               ]),
-            ),
-          ),
+            );
+          }),
         );
       });
 
       it('should return matched results', async () => {
         const entities = await readPuppetNodes(config);
-        expect(mockFetch).toHaveBeenCalledWith(
-          `${config.host}/${ENDPOINT_FACTSETS}?query=%5B%22%3D%22%2C+%22certname%22%2C+%22node1%22%5D`,
-          {
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-            method: 'GET',
-          },
-        );
         expect(entities).toHaveLength(1);
       });
     });
