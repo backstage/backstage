@@ -60,13 +60,27 @@ export type TemplateListPageProps = {
 };
 
 const defaultGroup: TemplateGroupFilter = {
-  title: 'All Templates',
+  title: 'Templates',
   filter: () => true,
 };
 
+const createGroupsWithOther = (
+  groups: TemplateGroupFilter[],
+): TemplateGroupFilter[] => [
+  ...groups,
+  {
+    title: 'Other Templates',
+    filter: e => ![...groups].some(({ filter }) => filter(e)),
+  },
+];
+
 export const TemplateListPage = (props: TemplateListPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
-  const { TemplateCardComponent, groups = [] } = props;
+  const { TemplateCardComponent, groups: givenGroups = [] } = props;
+
+  const groups = givenGroups.length
+    ? createGroupsWithOther(givenGroups)
+    : [defaultGroup];
 
   return (
     <EntityListProvider>
@@ -104,7 +118,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <TemplateGroups
-                groups={[...groups, defaultGroup]}
+                groups={groups}
                 TemplateCardComponent={TemplateCardComponent}
               />
             </CatalogFilterLayout.Content>

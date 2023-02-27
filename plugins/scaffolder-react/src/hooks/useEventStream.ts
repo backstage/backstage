@@ -25,6 +25,11 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { Subscription } from '@backstage/types';
 
+/**
+ * The status of the step being processed
+ *
+ * @public
+ */
 export type Step = {
   id: string;
   status: ScaffolderTaskStatus;
@@ -32,6 +37,11 @@ export type Step = {
   startedAt?: string;
 };
 
+/**
+ * A task event from the event stream
+ *
+ * @public
+ */
 export type TaskStream = {
   loading: boolean;
   error?: Error;
@@ -132,6 +142,11 @@ function reducer(draft: TaskStream, action: ReducerAction) {
   }
 }
 
+/**
+ * A hook to stream the logs of a task being processed
+ *
+ * @public
+ */
 export const useTaskEventStream = (taskId: string): TaskStream => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const [state, dispatch] = useImmerReducer(reducer, {

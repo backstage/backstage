@@ -77,6 +77,7 @@ Options:
   --azureAccountKey <AZURE ACCOUNT KEY>
   --awsRoleArn <AWS ROLE ARN>
   --awsEndpoint <AWS ENDPOINT>
+  --awsProxy <HTTPS Proxy>
   --awsS3sse <AWS SSE>
   --awsS3ForcePathStyle
   --awsBucketRootPath <AWS BUCKET ROOT PATH>
