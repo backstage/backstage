@@ -14,6 +14,7 @@
 '@backstage/codemods': patch
 '@backstage/config': patch
 '@backstage/theme': patch
+'@backstage/cli': patch
 ---
 
 Updated link to docs.
