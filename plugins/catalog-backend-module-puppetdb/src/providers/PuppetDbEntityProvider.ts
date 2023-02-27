@@ -192,15 +192,14 @@ export class PuppetDbEntityProvider implements EntityProvider {
  * @returns Entity with @{@link ANNOTATION_LOCATION} and @{@link ANNOTATION_ORIGIN_LOCATION} annotations.
  */
 function withLocations(host: string, entity: Entity): Entity {
-  const location = new URL(host);
-  location.pathname = `${ENDPOINT_NODES}/${entity.metadata?.name}`;
+  const location = `${host}/${ENDPOINT_NODES}/${entity.metadata?.name}`;
 
   return merge(
     {
       metadata: {
         annotations: {
-          [ANNOTATION_LOCATION]: `url:${location.toString()}`,
-          [ANNOTATION_ORIGIN_LOCATION]: `url:${location.toString()}`,
+          [ANNOTATION_LOCATION]: `url:${location}`,
+          [ANNOTATION_ORIGIN_LOCATION]: `url:${location}`,
         },
       },
     },

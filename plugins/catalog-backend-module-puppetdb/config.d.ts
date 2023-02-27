@@ -31,25 +31,38 @@ export interface Config {
       /**
        * PuppetDB Entity Provider configuration. Uses "default" as default ID for the single config variant.
        */
-      puppetdb?: ProviderConfig | Record<string, ProviderConfig>;
+      puppetdb?:
+        | {
+            /**
+             * (Required) The host of PuppetDB API instance.
+             */
+            host: string;
+            /**
+             * (Optional) PQL query to filter PuppetDB nodes.
+             */
+            query?: string;
+            /**
+             * (Optional) Task schedule definition for the refresh.
+             */
+            schedule?: TaskScheduleDefinition;
+          }
+        | Record<
+            string,
+            {
+              /**
+               * (Required) The host of PuppetDB API instance.
+               */
+              host: string;
+              /**
+               * (Optional) PQL query to filter PuppetDB nodes.
+               */
+              query?: string;
+              /**
+               * (Optional) Task schedule definition for the refresh.
+               */
+              schedule?: TaskScheduleDefinition;
+            }
+          >;
     };
   };
-}
-
-/**
- * Configuration of {@link PuppetDbEntityProvider}.
- */
-interface ProviderConfig {
-  /**
-   * (Required) The host of PuppetDB API instance.
-   */
-  host: string;
-  /**
-   * (Optional) PQL query to filter PuppetDB nodes.
-   */
-  query?: string;
-  /**
-   * (Optional) Task schedule definition for the refresh.
-   */
-  schedule?: TaskScheduleDefinition;
 }

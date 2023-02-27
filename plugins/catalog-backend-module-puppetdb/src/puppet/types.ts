@@ -96,7 +96,7 @@ export type PuppetFact = {
    */
   name: string;
   /**
-   * The value of the fact, in JSON format.
+   * The value of the fact.
    */
   value: JsonValue;
 };

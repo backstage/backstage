@@ -44,9 +44,7 @@ export async function readPuppetNodes(
   }
 
   if (opts?.logger) {
-    opts.logger
-      .child({ url: url.toString() })
-      .debug('Reading nodes from PuppetDB');
+    opts.logger.debug('Reading nodes from PuppetDB', { url: url.toString() });
   }
 
   const response = await fetch(url.toString(), {

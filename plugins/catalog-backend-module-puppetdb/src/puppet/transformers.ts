@@ -32,13 +32,13 @@ export const defaultResourceTransformer: ResourceTransformer = async (
   node,
   _config,
 ): Promise<ResourceEntity | undefined> => {
-  const certName = node.certname.toLowerCase();
+  const certName = node.certname.toLocaleLowerCase('en-US');
   const type = node.facts?.data?.find(e => e.name === 'is_virtual')?.value
     ? 'virtual-machine'
     : 'physical-server';
   const kernel = node.facts?.data?.find(e => e.name === 'kernel')?.value;
 
-  const entity: ResourceEntity = {
+  return {
     apiVersion: 'backstage.io/v1beta1',
     kind: 'Resource',
     metadata: {
@@ -50,7 +50,7 @@ export const defaultResourceTransformer: ResourceTransformer = async (
       description: node.facts?.data
         ?.find(e => e.name === 'ipaddress')
         ?.value?.toString(),
-      tags: kernel ? [kernel.toString().toLowerCase()] : [],
+      tags: kernel ? [kernel.toString().toLocaleLowerCase('en-US')] : [],
     },
     spec: {
       type: type,
@@ -59,6 +59,4 @@ export const defaultResourceTransformer: ResourceTransformer = async (
       dependencyOf: [],
     },
   };
-
-  return entity;
 };
