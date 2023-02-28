@@ -19,5 +19,5 @@ export { useCustomLayouts } from './useCustomLayouts';
 export {
   useTaskEventStream,
   type TaskStream,
-  type Step,
+  type ScaffolderStep,
 } from './useEventStream';
