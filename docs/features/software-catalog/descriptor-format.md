@@ -255,7 +255,7 @@ i.e. not Backstage specific but the same as in Kubernetes.
 
 Each entity gets an automatically generated globally unique ID when it first
 enters the database. This field is not meant to be specified as input data, but
-is rater created by the database engine itself when producing the output entity.
+is rather created by the database engine itself when producing the output entity.
 
 Note that `uid` values are _not_ to be seen as stable, and should _not_ be used
 as external references to an entity. The `uid` can change over time even when a

@@ -45,6 +45,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
   ringEmpty: {
     color: theme.palette.text.secondary,
+    fontSize: '12px',
   },
   ringHeading: {
     pointerEvents: 'none',

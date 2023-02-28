@@ -44,4 +44,16 @@ describe('RadarGrid', () => {
     expect(rendered.getByTestId('radar-grid-x-line')).toBeInTheDocument();
     expect(rendered.getByTestId('radar-grid-y-line')).toBeInTheDocument();
   });
+
+  it('should have the correct text color', async () => {
+    const rendered = await renderInTestApp(
+      <svg>
+        <RadarGrid {...minProps} />
+      </svg>,
+    );
+
+    expect(rendered.getByTestId('radar-ring-heading')).toHaveStyle({
+      fill: '#93c47d',
+    });
+  });
 });

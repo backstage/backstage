@@ -23,10 +23,10 @@ import {
 } from './api';
 
 const rings = new Array<RadarRing>();
-rings.push({ id: 'adopt', name: 'ADOPT', color: '#93c47d' });
-rings.push({ id: 'trial', name: 'TRIAL', color: '#93d2c2' });
-rings.push({ id: 'assess', name: 'ASSESS', color: '#fbdb84' });
-rings.push({ id: 'hold', name: 'HOLD', color: '#efafa9' });
+rings.push({ id: 'adopt', name: 'ADOPT', color: '#5BA300' });
+rings.push({ id: 'trial', name: 'TRIAL', color: '#009EB0' });
+rings.push({ id: 'assess', name: 'ASSESS', color: '#C7BA00' });
+rings.push({ id: 'hold', name: 'HOLD', color: '#E09B96' });
 
 const quadrants = new Array<RadarQuadrant>();
 quadrants.push({ id: 'infrastructure', name: 'Infrastructure' });
