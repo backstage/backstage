@@ -19,7 +19,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { AwsSqsConsumingEventPublisher } from '../publisher/AwsSqsConsumingEventPublisher';
 
 /**

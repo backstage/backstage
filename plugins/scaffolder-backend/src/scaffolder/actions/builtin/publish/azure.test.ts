@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 jest.mock('azure-devops-node-api', () => ({
   WebApi: jest.fn(),
   getPersonalAccessTokenHandler: jest.fn().mockReturnValue(() => {}),

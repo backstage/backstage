@@ -1,5 +1,71 @@
 # @techdocs/cli
 
+## 1.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/plugin-techdocs-node@1.5.1-next.0
+
+## 1.3.2
+
+### Patch Changes
+
+- dd1e37649f: Deprecated getMkDocsYml in favor of getMkdocsYml (lowercase 'd')
+- dcacf94912: Fix proxying to mkdocs
+
+  The domain localhost may point to both 127.0.0.1 and ::1, ipv4 and ipv6
+  and when node tries to lookup localhost it might prefer ipv6 while mkdocs
+  is only listening on ipv4. This tells node-proxy to target the ipv4 address
+  instead of relying on localhost hostname lookup.
+
+- 339d9a5b5c: Added support for using a default `mkdocs.yml` configuration file when none is provided
+- 6e0b6a0d50: Fixed publish command missing awsBucketRootPath option.
+  Fixed publish command having the gcsBucketRootPath option misconfigured, previously returning a boolean vs a string.
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-techdocs-node@1.5.0
+  - @backstage/catalog-model@1.2.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+
+## 1.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/plugin-techdocs-node@1.4.6-next.2
+
+## 1.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/plugin-techdocs-node@1.4.6-next.1
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- 6e0b6a0d50: Fixed publish command missing awsBucketRootPath option.
+  Fixed publish command having the gcsBucketRootPath option misconfigured, previously returning a boolean vs a string.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.4.6-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+
 ## 1.3.0
 
 ### Minor Changes

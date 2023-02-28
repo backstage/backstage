@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { rootLoggerFactory } from './rootLoggerFactory';
+export { rootLoggerServiceFactory } from './rootLoggerServiceFactory';

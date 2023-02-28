@@ -97,6 +97,7 @@ export type SearchTypeAccordionProps = {
     icon: JSX.Element;
   }>;
   defaultValue?: string;
+  showCounts?: boolean;
 };
 
 // @public

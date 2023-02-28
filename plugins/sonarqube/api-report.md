@@ -6,8 +6,12 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { FindingSummary } from '@backstage/plugin-sonarqube-react';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { SonarQubeApi } from '@backstage/plugin-sonarqube-react';
 
 // @public (undocumented)
 export type DuplicationRating = {
@@ -37,6 +41,29 @@ export const SonarQubeCard: (props: {
   variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
 }) => JSX.Element;
+
+// @public (undocumented)
+export class SonarQubeClient implements SonarQubeApi {
+  constructor({
+    discoveryApi,
+    identityApi,
+  }: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  });
+  // (undocumented)
+  discoveryApi: DiscoveryApi;
+  // (undocumented)
+  getFindingSummary({
+    componentKey,
+    projectInstance,
+  }?: {
+    componentKey?: string;
+    projectInstance?: string;
+  }): Promise<FindingSummary | undefined>;
+  // (undocumented)
+  identityApi: IdentityApi;
+}
 
 // @public (undocumented)
 export type SonarQubeContentPageProps = {

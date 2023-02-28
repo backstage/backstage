@@ -21,7 +21,8 @@ import {
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { UIOptionsType } from '@rjsf/utils';
-import { FieldExtensionComponent } from '../../extensions';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
 import { FIELD_EXTENSION_KEY } from '../../extensions/keys';
 
 /**

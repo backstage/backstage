@@ -22,8 +22,8 @@ import {
 } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { PassThrough } from 'stream';
-import { TemplateAction } from '../../types';
 
 const mockOctokit = {
   rest: {

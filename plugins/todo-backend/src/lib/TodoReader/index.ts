@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { TodoScmReader } from './TodoScmReader';
+export { TodoScmReader, todoReaderServiceRef } from './TodoScmReader';
 export type { TodoScmReaderOptions } from './TodoScmReader';
 export { createTodoParser } from './createTodoParser';
 export type { TodoParserOptions } from './createTodoParser';

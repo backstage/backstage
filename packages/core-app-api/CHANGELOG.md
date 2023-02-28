@@ -1,5 +1,41 @@
 # @backstage/core-app-api
 
+## 1.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.5.0
+
+### Minor Changes
+
+- db10b6ef65: Added a Bitbucket Server Auth Provider and added its API to the app defaults
+
+### Patch Changes
+
+- dff4d8ddb1: Fixed an issue where an explicit port the frontend base URL could break the app.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- dff4d8ddb1: Fixed an issue where an explicit port the frontend base URL could break the app.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
 ## 1.4.0
 
 ### Minor Changes

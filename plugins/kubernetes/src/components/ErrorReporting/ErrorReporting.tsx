@@ -102,7 +102,7 @@ export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
           title="Error Reporting"
           data={errors}
           columns={columns}
-          options={{ paging: true, search: false }}
+          options={{ paging: true, search: false, emptyRowsWhenPaging: false }}
         />
       )}
     </>

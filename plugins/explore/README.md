@@ -30,7 +30,7 @@ any path for the route, but we recommend the following:
 
 ```diff
 // packages/app/src/App.tsx
-+ import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
++ import { ExplorePage } from '@backstage/plugin-explore';
 
 ...
 

@@ -94,7 +94,7 @@ describe('<RecentWorkflowRunsCard />', () => {
     );
 
   it('renders a table with a row for each workflow', async () => {
-    const subject = await renderSubject();
+    const subject = renderSubject();
 
     workflowRuns.forEach(run => {
       expect(subject.getByText(run.message)).toBeInTheDocument();
@@ -102,7 +102,7 @@ describe('<RecentWorkflowRunsCard />', () => {
   });
 
   it('renders a workflow row correctly', async () => {
-    const subject = await renderSubject();
+    const subject = renderSubject();
     const [run] = workflowRuns;
     expect(subject.getByText(run.message).closest('a')).toHaveAttribute(
       'href',

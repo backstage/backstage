@@ -19,7 +19,7 @@ const pluginMetadata = fs
   .map(file => yaml.load(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
   .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
 const truncate = text =>
-  text.length > 170 ? text.substr(0, 170) + '...' : text;
+  text.length > 170 ? text.slice(0, 170) + '...' : text;
 
 const newForDays = 100;
 

@@ -20,11 +20,13 @@ import {
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
+  eventsExtensionPoint,
+  EventsExtensionPoint,
+} from '@backstage/plugin-events-node/alpha';
+import {
   EventBroker,
   EventPublisher,
   EventSubscriber,
-  eventsExtensionPoint,
-  EventsExtensionPoint,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
 import { InMemoryEventBroker } from './InMemoryEventBroker';
@@ -80,7 +82,7 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
  * @alpha
  */
 export const eventsPlugin = createBackendPlugin({
-  id: 'events',
+  pluginId: 'events',
   register(env) {
     const extensionPoint = new EventsExtensionPointImpl();
     env.registerExtensionPoint(eventsExtensionPoint, extensionPoint);

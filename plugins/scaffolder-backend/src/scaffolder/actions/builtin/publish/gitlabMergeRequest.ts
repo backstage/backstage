@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTemplateAction } from '../../createTemplateAction';
+
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
 import { Types } from '@gitbeaker/core';
 import path from 'path';

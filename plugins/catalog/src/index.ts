@@ -29,7 +29,6 @@ export type {
 } from './components/AboutCard';
 export { AboutContent, AboutField } from './components/AboutCard';
 export * from './components/CatalogKindHeader';
-export * from './components/CatalogSearchResultListItem';
 export * from './components/CatalogTable';
 export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
@@ -53,6 +52,7 @@ export {
   EntityLinksCard,
   EntityLabelsCard,
   RelatedEntitiesCard,
+  CatalogSearchResultListItem,
 } from './plugin';
 
 export type { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
@@ -72,3 +72,4 @@ export type { HasResourcesCardProps } from './components/HasResourcesCard';
 export type { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
 export type { HasSystemsCardProps } from './components/HasSystemsCard';
 export type { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
+export type { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';

@@ -16,22 +16,22 @@
 
 import {
   Backend,
-  cacheFactory,
-  configFactory,
+  cacheServiceFactory,
+  configServiceFactory,
   createSpecializedBackend,
-  databaseFactory,
-  discoveryFactory,
-  httpRouterFactory,
-  rootHttpRouterFactory,
-  lifecycleFactory,
-  rootLifecycleFactory,
-  loggerFactory,
-  permissionsFactory,
-  rootLoggerFactory,
-  schedulerFactory,
-  tokenManagerFactory,
-  urlReaderFactory,
-  identityFactory,
+  databaseServiceFactory,
+  discoveryServiceFactory,
+  httpRouterServiceFactory,
+  rootHttpRouterServiceFactory,
+  lifecycleServiceFactory,
+  rootLifecycleServiceFactory,
+  loggerServiceFactory,
+  permissionsServiceFactory,
+  rootLoggerServiceFactory,
+  schedulerServiceFactory,
+  tokenManagerServiceFactory,
+  urlReaderServiceFactory,
+  identityServiceFactory,
 } from '@backstage/backend-app-api';
 import {
   ServiceFactory,
@@ -40,25 +40,25 @@ import {
 } from '@backstage/backend-plugin-api';
 
 // Internal import of the type to avoid needing to export this.
-// eslint-disable-next-line monorepo/no-internal-import
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
 import type { InternalSharedBackendEnvironment } from '@backstage/backend-plugin-api/src/wiring/createSharedEnvironment';
 
 export const defaultServiceFactories = [
-  cacheFactory(),
-  configFactory(),
-  databaseFactory(),
-  discoveryFactory(),
-  httpRouterFactory(),
-  identityFactory(),
-  lifecycleFactory(),
-  loggerFactory(),
-  permissionsFactory(),
-  rootHttpRouterFactory(),
-  rootLifecycleFactory(),
-  rootLoggerFactory(),
-  schedulerFactory(),
-  tokenManagerFactory(),
-  urlReaderFactory(),
+  cacheServiceFactory(),
+  configServiceFactory(),
+  databaseServiceFactory(),
+  discoveryServiceFactory(),
+  httpRouterServiceFactory(),
+  identityServiceFactory(),
+  lifecycleServiceFactory(),
+  loggerServiceFactory(),
+  permissionsServiceFactory(),
+  rootHttpRouterServiceFactory(),
+  rootLifecycleServiceFactory(),
+  rootLoggerServiceFactory(),
+  schedulerServiceFactory(),
+  tokenManagerServiceFactory(),
+  urlReaderServiceFactory(),
 ];
 
 /**

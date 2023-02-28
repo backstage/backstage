@@ -43,7 +43,7 @@ import { KubernetesProxy } from './KubernetesProxy';
 
 /**
  *
- * @alpha
+ * @public
  */
 export interface KubernetesEnvironment {
   logger: Logger;
@@ -54,7 +54,7 @@ export interface KubernetesEnvironment {
 /**
  * The return type of the `KubernetesBuilder.build` method
  *
- * @alpha
+ * @public
  */
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
@@ -68,7 +68,7 @@ export type KubernetesBuilderReturn = Promise<{
 
 /**
  *
- * @alpha
+ * @public
  */
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
@@ -265,6 +265,7 @@ export class KubernetesBuilder {
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
+    router.use('/proxy', proxy.createRequestHandler());
     router.use(express.json());
 
     // @deprecated
@@ -296,8 +297,6 @@ export class KubernetesBuilder {
         })),
       });
     });
-
-    router.use('/proxy', proxy.createRequestHandler());
 
     addResourceRoutesToRouter(router, catalogApi, objectsProvider);
 

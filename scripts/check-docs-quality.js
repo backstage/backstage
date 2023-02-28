@@ -21,7 +21,7 @@ const IGNORED = [
   /^ADOPTERS\.md$/,
   /^OWNERS\.md$/,
   /^.*[/\\]CHANGELOG\.md$/,
-  /^.*[/\\]api-report\.md$/,
+  /^.*[/\\]([^\/]+-)?api-report\.md$/,
   /^docs[/\\]releases[/\\].*-changelog\.md$/,
   /^docs[/\\]reference[/\\]/,
 ];
@@ -56,7 +56,7 @@ async function listFiles(dir = '') {
 // caused by the script. In CI, we want to ensure vale linter is run.
 async function exitIfMissingVale() {
   try {
-    // eslint-disable-next-line import/no-extraneous-dependencies
+    // eslint-disable-next-line @backstage/no-undeclared-imports
     await require('command-exists')('vale');
   } catch (e) {
     if (process.env.CI) {

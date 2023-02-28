@@ -37,22 +37,42 @@ import { RegisterExistingButton } from './RegisterExistingButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
 import { registerComponentRouteRef } from '../../routes';
+import { ContextMenu } from './ContextMenu';
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+    tasks?: boolean;
+  };
 };
 
 const defaultGroup: TemplateGroupFilter = {
-  title: 'All Templates',
+  title: 'Templates',
   filter: () => true,
 };
 
+const createGroupsWithOther = (
+  groups: TemplateGroupFilter[],
+): TemplateGroupFilter[] => [
+  ...groups,
+  {
+    title: 'Other Templates',
+    filter: e => ![...groups].some(({ filter }) => filter(e)),
+  },
+];
+
 export const TemplateListPage = (props: TemplateListPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
-  const { TemplateCardComponent, groups = [] } = props;
+  const { TemplateCardComponent, groups: givenGroups = [] } = props;
+
+  const groups = givenGroups.length
+    ? createGroupsWithOther(givenGroups)
+    : [defaultGroup];
 
   return (
     <EntityListProvider>
@@ -61,7 +81,9 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
           pageTitleOverride="Create a new component"
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
-        />
+        >
+          <ContextMenu {...props.contextMenu} />
+        </Header>
         <Content>
           <ContentHeader title="Available Templates">
             <RegisterExistingButton
@@ -88,7 +110,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <TemplateGroups
-                groups={[...groups, defaultGroup]}
+                groups={groups}
                 TemplateCardComponent={TemplateCardComponent}
               />
             </CatalogFilterLayout.Content>

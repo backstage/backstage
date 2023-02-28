@@ -15,13 +15,13 @@
  */
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { AzureDevOpsEventRouter } from '../router/AzureDevOpsEventRouter';
 
 /**
  * Module for the events-backend plugin, adding an event router for Azure DevOps.
  *
- * Registers the {@link AzureDevOpsEventRouter}.
+ * Registers the `AzureDevOpsEventRouter`.
  *
  * @alpha
  */

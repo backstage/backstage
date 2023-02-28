@@ -20,6 +20,7 @@ import {
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
+import { cacheToPluginCacheManager } from './cache';
 import { loggerToWinstonLogger } from './logging';
 
 /**
@@ -60,7 +61,7 @@ export function makeLegacyPlugin<
     }>,
   ) => {
     const compatPlugin = createBackendPlugin({
-      id: name,
+      pluginId: name,
       register(env) {
         env.registerInit({
           deps: { ...envMapping, _router: coreServices.httpRouter },
@@ -119,5 +120,6 @@ export const legacyPlugin = makeLegacyPlugin(
   },
   {
     logger: log => loggerToWinstonLogger(log),
+    cache: cache => cacheToPluginCacheManager(cache),
   },
 );

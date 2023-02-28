@@ -22,7 +22,12 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  createSearchResultListItemExtension,
+  SearchResultListItemExtensionProps,
+} from '@backstage/plugin-search-react';
 import { ExploreClient, exploreApiRef } from './api';
+import { ToolSearchResultListItemProps } from './components/ToolSearchResultListItem';
 // import { exampleTools } from './util/examples';
 
 /** @public */
@@ -65,3 +70,17 @@ export const explorePlugin = createPlugin({
     catalogEntity: catalogEntityRouteRef,
   },
 });
+
+/** @public */
+export const ToolSearchResultListItem: (
+  props: SearchResultListItemExtensionProps<ToolSearchResultListItemProps>,
+) => JSX.Element | null = explorePlugin.provide(
+  createSearchResultListItemExtension({
+    name: 'ToolSearchResultListItem',
+    component: () =>
+      import('./components/ToolSearchResultListItem').then(
+        m => m.ToolSearchResultListItem,
+      ),
+    predicate: result => result.type === 'tools',
+  }),
+);

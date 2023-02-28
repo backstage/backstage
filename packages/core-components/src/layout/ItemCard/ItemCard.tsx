@@ -21,7 +21,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Chip from '@material-ui/core/Chip';
 import React, { ReactNode } from 'react';
-import { Button } from '../../components';
+import { LinkButton } from '../../components';
 import { ItemCardHeader } from './ItemCardHeader';
 
 type ItemCardProps = {
@@ -80,14 +80,14 @@ export function ItemCard(props: ItemCardProps) {
       </CardContent>
       <CardActions>
         {!href && (
-          <Button to="#" onClick={onClick} color="primary">
+          <LinkButton to="#" onClick={onClick} color="primary">
             {label}
-          </Button>
+          </LinkButton>
         )}
         {href && (
-          <Button to={href} color="primary">
+          <LinkButton to={href} color="primary">
             {label}
-          </Button>
+          </LinkButton>
         )}
       </CardActions>
     </Card>

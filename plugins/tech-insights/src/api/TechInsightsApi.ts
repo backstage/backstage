@@ -18,6 +18,7 @@ import { createApiRef } from '@backstage/core-plugin-api';
 import {
   CheckResult,
   BulkCheckResponse,
+  FactSchema,
 } from '@backstage/plugin-tech-insights-common';
 import { Check, InsightFacts } from './types';
 import { CheckResultRenderer } from '../components/CheckResultRenderer';
@@ -49,4 +50,5 @@ export interface TechInsightsApi {
     checks?: Check[],
   ): Promise<BulkCheckResponse>;
   getFacts(entity: CompoundEntityRef, facts: string[]): Promise<InsightFacts>;
+  getFactSchemas(): Promise<FactSchema[]>;
 }

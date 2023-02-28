@@ -19,11 +19,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import React, { Component, ReactNode, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import yaml from 'yaml';
-import {
+import type {
   FieldExtensionOptions,
+  LayoutOptions,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
-import { LayoutOptions } from '../../layouts';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from '../TemplatePage';
 import { useDirectoryEditor } from './DirectoryEditorContext';

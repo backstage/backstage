@@ -120,7 +120,7 @@ export const EntityCostsCard = () => {
     return <MaterialAlert severity="error">{error.message}</MaterialAlert>;
   }
 
-  if (!dailyCost) {
+  if (!dailyCost || !dailyCost.aggregation.length) {
     return <MaterialAlert severity="error">No daily costs</MaterialAlert>;
   }
 

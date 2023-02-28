@@ -4,7 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { TemplateAction } from '@backstage/plugin-scaffolder-backend';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
 export function createSentryCreateProjectAction(options: {

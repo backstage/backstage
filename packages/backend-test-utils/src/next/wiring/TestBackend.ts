@@ -17,15 +17,6 @@
 import {
   Backend,
   createSpecializedBackend,
-  lifecycleFactory,
-  rootLifecycleFactory,
-  loggerFactory,
-  cacheFactory,
-  permissionsFactory,
-  schedulerFactory,
-  urlReaderFactory,
-  databaseFactory,
-  httpRouterFactory,
   MiddlewareFactory,
   createHttpServer,
   ExtendedHttpServer,
@@ -39,16 +30,13 @@ import {
   BackendFeature,
   ExtensionPoint,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-
-import { mockConfigFactory } from '../implementations/mockConfigService';
-import { mockRootLoggerService } from '../implementations/mockRootLoggerService';
-import { mockTokenManagerFactory } from '../implementations/mockTokenManagerService';
+import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
-import { mockIdentityFactory } from '../implementations/mockIdentityService';
 
-/** @alpha */
+/** @public */
 export interface TestBackendOptions<
   TServices extends any[],
   TExtensionPoints extends any[],
@@ -72,7 +60,7 @@ export interface TestBackendOptions<
   features?: BackendFeature[];
 }
 
-/** @alpha */
+/** @public */
 export interface TestBackend extends Backend {
   /**
    * Provides access to the underling HTTP server for use with utilities
@@ -84,24 +72,24 @@ export interface TestBackend extends Backend {
 }
 
 const defaultServiceFactories = [
-  cacheFactory(),
-  databaseFactory(),
-  httpRouterFactory(),
-  lifecycleFactory(),
-  loggerFactory(),
-  mockConfigFactory(),
-  mockRootLoggerService(),
-  mockIdentityFactory(),
-  mockTokenManagerFactory(),
-  permissionsFactory(),
-  rootLifecycleFactory(),
-  schedulerFactory(),
-  urlReaderFactory(),
+  mockServices.cache.factory(),
+  mockServices.config.factory(),
+  mockServices.database.factory(),
+  mockServices.httpRouter.factory(),
+  mockServices.identity.factory(),
+  mockServices.lifecycle.factory(),
+  mockServices.logger.factory(),
+  mockServices.permissions.factory(),
+  mockServices.rootLifecycle.factory(),
+  mockServices.rootLogger.factory(),
+  mockServices.scheduler.factory(),
+  mockServices.tokenManager.factory(),
+  mockServices.urlReader.factory(),
 ];
 
 const backendInstancesToCleanUp = new Array<Backend>();
 
-/** @alpha */
+/** @public */
 export async function startTestBackend<
   TServices extends any[],
   TExtensionPoints extends any[],
@@ -142,12 +130,7 @@ export async function startTestBackend<
         { logger },
       );
 
-      lifecycle.addShutdownHook({
-        async fn() {
-          await server.stop();
-        },
-        logger,
-      });
+      lifecycle.addShutdownHook(() => server.stop(), { logger });
 
       await server.start();
 
@@ -211,16 +194,18 @@ export async function startTestBackend<
 
   backendInstancesToCleanUp.push(backend);
 
-  backend.add({
-    id: `---test-extension-point-registrar`,
-    register(reg) {
-      for (const [ref, impl] of extensionPoints) {
-        reg.registerExtensionPoint(ref, impl);
-      }
+  backend.add(
+    createBackendPlugin({
+      pluginId: `---test-extension-point-registrar`,
+      register(reg) {
+        for (const [ref, impl] of extensionPoints) {
+          reg.registerExtensionPoint(ref, impl);
+        }
 
-      reg.registerInit({ deps: {}, async init() {} });
-    },
-  });
+        reg.registerInit({ deps: {}, async init() {} });
+      },
+    })(),
+  );
 
   for (const feature of features) {
     backend.add(feature);

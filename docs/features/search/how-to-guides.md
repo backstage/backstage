@@ -114,6 +114,42 @@ of the `SearchType` component.
 
 > Check out the documentation around [integrating search into plugins](../../plugins/integrating-search-into-plugins.md#create-a-collator) for how to create your own collator.
 
+## How to customize fields in the Software Catalog index
+
+Sometimes you will might want to have ability to control
+which data passes to search index in catalog collator, or to customize data for specific kind.
+You can easily do that by passing `entityTransformer` callback to `DefaultCatalogCollatorFactory`.
+You can either just simply amend default behaviour, or even to write completely new document
+(which should follow some required basic structure though).
+
+> `authorization` and `location` cannot be modified via a `entityTransformer`, `location` can be modified only through `locationTemplate`.
+
+```diff
+// packages/backend/src/plugins/search.ts
+
+const entityTransformer: CatalogCollatorEntityTransformer = (entity: Entity) => {
+  if (entity.kind === 'SomeKind') {
+    return {
+      // customize here output for 'SomeKind' kind
+    };
+  }
+
+  return {
+    // and customize default output
+    ...defaultCatalogCollatorEntityTransformer(entity),
+    text: 'my super cool text',
+  };
+};
+
+indexBuilder.addCollator({
+  collator: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
++   entityTransformer,
+  }),
+});
+```
+
 ## How to limit what can be searched in the Software Catalog
 
 The Software Catalog includes a wealth of information about the components,
@@ -174,3 +210,170 @@ const highlightOverride = {
 [obj-mode]: https://nodejs.org/dist/latest-v16.x/docs/api/stream.html#stream_object_mode
 [read-stream]: https://nodejs.org/dist/latest-v16.x/docs/api/stream.html#readable-streams
 [async-gen]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of#iterating_over_async_generators
+
+## How to render search results using extensions
+
+Extensions for search results let you customize components used to render search result items, It is possible to provide your own search result item extensions or use the ones provided by plugin packages:
+
+### 1. Providing an extension in your plugin package
+
+Using the example below, you can provide an extension to be used as a default result item:
+
+```tsx
+// plugins/your-plugin/src/plugin.ts
+import { createPlugin } from '@backstage/core-plugin-api';
+import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
+
+const plugin = createPlugin({ id: 'YOUR_PLUGIN_ID' });
+
+export const YourSearchResultListItemExtension = plugin.provide(
+  createSearchResultListItemExtension({
+    name: 'YourSearchResultListItem',
+    component: () =>
+      import('./components').then(m => m.YourSearchResultListItem),
+  }),
+);
+```
+
+If your list item accept props, you can extend the `SearchResultListItemExtensionProps` with your component specific props:
+
+```tsx
+export const YourSearchResultListItemExtension: (
+  props: SearchResultListItemExtensionProps<YourSearchResultListItemProps>,
+) => JSX.Element | null = plugin.provide(
+  createSearchResultListItemExtension({
+    name: 'YourSearchResultListItem',
+    component: () =>
+      import('./components').then(m => m.YourSearchResultListItem),
+  }),
+);
+```
+
+Additionally, you can define a predicate function that receives a result and returns whether your extension should be used to render it or not:
+
+```tsx
+// plugins/your-plugin/src/plugin.ts
+import { createPlugin } from '@backstage/core-plugin-api';
+import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
+
+const plugin = createPlugin({ id: 'YOUR_PLUGIN_ID' });
+
+export const YourSearchResultListItemExtension = plugin.provide(
+  createSearchResultListItemExtension({
+    name: 'YourSearchResultListItem',
+    component: () =>
+      import('./components').then(m => m.YourSearchResultListItem),
+    // Only results matching your type will be rendered by this extension
+    predicate: result => result.type === 'YOUR_RESULT_TYPE',
+  }),
+);
+```
+
+Remember to export your new extension:
+
+```tsx
+// plugins/your-plugin/src/index.ts
+export { YourSearchResultListItem } from './plugin.ts';
+```
+
+For more details, see the [createSearchResultListItemExtension](https://backstage.io/docs/reference/plugin-search-react.createsearchresultlistitemextension) API reference.
+
+### 2. Using an extension in your Backstage app
+
+Now that you know how a search result item is provided, let's finally see how they can be used, for example, to compose a page in your application:
+
+```tsx
+// packages/app/src/components/searchPage.tsx
+import React from 'react';
+
+import { Grid, Paper } from '@material-ui/core';
+import BuildIcon from '@material-ui/icons/Build';
+
+import {
+  Page,
+  Header,
+  Content,
+  DocsIcon,
+  CatalogIcon,
+} from '@backstage/core-components';
+import { SearchBar, SearchResult } from '@backstage/plugin-search-react';
+
+// Your search result item extension
+import { YourSearchResultListItem } from '@backstage/your-plugin';
+
+// Extensions provided by other plugin developers
+import { ToolSearchResultListItem } from '@backstage/plugin-explore';
+import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
+import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
+
+// This example omits other components, like filter and pagination
+const SearchPage = () => (
+  <Page themeId="home">
+    <Header title="Search" />
+    <Content>
+      <Grid container direction="row">
+        <Grid item xs={12}>
+          <Paper>
+            <SearchBar />
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <SearchResult>
+            <YourSearchResultListItem />
+            <CatalogSearchResultListItem icon={<CatalogIcon />} />
+            <TechDocsSearchResultListItem icon={<DocsIcon />} />
+            <ToolSearchResultListItem icon={<BuildIcon />} />
+          </SearchResult>
+        </Grid>
+      </Grid>
+    </Content>
+  </Page>
+);
+
+export const searchPage = <SearchPage />;
+```
+
+> **Important**: A default result item extension should be placed as the last child, so it can be used only when no other extensions match the result being rendered. If a non-default extension is specified, the `DefaultResultListItem` component will be used.
+
+As another example, here's a search modal that renders results with extensions:
+
+```tsx
+// packages/app/src/components/searchModal.tsx
+import React from 'react';
+
+import { DialogContent, DialogTitle, Paper } from '@material-ui/core';
+import BuildIcon from '@material-ui/icons/Build';
+
+import { DocsIcon, CatalogIcon } from '@backstage/core-components';
+import { SearchBar, SearchResult } from '@backstage/plugin-search-react';
+
+// Your search result item extension
+import { YourSearchResultListItem } from '@backstage/your-plugin';
+
+// Extensions provided by other plugin developers
+import { ToolSearchResultListItem } from '@backstage/plugin-explore';
+import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
+import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
+
+export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => (
+  <>
+    <DialogTitle>
+      <Paper>
+        <SearchBar />
+      </Paper>
+    </DialogTitle>
+    <DialogContent>
+      <SearchResult onClick={toggleModal}>
+        <CatalogSearchResultListItem icon={<CatalogIcon />} />
+        <TechDocsSearchResultListItem icon={<DocsIcon />} />
+        <ToolSearchResultListItem icon={<BuildIcon />} />
+        {/* As a "default" extension, it does not define a predicate function, 
+        so it must be the last child to render results that do not match the above extensions */}
+        <YourSearchResultListItem />
+      </SearchResult>
+    </DialogContent>
+  </>
+);
+```
+
+There are other more specific search results layout components that also accept result item extensions, check their documentation: [SearchResultList](https://backstage.io/storybook/?path=/story/plugins-search-searchresultlist--with-result-item-extensions) and [SearchResultGroup](https://backstage.io/storybook/?path=/story/plugins-search-searchresultgroup--with-result-item-extensions).

@@ -17,7 +17,7 @@
 import { UrlReader, resolveSafeChildPath } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 
 /**
  * Downloads content and places it in the workspace, or optionally

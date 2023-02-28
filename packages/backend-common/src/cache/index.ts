@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-export type { CacheClient, CacheClientSetOptions } from './CacheClient';
-export { CacheManager } from './CacheManager';
+export { CacheManager, cacheToPluginCacheManager } from './CacheManager';
 export type {
+  CacheClient,
+  CacheClientSetOptions,
   PluginCacheManager,
   CacheManagerOptions,
   CacheClientOptions,

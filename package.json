@@ -11,7 +11,7 @@
     "build:backend": "yarn workspace backend build",
     "build:all": "backstage-cli repo build --all",
     "build:api-reports": "yarn build:api-reports:only --tsc",
-    "build:api-reports:only": "backstage-repo-tools api-reports --allow-warnings 'packages/core-components,plugins/+(catalog|catalog-import|git-release-manager|jenkins|kubernetes)' -o ae-wrong-input-file-type",
+    "build:api-reports:only": "backstage-repo-tools api-reports --allow-warnings 'packages/core-components,plugins/+(catalog|catalog-import|git-release-manager|jenkins|kubernetes)' -o ae-wrong-input-file-type --validate-release-tags",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs",
     "tsc": "tsc",
     "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false",
@@ -27,6 +27,7 @@
     "create-plugin": "echo \"use 'yarn new' instead\"",
     "release": "node scripts/prepare-release.js && changeset version && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && yarn install --no-immutable",
     "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "storybook": "yarn ./storybook run start",
     "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
     "snyk:test:package": "yarn snyk:test --include",
@@ -46,7 +47,7 @@
     "@types/react": "^17",
     "@types/react-dom": "^17"
   },
-  "version": "1.10.0",
+  "version": "1.12.0-next.0",
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3"

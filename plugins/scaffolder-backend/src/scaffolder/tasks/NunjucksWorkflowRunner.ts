@@ -26,7 +26,7 @@ import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
-import { TemplateAction, TemplateActionRegistry } from '../actions';
+import { TemplateActionRegistry } from '../actions';
 import {
   TemplateFilter,
   SecureTemplater,
@@ -38,6 +38,7 @@ import {
   TaskSpecV1beta3,
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 

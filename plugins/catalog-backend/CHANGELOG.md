@@ -1,5 +1,121 @@
 # @backstage/plugin-catalog-backend
 
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 7f4ea3d360: Add /entities/by-query endpoint returning paginated entities.
+
+  The endpoint supports cursor base pagination and server side sorting of the entities
+
+### Patch Changes
+
+- ac8929f2f3: Fix export of `defaultCatalogCollatorEntityTransformer`.
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.12-next.0
+  - @backstage/plugin-catalog-node@1.3.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.6-next.0
+  - @backstage/plugin-scaffolder-common@1.2.6-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.2
+
+### Patch Changes
+
+- 071354eb7d: Add additional validation as security precations for output entities.
+- b977c2e69f: Minor improvements to the descriptions provided with permission rules schemas
+- 2380506364: The process of adding or modifying fields in the software-catalog search index has been simplified. For more details, see [how to customize fields in the Software Catalog index](https://backstage.io/docs/features/search/how-to-guides#how-to-customize-fields-in-the-software-catalog-index).
+- 9573651919: The previous migration that adds the `search.original_value` column may leave some of the entities not updated. Add a migration script to trigger a reprocessing of the entities.
+- 9f71a2fd20: Location rule target patterns now also match hidden files, i.e. path components with a leading dot.
+- e716946103: Updated usage of the lifecycle service.
+- 1aec041c34: Fixed an issue where entities sometimes were not properly deleted during a full mutation.
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- fc73f6aae5: Switched the order of reprocessing statements retroactively in migrations. This only improves the experience for those who at a later time perform a large upgrade of an old Backstage installation.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5
+  - @backstage/plugin-scaffolder-common@1.2.5
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.2-next.2
+
+### Patch Changes
+
+- e716946103: Updated usage of the lifecycle service.
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/plugin-permission-node@0.7.5-next.2
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.2-next.1
+
+### Patch Changes
+
+- 2380506364: The process of adding or modifying fields in the software-catalog search index has been simplified. For more details, see [how to customize fields in the Software Catalog index](https://backstage.io/docs/features/search/how-to-guides#how-to-customize-fields-in-the-software-catalog-index).
+- 9573651919: The previous migration that adds the `search.original_value` column may leave some of the entities not updated. Add a migration script to trigger a reprocessing of the entities.
+- fc73f6aae5: Switched the order of reprocessing statements retroactively in migrations. This only improves the experience for those who at a later time perform a large upgrade of an old Backstage installation.
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-catalog-node@1.3.3-next.1
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5-next.1
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-catalog-node@1.3.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-permission-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
 ## 1.7.0
 
 ### Minor Changes

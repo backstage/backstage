@@ -25,6 +25,10 @@ import {
   ScaffolderFieldExtensions as ScaffolderFieldExtensionsTemp,
   useTemplateSecrets as useTemplateSecretsTemp,
   scaffolderApiRef as scaffolderApiRefTemp,
+  createScaffolderLayout as createScaffolderLayoutTemp,
+  ScaffolderLayouts as ScaffolderLayoutsTemp,
+  type LayoutOptions as LayoutOptionsTemp,
+  type LayoutTemplate as LayoutTemplateTemp,
   type ScaffolderApi as ScaffolderApiTemp,
   type ScaffolderUseTemplateSecrets as ScaffolderUseTemplateSecretsTemp,
   type TemplateParameterSchema as TemplateParameterSchemaTemp,
@@ -188,3 +192,23 @@ export type ScaffolderTaskOutput = ScaffolderTaskOutputTemp;
  * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderTaskStatus} instead as this has now been moved.
  */
 export type ScaffolderTaskStatus = ScaffolderTaskStatusTemp;
+/**
+ * @public
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-react#createScaffolderLayout} instead as this has now been moved.
+ */
+export const createScaffolderLayout = createScaffolderLayoutTemp;
+/**
+ * @public
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderLayouts} instead as this has now been moved.
+ */
+export const ScaffolderLayouts = ScaffolderLayoutsTemp;
+/**
+ * @public
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-react#LayoutTemplate} instead as this has now been moved.
+ */
+export type LayoutTemplate = LayoutTemplateTemp;
+/**
+ * @public
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-react#LayoutOptions} instead as this has now been moved.
+ */
+export type LayoutOptions = LayoutOptionsTemp;

@@ -16,7 +16,8 @@
 
 import { createDevApp } from '@backstage/dev-utils';
 import { lighthousePlugin } from '../src/plugin';
-import { lighthouseApiRef, LighthouseRestApi } from '../src';
+import { lighthouseApiRef } from '../src';
+import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
 
 createDevApp()
   .registerPlugin(lighthousePlugin)

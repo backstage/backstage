@@ -47,6 +47,11 @@ catalog:
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code
           timeout: { minutes: 3 }
+      yourSecondProviderId: # identifies your dataset / provider independent of config changes
+        organization: myorg
+        project: '*' # this will match all projects
+        repository: '*' # this will match all repos
+        path: /catalog-info.yaml
       anotherProviderId: # another identifier
         organization: myorg
         project: myproject
@@ -62,7 +67,7 @@ The parameters available are:
 
 - **`host:`** _(optional)_ Leave empty for Cloud hosted, otherwise set to your self-hosted instance host.
 - **`organization:`** Your Organization slug (or Collection for on-premise users). Required.
-- **`project:`** Your project slug. Required.
+- **`project:`** _(optional)_ Your project slug. Wildcards are supported as show on the examples above. If not set, all projects will be searched. For a project name containing spaces, use both single and double quotes as in `project: '"My Project Name"'`.
 - **`repository:`** _(optional)_ The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.
 - **`path:`** _(optional)_ Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml.
 - **`schedule`** _(optional)_:
@@ -144,7 +149,7 @@ When using a custom pattern, the target is composed of five parts:
 
 - The base instance URL, `https://dev.azure.com` in this case
 - The organization name which is required, `myorg` in this case
-- The project name which is required, `myproject` in this case
+- The project name which is optional, `myproject` in this case. This defaults to \*, which scans all the projects where the token has access to.
 - The repository blob to scan, which accepts \* wildcard tokens and must be
   added after `_git/`. This can simply be `*` to scan all repositories in the
   project.

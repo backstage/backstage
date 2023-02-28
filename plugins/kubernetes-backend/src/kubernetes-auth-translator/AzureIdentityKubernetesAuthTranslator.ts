@@ -27,7 +27,7 @@ const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default'; // This scope 
 
 /**
  *
- * @alpha
+ * @public
  */
 export class AzureIdentityKubernetesAuthTranslator
   implements KubernetesAuthTranslator

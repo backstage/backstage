@@ -85,4 +85,4 @@ We are envisioning [three phases](https://github.com/backstage/backstage/milesto
 
 https://github.com/backstage/backstage/milestones
 
-Want to discuss the project or need support? Join us on [Discord](https://discord.gg/MUpMjP2) or reach out on [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com).
+Want to discuss the project or need support? Join us on [Discord](https://discord.gg/backstage-687207715902193673) or reach out on [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com).

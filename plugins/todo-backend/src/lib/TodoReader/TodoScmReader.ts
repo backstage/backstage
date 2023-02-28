@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { loggerToWinstonLogger, UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { Logger } from 'winston';
 
@@ -28,6 +28,11 @@ import {
 import { Config } from '@backstage/config';
 import { createTodoParser } from './createTodoParser';
 import path from 'path';
+import {
+  coreServices,
+  createServiceFactory,
+  createServiceRef,
+} from '@backstage/backend-plugin-api';
 
 const excludedExtensions = [
   '.png',
@@ -167,3 +172,26 @@ export class TodoScmReader implements TodoReader {
     return { result: { items: todos }, etag: tree.etag };
   }
 }
+
+/**
+ * @public
+ */
+export const todoReaderServiceRef = createServiceRef<TodoReader>({
+  id: 'todo.todoReader',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {
+        reader: coreServices.urlReader,
+        config: coreServices.config,
+        logger: coreServices.logger,
+      },
+      factory: async ({ reader, config, logger }) => {
+        const winstonLogger = loggerToWinstonLogger(logger);
+        return TodoScmReader.fromConfig(config, {
+          logger: winstonLogger,
+          reader,
+        });
+      },
+    }),
+});

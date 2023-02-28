@@ -22,8 +22,9 @@ import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { TaskContext, TaskSecrets } from './types';
+import { TaskContext } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 
 // The Stream module is lazy loaded, so make sure it's in the module cache before mocking fs

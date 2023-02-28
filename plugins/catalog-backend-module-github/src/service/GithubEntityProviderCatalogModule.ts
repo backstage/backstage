@@ -19,11 +19,11 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 
 /**
- * Registers the {@link GithubEntityProvider} with the catalog processing extension point.
+ * Registers the `GithubEntityProvider` with the catalog processing extension point.
  *
  * @alpha
  */

@@ -356,4 +356,27 @@ describe('PageDutyCard', () => {
       expect(getByText('Empty escalation policy')).toBeInTheDocument();
     });
   });
+
+  describe('when entity has all annotations but the plugin has been configured to be "read only"', () => {
+    it('queries by integration key but does not render the "Create Incident" button', async () => {
+      mockPagerDutyApi.getServiceByEntity = jest
+        .fn()
+        .mockImplementationOnce(async () => ({ service }));
+
+      const { getByText, queryByTestId } = render(
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <EntityProvider entity={entityWithAllAnnotations}>
+              <PagerDutyCard readOnly />
+            </EntityProvider>
+          </ApiProvider>,
+        ),
+      );
+      await waitFor(() => !queryByTestId('progress'));
+      expect(getByText('Service Directory')).toBeInTheDocument();
+      expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
+      expect(getByText('Empty escalation policy')).toBeInTheDocument();
+      expect(() => getByText('Create Incident')).toThrow();
+    });
+  });
 });

@@ -50,8 +50,10 @@ describe('api', () => {
         const { path } = req.params;
         if (path === 'test/success') {
           return res(ctx.json(mockSecretsResult));
-        } else if (path === 'test/error') {
+        } else if (path === 'test/empty') {
           return res(ctx.json({ items: [] }));
+        } else if (path === 'test/not-found') {
+          return res(ctx.status(404));
         }
         return res(ctx.status(400));
       }),
@@ -72,12 +74,28 @@ describe('api', () => {
   it('should return empty secret list', async () => {
     setupHandlers();
     const api = new VaultClient({ discoveryApi });
-    expect(await api.listSecrets('test/error')).toEqual([]);
+    expect(await api.listSecrets('test/empty')).toEqual([]);
   });
 
   it('should return all the secrets if no path defined', async () => {
     setupHandlers();
     const api = new VaultClient({ discoveryApi });
     expect(await api.listSecrets('')).toEqual(mockSecretsResult.items);
+  });
+
+  it('should throw an error if the Vault API responds with an HTTP 404', async () => {
+    setupHandlers();
+    const api = new VaultClient({ discoveryApi });
+    await expect(api.listSecrets('test/not-found')).rejects.toThrow(
+      "No secrets found in path 'v1/secrets/test%2Fnot-found'",
+    );
+  });
+
+  it('should throw an error if the Vault API responds with a non-successful HTTP status code', async () => {
+    setupHandlers();
+    const api = new VaultClient({ discoveryApi });
+    await expect(api.listSecrets('test/error')).rejects.toThrow(
+      'Request failed with 400 Error',
+    );
   });
 });

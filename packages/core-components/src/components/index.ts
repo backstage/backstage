@@ -16,7 +16,7 @@
 
 export * from './AlertDisplay';
 export * from './Avatar';
-export * from './Button';
+export * from './LinkButton';
 export * from './CodeSnippet';
 export * from './CopyTextButton';
 export * from './CreateButton';
@@ -30,6 +30,7 @@ export * from './HeaderIconLinkRow';
 export * from './HorizontalScrollGrid';
 export * from './Lifecycle';
 export * from './Link';
+export * from './LinkButton';
 export * from './LogViewer';
 export * from './MarkdownContent';
 export * from './OAuthRequestDialog';

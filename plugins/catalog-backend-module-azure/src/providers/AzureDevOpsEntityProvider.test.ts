@@ -164,6 +164,9 @@ describe('AzureDevOpsEntityProvider', () => {
           repository: {
             name: 'myrepo',
           },
+          project: {
+            name: 'myproject',
+          },
         },
       ],
       'https://dev.azure.com/myorganization/myproject',
@@ -189,12 +192,18 @@ describe('AzureDevOpsEntityProvider', () => {
           repository: {
             name: 'myrepo',
           },
+          project: {
+            name: 'myproject',
+          },
         },
         {
           fileName: 'catalog-info.yaml',
           path: '/catalog-info.yaml',
           repository: {
             name: 'myotherrepo',
+          },
+          project: {
+            name: 'myproject',
           },
         },
       ],
@@ -277,12 +286,18 @@ describe('AzureDevOpsEntityProvider', () => {
           repository: {
             name: 'myrepo',
           },
+          project: {
+            name: 'myproject',
+          },
         },
         {
           fileName: 'catalog-info.yaml',
           path: '/catalog-info.yaml',
           repository: {
             name: 'myotherrepo',
+          },
+          project: {
+            name: 'myproject',
           },
         },
       ],

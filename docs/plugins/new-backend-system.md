@@ -4,11 +4,11 @@ title: New Backend System
 description: Details of the upcoming backend system
 ---
 
-> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
 
 ## Status
 
-The new backend system is under active development, and only a small number of plugins have been migrated so far. It is possible to try it out, but it is not recommended to use this new system in production yet.
+The new backend system is in alpha, and only a small number of plugins have been migrated so far. It is possible to try it out, but it is not recommended to use this new system in production yet.
 
 You can find an example backend setup in [the backend-next package](https://github.com/backstage/backstage/tree/master/packages/backend-next).
 
@@ -84,7 +84,7 @@ import {
 // export type ExamplePluginOptions = { exampleOption: boolean };
 export const examplePlugin = createBackendPlugin({
   // unique id for the plugin
-  id: 'example',
+  pluginId: 'example',
   // It's possible to provide options to the plugin
   // register(env, options: ExamplePluginOptions) {
   register(env) {
@@ -111,7 +111,7 @@ If we wanted our plugin to accept options as well, we'd accept the options as th
 
 ```ts
 export const examplePlugin = createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env, options?: { silent?: boolean }) {
     env.registerInit({
       deps: { logger: coreServices.logger },

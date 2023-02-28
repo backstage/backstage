@@ -16,6 +16,7 @@
 
 import { JsonValue, JsonObject, Observable } from '@backstage/types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 
 /**
  * The status of each step of the Task
@@ -69,15 +70,6 @@ export type SerializedTaskEvent = {
   body: JsonObject;
   type: TaskEventType;
   createdAt: string;
-};
-
-/**
- * TaskSecrets
- *
- * @public
- */
-export type TaskSecrets = Record<string, string> & {
-  backstageToken?: string;
 };
 
 /**

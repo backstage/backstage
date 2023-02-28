@@ -16,8 +16,6 @@
 
 import { useApp } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -27,7 +25,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Popover from '@material-ui/core/Popover';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import React, { MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
 import { HelpIcon } from '../../icons';
@@ -111,13 +111,14 @@ export function SupportButton(props: SupportButtonProps) {
             size="small"
             onClick={onClickHandler}
             data-testid="support-button"
+            aria-label="Support"
           >
             <HelpIcon />
           </IconButton>
         ) : (
           <Button
             data-testid="support-button"
-            aria-label="support"
+            aria-label="Support"
             color="primary"
             onClick={onClickHandler}
             startIcon={<HelpIcon />}
@@ -156,7 +157,11 @@ export function SupportButton(props: SupportButtonProps) {
           ))}
         </List>
         <DialogActions>
-          <Button color="primary" onClick={popoverCloseHandler}>
+          <Button
+            color="primary"
+            onClick={popoverCloseHandler}
+            aria-label="Close"
+          >
             Close
           </Button>
         </DialogActions>

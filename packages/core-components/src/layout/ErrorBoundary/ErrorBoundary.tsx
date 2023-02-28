@@ -16,7 +16,7 @@
 
 import Typography from '@material-ui/core/Typography';
 import React, { ComponentClass, Component, ErrorInfo } from 'react';
-import { Button } from '../../components/Button';
+import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
 
 type SlackChannel = {
@@ -49,9 +49,9 @@ const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
   }
 
   return (
-    <Button to={slackChannel.href} variant="contained">
+    <LinkButton to={slackChannel.href} variant="contained">
       {slackChannel.name}
-    </Button>
+    </LinkButton>
   );
 };
 

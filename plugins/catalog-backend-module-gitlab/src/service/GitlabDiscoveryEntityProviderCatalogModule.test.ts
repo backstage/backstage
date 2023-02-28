@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-tasks';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Duration } from 'luxon';
 import { gitlabDiscoveryEntityProviderCatalogModule } from './GitlabDiscoveryEntityProviderCatalogModule';
 import { GitlabDiscoveryEntityProvider } from '../providers';

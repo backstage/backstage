@@ -56,7 +56,11 @@ Let's make the following changes in `plugins/todo-list/src/components/TodoListPa
 -           Add
 -         </Button>
 +         {!loadingPermission && (
-+           <Button disabled={!canAddTodo} variant="contained" onClick={handleAdd}>
++           <Button
++             disabled={!canAddTodo}
++             variant="contained"
++             onClick={() => onAdd(title.current)}
++           >
 +             Add
 +           </Button>
 +         )}
@@ -118,7 +122,10 @@ Providing a disabled state can be a helpful signal to users, but there may be ca
 -           <Grid item>
 -             <AddTodo onAdd={handleAdd} />
 -           </Grid>
-+           <RequirePermission permission={todoListCreatePermission} errorPage={<></>}>
++           <RequirePermission
++             permission={todoListCreatePermission}
++             errorPage={<></>}
++           >
 +             <Grid item>
 +               <AddTodo onAdd={handleAdd} />
 +             </Grid>
@@ -149,11 +156,15 @@ Providing a disabled state can be a helpful signal to users, but there may be ca
             onChange={e => (title.current = e.target.value)}
           />
 -         {!loadingPermission && (
--           <Button disabled={!canAddTodo} variant="contained" onClick={handleAdd}>
+-           <Button
+-             disabled={!canAddTodo}
+-             variant="contained"
+-             onClick={() => onAdd(title.current)}
+-           >
 -             Add
 -           </Button>
 -         )}
-+         <Button variant="contained" onClick={handleAdd}>
++         <Button variant="contained" onClick={() => onAdd(title.current)}>
 +           Add
 +         </Button>
         </Box>

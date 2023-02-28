@@ -21,3 +21,4 @@
  */
 
 export * from './types';
+export * from './catalog-entity-constants';

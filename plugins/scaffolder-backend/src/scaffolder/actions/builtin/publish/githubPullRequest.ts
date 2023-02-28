@@ -20,11 +20,11 @@ import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { InputError, CustomErrorBase } from '@backstage/errors';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from '../github/helpers';
 import {
   SerializedFile,

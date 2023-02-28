@@ -19,7 +19,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Divider,
   Grid,
   Typography,
 } from '@material-ui/core';
@@ -38,15 +37,12 @@ const ServiceSummary = ({ service }: ServiceSummaryProps) => {
     <Grid
       container
       direction="row"
-      justifyContent="flex-start"
+      justifyContent="space-between"
       alignItems="center"
+      spacing={0}
     >
-      <Grid xs={3} item>
+      <Grid xs={8} item>
         <ServiceDrawer service={service} />
-      </Grid>
-
-      <Grid item xs={1}>
-        <Divider style={{ height: '5em' }} orientation="vertical" />
       </Grid>
 
       <Grid item>
@@ -95,7 +91,7 @@ type ServiceAccordionProps = {
 
 const ServiceAccordion = ({ service }: ServiceAccordionProps) => {
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
+    <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <ServiceSummary service={service} />
       </AccordionSummary>

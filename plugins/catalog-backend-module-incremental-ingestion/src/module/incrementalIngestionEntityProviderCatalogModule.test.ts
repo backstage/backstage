@@ -18,7 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { coreServices } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { IncrementalEntityProvider } from '../types';
 import { incrementalIngestionEntityProviderCatalogModule } from './incrementalIngestionEntityProviderCatalogModule';
 

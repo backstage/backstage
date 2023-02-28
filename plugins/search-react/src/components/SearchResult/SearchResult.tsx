@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import { isFunction } from 'lodash';
 
 import {
-  EmptyState,
   Progress,
+  EmptyState,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { AnalyticsContext, useApi } from '@backstage/core-plugin-api';
+import { useApi, AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
 
-import { useSearch } from '../../context';
 import { searchApiRef } from '../../api';
+import { useSearch } from '../../context';
+import {
+  SearchResultListItemExtensions,
+  SearchResultListItemExtensionsProps,
+} from '../../extensions';
 
 /**
  * Props for {@link SearchResultContext}
@@ -36,7 +41,10 @@ export type SearchResultContextProps = {
   /**
    * A child function that receives an asynchronous result set and returns a react element.
    */
-  children: (state: AsyncState<SearchResultSet>) => JSX.Element | null;
+  children: (
+    state: AsyncState<SearchResultSet>,
+    query: Partial<SearchQuery>,
+  ) => JSX.Element | null;
 };
 
 /**
@@ -62,8 +70,8 @@ export type SearchResultContextProps = {
 export const SearchResultContext = (props: SearchResultContextProps) => {
   const { children } = props;
   const context = useSearch();
-  const state = context.result;
-  return children(state);
+  const { result: state, ...query } = context;
+  return children(state, query);
 };
 
 /**
@@ -103,7 +111,7 @@ export const SearchResultApi = (props: SearchResultApiProps) => {
     return searchApi.query({ ...rest, term, types, filters });
   }, [query]);
 
-  return children(state);
+  return children(state, query);
 };
 
 /**
@@ -165,10 +173,11 @@ export const SearchResultState = (props: SearchResultStateProps) => {
  * Props for {@link SearchResult}
  * @public
  */
-export type SearchResultProps = Pick<SearchResultStateProps, 'query'> & {
-  children: (resultSet: SearchResultSet) => JSX.Element;
-  noResultsComponent?: JSX.Element;
-};
+export type SearchResultProps = Pick<SearchResultStateProps, 'query'> &
+  Omit<SearchResultListItemExtensionsProps, 'results' | 'children'> & {
+    children?: ReactNode | ((resultSet: SearchResultSet) => JSX.Element);
+    noResultsComponent?: JSX.Element;
+  };
 
 /**
  * Renders results from a parent search context or api.
@@ -183,6 +192,7 @@ export const SearchResultComponent = (props: SearchResultProps) => {
     noResultsComponent = (
       <EmptyState missing="data" title="Sorry, no results were found" />
     ),
+    ...rest
   } = props;
 
   return (
@@ -205,7 +215,15 @@ export const SearchResultComponent = (props: SearchResultProps) => {
           return noResultsComponent;
         }
 
-        return children(value);
+        if (isFunction(children)) {
+          return children(value);
+        }
+
+        return (
+          <SearchResultListItemExtensions {...rest} results={value.results}>
+            {children}
+          </SearchResultListItemExtensions>
+        );
       }}
     </SearchResultState>
   );

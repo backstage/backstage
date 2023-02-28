@@ -105,7 +105,13 @@ export default ({ theme, sidebar }: RuleOptions) => `
 .md-footer {
   position: fixed;
   bottom: 0px;
+  pointer-events: none;
 }
+
+.md-footer-nav__link, .md-footer__link {
+  pointer-events: all;
+}
+
 .md-footer__title {
   background-color: unset;
 }

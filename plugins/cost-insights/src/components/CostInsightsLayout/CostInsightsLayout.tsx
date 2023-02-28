@@ -37,6 +37,7 @@ type CostInsightsLayoutProps = {
 };
 
 export const CostInsightsLayout = ({
+  title = 'Cost Insights',
   groups,
   children,
 }: PropsWithChildren<CostInsightsLayoutProps>) => {
@@ -46,7 +47,7 @@ export const CostInsightsLayout = ({
       <Header
         style={{ boxShadow: 'none' }}
         title="Cost Insights"
-        pageTitleOverride="Cost Insights"
+        pageTitleOverride={title}
         type="Tool"
       />
       <div className={classes.root}>

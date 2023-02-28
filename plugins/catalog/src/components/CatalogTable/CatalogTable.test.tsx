@@ -78,10 +78,9 @@ describe('CatalogTable component', () => {
         },
       },
     );
-    const errorMessage = await screen.findByText(
-      /Could not fetch catalog entities./,
-    );
-    expect(errorMessage).toBeInTheDocument();
+    await expect(
+      screen.findByText(/Could not fetch catalog entities./),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should display entity names when loading has finished and no error occurred', async () => {
@@ -306,6 +305,7 @@ describe('CatalogTable component', () => {
     },
     20_000,
   );
+
   it('should render the subtitle when it is specified', async () => {
     const entity = {
       apiVersion: 'backstage.io/v1alpha1',

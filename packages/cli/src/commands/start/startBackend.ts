@@ -17,6 +17,7 @@
 import fs from 'fs-extra';
 import { paths } from '../../lib/paths';
 import { serveBackend } from '../../lib/bundler';
+import { startBackendExperimental } from '../../lib/experimental/startBackendExperimental';
 
 interface StartBackendOptions {
   checksEnabled: boolean;
@@ -25,17 +26,28 @@ interface StartBackendOptions {
 }
 
 export async function startBackend(options: StartBackendOptions) {
-  // Cleaning dist/ before we start the dev process helps work around an issue
-  // where we end up with the entrypoint executing multiple times, causing
-  // a port bind conflict among other things.
-  await fs.remove(paths.resolveTarget('dist'));
+  if (process.env.EXPERIMENTAL_BACKEND_START) {
+    const waitForExit = await startBackendExperimental({
+      entry: 'src/index',
+      checksEnabled: false, // not supported
+      inspectEnabled: options.inspectEnabled,
+      inspectBrkEnabled: options.inspectBrkEnabled,
+    });
 
-  const waitForExit = await serveBackend({
-    entry: 'src/index',
-    checksEnabled: options.checksEnabled,
-    inspectEnabled: options.inspectEnabled,
-    inspectBrkEnabled: options.inspectBrkEnabled,
-  });
+    await waitForExit();
+  } else {
+    // Cleaning dist/ before we start the dev process helps work around an issue
+    // where we end up with the entrypoint executing multiple times, causing
+    // a port bind conflict among other things.
+    await fs.remove(paths.resolveTarget('dist'));
 
-  await waitForExit();
+    const waitForExit = await serveBackend({
+      entry: 'src/index',
+      checksEnabled: options.checksEnabled,
+      inspectEnabled: options.inspectEnabled,
+      inspectBrkEnabled: options.inspectBrkEnabled,
+    });
+
+    await waitForExit();
+  }
 }

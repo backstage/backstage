@@ -35,6 +35,10 @@ const entity = {
 };
 
 const location: Record<string, LocationSpec> = {
+  v: {
+    type: 'url',
+    target: 'https://github.com/b/c/blob/master/.folder/v.yaml',
+  },
   w: {
     type: 'url',
     target: 'https://github.com/b/c/blob/master/w.yaml',
@@ -262,5 +266,21 @@ describe('DefaultCatalogRulesEnforcer', () => {
       expect(enforcer.isAllowed(entity.component, location.y)).toBe(false);
       expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
     });
+  });
+
+  it('should allow locations with a hidden folder', () => {
+    const enforcer = DefaultCatalogRulesEnforcer.fromConfig(
+      new ConfigReader({
+        catalog: {
+          rules: [
+            {
+              allow: ['Component'],
+              locations: [{ type: 'url', pattern: 'https://github.com/b/**' }],
+            },
+          ],
+        },
+      }),
+    );
+    expect(enforcer.isAllowed(entity.component, location.v)).toBe(true);
   });
 });

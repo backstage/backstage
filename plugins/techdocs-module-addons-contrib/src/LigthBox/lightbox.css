@@ -1,0 +1,7 @@
+.pswp {
+  --pswp-bg: #f8f8f8;
+}
+.pswp__counter {
+  color: rgba(0, 0, 0, 0.87);
+  text-shadow: none;
+}

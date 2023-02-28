@@ -6,6 +6,7 @@ metadata:
 spec:
   targets:
     - ./apis/hello-world-api.yaml
+    - ./apis/hello-world-trpc-api.yaml
     - ./apis/petstore-api.yaml
     - ./apis/spotify-api.yaml
     - ./apis/streetlights-api.yaml

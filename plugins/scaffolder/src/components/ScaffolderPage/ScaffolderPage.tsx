@@ -36,7 +36,7 @@ import {
 import React, { ComponentType } from 'react';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
 import { registerComponentRouteRef } from '../../routes';

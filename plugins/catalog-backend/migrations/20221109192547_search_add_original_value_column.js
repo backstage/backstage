@@ -34,11 +34,11 @@ exports.up = async function up(knex) {
   // not enough to just reset the final_entities hash, since stitching is driven
   // only by processing resulting in data that isn't matching the refresh_state
   // hash.
+  await knex('final_entities').update({ hash: '' });
   await knex('refresh_state').update({
     result_hash: '',
     next_update_at: knex.fn.now(),
   });
-  await knex('final_entities').update({ hash: '' });
 };
 
 /**

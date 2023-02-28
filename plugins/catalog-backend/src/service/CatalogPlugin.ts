@@ -19,9 +19,11 @@ import {
 } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
-  CatalogProcessor,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node/alpha';
+import {
+  CatalogProcessor,
   EntityProvider,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
@@ -56,7 +58,7 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
  * @alpha
  */
 export const catalogPlugin = createBackendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   register(env) {
     const processingExtensions = new CatalogExtensionPointImpl();
     // plugins depending on this API will be initialized before this plugins init method is executed.
@@ -97,11 +99,7 @@ export const catalogPlugin = createBackendPlugin({
         const { processingEngine, router } = await builder.build();
 
         await processingEngine.start();
-        lifecycle.addShutdownHook({
-          fn: async () => {
-            await processingEngine.stop();
-          },
-        });
+        lifecycle.addShutdownHook(() => processingEngine.stop());
         httpRouter.use(router);
       },
     });

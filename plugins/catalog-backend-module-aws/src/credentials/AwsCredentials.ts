@@ -27,6 +27,7 @@ export class AwsCredentials {
       accessKeyId?: string;
       secretAccessKey?: string;
       roleArn?: string;
+      externalId?: string;
     },
     roleSessionName: string,
   ): Credentials | CredentialsOptions | undefined {
@@ -52,6 +53,7 @@ export class AwsCredentials {
         params: {
           RoleArn: roleArn,
           RoleSessionName: roleSessionName,
+          ExternalId: config.externalId,
         },
       });
     }

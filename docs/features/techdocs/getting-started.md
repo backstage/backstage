@@ -89,11 +89,15 @@ const AppRoutes = () => {
 
 I know, you're curious to see how it looks, aren't you? See the image below:
 
-<img data-zoomable src="../../assets/techdocs/report-issue-addon.png" alt="TechDocs Report Issue Add-on" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Report Issue Add-on](../../assets/techdocs/report-issue-addon.png)
 
 By clicking the open new issue button, you will be redirected to the new issue page according to the source code provider you are using:
 
-<img data-zoomable src="../../assets/techdocs/report-issue-template.png" alt="TechDocs Report Issue Template" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Report Issue Template](../../assets/techdocs/report-issue-template.png)
 
 That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 
@@ -262,12 +266,12 @@ You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
 pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
 apt).
 
-You can do so by including the following lines in the last step of your
+You can do so by including the following lines right above `USER node` of your
 `Dockerfile`:
 
 ```Dockerfile
 RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install mkdocs-techdocs-core==1.0.1
+RUN pip3 install mkdocs-techdocs-core==1.1.7
 ```
 
 Please be aware that the version requirement could change, you need to check our

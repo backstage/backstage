@@ -20,7 +20,14 @@ import {
   getEntitySourceLocation,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { TodoReader } from '../lib';
+import {
+  createServiceFactory,
+  createServiceRef,
+  ServiceRef,
+} from '@backstage/backend-plugin-api';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+
+import { TodoReader, todoReaderServiceRef } from '../lib';
 import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
 
 const DEFAULT_DEFAULT_PAGE_SIZE = 10;
@@ -130,3 +137,23 @@ export class TodoReaderService implements TodoService {
     };
   }
 }
+
+export const todoServiceRef: ServiceRef<TodoService> =
+  createServiceRef<TodoService>({
+    id: 'todo.client',
+    defaultFactory: async service =>
+      createServiceFactory({
+        service,
+        deps: {
+          catalogApi: catalogServiceRef,
+          todoReader: todoReaderServiceRef,
+        },
+        async factory({ catalogApi, todoReader }) {
+          const todoReaderService = new TodoReaderService({
+            catalogClient: catalogApi,
+            todoReader,
+          });
+          return todoReaderService;
+        },
+      }),
+  });

@@ -22,7 +22,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import os from 'os';
 import { PassThrough } from 'stream';
 import { createRunYeomanAction } from './yeoman';
-import type { ActionContext } from '@backstage/plugin-scaffolder-backend';
+import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
 
 describe('run:yeoman', () => {

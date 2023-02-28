@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 export { EntityRelationsGraph } from './EntityRelationsGraph';
+export type { EntityRelationsGraphProps } from './EntityRelationsGraph';
 export { ALL_RELATION_PAIRS } from './relations';
 export type { RelationPairs } from './relations';
 export { Direction } from './types';

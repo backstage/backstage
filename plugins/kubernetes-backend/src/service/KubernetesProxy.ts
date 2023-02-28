@@ -32,14 +32,14 @@ export const APPLICATION_JSON: string = 'application/json';
 /**
  * The header that is used to specify the cluster name.
  *
- * @alpha
+ * @public
  */
 export const HEADER_KUBERNETES_CLUSTER: string = 'X-Kubernetes-Cluster';
 
 /**
  * A proxy that routes requests to the Kubernetes API.
  *
- * @alpha
+ * @public
  */
 export class KubernetesProxy {
   private readonly middlewareForClusterName = new Map<string, RequestHandler>();

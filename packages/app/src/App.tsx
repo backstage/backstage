@@ -59,9 +59,9 @@ import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
+import { NextScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
 import {
   ScaffolderPage,
-  NextScaffolderPage,
   scaffolderPlugin,
   ScaffolderLayouts,
 } from '@backstage/plugin-scaffolder';
@@ -78,6 +78,7 @@ import {
   ExpandableNavigation,
   ReportIssue,
   TextSize,
+  LightBox,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import {
   SettingsLayout,
@@ -103,10 +104,11 @@ import * as plugins from './plugins';
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { PlaylistIndexPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
+import { StackstormPage } from '@backstage/plugin-stackstorm';
 
 const app = createApp({
   apis,
@@ -203,6 +205,7 @@ const routes = (
         <ExpandableNavigation />
         <ReportIssue />
         <TextSize />
+        <LightBox />
       </TechDocsAddons>
     </Route>
     <Route
@@ -244,6 +247,9 @@ const routes = (
       <ScaffolderFieldExtensions>
         <DelayingComponentFieldExtension />
       </ScaffolderFieldExtensions>
+      <ScaffolderLayouts>
+        <TwoColumnLayout />
+      </ScaffolderLayouts>
     </Route>
     <Route path="/explore" element={<ExplorePage />} />
     <Route
@@ -276,6 +282,7 @@ const routes = (
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
     <Route path="/playlist" element={<PlaylistIndexPage />} />
     <Route path="/score-board" element={<ScoreBoardPage />} />
+    <Route path="/stackstorm" element={<StackstormPage />} />
   </FlatRoutes>
 );
 

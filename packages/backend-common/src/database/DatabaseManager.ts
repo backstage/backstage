@@ -29,7 +29,11 @@ import {
 } from './connection';
 import { PluginDatabaseManager } from './types';
 import path from 'path';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LifecycleService,
+  LoggerService,
+  PluginMetadataService,
+} from '@backstage/backend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 
 /**
@@ -94,12 +98,18 @@ export class DatabaseManager {
    * should be unique as they are used to look up database config overrides under
    * `backend.database.plugin`.
    */
-  forPlugin(pluginId: string): PluginDatabaseManager {
+  forPlugin(
+    pluginId: string,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): PluginDatabaseManager {
     const _this = this;
 
     return {
       getClient(): Promise<Knex> {
-        return _this.getDatabase(pluginId);
+        return _this.getDatabase(pluginId, deps);
       },
       migrations: {
         skip: false,
@@ -307,7 +317,13 @@ export class DatabaseManager {
    * @returns Promise which resolves to a scoped Knex database client for a
    *          plugin
    */
-  private async getDatabase(pluginId: string): Promise<Knex> {
+  private async getDatabase(
+    pluginId: string,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): Promise<Knex> {
     if (this.databaseCache.has(pluginId)) {
       return this.databaseCache.get(pluginId)!;
     }
@@ -351,6 +367,7 @@ export class DatabaseManager {
       const client = createDatabaseClient(
         pluginConfig,
         databaseClientOverrides,
+        deps,
       );
       this.startKeepaliveLoop(pluginId, client);
       return client;

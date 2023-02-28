@@ -35,11 +35,11 @@ import React, { ComponentType, useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
-import { LayoutOptions } from '../../layouts';
 import { ReviewStepProps } from '../types';
 import { ReviewStep } from './ReviewStep';
-import { extractSchemaFromStep } from '@backstage/plugin-scaffolder-react';
+import { extractSchemaFromStep } from '@backstage/plugin-scaffolder-react/alpha';
 import { selectedTemplateRouteRef } from '../../routes';
+import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 
 const Form = withTheme(MuiTheme);
 

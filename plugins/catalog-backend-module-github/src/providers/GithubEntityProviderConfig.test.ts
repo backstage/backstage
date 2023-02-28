@@ -78,6 +78,12 @@ describe('readProviderConfigs', () => {
                 },
               },
             },
+            providerWithForkFilter: {
+              organization: 'test-org6',
+              filters: {
+                allowForks: false,
+              },
+            },
             providerWithHost: {
               organization: 'test-org1',
               host: 'ghe.internal.com',
@@ -97,7 +103,7 @@ describe('readProviderConfigs', () => {
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(7);
+    expect(providerConfigs).toHaveLength(8);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -106,6 +112,7 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        allowForks: true,
         topic: {
           include: undefined,
           exclude: undefined,
@@ -122,6 +129,7 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        allowForks: true,
         topic: {
           include: undefined,
           exclude: undefined,
@@ -138,6 +146,7 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: /^repository.*filter$/, // repo
         branch: undefined, // branch
+        allowForks: true,
         topic: {
           include: undefined,
           exclude: undefined,
@@ -154,6 +163,7 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: 'branch-name',
+        allowForks: true,
         topic: {
           include: undefined,
           exclude: undefined,
@@ -170,6 +180,7 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        allowForks: true,
         topic: {
           include: ['backstage-include'],
           exclude: ['backstage-exclude'],
@@ -179,6 +190,23 @@ describe('readProviderConfigs', () => {
       validateLocationsExist: false,
     });
     expect(providerConfigs[5]).toEqual({
+      id: 'providerWithForkFilter',
+      organization: 'test-org6',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: false,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+      },
+      schedule: undefined,
+      validateLocationsExist: false,
+    });
+    expect(providerConfigs[6]).toEqual({
       id: 'providerWithHost',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
@@ -186,6 +214,7 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        allowForks: true,
         topic: {
           include: undefined,
           exclude: undefined,
@@ -194,7 +223,7 @@ describe('readProviderConfigs', () => {
       validateLocationsExist: false,
       schedule: undefined,
     });
-    expect(providerConfigs[6]).toEqual({
+    expect(providerConfigs[7]).toEqual({
       id: 'providerWithSchedule',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
@@ -202,6 +231,7 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        allowForks: true,
         topic: {
           include: undefined,
           exclude: undefined,

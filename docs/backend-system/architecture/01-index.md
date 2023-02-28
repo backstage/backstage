@@ -1,23 +1,27 @@
 ---
 id: index
 title: Backend System Architecture
-sidebar_label: System Architecture
+sidebar_label: Overview
 # prettier-ignore
 description: The structure and architecture of the new Backend System and its component parts
 ---
 
-# Overview
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+
+## Building Blocks
 
 This section introduces the high-level building blocks upon which this new
 system is built. These are all concepts that exist in our current system in one
 way or another, but they have all been lifted up to be first class concerns in
-the new system.
+the new system. Regardless of whether you are setting up your own backstage
+instance, developing plugins, or extending plugins with new features, it is
+important to understand these concepts.
 
-## Building Blocks
+The diagram below provides an overview of the different building blocks, and the other blocks that each of them interact with.
 
-This section introduces the high-level building blocks upon which this new system is built. These are all concepts that exist in our current system in one way or another, but they have all been lifted up to be first class concerns in the new system.
+![backend system building blocks diagram](../../assets/backend-system/architecture-building-blocks.drawio.svg)
 
-<!-- TODO: GRAPH GO HERE -->
+> NOTE: These are all concepts that existed in our old backend system in one way or another, but they have now all been lifted up to be first class concerns.
 
 ### Backend
 
@@ -33,7 +37,7 @@ Plugins provide the actual features, just like in our existing system. They oper
 
 Services provide utilities to help make it simpler to implement plugins, so that each plugin doesn't need to implement everything from scratch. There are both many built-in services, like the ones for logging, database access, and reading configuration, but you can also import third-party services, or create your own.
 
-Services are also a customization point for individual backend installations. You can both override services with your own implementations, as well as make smaller customizations to existing services.
+Services are also a customization point for individual backend installations. You can override services with your own implementations, as well as make smaller customizations to existing services.
 
 ### Extension Points
 
@@ -41,7 +45,7 @@ Many plugins have ways in which you can extend them, for example entity provider
 
 Extension Points look a little bit like services, since you depended on them just like you would a service. A key difference is that extension points are registered and provided by plugins themselves, based on what customizations each individual plugin wants to expose.
 
-Extension Points are also exported separately from the plugin instance itself, and a single plugin can also expose multiple different extension points at once. This makes it easier to evolve and deprecated individual Extension Points over time, rather than dealing with a single large API surface.
+Extension Points are also exported separately from the plugin instance itself, and a single plugin can also expose multiple different extension points at once. This makes it easier to evolve and deprecate individual Extension Points over time, rather than dealing with a single large API surface.
 
 ### Modules
 
@@ -49,22 +53,20 @@ Modules use the plugin Extension Points to add new features for plugins. They mi
 
 Each module may only extend a single plugin, and the module must be deployed together with that plugin in the same backend instance. Modules may however only communicate with their plugin through its registered extension points.
 
-Just like plugins, modules also have access to services and can depend on their own service implementations. They will however share services with the plugin that they extend, there are no module-specific service implementations.
+Just like plugins, modules also have access to services and can depend on their own service implementations. They will however share services with the plugin that they extend - there are no module-specific service implementations.
 
 ## Package structure
 
 A detailed explanation of the package architecture can be found in the
 [Backstage Architecture
 Overview](../../overview/architecture-overview.md#package-architecture). The
-most important packages to consider for this system are `backend`,
-`plugin-<pluginId>-backend`, `plugin-<pluginId>-node`, and
-`plugin-<pluginId>-backend-module-<moduleId>`.
+most important packages to consider for this system are the following:
 
 - `plugin-<pluginId>-backend` houses the implementation of the backend plugins
   themselves.
-- `plugin-<pluginId>-node` houses the extension points and any other utilities
+- `plugin-<pluginId>-node` houses the backend plugin's extension points and any other utilities
   that modules or other plugins might need.
 - `plugin-<pluginId>-backend-module-<moduleId>` houses the modules that extend
-  the plugins via the extension points.
+  the plugin via its extension points.
 - `backend` is the backend itself that wires everything together to something
   that you can deploy.

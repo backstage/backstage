@@ -16,7 +16,7 @@
 
 import { JsonObject } from '@backstage/types';
 import { ConflictError, NotFoundError } from '@backstage/errors';
-import { TemplateAction } from './types';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 /**
  * Registry of all registered template actions.

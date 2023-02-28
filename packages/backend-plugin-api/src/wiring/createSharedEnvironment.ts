@@ -16,35 +16,47 @@
 
 import { ServiceFactory, ServiceFactoryOrFunction } from '../services';
 
-/** @public */
+/**
+ * The configuration options passed to {@link createSharedEnvironment}.
+ *
+ * @public
+ */
 export interface SharedBackendEnvironmentConfig {
   services?: ServiceFactoryOrFunction[];
 }
 
-// This type is opaque in order to allow for future API evolution without
-// cluttering the external API. For example we might want to add support
-// for more powerful callback based backend modifications.
-//
-// By making this opaque we also ensure that the type doesn't become an input
-// type that we need to care about, as it would otherwise be possible to pass
-// a custom environment definition to `createBackend`, which we don't want.
 /**
+ * An opaque type that represents the contents of a shared backend environment.
+ *
  * @public
  */
 export interface SharedBackendEnvironment {
-  $$type: 'SharedBackendEnvironment';
+  $$type: '@backstage/SharedBackendEnvironment';
+
+  // NOTE: This type is opaque in order to allow for future API evolution without
+  // cluttering the external API. For example we might want to add support
+  // for more powerful callback based backend modifications.
+  //
+  // By making this opaque we also ensure that the type doesn't become an input
+  // type that we need to care about, as it would otherwise be possible to pass
+  // a custom environment definition to `createBackend`, which we don't want.
 }
 
 /**
- * This type is NOT supposed to be used by anyone except internally by the backend-app-api package.
- * @internal */
+ * This type is NOT supposed to be used by anyone except internally by the
+ * backend-app-api package.
+ *
+ * @internal
+ */
 export interface InternalSharedBackendEnvironment {
   version: 'v1';
   services?: ServiceFactory[];
 }
 
 /**
- * Creates a shared backend environment which can be used to create multiple backends
+ * Creates a shared backend environment which can be used to create multiple
+ * backends.
+ *
  * @public
  */
 export function createSharedEnvironment<
@@ -81,7 +93,7 @@ export function createSharedEnvironment<
 
     // Here to ensure type safety in this internal implementation.
     const env: SharedBackendEnvironment & InternalSharedBackendEnvironment = {
-      $$type: 'SharedBackendEnvironment',
+      $$type: '@backstage/SharedBackendEnvironment',
       version: 'v1',
       services,
     };

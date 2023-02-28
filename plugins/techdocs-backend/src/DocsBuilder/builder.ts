@@ -186,6 +186,9 @@ export class DocsBuilder {
       etag: newEtag,
       logger: this.logger,
       logStream: this.logStream,
+      siteOptions: {
+        name: this.entity.metadata.title ?? this.entity.metadata.name,
+      },
     });
 
     // Remove Prepared directory since it is no longer needed.

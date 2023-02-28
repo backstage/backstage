@@ -17,7 +17,6 @@
 import mockFs from 'mock-fs';
 import { packageVersions, createPackageVersionProvider } from './version';
 import { Lockfile } from './versioning';
-// eslint-disable-next-line monorepo/no-internal-import
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 
 describe('createPackageVersionProvider', () => {

@@ -264,6 +264,7 @@ export function readProviderConfig(
 
   const userExpand = config.getOptionalString('user.expand');
   const userFilter = config.getOptionalString('user.filter');
+  const userSelect = config.getOptionalStringArray('user.select');
 
   const groupExpand = config.getOptionalString('group.expand');
   const groupFilter = config.getOptionalString('group.filter');
@@ -318,6 +319,7 @@ export function readProviderConfig(
     tenantId,
     userExpand,
     userFilter,
+    userSelect,
     groupExpand,
     groupFilter,
     groupSearch,

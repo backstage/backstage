@@ -18,6 +18,7 @@ Backstage comes with many common authentication providers in the core library:
 - [Auth0](auth0/provider.md)
 - [Azure](microsoft/provider.md)
 - [Bitbucket](bitbucket/provider.md)
+- [Bitbucket Server](bitbucketServer/provider.md)
 - [Cloudflare Access](cloudflare/access.md)
 - [GitHub](github/provider.md)
 - [GitLab](gitlab/provider.md)

@@ -112,11 +112,11 @@ steps which would be rendered as different steps in the scaffolder plugin
 frontend.
 
 Each `Step` is `JSONSchema` with some extra goodies for styling what it might
-look like in the frontend. For these steps we rely very heavily on this library:
-https://github.com/rjsf-team/react-jsonschema-form. They have some great docs
-too here: https://react-jsonschema-form.readthedocs.io/ and a playground where
-you can play around with some examples here
-https://rjsf-team.github.io/react-jsonschema-form.
+look like in the frontend. For these steps we rely very heavily on this
+[library](https://github.com/rjsf-team/react-jsonschema-form). They have some
+[great docs](https://rjsf-team.github.io/react-jsonschema-form/docs/) and a
+[playground](https://rjsf-team.github.io/react-jsonschema-form) where you can
+play around with some examples.
 
 There's another option for that library called `uiSchema` which we've taken
 advantage of, and we've merged it with the existing `JSONSchema` that you

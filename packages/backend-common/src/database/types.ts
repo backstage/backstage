@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  LifecycleService,
+  PluginMetadataService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { Knex } from 'knex';
 
@@ -26,7 +30,14 @@ export interface DatabaseConnector {
   /**
    * createClient provides an instance of a knex database connector.
    */
-  createClient(dbConfig: Config, overrides?: Partial<Knex.Config>): Knex;
+  createClient(
+    dbConfig: Config,
+    overrides?: Partial<Knex.Config>,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): Knex;
   /**
    * createNameOverride provides a partial knex config sufficient to override a
    * database name.

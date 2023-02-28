@@ -1,5 +1,46 @@
 # @backstage/plugin-events-backend-module-gerrit
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/plugin-events-node@0.2.4-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/plugin-events-node@0.2.3
+
+## 0.1.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/plugin-events-node@0.2.3-next.2
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/plugin-events-node@0.2.3-next.1
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.2-next.0
+  - @backstage/plugin-events-node@0.2.3-next.0
+
 ## 0.1.2
 
 ### Patch Changes

@@ -15,13 +15,13 @@
  */
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { GitlabEventRouter } from '../router/GitlabEventRouter';
 
 /**
  * Module for the events-backend plugin, adding an event router for GitLab.
  *
- * Registers the {@link GitlabEventRouter}.
+ * Registers the `GitlabEventRouter`.
  *
  * @alpha
  */

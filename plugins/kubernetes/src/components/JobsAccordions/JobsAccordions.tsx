@@ -18,7 +18,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Divider,
   Grid,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -54,22 +53,21 @@ const JobSummary = ({ job }: JobSummaryProps) => {
     <Grid
       container
       direction="row"
-      justifyContent="flex-start"
+      justifyContent="space-between"
       alignItems="center"
+      spacing={0}
     >
-      <Grid xs={3} item>
+      <Grid xs={6} item>
         <JobDrawer job={job} />
-      </Grid>
-      <Grid item xs={1}>
-        <Divider style={{ height: '5em' }} orientation="vertical" />
       </Grid>
       <Grid
         item
         container
-        xs={8}
+        xs={6}
         direction="column"
         justifyContent="flex-start"
-        alignItems="flex-start"
+        alignItems="flex-end"
+        spacing={0}
       >
         <Grid item>
           {job.status?.succeeded && <StatusOK>Succeeded</StatusOK>}
@@ -89,7 +87,7 @@ const JobSummary = ({ job }: JobSummaryProps) => {
 
 const JobAccordion = ({ job, ownedPods }: JobAccordionProps) => {
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
+    <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <JobSummary job={job} />
       </AccordionSummary>

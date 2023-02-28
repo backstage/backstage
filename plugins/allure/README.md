@@ -4,16 +4,9 @@ Welcome to the Backstage Allure plugin. This plugin add an entity service page t
 
 ## Install
 
-Run the below command from the `app` package directory.
-
 ```shell
-yarn add @backstage/plugin-allure
-```
-
-alternatively, you can execute below command from the root directory of your Backstage app.
-
-```shell
-yarn workspace app add @backstage/plugin-allure
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-allure
 ```
 
 ## Configure

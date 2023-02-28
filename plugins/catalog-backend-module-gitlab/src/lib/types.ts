@@ -31,12 +31,49 @@ export type GitLabProject = {
   path_with_namespace?: string;
 };
 
+export type GitLabUser = {
+  id: number;
+  username: string;
+  email: string;
+  name: string;
+  state: string;
+  web_url: string;
+  avatar_url: string;
+  groups?: GitLabGroup[];
+};
+
+export type GitLabGroup = {
+  id: number;
+  name: string;
+  full_path: string;
+  description?: string;
+  parent_id?: number;
+};
+
+export type GitLabMembership = {
+  source_id: number;
+  source_name: string;
+  source_type: string;
+  access_level: number;
+};
+
 export type GitlabProviderConfig = {
   host: string;
   group: string;
   id: string;
-  branch: string;
+  /**
+   * @deprecated use `fallbackBranch` instead
+   */
+  branch?: string;
+  /**
+   * If there is no default branch defined at the project, this fallback is used to discover catalog files.
+   * Defaults to: `master`
+   */
+  fallbackBranch: string;
   catalogFile: string;
   projectPattern: RegExp;
+  userPattern: RegExp;
+  groupPattern: RegExp;
+  orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;
 };

@@ -15,7 +15,7 @@
  */
 
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { gitlabEventRouterEventsModule } from './GitlabEventRouterEventsModule';
 import { GitlabEventRouter } from '../router/GitlabEventRouter';
 

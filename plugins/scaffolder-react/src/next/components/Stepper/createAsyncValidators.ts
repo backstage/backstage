@@ -15,11 +15,19 @@
  */
 
 import { FieldValidation } from '@rjsf/utils';
-import { JsonObject } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { createFieldValidation } from '../../lib';
 import { NextCustomFieldValidator } from '../../extensions';
+import { isObject } from './utils';
+
+/**
+ * @internal
+ */
+export type FormValidation = {
+  [name: string]: FieldValidation | FormValidation;
+};
 
 export const createAsyncValidators = (
   rootSchema: JsonObject,
@@ -28,26 +36,64 @@ export const createAsyncValidators = (
     apiHolder: ApiHolder;
   },
 ) => {
-  async function validate(formData: JsonObject, pathPrefix: string = '#') {
+  async function validate(
+    formData: JsonObject,
+    pathPrefix: string = '#',
+    current: JsonObject = formData,
+  ): Promise<FormValidation> {
     const parsedSchema = new JSONSchema(rootSchema);
-    const formValidation: Record<string, FieldValidation> = {};
-    for (const [key, value] of Object.entries(formData)) {
-      const definitionInSchema = parsedSchema.getSchema(
-        `${pathPrefix}/${key}`,
-        formData,
-      );
+    const formValidation: FormValidation = {};
+
+    const validateForm = async (
+      validatorName: string,
+      key: string,
+      value: JsonValue | undefined,
+      schema: JsonObject,
+    ) => {
+      const validator = validators[validatorName];
+      if (validator) {
+        const fieldValidation = createFieldValidation();
+        try {
+          await validator(value, fieldValidation, {
+            ...context,
+            formData,
+            schema,
+          });
+        } catch (ex) {
+          fieldValidation.addError(ex.message);
+        }
+        formValidation[key] = fieldValidation;
+      }
+    };
+
+    for (const [key, value] of Object.entries(current)) {
+      const path = `${pathPrefix}/${key}`;
+      const definitionInSchema = parsedSchema.getSchema(path, formData);
 
       if (definitionInSchema && 'ui:field' in definitionInSchema) {
-        const validator = validators[definitionInSchema['ui:field']];
-        if (validator) {
-          const fieldValidation = createFieldValidation();
-          try {
-            await validator(value, fieldValidation, { ...context, formData });
-          } catch (ex) {
-            fieldValidation.addError(ex.message);
-          }
-          formValidation[key] = fieldValidation;
+        if ('ui:field' in definitionInSchema) {
+          await validateForm(
+            definitionInSchema['ui:field'],
+            key,
+            value,
+            definitionInSchema,
+          );
         }
+      } else if (
+        definitionInSchema &&
+        definitionInSchema.items &&
+        'ui:field' in definitionInSchema.items
+      ) {
+        if ('ui:field' in definitionInSchema.items) {
+          await validateForm(
+            definitionInSchema.items['ui:field'],
+            key,
+            value,
+            definitionInSchema.items,
+          );
+        }
+      } else if (isObject(value)) {
+        formValidation[key] = await validate(formData, path, value);
       }
     }
 

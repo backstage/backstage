@@ -20,9 +20,9 @@ import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
-  LocationSpec,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { AwsCredentials } from '../credentials/AwsCredentials';
 import { readAwsS3Configs } from './config';
 import { AwsS3Config } from './types';

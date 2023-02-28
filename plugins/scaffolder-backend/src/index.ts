@@ -24,6 +24,5 @@ export * from './scaffolder';
 export * from './service/router';
 export * from './lib';
 export * from './processor';
-export * from './extension';
-export { scaffolderPlugin } from './ScaffolderPlugin';
-export type { ScaffolderPluginOptions } from './ScaffolderPlugin';
+
+export * from './deprecated';

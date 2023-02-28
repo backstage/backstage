@@ -230,7 +230,7 @@ If you are deploying Backstage to Amazon EC2, Amazon ECS, or Amazon EKS, you do
 not need to obtain the access keys separately. They can be made available in the
 environment automatically by defining appropriate IAM role with access to the
 bucket. Read more in the
-[official AWS documentation for using IAM roles.](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
+[official AWS documentation for using IAM roles](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
 
 **4b. Authentication using app-config.yaml**
 

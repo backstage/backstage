@@ -1,6 +1,6 @@
 name: 💬 RFC
 description: 'Request For Comments (RFC) from the community'
-title: '💬 RFC: '
+title: '💬 RFC: <title>'
 labels: [rfc]
 body:
   - type: markdown

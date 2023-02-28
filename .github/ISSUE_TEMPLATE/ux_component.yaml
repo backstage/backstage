@@ -1,6 +1,6 @@
 name: 🦄 UX Component
 description: 'For designers to request UX components to be added to the Backstage Storybook'
-title: '🦄 UX Component: '
+title: '🦄 UX Component: <title>'
 labels: [design]
 body:
   - type: markdown

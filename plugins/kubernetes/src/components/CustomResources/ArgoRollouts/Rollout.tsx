@@ -19,7 +19,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Divider,
   Grid,
   Typography,
 } from '@material-ui/core';
@@ -101,14 +100,12 @@ const RolloutSummary = ({
     <Grid
       container
       direction="row"
-      justifyContent="flex-start"
+      justifyContent="space-between"
       alignItems="center"
+      spacing={0}
     >
-      <Grid xs={3} item>
+      <Grid xs={6} item>
         <RolloutDrawer rollout={rollout} />
-      </Grid>
-      <Grid item xs={1}>
-        <Divider style={{ height: '5em' }} orientation="vertical" />
       </Grid>
       {hpa && (
         <Grid item xs={3}>
@@ -149,7 +146,8 @@ const RolloutSummary = ({
         xs={3}
         direction="column"
         justifyContent="flex-start"
-        alignItems="flex-start"
+        alignItems="flex-end"
+        spacing={0}
       >
         <Grid item>
           <StatusOK>{numberOfCurrentPods} pods</StatusOK>
@@ -210,6 +208,7 @@ const RolloutAccordion = ({
     <Accordion
       defaultExpanded={defaultExpanded}
       TransitionProps={{ unmountOnExit: true }}
+      variant="outlined"
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <RolloutSummary
