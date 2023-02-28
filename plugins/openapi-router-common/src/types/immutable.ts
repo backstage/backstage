@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import type {
-  ContentObject as MutableContentObject,
-  OpenAPIObject as MutableOpenApiObject,
-  ReferenceObject as MutableReferenceObject,
-  RequestBodyObject as MutableRequestBodyObject,
+  ContentObject,
+  OpenAPIObject,
+  ReferenceObject,
+  RequestBodyObject,
 } from 'openapi3-ts';
 
 /**
@@ -25,6 +25,11 @@ import type {
  *  package due to issues with `as const` supporting only readonly values.
  */
 
+/**
+ * From {@link https://github.com/microsoft/TypeScript/issues/13923#issuecomment-653675557}, allows
+ *  us to convert from `as const` to the various OpenAPI types documented in `openapi3-ts`.
+ * @public
+ */
 export type Immutable<T> = T extends
   | Function
   | boolean
@@ -39,13 +44,27 @@ export type Immutable<T> = T extends
   ? ReadonlySet<Immutable<S>>
   : { readonly [P in keyof T]: Immutable<T[P]> };
 
-// This works for objects, arrays and tuples:
+/**
+ * @public
+ */
 export type ImmutableObject<T> = { readonly [K in keyof T]: Immutable<T[K]> };
 
-export type ReferenceObject = ImmutableObject<MutableReferenceObject>;
+/**
+ * @public
+ */
+export type ImmutableReferenceObject = ImmutableObject<ReferenceObject>;
 
-export type OpenAPIObject = ImmutableObject<MutableOpenApiObject>;
+/**
+ * @public
+ */
+export type ImmutableOpenAPIObject = ImmutableObject<OpenAPIObject>;
 
-export type ContentObject = ImmutableObject<MutableContentObject>;
+/**
+ * @public
+ */
+export type ImmutableContentObject = ImmutableObject<ContentObject>;
 
-export type RequestBodyObject = ImmutableObject<MutableRequestBodyObject>;
+/**
+ * @public
+ */
+export type ImmutableRequestBodyObject = ImmutableObject<RequestBodyObject>;

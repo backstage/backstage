@@ -17,3 +17,4 @@ export * from './common';
 export * from './express';
 export * from './requests';
 export * from './responses';
+export * from './immutable';

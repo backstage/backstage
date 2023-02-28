@@ -30,7 +30,10 @@ import type {
   PathTemplate,
   ToTypeSafe,
 } from './common';
-import { ReferenceObject, RequestBodyObject } from './immutable';
+import {
+  ImmutableReferenceObject,
+  ImmutableRequestBodyObject,
+} from './immutable';
 
 /**
  * @public
@@ -39,7 +42,11 @@ export type RequestBody<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
-> = DocOperation<Doc, Path, Method>['requestBody'] extends ReferenceObject
+> = DocOperation<
+  Doc,
+  Path,
+  Method
+>['requestBody'] extends ImmutableReferenceObject
   ? 'requestBodies' extends ComponentTypes<Doc>
     ? ComponentRef<
         Doc,
@@ -56,7 +63,11 @@ export type RequestBodySchema<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = RequestBody<Doc, DocPath<Doc, Path>, Method> extends RequestBodyObject
+> = RequestBody<
+  Doc,
+  DocPath<Doc, Path>,
+  Method
+> extends ImmutableRequestBodyObject
   ? ObjectWithContentSchema<Doc, RequestBody<Doc, DocPath<Doc, Path>, Method>>
   : never;
 

@@ -19,19 +19,23 @@
  */
 
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
-import { ContentObject, OpenAPIObject, ReferenceObject } from './immutable';
+import {
+  ImmutableContentObject,
+  ImmutableOpenAPIObject,
+  ImmutableReferenceObject,
+} from './immutable';
 
 /**
  * Basic OpenAPI spec with paths and components properties enforced.
  *
  * @public
  */
-export type RequiredDoc = Pick<OpenAPIObject, 'paths' | 'components'>;
+export type RequiredDoc = Pick<ImmutableOpenAPIObject, 'paths' | 'components'>;
 
 /**
  * @public
  */
-export type PathDoc = Pick<OpenAPIObject, 'paths'>;
+export type PathDoc = Pick<ImmutableOpenAPIObject, 'paths'>;
 
 /**
  * Get value types of `T`
@@ -140,10 +144,10 @@ export type ComponentTypes<Doc extends RequiredDoc> = Extract<
 export type ComponentRef<
   Doc extends RequiredDoc,
   Type extends ComponentTypes<Doc>,
-  Ref extends ReferenceObject,
+  Ref extends ImmutableReferenceObject,
 > = Ref extends { $ref: `#/components/${Type}/${infer Name}` }
   ? Name extends keyof Doc['components'][Type]
-    ? Doc['components'][Type][Name] extends ReferenceObject
+    ? Doc['components'][Type][Name] extends ImmutableReferenceObject
       ? ComponentRef<Doc, Type, Doc['components'][Type][Name]>
       : Doc['components'][Type][Name]
     : never
@@ -167,8 +171,8 @@ export type SchemaRef<Doc extends RequiredDoc, Schema> = Schema extends {
  */
 export type ObjectWithContentSchema<
   Doc extends RequiredDoc,
-  Object extends { content?: ContentObject },
-> = Object['content'] extends ContentObject
+  Object extends { content?: ImmutableContentObject },
+> = Object['content'] extends ImmutableContentObject
   ? SchemaRef<Doc, Object['content']['application/json']['schema']>
   : never;
 

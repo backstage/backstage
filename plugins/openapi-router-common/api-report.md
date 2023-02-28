@@ -37,12 +37,12 @@ export interface ApiRouter<Doc extends RequiredDoc> extends Router {
 export type ComponentRef<
   Doc extends RequiredDoc,
   Type extends ComponentTypes<Doc>,
-  Ref extends ReferenceObject,
+  Ref extends ImmutableReferenceObject,
 > = Ref extends {
   $ref: `#/components/${Type}/${infer Name}`;
 }
   ? Name extends keyof Doc['components'][Type]
-    ? Doc['components'][Type][Name] extends ReferenceObject
+    ? Doc['components'][Type][Name] extends ImmutableReferenceObject
       ? ComponentRef<Doc, Type, Doc['components'][Type][Name]>
       : Doc['components'][Type][Name]
     : never
@@ -61,11 +61,6 @@ export type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
 ]
   ? ConvertAll<Rest, [...R, FromSchema<First>]>
   : R;
-
-// @public
-export type DeepWriteable<T> = {
-  -readonly [P in keyof T]: DeepWriteable<T[P]>;
-};
 
 // @public (undocumented)
 export type DocOperation<
@@ -148,6 +143,40 @@ export interface DocRequestMatcher<
   ): T;
 }
 
+// @public
+export type Immutable<T> = T extends
+  | Function
+  | boolean
+  | number
+  | string
+  | null
+  | undefined
+  ? T
+  : T extends Map<infer K, infer V>
+  ? ReadonlyMap<Immutable<K>, Immutable<V>>
+  : T extends Set<infer S>
+  ? ReadonlySet<Immutable<S>>
+  : {
+      readonly [P in keyof T]: Immutable<T[P]>;
+    };
+
+// @public (undocumented)
+export type ImmutableContentObject = ImmutableObject<ContentObject>;
+
+// @public (undocumented)
+export type ImmutableObject<T> = {
+  readonly [K in keyof T]: Immutable<T[K]>;
+};
+
+// @public (undocumented)
+export type ImmutableOpenAPIObject = ImmutableObject<OpenAPIObject>;
+
+// @public (undocumented)
+export type ImmutableReferenceObject = ImmutableObject<ReferenceObject>;
+
+// @public (undocumented)
+export type ImmutableRequestBodyObject = ImmutableObject<RequestBodyObject>;
+
 // @public (undocumented)
 export type LastOf<T> = UnionToIntersection<
   T extends any ? () => T : never
@@ -175,9 +204,9 @@ export type MethodAwareDocPath<
 export type ObjectWithContentSchema<
   Doc extends RequiredDoc,
   Object extends {
-    content?: ContentObject;
+    content?: ImmutableContentObject;
   },
-> = Object['content'] extends ContentObject
+> = Object['content'] extends ImmutableContentObject
   ? SchemaRef<Doc, Object['content']['application/json']['schema']>
   : never;
 
@@ -188,7 +217,7 @@ export interface ParsedQs {
 }
 
 // @public (undocumented)
-export type PathDoc = Pick<OpenAPIObject, 'paths'>;
+export type PathDoc = Pick<ImmutableOpenAPIObject, 'paths'>;
 
 // @public
 export type PathTemplate<Path extends string> =
@@ -204,7 +233,11 @@ export type RequestBody<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
-> = DocOperation<Doc, Path, Method>['requestBody'] extends ReferenceObject
+> = DocOperation<
+  Doc,
+  Path,
+  Method
+>['requestBody'] extends ImmutableReferenceObject
   ? 'requestBodies' extends ComponentTypes<Doc>
     ? ComponentRef<
         Doc,
@@ -219,7 +252,11 @@ export type RequestBodySchema<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = RequestBody<Doc, DocPath<Doc, Path>, Method> extends RequestBodyObject
+> = RequestBody<
+  Doc,
+  DocPath<Doc, Path>,
+  Method
+> extends ImmutableRequestBodyObject
   ? ObjectWithContentSchema<Doc, RequestBody<Doc, DocPath<Doc, Path>, Method>>
   : never;
 
@@ -231,7 +268,7 @@ export type RequestBodyToJsonSchema<
 > = ToTypeSafe<RequestBodySchema<Doc, Path, Method>>;
 
 // @public
-export type RequiredDoc = Pick<OpenAPIObject, 'paths' | 'components'>;
+export type RequiredDoc = Pick<ImmutableOpenAPIObject, 'paths' | 'components'>;
 
 // @public (undocumented)
 type Response_2<
