@@ -3845,7 +3845,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/config@^1.0.4, @backstage/config@^1.0.6, @backstage/config@workspace:^, @backstage/config@workspace:packages/config":
+"@backstage/config@npm:^1.0.4, @backstage/config@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "@backstage/config@npm:1.0.6"
+  dependencies:
+    "@backstage/types": ^1.0.2
+    lodash: ^4.17.21
+  checksum: 5cd2b409237091eb523a61c11df49c183ad1548dce90df343c9b0204eec7147508f41c832f931f82783c458ccdcc9d9fb73511cdd373fdb023db67bc738fcc67
+  languageName: node
+  linkType: hard
+
+"@backstage/config@workspace:^, @backstage/config@workspace:packages/config":
   version: 0.0.0-use.local
   resolution: "@backstage/config@workspace:packages/config"
   dependencies:
@@ -4115,7 +4125,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/errors@^1.1.4, @backstage/errors@workspace:^, @backstage/errors@workspace:packages/errors":
+"@backstage/errors@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "@backstage/errors@npm:1.1.4"
+  dependencies:
+    "@backstage/types": ^1.0.2
+    cross-fetch: ^3.1.5
+    serialize-error: ^8.0.1
+  checksum: 1f0915a29fbeeff0e7fb82f1b4858248d99e9fa6a1aec65d617a241fab812f7939ec418ef0751370833753a2ee2c989463c5e26b40d7ea6aa297e5b6aee96584
+  languageName: node
+  linkType: hard
+
+"@backstage/errors@workspace:^, @backstage/errors@workspace:packages/errors":
   version: 0.0.0-use.local
   resolution: "@backstage/errors@workspace:packages/errors"
   dependencies:
@@ -4202,7 +4223,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration@^1.4.2, @backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
+"@backstage/integration@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "@backstage/integration@npm:1.4.2"
+  dependencies:
+    "@backstage/config": ^1.0.6
+    "@backstage/errors": ^1.1.4
+    "@octokit/auth-app": ^4.0.0
+    "@octokit/rest": ^19.0.3
+    cross-fetch: ^3.1.5
+    git-url-parse: ^13.0.0
+    lodash: ^4.17.21
+    luxon: ^3.0.0
+  checksum: b1fceb1c7d08d1db29529d1ba1d661019e9829dec8a004414fedc5ceec13b7087a1bdc7f4839e8e818f3386dc93aa94d74e8b65f9be75330a28b34305374126c
+  languageName: node
+  linkType: hard
+
+"@backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
   version: 0.0.0-use.local
   resolution: "@backstage/integration@workspace:packages/integration"
   dependencies:
@@ -7338,7 +7375,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-common@^0.7.3, @backstage/plugin-permission-common@workspace:^, @backstage/plugin-permission-common@workspace:plugins/permission-common":
+"@backstage/plugin-permission-common@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "@backstage/plugin-permission-common@npm:0.7.3"
+  dependencies:
+    "@backstage/config": ^1.0.6
+    "@backstage/errors": ^1.1.4
+    "@backstage/types": ^1.0.2
+    cross-fetch: ^3.1.5
+    uuid: ^8.0.0
+    zod: ~3.18.0
+  checksum: b3aa1e4a487ec7c4edd20c60bc216ee54841431e8e932fa9778c72f13dfa369044186f9afbf44316a9017e9bca0ffa774bbec7847711f04557981fb7cd6af080
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-permission-common@workspace:^, @backstage/plugin-permission-common@workspace:plugins/permission-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-common@workspace:plugins/permission-common"
   dependencies:
@@ -7956,7 +8007,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-common@^1.2.1, @backstage/plugin-search-common@workspace:^, @backstage/plugin-search-common@workspace:plugins/search-common":
+"@backstage/plugin-search-common@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@backstage/plugin-search-common@npm:1.2.1"
+  dependencies:
+    "@backstage/plugin-permission-common": ^0.7.3
+    "@backstage/types": ^1.0.2
+  checksum: ebeacfd26dccd906e1d72f8b2df4a585294e31c6759aaabe0de245f0d93dfc1e0f44b8359e951116c619a7700bf71d22dad901c9fbd6dfb79b9385832989fe00
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-search-common@workspace:^, @backstage/plugin-search-common@workspace:plugins/search-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-common@workspace:plugins/search-common"
   dependencies:
@@ -8914,7 +8975,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.2.16, @backstage/theme@^0.2.17, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@npm:^0.2.16, @backstage/theme@npm:^0.2.17":
+  version: 0.2.17
+  resolution: "@backstage/theme@npm:0.2.17"
+  dependencies:
+    "@material-ui/core": ^4.12.2
+  checksum: 4be1d9bf2c3fce611a75f3b5b80f91365dcb67b8e5a417f9c760ffbc9c6f3dd9c243082347278569ad343cf017b76ebaf2143eb9aebfa07a58513c38dbbca97e
+  languageName: node
+  linkType: hard
+
+"@backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:

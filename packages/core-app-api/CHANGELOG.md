@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.5.1-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
 ## 1.5.1-next.0
 
 ### Patch Changes
