@@ -46,7 +46,7 @@
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "history": "^5.0.0",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",

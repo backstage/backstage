@@ -44,7 +44,7 @@
     "@backstage/plugin-catalog-react": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
     "git-url-parse": "^13.0.0",
     "js-base64": "^3.6.0",

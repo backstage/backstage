@@ -57,7 +57,7 @@
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^20.0.0",
     "@rjsf/core": "^3.2.1",
     "@rjsf/core-v5": "npm:@rjsf/core@5.1.0",
