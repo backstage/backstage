@@ -45,7 +45,7 @@ import BuildIcon from '@material-ui/icons/Build';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
-    padding: theme.spacing(1, 0),
+    padding: theme.spacing(1),
   },
   filter: {
     '& + &': {
