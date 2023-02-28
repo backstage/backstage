@@ -233,9 +233,11 @@ export const apis = [
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       BitbucketServerAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         defaultScopes: ['REPO_READ'],
