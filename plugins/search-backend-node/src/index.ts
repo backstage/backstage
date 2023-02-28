@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-export { IndexBuilder } from './IndexBuilder';
+export { IndexBuilder, searchIndexBuilderRef } from './IndexBuilder';
 export { Scheduler } from './Scheduler';
 export * from './collators';
 export { LunrSearchEngine } from './engines';

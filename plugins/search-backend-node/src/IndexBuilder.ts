@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createServiceRef } from '@backstage/backend-plugin-api';
 import {
   DocumentDecoratorFactory,
   DocumentTypeInfo,
@@ -23,16 +24,20 @@ import { Transform, pipeline } from 'stream';
 import { Logger } from 'winston';
 import { Scheduler } from './Scheduler';
 import {
+  IndexBuilderService,
   IndexBuilderOptions,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
 } from './types';
 
+export const searchIndexBuilderRef = createServiceRef<IndexBuilderService>({
+  id: 'search.index-node',
+});
 /**
  * Used for adding collators, decorators and compile them into tasks which are added to a scheduler returned to the caller.
  * @public
  */
-export class IndexBuilder {
+export class IndexBuilder implements IndexBuilderService {
   private collators: Record<string, RegisterCollatorParameters>;
   private decorators: Record<string, DocumentDecoratorFactory[]>;
   private documentTypes: Record<string, DocumentTypeInfo>;

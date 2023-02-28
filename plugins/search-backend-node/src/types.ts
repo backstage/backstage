@@ -18,9 +18,11 @@ import { TaskRunner } from '@backstage/backend-tasks';
 import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
+  DocumentTypeInfo,
   SearchEngine,
 } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
+import { Scheduler } from './Scheduler';
 
 /**
  * Options required to instantiate the index builder.
@@ -56,4 +58,28 @@ export interface RegisterDecoratorParameters {
    * The class responsible for returning the decorator which appends, modifies, or filters documents.
    */
   factory: DocumentDecoratorFactory;
+}
+
+export type IndexBuilderServiceBuildOptions = {
+  searchEngine: SearchEngine;
+  collators: RegisterCollatorParameters[];
+  decorators: RegisterDecoratorParameters[];
+};
+export interface IndexBuilderService {
+  build(options: IndexBuilderServiceBuildOptions): Promise<{
+    scheduler: Scheduler;
+  }>;
+  getDocumentTypes(): Record<string, DocumentTypeInfo>;
+}
+
+export interface SearchIndexRegistryExtensionPoint {
+  addCollator(options: RegisterCollatorParameters): void;
+  addDecorator(options: RegisterDecoratorParameters): void;
+  getCollators(): RegisterCollatorParameters[];
+  getDecorators(): RegisterDecoratorParameters[];
+}
+
+export interface SearchEngineRegistryExtensionPoint {
+  setSearchEngine(searchEngine: SearchEngine): void;
+  getSearchEngine(): SearchEngine;
 }
