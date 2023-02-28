@@ -198,20 +198,12 @@ GraphQL modules resolvers, you'll need modify your `@graphql-codegen` config.
    function and pass all your GraphQL files
 
 ```ts
-import { resolvePackagePath } from '@backstage/backend-common';
 import { transformSchema } from '@backstage/plugin-graphql-common';
+import { Catalog } from '@backstage/plugin-graphql-catalog';
 import { printSchemaWithDirectives } from '@graphql-tools/utils';
-import { loadFilesSync } from '@graphql-tools/load-files';
+import { MyModule } from '../modules/my-module/my-module';
 
-export default printSchemaWithDirectives(
-  transformSchema([
-    // Add Catalog GraphQL schema if you use Catalog GraphQL module
-    loadFilesSync(
-      require.resolve('@backstage/plugin-catalog-backend/catalog.graphql'),
-    ),
-    loadFilesSync(resolvePackagePath('backend', 'src/modules/**/*.graphql')),
-  ]),
-);
+export default printSchemaWithDirectives(transformSchema([Catalog, MyModule]));
 ```
 
 2. Then you need to update `schema` option in your `codegen.ts`

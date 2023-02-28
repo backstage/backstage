@@ -13,6 +13,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./catalog.graphql": "./src/catalog/catalog.graphql",
+    "./relation.graphql": "./src/relation/relation.graphql",
     "./package.json": "./package.json"
   },
   "backstage": {
