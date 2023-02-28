@@ -18,7 +18,6 @@
  * Pulled from https://github.com/varanauskas/oatx.
  */
 
-import type { ReferenceObject, RequestBodyObject } from 'openapi3-ts';
 import type {
   ComponentRef,
   ComponentTypes,
@@ -31,6 +30,7 @@ import type {
   PathTemplate,
   ToTypeSafe,
 } from './common';
+import { ReferenceObject, RequestBodyObject } from './immutable';
 
 /**
  * @public

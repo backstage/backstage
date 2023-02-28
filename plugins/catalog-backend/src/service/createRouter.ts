@@ -50,7 +50,7 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
-import { ApiRouter, DeepWriteable } from '@backstage/plugin-openapi-router';
+import { ApiRouter } from '@backstage/plugin-openapi-router';
 import spec from './schema/openapi';
 
 /**
@@ -87,7 +87,7 @@ export async function createRouter(
     logger,
     permissionIntegrationRouter,
   } = options;
-  const router = Router() as ApiRouter<DeepWriteable<typeof spec>>;
+  const router = Router() as ApiRouter<typeof spec>;
   router.use(express.json());
 
   const readonlyEnabled =

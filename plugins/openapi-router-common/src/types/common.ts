@@ -19,11 +19,7 @@
  */
 
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
-import type {
-  ContentObject,
-  OpenAPIObject,
-  ReferenceObject,
-} from 'openapi3-ts';
+import { ContentObject, OpenAPIObject, ReferenceObject } from './immutable';
 
 /**
  * Basic OpenAPI spec with paths and components properties enforced.

@@ -328,7 +328,6 @@ components:
         - $ref: '#/components/schemas/JsonObject'
         - type: object
           properties:
-            properties:
             links:
               type: array
               items:

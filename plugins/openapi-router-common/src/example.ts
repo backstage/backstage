@@ -15,7 +15,7 @@
  */
 import express from 'express';
 import Router from 'express-promise-router';
-import { ApiRouter, DeepWriteable } from './router';
+import { ApiRouter } from './router';
 import doc from './schema/petstore';
 
 interface RouterOptions {}
@@ -24,7 +24,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   console.log(options);
-  const router = Router() as ApiRouter<DeepWriteable<typeof doc>>;
+  const router = Router() as ApiRouter<typeof doc>;
 
   router.get('/pets/:uid', (_, res) => {
     res.json({

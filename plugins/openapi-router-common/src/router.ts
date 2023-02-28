@@ -20,8 +20,8 @@ import { RequiredDoc, DocRequestMatcher } from './types';
  * Helper to transform readonly `as const` API specs for the ApiRouter.
  * @public
  */
-export type DeepWriteable<T> = {
-  -readonly [P in keyof T]: DeepWriteable<T[P]>;
+export type DeepReadonly<T> = {
+  readonly [P in keyof T]: DeepReadonly<T[P]>;
 };
 
 /**

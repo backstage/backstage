@@ -34,7 +34,54 @@ export default {
   components: {
     examples: {},
     headers: {},
-    parameters: {},
+    parameters: {
+      cursor: {
+        name: 'cursor',
+        in: 'query',
+        description: 'Cursor to a set page of results.',
+        required: false,
+        schema: {
+          type: 'string',
+        },
+      },
+      fields: {
+        name: 'fields',
+        in: 'query',
+        description: 'Restrict to just these fields in the response.',
+        required: false,
+        schema: {
+          type: 'string',
+        },
+      },
+      limit: {
+        name: 'limit',
+        in: 'query',
+        description: 'Number of records to return in the response.',
+        required: false,
+        schema: {
+          type: 'integer',
+          minimum: 1,
+        },
+      },
+      sortField: {
+        name: 'sortField',
+        in: 'query',
+        description: 'The fields to sort returned results by.',
+        required: false,
+        schema: {
+          type: 'array',
+          items: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'A two-item tuple of [field, order].',
+          },
+        },
+        explode: true,
+        style: 'form',
+      },
+    },
     requestBodies: {},
     responses: {},
     schemas: {
@@ -253,19 +300,16 @@ export default {
         },
         additionalProperties: false,
       },
-      EntityFacets: {
-        type: 'array',
-        items: {
-          $ref: '#/components/schemas/EntityFacet',
-        },
-      },
       EntityFacetsResponse: {
         type: 'object',
         properties: {
           facets: {
             type: 'object',
             additionalProperties: {
-              $ref: '#/components/schemas/EntityFacets',
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/EntityFacet',
+              },
             },
           },
         },
@@ -349,7 +393,6 @@ export default {
           {
             type: 'object',
             properties: {
-              properties: null,
               links: {
                 type: 'array',
                 items: {
@@ -408,7 +451,7 @@ export default {
         ],
         additionalProperties: false,
       },
-      RecursivePartial_Entity_: {
+      RecursivePartialEntity: {
         type: 'object',
         properties: {
           apiVersion: {
@@ -444,7 +487,7 @@ export default {
           description: {
             type: 'string',
             description:
-              'A text to show to the user to inform about the choices made. Like, it could say\n"Found a CODEOWNERS file that covers this target, so we suggest leaving this \nfield empty; which would currently make it owned by X" where X is taken from the\ncodeowners file.',
+              'A text to show to the user to inform about the choices made. Like, it could say\n"Found a CODEOWNERS file that covers this target, so we suggest leaving this\nfield empty; which would currently make it owned by X" where X is taken from the\ncodeowners file.',
           },
           value: {
             type: 'string',
@@ -479,7 +522,7 @@ export default {
             },
           },
           entity: {
-            $ref: '#/components/schemas/RecursivePartial_Entity_',
+            $ref: '#/components/schemas/RecursivePartialEntity',
           },
         },
         required: ['fields', 'entity'],
@@ -573,12 +616,11 @@ export default {
             properties: {
               nextCursor: {
                 type: 'string',
-                description: 'Base64 encoded database query for the next page.',
+                description: 'The cursor for the next batch of entities.',
               },
               prevCursor: {
                 type: 'string',
-                description:
-                  'Base64 encoded database query for the previous page.',
+                description: 'The cursor for the previous batch of entities.',
               },
             },
           },
@@ -928,12 +970,40 @@ export default {
         ],
         parameters: [
           {
+            $ref: '#/components/parameters/fields',
+          },
+          {
+            $ref: '#/components/parameters/limit',
+          },
+          {
+            $ref: '#/components/parameters/sortField',
+          },
+          {
+            $ref: '#/components/parameters/cursor',
+          },
+          {
+            name: 'fullTextFilterTerm',
             in: 'query',
-            name: 'fields',
+            description: 'Text search term.',
             required: false,
             schema: {
               type: 'string',
             },
+          },
+          {
+            name: 'fullTextFilterFields',
+            in: 'query',
+            description:
+              'A comma separated list of fields to sort returned results by.',
+            required: false,
+            schema: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+            explode: false,
+            style: 'form',
           },
         ],
         requestBody: {
