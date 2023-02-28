@@ -19,7 +19,7 @@ dependencies:
   - name: postgresql
     condition: postgresql.enabled
     version: 9.8.12
-    repository: https://charts.bitnami.com/bitnami
+    repository: https://marketplace.azurecr.io/helm/v1/repo
 
 maintainers:
   - name: Martina Iglesias Fernández
