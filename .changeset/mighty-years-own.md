@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-react': patch
 ---
 
-Move the `uiSchema` to its own property to align with component development and access of `ui:options`
+scaffolder/next: Move the `uiSchema` to its own property in the validation `context` to align with component development and access of `ui:options`
