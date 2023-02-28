@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 1.4.0-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+
 ## 1.4.0-next.0
 
 ### Minor Changes

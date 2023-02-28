@@ -1,5 +1,16 @@
 # @backstage/backend-defaults
 
+## 0.1.8-next.1
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- 5d0693edc09: Added a workaround for the cyclic dependency bug across `@backstage/backend-common` and `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-app-api@0.4.1-next.1
+
 ## 0.1.8-next.0
 
 ### Patch Changes

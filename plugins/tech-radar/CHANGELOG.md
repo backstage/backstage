@@ -1,5 +1,17 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.2-next.1
+
+### Patch Changes
+
+- e14dcfa4994: Update colors to match Zalando's tech radar, also add coloring on title and legend to match ring color.
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+
 ## 0.6.2-next.0
 
 ### Patch Changes

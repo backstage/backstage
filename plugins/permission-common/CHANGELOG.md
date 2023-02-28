@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-common
 
+## 0.7.4-next.0
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
 ## 0.7.3
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @backstage/plugin-techdocs
 
+## 1.6.0-next.1
+
+### Patch Changes
+
+- 54a1e133b56: Fix bug that caused next and previous links not to work with certain versions of mkdocs-material
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 8adfda60ae1: Updated dependency `jss` to `~10.10.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 238cf657c09: Copy to clipboard now works in a not secure context.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/plugin-techdocs-react@1.1.4-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration-react@1.1.11-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+  - @backstage/plugin-search-react@1.5.1-next.1
+
 ## 1.6.0-next.0
 
 ### Minor Changes
