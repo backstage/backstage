@@ -35,6 +35,9 @@ export type NextRouterProps = {
     TemplateOutputsComponent?: React_2.ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
+    TemplateWizardTitle?: React_2.ComponentType<{
+      templateRef: string;
+    }>;
   };
   groups?: TemplateGroupFilter[];
   FormProps?: FormProps_2;

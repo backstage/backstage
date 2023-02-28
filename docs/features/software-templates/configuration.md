@@ -48,7 +48,8 @@ add the `repoVisibility` key within a software template:
 
 Software templates use the `fetch:template` action by default, which requires no
 external dependencies and offers a
-[Cookiecutter-compatible mode](https://backstage.io/docs/features/software-templates/builtin-actions#using-cookiecuttercompat-mode).
+[Cookiecutter-compatible mode](https://backstage.io/docs/features/software-templates/builtin-actions#using-cookiecuttercompat-mode)
+.
 There is also a `fetch:cookiecutter` action, which uses
 [Cookiecutter](https://github.com/cookiecutter/cookiecutter) directly for
 templating. By default, the `fetch:cookiecutter` action will use the
@@ -91,5 +92,153 @@ top of the page above any other templates not filtered by this group or others.
 
 You can also further customize groups by passing in a `titleComponent` instead
 of a `title` which will be a component to use as the header instead of just the
-default `ContentHeader` with the `title` set as it's value.
+default `ContentHeader` with the `title` set as its value.
 ![Grouped Templates](../../assets/software-templates/grouped-templates.png)
+
+## Customizing the template title
+
+You have a possibility to customize the title of the template.
+Here is an example how you are add a feedback panel for certain templates:
+
+```typescript jsx
+// in App.tsx
+
+<Route
+  path="/create"
+  element={
+    <ScaffolderPage
+      defaultPreviewTemplate={defaultPreviewTemplate}
+      components={{
+        TemplateWizardTitle,
+      }}
+    />
+  }
+/>;
+
+// TemplateWizardTitle.tsx
+
+import React, { Suspense, Fragment } from 'react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, ListItemIcon, Tooltip, Typography } from '@material-ui/core';
+import EmailIcon from '@material-ui/icons/Email';
+import ChatIcon from '@material-ui/icons/Chat';
+import DescriptionIcon from '@material-ui/icons/Description';
+import { Link } from '@backstage/core-components';
+
+type Props = {
+  templateRef: string;
+};
+
+const styles = () =>
+  createStyles({
+    root: {
+      position: 'absolute',
+      top: 0,
+      right: 10,
+    },
+    actionPanel: {
+      display: 'inline-block',
+      marginLeft: '30px',
+    },
+    itemIcon: {
+      minWidth: 30,
+      verticalAlign: 'bottom',
+    },
+    actionBox: {
+      display: 'inline-block',
+      marginLeft: '20px',
+      verticalAlign: 'middle',
+    },
+    link: {
+      display: 'inline-block',
+    },
+  });
+
+const useStyles = makeStyles(styles, {
+  name: 'FeedbackPanel',
+});
+
+const FeedbackPanel = () => {
+  const classes = useStyles();
+  return (
+    <Box className={classes.root}>
+      <Box className={classes.actionPanel}>
+        <Box className={classes.actionBox}>
+          <Box>
+            <ListItemIcon className={classes.itemIcon}>
+              <Tooltip title="Email">
+                <EmailIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <Link to="mailto:my-team@spotify.com" className={classes.link}>
+              <Typography>e-mail</Typography>
+            </Link>
+          </Box>
+        </Box>
+
+        <Box className={classes.actionBox}>
+          <Box>
+            <ListItemIcon className={classes.itemIcon}>
+              <Tooltip title="Slack">
+                <ChatIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <Link
+              to="https://my.slack.com/archives/xxx"
+              className={classes.link}
+            >
+              <Typography>slack</Typography>
+            </Link>
+          </Box>
+        </Box>
+
+        <Box className={classes.actionBox}>
+          <Box>
+            <ListItemIcon className={classes.itemIcon}>
+              <Tooltip title="Docs">
+                <DescriptionIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <Link
+              to="https://mydocs.spotify.com/my-template.html"
+              className={classes.link}
+            >
+              <Typography>docs</Typography>
+            </Link>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export const TemplateWizardTitle = (props: Props) => {
+  const catalogApi = useApi(catalogApiRef);
+
+  const {
+    value: entity,
+    loading,
+    error,
+  } = useAsync(() => {
+    return catalogApi.getEntityByRef(props.templateRef);
+  }, [catalogApi]);
+
+  if (loading || error) {
+    return <Box />;
+  }
+
+  return (
+    <Fragment>
+      <Suspense fallback={<Box>Loading...</Box>}>
+        <Box position="relative">
+          <Box component="span">{entity?.metadata.name}</Box>
+          <FeedbackPanel />
+        </Box>
+      </Suspense>
+    </Fragment>
+  );
+};
+```

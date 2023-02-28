@@ -53,6 +53,7 @@ export type RouterProps = {
       | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;
     TaskPageComponent?: ComponentType<{}>;
+    TemplateWizardTitle?: React.ComponentType<{ templateRef: string }>;
   };
   groups?: Array<{
     title?: React.ReactNode;
@@ -83,8 +84,12 @@ export type RouterProps = {
 export const Router = (props: RouterProps) => {
   const { groups, components = {}, defaultPreviewTemplate } = props;
 
-  const { ReviewStepComponent, TemplateCardComponent, TaskPageComponent } =
-    components;
+  const {
+    ReviewStepComponent,
+    TemplateCardComponent,
+    TaskPageComponent,
+    TemplateWizardTitle,
+  } = components;
 
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
@@ -145,6 +150,7 @@ export const Router = (props: RouterProps) => {
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
               headerOptions={props.headerOptions}
+              TemplateTitle={TemplateWizardTitle}
             />
           </SecretsContextProvider>
         }

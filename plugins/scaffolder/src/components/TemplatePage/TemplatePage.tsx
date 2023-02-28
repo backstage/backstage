@@ -63,6 +63,7 @@ type Props = {
     title?: string;
     subtitle?: string;
   };
+  TemplateTitle?: React.ComponentType<{ templateRef: string }>;
 };
 
 export const TemplatePage = ({
@@ -70,6 +71,7 @@ export const TemplatePage = ({
   customFieldExtensions = [],
   layouts = [],
   headerOptions,
+  TemplateTitle,
 }: Props) => {
   const apiHolder = useApiHolder();
   const secretsContext = useTemplateSecrets();
@@ -155,7 +157,13 @@ export const TemplatePage = ({
           {loading && <LinearProgress data-testid="loading-progress" />}
           {schema && (
             <InfoCard
-              title={schema.title}
+              title={
+                TemplateTitle ? (
+                  <TemplateTitle templateRef={templateRef} />
+                ) : (
+                  schema.title
+                )
+              }
               noPadding
               titleTypographyProps={{ component: 'h2' }}
             >

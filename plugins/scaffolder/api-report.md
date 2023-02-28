@@ -327,6 +327,9 @@ export type RouterProps = {
         }>
       | undefined;
     TaskPageComponent?: ComponentType<{}>;
+    TemplateWizardTitle?: React_2.ComponentType<{
+      templateRef: string;
+    }>;
   };
   groups?: Array<{
     title?: React_2.ReactNode;

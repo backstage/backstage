@@ -44,9 +44,11 @@ export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   FormProps?: FormProps;
+  WorkflowTitle?: React.ComponentType<{ templateRef: string }>;
 };
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
+  const { WorkflowTitle } = props;
   const rootRef = useRouteRef(nextRouteRef);
   const taskRoute = useRouteRef(nextScaffolderTaskRouteRef);
   const { secrets } = useTemplateSecrets();
@@ -90,6 +92,11 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           extensions={props.customFieldExtensions}
           FormProps={props.FormProps}
           layouts={props.layouts}
+          title={
+            WorkflowTitle ? (
+              <WorkflowTitle templateRef={templateRef} />
+            ) : undefined
+          }
         />
       </Page>
     </AnalyticsContext>

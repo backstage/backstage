@@ -29,7 +29,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
+import { TemplateGroupFilter } from '../TemplateListPage';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {
@@ -59,6 +59,7 @@ export type NextRouterProps = {
     TemplateOutputsComponent?: React.ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
+    TemplateWizardTitle?: React.ComponentType<{ templateRef: string }>;
   };
   groups?: TemplateGroupFilter[];
   // todo(blam): rename this to formProps
@@ -83,6 +84,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
     components: {
       TemplateCardComponent,
       TemplateOutputsComponent,
+      TemplateWizardTitle,
       TaskPageComponent = OngoingTask,
     } = {},
   } = props;
@@ -122,6 +124,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
               FormProps={props.FormProps}
+              WorkflowTitle={TemplateWizardTitle}
             />
           </SecretsContextProvider>
         }

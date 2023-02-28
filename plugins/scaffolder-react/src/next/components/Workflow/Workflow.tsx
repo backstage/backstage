@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import {
   Content,
   InfoCard,
@@ -44,7 +44,7 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
  * @alpha
  */
 export type WorkflowProps = {
-  title?: string;
+  title?: ReactNode;
   description?: string;
   namespace: string;
   templateName: string;

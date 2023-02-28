@@ -203,7 +203,7 @@ export const Workflow: (workflowProps: WorkflowProps) => JSX.Element | null;
 
 // @alpha (undocumented)
 export type WorkflowProps = {
-  title?: string;
+  title?: ReactNode;
   description?: string;
   namespace: string;
   templateName: string;

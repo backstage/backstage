@@ -1,45 +1,77 @@
 ---
 id: testing-scaffolder-alpha
 title: 'Experimental: Testing out the alpha Scaffolder plugin'
+
 # prettier-ignore
+
 description: Docs on the upcoming breaking release for the scaffolder plugin
 ---
 
 ## What's `scaffolder/next`?
 
-The `alpha` version, or as you might have seen referred to in other places the `scaffolder/next` release, is a new version of the `scaffolder` plugin that will be the first breaking change to the plugin, so you can also think of it as `@backstage/plugin-scaffolder@2.0.0`.
-Its mostly a rewrite of a lot of the frontend components and pages that had very limited test coverage, which made adding new features to the `scaffolder` plugin quite hard, and we were lacking in confidence when making changes.
+The `alpha` version, or as you might have seen referred to in other places the `scaffolder/next` release, is a new
+version of the `scaffolder` plugin that will be the first breaking change to the plugin, so you can also think of it
+as `@backstage/plugin-scaffolder@2.0.0`.
+Its mostly a rewrite of a lot of the frontend components and pages that had very limited test coverage, which made
+adding new features to the `scaffolder` plugin quite hard, and we were lacking in confidence when making changes.
 
-There is of course some other things that have changed when re-writing this, which are essentially what has caused some breaking changes.
-Now, this is not like previous scaffolder changes where you would have to change all of your templates as this is only the frontend plugin that is going to have breaking changes. You can read more about the [breaking changes](#breaking-changes) below.
+There is of course some other things that have changed when re-writing this, which are essentially what has caused some
+breaking changes.
+Now, this is not like previous scaffolder changes where you would have to change all of your templates as this is only
+the frontend plugin that is going to have breaking changes. You can read more about
+the [breaking changes](#breaking-changes) below.
 
 ## What's new?
 
-First off, the main dependency that we have for the frontend which is responsible for rendering the `JSONSchema` into `material-ui` components is [react-jsonschema-form](https://github.com/rjsf-team/react-jsonschema-form).
-This dependency in the current version of the plugin is 3.x.x, which is now 2 major versions out of date. Long story short, `v4` of this plugin contained some bug fixes, and new features but we we're unable to upgrade due to some issues with having support for `material-ui@v4`, so we had to wait for `v5` to be released, and because of the `FieldExtensions` and how they are very tightly coupled to the `react-jsonschema-form` library, we also wanted to make sure that this release was stable before getting people to migrate their `Field Extensions`.
+First off, the main dependency that we have for the frontend which is responsible for rendering the `JSONSchema`
+into `material-ui` components is [react-jsonschema-form](https://github.com/rjsf-team/react-jsonschema-form).
+This dependency in the current version of the plugin is 3.x.x, which is now 2 major versions out of date. Long story
+short, `v4` of this plugin contained some bug fixes, and new features but we we're unable to upgrade due to some issues
+with having support for `material-ui@v4`, so we had to wait for `v5` to be released, and because of
+the `FieldExtensions` and how they are very tightly coupled to the `react-jsonschema-form` library, we also wanted to
+make sure that this release was stable before getting people to migrate their `Field Extensions`.
 
-With that in mind, this release has `v5` of `react-jsonschema-form`, and with that comes all the new features and bugfixes in `v4` that we were waiting for - one of the main ones being the ability to use `if / then / else` syntax in the `template.yaml` definitions! 🎉
+With that in mind, this release has `v5` of `react-jsonschema-form`, and with that comes all the new features and
+bugfixes in `v4` that we were waiting for - one of the main ones being the ability to use `if / then / else` syntax in
+the `template.yaml` definitions! 🎉
 
-We've also rebuilt how validation works in the `scaffolder` components, which now means that we've opened the ability to have `async` validation functions in your `Field Extensions`.
+We've also rebuilt how validation works in the `scaffolder` components, which now means that we've opened the ability to
+have `async` validation functions in your `Field Extensions`.
 
-Some of the pages have gotten a little bit of an overhaul in terms of UI based on some research and feedback from the community and internally.
+Some of the pages have gotten a little bit of an overhaul in terms of UI based on some research and feedback from the
+community and internally.
 
-- The `TemplateList` page has gotten some new `Card` components which show a little more information than the previous version with a little `material-ui` standards.
-- The `WizardPage` has received some new updates with the stepper now running horizontally, and the `Review` step being a dedicated step in the stepper.
-- The `OngoingTask` page now does not show the logs by default, and instead has a much cleaner interface for tracking the ongoing steps and the pipeline of actions that are currently showing.
-  - You can also now provide your own `OutputsComponent` which can be used to render the outputs from an ongoing / completed task in a way that suits your templates the best. For instance, if your template produces `Pull Requests`, it could be useful to render these in an interactive way where you can see the statuses of each of these `Pull Requests` in the `Ongoing Task` page.
+- The `TemplateList` page has gotten some new `Card` components which show a little more information than the previous
+  version with a little `material-ui` standards.
+- The `WizardPage` has received some new updates with the stepper now running horizontally, and the `Review` step being
+  a dedicated step in the stepper.
+- The `OngoingTask` page now does not show the logs by default, and instead has a much cleaner interface for tracking
+  the ongoing steps and the pipeline of actions that are currently showing.
+  - You can also now provide your own `OutputsComponent` which can be used to render the outputs from an ongoing /
+    completed task in a way that suits your templates the best. For instance, if your template produces `Pull Requests`,
+    it could be useful to render these in an interactive way where you can see the statuses of each of
+    these `Pull Requests` in the `Ongoing Task` page.
 
 There's also a lot of bug fixes, and other things, but these are the main ones that we wanted to highlight.
 
 ## How do I test out the `alpha` version?
 
-With the release of [`v1.11.0`](https://github.com/backstage/backstage/releases/tag/v1.11.0) it's now possible to run the `scaffolder/next` plugin and it be a drop in replacement for the current version that you use today. This means that you can start using the new code, and start testing it out. Once we have collected enough feedback, and squashed any bugs that might block us from releasing, it will be promoted from the `/alpha` exports and replace the existing code leading to breaking changes if you haven't already made these changes as part of this testing pilot. Those that have chosen to opt into this testing pilot means that once we promote it from the `/alpha` exports, you will need to update your code to point to the original exports from the `scaffolder` plugin, just like the code is today but with the [breaking changes](#breaking-changes) that you already made to your `Custom Field Extensions`.
+With the release of [`v1.11.0`](https://github.com/backstage/backstage/releases/tag/v1.11.0) it's now possible to run
+the `scaffolder/next` plugin and it be a drop in replacement for the current version that you use today. This means that
+you can start using the new code, and start testing it out. Once we have collected enough feedback, and squashed any
+bugs that might block us from releasing, it will be promoted from the `/alpha` exports and replace the existing code
+leading to breaking changes if you haven't already made these changes as part of this testing pilot. Those that have
+chosen to opt into this testing pilot means that once we promote it from the `/alpha` exports, you will need to update
+your code to point to the original exports from the `scaffolder` plugin, just like the code is today but with
+the [breaking changes](#breaking-changes) that you already made to your `Custom Field Extensions`.
 
-It's also worth calling out that if you do test this out, and find some issues or something not working out as expected, feel free to raise an issue in the [repo](https://github.com/backstage/backstage) or reach out to us on Discord!
+It's also worth calling out that if you do test this out, and find some issues or something not working out as expected,
+feel free to raise an issue in the [repo](https://github.com/backstage/backstage) or reach out to us on Discord!
 
 ### Make the required changes to `App.tsx`
 
-The `ScaffolderPage` router has a completely different export for the `scaffolder/next` work, so you will want to change any import from the old `ScaffolderPage` to the new `NextScaffolderPage`
+The `ScaffolderPage` router has a completely different export for the `scaffolder/next` work, so you will want to change
+any import from the old `ScaffolderPage` to the new `NextScaffolderPage`
 
 ```diff
 - import { ScaffolderPage } from '@backstage/plugin-scaffolder';
@@ -47,7 +79,8 @@ The `ScaffolderPage` router has a completely different export for the `scaffolde
 
 ```
 
-And this API should be the exact same as the previous Router, so you should be able to make a change like the following further down in this file:
+And this API should be the exact same as the previous Router, so you should be able to make a change like the following
+further down in this file:
 
 ```diff
   <Route
@@ -78,7 +111,8 @@ And this API should be the exact same as the previous Router, so you should be a
 
 ### Make the required changes to your `CustomFieldExtensions`
 
-There's differently named function for creating field extensions part of the `/alpha` exports as these are the ones that can contain breaking changes because of the breaking changes that have been applied in `react-jsonschema-form`.
+There's differently named function for creating field extensions part of the `/alpha` exports as these are the ones that
+can contain breaking changes because of the breaking changes that have been applied in `react-jsonschema-form`.
 
 Let's take the following example:
 
@@ -93,7 +127,8 @@ export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
 );
 ```
 
-References for `createScaffolderFieldExtension` have an `/alpha` version of `createNextScaffolderFieldExtension`, which should be used instead.
+References for `createScaffolderFieldExtension` have an `/alpha` version of `createNextScaffolderFieldExtension`, which
+should be used instead.
 
 ```diff
 -import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder';
@@ -109,7 +144,8 @@ export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
 );
 ```
 
-Once you've done this you will find that you will have two squiggly lines under the properties that are passed in. One for the component and one for the validation (if provided.)
+Once you've done this you will find that you will have two squiggly lines under the properties that are passed in. One
+for the component and one for the validation (if provided.)
 
 Let's take the following code for the `EntityNamePicker` component:
 
@@ -120,18 +156,19 @@ export const EntityNamePicker = (
   const {
     onChange,
     required,
-    schema: { title = 'Name', description = 'Unique name of the component' },
+    schema: {title = 'Name', description = 'Unique name of the component'},
     rawErrors,
     formData,
-    uiSchema: { 'ui:autofocus': autoFocus },
+    uiSchema: {'ui:autofocus': autoFocus},
     idSchema,
     placeholder,
   } = props;
-  ...
+...
 }
 ```
 
-There's another `/alpha` export that you need to replace `FieldExtensionComponentProps` with which is the `NextFieldExtensionComponentProps`.
+There's another `/alpha` export that you need to replace `FieldExtensionComponentProps` with which is
+the `NextFieldExtensionComponentProps`.
 
 ```diff
 - import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
@@ -156,9 +193,12 @@ export const EntityNamePicker = (
 }
 ```
 
-You'll notice that there's an additional change here, which is that we're now defaulting the `uiSchema` to an empty object. This is because the `uiSchema` is now optional, and if you don't provide it, it will be `undefined` instead of an empty object. There's more around this in the [breaking changes](#breaking-changes) section.
+You'll notice that there's an additional change here, which is that we're now defaulting the `uiSchema` to an empty
+object. This is because the `uiSchema` is now optional, and if you don't provide it, it will be `undefined` instead of
+an empty object. There's more around this in the [breaking changes](#breaking-changes) section.
 
-To fix the previous validation error, you will need to change the import for the `FieldValidation` type that is used in the `validation` function.
+To fix the previous validation error, you will need to change the import for the `FieldValidation` type that is used in
+the `validation` function.
 
 Let's take the following example of the validation function:
 
@@ -180,7 +220,9 @@ export const entityNamePickerValidation = (
 
 You will need to change the import for `FieldValidation` to point at the new `react-jsonschema-form` dependency.
 
-> Note: you will probably need to install this dependency too, by using `yarn add @rjsf/utils` in the package where you define these validation functions, this could also be in the `packages/app` folder, so you can install it there if needed.
+> Note: you will probably need to install this dependency too, by using `yarn add @rjsf/utils` in the package where you
+> define these validation functions, this could also be in the `packages/app` folder, so you can install it there if
+> needed.
 
 ```diff
 - import { FieldValidation } from '@rjsf/core';
@@ -195,11 +237,14 @@ export const entityNamePickerValidation = (
 
 ## Breaking Changes
 
-Once we fully release the code that is in the `/alpha` exports right now onto the current API and release v2.0.0 of `@backstage/plugin-scaffolder` the breaking changes will be as follows:
+Once we fully release the code that is in the `/alpha` exports right now onto the current API and release v2.0.0
+of `@backstage/plugin-scaffolder` the breaking changes will be as follows:
 
 ### `uiSchema` is now optional
 
-Later releases of `react-jsonschema-form` have made the `uiSchema` optional, and if you don't provide it, it will be `undefined` instead of an empty object. This means that you will need to make sure that you're defaulting the `uiSchema` to an empty object if you're using it in your code.
+Later releases of `react-jsonschema-form` have made the `uiSchema` optional, and if you don't provide it, it will
+be `undefined` instead of an empty object. This means that you will need to make sure that you're defaulting
+the `uiSchema` to an empty object if you're using it in your code.
 
 ```diff
   const {
@@ -217,7 +262,8 @@ Later releases of `react-jsonschema-form` have made the `uiSchema` optional, and
 
 ### `formData` can also be `undefined`
 
-If you were using the `formData` and assuming that it was set to an empty object when building `Field Extensions` that return objects, then this will be `undefined` now due to a change in the `react-jsonschema-form` library.
+If you were using the `formData` and assuming that it was set to an empty object when building `Field Extensions` that
+return objects, then this will be `undefined` now due to a change in the `react-jsonschema-form` library.
 
 ```diff
   const {
@@ -231,4 +277,151 @@ If you were using the `formData` and assuming that it was set to an empty object
     idSchema,
     placeholder,
   } = props;
+```
+
+## Customizing the template title
+
+You have a possibility to customize the title of the template.
+Here is an example how you are add a feedback panel for certain templates:
+
+```typescript jsx
+// in App.tsx
+
+<Route
+  path="/create/next"
+  element={
+    <NextScaffolderPage
+      components={{
+        TemplateWizardTitle,
+      }}
+    />
+  }
+/>;
+
+// TemplateWizardTitle.tsx
+
+import React, { Suspense, Fragment } from 'react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, ListItemIcon, Tooltip, Typography } from '@material-ui/core';
+import EmailIcon from '@material-ui/icons/Email';
+import ChatIcon from '@material-ui/icons/Chat';
+import DescriptionIcon from '@material-ui/icons/Description';
+import { Link } from '@backstage/core-components';
+
+type Props = {
+  templateRef: string;
+};
+
+const styles = () =>
+  createStyles({
+    root: {
+      position: 'absolute',
+      top: 0,
+      right: 10,
+    },
+    actionPanel: {
+      display: 'inline-block',
+      marginLeft: '30px',
+    },
+    itemIcon: {
+      minWidth: 30,
+      verticalAlign: 'bottom',
+    },
+    actionBox: {
+      display: 'inline-block',
+      marginLeft: '20px',
+      verticalAlign: 'middle',
+    },
+    link: {
+      display: 'inline-block',
+    },
+  });
+
+const useStyles = makeStyles(styles, {
+  name: 'FeedbackPanel',
+});
+
+const FeedbackPanel = () => {
+  const classes = useStyles();
+  return (
+    <Box className={classes.root}>
+      <Box className={classes.actionPanel}>
+        <Box className={classes.actionBox}>
+          <Box>
+            <ListItemIcon className={classes.itemIcon}>
+              <Tooltip title="Email">
+                <EmailIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <Link to="mailto:my-team@spotify.com" className={classes.link}>
+              <Typography>e-mail</Typography>
+            </Link>
+          </Box>
+        </Box>
+
+        <Box className={classes.actionBox}>
+          <Box>
+            <ListItemIcon className={classes.itemIcon}>
+              <Tooltip title="Slack">
+                <ChatIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <Link
+              to="https://my.slack.com/archives/xxx"
+              className={classes.link}
+            >
+              <Typography>slack</Typography>
+            </Link>
+          </Box>
+        </Box>
+
+        <Box className={classes.actionBox}>
+          <Box>
+            <ListItemIcon className={classes.itemIcon}>
+              <Tooltip title="Docs">
+                <DescriptionIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <Link
+              to="https://mydocs.spotify.com/my-template.html"
+              className={classes.link}
+            >
+              <Typography>docs</Typography>
+            </Link>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export const TemplateWizardTitle = (props: Props) => {
+  const catalogApi = useApi(catalogApiRef);
+
+  const {
+    value: entity,
+    loading,
+    error,
+  } = useAsync(() => {
+    return catalogApi.getEntityByRef(props.templateRef);
+  }, [catalogApi]);
+
+  if (loading || error) {
+    return <Box />;
+  }
+
+  return (
+    <Fragment>
+      <Suspense fallback={<Box>Loading...</Box>}>
+        <Box position="relative">
+          <Box component="span">{entity?.metadata.name}</Box>
+          <FeedbackPanel />
+        </Box>
+      </Suspense>
+    </Fragment>
+  );
+};
 ```
