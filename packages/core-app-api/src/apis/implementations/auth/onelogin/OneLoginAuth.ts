@@ -18,6 +18,7 @@ import {
   oneloginAuthApiRef,
   OAuthRequestApi,
   AuthProviderInfo,
+  ConfigApi,
   DiscoveryApi,
 } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
@@ -27,10 +28,10 @@ import { OAuth2 } from '../oauth2';
  * @public
  */
 export type OneLoginAuthCreateOptions = {
+  configApi: ConfigApi;
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
-  authFlow?: string;
   provider?: AuthProviderInfo;
 };
 
@@ -62,19 +63,19 @@ export default class OneLoginAuth {
     options: OneLoginAuthCreateOptions,
   ): typeof oneloginAuthApiRef.T {
     const {
+      configApi,
       discoveryApi,
       environment = 'development',
-      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
     } = options;
 
     return OAuth2.create({
+      configApi,
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      authFlow: authFlow,
       defaultScopes: ['openid', 'email', 'profile', 'offline_access'],
       scopeTransform(scopes) {
         return scopes.map(scope => {

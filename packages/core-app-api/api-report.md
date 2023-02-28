@@ -24,6 +24,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -263,7 +264,7 @@ export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
   provider?: AuthProviderInfo;
-  authFlow?: string;
+  configApi: ConfigApi;
 };
 
 // @public
@@ -493,8 +494,6 @@ export type OAuthApiCreateOptions = AuthApiCreateOptions & {
 // @public
 export class OAuthRequestManager implements OAuthRequestApi {
   // (undocumented)
-  authFlow(): string;
-  // (undocumented)
   authRequest$(): Observable<PendingOAuthRequest[]>;
   // (undocumented)
   createAuthRequester<T>(options: OAuthRequesterOptions<T>): OAuthRequester<T>;
@@ -516,10 +515,10 @@ export class OneLoginAuth {
 
 // @public
 export type OneLoginAuthCreateOptions = {
+  configApi: ConfigApi;
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
-  authFlow?: string;
   provider?: AuthProviderInfo;
 };
 

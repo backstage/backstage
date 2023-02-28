@@ -293,7 +293,6 @@ auth:
   #    path: my-sessions
 
   environment: development
-  authFlow: redirect
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:
   #   secret: custom session secret

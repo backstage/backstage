@@ -103,7 +103,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     const env = req.query.env?.toString();
     const origin = req.query.origin?.toString();
     const redirectUrl = req.query.redirectUrl?.toString();
-    const flow = req.query.authFlow?.toString();
+    const flow = req.query.flow?.toString();
     if (!env) {
       throw new InputError('No env provided in request query parameters');
     }

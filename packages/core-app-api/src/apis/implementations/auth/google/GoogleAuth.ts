@@ -34,10 +34,10 @@ const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 export default class GoogleAuth {
   static create(options: OAuthApiCreateOptions): typeof googleAuthApiRef.T {
     const {
+      configApi,
       discoveryApi,
       oauthRequestApi,
       environment = 'development',
-      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       defaultScopes = [
         'openid',
@@ -47,11 +47,11 @@ export default class GoogleAuth {
     } = options;
 
     return OAuth2.create({
+      configApi,
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      authFlow,
       defaultScopes,
       scopeTransform(scopes: string[]) {
         return scopes.map(scope => {

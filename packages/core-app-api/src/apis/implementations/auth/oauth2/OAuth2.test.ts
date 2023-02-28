@@ -17,6 +17,8 @@
 import OAuth2 from './OAuth2';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
+import { ConfigReader } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
 
 const theFuture = new Date(Date.now() + 3600000);
 const thePast = new Date(Date.now() - 10);
@@ -34,12 +36,17 @@ jest.mock('../../../../lib/AuthSessionManager', () => ({
   },
 }));
 
+const configApi: ConfigApi = new ConfigReader({
+  enableExperimentalRedirectFlow: false,
+});
+
 describe('OAuth2', () => {
   it('should get refreshed access token', async () => {
     getSession = jest.fn().mockResolvedValue({
       providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
     });
     const oauth2 = OAuth2.create({
+      configApi: configApi,
       scopeTransform: scopeTransform,
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
@@ -59,6 +66,7 @@ describe('OAuth2', () => {
       providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
     });
     const oauth2 = OAuth2.create({
+      configApi: configApi,
       scopeTransform: scopes => scopes.map(scope => `my-prefix/${scope}`),
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
@@ -75,7 +83,9 @@ describe('OAuth2', () => {
     getSession = jest.fn().mockResolvedValue({
       providerInfo: { idToken: 'id-token', expiresAt: theFuture },
     });
+
     const oauth2 = OAuth2.create({
+      configApi: configApi,
       scopeTransform: scopeTransform,
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
@@ -90,6 +100,7 @@ describe('OAuth2', () => {
       providerInfo: { idToken: 'id-token', expiresAt: theFuture },
     });
     const oauth2 = OAuth2.create({
+      configApi: configApi,
       scopeTransform: scopes => scopes.map(scope => `my-prefix/${scope}`),
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
@@ -113,6 +124,7 @@ describe('OAuth2', () => {
       })
       .mockRejectedValue(error);
     const oauth2 = OAuth2.create({
+      configApi: configApi,
       scopeTransform: scopes => scopes.map(scope => `my-prefix/${scope}`),
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
@@ -147,6 +159,7 @@ describe('OAuth2', () => {
         },
       });
     const oauth2 = OAuth2.create({
+      configApi: configApi,
       scopeTransform: scopes => scopes.map(scope => `my-prefix/${scope}`),
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),

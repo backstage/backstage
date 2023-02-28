@@ -17,6 +17,8 @@
 import GoogleAuth from './GoogleAuth';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
+import { ConfigReader } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
 
 const PREFIX = 'https://www.googleapis.com/auth/';
 
@@ -58,7 +60,12 @@ describe('GoogleAuth', () => {
     [`${PREFIX}profile`, [`${PREFIX}profile`]],
     [`${PREFIX}openid`, [`${PREFIX}openid`]],
   ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
+    const configApi: ConfigApi = new ConfigReader({
+      enableExperimentalRedirectFlow: false,
+    });
+
     const googleAuth = GoogleAuth.create({
+      configApi: configApi,
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
     });

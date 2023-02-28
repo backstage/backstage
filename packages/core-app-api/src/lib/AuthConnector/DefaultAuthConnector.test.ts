@@ -21,11 +21,17 @@ import { UrlPatternDiscovery } from '../../apis';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { ConfigReader } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
 
 jest.mock('../loginPopup', () => {
   return {
     showLoginPopup: jest.fn(),
   };
+});
+
+const configApi: ConfigApi = new ConfigReader({
+  enableExperimentalRedirectFlow: false,
 });
 
 const defaultOptions = {
@@ -42,7 +48,7 @@ const defaultOptions = {
     scopes: new Set(res.scopes.split(' ')),
     expiresAt: new Date(Date.now() + expiresInSeconds * 1000),
   }),
-  authFlow: 'popup',
+  configApi: configApi,
 };
 
 describe('DefaultAuthConnector', () => {

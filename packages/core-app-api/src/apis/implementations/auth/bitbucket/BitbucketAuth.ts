@@ -47,20 +47,20 @@ const DEFAULT_PROVIDER = {
 export default class BitbucketAuth {
   static create(options: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T {
     const {
+      configApi,
       discoveryApi,
       environment = 'development',
-      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = ['team'],
     } = options;
 
     return OAuth2.create({
+      configApi,
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      authFlow,
       defaultScopes,
     });
   }

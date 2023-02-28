@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -24,7 +23,11 @@ import Button from '@material-ui/core/Button';
 import React, { useMemo, useState } from 'react';
 import useObservable from 'react-use/lib/useObservable';
 import LoginRequestListItem from './LoginRequestListItem';
-import { useApi, oauthRequestApiRef } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  configApiRef,
+  oauthRequestApiRef,
+} from '@backstage/core-plugin-api';
 import Typography from '@material-ui/core/Typography';
 
 export type OAuthRequestDialogClassKey =
@@ -58,10 +61,13 @@ export function OAuthRequestDialog(_props: {}) {
   const classes = useStyles();
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
-  const redirectMessage =
-    oauthRequestApi.authFlow() === 'popup'
-      ? ''
-      : 'This will trigger a http redirect to OAuth Login.';
+  const configApi = useApi(configApiRef);
+
+  const authRedirect =
+    configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ?? false;
+  const redirectMessage = authRedirect
+    ? 'This will trigger a http redirect to OAuth Login.'
+    : '';
 
   const requests = useObservable(
     useMemo(() => oauthRequestApi.authRequest$(), [oauthRequestApi]),

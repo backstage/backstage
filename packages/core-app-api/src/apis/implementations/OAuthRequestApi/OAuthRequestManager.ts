@@ -37,10 +37,8 @@ export class OAuthRequestManager implements OAuthRequestApi {
   private readonly subject = new BehaviorSubject<PendingOAuthRequest[]>([]);
   private currentRequests: PendingOAuthRequest[] = [];
   private handlerCount = 0;
-  private authFlowStr: string = 'popup';
 
   createAuthRequester<T>(options: OAuthRequesterOptions<T>): OAuthRequester<T> {
-    this.authFlowStr = options.authFlow;
     const handler = new OAuthPendingRequests<T>();
 
     const index = this.handlerCount;
@@ -92,9 +90,5 @@ export class OAuthRequestManager implements OAuthRequestApi {
 
   authRequest$(): Observable<PendingOAuthRequest[]> {
     return this.subject;
-  }
-
-  authFlow(): string {
-    return this.authFlowStr;
   }
 }

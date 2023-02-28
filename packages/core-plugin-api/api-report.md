@@ -548,7 +548,6 @@ export type OAuthRequestApi = {
     options: OAuthRequesterOptions<OAuthResponse>,
   ): OAuthRequester<OAuthResponse>;
   authRequest$(): Observable<PendingOAuthRequest[]>;
-  authFlow(): string;
 };
 
 // @public
@@ -563,7 +562,6 @@ export type OAuthRequester<TAuthResponse> = (
 export type OAuthRequesterOptions<TOAuthResponse> = {
   provider: AuthProviderInfo;
   onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
-  authFlow: string;
 };
 
 // @public

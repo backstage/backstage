@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
-  OAuthRequester,
-  OAuthRequestApi,
   AuthProviderInfo,
+  ConfigApi,
   DiscoveryApi,
+  OAuthRequestApi,
+  OAuthRequester,
 } from '@backstage/core-plugin-api';
 import { showLoginPopup } from '../loginPopup';
 import { AuthConnector, CreateSessionOptions } from './types';
@@ -50,9 +50,9 @@ type Options<AuthSession> = {
    */
   sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
   /**
-   * The UI authentication flow with backend authentication api. Supports either 'popup' or 'redirect'.
+   * ConfigApi instance used to configure authentication flow of pop-up or redirect.
    */
-  authFlow: string;
+  configApi: ConfigApi;
 };
 
 function defaultJoinScopes(scopes: Set<string>) {
@@ -68,36 +68,37 @@ export class DefaultAuthConnector<AuthSession>
   implements AuthConnector<AuthSession>
 {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly configApi: ConfigApi;
   private readonly environment: string;
   private readonly provider: AuthProviderInfo;
   private readonly joinScopesFunc: (scopes: Set<string>) => string;
   private readonly authRequester: OAuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
-  private readonly authFlow: string;
-
   constructor(options: Options<AuthSession>) {
     const {
+      configApi,
       discoveryApi,
       environment,
       provider,
       joinScopes = defaultJoinScopes,
       oauthRequestApi,
-      authFlow,
       sessionTransform = id => id,
     } = options;
 
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
       onAuthRequest: async scopes => {
-        if (authFlow === 'popup') {
+        const enableExperimentalRedirectFlow =
+          this.configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ??
+          false;
+        if (!enableExperimentalRedirectFlow) {
           return this.showPopup(scopes);
         }
         return this.executeRedirect(scopes);
       },
-      authFlow,
     });
 
-    this.authFlow = authFlow;
+    this.configApi = configApi;
     this.discoveryApi = discoveryApi;
     this.environment = environment;
     this.provider = provider;
@@ -106,7 +107,11 @@ export class DefaultAuthConnector<AuthSession>
   }
 
   async createSession(options: CreateSessionOptions): Promise<AuthSession> {
-    if (options.instantPopup && this.authFlow === 'popup') {
+    const enableExperimentalRedirectFlow =
+      this.configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ??
+      false;
+
+    if (options.instantPopup && !enableExperimentalRedirectFlow) {
       return this.showPopup(options.scopes);
     }
     return this.authRequester(options.scopes);
@@ -184,14 +189,13 @@ export class DefaultAuthConnector<AuthSession>
 
   private async executeRedirect(scopes: Set<string>): Promise<AuthSession> {
     const scope = this.joinScopesFunc(scopes);
-    const redirectUrl = await this.buildUrl('/start', {
+    // redirect to auth api
+    window.location.href = await this.buildUrl('/start', {
       scope,
       origin: window.location.origin,
       redirectUrl: window.location.href,
-      authFlow: 'redirect',
+      flow: 'redirect',
     });
-    // redirect to auth api
-    window.location.href = redirectUrl;
     // return a promise that never resolves
     return new Promise(() => {});
   }

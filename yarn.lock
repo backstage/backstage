@@ -6195,6 +6195,7 @@ __metadata:
   resolution: "@backstage/plugin-gitops-profiles@workspace:plugins/gitops-profiles"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"

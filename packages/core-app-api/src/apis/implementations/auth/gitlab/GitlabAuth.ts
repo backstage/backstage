@@ -32,20 +32,20 @@ const DEFAULT_PROVIDER = {
 export default class GitlabAuth {
   static create(options: OAuthApiCreateOptions): typeof gitlabAuthApiRef.T {
     const {
+      configApi,
       discoveryApi,
       environment = 'development',
-      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = ['read_user'],
     } = options;
 
     return OAuth2.create({
+      configApi,
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      authFlow,
       defaultScopes,
     });
   }

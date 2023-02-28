@@ -35,11 +35,6 @@ export type OAuthRequesterOptions<TOAuthResponse> = {
    * trigger() is called on an auth requests.
    */
   onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
-
-  /**
-   * The authentication flow type
-   */
-  authFlow: string;
 };
 
 /**
@@ -124,11 +119,6 @@ export type OAuthRequestApi = {
    * AuthRequester calls will resolve to the value returned by the onAuthRequest call.
    */
   authRequest$(): Observable<PendingOAuthRequest[]>;
-
-  /**
-   * The authentication flow type
-   */
-  authFlow(): string;
 };
 
 /**

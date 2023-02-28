@@ -72,21 +72,21 @@ export default class OAuth2
 {
   static create(options: OAuth2CreateOptions) {
     const {
+      configApi,
       discoveryApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = [],
-      authFlow = 'popup',
       scopeTransform = x => x,
     } = options;
 
     const connector = new DefaultAuthConnector({
+      configApi,
       discoveryApi,
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,
-      authFlow,
       sessionTransform(res: OAuth2Response): OAuth2Session {
         return {
           ...res,

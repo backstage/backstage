@@ -44,20 +44,20 @@ const OKTA_SCOPE_PREFIX: string = 'okta.';
 export default class OktaAuth {
   static create(options: OAuthApiCreateOptions): typeof oktaAuthApiRef.T {
     const {
+      configApi,
       discoveryApi,
       environment = 'development',
-      authFlow = 'popup',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       defaultScopes = ['openid', 'email', 'profile', 'offline_access'],
     } = options;
 
     return OAuth2.create({
+      configApi,
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      authFlow,
       defaultScopes,
       scopeTransform(scopes) {
         return scopes.map(scope => {

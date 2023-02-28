@@ -30,7 +30,6 @@ describe('OAuthRequestManager', () => {
         icon: () => null,
       },
       onAuthRequest: async () => 'hello',
-      authFlow: 'popup',
     });
 
     expect(reqSpy).toHaveBeenCalledTimes(0);
