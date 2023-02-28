@@ -10,6 +10,11 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "exports": {
+    ".": "./src/index.ts",
+    "./catalog.graphql": "./src/catalog/catalog.graphql",
+    "./package.json": "./package.json"
+  },
   "backstage": {
     "role": "backend-plugin"
   },
