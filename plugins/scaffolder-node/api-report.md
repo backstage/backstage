@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { Schema } from 'jsonschema';
@@ -15,7 +16,7 @@ import { Writable } from 'stream';
 import { z } from 'zod';
 
 // @public
-export type ActionContext<TActionInput = unknown> = {
+export type ActionContext<TActionInput extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;

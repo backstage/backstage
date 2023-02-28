@@ -16,16 +16,17 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonValue } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { TaskSecrets } from '../tasks/types';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Schema } from 'jsonschema';
+
 /**
  * ActionContext is passed into scaffolder actions.
  * @public
  */
-export type ActionContext<TActionInput = unknown> = {
+export type ActionContext<TActionInput extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
