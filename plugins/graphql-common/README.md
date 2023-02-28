@@ -65,7 +65,7 @@ export const myModule = createModule({
 ```ts
 // packages/backend/src/plugins/graphql.ts
 import { createRouter } from '@backstage/plugin-graphql-backend';
-import { Catalog } from '@backstage/plugin-graphql-catalog;
+import { Catalog } from '@backstage/plugin-graphql-catalog';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { MyModule } from '../modules/my-module/my-module';
@@ -249,9 +249,13 @@ import { printSchemaWithDirectives } from '@graphql-tools/utils';
 import { loadFilesSync } from '@graphql-tools/load-files';
 
 export default printSchemaWithDirectives(
-  transformSchema(
+  transformSchema([
+    // Add Catalog GraphQL schema if you use Catalog GraphQL module
+    loadFilesSync(
+      require.resolve('@backstage/plugin-catalog-backend/catalog.graphql'),
+    ),
     loadFilesSync(resolvePackagePath('backend', 'src/modules/**/*.graphql')),
-  ),
+  ]),
 );
 ```
 
