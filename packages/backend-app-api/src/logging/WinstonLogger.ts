@@ -16,9 +16,9 @@
 
 import {
   LoggerService,
-  LogMeta,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { Format, TransformableInfo } from 'logform';
 import {
   Logger,
@@ -33,7 +33,7 @@ import { escapeRegExp } from '../lib/escapeRegExp';
  * @public
  */
 export interface WinstonLoggerOptions {
-  meta?: LogMeta;
+  meta?: JsonObject;
   level: string;
   format: Format;
   transports: Transport[];
@@ -150,23 +150,23 @@ export class WinstonLogger implements RootLoggerService {
     this.#addRedactions = addRedactions;
   }
 
-  error(message: string, meta?: LogMeta): void {
+  error(message: string, meta?: JsonObject): void {
     this.#winston.error(message, meta);
   }
 
-  warn(message: string, meta?: LogMeta): void {
+  warn(message: string, meta?: JsonObject): void {
     this.#winston.warn(message, meta);
   }
 
-  info(message: string, meta?: LogMeta): void {
+  info(message: string, meta?: JsonObject): void {
     this.#winston.info(message, meta);
   }
 
-  debug(message: string, meta?: LogMeta): void {
+  debug(message: string, meta?: JsonObject): void {
     this.#winston.debug(message, meta);
   }
 
-  child(meta: LogMeta): LoggerService {
+  child(meta: JsonObject): LoggerService {
     return new WinstonLogger(this.#winston.child(meta));
   }
 

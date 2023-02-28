@@ -22,7 +22,6 @@ const { version } = require('../package.json');
 
 const envOptions = {
   oldTests: Boolean(process.env.BACKSTAGE_OLD_TESTS),
-  enableSourceMaps: Boolean(process.env.ENABLE_SOURCE_MAPS),
 };
 
 const transformIgnorePattern = [
@@ -130,7 +129,6 @@ async function getProjectConfig(targetPath, extraConfig) {
       '\\.(mjs|cjs|js)$': [
         require.resolve('./jestSwcTransform'),
         {
-          sourceMaps: envOptions.enableSourceMaps || !envOptions.oldTests,
           jsc: {
             parser: {
               syntax: 'ecmascript',
@@ -141,7 +139,6 @@ async function getProjectConfig(targetPath, extraConfig) {
       '\\.jsx$': [
         require.resolve('./jestSwcTransform'),
         {
-          sourceMaps: envOptions.enableSourceMaps || !envOptions.oldTests,
           jsc: {
             parser: {
               syntax: 'ecmascript',
@@ -158,7 +155,6 @@ async function getProjectConfig(targetPath, extraConfig) {
       '\\.ts$': [
         require.resolve('./jestSwcTransform'),
         {
-          sourceMaps: envOptions.enableSourceMaps || !envOptions.oldTests,
           jsc: {
             parser: {
               syntax: 'typescript',
@@ -169,7 +165,6 @@ async function getProjectConfig(targetPath, extraConfig) {
       '\\.tsx$': [
         require.resolve('./jestSwcTransform'),
         {
-          sourceMaps: envOptions.enableSourceMaps || !envOptions.oldTests,
           jsc: {
             parser: {
               syntax: 'typescript',

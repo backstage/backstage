@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import * as yaml from 'yaml';
 import { Entity } from '@backstage/catalog-model';
 import { resolveSafeChildPath } from '@backstage/backend-common';

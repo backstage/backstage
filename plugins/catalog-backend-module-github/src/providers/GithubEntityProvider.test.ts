@@ -172,6 +172,7 @@ describe('GithubEntityProvider', () => {
             url: 'https://github.com/test-org/test-repo',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
@@ -274,6 +275,7 @@ describe('GithubEntityProvider', () => {
               ],
             },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
@@ -353,6 +355,7 @@ describe('GithubEntityProvider', () => {
               ],
             },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
@@ -445,6 +448,7 @@ describe('GithubEntityProvider', () => {
               nodes: [],
             },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
@@ -457,6 +461,7 @@ describe('GithubEntityProvider', () => {
               nodes: [],
             },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
@@ -557,6 +562,7 @@ describe('GithubEntityProvider', () => {
               ],
             },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
@@ -580,6 +586,7 @@ describe('GithubEntityProvider', () => {
               ],
             },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
@@ -600,6 +607,7 @@ describe('GithubEntityProvider', () => {
               ],
             },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },

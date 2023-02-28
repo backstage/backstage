@@ -6,8 +6,9 @@ This package contains ApiDefinitionWidgets for the following projects:
 
 ## Setup
 
-```
-yarn add @backstage/plugin-api-docs-module-protoc-gen-doc
+```sh
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-api-docs-module-protoc-gen-doc
 ```
 
 ## Add the GrpcDocsApiWidget to your apis

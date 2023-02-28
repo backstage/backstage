@@ -1,11 +1,3 @@
-import Layout from '@theme/Layout';
-import React from 'react';
+import { Home } from './home/_home';
 
-function Index() {
-  return (
-    <Layout>
-      <h1>HELLO</h1>
-    </Layout>
-  );
-}
-export default Index;
+export default Home;

@@ -7,27 +7,22 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
-import { Dispatch } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
-import { FieldProps as FieldProps_2 } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/core';
-import { FieldValidation as FieldValidation_2 } from '@rjsf/utils';
-import type { FormProps as FormProps_2 } from '@rjsf/core-v5';
-import { IconComponent } from '@backstage/core-plugin-api';
+import type { FormProps } from '@rjsf/core-v5';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
-import { ReactNode } from 'react';
-import { SetStateAction } from 'react';
+import { ScaffolderTask as ScaffolderTask_2 } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderTaskOutput as ScaffolderTaskOutput_2 } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderTaskStatus as ScaffolderTaskStatus_2 } from '@backstage/plugin-scaffolder-react';
+import { Step as Step_2 } from '@backstage/plugin-scaffolder-react';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { UIOptionsType } from '@rjsf/utils';
-import { UiSchema } from '@rjsf/utils';
 
 // @public
 export type Action = {
@@ -46,17 +41,6 @@ export type ActionExample = {
   example: string;
 };
 
-// @alpha
-export const createFieldValidation: () => FieldValidation_2;
-
-// @alpha
-export function createNextScaffolderFieldExtension<
-  TReturnValue = unknown,
-  TInputProps extends UIOptionsType = {},
->(
-  options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
-): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
-
 // @public
 export function createScaffolderFieldExtension<
   TReturnValue = unknown,
@@ -64,6 +48,11 @@ export function createScaffolderFieldExtension<
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
+
+// @public
+export function createScaffolderLayout<TInputProps = unknown>(
+  options: LayoutOptions,
+): Extension<LayoutComponent<TInputProps>>;
 
 // @public
 export type CustomFieldExtensionSchema = {
@@ -79,15 +68,6 @@ export type CustomFieldValidator<TFieldReturnValue> = (
     apiHolder: ApiHolder;
   },
 ) => void | Promise<void>;
-
-// @alpha (undocumented)
-export const EmbeddableWorkflow: (props: WorkflowProps) => JSX.Element;
-
-// @alpha
-export const extractSchemaFromStep: (inputStep: JsonObject) => {
-  uiSchema: UiSchema;
-  schema: JsonObject;
-};
 
 // @public
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
@@ -116,11 +96,21 @@ export type FieldExtensionOptions<
   schema?: CustomFieldExtensionSchema;
 };
 
-// @alpha
-export type FormProps = Pick<
-  FormProps_2,
-  'transformErrors' | 'noHtml5Validate'
->;
+// @public
+export type LayoutComponent<_TInputProps> = () => null;
+
+// @public
+export interface LayoutOptions<P = any> {
+  // (undocumented)
+  component: LayoutTemplate<P>;
+  // (undocumented)
+  name: string;
+}
+
+// @public
+export type LayoutTemplate<T = any> = NonNullable<
+  FormProps<T>['uiSchema']
+>['ui:ObjectFieldTemplate'];
 
 // @public
 export type ListActionsResponse = Array<Action>;
@@ -136,63 +126,6 @@ export type LogEvent = {
   createdAt: string;
   id: string;
   taskId: string;
-};
-
-// @alpha
-export type NextCustomFieldValidator<TFieldReturnValue> = (
-  data: TFieldReturnValue,
-  field: FieldValidation_2,
-  context: {
-    apiHolder: ApiHolder;
-    formData: JsonObject;
-  },
-) => void | Promise<void>;
-
-// @alpha
-export interface NextFieldExtensionComponentProps<
-  TFieldReturnValue,
-  TUiOptions = {},
-> extends PropsWithChildren<FieldProps_2<TFieldReturnValue>> {
-  // (undocumented)
-  uiSchema?: UiSchema<TFieldReturnValue> & {
-    'ui:options'?: TUiOptions & UIOptionsType;
-  };
-}
-
-// @alpha
-export type NextFieldExtensionOptions<
-  TFieldReturnValue = unknown,
-  TInputProps = unknown,
-> = {
-  name: string;
-  component: (
-    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
-  ) => JSX.Element | null;
-  validation?: NextCustomFieldValidator<TFieldReturnValue>;
-  schema?: CustomFieldExtensionSchema;
-};
-
-// @alpha
-export interface ParsedTemplateSchema {
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  mergedSchema: JsonObject;
-  // (undocumented)
-  schema: JsonObject;
-  // (undocumented)
-  title: string;
-  // (undocumented)
-  uiSchema: UiSchema;
-}
-
-// @alpha
-export const ReviewState: (props: ReviewStateProps) => JSX.Element;
-
-// @alpha
-export type ReviewStateProps = {
-  schemas: ParsedTemplateSchema[];
-  formState: JsonObject;
 };
 
 // @public
@@ -276,6 +209,9 @@ export interface ScaffolderGetIntegrationsListResponse {
   }[];
 }
 
+// @public
+export const ScaffolderLayouts: React.ComponentType;
+
 // @public (undocumented)
 export type ScaffolderOutputLink = {
   title?: string;
@@ -345,64 +281,52 @@ export const SecretsContextProvider: ({
   children,
 }: PropsWithChildren<{}>) => JSX.Element;
 
-// @alpha
-export const Stepper: (stepperProps: StepperProps) => JSX.Element;
-
-// @alpha
-export type StepperProps = {
-  manifest: TemplateParameterSchema;
-  extensions: NextFieldExtensionOptions<any, any>[];
-  templateName?: string;
-  FormProps?: FormProps;
-  initialState?: Record<string, JsonValue>;
-  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
-  components?: {
-    ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
-    createButtonText?: ReactNode;
-    reviewButtonText?: ReactNode;
-  };
+// @public
+export type Step = {
+  id: string;
+  status: ScaffolderTaskStatus_2;
+  endedAt?: string;
+  startedAt?: string;
 };
 
-// @alpha
-export const TemplateCard: (props: TemplateCardProps) => JSX.Element;
-
-// @alpha
-export interface TemplateCardProps {
+// @public (undocumented)
+export interface StepperProps {
   // (undocumented)
-  additionalLinks?: {
-    icon: IconComponent;
-    text: string;
-    url: string;
-  }[];
+  activeStep?: number;
   // (undocumented)
-  onSelected?: (template: TemplateEntityV1beta3) => void;
-  // (undocumented)
-  template: TemplateEntityV1beta3;
+  steps: (TaskStep & Step_2)[];
 }
 
-// @alpha
-export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element;
+// @public
+export const TaskBorder: (props: {
+  isComplete: boolean;
+  isError: boolean;
+}) => JSX.Element;
 
-// @alpha
-export interface TemplateGroupProps {
-  // (undocumented)
-  components?: {
-    CardComponent?: React_2.ComponentType<TemplateCardProps>;
+// @public
+export const TaskLogStream: (props: {
+  logs: {
+    [k: string]: string[];
   };
-  // (undocumented)
-  onSelected: (template: TemplateEntityV1beta3) => void;
-  // (undocumented)
-  templates: {
-    template: TemplateEntityV1beta3;
-    additionalLinks?: {
-      icon: IconComponent;
-      text: string;
-      url: string;
-    }[];
-  }[];
-  // (undocumented)
-  title: React_2.ReactNode;
-}
+}) => JSX.Element;
+
+// @public
+export const TaskSteps: (props: StepperProps) => JSX.Element;
+
+// @public
+export type TaskStream = {
+  loading: boolean;
+  error?: Error;
+  stepLogs: {
+    [stepId in string]: string[];
+  };
+  completed: boolean;
+  task?: ScaffolderTask_2;
+  steps: {
+    [stepId in string]: Step;
+  };
+  output?: ScaffolderTaskOutput_2;
+};
 
 // @public
 export type TemplateParameterSchema = {
@@ -422,40 +346,16 @@ export const useCustomFieldExtensions: <
   outlet: React.ReactNode,
 ) => TComponentDataType[];
 
-// @alpha
-export const useFormDataFromQuery: (
-  initialState?: Record<string, JsonValue>,
-) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
+// @public
+export const useCustomLayouts: <TComponentDataType = LayoutOptions<any>>(
+  outlet: React.ReactNode,
+) => TComponentDataType[];
 
-// @alpha (undocumented)
-export const useTemplateParameterSchema: (templateRef: string) => {
-  manifest: TemplateParameterSchema | undefined;
-  loading: boolean;
-  error: Error | undefined;
-};
-
-// @alpha
-export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
-  steps: ParsedTemplateSchema[];
-};
+// @public
+export const useTaskEventStream: (taskId: string) => TaskStream;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
-
-// @alpha (undocumented)
-export const Workflow: (workflowProps: WorkflowProps) => JSX.Element | null;
-
-// @alpha (undocumented)
-export type WorkflowProps = {
-  title?: string;
-  description?: string;
-  namespace: string;
-  templateName: string;
-  onError(error: Error | undefined): JSX.Element | null;
-} & Pick<
-  StepperProps,
-  'extensions' | 'FormProps' | 'components' | 'onCreate' | 'initialState'
->;
 
 // (No @packageDocumentation comment for this package)
 ```

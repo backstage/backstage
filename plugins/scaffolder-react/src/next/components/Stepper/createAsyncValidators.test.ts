@@ -56,6 +56,79 @@ describe('createAsyncValidators', () => {
     expect(validators.AddressField).toHaveBeenCalled();
   });
 
+  it('should call the validator function with the correct schema in the context', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          'ui:options': {
+            bob: true,
+          },
+          pattern: 'lols',
+          'ui:field': 'NameField',
+        },
+        address: {
+          type: 'object',
+          'ui:field': 'AddressField',
+          properties: {
+            street: {
+              type: 'string',
+            },
+            postcode: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    };
+
+    const validators = { NameField: jest.fn(), AddressField: jest.fn() };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      name: 'asd',
+      address: { street: 'street', postcode: 'postcode' },
+    });
+
+    expect(validators.NameField).toHaveBeenCalledWith(
+      'asd',
+      expect.anything(),
+      expect.objectContaining({
+        schema: {
+          type: 'string',
+          'ui:options': {
+            bob: true,
+          },
+          pattern: 'lols',
+          'ui:field': 'NameField',
+        },
+      }),
+    );
+
+    expect(validators.AddressField).toHaveBeenCalledWith(
+      { street: 'street', postcode: 'postcode' },
+      expect.anything(),
+      expect.objectContaining({
+        schema: {
+          type: 'object',
+          'ui:field': 'AddressField',
+          properties: {
+            street: {
+              type: 'string',
+            },
+            postcode: {
+              type: 'string',
+            },
+          },
+        },
+      }),
+    );
+  });
+
   it('should return the correct errors to the frontend', async () => {
     const schema: JsonObject = {
       type: 'object',
@@ -153,5 +226,178 @@ describe('createAsyncValidators', () => {
         __errors: ['postcode is missing!', 'street is missing here!'],
       }),
     });
+  });
+
+  it('should run validation on complex nested schemas', async () => {
+    const schema: JsonObject = {
+      title: 'Select component',
+      properties: {
+        actionType: {
+          title: 'action type',
+          type: 'string',
+          description: 'Select the action type',
+          enum: ['newThing', 'existingThing'],
+          enumNames: ['New thing', 'Existing thing'],
+          default: 'newThing',
+        },
+      },
+      required: ['actionType'],
+      dependencies: {
+        actionType: {
+          oneOf: [
+            {
+              properties: {
+                actionType: {
+                  enum: ['newThing'],
+                },
+                general: {
+                  title: 'General',
+                  type: 'object',
+                  properties: {
+                    address: {
+                      type: 'object',
+                      'ui:field': 'AddressField',
+                      properties: {
+                        street: {
+                          type: 'string',
+                        },
+                        postcode: {
+                          type: 'string',
+                        },
+                      },
+                    },
+                    name: {
+                      title: 'Name',
+                      type: 'string',
+                      'ui:field': 'NameField',
+                    },
+                  },
+                },
+              },
+            },
+            {
+              properties: {
+                actionType: {
+                  enum: ['existingThing'],
+                },
+                thingId: {
+                  title: 'Thing id',
+                  type: 'string',
+                  description: 'Enter thing id',
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const AddressField: NextCustomFieldValidator<{
+      street?: string;
+      postcode?: string;
+    }> = (value, { addError }) => {
+      if (!value.postcode) {
+        addError('postcode is missing!');
+      }
+
+      if (!value.street) {
+        addError('street is missing here!');
+      }
+    };
+
+    const NameField: NextCustomFieldValidator<string> = (
+      value,
+      { addError },
+    ) => {
+      if (!value) {
+        addError('something is broken here!');
+      }
+    };
+
+    const validators = {
+      AddressField: AddressField as NextCustomFieldValidator<unknown>,
+      NameField: NameField as NextCustomFieldValidator<unknown>,
+    };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await expect(
+      validate({
+        actionType: 'newThing',
+        general: {
+          address: {
+            street: 'street',
+            postcode: 'postcode',
+          },
+          name: undefined,
+        },
+      }),
+    ).resolves.toEqual({
+      general: {
+        address: expect.objectContaining({
+          __errors: [],
+        }),
+        name: expect.objectContaining({
+          __errors: ['something is broken here!'],
+        }),
+      },
+    });
+  });
+
+  it('should call a validator for array property from a custom field extension', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        tags: {
+          title: 'Tags',
+          type: 'array',
+          items: {
+            type: 'string',
+            'ui:field': 'TagField',
+          },
+        },
+      },
+    };
+
+    const validators = { TagField: jest.fn() };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      tags: ['tag-1', 'tag-2'],
+    });
+
+    expect(validators.TagField).toHaveBeenCalled();
+  });
+
+  it('should does not call a validator if no ui field specified', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        tags: {
+          title: 'Tags',
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+        },
+      },
+    };
+
+    const validators = { TagField: jest.fn() };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      tags: ['asd', 'asd$'],
+    });
+
+    expect(validators.TagField).not.toHaveBeenCalled();
   });
 });

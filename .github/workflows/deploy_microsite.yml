@@ -14,7 +14,8 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=7168
+      DOCUSAURUS_SSR_CONCURRENCY: 5
 
     steps:
       - uses: actions/checkout@v3
@@ -32,7 +33,7 @@ jobs:
         run: yarn install --immutable
       - name: microsite yarn install
         run: yarn install --immutable
-        working-directory: microsite
+        working-directory: microsite-next
       - name: storybook yarn install
         run: yarn install --immutable
         working-directory: storybook
@@ -42,20 +43,20 @@ jobs:
 
       - name: build microsite
         run: yarn build
-        working-directory: microsite
+        working-directory: microsite-next
 
       - name: build storybook
         run: yarn build-storybook
         working-directory: storybook
 
       - name: move storybook dist into microsite
-        run: mv storybook/dist/ microsite/build/backstage/storybook
+        run: mv storybook/dist/ microsite-next/build/storybook
 
       - name: Check the build output
-        run: ls microsite/build/backstage && ls microsite/build/backstage/storybook
+        run: ls microsite-next/build && ls microsite-next/build/storybook
 
       - name: Deploy both microsite and storybook to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           branch: gh-pages
-          folder: microsite/build/backstage
+          folder: microsite-next/build

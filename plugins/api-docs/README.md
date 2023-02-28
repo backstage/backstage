@@ -164,6 +164,7 @@ This also may require you to adjust `Content Security Policy` header settings of
 ```yaml
 script-src:
   - "'self'"
+  - "'unsafe-eval'" # this is required for scaffolder usage, and ajv validation.
   - "'sha256-GeDavzSZ8O71Jggf/pQkKbt52dfZkrdNMQ3e+Ox+AkI='" # oauth2-redirect.html
 ```
 

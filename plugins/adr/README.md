@@ -4,6 +4,8 @@ Welcome to the ADR plugin!
 
 This plugin allows you to browse ADRs associated with your entities as well as a way to discover ADRs across others entities via Backstage Search. Use this to learn from the past experience of other projects to guide your own architecture decisions.
 
+![ADR tab](./docs/adr-tab.png)
+
 ## Setup
 
 1. Install this plugin:
@@ -26,7 +28,7 @@ yarn --cwd packages/app add @backstage/plugin-adr
 import { EntityAdrContent, isAdrAvailable } from '@backstage/plugin-adr';
 
 ...
-
+// Note: Add to any other Pages as well (e.g. defaultEntityPage and websiteEntityPage)
 const serviceEntityPage = (
   <EntityLayout>
     {/* other tabs... */}
@@ -67,16 +69,46 @@ Afterwards, add the following code snippet to use `AdrSearchResultListItem` when
 ```tsx
 // In packages/app/src/components/search/SearchPage.tsx
 import { AdrSearchResultListItem } from '@backstage/plugin-adr';
+import { AdrDocument } from '@backstage/plugin-adr-common';
 
 ...
+// Optional - Add type to side pane
+<SearchType.Accordion
+  name="Result Type"
+  defaultValue="software-catalog"
+  types={[
+    ...
+    {
+      value: 'adr',
+      name: 'Architecture Decision Records',
+      icon: <DocsIcon />,
+    },
+  ]}
+/>
+...
 
-case 'adr':
-  return (
-    <AdrSearchResultListItem
-      key={document.location}
-      result={document}
-    />
-  );
+// In results
+<SearchResult>
+  {({ results }) => (
+    <List>
+      {results.map(({ type, document, highlight, rank }) => {
+        switch (type) {
+          ...
+          case 'adr':
+            return (
+              <AdrSearchResultListItem
+                key={document.location}
+                // Not required if you're leveraging the new search results extensions available in v1.11+
+                // https://backstage.io/docs/features/search/how-to-guides#2-using-an-extension-in-your-backstage-app
+                result={document as AdrDocument}
+              />
+            );
+          ...
+        }
+      })}
+    </List>
+  )}
+</SearchResult>
 ```
 
 ## Custom ADR formats

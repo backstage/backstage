@@ -16,12 +16,12 @@
 import { Knex } from 'knex';
 import {
   FactLifecycle,
-  FactSchema,
   FactSchemaDefinition,
   FlatTechInsightFact,
   TechInsightFact,
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
+import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { rsort } from 'semver';
 import { groupBy, omit } from 'lodash';
 import { DateTime } from 'luxon';

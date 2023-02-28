@@ -52,8 +52,13 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { RefreshStateItem } from './database/types';
 import { DefaultProviderDatabase } from './database/DefaultProviderDatabase';
+import { InputError } from '@backstage/errors';
 
 const voidLogger = getVoidLogger();
+
+type ProgressTrackerWithErrorReports = ProgressTracker & {
+  reportError(unprocessedEntity: Entity, errors: Error[]): void;
+};
 
 class TestProvider implements EntityProvider {
   #connection?: EntityProviderConnection;
@@ -74,10 +79,10 @@ class TestProvider implements EntityProvider {
   }
 }
 
-class ProxyProgressTracker implements ProgressTracker {
-  #inner: ProgressTracker;
+class ProxyProgressTracker implements ProgressTrackerWithErrorReports {
+  #inner: ProgressTrackerWithErrorReports;
 
-  constructor(inner: ProgressTracker) {
+  constructor(inner: ProgressTrackerWithErrorReports) {
     this.#inner = inner;
   }
 
@@ -85,12 +90,16 @@ class ProxyProgressTracker implements ProgressTracker {
     return this.#inner.processStart(item, voidLogger);
   }
 
-  setTracker(tracker: ProgressTracker) {
+  setTracker(tracker: ProgressTrackerWithErrorReports) {
     this.#inner = tracker;
+  }
+
+  reportError(unprocessedEntity: Entity, errors: Error[]): void {
+    this.#inner.reportError(unprocessedEntity, errors);
   }
 }
 
-class NoopProgressTracker implements ProgressTracker {
+class NoopProgressTracker implements ProgressTrackerWithErrorReports {
   static emptyTracking = {
     markFailed() {},
     markProcessorsCompleted() {},
@@ -102,18 +111,20 @@ class NoopProgressTracker implements ProgressTracker {
   processStart() {
     return NoopProgressTracker.emptyTracking;
   }
+
+  reportError() {}
 }
 
-class WaitingProgressTracker implements ProgressTracker {
-  #resolve: (errors: Record<string, Error>) => void;
-  #promise: Promise<Record<string, Error>>;
+class WaitingProgressTracker implements ProgressTrackerWithErrorReports {
+  #resolve: (errors: Record<string, Error[]>) => void;
+  #promise: Promise<Record<string, Error[]>>;
   #counts = new Map<string, number>();
-  #errors = new Map<string, Error>();
+  #errors = new Map<string, Error[]>();
   #inFlight = new Array<Promise<void>>();
 
   constructor(private readonly entityRefs?: Set<string>) {
-    let resolve: (errors: Record<string, Error>) => void;
-    this.#promise = new Promise<Record<string, Error>>(_resolve => {
+    let resolve: (errors: Record<string, Error[]>) => void;
+    this.#promise = new Promise<Record<string, Error[]>>(_resolve => {
       resolve = _resolve;
     });
     this.#resolve = resolve!;
@@ -143,7 +154,7 @@ class WaitingProgressTracker implements ProgressTracker {
     };
     return {
       markFailed: (error: Error) => {
-        this.#errors.set(item.entityRef, error);
+        this.#errors.set(item.entityRef, [error]);
         onDone();
         resolve();
       },
@@ -154,7 +165,6 @@ class WaitingProgressTracker implements ProgressTracker {
         resolve();
       },
       markSuccessfulWithErrors: () => {
-        this.#errors.delete(item.entityRef);
         onDone();
         resolve();
       },
@@ -165,7 +175,11 @@ class WaitingProgressTracker implements ProgressTracker {
     };
   }
 
-  async wait(): Promise<Record<string, Error>> {
+  reportError(unprocessedEntity: Entity, errors: Error[]): void {
+    this.#errors.set(stringifyEntityRef(unprocessedEntity), errors);
+  }
+
+  async wait(): Promise<Record<string, Error[]>> {
     return this.#promise;
   }
 
@@ -191,10 +205,6 @@ class TestHarness {
       location: LocationSpec,
       emit: CatalogProcessorEmit,
     ): Promise<Entity>;
-    onProcessingError?(event: {
-      unprocessedEntity: Entity;
-      errors: Error[];
-    }): void;
   }) {
     const config = new ConfigReader(
       options?.config ?? {
@@ -258,7 +268,11 @@ class TestHarness {
       legacySingleProcessorValidation: false,
     });
     const stitcher = new Stitcher(db, logger);
-    const catalog = new DefaultEntitiesCatalog(db, stitcher);
+    const catalog = new DefaultEntitiesCatalog({
+      database: db,
+      logger,
+      stitcher,
+    });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
     );
@@ -271,13 +285,7 @@ class TestHarness {
       () => createHash('sha1'),
       50,
       event => {
-        if (options?.onProcessingError) {
-          options.onProcessingError(event);
-        } else {
-          throw new Error(
-            `Catalog processing error, ${event.errors.join(', ')}`,
-          );
-        }
+        proxyProgressTracker.reportError(event.unprocessedEntity, event.errors);
       },
       proxyProgressTracker,
     );
@@ -388,7 +396,13 @@ describe('Catalog Backend Integration', () => {
 
     triggerError = true;
 
-    await expect(harness.process()).resolves.toEqual({});
+    await expect(harness.process()).resolves.toEqual({
+      'component:default/test': [
+        new InputError(
+          'Processor Object threw an error while preprocessing; caused by Error: NOPE',
+        ),
+      ],
+    });
 
     await expect(harness.getOutputEntities()).resolves.toEqual({
       'component:default/test': {
@@ -684,5 +698,70 @@ describe('Catalog Backend Integration', () => {
       (await harness.getOutputEntities())['component:default/d'].metadata
         .annotations!['backstage.io/orphan'],
     ).toBeUndefined();
+  });
+
+  it('should reject insecure URLs', async () => {
+    const harness = await TestHarness.create();
+
+    await harness.setInputEntities([
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'test',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+            'backstage.io/view-url': '       javascript:bad()',
+            'backstage.io/edit-url': '       javascript:alert()',
+          },
+        },
+      },
+    ]);
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/test': {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: expect.objectContaining({
+          name: 'test',
+          annotations: expect.objectContaining({
+            'backstage.io/view-url':
+              'https://backstage.io/annotation-rejected-for-security-reasons',
+            'backstage.io/edit-url':
+              'https://backstage.io/annotation-rejected-for-security-reasons',
+          }),
+        }),
+        relations: [],
+      },
+    });
+  });
+
+  it('should reject insecure location URLs', async () => {
+    const harness = await TestHarness.create();
+
+    await harness.setInputEntities([
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'test',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:javascript:bad()',
+            'backstage.io/managed-by-origin-location': 'url:javascript:alert()',
+          },
+        },
+      },
+    ]);
+
+    await expect(harness.process()).resolves.toEqual({
+      'component:default/test': [
+        new TypeError(
+          "Invalid location ref 'url:javascript:bad()', target is a javascript: URL",
+        ),
+      ],
+    });
   });
 });

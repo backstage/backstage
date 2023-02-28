@@ -21,7 +21,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import {
   TestEventBroker,
   TestEventPublisher,

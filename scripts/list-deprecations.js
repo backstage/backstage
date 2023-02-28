@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 const _ = require('lodash');
 const fs = require('fs-extra');

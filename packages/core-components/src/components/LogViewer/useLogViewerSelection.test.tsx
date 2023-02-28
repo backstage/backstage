@@ -20,7 +20,7 @@ import { TestApiProvider, MockErrorApi } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { AnsiLine } from './AnsiProcessor';
 import { useLogViewerSelection } from './useLogViewerSelection';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import copyToClipboard from 'copy-to-clipboard';
 
 // Used by useCopyToClipboard

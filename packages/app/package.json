@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.79",
+  "version": "0.2.81-next.0",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -30,6 +30,7 @@
     "@backstage/plugin-code-coverage": "workspace:^",
     "@backstage/plugin-cost-insights": "workspace:^",
     "@backstage/plugin-dynatrace": "workspace:^",
+    "@backstage/plugin-entity-feedback": "workspace:^",
     "@backstage/plugin-explore": "workspace:^",
     "@backstage/plugin-gcalendar": "workspace:^",
     "@backstage/plugin-gcp-projects": "workspace:^",
@@ -41,6 +42,9 @@
     "@backstage/plugin-kafka": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-lighthouse": "workspace:^",
+    "@backstage/plugin-linguist": "workspace:^",
+    "@backstage/plugin-linguist-common": "workspace:^",
+    "@backstage/plugin-microsoft-calendar": "workspace:^",
     "@backstage/plugin-newrelic": "workspace:^",
     "@backstage/plugin-newrelic-dashboard": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
@@ -56,6 +60,7 @@
     "@backstage/plugin-sentry": "workspace:^",
     "@backstage/plugin-shortcuts": "workspace:^",
     "@backstage/plugin-stack-overflow": "workspace:^",
+    "@backstage/plugin-stackstorm": "workspace:^",
     "@backstage/plugin-tech-insights": "workspace:^",
     "@backstage/plugin-tech-radar": "workspace:^",
     "@backstage/plugin-techdocs": "workspace:^",

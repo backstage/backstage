@@ -25,28 +25,35 @@ import {
 import {
   scaffolderApiRef,
   useTemplateSecrets,
-  NextFieldExtensionOptions,
+  type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
+import {
+  FormProps,
+  Workflow,
+  NextFieldExtensionOptions,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
-import { type FormProps } from '../types';
-import { nextRouteRef } from '../routes';
-import { scaffolderTaskRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { Header, Page } from '@backstage/core-components';
-import { Workflow } from '@backstage/plugin-scaffolder-react';
+import {
+  nextRouteRef,
+  nextScaffolderTaskRouteRef,
+  nextSelectedTemplateRouteRef,
+} from '../routes';
 
-type TemplateWizardPageProps = {
+export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
   FormProps?: FormProps;
 };
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const rootRef = useRouteRef(nextRouteRef);
-  const taskRoute = useRouteRef(scaffolderTaskRouteRef);
+  const taskRoute = useRouteRef(nextScaffolderTaskRouteRef);
   const { secrets } = useTemplateSecrets();
   const scaffolderApi = useApi(scaffolderApiRef);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
-    selectedTemplateRouteRef,
+    nextSelectedTemplateRouteRef,
   );
 
   const templateRef = stringifyEntityRef({
@@ -82,6 +89,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           onError={onError}
           extensions={props.customFieldExtensions}
           FormProps={props.FormProps}
+          layouts={props.layouts}
         />
       </Page>
     </AnalyticsContext>

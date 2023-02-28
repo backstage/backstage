@@ -199,9 +199,21 @@ export async function createTemporaryAppFolderTask(tempDir: string) {
  * @param appDir - location of application to build
  */
 export async function buildAppTask(appDir: string) {
+  process.chdir(appDir);
+
+  await Task.forItem('determining', 'yarn version', async () => {
+    const result = await exec('yarn --version');
+    const yarnVersion = result.stdout?.trim();
+
+    if (yarnVersion && !yarnVersion.startsWith('1.')) {
+      throw new Error(
+        `@backstage/create-app requires Yarn v1, found '${yarnVersion}'. You can migrate the project to Yarn 3 after creation using https://backstage.io/docs/tutorials/yarn-migration`,
+      );
+    }
+  });
+
   const runCmd = async (cmd: string) => {
     await Task.forItem('executing', cmd, async () => {
-      process.chdir(appDir);
       await exec(cmd).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);

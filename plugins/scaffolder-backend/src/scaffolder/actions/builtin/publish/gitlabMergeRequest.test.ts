@@ -16,11 +16,11 @@
 import { getRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import mockFs from 'mock-fs';
 import os from 'os';
 import { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
-import { TemplateAction } from '../../types';
 import { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';
 
 const root = os.platform() === 'win32' ? 'C:\\root' : '/root';

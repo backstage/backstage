@@ -18,7 +18,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
-import { TemplateParameterSchema } from '../../types';
+import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 
 describe('useTemplateSchema', () => {
   it('should generate the correct schema', () => {

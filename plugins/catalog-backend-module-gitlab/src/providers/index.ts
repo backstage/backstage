@@ -15,3 +15,4 @@
  */
 
 export { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';
+export { GitlabOrgDiscoveryEntityProvider } from './GitlabOrgDiscoveryEntityProvider';

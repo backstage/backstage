@@ -1,5 +1,40 @@
 # @backstage/catalog-client
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 8c030b1826: Add `queryEntities` method to `CatalogApi`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/errors@1.1.4
+
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0
+  - @backstage/errors@1.1.4
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/errors@1.1.4
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+
 ## 1.3.0
 
 ### Minor Changes

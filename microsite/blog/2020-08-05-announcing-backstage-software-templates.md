@@ -73,6 +73,6 @@ Backstage ships with four example templates, but since these are likely not the 
 
 We have learned that one of the keys to getting these standards adopted is to keep an open process. Templates are code. By making it clear to your engineers that you are open to pull requests, and that teams with different needs can add their own templates, you are on the path of striking a good balance between autonomy and standardization.
 
-If you have feedback or questions, please open a [GitHub issue](https://github.com/backstage/backstage/issues), ping us on [Discord chat](https://discord.gg/EBHEGzX) or send us an email at [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com) 🙏
+If you have feedback or questions, please open a [GitHub issue](https://github.com/backstage/backstage/issues), ping us on [Discord chat](https://discord.gg/backstage-687207715902193673) or send us an email at [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com) 🙏
 
 To get regular product updates and news about the Backstage community, sign up for the [Backstage newsletter](https://info.backstage.spotify.com/newsletter_subscribe).

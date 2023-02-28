@@ -15,7 +15,7 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import yaml from 'yaml';
 
 const id = 'catalog:fetch';
@@ -93,6 +93,11 @@ export function createFetchCatalogEntityAction(options: {
           throw e;
         }
       }
+
+      if (!entity && !optional) {
+        throw new Error(`Entity ${entityRef} not found`);
+      }
+
       ctx.output('entity', entity ?? null);
     },
   });

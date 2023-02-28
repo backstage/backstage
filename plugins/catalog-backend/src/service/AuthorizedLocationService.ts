@@ -21,7 +21,7 @@ import {
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
   catalogLocationReadPermission,
-} from '@backstage/plugin-catalog-common';
+} from '@backstage/plugin-catalog-common/alpha';
 import {
   AuthorizeResult,
   PermissionEvaluator,

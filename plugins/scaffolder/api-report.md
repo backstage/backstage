@@ -10,26 +10,25 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { createScaffolderFieldExtension as createScaffolderFieldExtension_2 } from '@backstage/plugin-scaffolder-react';
+import { createScaffolderLayout as createScaffolderLayout_2 } from '@backstage/plugin-scaffolder-react';
 import { CustomFieldExtensionSchema as CustomFieldExtensionSchema_2 } from '@backstage/plugin-scaffolder-react';
 import { CustomFieldValidator as CustomFieldValidator_2 } from '@backstage/plugin-scaffolder-react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldExtensionComponent as FieldExtensionComponent_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionComponentProps as FieldExtensionComponentProps_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions as FieldExtensionOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/core';
-import type { FormProps as FormProps_2 } from '@rjsf/core';
-import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-react';
+import { LayoutTemplate as LayoutTemplate_2 } from '@backstage/plugin-scaffolder-react';
 import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-scaffolder-react';
 import { LogEvent as LogEvent_2 } from '@backstage/plugin-scaffolder-react';
 import { Observable } from '@backstage/types';
 import { PathParams } from '@backstage/core-plugin-api';
-import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -56,10 +55,8 @@ import { z } from 'zod';
 // @public @deprecated (undocumented)
 export const createScaffolderFieldExtension: typeof createScaffolderFieldExtension_2;
 
-// @public
-export function createScaffolderLayout<TInputProps = unknown>(
-  options: LayoutOptions,
-): Extension<LayoutComponent<TInputProps>>;
+// @public @deprecated (undocumented)
+export const createScaffolderLayout: typeof createScaffolderLayout_2;
 
 // @public @deprecated (undocumented)
 export type CustomFieldExtensionSchema = CustomFieldExtensionSchema_2;
@@ -155,25 +152,11 @@ export interface FieldSchema<TReturn, TUiOptions> {
   readonly uiOptionsType: TUiOptions;
 }
 
-// @alpha @deprecated
-export type FormProps = Pick<
-  FormProps_3,
-  'transformErrors' | 'noHtml5Validate'
->;
+// @public @deprecated (undocumented)
+export type LayoutOptions = LayoutOptions_2;
 
-// @public
-export type LayoutComponent<_TInputProps> = () => null;
-
-// @public
-export interface LayoutOptions<P = any> {
-  // (undocumented)
-  component: LayoutTemplate<P>;
-  // (undocumented)
-  name: string;
-}
-
-// @public
-export type LayoutTemplate<T = any> = FormProps_2<T>['ObjectFieldTemplate'];
+// @public @deprecated (undocumented)
+export type LayoutTemplate = LayoutTemplate_2;
 
 // @public @deprecated (undocumented)
 export type ListActionsResponse = ListActionsResponse_2;
@@ -193,36 +176,6 @@ export function makeFieldSchemaFromZod<
   TUiOptionsSchema extends z.ZodType<any, any, infer IUiOptions>
     ? IUiOptions
     : never
->;
-
-// @alpha (undocumented)
-export const nextRouteRef: RouteRef<undefined>;
-
-// @alpha
-export type NextRouterProps = {
-  components?: {
-    TemplateCardComponent?: React_2.ComponentType<{
-      template: TemplateEntityV1beta3;
-    }>;
-    TaskPageComponent?: React_2.ComponentType<{}>;
-  };
-  groups?: TemplateGroupFilter[];
-  FormProps?: FormProps;
-};
-
-// @alpha
-export const NextScaffolderPage: (
-  props: PropsWithChildren<NextRouterProps>,
-) => JSX.Element;
-
-// @alpha (undocumented)
-export const nextScaffolderTaskRouteRef: SubRouteRef<
-  PathParams<'/tasks/:taskId'>
->;
-
-// @alpha (undocumented)
-export const nextSelectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:namespace/:templateName'>
 >;
 
 // @public
@@ -453,8 +406,8 @@ export type ScaffolderGetIntegrationsListOptions =
 export type ScaffolderGetIntegrationsListResponse =
   ScaffolderGetIntegrationsListResponse_2;
 
-// @public
-export const ScaffolderLayouts: React.ComponentType;
+// @public @deprecated (undocumented)
+export const ScaffolderLayouts: ComponentType<{}>;
 
 // @public @deprecated (undocumented)
 export type ScaffolderOutputlink = ScaffolderOutputLink;
@@ -512,12 +465,6 @@ export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
 // @public
 export type TaskPageProps = {
   loadingText?: string;
-};
-
-// @alpha (undocumented)
-export type TemplateGroupFilter = {
-  title?: React_2.ReactNode;
-  filter: (entity: Entity) => boolean;
 };
 
 // @public @deprecated (undocumented)

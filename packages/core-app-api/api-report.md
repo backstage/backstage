@@ -22,6 +22,7 @@ import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
+import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
@@ -281,6 +282,25 @@ export class BitbucketAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T;
 }
+
+// @public
+export class BitbucketServerAuth {
+  // (undocumented)
+  static create(
+    options: OAuthApiCreateOptions,
+  ): typeof bitbucketServerAuthApiRef.T;
+}
+
+// @public
+export type BitbucketServerSession = {
+  providerInfo: {
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt?: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentityResponse;
+};
 
 // @public
 export type BitbucketSession = {

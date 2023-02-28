@@ -19,6 +19,37 @@ import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
 import { V1StatefulSet } from '@kubernetes/client-node';
 
+// @public
+export const ANNOTATION_KUBERNETES_API_SERVER = 'kubernetes.io/api-server';
+
+// @public
+export const ANNOTATION_KUBERNETES_API_SERVER_CA =
+  'kubernetes.io/api-server-certificate-authority';
+
+// @public
+export const ANNOTATION_KUBERNETES_AUTH_PROVIDER =
+  'kubernetes.io/auth-provider';
+
+// @public
+export const ANNOTATION_KUBERNETES_DASHBOARD_APP =
+  'kubernetes.io/dashboard-app';
+
+// @public
+export const ANNOTATION_KUBERNETES_DASHBOARD_URL =
+  'kubernetes.io/dashboard-url';
+
+// @public
+export const ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER =
+  'kubernetes.io/oidc-token-provider';
+
+// @public
+export const ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP =
+  'kubernetes.io/skip-metrics-lookup';
+
+// @public
+export const ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY =
+  'kubernetes.io/skip-tls-verify';
+
 // @public (undocumented)
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws' | 'azure';
 
@@ -140,7 +171,7 @@ export type FetchResponse =
   | ServiceFetchResponse
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
-  | LimitRangeFetchReponse
+  | LimitRangeFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
@@ -205,7 +236,7 @@ export interface KubernetesRequestBody {
 }
 
 // @public (undocumented)
-export interface LimitRangeFetchReponse {
+export interface LimitRangeFetchResponse {
   // (undocumented)
   resources: Array<V1LimitRange>;
   // (undocumented)

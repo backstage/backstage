@@ -15,13 +15,13 @@
  */
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { GerritEventRouter } from '../router/GerritEventRouter';
 
 /**
  * Module for the events-backend plugin, adding an event router for Gerrit.
  *
- * Registers the {@link GerritEventRouter}.
+ * Registers the `GerritEventRouter`.
  *
  * @alpha
  */

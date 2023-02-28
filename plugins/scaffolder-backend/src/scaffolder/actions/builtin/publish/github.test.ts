@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TemplateAction } from '../../types';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 jest.mock('../helpers');
 
@@ -45,6 +45,7 @@ const mockOctokit = {
       replaceAllTopics: jest.fn(),
     },
     teams: {
+      getByName: jest.fn(),
       addOrUpdateRepoPermissionsInOrg: jest.fn(),
     },
   },
@@ -96,9 +97,39 @@ describe('publish:github', () => {
     });
   });
 
+  it('should fail to create if the team is not found in the org', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.teams.getByName.mockRejectedValue({
+      response: {
+        status: 404,
+        data: {
+          message: 'Not Found',
+          documentation_url:
+            'https://docs.github.com/en/rest/teams/teams#add-or-update-team-repository-permissions',
+        },
+      },
+    });
+
+    await expect(action.handler(mockContext)).rejects.toThrow(
+      "Received 'Not Found' from the API;",
+    );
+
+    expect(mockOctokit.rest.repos.createInOrg).not.toHaveBeenCalled();
+  });
+
   it('should call the githubApis with the correct values for createInOrg', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.teams.getByName.mockResolvedValue({
+      data: {
+        name: 'blam',
+        id: 42,
+      },
     });
 
     mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
@@ -516,6 +547,30 @@ describe('publish:github', () => {
       repo: 'repo',
       permission: 'admin',
     });
+  });
+
+  it('should provide an adequate failure message when adding access', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.teams.getByName.mockRejectedValue({
+      response: {
+        status: 404,
+        data: {
+          message: 'Not Found',
+          documentation_url:
+            'https://docs.github.com/en/rest/teams/teams#add-or-update-team-repository-permissions',
+        },
+      },
+    });
+    await expect(action.handler(mockContext)).rejects.toThrow(
+      "Received 'Not Found' from the API;",
+    );
+
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).not.toHaveBeenCalled();
   });
 
   it('should add outside collaborators when provided', async () => {

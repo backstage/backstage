@@ -25,6 +25,7 @@ import {
   GitlabAuth,
   MicrosoftAuth,
   BitbucketAuth,
+  BitbucketServerAuth,
   OAuthRequestManager,
   WebStorage,
   UrlPatternDiscovery,
@@ -53,6 +54,7 @@ import {
   configApiRef,
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
+  bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
@@ -224,6 +226,19 @@ export const apis = [
         oauthRequestApi,
         defaultScopes: ['team'],
         environment: configApi.getOptionalString('auth.environment'),
+      }),
+  }),
+  createApiFactory({
+    api: bitbucketServerAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      BitbucketServerAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        defaultScopes: ['REPO_READ'],
       }),
   }),
   createApiFactory({

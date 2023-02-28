@@ -25,10 +25,11 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../../routes';
 import {
-  Button,
+  LinkButton,
   EmptyState,
   Table,
   TableColumn,
+  TableOptions,
   TableProps,
 } from '@backstage/core-components';
 import { actionFactories } from './actions';
@@ -47,6 +48,7 @@ export type DocsTableProps = {
   loading?: boolean | undefined;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
+  options?: TableOptions<DocsTableRow>;
 };
 
 /**
@@ -55,7 +57,7 @@ export type DocsTableProps = {
  * @public
  */
 export const DocsTable = (props: DocsTableProps) => {
-  const { entities, title, loading, columns, actions } = props;
+  const { entities, title, loading, columns, actions, options } = props;
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
@@ -102,6 +104,7 @@ export const DocsTable = (props: DocsTableProps) => {
             pageSize: 20,
             search: true,
             actionsColumnIndex: -1,
+            ...options,
           }}
           data={documents}
           columns={columns || defaultColumns}
@@ -118,13 +121,13 @@ export const DocsTable = (props: DocsTableProps) => {
           title="No documents to show"
           description="Create your own document. Check out our Getting Started Information"
           action={
-            <Button
+            <LinkButton
               color="primary"
               to="https://backstage.io/docs/features/techdocs/getting-started"
               variant="contained"
             >
               DOCS
-            </Button>
+            </LinkButton>
           }
         />
       )}

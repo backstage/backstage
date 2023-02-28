@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
+// Think this file will probably go away once we move to backend system
+// And restructure into the /dev folder
+// eslint-disable-next-line @backstage/no-undeclared-imports
+import { createBackend } from '@backstage/backend-defaults';
 import {
-  databaseFactory,
-  discoveryFactory,
-  httpRouterFactory,
-  lifecycleFactory,
-  loggerFactory,
-  permissionsFactory,
-  rootLoggerFactory,
-  schedulerFactory,
-  tokenManagerFactory,
-  urlReaderFactory,
-} from '@backstage/backend-app-api';
-import { coreServices } from '@backstage/backend-plugin-api';
-import { startTestBackend } from '@backstage/backend-test-utils';
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-import {
-  IncrementalEntityProvider,
-  incrementalIngestionEntityProviderCatalogModule,
-} from '.';
+import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
+import { IncrementalEntityProvider } from '.';
+import { incrementalIngestionEntityProviderCatalogModule } from './alpha';
 
 const provider: IncrementalEntityProvider<number, {}> = {
   getProviderName: () => 'test-provider',
@@ -60,37 +51,33 @@ async function main() {
     },
   };
 
-  await startTestBackend({
+  const backend = createBackend({
     services: [
-      [coreServices.config, new ConfigReader(config)],
-      databaseFactory(),
-      discoveryFactory(),
-      httpRouterFactory(),
-      lifecycleFactory(),
-      loggerFactory(),
-      permissionsFactory(),
-      rootLoggerFactory(),
-      schedulerFactory(),
-      tokenManagerFactory(),
-      urlReaderFactory(),
-    ],
-    extensionPoints: [],
-    features: [
-      catalogPlugin(),
-      incrementalIngestionEntityProviderCatalogModule({
-        providers: [
-          {
-            provider: provider,
-            options: {
-              burstInterval: { seconds: 1 },
-              burstLength: { seconds: 10 },
-              restLength: { seconds: 10 },
-            },
-          },
-        ],
+      createServiceFactory({
+        service: coreServices.config,
+        deps: {},
+        factory: () => new ConfigReader(config),
       }),
     ],
   });
+
+  backend.add(catalogPlugin());
+  backend.add(
+    incrementalIngestionEntityProviderCatalogModule({
+      providers: [
+        {
+          provider: provider,
+          options: {
+            burstInterval: { seconds: 1 },
+            burstLength: { seconds: 10 },
+            restLength: { seconds: 10 },
+          },
+        },
+      ],
+    }),
+  );
+
+  await backend.start();
 }
 
 main().catch(error => {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import {
   PluginEndpointDiscovery,
   TokenManager,
@@ -23,16 +24,14 @@ import {
   CatalogClient,
   GetEntitiesRequest,
 } from '@backstage/catalog-client';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-import {
-  catalogEntityReadPermission,
-  CatalogEntityDocument,
-} from '@backstage/plugin-catalog-common';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
-import { getDocumentText } from './util';
+import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
+import { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 /** @public */
 export type DefaultCatalogCollatorFactoryOptions = {
@@ -42,11 +41,12 @@ export type DefaultCatalogCollatorFactoryOptions = {
   filter?: GetEntitiesRequest['filter'];
   batchSize?: number;
   catalogClient?: CatalogApi;
+  entityTransformer?: CatalogCollatorEntityTransformer;
 };
 
 /** @public */
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
-  public readonly type: string = 'software-catalog';
+  public readonly type = 'software-catalog';
   public readonly visibilityPermission: Permission =
     catalogEntityReadPermission;
 
@@ -55,6 +55,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   private batchSize: number;
   private readonly catalogClient: CatalogApi;
   private tokenManager: TokenManager;
+  private entityTransformer: CatalogCollatorEntityTransformer;
 
   static fromConfig(
     _config: Config,
@@ -71,6 +72,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
       filter,
       catalogClient,
       tokenManager,
+      entityTransformer,
     } = options;
 
     this.locationTemplate =
@@ -80,21 +82,12 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
     this.tokenManager = tokenManager;
+    this.entityTransformer =
+      entityTransformer ?? defaultCatalogCollatorEntityTransformer;
   }
 
   async getCollator(): Promise<Readable> {
     return Readable.from(this.execute());
-  }
-
-  private applyArgsToFormat(
-    format: string,
-    args: Record<string, string>,
-  ): string {
-    let formatted = format;
-    for (const [key, value] of Object.entries(args)) {
-      formatted = formatted.replace(`:${key}`, value);
-    }
-    return formatted.toLowerCase();
   }
 
   private async *execute(): AsyncGenerator<CatalogEntityDocument> {
@@ -123,24 +116,30 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
 
       for (const entity of entities) {
         yield {
-          title: entity.metadata.title ?? entity.metadata.name,
+          ...this.entityTransformer(entity),
+          authorization: {
+            resourceRef: stringifyEntityRef(entity),
+          },
           location: this.applyArgsToFormat(this.locationTemplate, {
             namespace: entity.metadata.namespace || 'default',
             kind: entity.kind,
             name: entity.metadata.name,
           }),
-          text: getDocumentText(entity),
-          componentType: entity.spec?.type?.toString() || 'other',
-          type: entity.spec?.type?.toString() || 'other',
-          namespace: entity.metadata.namespace || 'default',
-          kind: entity.kind,
-          lifecycle: (entity.spec?.lifecycle as string) || '',
-          owner: (entity.spec?.owner as string) || '',
-          authorization: {
-            resourceRef: stringifyEntityRef(entity),
-          },
         };
       }
     }
+  }
+
+  private applyArgsToFormat(
+    format: string,
+    args: Record<string, string>,
+  ): string {
+    let formatted = format;
+
+    for (const [key, value] of Object.entries(args)) {
+      formatted = formatted.replace(`:${key}`, value);
+    }
+
+    return formatted.toLowerCase();
   }
 }

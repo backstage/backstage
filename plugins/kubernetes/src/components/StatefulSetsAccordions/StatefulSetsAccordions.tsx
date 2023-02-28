@@ -19,7 +19,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Divider,
   Grid,
   Typography,
 } from '@material-ui/core';
@@ -69,14 +68,12 @@ const StatefulSetSummary = ({
     <Grid
       container
       direction="row"
-      justifyContent="flex-start"
+      justifyContent="space-between"
       alignItems="center"
+      spacing={0}
     >
-      <Grid xs={3} item>
+      <Grid xs={6} item>
         <StatefulSetDrawer statefulset={statefulset} />
-      </Grid>
-      <Grid item xs={1}>
-        <Divider style={{ height: '5em' }} orientation="vertical" />
       </Grid>
       {hpa && (
         <Grid item xs={3}>
@@ -118,6 +115,7 @@ const StatefulSetSummary = ({
         direction="column"
         justifyContent="flex-start"
         alignItems="flex-start"
+        spacing={0}
       >
         <Grid item>
           <StatusOK>{numberOfCurrentPods} pods</StatusOK>
@@ -149,7 +147,7 @@ const StatefulSetAccordion = ({
   );
 
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
+    <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <StatefulSetSummary
           statefulset={statefulset}

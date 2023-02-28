@@ -24,4 +24,3 @@
  */
 
 export { AwsSqsConsumingEventPublisher } from './publisher/AwsSqsConsumingEventPublisher';
-export { awsSqsConsumingEventPublisherEventsModule } from './service/AwsSqsConsumingEventPublisherEventsModule';

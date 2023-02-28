@@ -130,6 +130,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
     return {
       targetDir: pkg.dir,
+      packageJson: pkg.packageJson,
       outputs,
       logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
       minify: buildOptions.minify,

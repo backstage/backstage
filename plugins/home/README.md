@@ -9,7 +9,7 @@ For App Integrators, the system is designed to be composable to give total freed
 If you have a standalone app (you didn't clone this repo), then do
 
 ```bash
-# From the Backstage repository root
+# From your Backstage root directory
 yarn add --cwd packages/app @backstage/plugin-home
 ```
 

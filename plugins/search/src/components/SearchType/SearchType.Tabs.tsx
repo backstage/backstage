@@ -22,13 +22,12 @@ import { makeStyles, Tab, Tabs } from '@material-ui/core';
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   tabs: {
     borderBottom: `1px solid ${theme.palette.textVerySubtle}`,
-    padding: theme.spacing(0, 4),
   },
   tab: {
     height: '50px',
     fontWeight: theme.typography.fontWeightBold,
     fontSize: theme.typography.pxToRem(13),
-    color: theme.palette.textSubtle,
+    color: theme.palette.text.primary,
     minWidth: '130px',
   },
 }));
@@ -72,6 +71,7 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
 
   return (
     <Tabs
+      aria-label="List of search types tabs"
       className={classes.tabs}
       indicatorColor="primary"
       value={types.length === 0 ? '' : types[0]}
@@ -81,7 +81,6 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
         <Tab
           key={idx}
           className={classes.tab}
-          disableRipple
           label={type.name}
           value={type.value}
         />

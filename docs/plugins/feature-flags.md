@@ -56,7 +56,7 @@ The users selection is saved in the users browsers local storage. Once toggled i
 The easiest way to control content based on the state of a feature flag is to use the [FeatureFlagged](https://backstage.io/docs/reference/core-app-api.featureflagged) component.
 
 ```ts
-import { FeatureFlagged } from '@backstage/core-app-api'
+import { FeatureFlagged } from '@backstage/core-app-api';
 
 ...
 

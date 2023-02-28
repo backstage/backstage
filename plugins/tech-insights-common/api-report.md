@@ -47,5 +47,22 @@ export type FactResponse = {
   };
 };
 
+// @public
+export type FactSchema = {
+  [name: string]: {
+    type:
+      | 'integer'
+      | 'float'
+      | 'string'
+      | 'boolean'
+      | 'datetime'
+      | 'set'
+      | 'object';
+    description: string;
+    since?: string;
+    metadata?: Record<string, any>;
+  };
+};
+
 // (No @packageDocumentation comment for this package)
 ```

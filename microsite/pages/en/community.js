@@ -62,7 +62,9 @@ const Background = props => {
                 <li>
                   <Block.Paragraph style={{ marginBottom: '0' }}>
                     Chat and get support on our{' '}
-                    <a href="https://discord.gg/MUpMjP2">Discord</a>
+                    <a href="https://discord.gg/backstage-687207715902193673">
+                      Discord
+                    </a>
                   </Block.Paragraph>
                 </li>
                 <li>

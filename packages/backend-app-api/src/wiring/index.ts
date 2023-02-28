@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-export type {
-  Backend,
-  CreateSpecializedBackendOptions,
-  ServiceOrExtensionPoint,
-} from './types';
+export type { Backend, CreateSpecializedBackendOptions } from './types';
 export { createSpecializedBackend } from './createSpecializedBackend';

@@ -1,5 +1,72 @@
 # @backstage/cli
 
+## 0.22.4-next.0
+
+### Patch Changes
+
+- b4cd145b57: Added a new `migrate package-exports` command that synchronizes package exports fields in all `package.json`s.
+- 8bf24946c6: Adjust express dependencies to be the same as the rest of the project
+- 17271841de: Updated frontend plugin template to use some more recent features
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.2-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2
+
+### Patch Changes
+
+- 561df21ea3: The `backstage-cli repo test` command now sets a default Jest `--workerIdleMemoryLimit` of 1GB. If needed to ensure that tests are not run in band, `--maxWorkers=2` is set as well. This is the recommended workaround for dealing with Jest workers leaking memory and eventually hitting the heap limit.
+- 2815981057: Show module name causing error during build
+- dd8a9afe66: Replaced several monorepo lint rules with new rules from `@backstage/eslint-plugin`. See the [README](https://github.com/import-js/eslint-plugin-import/blob/main/packages/eslint-plugin/README.md) for a full list of rules.
+- a9c50af76b: Fixed Webpack loader patterns so that they properly match the file suffix only.
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- 6d3abfded1: Switch to inline source maps for test transpilation, simplifying editor setups.
+- 90616df9a8: Added an experimental mode for the `package start` command for backend packages. Enabled by setting `EXPERIMENTAL_BACKEND_START`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2-next.1
+
+### Patch Changes
+
+- dd8a9afe66: Replaced several monorepo lint rules with new rules from `@backstage/eslint-plugin`. See the [README](https://github.com/import-js/eslint-plugin-import/blob/main/packages/eslint-plugin/README.md) for a full list of rules.
+- 90616df9a8: Added an experimental mode for the `package start` command for backend packages. Enabled by setting `EXPERIMENTAL_BACKEND_START`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.0-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2-next.0
+
+### Patch Changes
+
+- 561df21ea3: The `backstage-cli repo test` command now sets a default Jest `--workerIdleMemoryLimit` of 1GB. If needed to ensure that tests are not run in band, `--maxWorkers=2` is set as well. This is the recommended workaround for dealing with Jest workers leaking memory and eventually hitting the heap limit.
+- 2815981057: Show module name causing error during build
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- 6d3abfded1: Switch to inline source maps for test transpilation, simplifying editor setups.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
 ## 0.22.1
 
 ### Patch Changes

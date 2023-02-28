@@ -29,10 +29,8 @@ import {
   CatalogClient,
   GetEntitiesRequest,
 } from '@backstage/catalog-client';
-import {
-  catalogEntityReadPermission,
-  CatalogEntityDocument,
-} from '@backstage/plugin-catalog-common';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { Permission } from '@backstage/plugin-permission-common';
 
 /**

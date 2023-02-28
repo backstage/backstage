@@ -100,7 +100,7 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
 Pass the `permissions` object to the plugin in `packages/backend/src/plugins/todolist.ts`:
 
 ```diff
-  import { IdentityClient } from '@backstage/plugin-auth-backend';
+  import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
   import { createRouter } from '@internal/plugin-todo-list-backend';
   import { Router } from 'express';
   import { PluginEnvironment } from '../types';
@@ -112,7 +112,7 @@ Pass the `permissions` object to the plugin in `packages/backend/src/plugins/tod
   }: PluginEnvironment): Promise<Router> {
     return await createRouter({
       logger,
-      identity: new IdentityClient({
+      identity: DefaultIdentityClient.create({
         discovery,
         issuer: await discovery.getExternalBaseUrl('auth'),
       }),
@@ -146,7 +146,7 @@ In order to test the logic above, the integrators of your backstage instance nee
 -   async handle(): Promise<PolicyDecision> {
 +   async handle(
 +     request: PolicyQuery,
-+     user?: BackstageIdentityResponse,
++     _user?: BackstageIdentityResponse,
 +   ): Promise<PolicyDecision> {
 +     if (isPermission(request.permission, todoListCreatePermission)) {
 +       return {
@@ -204,7 +204,7 @@ First we'll clean up the `plugins/todo-list-backend/src/service/router.test.ts`:
       const router = await createRouter({
         logger: getVoidLogger(),
         identity: {} as DefaultIdentityClient,
-+       permissions: toPermissionEvaluator,
++       permissions: permissionEvaluator,
       });
       app = express().use(router);
     });
@@ -235,7 +235,7 @@ Then we want to update the `plugins/todo-list-backend/src/service/standaloneServ
 +   ServerTokenManager,
   } from '@backstage/backend-common';
   import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-  import { ServerPermissionClient } from '@backstage/plugin-permission-node';
++ import { ServerPermissionClient } from '@backstage/plugin-permission-node';
   import { Server } from 'http';
   import { Logger } from 'winston';
   import { createRouter } from './router';
@@ -283,6 +283,46 @@ Then we want to update the `plugins/todo-list-backend/src/service/standaloneServ
   }
 
   module.hot?.accept();
+```
+
+Finally, we need to update `plugins/todo-list-backend/src/plugin.ts`:
+
+```diff
+  import { loggerToWinstonLogger } from '@backstage/backend-common';
+  import {
+    coreServices,
+    createBackendPlugin,
+  } from '@backstage/backend-plugin-api';
+  import { createRouter } from './service/router';
+
+  /**
+  * The example TODO list backend plugin.
+  *
+  * @alpha
+  */
+  export const exampleTodoListPlugin = createBackendPlugin({
+    pluginId: 'exampleTodoList',
+    register(env) {
+      env.registerInit({
+        deps: {
+          identity: coreServices.identity,
+          logger: coreServices.logger,
+          httpRouter: coreServices.httpRouter,
++         permissions: coreServices.permissions,
+        },
+-       async init({ identity, logger, httpRouter }) {
++       async init({ identity, logger, httpRouter, permissions }) {
+          httpRouter.use(
+            await createRouter({
+              identity,
+              logger: loggerToWinstonLogger(logger),
+              permissions,
+            }),
+          );
+        },
+      });
+    },
+  });
 ```
 
 Now when you run `yarn tsc` you should have no more errors.

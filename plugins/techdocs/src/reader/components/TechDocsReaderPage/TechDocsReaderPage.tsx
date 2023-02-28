@@ -102,6 +102,7 @@ CONFIGURATION 4: <TechDocsReaderPage> and provided content in <Route>
     <ExpandableNavigation />
     <ReportIssue />
     <TextSize />
+    <LightBox />
   </TechDocsAddons>
 </Route>
 

@@ -1,5 +1,104 @@
 # @backstage/plugin-catalog-react
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 0a5b73b292: Add possibility to re-use EntityPicker for filters with multiple select.
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.12-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/theme@0.2.17
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.11-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- 929e1afe1b: Add `initialFilter` prop to EntityLifecyclePicker. This allows you to set an initial lifecycle for the catalog.
+- fab93c2fe8: Aligned buttons on "Unregister entity" dialog to keep them on the same line
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.11
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.10
+
+## 1.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.9
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- fab93c2fe8: Aligned buttons on "Unregister entity" dialog to keep them on the same line
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.9
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 929e1afe1b: Add `initialFilter` prop to EntityLifecyclePicker. This allows you to set an initial lifecycle for the catalog.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+
 ## 1.2.4
 
 ### Patch Changes

@@ -27,7 +27,7 @@ export const BADGE_STYLES = [
 ] as const;
 
 /** @public */
-export type BadgeStyle = typeof BADGE_STYLES[number];
+export type BadgeStyle = (typeof BADGE_STYLES)[number];
 
 /** @public */
 export interface Badge {

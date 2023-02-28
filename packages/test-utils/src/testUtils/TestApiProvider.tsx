@@ -91,6 +91,10 @@ export class TestApiRegistry implements ApiHolder {
  * It lets you provide any number of API implementations, without necessarily
  * having to fully implement each of the APIs.
  *
+ * @remarks
+ * todo: remove this remark tag and ship in the api-reference. There's some odd formatting going on when this is made into a markdown doc, that there's no line break between
+ * the emmited <p> for To the following </p> so what happens is that when parsing in docusaurus, it thinks that the code block is mdx rather than a code
+ * snippet. Just ommiting this from the report for now until we can work out how to fix laterr.
  * A migration from `ApiRegistry` and `ApiProvider` might look like this, from:
  *
  * ```tsx
@@ -100,7 +104,7 @@ export class TestApiRegistry implements ApiHolder {
  *       [identityApiRef, mockIdentityApi as unknown as IdentityApi]
  *     ])}
  *   >
- *     {...}
+ *    ...
  *   </ApiProvider>
  * )
  * ```
@@ -110,7 +114,7 @@ export class TestApiRegistry implements ApiHolder {
  * ```tsx
  * renderInTestApp(
  *   <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
- *     {...}
+ *     ...
  *   </TestApiProvider>
  * )
  * ```
@@ -119,7 +123,7 @@ export class TestApiRegistry implements ApiHolder {
  * implements a subset of the `IdentityApi`.
  *
  * @public
- **/
+ */
 export const TestApiProvider = <T extends any[]>(
   props: TestApiProviderProps<T>,
 ) => {

@@ -24,7 +24,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 
 /**
  *
- * @alpha
+ * @public
  */
 export interface RouterOptions {
   logger: Logger;
@@ -47,7 +47,7 @@ export interface RouterOptions {
  * }).build();
  * ```
  *
- * @alpha
+ * @public
  */
 export async function createRouter(
   options: RouterOptions,

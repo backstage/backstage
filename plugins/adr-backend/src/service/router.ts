@@ -19,6 +19,7 @@ import { NotModifiedError, stringifyError } from '@backstage/errors';
 import { Logger } from 'winston';
 import express from 'express';
 import Router from 'express-promise-router';
+import { madrParser } from '../search/madrParser';
 
 /** @public */
 export type AdrRouterOptions = {
@@ -59,13 +60,20 @@ export async function createRouter(
         etag: cachedTree?.etag,
       });
       const files = await treeGetResponse.files();
-      const data = files.map(file => {
-        return {
-          type: 'file',
-          name: file.path.substring(file.path.lastIndexOf('/') + 1),
-          path: file.path,
-        };
-      });
+      const data = await Promise.all(
+        files
+          .map(async file => {
+            const fileContent = await file.content();
+            const adrInfo = madrParser(fileContent.toString());
+            return {
+              type: 'file',
+              name: file.path.substring(file.path.lastIndexOf('/') + 1),
+              path: file.path,
+              ...adrInfo,
+            };
+          })
+          .reverse(),
+      );
 
       await cacheClient.set(urlToProcess, {
         data,

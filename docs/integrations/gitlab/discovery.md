@@ -21,10 +21,10 @@ catalog:
     gitlab:
       yourProviderId:
         host: gitlab-host # Identifies one of the hosts set up in the integrations
-        branch: main # Optional. Uses `master` as default
-        group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole project will be scanned
+        fallbackBranch: main # Optional. Fallback to be used if there is no default branch configured at the Gitlab repository. It is only used, if `branch` is undefined. Uses `master` as default
+        group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
-        projectPattern: /[\s\S]*/ # Optional. Filters found projects based on provided patter. Defaults to `/[\s\S]*/`, what means to not filter anything
+        projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
         schedule: # optional; same options as in TaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
@@ -36,7 +36,7 @@ As this provider is not one of the default providers, you will first need to ins
 the gitlab catalog plugin:
 
 ```bash
-# From the Backstage root directory
+# From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-gitlab
 ```
 

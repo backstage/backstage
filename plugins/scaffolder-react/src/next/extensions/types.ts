@@ -22,7 +22,7 @@ import {
 } from '@rjsf/utils';
 import { PropsWithChildren } from 'react';
 import { JsonObject } from '@backstage/types';
-import { CustomFieldExtensionSchema } from '../../extensions';
+import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
 
 /**
  * Type for Field Extension Props for RJSF v5
@@ -46,7 +46,11 @@ export interface NextFieldExtensionComponentProps<
 export type NextCustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
   field: FieldValidationV5,
-  context: { apiHolder: ApiHolder; formData: JsonObject },
+  context: {
+    apiHolder: ApiHolder;
+    formData: JsonObject;
+    schema: JsonObject;
+  },
 ) => void | Promise<void>;
 
 /**

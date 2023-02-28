@@ -68,6 +68,11 @@ export interface BaseElasticSearchClientOptions {
 }
 
 // @public (undocumented)
+export function decodeElasticSearchPageCursor(pageCursor?: string): {
+  page: number;
+};
+
+// @public (undocumented)
 export interface ElasticSearchAgentOptions {
   // (undocumented)
   keepAlive?: boolean;

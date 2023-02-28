@@ -18,7 +18,7 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import yaml from 'yaml';
 
 const id = 'catalog:register';

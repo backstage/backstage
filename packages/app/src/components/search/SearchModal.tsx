@@ -21,20 +21,13 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  List,
   makeStyles,
   Paper,
-  useTheme,
 } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import BuildIcon from '@material-ui/icons/Build';
 import LaunchIcon from '@material-ui/icons/Launch';
-import {
-  CatalogIcon,
-  DocsIcon,
-  Link,
-  useContent,
-} from '@backstage/core-components';
+import { CatalogIcon, DocsIcon, Link } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
 import {
@@ -44,9 +37,8 @@ import {
 import { ToolSearchResultListItem } from '@backstage/plugin-explore';
 import { searchPlugin, SearchType } from '@backstage/plugin-search';
 import {
-  DefaultResultListItem,
-  SearchFilter,
   SearchBar,
+  SearchFilter,
   SearchResult,
   SearchResultPager,
   useSearch,
@@ -80,9 +72,6 @@ const rootRouteRef = searchPlugin.routes.root;
 export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const { transitions } = useTheme();
-  const { focusContent } = useContent();
-
   const catalogApi = useApi(catalogApiRef);
 
   const { term, types } = useSearch();
@@ -93,19 +82,14 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
     searchBarRef?.current?.focus();
   });
 
-  const handleSearchResulClick = useCallback(() => {
-    toggleModal();
-    setTimeout(focusContent, transitions.duration.leavingScreen);
-  }, [toggleModal, focusContent, transitions]);
-
   const handleSearchBarKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (e.key === 'Enter') {
-        navigate(searchPagePath);
         toggleModal();
+        navigate(searchPagePath);
       }
     },
-    [navigate, toggleModal, searchPagePath],
+    [navigate, searchPagePath, toggleModal],
   );
 
   return (
@@ -189,7 +173,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
               alignItems="center"
             >
               <Grid item>
-                <Link to={searchPagePath} onClick={handleSearchResulClick}>
+                <Link to={searchPagePath} onClick={toggleModal}>
                   <Typography
                     component="span"
                     className={classes.viewResultsLink}
@@ -202,69 +186,10 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
             </Grid>
           </Grid>
           <Grid item xs>
-            <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(({ type, document, highlight, rank }) => {
-                    let resultItem;
-                    switch (type) {
-                      case 'software-catalog':
-                        resultItem = (
-                          <CatalogSearchResultListItem
-                            icon={<CatalogIcon />}
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                        break;
-                      case 'techdocs':
-                        resultItem = (
-                          <TechDocsSearchResultListItem
-                            icon={<DocsIcon />}
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                        break;
-                      case 'tools':
-                        resultItem = (
-                          <ToolSearchResultListItem
-                            icon={<BuildIcon />}
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                        break;
-                      default:
-                        resultItem = (
-                          <DefaultResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                    }
-                    return (
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        key={`${document.location}-btn`}
-                        onClick={handleSearchResulClick}
-                        onKeyDown={handleSearchResulClick}
-                      >
-                        {resultItem}
-                      </div>
-                    );
-                  })}
-                </List>
-              )}
+            <SearchResult onClick={toggleModal}>
+              <CatalogSearchResultListItem icon={<CatalogIcon />} />
+              <TechDocsSearchResultListItem icon={<DocsIcon />} />
+              <ToolSearchResultListItem icon={<BuildIcon />} />
             </SearchResult>
           </Grid>
         </Grid>

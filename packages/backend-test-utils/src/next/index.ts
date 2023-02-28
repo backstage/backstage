@@ -15,4 +15,4 @@
  */
 
 export * from './wiring';
-export * from './implementations';
+export * from './services';

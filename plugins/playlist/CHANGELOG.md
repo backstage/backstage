@@ -1,5 +1,85 @@
 # @backstage/plugin-playlist
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 122a37a880: Internal update to work with newer versions of react-router
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.12-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.17
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.11-next.0
+  - @backstage/plugin-playlist-common@0.1.4
+  - @backstage/plugin-search-react@1.5.1-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- d950d3e217: Depend on `@material-ui/core` version `^4.12.2` like all other in-repo packages
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-catalog-common@1.0.11
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.10
+  - @backstage/plugin-playlist-common@0.1.4
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-search-react@1.5.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.11-next.1
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/plugin-playlist-common@0.1.4
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- d950d3e217: Depend on `@material-ui/core` version `^4.12.2` like all other in-repo packages
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-search-react@1.5.0-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/plugin-playlist-common@0.1.4
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+
 ## 0.1.5
 
 ### Patch Changes

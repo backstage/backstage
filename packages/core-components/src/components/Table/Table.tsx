@@ -240,6 +240,8 @@ export interface TableProps<T extends object = {}>
   onStateChange?: (state: TableState) => any;
 }
 
+export interface TableOptions<T extends object = {}> extends Options<T> {}
+
 export function TableToolbar(toolbarProps: {
   toolbarRef: MutableRefObject<any>;
   setSearch: (value: string) => void;

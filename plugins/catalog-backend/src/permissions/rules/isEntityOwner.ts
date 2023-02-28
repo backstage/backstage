@@ -15,7 +15,7 @@
  */
 
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 import { z } from 'zod';
 import { createCatalogPermissionRule } from './util';
 
@@ -27,7 +27,7 @@ import { createCatalogPermissionRule } from './util';
  */
 export const isEntityOwner = createCatalogPermissionRule({
   name: 'IS_ENTITY_OWNER',
-  description: 'Allow entities owned by the current user',
+  description: 'Allow entities owned by a specified claim',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
   paramsSchema: z.object({
     claims: z

@@ -15,7 +15,7 @@
  */
 
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { azureDevOpsEventRouterEventsModule } from './AzureDevOpsEventRouterEventsModule';
 import { AzureDevOpsEventRouter } from '../router/AzureDevOpsEventRouter';
 

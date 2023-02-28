@@ -15,17 +15,23 @@
  */
 
 import type { Transformer } from './transformer';
+import { SHADOW_DOM_STYLE_LOAD_EVENT } from '@backstage/plugin-techdocs-react';
 
 export const scrollIntoAnchor = (): Transformer => {
   return dom => {
-    setTimeout(() => {
-      // Scroll to the desired anchor on initial navigation
-      if (window.location.hash) {
-        const hash = window.location.hash.slice(1);
-        // fix invalid selector error for anchor starting with number
-        dom?.querySelector(`[id="${hash}"]`)?.scrollIntoView();
-      }
-    }, 200);
+    dom.addEventListener(
+      SHADOW_DOM_STYLE_LOAD_EVENT,
+      function handleShadowDomStyleLoad() {
+        if (window.location.hash) {
+          const hash = window.location.hash.slice(1);
+          dom?.querySelector(`[id="${hash}"]`)?.scrollIntoView();
+        }
+        dom.removeEventListener(
+          SHADOW_DOM_STYLE_LOAD_EVENT,
+          handleShadowDomStyleLoad,
+        );
+      },
+    );
     return dom;
   };
 };

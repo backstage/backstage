@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Audit } from '../../api';
+import { Audit } from '@backstage/plugin-lighthouse-common';
 import {
   StatusError,
   StatusOK,

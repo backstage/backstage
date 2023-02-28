@@ -105,6 +105,7 @@ describe('DefaultCatalogDatabase', () => {
           'location:default/root-2',
         ]);
       },
+      60_000,
     );
   });
 });

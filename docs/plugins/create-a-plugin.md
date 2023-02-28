@@ -33,7 +33,7 @@ You can also serve the plugin in isolation by running `yarn start` in the plugin
 directory. Or by using the yarn workspace command, for example:
 
 ```bash
-yarn workspace @backstage/my-plugin start # Also supports --check
+yarn workspace @backstage/plugin-my-plugin start # Also supports --check
 ```
 
 This method of serving the plugin provides quicker iteration speed and a faster

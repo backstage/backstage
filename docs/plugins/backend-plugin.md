@@ -66,8 +66,8 @@ To actually attach and run the plugin router, you will make some modifications
 to your backend.
 
 ```bash
-# From the Backstage root directory
-yarn add --cwd packages/backend @internal/plugin-carmen-backend@^0.1.1 # Change this to match the plugin's package.json
+# From your Backstage root directory
+yarn add --cwd packages/backend @internal/plugin-carmen-backend@^0.1.0 # Change this to match the plugin's package.json
 ```
 
 Create a new file named `packages/backend/src/plugins/carmen.ts`, and add the

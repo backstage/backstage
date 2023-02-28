@@ -38,7 +38,12 @@ import { render } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import React from 'react';
-import { Audit, lighthouseApiRef, LighthouseRestApi, Website } from '../../api';
+import {
+  Audit,
+  LighthouseRestApi,
+  Website,
+} from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import { formatTime } from '../../utils';
 import * as data from '../../__fixtures__/website-response.json';
 import AuditView from './index';

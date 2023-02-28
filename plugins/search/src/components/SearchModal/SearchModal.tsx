@@ -23,7 +23,6 @@ import {
   DialogTitle,
   Divider,
   Grid,
-  List,
   Paper,
   useTheme,
 } from '@material-ui/core';
@@ -31,7 +30,6 @@ import Typography from '@material-ui/core/Typography';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  DefaultResultListItem,
   SearchContextProvider,
   SearchBar,
   SearchResult,
@@ -44,7 +42,7 @@ import { rootRouteRef } from '../../plugin';
 
 /**
  * @public
- **/
+ */
 export interface SearchModalChildrenProps {
   /**
    * A function that should be invoked when navigating away from the modal.
@@ -54,7 +52,7 @@ export interface SearchModalChildrenProps {
 
 /**
  * @public
- **/
+ */
 export interface SearchModalProps {
   /**
    * If true, it renders the modal.
@@ -151,27 +149,10 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
           </Grid>
         </Grid>
         <Divider />
-        <SearchResult>
-          {({ results }) => (
-            <List>
-              {results.map(({ document, highlight }) => (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  key={`${document.location}-btn`}
-                  onClick={handleSearchResultClick}
-                  onKeyDown={handleSearchResultClick}
-                >
-                  <DefaultResultListItem
-                    key={document.location}
-                    result={document}
-                    highlight={highlight}
-                  />
-                </div>
-              ))}
-            </List>
-          )}
-        </SearchResult>
+        <SearchResult
+          onClick={handleSearchResultClick}
+          onKeyDown={handleSearchResultClick}
+        />
       </DialogContent>
       <DialogActions className={classes.dialogActionsContainer}>
         <Grid container direction="row">

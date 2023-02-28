@@ -27,26 +27,20 @@ import {
 } from '../hooks/useEntityListProvider';
 
 /** @public */
-export const MockEntityListContextProvider = ({
+export function MockEntityListContextProvider<
+  T extends DefaultEntityFilters = DefaultEntityFilters,
+>({
   children,
   value,
 }: PropsWithChildren<{
-  value?: Partial<EntityListContextProps>;
-}>) => {
+  value?: Partial<EntityListContextProps<T>>;
+}>) {
   // Provides a default implementation that stores filter state, for testing components that
   // reflect filter state.
-  const [filters, setFilters] = useState<DefaultEntityFilters>(
-    value?.filters ?? {},
-  );
+  const [filters, setFilters] = useState<T>(value?.filters ?? ({} as T));
 
   const updateFilters = useCallback(
-    (
-      update:
-        | Partial<DefaultEntityFilters>
-        | ((
-            prevFilters: DefaultEntityFilters,
-          ) => Partial<DefaultEntityFilters>),
-    ) => {
+    (update: Partial<T> | ((prevFilters: T) => Partial<T>)) => {
       setFilters(prevFilters => {
         const newFilters =
           typeof update === 'function' ? update(prevFilters) : update;
@@ -67,7 +61,7 @@ export const MockEntityListContextProvider = ({
     [],
   );
 
-  const resolvedValue: EntityListContextProps = useMemo(
+  const resolvedValue: EntityListContextProps<T> = useMemo(
     () => ({
       entities: value?.entities ?? defaultValues.entities,
       backendEntities: value?.backendEntities ?? defaultValues.backendEntities,
@@ -85,4 +79,4 @@ export const MockEntityListContextProvider = ({
       {children}
     </EntityListContext.Provider>
   );
-};
+}

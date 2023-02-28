@@ -47,7 +47,8 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /** @public */
-export const EntityLifecyclePicker = () => {
+export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
+  const { initialFilter = [] } = props;
   const classes = useStyles();
   const {
     updateFilters,
@@ -64,7 +65,7 @@ export const EntityLifecyclePicker = () => {
   const [selectedLifecycles, setSelectedLifecycles] = useState(
     queryParamLifecycles.length
       ? queryParamLifecycles
-      : filters.lifecycles?.values ?? [],
+      : filters.lifecycles?.values ?? initialFilter,
   );
 
   // Set selected lifecycles on query parameter updates; this happens at initial page load and from
@@ -104,6 +105,7 @@ export const EntityLifecyclePicker = () => {
         Lifecycle
         <Autocomplete
           multiple
+          disableCloseOnSelect
           options={availableLifecycles}
           value={selectedLifecycles}
           onChange={(_: object, value: string[]) =>

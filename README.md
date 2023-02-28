@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-incubation-blue.svg)](https://www.cncf.io/projects)
 [![Main CI Build](https://github.com/backstage/backstage/workflows/Main%20Master%20Build/badge.svg)](https://github.com/backstage/backstage/actions?query=workflow%3A%22Main+Master+Build%22)
-[![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/EBHEGzX)
+[![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/backstage-687207715902193673)
 ![Code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
 [![Codecov](https://img.shields.io/codecov/c/github/backstage/backstage)](https://codecov.io/gh/backstage/backstage)
 [![](https://img.shields.io/github/v/release/backstage/backstage)](https://github.com/backstage/backstage/releases)
@@ -45,7 +45,7 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 
 ## Community
 
-- [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the project
+- [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Get support or discuss the project
 - [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Start here if you want to contribute
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](https://backstage.io/docs/FAQ) - Frequently Asked Questions

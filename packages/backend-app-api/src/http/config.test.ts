@@ -53,7 +53,7 @@ describe('readHttpServerOptions', () => {
       {
         listen: { host: '', port: 7007 },
         https: {
-          certificate: { type: 'plain', cert: 'my-cert', key: 'my-key' },
+          certificate: { type: 'pem', cert: 'my-cert', key: 'my-key' },
         },
       },
     ],

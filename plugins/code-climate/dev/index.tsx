@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import { createDevApp, EntityGridItem } from '@backstage/dev-utils';
 import { Grid } from '@material-ui/core';
 import React from 'react';

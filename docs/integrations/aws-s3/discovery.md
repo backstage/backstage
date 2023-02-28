@@ -63,7 +63,7 @@ As this provider is not one of the default providers, you will first need to ins
 the AWS catalog plugin:
 
 ```bash
-# From the Backstage root directory
+# From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-aws
 ```
 

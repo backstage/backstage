@@ -29,8 +29,8 @@ export {
   defaultGroupTransformer,
   defaultOrganizationTransformer,
   defaultUserTransformer,
-  readMicrosoftGraphOrg,
-} from './read';
+} from './defaultTransformers';
+export { readMicrosoftGraphOrg } from './read';
 export type {
   GroupTransformer,
   OrganizationTransformer,

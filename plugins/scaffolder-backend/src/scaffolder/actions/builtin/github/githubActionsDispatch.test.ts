@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import { TemplateAction } from '../../types';
-import { createGithubActionsDispatchAction } from './githubActionsDispatch';
-
 import {
   ScmIntegrations,
   DefaultGithubCredentialsProvider,
@@ -24,7 +21,9 @@ import {
 } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { PassThrough } from 'stream';
+import { createGithubActionsDispatchAction } from './githubActionsDispatch';
 
 const mockOctokit = {
   rest: {

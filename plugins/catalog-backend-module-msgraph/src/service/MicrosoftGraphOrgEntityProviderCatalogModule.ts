@@ -19,12 +19,12 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import {
   GroupTransformer,
   OrganizationTransformer,
   UserTransformer,
-} from '../microsoftGraph';
+} from '@backstage/plugin-catalog-backend-module-msgraph';
 import { MicrosoftGraphOrgEntityProvider } from '../processors';
 
 /**

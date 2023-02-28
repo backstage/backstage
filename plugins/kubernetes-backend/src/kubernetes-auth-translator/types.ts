@@ -19,7 +19,7 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
  *
- * @alpha
+ * @public
  */
 export interface KubernetesAuthTranslator {
   decorateClusterDetailsWithAuth(

@@ -86,7 +86,7 @@ option will be GitHub. To setup GitHub authentication in Backstage, see
 ---
 
 Congratulations! That should be it. Let us know how it went
-[on discord](https://discord.gg/EBHEGzX), file issues for any
+[on discord](https://discord.gg/backstage-687207715902193673), file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or
 [plugin suggestions](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),

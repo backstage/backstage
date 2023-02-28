@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.11.0",
       "releases/v1.10.0",
       "releases/v1.9.0",
       "releases/v1.8.0",
@@ -87,7 +88,8 @@
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
           "features/kubernetes/authentication",
-          "features/kubernetes/troubleshooting"
+          "features/kubernetes/troubleshooting",
+          "features/kubernetes/proxy"
         ]
       },
       {
@@ -103,6 +105,7 @@
           "features/software-templates/writing-custom-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
+          "features/software-templates/testing-scaffolder-alpha",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },
@@ -201,7 +204,8 @@
         "label": "GitLab",
         "ids": [
           "integrations/gitlab/locations",
-          "integrations/gitlab/discovery"
+          "integrations/gitlab/discovery",
+          "integrations/gitlab/org"
         ]
       },
       {
@@ -364,43 +368,40 @@
     ],
     "FAQ": ["FAQ"],
     "Experimental Backend System": [
+      "backend-system/index",
       {
-        "_hidden_": [
-          "backend-system/index",
-          {
-            "type": "subcategory",
-            "label": "Architecture",
-            "ids": [
-              "backend-system/architecture/index",
-              "backend-system/architecture/services",
-              "backend-system/architecture/plugins",
-              "backend-system/architecture/extension-points",
-              "backend-system/architecture/modules"
-            ]
-          },
-          {
-            "type": "subcategory",
-            "label": "Building Backends",
-            "ids": [
-              "backend-system/building-backends/index",
-              "backend-system/building-backends/migrating"
-            ]
-          },
-          {
-            "type": "subcategory",
-            "label": "Building Plugins & Modules",
-            "ids": [
-              "backend-system/building-plugins-and-modules/index",
-              "backend-system/building-plugins-and-modules/testing",
-              "backend-system/building-plugins-and-modules/migrating"
-            ]
-          },
-          {
-            "type": "subcategory",
-            "label": "Core Services",
-            "ids": ["backend-system/core-services/index"]
-          }
+        "type": "subcategory",
+        "label": "Architecture",
+        "ids": [
+          "backend-system/architecture/index",
+          "backend-system/architecture/services",
+          "backend-system/architecture/plugins",
+          "backend-system/architecture/extension-points",
+          "backend-system/architecture/modules",
+          "backend-system/architecture/naming-patterns"
         ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Building Backends",
+        "ids": [
+          "backend-system/building-backends/index",
+          "backend-system/building-backends/migrating"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Building Plugins & Modules",
+        "ids": [
+          "backend-system/building-plugins-and-modules/index",
+          "backend-system/building-plugins-and-modules/testing",
+          "backend-system/building-plugins-and-modules/migrating"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Core Services",
+        "ids": ["backend-system/core-services/index"]
       }
     ]
   }

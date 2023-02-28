@@ -33,7 +33,8 @@ import {
   useParams,
 } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
-import { Audit, lighthouseApiRef, Website } from '../../api';
+import { Audit, Website } from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import { formatTime } from '../../utils';
 import AuditStatusIcon from '../AuditStatusIcon';
 import LighthouseSupportButton from '../SupportButton';

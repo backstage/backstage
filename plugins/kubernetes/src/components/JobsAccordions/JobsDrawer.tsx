@@ -47,12 +47,12 @@ export const JobDrawer = ({
         spacing={0}
       >
         <Grid item>
-          <Typography variant="h6">
+          <Typography variant="body1">
             {job.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
         <Grid item>
-          <Typography color="textSecondary" variant="body1">
+          <Typography color="textSecondary" variant="subtitle1">
             Job
           </Typography>
         </Grid>

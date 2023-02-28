@@ -19,7 +19,9 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { TableColumn } from '@backstage/core-components';
+import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsMetadata as TechDocsMetadata_2 } from '@backstage/plugin-techdocs-react';
@@ -100,6 +102,7 @@ export type DocsTableProps = {
   loading?: boolean | undefined;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
+  options?: TableOptions<DocsTableRow>;
 };
 
 // @public
@@ -159,6 +162,7 @@ export const EntityListDocsTable: {
 export type EntityListDocsTableProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
+  options?: TableOptions<DocsTableRow>;
 };
 
 // @public
@@ -397,13 +401,13 @@ export type TechDocsSearchProps = {
 
 // @public
 export const TechDocsSearchResultListItem: (
-  props: TechDocsSearchResultListItemProps,
-) => JSX.Element;
+  props: SearchResultListItemExtensionProps<TechDocsSearchResultListItemProps>,
+) => JSX.Element | null;
 
 // @public
 export type TechDocsSearchResultListItemProps = {
-  icon?: ReactNode;
-  result: any;
+  icon?: ReactNode | ((result: any) => ReactNode);
+  result?: any;
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;

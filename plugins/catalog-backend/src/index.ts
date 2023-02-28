@@ -42,7 +42,6 @@ export { processingResult } from '@backstage/plugin-catalog-node';
 export * from './catalog';
 export * from './ingestion';
 export * from './modules';
-export * from './permissions';
 export * from './processing';
 export * from './search';
 export * from './service';

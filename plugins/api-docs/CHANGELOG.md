@@ -1,5 +1,75 @@
 # @backstage/plugin-api-docs
 
+## 0.9.1-next.0
+
+### Patch Changes
+
+- 095e755d9b: Add ApiDefinitionDialog component for fast access to the API definition in ProvidedApiCards and ConsumedApiCards.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog@1.9.0-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/theme@0.2.17
+
+## 0.9.0
+
+### Minor Changes
+
+- 9ed53218a5: Adds a new tRPC API definition widget which users can utilize to integrate their tRPC API definitions into Backstage.
+
+### Patch Changes
+
+- 60996f8aba: Updating the readme with better `csp` instructions
+- 6856ab98f4: Updated dependency `@asyncapi/react-component` to `1.0.0-next.47`.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.8.0
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+
+## 0.9.0-next.2
+
+### Minor Changes
+
+- 9ed53218a5: Adds a new tRPC API definition widget which users can utilize to integrate their tRPC API definitions into Backstage.
+
+### Patch Changes
+
+- 6856ab98f4: Updated dependency `@asyncapi/react-component` to `1.0.0-next.47`.
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog@1.8.0-next.2
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+
+## 0.8.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.8.0-next.1
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+
+## 0.8.15-next.0
+
+### Patch Changes
+
+- 60996f8aba: Updating the readme with better `csp` instructions
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/plugin-catalog@1.7.3-next.0
+
 ## 0.8.14
 
 ### Patch Changes

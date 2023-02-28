@@ -17,7 +17,7 @@ app:
       - title: Discord Chatroom
         icon: chat
         links:
-          - url: https://discord.gg/MUpMjP2
+          - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
 
 backend:
@@ -117,6 +117,11 @@ proxy:
     target: https://your.dynatrace.instance.com/api/v2
     headers:
       Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
+
+  '/stackstorm':
+    target: https://your.stackstorm.instance.com/api
+    headers:
+      St2-Api-Key: ${ST2_API_KEY}
 
 organization:
   name: My Company
@@ -440,6 +445,9 @@ apacheAirflow:
 
 gocd:
   baseUrl: https://your.gocd.instance.com
+
+stackstorm:
+  webUrl: https://your.stackstorm.webui.instance.com
 
 permission:
   enabled: true

@@ -25,9 +25,9 @@ import AuditListTable from './AuditListTable';
 
 import {
   WebsiteListResponse,
-  lighthouseApiRef,
   LighthouseRestApi,
-} from '../../api';
+} from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import { formatTime } from '../../utils';
 import { setupServer } from 'msw/node';
 import * as data from '../../__fixtures__/website-list-response.json';

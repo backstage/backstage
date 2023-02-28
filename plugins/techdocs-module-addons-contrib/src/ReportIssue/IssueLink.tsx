@@ -59,14 +59,13 @@ const getUrl = (repository: Repository, template: ReportIssueTemplate) => {
   const encodedTitle = encodeURIComponent(title);
   const encodedBody = encodeURIComponent(body);
   const { protocol, resource, owner, name, type } = repository;
-  const encodedOwner = encodeURIComponent(owner);
-  const encodedName = encodeURIComponent(name);
 
-  const url = `${protocol}://${resource}/${encodedOwner}/${encodedName}`;
+  const url = `${protocol}://${resource}/${owner}/${name}`;
+  const encodedUrl = encodeURI(url);
   if (type === 'github') {
-    return `${url}/issues/new?title=${encodedTitle}&body=${encodedBody}`;
+    return `${encodedUrl}/issues/new?title=${encodedTitle}&body=${encodedBody}`;
   }
-  return `${url}/issues/new?issue[title]=${encodedTitle}&issue[description]=${encodedBody}`;
+  return `${encodedUrl}/issues/new?issue[title]=${encodedTitle}&issue[description]=${encodedBody}`;
 };
 
 export const IssueLink = ({ template, repository }: IssueLinkProps) => {

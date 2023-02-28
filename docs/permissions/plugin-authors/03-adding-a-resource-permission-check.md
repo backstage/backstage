@@ -76,7 +76,7 @@ This enables decisions based on characteristics of the resource, but it's import
 Install the missing module:
 
 ```
-$ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-node
+$ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-node zod
 ```
 
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
@@ -89,7 +89,8 @@ import { Todo, TodoFilter } from './todos';
 
 export const createTodoListPermissionRule = makeCreatePermissionRule<
   Todo,
-  TodoFilter
+  TodoFilter,
+  typeof TODO_LIST_RESOURCE_TYPE
 >();
 
 export const isOwner = createTodoListPermissionRule({
@@ -97,8 +98,8 @@ export const isOwner = createTodoListPermissionRule({
   description: 'Should allow only if the todo belongs to the user',
   resourceType: TODO_LIST_RESOURCE_TYPE,
   paramsSchema: z.object({
-    userId: z.string().describe('User ID to match on the resource')
-  })
+    userId: z.string().describe('User ID to match on the resource'),
+  }),
   apply: (resource: Todo, { userId }) => {
     return resource.author === userId;
   },
@@ -187,6 +188,7 @@ Make sure `todoListConditions` and `createTodoListConditionalDecision` are expor
 ```diff
   export * from './service/router';
 + export * from './conditionExports';
+  export { exampleTodoListPlugin } from './plugin';
 ```
 
 ## Test the authorized update endpoint
@@ -209,7 +211,6 @@ Let's go back to the permission policy's handle function and try to authorize ou
 + import {
 +   todoListCreatePermission,
 +   todoListUpdatePermission,
-+   TODO_LIST_RESOURCE_TYPE,
 + } from '@internal/plugin-todo-list-common';
 + import {
 +   todoListConditions,
@@ -217,7 +218,11 @@ Let's go back to the permission policy's handle function and try to authorize ou
 + } from '@internal/plugin-todo-list-backend';
 
 ...
-
+  async handle(
+    request: PolicyQuery,
+-   _user?: BackstageIdentityResponse,
++   user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
     if (isPermission(request.permission, todoListCreatePermission)) {
       return {
         result: AuthorizeResult.ALLOW,
@@ -236,6 +241,7 @@ Let's go back to the permission policy's handle function and try to authorize ou
     return {
       result: AuthorizeResult.ALLOW,
     };
+  }
 ```
 
 For any incoming update requests, we now return a _Conditional Decision_. We are saying:

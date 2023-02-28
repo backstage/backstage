@@ -19,9 +19,9 @@ import {
   getBitbucketServerRequestOptions,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import fetch, { Response, RequestInit } from 'node-fetch';
 import { initRepoAndPush } from '../helpers';
-import { createTemplateAction } from '../../createTemplateAction';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
 

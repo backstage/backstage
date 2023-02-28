@@ -13,20 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createBackendPlugin,
   coreServices,
-  createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node';
-import { TemplateFilter, TemplateGlobal } from './lib';
-import { createBuiltinActions, TaskBroker, TemplateAction } from './scaffolder';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import {
+  scaffolderActionsExtensionPoint,
+  ScaffolderActionsExtensionPoint,
+  TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
+import {
+  TemplateFilter,
+  TemplateGlobal,
+  TaskBroker,
+} from '@backstage/plugin-scaffolder-backend';
+import { createBuiltinActions } from './scaffolder';
 import { createRouter } from './service/router';
 
 /**
  * Catalog plugin options
+ *
  * @alpha
  */
 export type ScaffolderPluginOptions = {
@@ -37,44 +47,31 @@ export type ScaffolderPluginOptions = {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
-/**
- * @alpha
- * TODO: MOVE to scaffolder-node.
- */
-interface ScaffolderActionsExtensionPoint {
-  addActions(...actions: TemplateAction<any>[]): void;
-}
-
 class ScaffolderActionsExtensionPointImpl
   implements ScaffolderActionsExtensionPoint
 {
   #actions = new Array<TemplateAction<any>>();
+
   addActions(...actions: TemplateAction<any>[]): void {
     this.#actions.push(...actions);
   }
+
   get actions() {
     return this.#actions;
   }
 }
 
 /**
- * @alpha
- * TODO: MOVE to scaffolder-node.
- */
-export const scaffolderActionsExtensionPoint =
-  createExtensionPoint<ScaffolderActionsExtensionPoint>({
-    id: 'scaffolder.actions',
-  });
-
-/**
  * Catalog plugin
+ *
  * @alpha
  */
 export const scaffolderPlugin = createBackendPlugin(
   (options: ScaffolderPluginOptions) => ({
-    id: 'scaffolder',
+    pluginId: 'scaffolder',
     register(env) {
       const actionsExtensions = new ScaffolderActionsExtensionPointImpl();
+
       env.registerExtensionPoint(
         scaffolderActionsExtensionPoint,
         actionsExtensions,

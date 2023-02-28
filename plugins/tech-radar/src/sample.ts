@@ -45,11 +45,20 @@ entries.push({
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
     },
   ],
-  url: '#',
   key: 'javascript',
   id: 'javascript',
   title: 'JavaScript',
   quadrant: 'languages',
+  links: [
+    {
+      url: 'https://www.javascript.com/',
+      title: 'Learn more',
+    },
+    {
+      url: 'https://www.typescriptlang.org/',
+      title: 'TypeScript',
+    },
+  ],
   description:
     'Excepteur **sint** occaecat *cupidatat* non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n```ts\nconst x = "3";\n```\n',
 });
@@ -63,7 +72,6 @@ entries.push({
         'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat',
     },
   ],
-  url: '#',
   key: 'typescript',
   id: 'typescript',
   title: 'TypeScript',
@@ -81,7 +89,12 @@ entries.push({
         'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
     },
   ],
-  url: 'https://webpack.js.org/',
+  links: [
+    {
+      url: 'https://webpack.js.org/',
+      title: 'Learn more',
+    },
+  ],
   key: 'webpack',
   id: 'webpack',
   title: 'Webpack',
@@ -95,7 +108,12 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: 'https://reactjs.org/',
+  links: [
+    {
+      url: 'https://reactjs.org/',
+      title: 'Learn more',
+    },
+  ],
   key: 'react',
   id: 'react',
   title: 'React',
@@ -109,7 +127,6 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
   key: 'code-reviews',
   id: 'code-reviews',
   title: 'Code Reviews',
@@ -123,7 +140,6 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
   key: 'mob-programming',
   id: 'mob-programming',
   title: 'Mob Programming',
@@ -137,7 +153,6 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
   key: 'docs-like-code',
   id: 'docs-like-code',
   title: 'Docs-like-code',
@@ -150,7 +165,6 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
   key: 'force-push',
   id: 'force-push',
   title: 'Force push to master',
@@ -164,7 +178,12 @@ entries.push({
       description: 'long description',
     },
   ],
-  url: 'https://github.com',
+  links: [
+    {
+      url: 'https://github.com',
+      title: 'Learn more',
+    },
+  ],
   key: 'github-actions',
   id: 'github-actions',
   title: 'GitHub Actions',

@@ -1,0 +1,38 @@
+.hubSpotNewAdopterFormContainer {
+  top: 50%;
+  right: 0;
+  display: flex;
+  position: fixed;
+  transform: translateY(-50%);
+
+  transition: all 250ms ease-in-out;
+
+  &:global(.adoptersFormHidden) {
+    transform: translate(500px, -50%);
+  }
+
+  > button {
+    top: 50%;
+    left: -2rem;
+    position: fixed;
+
+    transform: rotate(-90deg) translateX(-50%);
+    transform-origin: top left;
+  }
+}
+
+.hubSpotNewAdopterFormContent {
+  height: 600px;
+  max-width: 500px;
+  overflow-y: hidden;
+  border-radius: 8px 0 0 8px;
+  background-color: var(--ifm-color-white);
+
+  form {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+
+    padding-right: 2rem;
+  }
+}

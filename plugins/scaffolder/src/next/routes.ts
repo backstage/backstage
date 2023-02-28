@@ -34,3 +34,24 @@ export const nextScaffolderTaskRouteRef = createSubRouteRef({
   parent: nextRouteRef,
   path: '/tasks/:taskId',
 });
+
+/** @alpha */
+export const nextScaffolderListTaskRouteRef = createSubRouteRef({
+  id: 'scaffolder/next/list-tasks',
+  parent: nextRouteRef,
+  path: '/tasks',
+});
+
+/** @alpha */
+export const nextActionsRouteRef = createSubRouteRef({
+  id: 'scaffolder/next/actions',
+  parent: nextRouteRef,
+  path: '/actions',
+});
+
+/** @alpha */
+export const nextEditRouteRef = createSubRouteRef({
+  id: 'scaffolder/next/edit',
+  parent: nextRouteRef,
+  path: '/edit',
+});

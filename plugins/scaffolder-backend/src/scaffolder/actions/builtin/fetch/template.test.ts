@@ -26,8 +26,11 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 import { PassThrough } from 'stream';
 import { fetchContents } from './helpers';
-import { ActionContext, TemplateAction } from '../../types';
 import { createFetchTemplateAction } from './template';
+import {
+  ActionContext,
+  TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
 
 jest.mock('./helpers', () => ({
   fetchContents: jest.fn(),

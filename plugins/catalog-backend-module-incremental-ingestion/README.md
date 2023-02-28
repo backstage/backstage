@@ -4,7 +4,7 @@ The Incremental Ingestion catalog backend module provides an Incremental Entity 
 
 ## Why did we create it?
 
-Backstage provides an [Entity Provider mechanism that has two kinds of mutations](https://backstage.io/docs/features/software-catalog/external-integrations#provider-mutations): `delta` and `full`. `delta` mutations tell Backstage Catalog which entities should be added and removed from the catalog. `full` mutation accepts a list of entities and automatically computes which entities must be removed by comparing the provided entities against existing entities to create a diff between the two sets. These two kinds of mutations are convenient for different kinds of data sources. A `delta` mutation can be used with a data source that emits UPDATE and DELETE events for its data. A `full` mutation is useful for APIs that produce fewer entities than can fit in Backstage processes' memory.
+Backstage provides an [Entity Provider mechanism that has two kinds of mutations](https://backstage.io/docs/features/software-catalog/external-integrations#provider-mutations): `delta` and `full`. `delta` mutations tell the Backstage Catalog which entities should be added and removed from the catalog. `full` mutations accept a list of entities and automatically computes which entities must be removed by comparing the provided entities against existing entities to create a diff between the two sets. These two kinds of mutations are convenient for different kinds of data sources. A `delta` mutation can be used with a data source that emits UPDATE and DELETE events for its data. A `full` mutation is useful for APIs that produce fewer entities than can fit in the Backstage processes' memory.
 
 Unfortunately, these two kinds of mutations are insufficient for very large data sources for the following reasons,
 
@@ -41,69 +41,82 @@ The Incremental Entity Provider backend is designed for data sources that provid
 
 ## Installation
 
-1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn workspace backend add @backstage/plugin-catalog-backend-module-incremental-ingestion`
-2. Import `IncrementalCatalogBuilder` from `@backstage/plugin-catalog-backend-module-incremental-ingestion` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
+1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
+2. In your catalog.ts, import `IncrementalCatalogBuilder` from `@backstage/plugin-catalog-backend-module-incremental-ingestion` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
 
-   ```ts
-   const builder = CatalogBuilder.create(env);
-   // incremental builder receives builder because it'll register
-   // incremental entity providers with the builder
-   const incrementalBuilder = await IncrementalCatalogBuilder.create(
-     env,
-     builder,
-   );
-   ```
+```ts
+const builder = CatalogBuilder.create(env);
+// incremental builder receives builder because it'll register
+// incremental entity providers with the builder
+const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
+```
 
-3. Last step, add `await incrementBuilder.build()` after `await builder.build()` to ensure that all `CatalogBuilder` migration run before running `incrementBuilder.build()` migrations.
+3. After building the regular `CatalogBuilder`, build the incremental builder:
 
-   ```ts
-   const { processingEngine, router } = await builder.build();
+```ts
+// Must be run first to ensure CatalogBuilder database migrations run before Incremental Entity Provider database migrations
+const { processingEngine, router } = await builder.build();
 
-   // this has to run after `await builder.build()` to ensure that catalog migrations are completed
-   // before incremental builder migrations are executed
-   await incrementalBuilder.build();
-   ```
+// Returns an optional - but highly recommended - set of administrative routes
+const { incrementalAdminRouter } = await incrementBuilder.build();
+```
 
-   The result should look something like this,
+The final result should look something like this,
 
-   ```ts
-   import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-   import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
-   import { IncrementalCatalogBuilder } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
-   import { Router } from 'express';
-   import { Duration } from 'luxon';
-   import { PluginEnvironment } from '../types';
+```ts
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { IncrementalCatalogBuilder } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
+import { Router } from 'express';
+import { Duration } from 'luxon';
+import { PluginEnvironment } from '../types';
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     const builder = CatalogBuilder.create(env);
-     // incremental builder receives builder because it'll register
-     // incremental entity providers with the builder
-     const incrementalBuilder = await IncrementalCatalogBuilder.create(
-       env,
-       builder,
-     );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = CatalogBuilder.create(env);
+  // incremental builder receives builder because it'll register
+  // incremental entity providers with the builder
+  const incrementalBuilder = await IncrementalCatalogBuilder.create(
+    env,
+    builder,
+  );
 
-     builder.addProcessor(new ScaffolderEntitiesProcessor());
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
 
-     const { processingEngine, router } = await builder.build();
+  const { processingEngine, router } = await builder.build();
+  const { incrementalAdminRouter } = await incrementalBuilder.build();
 
-     // this has to run after `await builder.build()` so ensure that catalog migrations are completed
-     // before incremental builder migrations are executed
-     const { incrementalAdminRouter } = await incrementalBuilder.build();
+  router.use(incrementalAdminRouter);
 
-     router.use('/incremental', incrementalAdminRouter);
+  await processingEngine.start();
 
-     await processingEngine.start();
+  return router;
+}
+```
 
-     return router;
-   }
-   ```
+## Administrative Routes
+
+If you want to manage your incremental entity providers via REST endpoints, the following endpoints are available:
+
+| Method | Path                                       | Description                                                                                                                 |
+| ------ | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/incremental/health`                      | Checks the health of all incremental providers. Returns array of any unhealthy ones.                                        |
+| GET    | `/incremental/providers`                   | Get a list of all known incremental entity providers                                                                        |
+| GET    | `/incremental/providers/:provider`         | Checks the status of an incremental provider (resting, interstitial, etc).                                                  |
+| POST   | `/incremental/providers/:provider/trigger` | Triggers a provider's next action immediately. E.g., if it's currently interstitial, it will trigger the next burst.        |
+| POST   | `/incremental/providers/:provider/start`   | Stop the current ingestion cycle and start a new one immediately.                                                           |
+| POST   | `/incremental/providers/:provider/cancel`  | Stop the current ingestion cycle and start a new one in 24 hours.                                                           |
+| DELETE | `/incremental/providers/:provider`         | Completely remove all records for the provider and schedule it to start again in 24 hours.                                  |
+| GET    | `/incremental/providers/:provider/marks`   | Retrieve a list of all ingestion marks for the current ingestion cycle.                                                     |
+| DELETE | `/incremental/providers/:provider/marks`   | Remove all ingestion marks for the current ingestion cycle.                                                                 |
+| POST   | `/incremental/cleanup`                     | Completely remove all records for ALL providers and schedule them to start again in 24 hours. (CAUTION! Can cause orphans!) |
+
+In all cases, `:provider` is the name of the incremental entity provider.
 
 ## Writing an Incremental Entity Provider
 
-To create an Incremental Entity Provider, you need to know how to retrieve a single page of the data that you wish to ingest into the Backstage catalog. If the API has pagination and you know how to make a paginated request to that API, you'll be able to implement an Incremental Entity Provider for this API. For more information about compatibility, checkout <a href="#compatible-data-source">Compatible data sources</a> section on this page.
+To create an Incremental Entity Provider, you need to know how to retrieve a single page of the data that you wish to ingest into the Backstage catalog. If the API has pagination and you know how to make a paginated request to that API, you'll be able to implement an Incremental Entity Provider for this API. For more information about compatibility, check out the <a href="#requirements">requirements</a> section of this page.
 
 Here is the type definition for an Incremental Entity Provider.
 
@@ -114,7 +127,19 @@ interface IncrementalEntityProvider<TCursor, TContext> {
    * operating in the catalog.
    */
   getProviderName(): string;
-
+  /**
+   * Return a single page of entities from a specific point in the
+   * ingestion.
+   *
+   * @param context - anything needed in order to fetch a single page.
+   * @param cursor - a unique value identifying the page to ingest.
+   * @returns The entities to be ingested, as well as the cursor of
+   * the next page after this one.
+   */
+  next(
+    context: TContext,
+    cursor?: TCursor,
+  ): Promise<EntityIteratorResult<TCursor>>;
   /**
    * Do any setup and teardown necessary in order to provide the
    * context for fetching pages. This should always invoke `burst` in
@@ -123,24 +148,10 @@ interface IncrementalEntityProvider<TCursor, TContext> {
    * @param burst - a function which performs a series of iterations
    */
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
-
-  /**
-   * Return a single page of entities from a specific point in the
-   * ingestion.
-   *
-   * @param context - anything needed in order to fetch a single page.
-   * @param cursor - a unique value identifying the page to ingest.
-   * @returns the entities to be ingested, as well as the cursor of
-   * the the next page after this one.
-   */
-  next(
-    context: TContext,
-    cursor?: TCursor,
-  ): Promise<EntityIteratorResult<TCursor>>;
 }
 ```
 
-For tutorial, we'll write an Incremental Entity Provider that will call an imaginary API. This imaginary API will return a list of imaginary services. This imaginary API has an imaginary API client with the following interface.
+For this tutorial, we'll write an Incremental Entity Provider that will call an imaginary API. This imaginary API will return a list of imaginary services. The imaginary API has an imaginary API client with the following interface.
 
 ```ts
 interface MyApiClient {
@@ -157,15 +168,12 @@ interface Service {
 }
 ```
 
-These are the only 3 methods that you need to implement. `getProviderName()` is pretty self explanatory and it's exactly same as on Entity Provider.
+These are the only 3 methods that you need to implement. `getProviderName()` is pretty self explanatory and it's identical to the `getProviderName()` method on a regular Entity Provider.
 
 ```ts
-import {
-  IncrementalEntityProvider,
-  EntityIteratorResult,
-} from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
+import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 
-// this will include your pagination information, let's say our API accepts a `page` parameter.
+// This will include your pagination information, let's say our API accepts a `page` parameter.
 // In this case, the cursor will include `page`
 interface MyApiCursor {
   page: number;
@@ -200,7 +208,7 @@ export class MyIncrementalEntityProvider
 
     await burst({ apiClient });
 
-    // if you need to do any teardown, you can do it here
+    // If you need to do any teardown, you can do it here.
   }
 }
 ```
@@ -306,31 +314,45 @@ We'll assume you followed the <a href="#installation">Installation</a> instructi
 ```ts
 const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
 
-// I'm assuming you're going to get your token from config
+// Assuming the token for the API comes from config
 const token = config.getString('myApiClient.token');
 
-const myEntityProvider = new MyIncrementalEntityProvider(token)
+const myEntityProvider = new MyIncrementalEntityProvider(token);
 
-incrementalBuilder.addIncrementalEntityProvider(
-  myEntityProvider,
-  {
-    // how long should it attempt to read pages from the API
-    // keep this short. Incremental Entity Provider will attempt to
-    // read as many pages as it can in this time
-    burstLength: Duration.fromObject({ seconds: 3 }),
-    // how long should it wait between bursts?
-    burstInterval: Duration.fromObject({ seconds: 3 }),
-    // how long should it rest before re-ingesting again?
-    restLength: Duration.fromObject({ day: 1 })
-    // optional back-off configuration - how long should it wait to retry?
-    backoff: [
-      Duration.fromObject({ seconds: 5 }),
-      Duration.fromObject({ seconds: 30 }),
-      Duration.fromObject({ minutes: 10 }),
-      Duration.fromObject({ hours: 3 })
-    ]
-  }
-)
+incrementalBuilder.addIncrementalEntityProvider(myEntityProvider, {
+  // How long should it attempt to read pages from the API in a
+  // single burst? Keep this short. The Incremental Entity Provider
+  // will attempt to read as many pages as it can in this time
+  burstLength: Duration.fromObject({ seconds: 3 }),
+
+  // How long should it wait between bursts?
+  burstInterval: Duration.fromObject({ seconds: 3 }),
+
+  // How long should it rest before re-ingesting again?
+  restLength: Duration.fromObject({ day: 1 }),
+
+  // Optional back-off configuration - how long should it wait to retry
+  // in the event of an error?
+  backoff: [
+    Duration.fromObject({ seconds: 5 }),
+    Duration.fromObject({ seconds: 30 }),
+    Duration.fromObject({ minutes: 10 }),
+    Duration.fromObject({ hours: 3 }),
+  ],
+
+  // Optional. Use this to prevent removal of entities above a given
+  // percentage. This can be helpful if a data source is flaky and
+  // sometimes returns a successful status, but fewer than expected
+  // assets to add or maintain in the catalog.
+  rejectRemovalsAbovePercentage: 5,
+
+  // Optional. Similar to rejectRemovalsAbovePercentage, except it
+  // applies to complete, 100% failure of a data source. If true,
+  // a data source that returns a successful status but does not
+  // provide any assets to turn into entities will have its empty
+  // data set rejected.
+  rejectEmptySourceCollections: true,
+});
 ```
 
 That's it!!!

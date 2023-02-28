@@ -16,7 +16,7 @@
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { UiSchema } from '@rjsf/utils';
-import { TemplateParameterSchema } from '../../types';
+import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { extractSchemaFromStep } from '../lib';
 
 /**

@@ -3,11 +3,14 @@ title: Cloudsmith
 author: Roadie
 authorUrl: https://roadie.io
 category: CI/CD
-description: Show Cloudsmith Repository stats on your backstage homepage.
+description: Show Cloudsmith Repository stats, Quota, Audit logs and Security scans for specific repositories.
 documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/tree/main/plugins/frontend/backstage-plugin-cloudsmith
 iconUrl: https://cloudsmith.com/img/cloudsmith-mini-dark.svg
 npmPackageName: '@roadiehq/backstage-plugin-cloudsmith'
 tags:
   - dashboards
   - monitoring
+  - audit logs
+  - security scanning
+  - usage
 addedDate: '2022-11-18'

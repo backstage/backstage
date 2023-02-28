@@ -1,5 +1,64 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/theme@0.2.17
+  - @backstage/plugin-home@0.4.32-next.0
+  - @backstage/plugin-search-common@1.2.1
+  - @backstage/plugin-search-react@1.5.1-next.0
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/plugin-home@0.4.31
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.1.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.5.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-home@0.4.31-next.2
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home@0.4.31-next.1
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-search-react@1.5.0-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home@0.4.31-next.0
+
 ## 0.1.10
 
 ### Patch Changes

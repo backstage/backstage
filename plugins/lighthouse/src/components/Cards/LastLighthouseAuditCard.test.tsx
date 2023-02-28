@@ -22,7 +22,7 @@ import {
   AuditCompleted,
   LighthouseCategoryId,
   WebsiteListResponse,
-} from '../../api';
+} from '@backstage/plugin-lighthouse-common';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import * as data from '../../__fixtures__/website-list-response.json';
 import { LastLighthouseAuditCard } from './LastLighthouseAuditCard';
