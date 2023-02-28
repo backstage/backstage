@@ -24,10 +24,11 @@ import {
   ConfigTarget,
   LoadConfigOptionsRemote,
 } from '@backstage/config-loader';
-import { Config, ConfigReader } from '@backstage/config';
+import { type Config, ConfigReader } from '@backstage/config';
 import { getPackages } from '@manypkg/get-packages';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { isValidUrl } from '../lib/urls';
+import type { JsonObject } from '@backstage/types';
 
 /** @public */
 export async function createConfigSecretEnumerator(options: {
@@ -70,6 +71,7 @@ export async function createConfigSecretEnumerator(options: {
 export async function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
+  config?: JsonObject;
 }): Promise<{ config: Config }> {
   const args = parseArgs(options.argv);
 
@@ -109,12 +111,12 @@ export async function loadBackendConfig(options: {
       }),
     },
   });
-
   console.info(
     `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 
   config.setConfig(ConfigReader.fromConfigs(appConfigs));
+  config.mergeConfig(options.config ?? {});
 
   return { config };
 }
