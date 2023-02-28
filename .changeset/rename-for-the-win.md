@@ -2,4 +2,5 @@
 '@backstage/plugin-permission-node': patch
 ---
 
-Improve Service-to-service url error
+Update the service-to-service auth docs URL in error message.
+``
