@@ -103,7 +103,7 @@ const useStyles = makeStyles(theme => ({
     top: theme.spacing(0.5),
     right: theme.spacing(0.5),
     padding: '0.25rem',
-    color: '#fff',
+    color: theme.palette.common.white,
   },
 }));
 

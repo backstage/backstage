@@ -17,21 +17,21 @@ import { Chip, withStyles } from '@material-ui/core';
 import React from 'react';
 import { PRIVATE, PUBLIC, StatusPage } from '../../types';
 
-const PrivateChip = withStyles({
+const PrivateChip = withStyles(theme => ({
   root: {
     backgroundColor: '#4caf50',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
+}))(Chip);
 
-const PublicChip = withStyles({
+const PublicChip = withStyles(theme => ({
   root: {
     backgroundColor: '#ffb74d',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
+}))(Chip);
 
 const statusPageVisibilityLabels = {
   [PUBLIC]: 'Public',
