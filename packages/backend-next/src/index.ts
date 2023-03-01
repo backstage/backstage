@@ -22,8 +22,8 @@ import { todoPlugin } from '@backstage/plugin-todo-backend';
 import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
 import { searchPlugin } from '@backstage/plugin-search-backend';
 import { elasticSearchEngineModule } from '@backstage/plugin-search-backend-module-elasticsearch';
-import { pgSearchEngineModule } from '@backstage/plugin-search-backend-module-pg';
-import { lunrSearchEngineModule } from '@backstage/plugin-search-backend-node/';
+// import { pgSearchEngineModule } from '@backstage/plugin-search-backend-module-pg';
+// import { lunrSearchEngineModule } from '@backstage/plugin-search-backend-node/';
 
 const backend = createBackend();
 
@@ -34,8 +34,14 @@ backend.add(todoPlugin());
 backend.add(techdocsPlugin());
 
 backend.add(searchPlugin());
-backend.add(elasticSearchEngineModule());
-backend.add(pgSearchEngineModule());
-backend.add(lunrSearchEngineModule());
+// just as example of search engine module, remove before shipping and use default
+backend.add(
+  elasticSearchEngineModule({
+    indexTemplate: {
+      name: 'my-custom-template',
+      body: { index_patterns: ['*index*'], template: {} },
+    },
+  }),
+);
 
 backend.start();

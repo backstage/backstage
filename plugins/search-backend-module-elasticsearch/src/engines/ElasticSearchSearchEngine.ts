@@ -530,24 +530,39 @@ export async function createElasticSearchClientOptions(
   };
 }
 
-export const elasticSearchEngineModule = createBackendModule({
-  moduleId: 'elasticSearchEngineModule',
-  pluginId: 'search-backend',
-  register(env) {
-    env.registerInit({
-      deps: {
-        searchEngineRegistry: searchEngineRegistryExtensionPoint,
-        logger: coreServices.logger,
-        config: coreServices.config,
-      },
-      async init({ searchEngineRegistry, logger, config }) {
-        searchEngineRegistry.setSearchEngine(
-          await ElasticSearchSearchEngine.fromConfig({
+export type ElasticSearchEngineModuleOptions = {
+  translator?: ElasticSearchQueryTranslator;
+  indexTemplate?: ElasticSearchCustomIndexTemplate;
+};
+
+export const elasticSearchEngineModule = createBackendModule(
+  (options?: ElasticSearchEngineModuleOptions) => ({
+    moduleId: 'elasticSearchEngineModule',
+    pluginId: 'search-backend',
+    register(env) {
+      env.registerInit({
+        deps: {
+          searchEngineRegistry: searchEngineRegistryExtensionPoint,
+          logger: coreServices.logger,
+          config: coreServices.config,
+        },
+        async init({ searchEngineRegistry, logger, config }) {
+          const searchEngine = await ElasticSearchSearchEngine.fromConfig({
             logger: loggerToWinstonLogger(logger),
             config: config,
-          }),
-        );
-      },
-    });
-  },
-});
+          });
+          searchEngineRegistry.setSearchEngine(searchEngine);
+          // set custom translator if available
+          if (options?.translator) {
+            searchEngine.setTranslator(options.translator);
+          }
+
+          // set custom index template if available TODO(emmaindal): make it possible to pass in mutliple index templates
+          if (options?.indexTemplate) {
+            searchEngine.setIndexTemplate(options.indexTemplate);
+          }
+        },
+      });
+    },
+  }),
+);
