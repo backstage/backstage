@@ -284,6 +284,7 @@ class TestHarness {
       stitcher,
       () => createHash('sha1'),
       50,
+      () => Promise.resolve(),
       event => {
         proxyProgressTracker.reportError(event.unprocessedEntity, event.errors);
       },

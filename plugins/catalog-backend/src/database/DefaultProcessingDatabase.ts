@@ -311,7 +311,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     options: {
       sourceEntityRef: string;
       entities: DeferredEntity[];
-      conflictHandler: (options: ConflictHandlerOptions) => Promise<void>;
+      conflictHandler?: (options: ConflictHandlerOptions) => Promise<void>;
     },
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
@@ -368,14 +368,16 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         this.options.logger.warn(
           `DefaultProcessingDatabase - Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
-        await options.conflictHandler({
-          tx,
-          entity,
-          hash,
-          originalLocationKey: conflictingKey,
-          newLocationKey: locationKey!,
-          logger: this.options.logger,
-        });
+        if (options.conflictHandler) {
+          await options.conflictHandler({
+            tx,
+            entity,
+            hash,
+            originalLocationKey: conflictingKey,
+            newLocationKey: locationKey!,
+            logger: this.options.logger,
+          });
+        }
       }
     }
 

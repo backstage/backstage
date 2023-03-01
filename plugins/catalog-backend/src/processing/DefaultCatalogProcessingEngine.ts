@@ -49,9 +49,9 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
     private readonly pollingIntervalMs: number = 1000,
-    private readonly conflictHandler: (
+    private readonly conflictHandler?: (
       options: ConflictHandlerOptions,
-    ) => Promise<void> = () => Promise.resolve(),
+    ) => Promise<void>,
     private readonly onProcessingError?: (event: {
       unprocessedEntity: Entity;
       errors: Error[];
