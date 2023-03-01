@@ -8,14 +8,7 @@ import type { EntityMeta } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
 import type { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
-import { ResourcePermission } from '@backstage/plugin-permission-common';
 import type { UserEntity } from '@backstage/catalog-model';
-
-// @alpha
-export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
-
-// @alpha
-export const scaffolderPermissions: ResourcePermission<'scaffolder-template'>[];
 
 // @public
 export const isTemplateEntityV1beta3: (
@@ -102,15 +95,9 @@ export interface TemplateParameter extends JsonObject {
   };
 }
 
-// @alpha
-export const templateParameterReadPermission: ResourcePermission<'scaffolder-template'>;
-
 // @public
 export interface TemplateSpecValuesMetadata extends JsonObject {
   // (undocumented)
   tags?: string[];
 }
-
-// @alpha
-export const templateStepReadPermission: ResourcePermission<'scaffolder-template'>;
 ```
