@@ -65,7 +65,7 @@ export type IndexBuilderServiceBuildOptions = {
   collators: RegisterCollatorParameters[];
   decorators: RegisterDecoratorParameters[];
 };
-export interface IndexBuilderService {
+export interface SearchIndexBuilderService {
   build(options: IndexBuilderServiceBuildOptions): Promise<{
     scheduler: Scheduler;
   }>;
@@ -81,5 +81,5 @@ export interface SearchIndexRegistryExtensionPoint {
 
 export interface SearchEngineRegistryExtensionPoint {
   setSearchEngine(searchEngine: SearchEngine): void;
-  getSearchEngine(): SearchEngine;
+  getSearchEngine(): SearchEngine | null;
 }
