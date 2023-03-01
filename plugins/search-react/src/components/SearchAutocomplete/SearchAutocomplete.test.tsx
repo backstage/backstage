@@ -74,7 +74,7 @@ describe('SearchAutocomplete', () => {
     expect(screen.queryByText(options[1])).not.toBeInTheDocument();
     expect(screen.queryByText(options[2])).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByPlaceholderText(`Search in ${title}`));
+    await userEvent.click(screen.getByLabelText(`Search in ${title}`));
 
     await waitFor(() => {
       expect(screen.getByText(options[0])).toBeInTheDocument();
@@ -150,7 +150,7 @@ describe('SearchAutocomplete', () => {
       </TestApiProvider>,
     );
 
-    await userEvent.click(screen.getByPlaceholderText(`Search in ${title}`));
+    await userEvent.click(screen.getByLabelText(`Search in ${title}`));
 
     await userEvent.click(screen.getByText(options[0]));
 
@@ -218,7 +218,7 @@ describe('SearchAutocomplete', () => {
       </TestApiProvider>,
     );
 
-    await userEvent.click(screen.getByPlaceholderText(`Search in ${title}`));
+    await userEvent.click(screen.getByLabelText(`Search in ${title}`));
 
     await waitFor(() => {
       expect(screen.getAllByTitle('Option icon')).toHaveLength(3);

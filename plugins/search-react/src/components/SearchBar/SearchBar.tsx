@@ -78,7 +78,7 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
         clearButton = true,
         fullWidth = true,
         value: defaultValue,
-        placeholder: defaultPlaceholder,
+        label: defaultLabel,
         inputProps: defaultInputProps = {},
         endAdornment: defaultEndAdornment,
         ...rest
@@ -119,8 +119,8 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
         }
       }, [onChange, onClear]);
 
-      const placeholder =
-        defaultPlaceholder ??
+      const label =
+        defaultLabel ??
         `Search in ${configApi.getOptionalString('app.title') || 'Backstage'}`;
 
       const startAdornment = (
@@ -142,12 +142,13 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       return (
         <TrackSearch>
           <TextField
+            id="search-bar-text-field"
             data-testid="search-bar-next"
             variant="outlined"
             margin="normal"
             inputRef={ref}
             value={value}
-            label={placeholder}
+            label={label}
             InputProps={{
               startAdornment,
               endAdornment: clearButton ? endAdornment : defaultEndAdornment,

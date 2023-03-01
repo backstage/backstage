@@ -70,9 +70,28 @@ describe('SearchBar', () => {
     );
 
     await waitFor(() => {
-      expect(
-        screen.getByPlaceholderText('Search in Mock title'),
-      ).toBeInTheDocument();
+      expect(screen.getByLabelText('Search in Mock title')).toBeInTheDocument();
+    });
+  });
+
+  it('Renders with custom label', async () => {
+    const label = 'label';
+
+    const result = await renderWithEffects(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider>
+          <SearchBar label={label} />
+        </SearchContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(result.getByLabelText(label)).toBeInTheDocument();
     });
   });
 
