@@ -382,7 +382,7 @@ export type DefaultCatalogCollatorFactoryOptions = {
   batchSize?: number;
   catalogClient?: CatalogApi;
   entityTransformer?: CatalogCollatorEntityTransformer;
-  type?: string;
+  documentType?: string;
 };
 
 export { DeferredEntity };

@@ -44,7 +44,7 @@ export type DefaultCatalogCollatorFactoryOptions = {
   batchSize?: number;
   catalogClient?: CatalogApi;
   entityTransformer?: CatalogCollatorEntityTransformer;
-  type?: string;
+  documentType?: string;
 };
 
 /** @public */
@@ -76,7 +76,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
       catalogClient,
       tokenManager,
       entityTransformer,
-      type,
+      documentType,
     } = options;
 
     this.locationTemplate =
@@ -88,7 +88,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     this.tokenManager = tokenManager;
     this.entityTransformer =
       entityTransformer ?? defaultCatalogCollatorEntityTransformer;
-    this.type = type ?? 'software-catalog';
+    this.type = documentType ?? 'software-catalog';
   }
 
   async getCollator(): Promise<Readable> {

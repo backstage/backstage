@@ -189,7 +189,7 @@ entities are indexed by the search engine.
 In some cases you might want to have the ability to change the document type in which catalog entities will be indexed by catalog collator.
 Such option gives a possibility to customize SearchPage results and filters depending on which document type you would like to see results for.
 
-You can achieve that by passing additional parameter `type` to the `DefaultCatalogCollatorFactory`.
+You can achieve that by passing additional parameter `documentType` to the `DefaultCatalogCollatorFactory`.
 
 Let's say that you want to have two different document types for some entities.
 Our example will cover a use case in which we want to:
@@ -197,7 +197,7 @@ Our example will cover a use case in which we want to:
 - Store entities of kind `User` or `Group` under document type `yourCustomDocumentType`,
 - Store rest of entities under default document type `software-catalog`
 
-To achieve that you will have to remove `User` and `Group` from your previous collator `filter` and register new `DefaultCatalogCollatorFactory` with new parameter `type`.
+To achieve that you will have to remove `User` and `Group` from your previous collator `filter` and register new `DefaultCatalogCollatorFactory` with new parameter `documentType`.
 
 ```diff
 // packages/backend/src/plugins/search.ts
@@ -222,7 +222,7 @@ To achieve that you will have to remove `User` and `Group` from your previous co
 +      filter: {
 +        kind: ['User', 'Group'],
 +      },
-+      type: 'yourCustomDocumentType',
++      documentType: 'yourCustomDocumentType',
 +    }),
 +  });
 ```
