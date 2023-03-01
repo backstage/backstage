@@ -43,7 +43,7 @@ export type UpdateProcessedEntityOptions = {
   deferredEntities: DeferredEntity[];
   locationKey?: string;
   refreshKeys: RefreshKeyData[];
-  handleConflict: (options: ConflictHandlerOptions) => Promise<void>;
+  conflictHandler: (options: ConflictHandlerOptions) => Promise<void>;
 };
 
 export type UpdateEntityCacheOptions = {

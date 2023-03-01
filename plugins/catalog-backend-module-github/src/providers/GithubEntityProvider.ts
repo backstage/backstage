@@ -169,6 +169,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
+
     const targets = await this.findCatalogFiles();
     const matchingTargets = this.matchesFilters(targets);
     const entities = matchingTargets

@@ -215,7 +215,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
                 deferredEntities: result.deferredEntities,
                 locationKey,
                 refreshKeys: result.refreshKeys,
-                handleConflict: this.conflictHandler,
+                conflictHandler: this.conflictHandler,
               });
             oldRelationSources = new Set(
               previous.relations.map(r => r.source_entity_ref),

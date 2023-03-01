@@ -77,7 +77,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       deferredEntities,
       refreshKeys,
       locationKey,
-      handleConflict,
+      conflictHandler,
     } = options;
     const configClient = tx.client.config.client;
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
@@ -107,7 +107,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     await this.addUnprocessedEntities(tx, {
       entities: deferredEntities,
       sourceEntityRef,
-      handleConflict,
+      conflictHandler,
     });
 
     // Delete old relations
@@ -311,7 +311,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     options: {
       sourceEntityRef: string;
       entities: DeferredEntity[];
-      handleConflict: (options: ConflictHandlerOptions) => Promise<void>;
+      conflictHandler: (options: ConflictHandlerOptions) => Promise<void>;
     },
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
@@ -368,7 +368,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         this.options.logger.warn(
           `DefaultProcessingDatabase - Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
-        await options.handleConflict({
+        await options.conflictHandler({
           tx,
           entity,
           hash,
