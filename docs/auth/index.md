@@ -84,49 +84,55 @@ which takes either a `provider` or `providers` (array) prop of `SignInProviderCo
 The following example for GitHub shows the additions needed to `packages/app/src/App.tsx`,
 and can be adapted to any of the built-in providers:
 
-```diff
-+ import { githubAuthApiRef } from '@backstage/core-plugin-api';
-+ import { SignInPage } from '@backstage/core-components';
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-start */
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { SignInPage } from '@backstage/core-components';
+/* highlight-add-end */
 
- const app = createApp({
-   apis,
-+  components: {
-+    SignInPage: props => (
-+      <SignInPage
-+        {...props}
-+        auto
-+        provider={{
-+          id: 'github-auth-provider',
-+          title: 'GitHub',
-+          message: 'Sign in using GitHub',
-+          apiRef: githubAuthApiRef,
-+        }}
-+      />
-+    ),
-+  },
-   bindRoutes({ bind }) {
+const app = createApp({
+  /* highlight-add-start */
+  components: {
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        auto
+        provider={{
+          id: 'github-auth-provider',
+          title: 'GitHub',
+          message: 'Sign in using GitHub',
+          apiRef: githubAuthApiRef,
+        }}
+      />
+    ),
+  },
+  /* highlight-add-end */
+  // ..
+});
 ```
 
 You can also use the `providers` prop to enable multiple sign-in methods, for example
 allows allowing guest access:
 
-```diff
- const app = createApp({
-   apis,
-+  components: {
-+    SignInPage: props => (
-+      <SignInPage
-+        {...props}
-+        providers={['guest', {
-+          id: 'github-auth-provider',
-+          title: 'GitHub',
-+          message: 'Sign in using GitHub',
-+          apiRef: githubAuthApiRef,
-+        }]}
-+      />
-+    ),
-+  },
-   bindRoutes({ bind }) {
+```tsx title="packages/app/src/App.tsx"
+const app = createApp({
+  /* highlight-add-start */
+  components: {
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        providers={['guest', {
+          id: 'github-auth-provider',
+          title: 'GitHub',
+          message: 'Sign in using GitHub',
+          apiRef: githubAuthApiRef,
+        }]}
+      />
+    ),
+  },
+  /* highlight-add-end */
+  // ..
+});
 ```
 
 ## Sign-In with Proxy Providers
@@ -142,12 +148,12 @@ All the sign-in page needs to do is to call the `/refresh` endpoint of the auth 
 to get the existing session, which is exactly what the `ProxiedSignInPage` does. The only
 thing you need to do to configure the `ProxiedSignInPage` is to pass the ID of the provider like this:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 const app = createApp({
-  ...,
   components: {
     SignInPage: props => <ProxiedSignInPage {...props} provider="awsalb" />,
   },
+  // ..
 });
 ```
 
@@ -159,6 +165,7 @@ Example:
 <ProxiedSignInPage
   {...props}
   provider="my-custom-provider"
+  /* highlight-next-line */
   headers={{ 'x-some-key': someValue }}
 />
 ```
@@ -169,10 +176,12 @@ Headers can also be returned in an async manner:
 <ProxiedSignInPage
   {...props}
   provider="my-custom-provider"
+  /* highlight-start */
   headers={async () => {
     const someValue = await someFn();
     return { 'x-some-key': someValue };
   }}
+  /* highlight-end */
 />
 ```
 
@@ -184,9 +193,8 @@ select the sign-in method based on the `process.env.NODE_ENV` environment variab
 by checking the `hostname` of the current location, or by accessing the configuration API
 to read a configuration value. For example:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 const app = createApp({
-  ...,
   components: {
     SignInPage: props => {
       const configApi = useApi(configApiRef);
@@ -206,6 +214,7 @@ const app = createApp({
       return <ProxiedSignInPage {...props} provider="gcpiap" />;
     },
   },
+  // ..
 });
 ```
 
@@ -218,7 +227,7 @@ If you want to use the authentication capabilities of the [Repository Picker](..
 
 To set it up, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The example below sets up the `ScmAuthApi` for an already configured GitLab authentication provider:
 
-```ts
+```ts title="packages/app/src/apis.ts"
 createApiFactory({
   api: scmAuthApiRef,
   deps: {
@@ -294,23 +303,24 @@ If you require only a subset of these integrations, then you will need a custom 
 
 The first step is to remove the code that creates the default providers.
 
-```diff
- import {
-   ScmIntegrationsApi,
-   scmIntegrationsApiRef,
-+   ScmAuth,
- } from '@backstage/integration-react';
+```ts title="packages/app/src/apis.ts"
+import {
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+  /* highlight-add-next-line */
+  ScmAuth,
+} from '@backstage/integration-react';
 
- export const apis: AnyApiFactory[] = [
-...
-+  ScmAuth.createDefaultApiFactory(),
-...
- ];
+export const apis: AnyApiFactory[] = [
+  /* highlight-add-next-line */
+  ScmAuth.createDefaultApiFactory(),
+ // ...
+];
 ```
 
 Then replace it with something like this, which will create an `ApiFactory` with only a github provider.
 
-```ts
+```ts title="packages/app/src/apis.ts"
 export const apis: AnyApiFactory[] = [
   createApiFactory({
     api: scmAuthApiRef,

@@ -18,7 +18,7 @@ The source code is available here:
 - [todo-list-backend](https://github.com/backstage/backstage/blob/master/plugins/example-todo-list-backend)
 - [todo-list-common](https://github.com/backstage/backstage/blob/master/plugins/example-todo-list-common)
 
-1.  Copy-paste the three folders into the plugins folder of your backstage application repository (removing the `example-` prefix from each folder) or run the following script from the root of your backstage application:
+1. Copy-paste the three folders into the plugins folder of your backstage application repository (removing the `example-` prefix from each folder) or run the following script from the root of your backstage application:
 
     ```bash
     $ cd $(mktemp -d)
@@ -37,7 +37,7 @@ The source code is available here:
 
     **Important**: if you are on **Windows**, make sure you have WSL and git installed on your machine before executing the script above.
 
-2.  Add these packages as dependencies for your Backstage app:
+2. Add these packages as dependencies for your Backstage app:
 
     ```sh
     # From your Backstage root directory
@@ -45,11 +45,11 @@ The source code is available here:
     $ yarn add --cwd packages/app @internal/plugin-todo-list
     ```
 
-3.  Include the backend and frontend plugin in your application:
+3. Include the backend and frontend plugin in your application:
 
     Create a new `packages/backend/src/plugins/todolist.ts` with the following content:
 
-    ```typescript
+    ```typescript title="packages/backend/src/plugins/todolist.ts"
     import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
     import { createRouter } from '@internal/plugin-todo-list-backend';
     import { Router } from 'express';
@@ -71,40 +71,47 @@ The source code is available here:
 
     Apply the following changes to `packages/backend/src/index.ts`:
 
-    ```diff
-      import techdocs from './plugins/techdocs';
-    + import todoList from './plugins/todolist';
-      import search from './plugins/search';
+    ```ts title="packages/backend/src/index.ts"
+    import techdocs from './plugins/techdocs';
+    /* highlight-add-next-line */
+    import todoList from './plugins/todolist';
+    import search from './plugins/search';
 
-      ...
-
+    async function main() {
       const searchEnv = useHotMemoize(module, () => createEnv('search'));
       const appEnv = useHotMemoize(module, () => createEnv('app'));
-    + const todoListEnv = useHotMemoize(module, () => createEnv('todolist'));
-
-      ...
+      /* highlight-add-next-line */
+      const todoListEnv = useHotMemoize(module, () => createEnv('todolist'));
+      // ..
 
       apiRouter.use('/proxy', await proxy(proxyEnv));
       apiRouter.use('/search', await search(searchEnv));
       apiRouter.use('/permission', await permission(permissionEnv));
-    + apiRouter.use('/todolist', await todoList(todoListEnv));
+      /* highlight-add-next-line */
+      apiRouter.use('/todolist', await todoList(todoListEnv));
       // Add backends ABOVE this line; this 404 handler is the catch-all fallback
       apiRouter.use(notFoundHandler());
+      // ..
+    }
     ```
 
     Apply the following changes to `packages/app/src/App.tsx`:
 
-    ```diff
-    + import { TodoListPage } from '@internal/plugin-todo-list';
+    ```tsx title="packages/app/src/App.tsx"
+    /* highlight-add-next-line */
+    import { TodoListPage } from '@internal/plugin-todo-list';
 
-    ...
-
+    const routes = (
+      <FlatRoutes>
         <Route path="/search" element={<SearchPage />}>
           {searchPage}
         </Route>
         <Route path="/settings" element={<UserSettingsPage />} />
-    +   <Route path="/todo-list" element={<TodoListPage />} />
+        {/* highlight-add-next-line */}
+        <Route path="/todo-list" element={<TodoListPage />} />
+        {/* ... */}
       </FlatRoutes>
+    );
     ```
 
 Now if you start your application you should be able to reach the `/todo-list` page:

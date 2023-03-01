@@ -32,8 +32,7 @@ Setup [Azure integration](locations.md) with `host` and `token`. Host must be `d
 
 At your configuration, you add one or more provider configs:
 
-```yaml
-# app-config.yaml
+```yaml title="app-config.yaml"
 catalog:
   providers:
     azureDevOps:
@@ -94,39 +93,45 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-azure
 
 Once you've done that, you'll also need to add the segment below to `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-/* packages/backend/src/plugins/catalog.ts */
-+import { AzureDevOpsEntityProvider } from '@backstage/plugin-catalog-backend-module-azure';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { AzureDevOpsEntityProvider } from '@backstage/plugin-catalog-backend-module-azure';
 
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
-+builder.addEntityProvider(
-+  AzureDevOpsEntityProvider.fromConfig(env.config, {
-+    logger: env.logger,
-+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-+    schedule: env.scheduler.createScheduledTaskRunner({
-+      frequency: { minutes: 30 },
-+      timeout: { minutes: 3 },
-+    }),
-+    // optional: alternatively, use schedule
-+    scheduler: env.scheduler,
-+  }),
-+);
+/* highlight-add-start */
+builder.addEntityProvider(
+  AzureDevOpsEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
+    }),
+    // optional: alternatively, use schedule
+    scheduler: env.scheduler,
+  }),
+);
+/* highlight-add-end */
 ```
 
 ## Alternative Processor
 
 As an alternative to the entity provider `AzureDevOpsEntityProvider`, you can still use the `AzureDevopsDiscoveryProcessor`.
 
-```diff
-// In packages/backend/src/plugins/catalog.ts
-+import { AzureDevOpsDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-azure';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { AzureDevOpsDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-azure';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
-+  builder.addProcessor(AzureDevOpsDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }));
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(AzureDevOpsDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }));
+
+  // ..
+}
 ```
 
 ```yaml

@@ -235,26 +235,33 @@ others.
 You should now be able to add this class to your backend in
 `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-+import { FrobsProvider } from '../path/to/class';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { FrobsProvider } from '../path/to/class';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = CatalogBuilder.create(env);
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = CatalogBuilder.create(env);
+  /* highlight-add-start */
+  const frobs = new FrobsProvider('production', env.reader);
+  builder.addEntityProvider(frobs);
+  /* highlight-add-end */
 
-+  const frobs = new FrobsProvider('production', env.reader);
-+  builder.addEntityProvider(frobs);
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
 
-   const { processingEngine, router } = await builder.build();
-   await processingEngine.start();
+  /* highlight-add-start */
+  await env.scheduler.scheduleTask({
+    id: 'run_frobs_refresh',
+    fn: async () => { await frobs.run(); },
+    frequency: { minutes: 30 },
+    timeout: { minutes: 10 },
+  });
+  /* highlight-add-end */
 
-+  await env.scheduler.scheduleTask({
-+    id: 'run_frobs_refresh',
-+    fn: async () => { await frobs.run(); },
-+    frequency: { minutes: 30 },
-+    timeout: { minutes: 10 },
-+  });
+  // ..
+}
 ```
 
 Note that we used the builtin scheduler facility to regularly call the `run`
@@ -464,8 +471,7 @@ feeding it into the ingestion loop. For this kind of an integration, you'd
 typically want to add it to the list of statically always-available locations in
 the config.
 
-```yaml
-# In app-config.yaml
+```yaml title="app-config.yaml"
 catalog:
   locations:
     - type: system-x
@@ -551,14 +557,19 @@ The key points to note are:
 You should now be able to add this class to your backend in
 `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-+import { SystemXReaderProcessor } from '../path/to/class';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { SystemXReaderProcessor } from '../path/to/class';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = CatalogBuilder.create(env);
-+  builder.addProcessor(new SystemXReaderProcessor(env.reader));
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(new SystemXReaderProcessor(env.reader));
+
+  // ..
+}
 ```
 
 Start up the backend - it should now start reading from the previously

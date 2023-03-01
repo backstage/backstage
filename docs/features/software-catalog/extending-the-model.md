@@ -530,12 +530,17 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 Once the processor is created it can be wired up to the catalog via the
 `CatalogBuilder` in `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-+ import { FoobarEntitiesProcessor } from '@internal/plugin-foobar-backend';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { FoobarEntitiesProcessor } from '@internal/plugin-foobar-backend';
 
- // ...
-
-     const builder = await CatalogBuilder.create(env);
-+    builder.addProcessor(new FoobarEntitiesProcessor());
-     const { processingEngine, router } = await builder.build();
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(new FoobarEntitiesProcessor());
+  const { processingEngine, router } = await builder.build();
+  // ..
+}
 ```

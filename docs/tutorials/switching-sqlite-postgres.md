@@ -29,24 +29,28 @@ yarn add --cwd packages/backend pg
 Next, modify `app-config.yaml` in the root folder to add PostgreSQL
 configuration for the backend:
 
-```diff
+```yaml title="app-config.yaml"
 backend:
   database:
--    client: better-sqlite3
--    connection: ':memory:'
-+    # config options: https://node-postgres.com/api/client
-+    client: pg
-+    connection:
-+      host: ${POSTGRES_HOST}
-+      port: ${POSTGRES_PORT}
-+      user: ${POSTGRES_USER}
-+      password: ${POSTGRES_PASSWORD}
-+      # https://node-postgres.com/features/ssl
-+      # you can set the sslmode configuration option via the `PGSSLMODE` environment variable
-+      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-+      # ssl:
-+      #   ca: # if you have a CA file and want to verify it you can uncomment this section
-+      #     $file: <file-path>/ca/server.crt
+    # highlight-remove-start
+    client: better-sqlite3
+    connection: ':memory:'
+    # highlight-remove-end
+    # highlight-add-start
+    # config options: https://node-postgres.com/api/client
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+      # https://node-postgres.com/features/ssl
+      # you can set the sslmode configuration option via the `PGSSLMODE` environment variable
+      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+      # ssl:
+      #   ca: # if you have a CA file and want to verify it you can uncomment this section
+      #     $file: <file-path>/ca/server.crt
+    # highlight-add-end
 ```
 
 If you have an `app-config.local.yaml` for local development, a similar update
@@ -60,31 +64,35 @@ The Backstage App is now ready to start up with a PostgreSQL backing database.
 
 If you want to override the default connection pool settings then use the below configuration:
 
-```diff
+```yaml title="app-config.local.yaml"
 backend:
   database:
--    client: better-sqlite3
--    connection: ':memory:'
-+    # config options: https://node-postgres.com/api/client
-+    client: pg
-+    connection:
-+      host: ${POSTGRES_HOST}
-+      port: ${POSTGRES_PORT}
-+      user: ${POSTGRES_USER}
-+      password: ${POSTGRES_PASSWORD}
-+      # https://node-postgres.com/features/ssl
-+      # you can set the sslmode configuration option via the `PGSSLMODE` environment variable
-+      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-+      # ssl:
-+      #   ca: # if you have a CA file and want to verify it you can uncomment this section
-+      #     $file: <file-path>/ca/server.crt
-+    # Refer to Tarn docs for default values on PostgreSQL pool configuration - https://github.com/Vincit/tarn.js
-+    knexConfig:
-+      pool:
-+        min: 3
-+        max: 12
-+        acquireTimeoutMillis: 60000
-+        idleTimeoutMillis: 60000
+    # highlight-remove-start
+    client: better-sqlite3
+    connection: ':memory:'
+    # highlight-remove-end
+    # highlight-add-start
+    # config options: https://node-postgres.com/api/client
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+      # https://node-postgres.com/features/ssl
+      # you can set the sslmode configuration option via the `PGSSLMODE` environment variable
+      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+      # ssl:
+      #   ca: # if you have a CA file and want to verify it you can uncomment this section
+      #     $file: <file-path>/ca/server.crt
+    # Refer to Tarn docs for default values on PostgreSQL pool configuration - https://github.com/Vincit/tarn.js
+    knexConfig:
+      pool:
+        min: 3
+        max: 12
+        acquireTimeoutMillis: 60000
+        idleTimeoutMillis: 60000
+      # highlight-add-end
 ```
 
 ### Using a single database

@@ -38,7 +38,7 @@ add the provider itself.
 Add a `providerFactories` entry to the router in
 `packages/backend/plugin/auth.ts`.
 
-```ts
+```ts title="packages/backend/plugin/auth.ts"
 import { providers } from '@backstage/plugin-auth-backend';
 
 export default async function createPlugin(
@@ -89,12 +89,18 @@ the user's behalf.
 It is recommended to use the `ProxiedSignInPage` for this provider, which is
 installed in `packages/app/src/App.tsx` like this:
 
-```diff
-+import { ProxiedSignInPage } from '@backstage/core-components';
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-next-line */
+import { ProxiedSignInPage } from '@backstage/core-components';
 
- const app = createApp({
-   components: {
-+    SignInPage: props => <ProxiedSignInPage {...props} provider="cfaccess" />,
+const app = createApp({
+  /* highlight-add-start */
+  components: {
+    SignInPage: props => <ProxiedSignInPage {...props} provider="cfaccess" />,
+  },
+  /* highlight-add-end */
+  // ..
+})
 ```
 
 See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page to also work smoothly for local development.

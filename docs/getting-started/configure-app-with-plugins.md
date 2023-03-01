@@ -33,23 +33,25 @@ to an entity in the software catalog.
 
 2. Add the `EntityCircleCIContent` extension to the entity pages in the app:
 
-   ```diff
-   // packages/app/src/components/catalog/EntityPage.tsx
-   +import {
-   +  EntityCircleCIContent,
-   +  isCircleCIAvailable,
-   +} from '@backstage/plugin-circleci';
+    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
+    /* highlight-add-start */
+    import {
+      EntityCircleCIContent,
+      isCircleCIAvailable,
+    } from '@backstage/plugin-circleci';
+    /* highlight-add-end */
 
-   ...
-   const cicdContent = (
-     <EntitySwitch>
-       ...
-   +     <EntitySwitch.Case if={isCircleCIAvailable}>
-   +       <EntityCircleCIContent />
-   +     </EntitySwitch.Case>;
-     </EntitySwitch>
-   );
-   ```
+    const cicdContent = (
+      <EntitySwitch>
+        {/* ... */}
+        {/* highlight-add-next-line */}
+        <EntitySwitch.Case if={isCircleCIAvailable}>
+          <EntityCircleCIContent />
+        </EntitySwitch.Case>;
+        {/* highlight-add-end */}
+      </EntitySwitch>
+    );
+    ```
 
    This is just one example, but each Backstage instance may integrate content or
    cards to suit their needs on different pages, tabs, etc. In addition, while some
@@ -62,8 +64,7 @@ to an entity in the software catalog.
    Plugins that collect data off of external services may require the use of a proxy service.
    This plugin accesses the CircleCI REST API, and thus requires a proxy definition.
 
-   ```yaml
-   // app-config.yaml
+   ```yaml title="app-config.yaml"
    proxy:
      '/circleci/api':
        target: https://circleci.com/api/v1.1
@@ -82,7 +83,7 @@ adding new `SidebarItem` elements.
 For example, if you install the `api-docs` plugin, a matching `SidebarItem`
 could be something like this:
 
-```tsx
+```tsx title="packages/app/src/components/Root/Root.tsx"
 // Import icon from MUI
 import ExtensionIcon from '@material-ui/icons/Extension';
 
@@ -95,7 +96,7 @@ are sized according to the Material UI's
 [SvgIcon](https://material-ui.com/api/svg-icon/) default of 24x24px, and set the
 extension to `.icon.svg`. For example:
 
-```ts
+```tsx
 import InternalToolIcon from './internal-tool.icon.svg';
 ```
 
@@ -104,7 +105,7 @@ customizing the experience you can group `SidebarItems` in a `SidebarGroup`
 (Example 1) or create a `SidebarGroup` with a link (Example 2). All
 `SidebarGroup`s are displayed in the bottom navigation with an icon.
 
-```ts
+```tsx
 // Example 1
 <SidebarGroup icon={<MenuIcon />} label="Menu">
   ...
@@ -113,7 +114,7 @@ customizing the experience you can group `SidebarItems` in a `SidebarGroup`
 <SidebarGroup />
 ```
 
-```ts
+```tsx
 // Example 2
 <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
   ...

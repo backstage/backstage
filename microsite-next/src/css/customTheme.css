@@ -56,3 +56,23 @@
   );
 }
 /* #endregion */
+
+/* prism magic comments https://docusaurus.io/docs/markdown-features/code-blocks#custom-magic-comments */
+
+.code-block-add-line {
+  background-color: rgba(0, 255, 0, 0.125);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+  border-left: 3px solid rgba(0, 255, 0, 0.5);
+}
+
+.code-block-remove-line {
+  background-color: rgba(255, 0, 0, 0.125);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+  border-left: 3px solid rgba(255, 0, 0, 0.5);
+}
+
+/* #endregion */

@@ -23,9 +23,11 @@ that incoming requests are not validated. If you want to enable
 service-to-service auth, the first step is to switch out the following line in
 your backend setup at `packages/backend/src/index.ts`:
 
-```diff
-- const tokenManager = ServerTokenManager.noop();
-+ const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
+```ts title="packages/backend/src/index.ts"
+/* highlight-remove-next-line */
+const tokenManager = ServerTokenManager.noop();
+/* highlight-add-next-line */
+const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
 ```
 
 By switching from the no-op `ServiceTokenManager` to one created from config,

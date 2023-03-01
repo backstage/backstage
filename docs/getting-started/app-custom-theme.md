@@ -172,7 +172,7 @@ When creating a custom theme you would be applying different values to
 component's css rules that use the theme object. For example, a Backstage
 component's styles might look like this:
 
-```ts
+```tsx
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
     header: {
@@ -263,10 +263,8 @@ You can also use another web image format such as PNG by importing it. To do
 this, place your new image into a new subdirectory such as
 `src/components/Root/logo/my-company-logo.png`, and then add this code:
 
-```jsx
+```tsx
 import MyCustomLogoFull from './logo/my-company-logo.png';
-
-//...
 
 const LogoFull = () => {
   return <img src={MyCustomLogoFull} />;
@@ -294,8 +292,7 @@ In your front-end application, locate the `src` folder. We suggest creating the 
 
 > Another example [here](https://github.com/backstage/backstage/blob/master/plugins/azure-devops/src/components/AzurePipelinesIcon/AzurePipelinesIcon.tsx), if you want to ensure proper behavior in light and dark themes.
 
-```tsx
-// customIcons.tsx
+```tsx title="customIcons.tsx"
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
 import React from 'react';
@@ -317,29 +314,28 @@ export const ExampleIcon = (props: SvgIconProps) => (
 
 Supply your custom icon in `packages/app/src/App.tsx`
 
-```diff
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-next-line */
+import { ExampleIcon } from './assets/customIcons'
 
-+ import { ExampleIcon } from './assets/customIcons'
-
-[...]
 
 const app = createApp({
   apis,
   components: {
-    [...]
+    {/* ... */}
   },
   themes: [
-    [...]
+    {/* ... */}
   ],
-+  icons: {
-+    github: ExampleIcon,
-+  },
+  /* highlight-add-start */
+  icons: {
+    github: ExampleIcon,
+  },
+  /* highlight-add-end */
   bindRoutes({ bind }) {
-    [...]
+    {/* ... */}
   }
 })
-
-[...]
 ```
 
 ### Adding Icons
@@ -350,17 +346,19 @@ You can add more icons, if the [default icons](https://github.com/backstage/back
 2. Then you want to import your icon, add this to the rest of your imports: `import AlarmIcon from '@material-ui/icons/Alarm';`
 3. Next you want to add the icon like this to your `createApp`:
 
-   ```diff
-     const app = createApp({
-       apis: ...,
-       plugins: ...,
-   +   icons: {
-   +     alert: AlarmIcon,
-   +   },
-       themes: ...,
-       components: ...,
-     });
-   ```
+    ```tsx title="packages/app/src/App.tsx"
+    const app = createApp({
+      apis: ...,
+      plugins: ...,
+      /* highlight-add-start */
+      icons: {
+        alert: AlarmIcon,
+      },
+    /* highlight-add-end */
+      themes: ...,
+      components: ...,
+    });
+    ```
 
 4. Now we can reference `alert` for our icon in our entity links like this:
 
@@ -404,7 +402,7 @@ For this example we'll show you how you can expand the sidebar with a sub-menu:
 1. Open the `Root.tsx` file located in `packages/app/src/components/Root` as this is where the sidebar code lives
 2. Then we want to add the following imports for the icons:
 
-   ```ts
+   ```tsx title="packages/app/src/components/Root/Root.tsx"
    import ApiIcon from '@material-ui/icons/Extension';
    import ComponentIcon from '@material-ui/icons/Memory';
    import DomainIcon from '@material-ui/icons/Apartment';
@@ -415,69 +413,71 @@ For this example we'll show you how you can expand the sidebar with a sub-menu:
 
 3. Then update the `@backstage/core-components` import like this:
 
-   ```diff
-     import {
-       Sidebar,
-       sidebarConfig,
-       SidebarDivider,
-       SidebarGroup,
-       SidebarItem,
-       SidebarPage,
-       SidebarScrollWrapper,
-       SidebarSpace,
-       useSidebarOpenState,
-       Link,
-   +   GroupIcon,
-   +   SidebarSubmenu,
-   +   SidebarSubmenuItem,
-     } from '@backstage/core-components';
-   ```
+    ```tsx
+    import {
+      Sidebar,
+      sidebarConfig,
+      SidebarDivider,
+      SidebarGroup,
+      SidebarItem,
+      SidebarPage,
+      SidebarScrollWrapper,
+      SidebarSpace,
+      useSidebarOpenState,
+      Link,
+      /* highlight-add-start */
+      GroupIcon,
+      SidebarSubmenu,
+      SidebarSubmenuItem,
+      /* highlight-add-end */
+    } from '@backstage/core-components';
+    ```
 
 4. Finally replace `<SidebarItem icon={HomeIcon} to="catalog" text="Home" />` with this:
 
-   ```ts
-   <SidebarItem icon={HomeIcon} to="catalog" text="Home">
-     <SidebarSubmenu title="Catalog">
-       <SidebarSubmenuItem
-         title="Domains"
-         to="catalog?filters[kind]=domain"
-         icon={DomainIcon}
-       />
-       <SidebarSubmenuItem
-         title="Systems"
-         to="catalog?filters[kind]=system"
-         icon={SystemIcon}
-       />
-       <SidebarSubmenuItem
-         title="Components"
-         to="catalog?filters[kind]=component"
-         icon={ComponentIcon}
-       />
-       <SidebarSubmenuItem
-         title="APIs"
-         to="catalog?filters[kind]=api"
-         icon={ApiIcon}
-       />
-       <SidebarDivider />
-       <SidebarSubmenuItem
-         title="Resources"
-         to="catalog?filters[kind]=resource"
-         icon={ResourceIcon}
-       />
-       <SidebarDivider />
-       <SidebarSubmenuItem
-         title="Groups"
-         to="catalog?filters[kind]=group"
-         icon={GroupIcon}
-       />
-       <SidebarSubmenuItem
-         title="Users"
-         to="catalog?filters[kind]=user"
-         icon={UserIcon}
-       />
-     </SidebarSubmenu>
-   </SidebarItem>
-   ```
+    ```tsx
+    <SidebarItem icon={HomeIcon} to="catalog" text="Home">
+      <SidebarSubmenu title="Catalog">
+        <SidebarSubmenuItem
+          title="Domains"
+          to="catalog?filters[kind]=domain"
+          icon={DomainIcon}
+        />
+        <SidebarSubmenuItem
+          title="Systems"
+          to="catalog?filters[kind]=system"
+          icon={SystemIcon}
+        />
+        <SidebarSubmenuItem
+          title="Components"
+          to="catalog?filters[kind]=component"
+          icon={ComponentIcon}
+        />
+        <SidebarSubmenuItem
+          title="APIs"
+          to="catalog?filters[kind]=api"
+          icon={ApiIcon}
+        />
+        <SidebarDivider />
+        <SidebarSubmenuItem
+          title="Resources"
+          to="catalog?filters[kind]=resource"
+          icon={ResourceIcon}
+        />
+        <SidebarDivider />
+        <SidebarSubmenuItem
+          title="Groups"
+          to="catalog?filters[kind]=group"
+          icon={GroupIcon}
+        />
+        <SidebarSubmenuItem
+          title="Users"
+          to="catalog?filters[kind]=user"
+          icon={UserIcon}
+        />
+      </SidebarSubmenu>
+    </SidebarItem>
+    ```
 
 When you startup your Backstage app and hover over the Home option on the sidebar you'll now see a nice sub-menu appear with links to the various Kinds in your Catalog. It would look like this:
 
