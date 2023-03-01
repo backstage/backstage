@@ -37,20 +37,24 @@ import {
   DialogTitle,
   Grid,
   makeStyles,
-  Paper,
 } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import BuildIcon from '@material-ui/icons/Build';
 import CloseIcon from '@material-ui/icons/Close';
-import LaunchIcon from '@material-ui/icons/Launch';
 import React, { KeyboardEvent, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
+    gap: theme.spacing(1),
     display: 'grid',
+    alignItems: 'center',
     gridTemplateColumns: '1fr auto',
+    '&> button': {
+      marginTop: theme.spacing(1),
+    },
   },
   container: {
     borderRadius: 30,
@@ -90,7 +94,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
   });
 
   const handleSearchBarKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (e: KeyboardEvent<HTMLDivElement | HTMLTextAreaElement>) => {
       if (e.key === 'Enter') {
         toggleModal();
         navigate(searchPagePath);
@@ -103,15 +107,13 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
     <>
       <DialogTitle>
         <Box className={classes.dialogTitle}>
-          <Paper className={classes.container}>
-            <SearchBar
-              className={classes.input}
-              inputProps={{ ref: searchBarRef }}
-              onKeyDown={handleSearchBarKeyDown}
-            />
-          </Paper>
+          <SearchBar
+            className={classes.input}
+            inputProps={{ ref: searchBarRef }}
+            onKeyDown={handleSearchBarKeyDown}
+          />
 
-          <IconButton aria-label="close" onClick={() => toggleModal()}>
+          <IconButton aria-label="close" onClick={toggleModal}>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -186,15 +188,15 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
               alignItems="center"
             >
               <Grid item>
-                <Link to={searchPagePath} onClick={toggleModal}>
-                  <Typography
-                    component="span"
-                    className={classes.viewResultsLink}
-                  >
-                    View Full Results
-                  </Typography>
-                  <LaunchIcon color="primary" />
-                </Link>
+                <Button
+                  to={searchPagePath}
+                  onClick={toggleModal}
+                  endIcon={<ArrowForwardIcon />}
+                  component={Link}
+                  color="primary"
+                >
+                  View Full Results
+                </Button>
               </Grid>
             </Grid>
           </Grid>

@@ -70,9 +70,7 @@ const SearchPage = () => {
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
-            <Paper className={classes.bar}>
-              <SearchBar debounceTime={100} />
-            </Paper>
+            <SearchBar debounceTime={100} />
           </Grid>
           {!isMobile && (
             <Grid item xs={3}>
