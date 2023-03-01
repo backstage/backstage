@@ -445,7 +445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.208.0, @aws-sdk/client-s3@npm:^3.276.0":
+"@aws-sdk/client-s3@npm:^3.208.0, @aws-sdk/client-s3@npm:^3.276.0, @aws-sdk/client-s3@npm:^3.281.0":
   version: 3.281.0
   resolution: "@aws-sdk/client-s3@npm:3.281.0"
   dependencies:
@@ -5177,6 +5177,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-aws@workspace:plugins/catalog-backend-module-aws"
   dependencies:
+    "@aws-sdk/client-s3": ^3.281.0
+    "@aws-sdk/util-stream-node": ^3.272.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
@@ -5193,6 +5195,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/lodash": ^4.14.151
     aws-sdk: ^2.840.0
+    aws-sdk-client-mock: ^2.0.1
     aws-sdk-mock: ^5.2.1
     lodash: ^4.17.21
     luxon: ^3.0.0
