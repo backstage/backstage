@@ -63,6 +63,12 @@ export interface ProxyConfig extends Options {
   reviveRequestBody?: boolean;
 }
 
+function isValidHttpProxyMiddlewareLogLevel(
+  level: string,
+): level is Exclude<Options['logLevel'], undefined> {
+  return ['debug', 'info', 'warn', 'error', 'silent'].includes(level);
+}
+
 // Creates a proxy middleware, possibly with defaults added on top of the
 // given config.
 export function buildMiddleware(
@@ -121,6 +127,9 @@ export function buildMiddleware(
 
   // Attach the logger to the proxy config
   fullConfig.logProvider = () => logger;
+  if (isValidHttpProxyMiddlewareLogLevel(logger.level)) {
+    fullConfig.logLevel = logger.level;
+  }
 
   // Only return the allowed HTTP headers to not forward unwanted secret headers
   const requestHeaderAllowList = new Set<string>(
