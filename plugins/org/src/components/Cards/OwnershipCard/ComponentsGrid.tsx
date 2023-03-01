@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
       boxShadow: theme.shadows[2],
       borderRadius: '4px',
       padding: theme.spacing(2),
-      color: '#fff',
+      color: theme.palette.common.white,
       transition: `${theme.transitions.duration.standard}ms`,
       '&:hover': {
         boxShadow: theme.shadows[4],

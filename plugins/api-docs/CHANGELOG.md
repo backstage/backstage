@@ -1,5 +1,19 @@
 # @backstage/plugin-api-docs
 
+## 0.9.1-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 9820eb5d24f: Add a `columns` prop to certain components that use the `EntityTable` for easier extensibility.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.9.0-next.1
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+
 ## 0.9.1-next.0
 
 ### Patch Changes

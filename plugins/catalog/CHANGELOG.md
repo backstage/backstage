@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog
 
+## 1.9.0-next.1
+
+### Minor Changes
+
+- c9a9f3c834f: Add a `columns` prop to certain components that use the `EntityTable` for easier extensibility.
+
+### Patch Changes
+
+- 7e8930ae1c6: Fix icon alignment in `CatalogSearchResultListItem`
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration-react@1.1.11-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+  - @backstage/plugin-search-react@1.5.1-next.1
+
 ## 1.9.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.4-next.1
+
+### Patch Changes
+
+- 8adfda60ae1: Updated dependency `jss` to `~10.10.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/version-bridge@1.0.3
+
 ## 1.1.4-next.0
 
 ### Patch Changes

@@ -15,30 +15,41 @@
  */
 import { useImmerReducer } from 'use-immer';
 import { useEffect } from 'react';
-import {
-  ScaffolderTask,
-  ScaffolderTaskStatus,
-  ScaffolderTaskOutput,
-  LogEvent,
-  scaffolderApiRef,
-} from '@backstage/plugin-scaffolder-react';
+
 import { useApi } from '@backstage/core-plugin-api';
 import { Subscription } from '@backstage/types';
+import {
+  LogEvent,
+  scaffolderApiRef,
+  ScaffolderTask,
+  ScaffolderTaskOutput,
+  ScaffolderTaskStatus,
+} from '../api';
 
-export type Step = {
+/**
+ * The status of the step being processed
+ *
+ * @public
+ */
+export type ScaffolderStep = {
   id: string;
   status: ScaffolderTaskStatus;
   endedAt?: string;
   startedAt?: string;
 };
 
+/**
+ * A task event from the event stream
+ *
+ * @public
+ */
 export type TaskStream = {
   loading: boolean;
   error?: Error;
   stepLogs: { [stepId in string]: string[] };
   completed: boolean;
   task?: ScaffolderTask;
-  steps: { [stepId in string]: Step };
+  steps: { [stepId in string]: ScaffolderStep };
   output?: ScaffolderTaskOutput;
 };
 
@@ -65,7 +76,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
       draft.steps = action.data.spec.steps.reduce((current, next) => {
         current[next.id] = { status: 'open', id: next.id };
         return current;
-      }, {} as { [stepId in string]: Step });
+      }, {} as { [stepId in string]: ScaffolderStep });
       draft.stepLogs = action.data.spec.steps.reduce((current, next) => {
         current[next.id] = [];
         return current;
@@ -132,13 +143,18 @@ function reducer(draft: TaskStream, action: ReducerAction) {
   }
 }
 
+/**
+ * A hook to stream the logs of a task being processed
+ *
+ * @public
+ */
 export const useTaskEventStream = (taskId: string): TaskStream => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const [state, dispatch] = useImmerReducer(reducer, {
     loading: true,
     completed: false,
     stepLogs: {} as { [stepId in string]: string[] },
-    steps: {} as { [stepId in string]: Step },
+    steps: {} as { [stepId in string]: ScaffolderStep },
   });
 
   useEffect(() => {

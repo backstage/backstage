@@ -1,5 +1,22 @@
 # @backstage/backend-common
 
+## 0.18.3-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-dev-utils@0.1.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.1
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
 ## 0.18.3-next.0
 
 ### Patch Changes

@@ -100,10 +100,12 @@ describe('createAsyncValidators', () => {
       expect.objectContaining({
         schema: {
           type: 'string',
+          pattern: 'lols',
+        },
+        uiSchema: {
           'ui:options': {
             bob: true,
           },
-          pattern: 'lols',
           'ui:field': 'NameField',
         },
       }),
@@ -115,7 +117,6 @@ describe('createAsyncValidators', () => {
       expect.objectContaining({
         schema: {
           type: 'object',
-          'ui:field': 'AddressField',
           properties: {
             street: {
               type: 'string',
@@ -124,6 +125,11 @@ describe('createAsyncValidators', () => {
               type: 'string',
             },
           },
+        },
+        uiSchema: {
+          'ui:field': 'AddressField',
+          street: {},
+          postcode: {},
         },
       }),
     );

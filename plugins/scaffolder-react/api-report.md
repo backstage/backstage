@@ -233,6 +233,14 @@ export interface ScaffolderScaffoldResponse {
 }
 
 // @public
+export type ScaffolderStep = {
+  id: string;
+  status: ScaffolderTaskStatus;
+  endedAt?: string;
+  startedAt?: string;
+};
+
+// @public
 export interface ScaffolderStreamLogsOptions {
   // (undocumented)
   after?: number;
@@ -278,6 +286,21 @@ export const SecretsContextProvider: ({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @public
+export type TaskStream = {
+  loading: boolean;
+  error?: Error;
+  stepLogs: {
+    [stepId in string]: string[];
+  };
+  completed: boolean;
+  task?: ScaffolderTask;
+  steps: {
+    [stepId in string]: ScaffolderStep;
+  };
+  output?: ScaffolderTaskOutput;
+};
+
+// @public
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
@@ -299,6 +322,9 @@ export const useCustomFieldExtensions: <
 export const useCustomLayouts: <TComponentDataType = LayoutOptions<any>>(
   outlet: React.ReactNode,
 ) => TComponentDataType[];
+
+// @public
+export const useTaskEventStream: (taskId: string) => TaskStream;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;

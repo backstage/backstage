@@ -14,27 +14,36 @@
  * limitations under the License.
  */
 import React from 'react';
-import { LogViewer } from '@backstage/core-components';
-import { makeStyles } from '@material-ui/core/styles';
+import { LinearProgress, makeStyles } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
+const useStyles = makeStyles((theme: BackstageTheme) => ({
+  failed: {
+    backgroundColor: theme.palette.error.main,
   },
-});
+  success: {
+    backgroundColor: theme.palette.success.main,
+  },
+}));
 
-export const TaskLogStream = (props: { logs: { [k: string]: string[] } }) => {
+/**
+ * The visual progress of the task event stream
+ */
+export const TaskBorder = (props: {
+  isComplete: boolean;
+  isError: boolean;
+}) => {
   const styles = useStyles();
+
+  if (!props.isComplete) {
+    return <LinearProgress variant="indeterminate" />;
+  }
+
   return (
-    <div className={styles.root}>
-      <LogViewer
-        text={Object.values(props.logs)
-          .map(l => l.join('\n'))
-          .filter(Boolean)
-          .join('\n')}
-      />
-    </div>
+    <LinearProgress
+      variant="determinate"
+      classes={{ bar: props.isError ? styles.failed : styles.success }}
+      value={100}
+    />
   );
 };

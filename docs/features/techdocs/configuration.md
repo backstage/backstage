@@ -136,6 +136,11 @@ techdocs:
       # https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/s3clientconfig.html#endpoint
       endpoint: ${AWS_ENDPOINT}
 
+      # (Optional) HTTPS proxy to use for S3 Requests
+      # Defaults to using no proxy
+      # This allows docs to be published and read from behind a proxy
+      httpsProxy: ${HTTPS_PROXY}
+
       # (Optional) Whether to use path style URLs when communicating with S3.
       # Defaults to false.
       # This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used to host tech docs.
