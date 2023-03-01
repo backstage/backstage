@@ -265,7 +265,7 @@ export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
   provider?: AuthProviderInfo;
-  configApi: ConfigApi;
+  configApi?: ConfigApi;
 };
 
 // @public
@@ -564,9 +564,7 @@ export class SamlAuth
 
 // @public
 export type SignInPageProps = {
-  onSignInStarted(): void;
   onSignInSuccess(identityApi: IdentityApi): void;
-  onSignInFailure(): void;
 };
 
 // @public

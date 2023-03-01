@@ -37,5 +37,5 @@ export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
   provider?: AuthProviderInfo;
-  configApi: ConfigApi;
+  configApi?: ConfigApi;
 };

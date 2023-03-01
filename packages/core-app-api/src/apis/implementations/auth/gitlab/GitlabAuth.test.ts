@@ -17,8 +17,7 @@
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import GitlabAuth from './GitlabAuth';
-import { ConfigReader } from '@backstage/config';
-import { ConfigApi } from '@backstage/core-plugin-api';
+import { MockConfigApi } from '@backstage/test-utils';
 
 const getSession = jest.fn();
 
@@ -41,9 +40,7 @@ describe('GitlabAuth', () => {
     ],
     ['read_repository sudo', ['read_repository', 'sudo']],
   ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
-    const configApi: ConfigApi = new ConfigReader({
-      enableExperimentalRedirectFlow: false,
-    });
+    const configApi = new MockConfigApi({});
 
     const gitlabAuth = GitlabAuth.create({
       configApi: configApi,

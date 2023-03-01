@@ -687,9 +687,7 @@ export enum SessionState {
 
 // @public
 export type SignInPageProps = {
-  onSignInStarted(): void;
   onSignInSuccess(identityApi: IdentityApi_2): void;
-  onSignInFailure(): void;
 };
 
 // @public

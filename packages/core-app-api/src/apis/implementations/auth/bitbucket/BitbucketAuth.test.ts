@@ -17,8 +17,7 @@
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import BitbucketAuth from './BitbucketAuth';
-import { ConfigReader } from '@backstage/config';
-import { ConfigApi } from '@backstage/core-plugin-api';
+import { MockConfigApi } from '@backstage/test-utils';
 
 const getSession = jest.fn();
 
@@ -34,9 +33,7 @@ describe('BitbucketAuth', () => {
     jest.resetAllMocks();
   });
 
-  const configApi: ConfigApi = new ConfigReader({
-    enableExperimentalRedirectFlow: false,
-  });
+  const configApi = new MockConfigApi({});
 
   it.each([
     ['team api write_repository', ['team', 'api', 'write_repository']],

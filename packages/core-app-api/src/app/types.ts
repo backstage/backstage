@@ -45,17 +45,9 @@ export type BootErrorPageProps = {
  */
 export type SignInPageProps = {
   /**
-   * Invoked when the sign-in process has started.
-   */
-  onSignInStarted(): void;
-  /**
    * Set the IdentityApi on successful sign-in. This should only be called once.
    */
   onSignInSuccess(identityApi: IdentityApi): void;
-  /**
-   * Invoked when the sign-in process has failed.
-   */
-  onSignInFailure(): void;
 };
 
 /**

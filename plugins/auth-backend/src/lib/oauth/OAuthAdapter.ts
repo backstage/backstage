@@ -114,7 +114,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce, cookieConfig);
 
-    const state: OAuthState = { nonce, env, origin, redirectUrl, flow: flow };
+    const state: OAuthState = { nonce, env, origin, redirectUrl, flow };
 
     // If scopes are persisted then we pass them through the state so that we
     // can set the cookie on successful auth

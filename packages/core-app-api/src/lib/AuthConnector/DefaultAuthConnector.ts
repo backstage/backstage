@@ -23,6 +23,8 @@ import {
 import { showLoginPopup } from '../loginPopup';
 import { AuthConnector, CreateSessionOptions } from './types';
 
+let warned = false;
+
 type Options<AuthSession> = {
   /**
    * DiscoveryApi instance used to locate the auth backend endpoint.
@@ -52,7 +54,7 @@ type Options<AuthSession> = {
   /**
    * ConfigApi instance used to configure authentication flow of pop-up or redirect.
    */
-  configApi: ConfigApi;
+  configApi?: ConfigApi;
 };
 
 function defaultJoinScopes(scopes: Set<string>) {
@@ -68,12 +70,12 @@ export class DefaultAuthConnector<AuthSession>
   implements AuthConnector<AuthSession>
 {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly configApi: ConfigApi;
   private readonly environment: string;
   private readonly provider: AuthProviderInfo;
   private readonly joinScopesFunc: (scopes: Set<string>) => string;
   private readonly authRequester: OAuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
+  private readonly enableExperimentalRedirectFlow: boolean;
   constructor(options: Options<AuthSession>) {
     const {
       configApi,
@@ -85,20 +87,28 @@ export class DefaultAuthConnector<AuthSession>
       sessionTransform = id => id,
     } = options;
 
+    if (!warned && !configApi) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'DEPRECATION WARNING: Authentication providers require a configApi instance to configure the authentication flow. Please provide one to the authentication provider constructor.',
+      );
+      warned = true;
+    }
+
+    this.enableExperimentalRedirectFlow = configApi
+      ? configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ?? false
+      : false;
+
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
       onAuthRequest: async scopes => {
-        const enableExperimentalRedirectFlow =
-          this.configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ??
-          false;
-        if (!enableExperimentalRedirectFlow) {
+        if (!this.enableExperimentalRedirectFlow) {
           return this.showPopup(scopes);
         }
         return this.executeRedirect(scopes);
       },
     });
 
-    this.configApi = configApi;
     this.discoveryApi = discoveryApi;
     this.environment = environment;
     this.provider = provider;
@@ -107,11 +117,10 @@ export class DefaultAuthConnector<AuthSession>
   }
 
   async createSession(options: CreateSessionOptions): Promise<AuthSession> {
-    const enableExperimentalRedirectFlow =
-      this.configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ??
-      false;
-
-    if (options.instantPopup && !enableExperimentalRedirectFlow) {
+    if (options.instantPopup) {
+      if (this.enableExperimentalRedirectFlow) {
+        return this.executeRedirect(options.scopes);
+      }
       return this.showPopup(options.scopes);
     }
     return this.authRequester(options.scopes);

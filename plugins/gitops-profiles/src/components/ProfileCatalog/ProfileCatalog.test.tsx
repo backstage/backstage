@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import {
+  MockConfigApi,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import React from 'react';
 import { gitOpsApiRef, GitOpsRestApi } from '../../api';
 import ProfileCatalog from './ProfileCatalog';
-import { ConfigReader } from '@backstage/config';
-import { ConfigApi } from '@backstage/core-plugin-api';
 
 import {
   ApiProvider,
@@ -33,9 +35,7 @@ import { githubAuthApiRef } from '@backstage/core-plugin-api';
 describe('ProfileCatalog', () => {
   it('should render', async () => {
     const oauthRequestApi = new OAuthRequestManager();
-    const configApi: ConfigApi = new ConfigReader({
-      enableExperimentalRedirectFlow: false,
-    });
+    const configApi = new MockConfigApi({});
     const apis = TestApiRegistry.from(
       [gitOpsApiRef, new GitOpsRestApi('http://localhost:3008')],
       [

@@ -285,6 +285,7 @@ export type SessionApi = {
    * Sign out from the current session. This will reload the page.
    */
   signOut(): Promise<void>;
+
   /**
    * Observe the current state of the auth session. Emits the current state on subscription.
    */

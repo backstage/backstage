@@ -65,9 +65,6 @@ export function OAuthRequestDialog(_props: {}) {
 
   const authRedirect =
     configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ?? false;
-  const redirectMessage = authRedirect
-    ? 'This will trigger a http redirect to OAuth Login.'
-    : '';
 
   const requests = useObservable(
     useMemo(() => oauthRequestApi.authRequest$(), [oauthRequestApi]),
@@ -94,7 +91,11 @@ export function OAuthRequestDialog(_props: {}) {
           <Typography className={classes.titleHeading} variant="h1">
             Login Required
           </Typography>
-          <Typography>{redirectMessage}</Typography>
+          {authRedirect ? (
+            <Typography>
+              This will trigger a http redirect to OAuth Login.
+            </Typography>
+          ) : null}
         </DialogTitle>
 
         <DialogContent dividers classes={{ root: classes.contentList }}>

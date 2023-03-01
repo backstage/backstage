@@ -17,8 +17,7 @@
 import OAuth2 from './OAuth2';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
-import { ConfigReader } from '@backstage/config';
-import { ConfigApi } from '@backstage/core-plugin-api';
+import { MockConfigApi } from '@backstage/test-utils';
 
 const theFuture = new Date(Date.now() + 3600000);
 const thePast = new Date(Date.now() - 10);
@@ -36,9 +35,7 @@ jest.mock('../../../../lib/AuthSessionManager', () => ({
   },
 }));
 
-const configApi: ConfigApi = new ConfigReader({
-  enableExperimentalRedirectFlow: false,
-});
+const configApi = new MockConfigApi({});
 
 describe('OAuth2', () => {
   it('should get refreshed access token', async () => {

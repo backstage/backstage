@@ -72,22 +72,8 @@ function SignInPageWrapper({
   const configApi = useApi(configApiRef);
   const basePath = getBasePath(configApi);
 
-  const handleSignInStarted = () => {
-    // no-op
-  };
-
-  const handleSignInFailure = () => {
-    // no-op
-  };
-
   if (!identityApi) {
-    return (
-      <Component
-        onSignInSuccess={setIdentityApi}
-        onSignInStarted={handleSignInStarted}
-        onSignInFailure={handleSignInFailure}
-      />
-    );
+    return <Component onSignInSuccess={setIdentityApi} />;
   }
 
   appIdentityProxy.setTarget(identityApi, {
