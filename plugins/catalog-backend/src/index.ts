@@ -46,7 +46,6 @@ export * from './processing';
 export * from './search';
 export * from './service';
 export * from './util';
-export * from './database/types';
 
 import { LocationSpec as NonDeprecatedLocationSpec } from '@backstage/plugin-catalog-common';
 
