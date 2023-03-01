@@ -47,9 +47,10 @@ export type JsonValue = JsonObject | JsonArray | JsonPrimitive;
  * prefers values from b, unless the value is an object, in which case it recursively
  * merges the values.
  *
- * @param a The base object
- * @param b The object to merge into a
+ * @param a - The base object
+ * @param b - The object to merge into a
  * @returns The merged object
+ * @public
  */
 export const mergeJson = (a: JsonObject, b: JsonObject): JsonObject => {
   const final: JsonObject = {};

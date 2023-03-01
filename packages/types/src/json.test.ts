@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { JsonPrimitive, JsonArray, JsonObject, JsonValue } from './json';
+import {
+  JsonPrimitive,
+  JsonArray,
+  JsonObject,
+  JsonValue,
+  mergeJson,
+} from './json';
 
 describe('json', () => {
   it('JsonPrimitive', () => {
@@ -77,5 +83,91 @@ describe('json', () => {
     isValid(1, 's', true, false, null, {}, []);
 
     expect(true).toBe(true);
+  });
+});
+
+describe('jsonMerge', () => {
+  it('should merge two objects', () => {
+    const obj1 = { a: 1, b: 2, c: 3 };
+    const obj2 = { b: 4, c: 5, d: 6 };
+    const merged = mergeJson(obj1, obj2);
+    expect(merged).toEqual({ a: 1, b: 4, c: 5, d: 6 });
+  });
+
+  it('should always prefer to merge the values of the second parameter', () => {
+    const obj1 = {
+      a: 1,
+      b: [1, 2, 3],
+      c: {
+        z: 1,
+        y: 2,
+        x: 3,
+      },
+    };
+    const obj2 = {
+      a: 2,
+      b: [2, 4, 6],
+      c: {
+        z: 2,
+        y: 4,
+        x: 6,
+      },
+    };
+    const merged = mergeJson(obj1, obj2);
+    expect(merged).toEqual(obj2);
+  });
+
+  it('should prefer the second argument whenever keys collide', () => {
+    const obj1 = {
+      a: 1,
+      b: [1, 2, 3],
+      c: {
+        z: 1,
+        y: 2,
+        x: 3,
+      },
+    };
+    const obj2 = {
+      a: 2,
+      c: {
+        y: 4,
+      },
+    };
+    const merged = mergeJson(obj1, obj2);
+    expect(merged).toEqual({
+      a: 2,
+      b: [1, 2, 3],
+      c: {
+        z: 1,
+        y: 4,
+        x: 3,
+      },
+    });
+  });
+
+  it('should merge recursively', () => {
+    const obj1 = {
+      backend: {
+        database: {
+          provider: 'sqlite3',
+        },
+      },
+    };
+    const obj2 = {
+      backend: {
+        database: {
+          password: 'password123',
+        },
+      },
+    };
+    const merged = mergeJson(obj1, obj2);
+    expect(merged).toEqual({
+      backend: {
+        database: {
+          provider: 'sqlite3',
+          password: 'password123',
+        },
+      },
+    });
   });
 });

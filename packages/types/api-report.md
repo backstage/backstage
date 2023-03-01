@@ -30,6 +30,9 @@ export type JsonPrimitive = number | string | boolean | null;
 export type JsonValue = JsonObject | JsonArray | JsonPrimitive;
 
 // @public
+export const mergeJson: (a: JsonObject, b: JsonObject) => JsonObject;
+
+// @public
 export type Observable<T> = {
   [Symbol.observable](): Observable<T>;
   subscribe(observer: Observer<T>): Subscription;
