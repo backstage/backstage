@@ -21,6 +21,4 @@
  */
 
 export * from './service/router';
-
-// TODO: export as alfa subpath
-export { searchPlugin } from './plugin';
+export * from './plugin';

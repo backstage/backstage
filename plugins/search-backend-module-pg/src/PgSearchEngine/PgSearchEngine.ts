@@ -30,6 +30,11 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node';
 
 /**
  * Search query that the Postgres search engine understands.
@@ -244,3 +249,24 @@ export function decodePageCursor(pageCursor?: string): { page: number } {
 export function encodePageCursor({ page }: { page: number }): string {
   return Buffer.from(`${page}`, 'utf-8').toString('base64');
 }
+
+export const pgSearchEngineModule = createBackendModule({
+  moduleId: 'pgSearchEngineModule',
+  pluginId: 'search-backend',
+  register(env) {
+    env.registerInit({
+      deps: {
+        searchEngineRegistry: searchEngineRegistryExtensionPoint,
+        database: coreServices.database,
+        config: coreServices.config,
+      },
+      async init({ searchEngineRegistry, database, config }) {
+        searchEngineRegistry.setSearchEngine(
+          await PgSearchEngine.fromConfig(config, {
+            database: database,
+          }),
+        );
+      },
+    });
+  },
+});

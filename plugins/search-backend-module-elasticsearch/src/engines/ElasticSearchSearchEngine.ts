@@ -30,9 +30,17 @@ import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchCustomIndexTemplate } from './types';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 import { Logger } from 'winston';
-import { MissingIndexError } from '@backstage/plugin-search-backend-node';
+import {
+  MissingIndexError,
+  searchEngineRegistryExtensionPoint,
+} from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
 import { v4 as uuid } from 'uuid';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 export type { ElasticSearchClientOptions };
 
@@ -521,3 +529,25 @@ export async function createElasticSearchClientOptions(
       : {}),
   };
 }
+
+export const elasticSearchEngineModule = createBackendModule({
+  moduleId: 'elasticSearchEngineModule',
+  pluginId: 'search-backend',
+  register(env) {
+    env.registerInit({
+      deps: {
+        searchEngineRegistry: searchEngineRegistryExtensionPoint,
+        logger: coreServices.logger,
+        config: coreServices.config,
+      },
+      async init({ searchEngineRegistry, logger, config }) {
+        searchEngineRegistry.setSearchEngine(
+          await ElasticSearchSearchEngine.fromConfig({
+            logger: loggerToWinstonLogger(logger),
+            config: config,
+          }),
+        );
+      },
+    });
+  },
+});

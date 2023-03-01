@@ -17,6 +17,7 @@
 export {
   decodePageCursor as decodeElasticSearchPageCursor,
   ElasticSearchSearchEngine,
+  elasticSearchEngineModule,
 } from './ElasticSearchSearchEngine';
 export { isOpenSearchCompatible } from './ElasticSearchClientOptions';
 export type {
