@@ -15,7 +15,6 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { useTheme, useMediaQuery } from '@material-ui/core';
 
@@ -47,6 +46,7 @@ import {
   useSanitizerTransformer,
   useStylesTransformer,
 } from '../../transformers';
+import { useNavigateUrl } from '@backstage/core-app-api';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
@@ -58,7 +58,7 @@ const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 export const useTechDocsReaderDom = (
   entityRef: CompoundEntityRef,
 ): Element | null => {
-  const navigate = useNavigate();
+  const navigate = useNavigateUrl();
   const theme = useTheme<BackstageTheme>();
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
   const sanitizerTransformer = useSanitizerTransformer();
@@ -176,7 +176,6 @@ export const useTechDocsReaderDom = (
             // detect if CTRL or META keys are pressed so that links can be opened in a new tab with `window.open`
             const modifierActive = event.ctrlKey || event.metaKey;
             const parsedUrl = new URL(url);
-            const fullPath = `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
 
             // capture link clicks within documentation
             const linkText =
@@ -187,9 +186,9 @@ export const useTechDocsReaderDom = (
             // hash exists when anchor is clicked on secondary sidebar
             if (parsedUrl.hash) {
               if (modifierActive) {
-                window.open(fullPath, '_blank');
+                window.open(url, '_blank');
               } else {
-                navigate(fullPath);
+                navigate(url);
                 // Scroll to hash if it's on the current page
                 transformedElement
                   ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
@@ -197,9 +196,9 @@ export const useTechDocsReaderDom = (
               }
             } else {
               if (modifierActive) {
-                window.open(fullPath, '_blank');
+                window.open(url, '_blank');
               } else {
-                navigate(fullPath);
+                navigate(url);
               }
             }
           },
