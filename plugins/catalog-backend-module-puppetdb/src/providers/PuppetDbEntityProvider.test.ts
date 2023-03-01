@@ -18,22 +18,26 @@ import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PuppetDbEntityProvider } from './PuppetDbEntityProvider';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import * as p from '../puppet/read';
+import {
+  DeferredEntity,
+  EntityProviderConnection,
+} from '@backstage/plugin-catalog-backend';
+import * as puppetFunctions from '../puppet/read';
 import { ANNOTATION_PUPPET_CERTNAME } from '../puppet';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
+  ResourceEntity,
 } from '@backstage/catalog-model/';
 import { DEFAULT_ENTITY_OWNER, ENDPOINT_NODES } from '../puppet/constants';
 
-const logger = getVoidLogger();
+jest.mock('../puppet/read', () => {
+  return {
+    readPuppetNodes: jest.fn(),
+  };
+});
 
-jest.mock('../puppet/read', () => ({
-  __esModule: true,
-  default: jest.fn(),
-  readPuppetNodes: null,
-}));
+const logger = getVoidLogger();
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -69,8 +73,7 @@ describe('PuppetEntityProvider', () => {
 
   describe('where there are no nodes', () => {
     beforeEach(() => {
-      // @ts-ignore
-      p.readPuppetNodes = jest.fn().mockResolvedValue([]);
+      jest.spyOn(puppetFunctions, 'readPuppetNodes').mockResolvedValueOnce([]);
     });
 
     it('creates no entities', async () => {
@@ -95,10 +98,9 @@ describe('PuppetEntityProvider', () => {
 
   describe('where there are nodes', () => {
     beforeEach(() => {
-      // @ts-ignore
-      p.readPuppetNodes = jest.fn().mockResolvedValue([
+      jest.spyOn(puppetFunctions, 'readPuppetNodes').mockResolvedValueOnce([
         {
-          api_version: 'backstage.io/v1beta1',
+          apiVersion: 'backstage.io/v1beta1',
           kind: 'Resource',
           metadata: {
             name: 'node1',
@@ -108,16 +110,16 @@ describe('PuppetEntityProvider', () => {
             },
             tags: ['windows'],
             description: 'Description 1',
-            spec: {
-              type: 'virtual-machine',
-              owner: DEFAULT_ENTITY_OWNER,
-              dependsOn: [],
-              dependencyOf: [],
-            },
+          },
+          spec: {
+            type: 'virtual-machine',
+            owner: DEFAULT_ENTITY_OWNER,
+            dependsOn: [],
+            dependencyOf: [],
           },
         },
         {
-          api_version: 'backstage.io/v1beta1',
+          apiVersion: 'backstage.io/v1beta1',
           kind: 'Resource',
           metadata: {
             name: 'node2',
@@ -127,15 +129,15 @@ describe('PuppetEntityProvider', () => {
             },
             tags: ['linux'],
             description: 'Description 2',
-            spec: {
-              type: 'physical-server',
-              owner: DEFAULT_ENTITY_OWNER,
-              dependsOn: [],
-              dependencyOf: [],
-            },
+          },
+          spec: {
+            type: 'physical-server',
+            owner: DEFAULT_ENTITY_OWNER,
+            dependsOn: [],
+            dependencyOf: [],
           },
         },
-      ]);
+      ] as ResourceEntity[]);
     });
 
     it('creates entities', async () => {
@@ -157,7 +159,7 @@ describe('PuppetEntityProvider', () => {
           {
             locationKey: providers[0].getProviderName(),
             entity: {
-              api_version: 'backstage.io/v1beta1',
+              apiVersion: 'backstage.io/v1beta1',
               kind: 'Resource',
               metadata: {
                 name: 'node1',
@@ -173,19 +175,19 @@ describe('PuppetEntityProvider', () => {
                 },
                 tags: ['windows'],
                 description: 'Description 1',
-                spec: {
-                  type: 'virtual-machine',
-                  owner: DEFAULT_ENTITY_OWNER,
-                  dependsOn: [],
-                  dependencyOf: [],
-                },
+              },
+              spec: {
+                type: 'virtual-machine',
+                owner: DEFAULT_ENTITY_OWNER,
+                dependsOn: [],
+                dependencyOf: [],
               },
             },
           },
           {
             locationKey: providers[0].getProviderName(),
             entity: {
-              api_version: 'backstage.io/v1beta1',
+              apiVersion: 'backstage.io/v1beta1',
               kind: 'Resource',
               metadata: {
                 name: 'node2',
@@ -201,16 +203,16 @@ describe('PuppetEntityProvider', () => {
                 },
                 tags: ['linux'],
                 description: 'Description 2',
-                spec: {
-                  type: 'physical-server',
-                  owner: DEFAULT_ENTITY_OWNER,
-                  dependsOn: [],
-                  dependencyOf: [],
-                },
+              },
+              spec: {
+                type: 'physical-server',
+                owner: DEFAULT_ENTITY_OWNER,
+                dependsOn: [],
+                dependencyOf: [],
               },
             },
           },
-        ],
+        ] as DeferredEntity[],
       });
     });
   });
