@@ -23,6 +23,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { DbRelationsRow } from './tables';
 import { RefreshKeyData } from '../processing/types';
+import { ConflictHandlerOptions } from '../catalog/types';
 
 /**
  * An abstraction for transactions of the underlying database technology.
@@ -42,6 +43,7 @@ export type UpdateProcessedEntityOptions = {
   deferredEntities: DeferredEntity[];
   locationKey?: string;
   refreshKeys: RefreshKeyData[];
+  handleConflict: (options: ConflictHandlerOptions) => Promise<void>;
 };
 
 export type UpdateEntityCacheOptions = {

@@ -38,6 +38,7 @@ import {
   UpdateEntityCacheOptions,
   UpdateProcessedEntityOptions,
 } from './types';
+import { ConflictHandlerOptions } from '../catalog/types';
 
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
@@ -76,6 +77,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       deferredEntities,
       refreshKeys,
       locationKey,
+      handleConflict,
     } = options;
     const configClient = tx.client.config.client;
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
@@ -105,6 +107,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     await this.addUnprocessedEntities(tx, {
       entities: deferredEntities,
       sourceEntityRef,
+      handleConflict,
     });
 
     // Delete old relations
@@ -308,6 +311,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     options: {
       sourceEntityRef: string;
       entities: DeferredEntity[];
+      handleConflict: (options: ConflictHandlerOptions) => Promise<void>;
     },
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
@@ -320,7 +324,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     for (const { entity, locationKey } of options.entities) {
       const entityRef = stringifyEntityRef(entity);
       const hash = generateStableHash(entity);
-
+      this.options.logger.info(
+        `addUnprocessedEntities called for entity ${entityRef} at ${locationKey}`,
+      );
       const updated = await updateUnprocessedEntity({
         tx,
         entity,
@@ -328,6 +334,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         locationKey,
       });
       if (updated) {
+        this.options.logger.info(
+          `updated entity ${entityRef} at ${locationKey}`,
+        );
         stateReferences.push(entityRef);
         continue;
       }
@@ -340,6 +349,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         logger: this.options.logger,
       });
       if (inserted) {
+        this.options.logger.info(
+          `inserted entity ${entityRef} at ${locationKey}`,
+        );
         stateReferences.push(entityRef);
         continue;
       }
@@ -354,8 +366,16 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       });
       if (conflictingKey) {
         this.options.logger.warn(
-          `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
+          `DefaultProcessingDatabase detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
+        await options.handleConflict({
+          tx,
+          entity,
+          hash,
+          originalLocationKey: conflictingKey,
+          newLocationKey: locationKey!,
+          logger: this.options.logger,
+        });
       }
     }
 

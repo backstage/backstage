@@ -15,6 +15,8 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { Knex } from 'knex';
+import { Logger } from 'winston';
 
 /**
  * A filter expression for entities.
@@ -310,4 +312,13 @@ export type Cursor = {
    * The number of items that match the provided filters
    */
   totalItems?: number;
+};
+
+export type ConflictHandlerOptions = {
+  tx: Knex.Transaction;
+  entity: Entity;
+  hash: string;
+  originalLocationKey: string;
+  newLocationKey: string;
+  logger: Logger;
 };

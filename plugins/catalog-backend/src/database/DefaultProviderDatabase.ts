@@ -181,13 +181,13 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             });
             if (conflictingKey) {
               this.options.logger.warn(
-                `Source ${options.sourceKey} detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
+                `DefaultProviderDatabase - Source ${options.sourceKey} detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
               );
             }
           }
         } catch (error) {
           this.options.logger.error(
-            `Failed to add '${entityRef}' from source '${options.sourceKey}', ${error}`,
+            `DefaultProviderDatabase - Failed to add '${entityRef}' from source '${options.sourceKey}', ${error}`,
           );
         }
       }

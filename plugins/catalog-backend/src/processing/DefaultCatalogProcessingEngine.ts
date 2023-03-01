@@ -25,6 +25,7 @@ import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
 import { metrics } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
+import { ConflictHandlerOptions } from '../catalog/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import {
   CatalogProcessingEngine,
@@ -48,6 +49,9 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
     private readonly pollingIntervalMs: number = 1000,
+    private readonly conflictHandler: (
+      options: ConflictHandlerOptions,
+    ) => Promise<void> = () => Promise.resolve(),
     private readonly onProcessingError?: (event: {
       unprocessedEntity: Entity;
       errors: Error[];
@@ -211,6 +215,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
                 deferredEntities: result.deferredEntities,
                 locationKey,
                 refreshKeys: result.refreshKeys,
+                handleConflict: this.conflictHandler,
               });
             oldRelationSources = new Set(
               previous.relations.map(r => r.source_entity_ref),

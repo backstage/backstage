@@ -98,6 +98,7 @@ import {
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
+import { ConflictHandlerOptions } from '../catalog/types';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -420,7 +421,9 @@ export class CatalogBuilder {
   /**
    * Wires up and returns all of the component parts of the catalog
    */
-  async build(): Promise<{
+  async build(
+    conflictHandler?: (options: ConflictHandlerOptions) => Promise<void>,
+  ): Promise<{
     processingEngine: CatalogProcessingEngine;
     router: Router;
   }> {
@@ -524,6 +527,7 @@ export class CatalogBuilder {
       stitcher,
       () => createHash('sha1'),
       1000,
+      conflictHandler,
       event => {
         this.onProcessingError?.(event);
       },

@@ -27,7 +27,7 @@ import {
   EntityProviderMutation,
 } from '@backstage/plugin-catalog-node';
 
-class Connection implements EntityProviderConnection {
+export class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
 
   constructor(

@@ -147,6 +147,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
+      this.logger.info(`GithubEntityProvider scheduled refresh being run`);
       return taskRunner.run({
         id: taskId,
         fn: async () => {
@@ -169,7 +170,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
-
+    logger.info(`GithubEntityProvider refresh called by scheduler`);
     const targets = await this.findCatalogFiles();
     const matchingTargets = this.matchesFilters(targets);
     const entities = matchingTargets
@@ -181,6 +182,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
           entity: locationSpecToLocationEntity({ location }),
         };
       });
+    logger.info(
+      `GithubEntityProvider refresh updating entitites ${entities.length}`,
+    );
 
     await this.connection.applyMutation({
       type: 'full',
