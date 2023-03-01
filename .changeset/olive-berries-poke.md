@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-react': patch
 ---
 
-Fix for next version of template scaffolder for the steps without properties
+scaffolder/next: Fix for steps without properties
