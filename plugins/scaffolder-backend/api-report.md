@@ -25,8 +25,6 @@ import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '@backstage/plugin-permission-node';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
@@ -533,14 +531,6 @@ export const createPublishGitlabMergeRequestAction: (options: {
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @alpha
-export const createScaffolderConditionalDecision: (
-  permission: ResourcePermission<'scaffolder-template'>,
-  conditions: PermissionCriteria<
-    PermissionCondition<'scaffolder-template', PermissionRuleParams>
-  >,
-) => ConditionalPolicyDecision;
-
 // @public @deprecated (undocumented)
 export const createTemplateAction: <
   TParams,
@@ -699,18 +689,6 @@ export type RunCommandOptions = {
   options?: SpawnOptionsWithoutStdio;
   logStream?: Writable;
 };
-
-// @alpha
-export const scaffolderConditions: Conditions<{
-  hasTag: PermissionRule<
-    TemplateParameter | TemplateEntityStepV1beta3,
-    {},
-    'scaffolder-template',
-    {
-      tag: string;
-    }
-  >;
-}>;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
