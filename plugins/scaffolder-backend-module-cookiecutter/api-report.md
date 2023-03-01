@@ -15,7 +15,7 @@ import { UrlReader } from '@backstage/backend-common';
 export function createFetchCookiecutterAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
 }): TemplateAction<{
   url: string;
   targetPath?: string | undefined;
