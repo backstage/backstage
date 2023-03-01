@@ -17,7 +17,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as differ from 'diff';
-import { PATCH_FOLDER } from './files';
+import { PATCH_FOLDER } from '../files';
 import { findPaths } from '@backstage/cli-common';
 
 /* eslint-disable-next-line no-restricted-syntax */

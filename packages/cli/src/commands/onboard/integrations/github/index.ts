@@ -17,37 +17,82 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Task } from '../../../../lib/tasks';
+import { updateConfigFile } from '../../config';
+import { APP_CONFIG_FILE } from '../../files';
+
+type Answers = {
+  isEnterprise: boolean;
+  host: string;
+  apiBaseUrl?: string;
+  token: string;
+};
+
+const getConfig = ({ isEnterprise, host, apiBaseUrl, token }: Answers) => ({
+  integrations: {
+    github: isEnterprise
+      ? [
+          {
+            host,
+            apiBaseUrl,
+            token,
+          },
+        ]
+      : [
+          {
+            host,
+            token,
+          },
+        ],
+  },
+});
 
 export const github = async () => {
-  const host = 'https://github.com';
-  const answers = await inquirer.prompt<{ hasEnterprise: boolean }>([
+  let host = 'github.com';
+  let apiBaseUrl: string | undefined;
+
+  // TODO(tudi2d): Is GitHub Enterprise a valid setup if there is no Authentication?
+  const { isEnterprise } = await inquirer.prompt<{
+    isEnterprise: Answers['isEnterprise'];
+  }>([
     {
       type: 'confirm',
-      name: 'hasEnterprise',
+      name: 'isEnterprise',
       message: 'Are you using GitHub Enterprise?',
     },
   ]);
 
-  if (answers.hasEnterprise) {
-    await inquirer.prompt<{ hasEnterprise: boolean }>([
-      {
-        type: 'confirm',
-        name: 'hasEnterprise',
-        message: 'Are you using GitHub Enterprise?',
-      },
-      {
-        type: 'input',
-        name: 'enterpriseInstanceUrl',
-        message: 'What is your GitHub Enterprise URL (e.g. ghe.example.net)?',
-        when: ({ hasEnterprise }) => hasEnterprise,
-        validate: (input: string) => Boolean(new URL(input)),
-      },
-    ]);
+  if (isEnterprise) {
+    try {
+      const answers = await inquirer.prompt<
+        Pick<Answers, 'host' | 'apiBaseUrl'>
+      >([
+        {
+          type: 'input',
+          name: 'apiBaseUrl',
+          message:
+            'What is your GitHub Enterprise REST API URL (e.g. https://ghe.example.net/api/v3)?',
+          // TODO(tudi2d): Fetch API using OAuth Token if Auth was set up
+          validate: (input: string) => Boolean(new URL(input)),
+        },
+        {
+          type: 'input',
+          name: 'host',
+          message:
+            'What is your GitHub Enterprise Host (e.g. ghe.example.net)?',
+          // TODO(tudi2d): validate: Must the host be part of the REST API URL?
+        },
+      ]);
+
+      host = answers.host;
+      apiBaseUrl = answers.apiBaseUrl;
+    } catch (err) {
+      return;
+    }
   }
 
   Task.log(`
       To create new repositories in GitHub using Software Templates you first need to create a personal access token: ${chalk.blue(
-        `${host}/settings/tokens/new',
+        `https://${host}/settings/tokens/new`,
       )}
   
       Select the following scopes:
@@ -68,6 +113,32 @@ export const github = async () => {
       You can find the full documentation page here: ${chalk.blue(
         'https://backstage.io/docs/integrations/github/locations',
       )}
-      `,
-      )}`);
+      `);
+
+  const { token } = await inquirer.prompt<{
+    token: Answers['token'];
+  }>([
+    {
+      type: 'input',
+      name: 'token',
+      message:
+        'Please insert your personal access token to setup the GitHub Integration',
+      // TODO(tudi2d): validate: Must the host be part of the REST API URL?
+    },
+  ]);
+
+  const config = getConfig({
+    token,
+    isEnterprise,
+    host,
+    apiBaseUrl,
+  });
+
+  Task.log('Setting up GitHub Integration for you...');
+
+  await Task.forItem(
+    'Updating',
+    APP_CONFIG_FILE,
+    async () => await updateConfigFile(APP_CONFIG_FILE, config),
+  );
 };

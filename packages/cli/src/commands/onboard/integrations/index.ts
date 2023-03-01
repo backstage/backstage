@@ -29,7 +29,7 @@ export async function integrations(): Promise<void> {
       integration?: Integration;
     }>([
       {
-        // TODO(tudi2d): Should be multiple choice
+        // TODO(tudi2d): Let's start with one, but it should be multiple choice in the future
         type: 'list',
         name: 'integration',
         message: 'Please select an integration:',

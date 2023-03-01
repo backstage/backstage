@@ -18,8 +18,8 @@ import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import { Task } from '../../../../lib/tasks';
-import { addUserEntity, updateConfigFile } from '../config';
-import { APP_CONFIG_FILE, PATCH_FOLDER, USER_ENTITY_FILE } from '../files';
+import { addUserEntity, updateConfigFile } from '../../config';
+import { APP_CONFIG_FILE, PATCH_FOLDER, USER_ENTITY_FILE } from '../../files';
 import { patch } from '../patch';
 
 const getConfig = (answers: Answers) => {

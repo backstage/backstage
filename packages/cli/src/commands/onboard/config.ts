@@ -18,44 +18,14 @@ import { UserEntity } from '@backstage/catalog-model';
 import * as fs from 'fs-extra';
 import yaml from 'yaml';
 
-type AuthConfig = {
-  auth: {
-    providers: {
-      [key: string]: {
-        development: {
-          clientId: string;
-          clientSecret: string;
-          enterpriseInstanceUrl?: string;
-          audience?: string;
-        };
-      };
-    };
-  };
-};
-
-const catalogUserLocation = {
-  catalog: {
-    locations: [
-      {
-        type: 'file',
-        target: '../../user-info.yaml',
-        rules: [{ allow: ['User'] }],
-      },
-    ],
-  },
-};
-
 const readYaml = async (file: string) => {
   return yaml.parse(await fs.readFile(file, 'utf8'));
 };
 
-export const updateConfigFile = async (
-  file: string,
-  authConfig: AuthConfig,
-) => {
+export const updateConfigFile = async <T>(file: string, config: T) => {
   const content = fs.existsSync(file)
-    ? { ...(await readYaml(file)), ...authConfig, ...catalogUserLocation }
-    : { ...authConfig, ...catalogUserLocation };
+    ? { ...(await readYaml(file)), ...config }
+    : { ...config };
 
   return await fs.writeFile(
     file,

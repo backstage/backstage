@@ -20,9 +20,29 @@ import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import { Task } from '../../../../lib/tasks';
-import { addUserEntity, updateConfigFile } from '../config';
-import { APP_CONFIG_FILE, PATCH_FOLDER, USER_ENTITY_FILE } from '../files';
+import { addUserEntity, updateConfigFile } from '../../config';
+import { APP_CONFIG_FILE, PATCH_FOLDER, USER_ENTITY_FILE } from '../../files';
 import { patch } from '../patch';
+
+type Answers = {
+  username: string;
+  clientSecret: string;
+  clientId: string;
+  hasEnterprise: boolean;
+  enterpriseInstanceUrl?: string;
+};
+
+const catalogUserLocation = {
+  catalog: {
+    locations: [
+      {
+        type: 'file',
+        target: '../../user-info.yaml',
+        rules: [{ allow: ['User'] }],
+      },
+    ],
+  },
+};
 
 const validateCredentials = async (clientId: string, clientSecret: string) => {
   try {
@@ -68,14 +88,6 @@ const getConfig = (answers: Answers) => {
       },
     },
   };
-};
-
-type Answers = {
-  username: string;
-  clientSecret: string;
-  clientId: string;
-  hasEnterprise: boolean;
-  enterpriseInstanceUrl?: string;
 };
 
 export const github = async () => {
@@ -147,7 +159,11 @@ export const github = async () => {
   await Task.forItem(
     'Updating',
     APP_CONFIG_FILE,
-    async () => await updateConfigFile(APP_CONFIG_FILE, config),
+    async () =>
+      await updateConfigFile(APP_CONFIG_FILE, {
+        ...config,
+        ...catalogUserLocation,
+      }),
   );
   await Task.forItem(
     'Creating',
