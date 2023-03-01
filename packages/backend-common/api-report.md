@@ -6,7 +6,6 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
-import aws from 'aws-sdk';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -51,6 +50,7 @@ import { ReadUrlOptions } from '@backstage/backend-plugin-api';
 import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
+import { S3Client } from '@aws-sdk/client-s3';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SearchOptions } from '@backstage/backend-plugin-api';
 import { SearchResponse } from '@backstage/backend-plugin-api';
@@ -67,12 +67,18 @@ import { Writable } from 'stream';
 // @public
 export class AwsS3UrlReader implements UrlReader {
   constructor(
+    defaultConfig: Config,
     integration: AwsS3Integration,
     deps: {
-      s3: aws.S3;
       treeResponseFactory: ReadTreeResponseFactory;
     },
   );
+  // (undocumented)
+  buildS3Client(
+    defaultConfig: Config,
+    region: string,
+    integration: AwsS3Integration,
+  ): Promise<S3Client>;
   // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
@@ -81,6 +87,8 @@ export class AwsS3UrlReader implements UrlReader {
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  retrieveS3ObjectData(stream: Readable): Promise<Readable>;
   // (undocumented)
   search(): Promise<SearchResponse>;
   // (undocumented)
