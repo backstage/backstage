@@ -4,13 +4,42 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+import { Conditions } from '@backstage/plugin-permission-node';
+import { PermissionCondition } from '@backstage/plugin-permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TaskBroker } from '@backstage/plugin-scaffolder-backend';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter } from '@backstage/plugin-scaffolder-backend';
 import { TemplateGlobal } from '@backstage/plugin-scaffolder-backend';
+import { TemplateParameter } from '@backstage/plugin-scaffolder-common';
 
 // @alpha
 export const catalogModuleTemplateKind: () => BackendFeature;
+
+// @alpha
+export const createScaffolderConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-template'>,
+  conditions: PermissionCriteria<
+    PermissionCondition<'scaffolder-template', PermissionRuleParams>
+  >,
+) => ConditionalPolicyDecision;
+
+// @alpha
+export const scaffolderConditions: Conditions<{
+  hasTag: PermissionRule<
+    TemplateParameter | TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-template',
+    {
+      tag: string;
+    }
+  >;
+}>;
 
 // @alpha
 export const scaffolderPlugin: (

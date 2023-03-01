@@ -15,5 +15,6 @@
  */
 
 export * from './modules';
+export * from './service/conditionExports';
 export { scaffolderPlugin } from './ScaffolderPlugin';
 export type { ScaffolderPluginOptions } from './ScaffolderPlugin';
