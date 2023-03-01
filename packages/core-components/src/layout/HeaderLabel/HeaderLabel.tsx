@@ -50,9 +50,16 @@ type HeaderLabelContentProps = {
   className: string;
 };
 
-const HeaderLabelContent = ({ value, className }: HeaderLabelContentProps) => (
-  <Typography className={className}>{value}</Typography>
-);
+const HeaderLabelContent = ({ value, className }: HeaderLabelContentProps) => {
+  return (
+    <Typography
+      component={typeof value === 'string' ? 'p' : 'span'}
+      className={className}
+    >
+      {value}
+    </Typography>
+  );
+};
 
 type HeaderLabelProps = {
   label: string;
