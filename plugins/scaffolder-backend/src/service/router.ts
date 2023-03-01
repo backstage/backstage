@@ -32,9 +32,11 @@ import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
+} from '@backstage/plugin-scaffolder-common';
+import {
   templateParameterReadPermission,
   templateStepReadPermission,
-} from '@backstage/plugin-scaffolder-common';
+} from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';

@@ -16,10 +16,11 @@
 
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   TemplateEntityStepV1beta3,
   TemplateParameter,
 } from '@backstage/plugin-scaffolder-common';
+import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
+
 import { z } from 'zod';
 
 export const createScaffolderPermissionRule = makeCreatePermissionRule<

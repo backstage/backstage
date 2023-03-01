@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin
- *
- * @packageDocumentation
- */
-
-export * from './TaskSpec';
-export { templateEntityV1beta3Validator } from './TemplateEntityV1beta3';
-export type {
-  TemplateEntityV1beta3,
-  TemplateEntityStepV1beta3,
-  TemplateParameter,
-  TemplatePermissions as TemplateSpecValuesMetadata,
-} from './TemplateEntityV1beta3';
+export * from './permissions';
