@@ -37,7 +37,7 @@ export async function readPuppetNodes(
   },
 ): Promise<ResourceEntity[]> {
   const transformFn = opts?.transformer ?? defaultResourceTransformer;
-  const url = new URL(ENDPOINT_FACTSETS, config.host);
+  const url = new URL(ENDPOINT_FACTSETS, config.baseUrl);
 
   if (config.query) {
     url.searchParams.set('query', config.query);

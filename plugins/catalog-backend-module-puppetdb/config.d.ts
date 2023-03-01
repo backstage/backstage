@@ -34,9 +34,9 @@ export interface Config {
       puppetdb?:
         | {
             /**
-             * (Required) The host of PuppetDB API instance.
+             * (Required) The base URL of PuppetDB API instance.
              */
-            host: string;
+            baseUrl: string;
             /**
              * (Optional) PQL query to filter PuppetDB nodes.
              */
@@ -50,9 +50,9 @@ export interface Config {
             string,
             {
               /**
-               * (Required) The host of PuppetDB API instance.
+               * (Required) The base URL of PuppetDB API instance.
                */
-              host: string;
+              baseUrl: string;
               /**
                * (Optional) PQL query to filter PuppetDB nodes.
                */

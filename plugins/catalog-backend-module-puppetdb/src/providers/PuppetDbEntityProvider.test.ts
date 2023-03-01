@@ -53,7 +53,7 @@ describe('PuppetEntityProvider', () => {
     catalog: {
       providers: {
         puppetdb: {
-          host: 'http://puppetdb:8080',
+          baseUrl: 'http://puppetdb:8080',
           schedule: {
             frequency: {
               minutes: 10,
@@ -165,10 +165,10 @@ describe('PuppetEntityProvider', () => {
                 annotations: {
                   [ANNOTATION_PUPPET_CERTNAME]: 'node1',
                   [ANNOTATION_LOCATION]: `url:${config.getString(
-                    'catalog.providers.puppetdb.host',
+                    'catalog.providers.puppetdb.baseUrl',
                   )}/${ENDPOINT_NODES}/node1`,
                   [ANNOTATION_ORIGIN_LOCATION]: `url:${config.getString(
-                    'catalog.providers.puppetdb.host',
+                    'catalog.providers.puppetdb.baseUrl',
                   )}/${ENDPOINT_NODES}/node1`,
                 },
                 tags: ['windows'],
@@ -193,10 +193,10 @@ describe('PuppetEntityProvider', () => {
                 annotations: {
                   [ANNOTATION_PUPPET_CERTNAME]: 'node2',
                   [ANNOTATION_LOCATION]: `url:${config.getString(
-                    'catalog.providers.puppetdb.host',
+                    'catalog.providers.puppetdb.baseUrl',
                   )}/${ENDPOINT_NODES}/node2`,
                   [ANNOTATION_ORIGIN_LOCATION]: `url:${config.getString(
-                    'catalog.providers.puppetdb.host',
+                    'catalog.providers.puppetdb.baseUrl',
                   )}/${ENDPOINT_NODES}/node2`,
                 },
                 tags: ['linux'],

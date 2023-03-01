@@ -35,13 +35,13 @@ describe('readPuppetNodes', () => {
 
   describe('where no query is specified', () => {
     const config: PuppetDbEntityProviderConfig = {
-      host: 'https://puppetdb',
+      baseUrl: 'https://puppetdb',
       id: DEFAULT_PROVIDER_ID,
     };
 
     beforeEach(async () => {
       worker.use(
-        rest.get(`${config.host}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
+        rest.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
           return res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -186,7 +186,7 @@ describe('readPuppetNodes', () => {
 
   describe('where query is specified', () => {
     const config: PuppetDbEntityProviderConfig = {
-      host: 'https://puppetdb',
+      baseUrl: 'https://puppetdb',
       id: DEFAULT_PROVIDER_ID,
       query: '["=", "certname", "node1"]',
     };
@@ -194,13 +194,16 @@ describe('readPuppetNodes', () => {
     describe('where no results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(`${config.host}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
-            return res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json([]),
-            );
-          }),
+          rest.get(
+            `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
+            (_req, res, ctx) => {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.json([]),
+              );
+            },
+          ),
         );
       });
 
@@ -213,22 +216,25 @@ describe('readPuppetNodes', () => {
     describe('where results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(`${config.host}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
-            return res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json([
-                {
-                  certname: 'node1',
-                  timestamp: 'time1',
-                  hash: 'hash1',
-                  producer_timestamp: 'producer_time1',
-                  producer: 'producer1',
-                  environment: 'environment1',
-                },
-              ]),
-            );
-          }),
+          rest.get(
+            `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
+            (_req, res, ctx) => {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.json([
+                  {
+                    certname: 'node1',
+                    timestamp: 'time1',
+                    hash: 'hash1',
+                    producer_timestamp: 'producer_time1',
+                    producer: 'producer1',
+                    environment: 'environment1',
+                  },
+                ]),
+              );
+            },
+          ),
         );
       });
 

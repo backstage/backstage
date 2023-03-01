@@ -48,8 +48,8 @@ catalog:
   providers:
     puppetdb:
       default:
-        # (Required) The host of PuppetDB API instance:
-        host: https://puppetdb.example.com
+        # (Required) The base URL of PuppetDB API instance:
+        baseUrl: https://puppetdb.example.com
 
         # (Optional) Query to filter PuppetDB nodes:
         #query: '["=","certname","example.com"]'

@@ -23,7 +23,7 @@ import { ANNOTATION_PUPPET_CERTNAME, DEFAULT_ENTITY_OWNER } from './constants';
 describe('defaultResourceTransformer', () => {
   it('should transform a puppet node to a resource entity', async () => {
     const config: PuppetDbEntityProviderConfig = {
-      host: '',
+      baseUrl: '',
       id: '',
     };
     const node: PuppetNode = {

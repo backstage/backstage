@@ -43,7 +43,7 @@ export class PuppetDbEntityProvider implements EntityProvider {
 // @public
 export type PuppetDbEntityProviderConfig = {
   id: string;
-  host: string;
+  baseUrl: string;
   query?: string;
   schedule?: TaskScheduleDefinition;
 };

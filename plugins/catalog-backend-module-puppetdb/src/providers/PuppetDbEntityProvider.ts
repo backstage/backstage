@@ -176,7 +176,7 @@ export class PuppetDbEntityProvider implements EntityProvider {
       type: 'full',
       entities: [...entities].map(entity => ({
         locationKey: this.getProviderName(),
-        entity: withLocations(this.config.host, entity),
+        entity: withLocations(this.config.baseUrl, entity),
       })),
     });
     markCommitComplete(entities);
@@ -186,13 +186,13 @@ export class PuppetDbEntityProvider implements EntityProvider {
 /**
  * Ensures the entities have required annotation data.
  *
- * @param host - The host of the PuppetDB instance.
+ * @param baseUrl - The base URL of the PuppetDB instance.
  * @param entity - The entity to add the annotations to.
  *
  * @returns Entity with @{@link ANNOTATION_LOCATION} and @{@link ANNOTATION_ORIGIN_LOCATION} annotations.
  */
-function withLocations(host: string, entity: Entity): Entity {
-  const location = `${host}/${ENDPOINT_NODES}/${entity.metadata?.name}`;
+function withLocations(baseUrl: string, entity: Entity): Entity {
+  const location = `${baseUrl}/${ENDPOINT_NODES}/${entity.metadata?.name}`;
 
   return merge(
     {

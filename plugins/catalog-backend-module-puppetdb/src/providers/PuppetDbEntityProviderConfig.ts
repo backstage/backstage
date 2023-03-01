@@ -32,9 +32,9 @@ export type PuppetDbEntityProviderConfig = {
    */
   id: string;
   /**
-   * (Required) The host of PuppetDB API instance.
+   * (Required) The base URL of PuppetDB API instance.
    */
-  host: string;
+  baseUrl: string;
   /**
    * (Optional) PQL query to filter PuppetDB nodes.
    */
@@ -62,7 +62,7 @@ export function readProviderConfigs(
     return [];
   }
 
-  if (providersConfig.has('host')) {
+  if (providersConfig.has('baseUrl')) {
     return [readProviderConfig(DEFAULT_PROVIDER_ID, providersConfig)];
   }
 
@@ -83,7 +83,7 @@ function readProviderConfig(
   id: string,
   config: Config,
 ): PuppetDbEntityProviderConfig {
-  const host = config.getString('host').replace(/\/+$/, '');
+  const baseUrl = config.getString('baseUrl').replace(/\/+$/, '');
   const query = config.getOptionalString('query');
 
   const schedule = config.has('schedule')
@@ -92,7 +92,7 @@ function readProviderConfig(
 
   return {
     id,
-    host,
+    baseUrl,
     query,
     schedule,
   };

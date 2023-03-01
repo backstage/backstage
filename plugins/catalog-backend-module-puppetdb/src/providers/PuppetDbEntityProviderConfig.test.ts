@@ -33,7 +33,7 @@ describe('readProviderConfigs', () => {
       catalog: {
         providers: {
           puppetdb: {
-            host: 'https://puppetdb',
+            baseUrl: 'https://puppetdb',
           },
         },
       },
@@ -43,7 +43,7 @@ describe('readProviderConfigs', () => {
 
     expect(providerConfigs).toHaveLength(1);
     expect(providerConfigs[0].id).toEqual('default');
-    expect(providerConfigs[0].host).toEqual('https://puppetdb');
+    expect(providerConfigs[0].baseUrl).toEqual('https://puppetdb');
   });
 
   it('single specific provider config', () => {
@@ -52,7 +52,7 @@ describe('readProviderConfigs', () => {
         providers: {
           puppetdb: {
             'my-provider': {
-              host: 'https://puppetdb',
+              baseUrl: 'https://puppetdb',
             },
           },
         },
@@ -63,7 +63,7 @@ describe('readProviderConfigs', () => {
 
     expect(providerConfigs).toHaveLength(1);
     expect(providerConfigs[0].id).toEqual('my-provider');
-    expect(providerConfigs[0].host).toEqual('https://puppetdb');
+    expect(providerConfigs[0].baseUrl).toEqual('https://puppetdb');
   });
 
   it('multiple provider configs', () => {
@@ -72,11 +72,11 @@ describe('readProviderConfigs', () => {
         providers: {
           puppetdb: {
             'my-provider': {
-              host: 'https://my-puppet/',
+              baseUrl: 'https://my-puppet/',
               query: 'my-query',
             },
             'your-provider': {
-              host: 'https://your-puppet',
+              baseUrl: 'https://your-puppet',
               query: 'your-query',
             },
           },
@@ -89,12 +89,12 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs).toHaveLength(2);
     expect(providerConfigs[0]).toEqual({
       id: 'my-provider',
-      host: 'https://my-puppet',
+      baseUrl: 'https://my-puppet',
       query: 'my-query',
     });
     expect(providerConfigs[1]).toEqual({
       id: 'your-provider',
-      host: 'https://your-puppet',
+      baseUrl: 'https://your-puppet',
       query: 'your-query',
     });
   });
@@ -104,7 +104,7 @@ describe('readProviderConfigs', () => {
       catalog: {
         providers: {
           puppetdb: {
-            host: 'https://puppetdb',
+            baseUrl: 'https://puppetdb',
             schedule: {
               frequency: 'PT30M',
               timeout: {
