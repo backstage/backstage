@@ -18,8 +18,6 @@ import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { getVoidLogger } from '../logging';
 import { DefaultReadTreeResponseFactory } from './tree';
-import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { DEFAULT_REGION, AwsS3UrlReader, parseUrl } from './AwsS3UrlReader';
 import {
   AwsS3Integration,
@@ -130,8 +128,6 @@ describe('parseUrl', () => {
 
 describe('AwsS3UrlReader', () => {
   const s3Client = mockClient(S3Client);
-  const worker = setupServer();
-  setupRequestMockHandlers(worker);
 
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsS3UrlReader.factory({
