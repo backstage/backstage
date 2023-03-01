@@ -33,6 +33,7 @@ import { EntityProviderMutation } from '@backstage/plugin-catalog-node';
 import { EntityRelationSpec } from '@backstage/plugin-catalog-node';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
+import { Knex } from 'knex';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
@@ -130,7 +131,10 @@ export class CatalogBuilder {
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
   ): CatalogBuilder;
-  build(): Promise<{
+  // Warning: (ae-forgotten-export) The symbol "ConflictHandlerOptions" needs to be exported by the entry point index.d.ts
+  build(
+    conflictHandler?: (options: ConflictHandlerOptions) => Promise<void>,
+  ): Promise<{
     processingEngine: CatalogProcessingEngine;
     router: Router;
   }>;
