@@ -4177,7 +4177,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@npm:^1.1.9":
+"@backstage/integration-react@npm:^1.1.10":
   version: 1.1.10
   resolution: "@backstage/integration-react@npm:1.1.10"
   dependencies:
@@ -13251,15 +13251,15 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-github-insights@npm:^2.0.5":
-  version: 2.3.5
-  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.5"
+  version: 2.3.6
+  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.6"
   dependencies:
-    "@backstage/catalog-model": ^1.1.5
-    "@backstage/core-components": ^0.12.3
-    "@backstage/core-plugin-api": ^1.3.0
-    "@backstage/integration-react": ^1.1.9
-    "@backstage/plugin-catalog-react": ^1.2.4
-    "@backstage/theme": ^0.2.16
+    "@backstage/catalog-model": ^1.2.0
+    "@backstage/core-components": ^0.12.4
+    "@backstage/core-plugin-api": ^1.4.0
+    "@backstage/integration-react": ^1.1.10
+    "@backstage/plugin-catalog-react": ^1.3.0
+    "@backstage/theme": ^0.2.17
     "@date-io/core": 2.10.7
     "@material-ui/core": ^4.11.0
     "@material-ui/icons": ^4.9.1
@@ -13274,7 +13274,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
-  checksum: 66e68cb85251df7be8d97e23810ab1d3b686ab99a76452e7daa8d4d3d44a0aee623defbbe83712601120af76d1d5a504fd62f6600edf6bfc623115d3a0f4ab00
+  checksum: 10b5be80d6691ccd2a7f06fb701bb9d3c50af5463e342efa8b34574b325d6103f98fbf5781df4156e0dce86834f25735fe1b14101d59cbde04460ea87a2314ed
   languageName: node
   linkType: hard
 
