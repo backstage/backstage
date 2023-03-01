@@ -32,7 +32,7 @@ import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
 
-export const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
+const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
 export type SignInProviderType = {
   [key: string]: {
