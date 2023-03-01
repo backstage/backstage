@@ -62,7 +62,7 @@ export const useTemplateSchema = (
         // Title is rendered at the top of the page, so let's ignore this from jsonschemaform
         title: undefined,
         properties: Object.fromEntries(
-          Object.entries((step.schema.properties || []) as JsonObject).filter(
+          Object.entries((step.schema?.properties ?? []) as JsonObject).filter(
             ([key]) => {
               const stepFeatureFlag =
                 step.uiSchema[key]?.['ui:backstage']?.featureFlag;
