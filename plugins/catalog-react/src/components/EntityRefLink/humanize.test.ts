@@ -34,6 +34,62 @@ describe('humanizeEntityRef', () => {
     expect(title).toEqual('component:software');
   });
 
+  it('overrides name with title', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        title: 'Software!',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const title = humanizeEntityRef(entity);
+    expect(title).toEqual('component:Software!');
+  });
+
+  it('overrides group name and title with spec.profile.displayName', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'group1',
+        title: 'Group One',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'organization',
+        profile: {
+          displayName: 'Group 1',
+        },
+      },
+    };
+    const title = humanizeEntityRef(entity);
+    expect(title).toEqual('group:Group 1');
+  });
+
+  it('overrides user name and title with spec.profile.displayName', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'User',
+      metadata: {
+        name: 'don.knotts',
+        title: 'Don Knotts',
+      },
+      spec: {
+        profile: {
+          displayName: 'Barney Fife',
+        },
+      },
+    };
+    const title = humanizeEntityRef(entity);
+    expect(title).toEqual('user:Barney Fife');
+  });
+
   it('formats entity in default namespace without skipping default namespace', () => {
     const entity = {
       apiVersion: 'v1',

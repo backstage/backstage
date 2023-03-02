@@ -40,13 +40,22 @@ export function humanizeEntityRef(
   if ('metadata' in entityRef) {
     kind = entityRef.kind;
     namespace = entityRef.metadata.namespace;
-    name = entityRef.metadata.name;
+    if (
+      entityRef.spec &&
+      'profile' in entityRef.spec &&
+      entityRef.spec.profile instanceof Object &&
+      'displayName' in entityRef.spec.profile &&
+      entityRef.spec.profile.displayName
+    ) {
+      name = entityRef.spec.profile.displayName;
+    } else {
+      name = entityRef.metadata.title ?? entityRef.metadata.name;
+    }
   } else {
     kind = entityRef.kind;
     namespace = entityRef.namespace;
     name = entityRef.name;
   }
-
   if (namespace === undefined || namespace === '') {
     namespace = DEFAULT_NAMESPACE;
   }
