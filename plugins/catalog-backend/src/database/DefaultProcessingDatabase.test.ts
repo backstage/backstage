@@ -433,10 +433,7 @@ describe('DefaultProcessingDatabase', () => {
             if (step.expectConflict) {
               // eslint-disable-next-line jest/no-conditional-expect
               expect(mockLogger.warn).toHaveBeenCalledWith(
-                // eslint-disable-next-line jest/no-conditional-expect
-                expect.stringMatching(
-                  `DefaultProcessingDatabase - Detected conflicting entityRef ${entityRef} already referenced by ${step.locationKey} and now also ${step.expectedLocationKey} `,
-                ),
+                `DefaultProcessingDatabase - Detected conflicting entityRef ${entityRef} already referenced by ${step.locationKey} and now also ${step.expectedLocationKey}`,
               );
               // eslint-disable-next-line jest/no-conditional-expect
               expect(conflictHandler).toHaveBeenCalled();
