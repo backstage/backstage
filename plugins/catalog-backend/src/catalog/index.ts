@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export type { EntitiesSearchFilter, EntityFilter } from './types';
+export type {
+  EntitiesSearchFilter,
+  EntityFilter,
+  ConflictHandlerOptions,
+} from './types';

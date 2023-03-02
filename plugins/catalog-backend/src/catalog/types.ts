@@ -314,6 +314,10 @@ export type Cursor = {
   totalItems?: number;
 };
 
+/**
+ * Parameters for use in custom conflict handling
+ *  @public
+ */
 export type ConflictHandlerOptions = {
   tx: Knex.Transaction;
   entity: Entity;

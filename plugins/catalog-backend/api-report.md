@@ -131,7 +131,6 @@ export class CatalogBuilder {
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
   ): CatalogBuilder;
-  // Warning: (ae-forgotten-export) The symbol "ConflictHandlerOptions" needs to be exported by the entry point index.d.ts
   build(
     conflictHandler?: (options: ConflictHandlerOptions) => Promise<void>,
   ): Promise<{
@@ -231,6 +230,16 @@ export class CodeOwnersProcessor implements CatalogProcessor {
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec_2): Promise<Entity>;
 }
+
+// @public
+export type ConflictHandlerOptions = {
+  tx: Knex.Transaction;
+  entity: Entity;
+  hash: string;
+  originalLocationKey: string;
+  newLocationKey: string;
+  logger: Logger;
+};
 
 // @public
 export function createRandomProcessingInterval(options: {
