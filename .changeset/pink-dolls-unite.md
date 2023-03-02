@@ -2,4 +2,4 @@
 '@backstage/plugin-linguist-backend': patch
 ---
 
-Added support for offline language data
+Added support for linguist-js options.
