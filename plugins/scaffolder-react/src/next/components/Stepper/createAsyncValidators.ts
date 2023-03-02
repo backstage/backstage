@@ -103,6 +103,26 @@ export const createAsyncValidators = (
             itemsUiSchema,
           );
         }
+      } else if (
+        definitionInSchema &&
+        definitionInSchema.items &&
+        definitionInSchema.items.type === 'object'
+      ) {
+        const properties = (definitionInSchema.items?.properties ??
+          []) as JsonObject[];
+        for (const [, propValue] of Object.entries(properties)) {
+          if ('ui:field' in propValue) {
+            const { schema: itemsSchema, uiSchema: itemsUiSchema } =
+              extractSchemaFromStep(definitionInSchema.items);
+            await validateForm(
+              propValue['ui:field'] as string,
+              key,
+              value,
+              itemsSchema,
+              itemsUiSchema,
+            );
+          }
+        }
       } else if (isObject(value)) {
         formValidation[key] = await validate(formData, path, value);
       }
