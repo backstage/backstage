@@ -8946,6 +8946,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/scaffolder-test-utils@workspace:packages/scaffolder-test-utils":
+  version: 0.0.0-use.local
+  resolution: "@backstage/scaffolder-test-utils@workspace:packages/scaffolder-test-utils"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/plugin-scaffolder-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@testing-library/react": ^12.1.3
+  peerDependencies:
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/test-utils@workspace:^, @backstage/test-utils@workspace:packages/test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/test-utils@workspace:packages/test-utils"
