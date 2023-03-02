@@ -23,6 +23,7 @@ import { CatalogProcessorRefreshKeysResult } from '@backstage/plugin-catalog-nod
 import { CatalogProcessorRelationResult } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
+import { DateTime } from 'luxon';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
@@ -32,6 +33,7 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { EntityProviderMutation } from '@backstage/plugin-catalog-node';
 import { EntityRelationSpec } from '@backstage/plugin-catalog-node';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
@@ -50,6 +52,9 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
+
+// @public (undocumented)
+export type AddUnprocessedEntitiesResult = {};
 
 // @public @deprecated
 export type AnalyzeLocationEntityField = AnalyzeLocationEntityField_2;
@@ -165,6 +170,17 @@ export type CatalogCollatorEntityTransformer = (
   entity: Entity,
 ) => Omit<CatalogEntityDocument, 'location' | 'authorization'>;
 
+// @public
+export interface CatalogDatabase {
+  listAncestors(
+    txOpaque: Transaction,
+    options: ListAncestorsOptions,
+  ): Promise<ListAncestorsResult>;
+  refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
+  // (undocumented)
+  transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
+}
+
 // @public (undocumented)
 export type CatalogEnvironment = {
   logger: Logger;
@@ -172,6 +188,9 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  processingDatabase?: ProcessingDatabase;
+  providerDatabase?: ProviderDatabase;
+  catalogDatabase?: CatalogDatabase;
 };
 
 // @public
@@ -233,6 +252,14 @@ export function createRandomProcessingInterval(options: {
   minSeconds: number;
   maxSeconds: number;
 }): ProcessingIntervalFunction;
+
+// @public (undocumented)
+export type DbRelationsRow = {
+  originating_entity_id: string;
+  source_entity_ref: string;
+  target_entity_ref: string;
+  type: string;
+};
 
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
@@ -347,6 +374,31 @@ export class FileReaderProcessor implements CatalogProcessor {
 }
 
 // @public (undocumented)
+export type GetProcessableEntitiesResult = {
+  items: RefreshStateItem[];
+};
+
+// @public (undocumented)
+export type ListAncestorsOptions = {
+  entityRef: string;
+};
+
+// @public (undocumented)
+export type ListAncestorsResult = {
+  entityRefs: string[];
+};
+
+// @public (undocumented)
+export type ListParentsOptions = {
+  entityRef: string;
+};
+
+// @public (undocumented)
+export type ListParentsResult = {
+  entityRefs: string[];
+};
+
+// @public (undocumented)
 export type LocationAnalyzer = {
   analyzeLocation(
     location: AnalyzeLocationRequest,
@@ -431,9 +483,103 @@ export type PlaceholderResolverResolveUrl = (
 ) => string;
 
 // @public
+export interface ProcessingDatabase {
+  // (undocumented)
+  getProcessableEntities(
+    txOpaque: Transaction,
+    request: {
+      processBatchSize: number;
+    },
+  ): Promise<GetProcessableEntitiesResult>;
+  // (undocumented)
+  listParents(
+    txOpaque: Transaction,
+    options: ListParentsOptions,
+  ): Promise<ListParentsResult>;
+  // (undocumented)
+  transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
+  updateEntityCache(
+    txOpaque: Transaction,
+    options: UpdateEntityCacheOptions,
+  ): Promise<void>;
+  updateProcessedEntity(
+    txOpaque: Transaction,
+    options: UpdateProcessedEntityOptions,
+  ): Promise<{
+    previous: {
+      relations: DbRelationsRow[];
+    };
+  }>;
+  updateProcessedEntityErrors(
+    txOpaque: Transaction,
+    options: UpdateProcessedEntityErrorsOptions,
+  ): Promise<void>;
+}
+
+// @public
 export type ProcessingIntervalFunction = () => number;
 
 export { processingResult };
+
+// @public
+export interface ProviderDatabase {
+  refreshByRefreshKeys(
+    txOpaque: Transaction,
+    options: RefreshByKeyOptions,
+  ): Promise<void>;
+  replaceUnprocessedEntities(
+    txOpaque: Transaction,
+    options: ReplaceUnprocessedEntitiesOptions,
+  ): Promise<void>;
+  // (undocumented)
+  transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
+}
+
+// @public (undocumented)
+export type RefreshByKeyOptions = {
+  keys: string[];
+};
+
+// @public
+export type RefreshKeyData = {
+  key: string;
+};
+
+// @public (undocumented)
+export type RefreshOptions = {
+  entityRef: string;
+};
+
+// @public (undocumented)
+export type RefreshStateItem = {
+  id: string;
+  entityRef: string;
+  unprocessedEntity: Entity;
+  processedEntity?: Entity;
+  resultHash: string;
+  nextUpdateAt: DateTime;
+  lastDiscoveryAt: DateTime;
+  state?: JsonObject;
+  errors?: string;
+  locationKey?: string;
+};
+
+// @public (undocumented)
+export type ReplaceUnprocessedEntitiesOptions =
+  | {
+      sourceKey: string;
+      items: DeferredEntity[];
+      type: 'full';
+    }
+  | {
+      sourceKey: string;
+      added: DeferredEntity[];
+      removed: {
+        entityRef: string;
+        locationKey?: string;
+      }[];
+      type: 'delta';
+    };
 
 // @public (undocumented)
 export type ScmLocationAnalyzer = {
@@ -441,6 +587,36 @@ export type ScmLocationAnalyzer = {
   analyze(options: AnalyzeOptions): Promise<{
     existing: AnalyzeLocationExistingEntity[];
   }>;
+};
+
+// @public
+export type Transaction = {
+  rollback(): Promise<unknown>;
+};
+
+// @public (undocumented)
+export type UpdateEntityCacheOptions = {
+  id: string;
+  state?: JsonObject;
+};
+
+// @public (undocumented)
+export type UpdateProcessedEntityErrorsOptions = {
+  id: string;
+  errors?: string;
+  resultHash: string;
+};
+
+// @public (undocumented)
+export type UpdateProcessedEntityOptions = {
+  id: string;
+  processedEntity: Entity;
+  resultHash: string;
+  errors?: string;
+  relations: EntityRelationSpec[];
+  deferredEntities: DeferredEntity[];
+  locationKey?: string;
+  refreshKeys: RefreshKeyData[];
 };
 
 // @public (undocumented)

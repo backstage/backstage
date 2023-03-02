@@ -51,6 +51,7 @@ export type EntityProcessingResult =
 
 /**
  * A string to associate to the entity itself.
+ * @public
  */
 export type RefreshKeyData = {
   key: string;

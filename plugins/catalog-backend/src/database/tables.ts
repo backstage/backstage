@@ -54,6 +54,9 @@ export type DbRefreshStateReferencesRow = {
   target_entity_ref: string;
 };
 
+/**
+ * @public
+ */
 export type DbRelationsRow = {
   originating_entity_id: string;
   source_entity_ref: string;

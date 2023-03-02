@@ -26,13 +26,18 @@ import { RefreshKeyData } from '../processing/types';
 
 /**
  * An abstraction for transactions of the underlying database technology.
+ * @public
  */
 export type Transaction = {
   rollback(): Promise<unknown>;
 };
-
+/**
+ * @public
+ */
 export type AddUnprocessedEntitiesResult = {};
-
+/**
+ * @public
+ */
 export type UpdateProcessedEntityOptions = {
   id: string;
   processedEntity: Entity;
@@ -43,18 +48,24 @@ export type UpdateProcessedEntityOptions = {
   locationKey?: string;
   refreshKeys: RefreshKeyData[];
 };
-
+/**
+ * @public
+ */
 export type UpdateEntityCacheOptions = {
   id: string;
   state?: JsonObject;
 };
-
+/**
+ * @public
+ */
 export type UpdateProcessedEntityErrorsOptions = {
   id: string;
   errors?: string;
   resultHash: string;
 };
-
+/**
+ * @public
+ */
 export type RefreshStateItem = {
   id: string;
   entityRef: string;
@@ -67,11 +78,15 @@ export type RefreshStateItem = {
   errors?: string;
   locationKey?: string;
 };
-
+/**
+ * @public
+ */
 export type GetProcessableEntitiesResult = {
   items: RefreshStateItem[];
 };
-
+/**
+ * @public
+ */
 export type ReplaceUnprocessedEntitiesOptions =
   | {
       sourceKey: string;
@@ -84,33 +99,46 @@ export type ReplaceUnprocessedEntitiesOptions =
       removed: { entityRef: string; locationKey?: string }[];
       type: 'delta';
     };
-
+/**
+ * @public
+ */
 export type RefreshByKeyOptions = {
   keys: string[];
 };
-
+/**
+ * @public
+ */
 export type RefreshOptions = {
   entityRef: string;
 };
-
+/**
+ * @public
+ */
 export type ListAncestorsOptions = {
   entityRef: string;
 };
-
+/**
+ * @public
+ */
 export type ListAncestorsResult = {
   entityRefs: string[];
 };
-
+/**
+ * @public
+ */
 export type ListParentsOptions = {
   entityRef: string;
 };
-
+/**
+ * @public
+ */
 export type ListParentsResult = {
   entityRefs: string[];
 };
 
 /**
  * The database abstraction layer for Entity Processor interactions.
+ * @public
  */
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
@@ -155,6 +183,7 @@ export interface ProcessingDatabase {
 
 /**
  * The database abstraction layer for Entity Provider interactions.
+ * @public
  */
 export interface ProviderDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
@@ -179,6 +208,7 @@ export interface ProviderDatabase {
 // TODO(Rugvip): This is only partial for now
 /**
  * The database abstraction layer for catalog access.
+ * @public
  */
 export interface CatalogDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;

@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export type { CatalogProcessingEngine, RefreshKeyData } from './types';
-
-export { createRandomProcessingInterval } from './refresh';
-export type { ProcessingIntervalFunction } from './refresh';
+export * from './types';
+export type { DbRelationsRow } from './tables';
