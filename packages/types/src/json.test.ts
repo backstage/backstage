@@ -170,4 +170,39 @@ describe('jsonMerge', () => {
       },
     });
   });
+
+  it("should overwrite the array with the second argument's array", () => {
+    const obj1 = {
+      array: ['a', 'b', 'c'],
+    };
+    const obj2 = {
+      array: [1, 2, 3],
+    };
+    const merged = mergeJson(obj1, obj2);
+    expect(merged).toEqual({
+      array: [1, 2, 3],
+    });
+
+    const merged2 = mergeJson(obj2, obj1);
+    expect(merged2).toEqual({
+      array: ['a', 'b', 'c'],
+    });
+  });
+
+  it('should take only the defined value in the case of a collision', () => {
+    const obj1 = {
+      sqlite: undefined,
+    };
+    const obj2 = {
+      sqlite: 'sqlite3',
+    };
+    const merged = mergeJson(obj1, obj2);
+    expect(merged).toEqual({
+      sqlite: 'sqlite3',
+    });
+    const merged2 = mergeJson(obj2, obj1);
+    expect(merged2).toEqual({
+      sqlite: 'sqlite3',
+    });
+  });
 });
