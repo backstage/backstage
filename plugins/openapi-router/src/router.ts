@@ -17,14 +17,6 @@ import { Router } from 'express';
 import { RequiredDoc, DocRequestMatcher } from './types';
 
 /**
- * Helper to transform readonly `as const` API specs for the ApiRouter.
- * @public
- */
-export type DeepReadonly<T> = {
-  readonly [P in keyof T]: DeepReadonly<T[P]>;
-};
-
-/**
  * Typed Express router based on an OpenAPI 3.1 spec.
  * @public
  */
