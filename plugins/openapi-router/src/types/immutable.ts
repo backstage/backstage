@@ -18,6 +18,7 @@ import type {
   OpenAPIObject,
   ReferenceObject,
   RequestBodyObject,
+  ParameterObject,
 } from 'openapi3-ts';
 
 /**
@@ -68,3 +69,33 @@ export type ImmutableContentObject = ImmutableObject<ContentObject>;
  * @public
  */
 export type ImmutableRequestBodyObject = ImmutableObject<RequestBodyObject>;
+
+export type ImmutableParameterObject = ImmutableObject<ParameterObject>;
+
+export interface HeaderObject extends ParameterObject {
+  in: 'header';
+  style: 'simple';
+}
+
+export type ImmutableHeaderObject = ImmutableObject<HeaderObject>;
+
+export interface CookieObject extends ParameterObject {
+  in: 'cookie';
+  style: 'form';
+}
+
+export type ImmutableCookieObject = ImmutableObject<CookieObject>;
+
+export interface QueryObject extends ParameterObject {
+  in: 'query';
+  style: 'form' | 'deepObject' | 'pipeDelimited' | 'spaceDelimited';
+}
+
+export type ImmutableQueryObject = ImmutableObject<QueryObject>;
+
+export interface PathObject extends ParameterObject {
+  in: 'path';
+  style: 'simple' | 'label' | 'matrix';
+}
+
+export type ImmutablePathObject = ImmutableObject<PathObject>;

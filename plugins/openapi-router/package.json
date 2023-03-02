@@ -24,7 +24,8 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "expect-type": "^0.15.0"
   },
   "files": [
     "dist"

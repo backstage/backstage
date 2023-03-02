@@ -7802,6 +7802,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@types/express": ^4.17.6
     "@types/express-serve-static-core": ^4.17.33
+    expect-type: ^0.15.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     json-schema-to-ts: ^2.6.2
@@ -24087,6 +24088,13 @@ __metadata:
   version: 2.0.3
   resolution: "expand-template@npm:2.0.3"
   checksum: 588c19847216421ed92befb521767b7018dc88f88b0576df98cb242f20961425e96a92cbece525ef28cc5becceae5d544ae0f5b9b5e2aa05acb13716ca5b3099
+  languageName: node
+  linkType: hard
+
+"expect-type@npm:^0.15.0":
+  version: 0.15.0
+  resolution: "expect-type@npm:0.15.0"
+  checksum: f5d3733bb593d9f7cf302b393e34b19389fb7022d72963815e9a847a9517b65201faef733dd9006bed9e200486d77204fd958c8d29ef58b466bed2da076fc0ba
   languageName: node
   linkType: hard
 
