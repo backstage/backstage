@@ -54,14 +54,20 @@ export function resolveUrlToRelative(url: string, baseUrl: string) {
 export function useNavigateUrl() {
   const navigate = useNavigate();
   const configApi = useApi(configApiRef);
-  const appBaseUrl = configApi.getString('app.baseUrl');
+  const appBaseUrl = configApi.getOptionalString('app.baseUrl');
   const navigateFn = useCallback(
     (to: string) => {
       let url = to;
-      try {
-        url = resolveUrlToRelative(to, appBaseUrl);
-      } catch (err) {
-        // URL passed in was relative.
+      /**
+       * This should always be true when running the application, this just allows
+       *    test cases that do not have the configApi set up to run still.
+       */
+      if (appBaseUrl) {
+        try {
+          url = resolveUrlToRelative(to, appBaseUrl);
+        } catch (err) {
+          // URL passed in was relative.
+        }
       }
       navigate(url);
     },
