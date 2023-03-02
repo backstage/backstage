@@ -39,7 +39,7 @@ The current documentation is very limited. Help us make the `/docs` folder come 
 
 Docs are published to [backstage.io/docs](https://backstage.io/docs). If you
 contribute to the documentation, you might want to preview your changes before
-submitting them. You'll find the website sources under [/microsite](/microsite)
+submitting them. You'll find the website sources under [/microsite](https://github.com/backstage/backstage/tree/master/microsite)
 with instructions for building and locally serving the website in the
 [README](/microsite#readme).
 
@@ -63,4 +63,4 @@ If you are proposing a feature:
 
 ### Add your company to `ADOPTERS`
 
-Have you started using Backstage? Adding your company to [ADOPTERS](ADOPTERS.md) really helps the project, you can do this by filling out this [Adopter form](https://form.typeform.com/to/zcOaKikB).
+Have you started using Backstage? Adding your company to [ADOPTERS](https://github.com/backstage/backstage/blob/master/ADOPTERS.md) really helps the project, you can do this by filling out this [Adopter form](https://form.typeform.com/to/zcOaKikB).
