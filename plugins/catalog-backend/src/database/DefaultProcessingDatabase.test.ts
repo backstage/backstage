@@ -340,6 +340,7 @@ describe('DefaultProcessingDatabase', () => {
           error: jest.fn(),
           warn: jest.fn(),
         };
+        const conflictHandler = jest.fn();
         const { knex, db } = await createDatabase(
           databaseId,
           mockLogger as unknown as Logger,
@@ -404,12 +405,14 @@ describe('DefaultProcessingDatabase', () => {
             mockLogger.warn.mockClear();
             mockLogger.error.mockClear();
 
+            const entityRef = `component:default/1`;
             await db.updateProcessedEntity(tx, {
               id,
               processedEntity,
               resultHash: '',
               relations: [],
               refreshKeys: [],
+              conflictHandler: conflictHandler,
               deferredEntities: [
                 {
                   entity: {
@@ -431,8 +434,12 @@ describe('DefaultProcessingDatabase', () => {
               // eslint-disable-next-line jest/no-conditional-expect
               expect(mockLogger.warn).toHaveBeenCalledWith(
                 // eslint-disable-next-line jest/no-conditional-expect
-                expect.stringMatching(/^Detected conflicting entityRef/),
+                expect.stringMatching(
+                  `DefaultProcessingDatabase - Detected conflicting entityRef ${entityRef} already referenced by ${step.locationKey} and now also ${step.expectedLocationKey} `,
+                ),
               );
+              // eslint-disable-next-line jest/no-conditional-expect
+              expect(conflictHandler).toHaveBeenCalled();
             } else {
               // eslint-disable-next-line jest/no-conditional-expect
               expect(mockLogger.warn).not.toHaveBeenCalled();

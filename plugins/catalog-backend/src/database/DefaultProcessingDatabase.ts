@@ -366,7 +366,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       });
       if (conflictingKey) {
         this.options.logger.warn(
-          `DefaultProcessingDatabase - Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
+          `DefaultProcessingDatabase - Detected conflicting entityRef ${entityRef} already referenced by ${locationKey} and now also ${conflictingKey}`,
         );
         if (options.conflictHandler) {
           await options.conflictHandler({
