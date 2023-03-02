@@ -29,10 +29,11 @@ class DemoEventBasedEntityProvider implements EntityProvider, EventSubscriber {
   ) {}
 
   async onEvent(params: EventParams): Promise<void> {
+    const request = params.eventPayload as Request;
     this.logger.info(
       `onEvent: topic=${params.topic}, metadata=${JSON.stringify(
         params.metadata,
-      )}, payload=${JSON.stringify(params.eventPayload)}`,
+      )}, payload=${JSON.stringify(request.body)}`,
     );
   }
 
