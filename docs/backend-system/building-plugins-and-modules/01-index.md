@@ -168,7 +168,61 @@ Whenever you want to allow modules to configure your plugin dynamically, for
 example in the way that the catalog backend lets catalog modules inject
 additional entity providers, you can use the extension points mechanism. This is
 described in detail with code examples in [the extension points architecture
-article](../architecture/05-extension-points.md).
+article](../architecture/05-extension-points.md), while the following is a more
+slim example of how to implement an extension point for a plugin:
+
+```ts
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+
+// This is the extension point interface, which is how modules interact with your plugin.
+export interface ExamplesExtensionPoint {
+  addExample(example: Example): void;
+}
+
+// This is the extension point reference that encapsulates the above interface.
+export const examplesExtensionPoint =
+  createExtensionPoint<ExamplesExtensionPoint>({
+    id: 'example.examples',
+  });
+
+// This is the implementation of the extension point, which is internal to your plugin.
+class ExamplesExtension implements ExamplesExtensionPoint {
+  #examples: Example[] = [];
+
+  addActions(example: Examples): void {
+    this.#examples.push(example);
+  }
+
+  // Note that this method is internal to this implementation
+  getRegisteredExamples() {
+    return this.#examples;
+  }
+}
+
+// The following shows how your plugin would register the extension point
+// and use the features that other modules have registered.
+export const examplePlugin = createBackendPlugin({
+  pluginId: 'example',
+  register(env) {
+    const examplesExtensions = new ExamplesExtension();
+    env.registerExtensionPoint(examplesExtensionPoint, examplesExtensions);
+
+    env.registerInit({
+      deps: { logger: coreServices.logger },
+      async init({ logger }) {
+        // We can access `actionsExtension` directly, giving us access to the internal interface.
+        const examples = actionsExtension.getRegisteredActions();
+
+        logger.info(`The following examples have been registered: ${examples}`);
+      },
+    });
+  },
+});
+```
+
+This is a very common type of extension point, one where modules are given the opportunity to register features to be used by the plugin. In this case modules are able to register examples that are then used by our examples plugin.
+
+Note that the public extension point interface only needs to expose the `addExample` method, while the `getRegisteredExamples()` method is kept internal to the plugin.
 
 ### Configuration
 
