@@ -435,7 +435,16 @@ export class CatalogBuilder {
     const { config, database, logger, permissions } = this.env;
     let { processingDatabase, providerDatabase, catalogDatabase } = this.env;
 
+    const policy = this.buildEntityPolicy();
+    const processors = this.buildProcessors();
+    const parser = this.parser || defaultEntityDataParser;
+
     const dbClient = await database.getClient();
+    if (!database.migrations?.skip) {
+      logger.info('Performing database migration');
+      await applyDatabaseMigrations(dbClient);
+    }
+
     processingDatabase =
       processingDatabase ??
       new DefaultProcessingDatabase({
@@ -455,15 +464,6 @@ export class CatalogBuilder {
         database: dbClient,
         logger,
       });
-    const policy = this.buildEntityPolicy();
-    const processors = this.buildProcessors();
-    const parser = this.parser || defaultEntityDataParser;
-
-    if (!database.migrations?.skip) {
-      logger.info('Performing database migration');
-      await applyDatabaseMigrations(dbClient);
-    }
-
     const integrations = ScmIntegrations.fromConfig(config);
     const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
