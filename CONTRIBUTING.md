@@ -8,6 +8,8 @@ Contributions are welcome, and they are greatly appreciated! Every little bit he
 
 Backstage is released under the Apache 2.0 License, and original creations contributed to this repo are accepted under the same license.
 
+You can find out more about the types of contributions over at [getting involved](https://backstage.io/docs/getting-started/get-involved)!
+
 ## Get Started!
 
 So...feel ready to jump in? Let's do this. 👏🏻💯
