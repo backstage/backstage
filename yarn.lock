@@ -8946,7 +8946,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/scaffolder-test-utils@workspace:packages/scaffolder-test-utils":
+"@backstage/scaffolder-test-utils@workspace:^, @backstage/scaffolder-test-utils@workspace:packages/scaffolder-test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/scaffolder-test-utils@workspace:packages/scaffolder-test-utils"
   dependencies:
@@ -22794,6 +22794,7 @@ __metadata:
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/plugin-todo": "workspace:^"
     "@backstage/plugin-user-settings": "workspace:^"
+    "@backstage/scaffolder-test-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@internal/plugin-catalog-customized": "workspace:^"

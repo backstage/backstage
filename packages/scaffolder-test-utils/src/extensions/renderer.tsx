@@ -30,11 +30,12 @@ const mockPlugin = createPlugin({
 });
 
 export type FormRenderResult = RenderResult & {
-  create: () => Promise<void>;
-  next: () => Promise<void>;
-  back: () => Promise<void>;
-  complete: () => Promise<void>;
+  navigateToNextStep: () => Promise<void>;
+  navigateToPreviousStep: () => Promise<void>;
+  submitForm: () => Promise<void>;
+  autoCompleteForm: () => Promise<void>;
   errors: () => Promise<string[]>;
+  onCreate: jest.Mock;
 };
 
 export const renderInForm = async (opts: {
@@ -44,7 +45,9 @@ export const renderInForm = async (opts: {
   wrapper?: React.ComponentType;
 }): Promise<FormRenderResult> => {
   const { manifest, extensions } = opts;
-  const pluginExtensions = extensions.map(e => mockPlugin.provide(e));
+  const pluginExtensions = extensions
+    .map(e => mockPlugin.provide(e))
+    .map((E, index) => <E key={index} />);
 
   const onCreate = jest.fn();
 
@@ -64,30 +67,30 @@ export const renderInForm = async (opts: {
     </Wrapper>,
   );
 
-  const next = async () => {
+  const navigateToNextStep = async () => {
     await act(async () => {
       rendered.getByTestId('next-button').click();
     });
   };
 
-  const back = async () => {
+  const navigateToPreviousStep = async () => {
     await act(async () => {
       rendered.getByTestId('back-button').click();
     });
   };
 
-  const create = async () => {
+  const submitForm = async () => {
     await act(async () => {
       rendered.getByTestId('create-button').click();
     });
   };
 
-  const complete = async () => {
+  const autoCompleteForm = async () => {
     for (let i = 0; i < manifest.steps.length; i++) {
-      await next();
+      await navigateToNextStep();
     }
 
-    await create();
+    await submitForm();
   };
 
   const errors = async () => {
@@ -97,10 +100,11 @@ export const renderInForm = async (opts: {
 
   return {
     ...rendered,
-    next,
-    back,
-    create,
-    complete,
+    navigateToNextStep,
+    navigateToPreviousStep,
+    submitForm,
+    autoCompleteForm,
     errors,
+    onCreate,
   };
 };
