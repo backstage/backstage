@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-linguist-backend': minor
+'@backstage/plugin-linguist-backend': patch
 ---
 
 Added support for offline language data
