@@ -197,12 +197,11 @@ export interface TaskStore {
   }>;
   list?(options: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
 
-  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
-  listEvents({
-    taskId,
-    after,
-  }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }>;
-  shutdownTask?({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
+  emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
+  listEvents(
+    options: TaskStoreListEventsOptions,
+  ): Promise<{ events: SerializedTaskEvent[] }>;
+  shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };

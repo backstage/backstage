@@ -460,7 +460,7 @@ export type ScaffolderTaskStatus = ScaffolderTaskStatus_2;
 export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecrets_2;
 
 // @public
-export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
+export const TaskPage: (props: TaskPageProps) => JSX.Element;
 
 // @public
 export type TaskPageProps = {

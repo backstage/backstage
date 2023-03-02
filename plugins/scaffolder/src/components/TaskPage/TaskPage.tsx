@@ -243,7 +243,9 @@ export type TaskPageProps = {
  *
  * @public
  */
-export const TaskPage = ({ loadingText }: TaskPageProps) => {
+export const TaskPage = (props: TaskPageProps) => {
+  const { loadingText } = props;
+
   const classes = useStyles();
   const navigate = useNavigate();
   const rootPath = useRouteRef(rootRouteRef);
