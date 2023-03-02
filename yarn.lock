@@ -5269,6 +5269,7 @@ __metadata:
     "@types/express": ^4.17.6
     "@types/git-url-parse": ^9.0.0
     "@types/lodash": ^4.14.151
+    "@types/luxon": ^3.0.0
     "@types/supertest": ^2.0.8
     "@types/uuid": ^8.0.0
     better-sqlite3: ^8.0.0
