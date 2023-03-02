@@ -107,7 +107,7 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
         return;
       }
 
-      const eventPayload = request;
+      const eventPayload = request.body;
       await this.eventBroker!.publish({
         topic,
         eventPayload,
