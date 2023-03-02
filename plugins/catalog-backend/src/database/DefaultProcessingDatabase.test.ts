@@ -336,6 +336,7 @@ describe('DefaultProcessingDatabase', () => {
       async databaseId => {
         const mockLogger = {
           debug: jest.fn(),
+          info: jest.fn(),
           error: jest.fn(),
           warn: jest.fn(),
         };
@@ -486,6 +487,7 @@ describe('DefaultProcessingDatabase', () => {
       async databaseId => {
         const mockLogger = {
           debug: jest.fn(),
+          info: jest.fn(),
           error: jest.fn(),
           warn: jest.fn(),
         };
