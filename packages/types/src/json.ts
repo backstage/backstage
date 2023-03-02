@@ -76,13 +76,6 @@ export const mergeJson = (a: JsonObject, b: JsonObject): JsonObject => {
   // for all primitives and arrays, we want to assign the value from b
   // for all objects, we want to recursively merge the values
   for (const key of intersectingKeys.values()) {
-    // check if value is an array or primitive
-    const value = b[key];
-    if (Array.isArray(value) || typeof value !== 'object') {
-      final[key] = value;
-      continue;
-    }
-
     // check if either value is undefined and default to the defined one
     const aValue = a[key];
     const bValue = b[key];
@@ -92,6 +85,13 @@ export const mergeJson = (a: JsonObject, b: JsonObject): JsonObject => {
     }
     if (!bValue) {
       final[key] = aValue;
+      continue;
+    }
+
+    // check if value is an array or primitive
+    const value = bValue;
+    if (Array.isArray(value) || typeof value !== 'object') {
+      final[key] = value;
       continue;
     }
 
