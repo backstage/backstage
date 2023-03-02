@@ -98,6 +98,11 @@ import {
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
+import {
+  CatalogDatabase,
+  ProcessingDatabase,
+  ProviderDatabase,
+} from '../database/types';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -115,6 +120,9 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  processingDatabase?: ProcessingDatabase;
+  providerDatabase?: ProviderDatabase;
+  catalogDatabase?: CatalogDatabase;
 };
 
 /**
@@ -425,30 +433,37 @@ export class CatalogBuilder {
     router: Router;
   }> {
     const { config, database, logger, permissions } = this.env;
+    let { processingDatabase, providerDatabase, catalogDatabase } = this.env;
 
+    const dbClient = await database.getClient();
+    processingDatabase =
+      processingDatabase ??
+      new DefaultProcessingDatabase({
+        database: dbClient,
+        logger,
+        refreshInterval: this.processingInterval,
+      });
+    providerDatabase =
+      providerDatabase ??
+      new DefaultProviderDatabase({
+        database: dbClient,
+        logger,
+      });
+    catalogDatabase =
+      catalogDatabase ??
+      new DefaultCatalogDatabase({
+        database: dbClient,
+        logger,
+      });
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
     const parser = this.parser || defaultEntityDataParser;
 
-    const dbClient = await database.getClient();
     if (!database.migrations?.skip) {
       logger.info('Performing database migration');
       await applyDatabaseMigrations(dbClient);
     }
 
-    const processingDatabase = new DefaultProcessingDatabase({
-      database: dbClient,
-      logger,
-      refreshInterval: this.processingInterval,
-    });
-    const providerDatabase = new DefaultProviderDatabase({
-      database: dbClient,
-      logger,
-    });
-    const catalogDatabase = new DefaultCatalogDatabase({
-      database: dbClient,
-      logger,
-    });
     const integrations = ScmIntegrations.fromConfig(config);
     const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
