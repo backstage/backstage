@@ -22,25 +22,25 @@ import {
   discoveryApiRef,
   googleAuthApiRef,
   useApi,
-} from '@backstage/core-plugin-api';
+} from "@backstage/core-plugin-api";
 
-const CLUSTER_NAME = ''; // use a known cluster name
+const CLUSTER_NAME = ""; // use a known cluster name
 
 // get a bearer token from Google
 const googleAuthApi = useApi(googleAuthApiRef);
 const token = await googleAuthApi.getAccessToken(
-  'https://www.googleapis.com/auth/cloud-platform',
+  "https://www.googleapis.com/auth/cloud-platform"
 );
 
 const discoveryApi = useApi(discoveryApiRef);
-const kubernetesBaseUrl = await discoveryApi.getBaseUrl('kubernetes');
+const kubernetesBaseUrl = await discoveryApi.getBaseUrl("kubernetes");
 const kubernetesProxyEndpoint = `${kubernetesBaseUrl}/proxy`;
 
 // fetch namespaces
 await fetch(`${kubernetesProxyEndpoint}/api/v1/namespaces`, {
-  method: 'GET',
+  method: "GET",
   headers: {
-    'X-Kubernetes-Cluster': CLUSTER_NAME,
+    "X-Kubernetes-Cluster": CLUSTER_NAME,
     Authorization: `Bearer ${token}`,
   },
 });

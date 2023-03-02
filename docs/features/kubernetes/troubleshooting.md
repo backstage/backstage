@@ -78,7 +78,7 @@ objects.
 ```yaml
 # k8s related yaml (service.yaml, deployment.yaml, ingress.yaml)
 metadata:
-  creationTimestamp: '2022-03-13T13:52:46.000Z'
+  creationTimestamp: "2022-03-13T13:52:46.000Z"
   labels:
     app: <k8s-app-name>
     env: <environment>
@@ -95,5 +95,5 @@ and the catalog info annotations would use label selector:
 ```yaml
 # catalog-info.yaml (backstage)
 annotations:
-  backstage.io/kubernetes-label-selector: '<label-selector>'
+  backstage.io/kubernetes-label-selector: "<label-selector>"
 ```

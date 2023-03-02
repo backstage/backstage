@@ -43,7 +43,7 @@ be enabled in your AKS cluster, then follow these steps:
 ```yaml
 kubernetes:
   clusterLocatorMethods:
-    - type: 'config'
+    - type: "config"
       clusters:
         - name: My AKS cluster
           url: ${AZURE_CLUSTER_API_SERVER_ADDRESS}
