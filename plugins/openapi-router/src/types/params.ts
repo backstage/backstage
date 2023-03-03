@@ -15,23 +15,30 @@
  */
 
 import {
+  ImmutableCookieObject,
   ImmutableHeaderObject,
   ImmutableParameterObject,
+  ImmutablePathObject,
+  ImmutableQueryObject,
   ImmutableReferenceObject,
+  ImmutableSchemaObject,
 } from './immutable';
 import {
   ComponentRef,
   ComponentTypes,
   DocOperation,
-  DocPathTemplate,
+  DocPath,
+  DocPathMethod,
+  Filter,
+  FullMap,
+  MapDiscriminatedUnion,
   PathTemplate,
   RequiredDoc,
-  TuplifyUnion,
 } from './common';
+import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
 import spec from '../schema/petstore';
-import { ParameterLocation } from 'openapi3-ts';
 
-export type ResolveDocParameter<
+export type DocParameter<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
@@ -45,52 +52,94 @@ export type ResolveDocParameter<
     ? ComponentRef<
         Doc,
         'parameters',
-        DocOperation<Doc, Path, Method>['parameter'][Parameter]
+        DocOperation<Doc, Path, Method>['parameters'][Parameter]
       >
     : never
   : DocOperation<Doc, Path, Method>['parameters'][Parameter];
 
-export type DocParameter<
-  Doc extends RequiredDoc,
-  Path extends Extract<keyof Doc['paths'], string>,
-  Method extends keyof Doc['paths'][Path],
-  Parameter extends keyof Doc['paths'][Path][Method]['parameters'],
-> = ResolveDocParameter<
-  Doc,
-  Path,
-  Method,
-  Parameter
-> extends ImmutableParameterObject
-  ? ResolveDocParameter<Doc, Path, Method, Parameter>
-  : never;
-
-type KeysMatching<T extends any[], V> = {
-  [K in keyof T]-?: T[K] extends V ? K : never;
-}[keyof T];
-/**
- * @public
- */
-export type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
-  infer First extends JSONSchema7,
-  ...infer Rest,
-]
-  ? ConvertAll<Rest, [...R, FromSchema<First>]>
-  : R;
 /**
  * @public
  */
 export type DocParameters<
   Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
+  Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
-> = TuplifyUnion<>;
+> = DocOperation<Doc, Path, Method>['parameters'] extends ReadonlyArray<any>
+  ? {
+      [Index in keyof DocOperation<
+        Doc,
+        Path,
+        Method
+      >['parameters']]: DocParameter<Doc, Path, Method, Index>;
+    }
+  : never;
+
+export type ResolveDocParameterSchema<
+  Doc extends RequiredDoc,
+  Schema extends ImmutableParameterObject['schema'],
+> = Schema extends ImmutableReferenceObject
+  ? 'parameters' extends ComponentTypes<Doc>
+    ? ComponentRef<Doc, 'parameters', Schema>
+    : never
+  : Schema;
+
+export type ParameterSchema<
+  Doc extends RequiredDoc,
+  Schema extends ImmutableParameterObject['schema'],
+> = ResolveDocParameterSchema<Doc, Schema> extends infer R
+  ? R extends ImmutableSchemaObject
+    ? R extends JSONSchema7
+      ? FromSchema<R>
+      : never
+    : never
+  : never;
+
+type MapToSchema<
+  Doc extends RequiredDoc,
+  T extends Record<string, ImmutableParameterObject>,
+> = {
+  [V in keyof T]: NonNullable<T[V]> extends ImmutableParameterObject
+    ? ParameterSchema<Doc, NonNullable<T[V]>['schema']>
+    : never;
+};
+
+export type ParametersSchema<
+  Doc extends RequiredDoc,
+  Path extends Extract<keyof Doc['paths'], string>,
+  Method extends keyof Doc['paths'][Path],
+  FilterType extends ImmutableParameterObject,
+> = number extends keyof DocParameters<Doc, Path, Method>
+  ? MapToSchema<
+      Doc,
+      FullMap<
+        MapDiscriminatedUnion<
+          Filter<DocParameters<Doc, Path, Method>[number], FilterType>,
+          'name'
+        >
+      >
+    >
+  : never;
 
 export type HeaderSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
-  Method extends keyof Doc['paths'][Path],
-> = KeysMatching<DocParameters<Doc, Path, Method>, ImmutableHeaderObject>;
+  Method extends DocPathMethod<Doc, Path>,
+> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableHeaderObject>;
 
-type keys = HeaderSchema<typeof spec, '/pets', 'get'>;
+export type CookieSchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableCookieObject>;
 
-type match = KeysMatching<[1, 2, 3], 1>;
+export type PathSchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutablePathObject>;
+
+export type QuerySchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableQueryObject>;

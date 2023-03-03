@@ -35,6 +35,38 @@ export default {
     examples: {},
     headers: {},
     parameters: {
+      kind: {
+        name: 'kind',
+        in: 'path',
+        required: true,
+        schema: {
+          type: 'string',
+        },
+      },
+      namespace: {
+        name: 'namespace',
+        in: 'path',
+        required: true,
+        schema: {
+          type: 'string',
+        },
+      },
+      name: {
+        name: 'name',
+        in: 'path',
+        required: true,
+        schema: {
+          type: 'string',
+        },
+      },
+      uid: {
+        name: 'uid',
+        in: 'path',
+        required: true,
+        schema: {
+          type: 'string',
+        },
+      },
       cursor: {
         name: 'cursor',
         in: 'query',
@@ -769,12 +801,7 @@ export default {
         ],
         parameters: [
           {
-            in: 'path',
-            name: 'uid',
-            required: true,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/uid',
           },
         ],
       },
@@ -826,28 +853,13 @@ export default {
         ],
         parameters: [
           {
-            in: 'path',
-            name: 'kind',
-            required: true,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/kind',
           },
           {
-            in: 'path',
-            name: 'namespace',
-            required: true,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/namespace',
           },
           {
-            in: 'path',
-            name: 'name',
-            required: true,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/name',
           },
         ],
       },
@@ -875,28 +887,13 @@ export default {
         ],
         parameters: [
           {
-            in: 'path',
-            name: 'kind',
-            required: true,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/kind',
           },
           {
-            in: 'path',
-            name: 'namespace',
-            required: true,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/namespace',
           },
           {
-            in: 'path',
-            name: 'name',
-            required: true,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/name',
           },
         ],
       },
@@ -1104,7 +1101,7 @@ export default {
             name: 'dryRun',
             required: false,
             schema: {
-              type: 'boolean',
+              type: 'string',
             },
           },
         ],

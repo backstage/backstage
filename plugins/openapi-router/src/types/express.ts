@@ -15,6 +15,7 @@
  */
 import core from 'express-serve-static-core';
 import { DocPathTemplate, MethodAwareDocPath, RequiredDoc } from './common';
+import { PathSchema, QuerySchema } from './params';
 import { RequestBodyToJsonSchema } from './requests';
 import { ResponseBodyToJsonSchema } from './responses';
 
@@ -35,10 +36,10 @@ export type DocRequestHandler<
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
 > = core.RequestHandler<
-  core.ParamsDictionary,
+  PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
   RequestBodyToJsonSchema<Doc, Path, Method>,
-  ParsedQs,
+  QuerySchema<Doc, Path, Method>,
   Record<string, string>
 >;
 
@@ -51,10 +52,10 @@ export type DocRequestHandlerParams<
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
 > = core.RequestHandlerParams<
-  core.ParamsDictionary,
+  PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
   RequestBodyToJsonSchema<Doc, Path, Method>,
-  ParsedQs,
+  QuerySchema<Doc, Path, Method>,
   Record<string, string>
 >;
 

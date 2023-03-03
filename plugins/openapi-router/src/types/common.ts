@@ -230,3 +230,36 @@ export type UnknownIfNever<P> = [P] extends [never] ? unknown : P;
  * @public
  */
 export type ToTypeSafe<T> = UnknownIfNever<ConvertAll<TuplifyUnion<T>>[number]>;
+
+type DiscriminateUnion<T, K extends keyof T, V extends T[K]> = Extract<
+  T,
+  Record<K, V>
+>;
+
+export type MapDiscriminatedUnion<
+  T extends Record<K, string>,
+  K extends keyof T,
+> = {
+  [V in T[K]]: DiscriminateUnion<T, K, V>;
+};
+
+export type PickOptionalKeys<T extends { [key: string]: any }> = {
+  [K in keyof T]: true extends T[K]['required'] ? never : K;
+}[keyof T];
+
+export type PickRequiredKeys<T extends { [key: string]: any }> = {
+  [K in keyof T]: true extends T[K]['required'] ? K : never;
+}[keyof T];
+
+export type OptionalMap<T extends { [key: string]: any }> = {
+  [P in Exclude<PickOptionalKeys<T>, undefined>]?: NonNullable<T[P]>;
+};
+
+export type RequiredMap<T extends { [key: string]: any }> = {
+  [P in Exclude<PickRequiredKeys<T>, undefined>]: NonNullable<T[P]>;
+};
+
+export type FullMap<T extends { [key: string]: any }> = RequiredMap<T> &
+  OptionalMap<T>;
+
+export type Filter<T, U> = T extends U ? T : never;

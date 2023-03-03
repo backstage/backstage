@@ -19,6 +19,7 @@ import type {
   ReferenceObject,
   RequestBodyObject,
   ParameterObject,
+  SchemaObject,
 } from 'openapi3-ts';
 
 /**
@@ -81,21 +82,23 @@ export type ImmutableHeaderObject = ImmutableObject<HeaderObject>;
 
 export interface CookieObject extends ParameterObject {
   in: 'cookie';
-  style: 'form';
+  style?: 'form';
 }
 
 export type ImmutableCookieObject = ImmutableObject<CookieObject>;
 
 export interface QueryObject extends ParameterObject {
   in: 'query';
-  style: 'form' | 'deepObject' | 'pipeDelimited' | 'spaceDelimited';
+  style?: 'form' | 'deepObject' | 'pipeDelimited' | 'spaceDelimited';
 }
 
 export type ImmutableQueryObject = ImmutableObject<QueryObject>;
 
 export interface PathObject extends ParameterObject {
   in: 'path';
-  style: 'simple' | 'label' | 'matrix';
+  style?: 'simple' | 'label' | 'matrix';
 }
 
 export type ImmutablePathObject = ImmutableObject<PathObject>;
+
+export type ImmutableSchemaObject = ImmutableObject<SchemaObject>;
