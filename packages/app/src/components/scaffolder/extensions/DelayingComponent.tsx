@@ -28,7 +28,7 @@ import {
 
 export const DelayingComponent = createNextScaffolderFieldExtension({
   name: 'DelayingComponent',
-  component: (props: NextFieldExtensionComponentProps<{ test?: string }>) => {
+  component: (props: NextFieldExtensionComponentProps<string>) => {
     const {
       onChange,
       formData,
@@ -47,18 +47,17 @@ export const DelayingComponent = createNextScaffolderFieldExtension({
         <Input
           id={title}
           aria-describedby="description"
-          onChange={e => onChange({ test: e.target?.value })}
+          onChange={e => onChange(e.target?.value)}
           value={formData ?? ''}
         />
         <FormHelperText id="description">{description}</FormHelperText>
       </FormControl>
     );
   },
-  validation: async (value: { test?: string }, validation: FieldValidation) => {
+  validation: async (value: string, validation: FieldValidation) => {
     // delay 2 seconds
     await new Promise(resolve => setTimeout(resolve, 2000));
-
-    if (value.test !== 'pass') {
+    if (value !== 'pass') {
       validation.addError('value was not equal to pass');
     }
   },

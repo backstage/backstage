@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderInForm } from '@backstage/scaffolder-test-utils/alpha';
+import {
+  renderExtension,
+  renderInForm,
+} from '@backstage/scaffolder-test-utils/alpha';
 import { DelayingComponent } from './DelayingComponent';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
@@ -45,21 +48,35 @@ const manifest: TemplateParameterSchema = {
 };
 
 describe('DelayingComponent', () => {
-  it('should render without breaking', async () => {
-    const { getByLabelText, autoCompleteForm, getFormData } =
-      await renderInForm({
-        manifest,
-        extensions: [DelayingComponent],
-      });
+  it('should render the extension without breaking', async () => {
+    const { getByLabelText, validate } = await renderExtension(
+      DelayingComponent,
+    );
 
     await act(async () => {
-      fireEvent.input(getByLabelText(/input field/), {
+      fireEvent.input(getByLabelText(/DelayingComponent/), {
         target: { value: 'pass' },
       });
     });
 
-    await autoCompleteForm();
+    const { errors, formData } = await validate();
+    expect(errors).toHaveLength(0);
+    expect(formData).toEqual({ DelayingComponent: 'pass' });
+  });
 
-    expect(await getFormData()).toEqual({ input: { test: 'pass' } });
+  it('should throw an error if the input is not valid', async () => {
+    const { getByLabelText, validate } = await renderExtension(
+      DelayingComponent,
+    );
+
+    await act(async () => {
+      fireEvent.input(getByLabelText(/DelayingComponent/), {
+        target: { value: 'fail' },
+      });
+    });
+
+    const { errors, formData } = await validate();
+    expect(formData).toEqual({ DelayingComponent: 'fail' });
+    expect(errors).toContain('value was not equal to pass');
   });
 });

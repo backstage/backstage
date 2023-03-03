@@ -13,4 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { renderInForm } from './renderer';
+export { renderExtension } from './renderExtension';
+export { renderInForm } from './renderInForm';

@@ -38,8 +38,6 @@ export type FormRenderResult = RenderResult & {
   getFormData: () => Promise<Record<string, JsonValue>>;
 };
 
-// function renderExtension(extension) => { validate() }; returns data called or errors, no JSON Schema provided to it
-
 export const renderInForm = async (opts: {
   manifest: TemplateParameterSchema;
   extensions: Extension<FieldExtensionComponent<unknown, unknown>>[];
