@@ -270,8 +270,12 @@ You can do so by including the following lines right above `USER node` of your
 `Dockerfile`:
 
 ```Dockerfile
+ARG PLANTUML_VER="1.2023.1"
+ARG PLANTUML_CHECKSUM="f9dc28cbe9779a2f9a0466b952f13baa25a89a1d"
 RUN apt-get update && apt-get install -y python3 python3-pip gcc musl-dev openjdk-17-jdk curl graphviz fonts-dejavu fontconfig
-RUN curl -o plantuml.jar -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2023.1.jar/download && echo "f9dc28cbe9779a2f9a0466b952f13baa25a89a1d  plantuml.jar" | sha1sum -c - && mv plantuml.jar /opt/plantuml.jar
+RUN curl -o plantuml.jar -L "http://sourceforge.net/projects/plantuml/files/plantuml.$PLANTUML_VER.jar/download" \
+  && echo "$PLANTUML_CHECKSUM  plantuml.jar" | sha1sum -c - \
+  && mv plantuml.jar /opt/plantuml.jar
 RUN pip3 install mkdocs-techdocs-core==1.1.7
 RUN echo '#!/bin/sh\n\njava -jar '/opt/plantuml.jar' ${@}' >> /usr/local/bin/plantuml
 RUN chmod 755 /usr/local/bin/plantuml
