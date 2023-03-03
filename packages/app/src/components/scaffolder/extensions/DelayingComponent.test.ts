@@ -18,19 +18,25 @@ import { DelayingComponent } from './DelayingComponent';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 
+jest.setTimeout(30000);
+
 const manifest: TemplateParameterSchema = {
   title: 'Test',
   steps: [
     {
       title: 'First',
       schema: {
-        type: 'object',
-        required: ['test'],
         properties: {
-          test: {
-            title: 'testinput',
-            type: 'string',
+          input: {
+            type: 'object',
+            title: 'input field',
+            required: ['test'],
             'ui:field': 'DelayingComponent',
+            properties: {
+              test: {
+                type: 'string',
+              },
+            },
           },
         },
       },
@@ -39,22 +45,21 @@ const manifest: TemplateParameterSchema = {
 };
 
 describe('DelayingComponent', () => {
-  // eslint-disable-next-line jest/expect-expect
   it('should render without breaking', async () => {
-    const { getByLabelText, navigateToNextStep, debug } = await renderInForm({
-      manifest,
-      extensions: [DelayingComponent],
-    });
-
-    // write in the input field
-    const input = getByLabelText(/testinput/);
+    const { getByLabelText, autoCompleteForm, getFormData } =
+      await renderInForm({
+        manifest,
+        extensions: [DelayingComponent],
+      });
 
     await act(async () => {
-      fireEvent.change(input, { target: { value: 'test' } });
+      fireEvent.input(getByLabelText(/input field/), {
+        target: { value: 'pass' },
+      });
     });
 
-    await navigateToNextStep();
+    await autoCompleteForm();
 
-    debug();
+    expect(await getFormData()).toEqual({ input: { test: 'pass' } });
   });
 });

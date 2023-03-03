@@ -35,8 +35,10 @@ export type FormRenderResult = RenderResult & {
   submitForm: () => Promise<void>;
   autoCompleteForm: () => Promise<void>;
   errors: () => Promise<string[]>;
-  onCreate: jest.Mock;
+  getFormData: () => Promise<Record<string, JsonValue>>;
 };
+
+// function renderExtension(extension) => { validate() }; returns data called or errors, no JSON Schema provided to it
 
 export const renderInForm = async (opts: {
   manifest: TemplateParameterSchema;
@@ -49,7 +51,25 @@ export const renderInForm = async (opts: {
     .map(e => mockPlugin.provide(e))
     .map((E, index) => <E key={index} />);
 
-  const onCreate = jest.fn();
+  let formData: Record<string, JsonValue> = {};
+
+  const formDataPromise = () => {
+    return new Promise<Record<string, JsonValue>>((resolve, reject) => {
+      const interval = setInterval(() => {
+        if (formData) {
+          clearInterval(interval);
+          resolve(formData);
+        }
+      }, 100);
+
+      setTimeout(() => {
+        if (!formData) {
+          clearInterval(interval);
+          reject(new Error('Form data was not set'));
+        }
+      });
+    });
+  };
 
   const Wrapper = opts.wrapper ?? React.Fragment;
 
@@ -57,7 +77,9 @@ export const renderInForm = async (opts: {
     <Wrapper>
       <StepperHelper
         manifest={manifest}
-        onCreate={onCreate}
+        onCreate={async data => {
+          formData = data;
+        }}
         initialState={opts.initialState ?? {}}
       >
         <ScaffolderFieldExtensions>
@@ -69,19 +91,34 @@ export const renderInForm = async (opts: {
 
   const navigateToNextStep = async () => {
     await act(async () => {
-      rendered.getByTestId('next-button').click();
+      const nextButton = await rendered.findByTestId(
+        'next-button',
+        {},
+        { timeout: 3000 },
+      );
+      nextButton.click();
     });
   };
 
   const navigateToPreviousStep = async () => {
     await act(async () => {
-      rendered.getByTestId('back-button').click();
+      const backButton = await rendered.findByTestId(
+        'back-button',
+        {},
+        { timeout: 3000 },
+      );
+      backButton.click();
     });
   };
 
   const submitForm = async () => {
     await act(async () => {
-      rendered.getByTestId('create-button').click();
+      const createButton = await rendered.findByTestId(
+        'create-button',
+        {},
+        { timeout: 3000 },
+      );
+      createButton.click();
     });
   };
 
@@ -105,6 +142,6 @@ export const renderInForm = async (opts: {
     submitForm,
     autoCompleteForm,
     errors,
-    onCreate,
+    getFormData: formDataPromise,
   };
 };

@@ -181,7 +181,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           >
             <div className={styles.footer}>
               <Button
-                test-id="back-button"
+                data-testid="back-button"
                 onClick={handleBack}
                 className={styles.backButton}
                 disabled={activeStep < 1}
@@ -189,7 +189,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 Back
               </Button>
               <Button
-                test-id="next-button"
+                data-testid="next-button"
                 variant="contained"
                 color="primary"
                 type="submit"
@@ -203,7 +203,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             <ReviewStateComponent formState={formState} schemas={steps} />
             <div className={styles.footer}>
               <Button
-                test-id="back-button"
+                data-testid="back-button"
                 onClick={handleBack}
                 className={styles.backButton}
                 disabled={activeStep < 1}
@@ -211,7 +211,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 Back
               </Button>
               <Button
-                test-id="create-button"
+                data-testid="create-button"
                 variant="contained"
                 onClick={() => {
                   props.onCreate(formState);
