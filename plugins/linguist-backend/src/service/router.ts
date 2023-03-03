@@ -38,7 +38,7 @@ export interface PluginOptions {
   age?: HumanDuration;
   batchSize?: number;
   useSourceLocation?: boolean;
-  linguistJsOptions?: Record<string, any>;
+  linguistJsOptions?: Record<string, unknown>;
   kind?: string[];
 }
 

@@ -57,7 +57,7 @@ export class LinguistBackendApi {
   private readonly batchSize?: number;
   private readonly useSourceLocation?: boolean;
   private readonly kind: string[];
-  private readonly linguistJsOptions?: Record<string, any>;
+  private readonly linguistJsOptions?: Record<string, unknown>;
   public constructor(
     logger: Logger,
     store: LinguistBackendStore,
@@ -68,7 +68,7 @@ export class LinguistBackendApi {
     batchSize?: number,
     useSourceLocation?: boolean,
     kind?: string[],
-    linguistJsOptions?: Record<string, any>,
+    linguistJsOptions?: Record<string, unknown>,
   ) {
     this.logger = logger;
     this.store = store;
