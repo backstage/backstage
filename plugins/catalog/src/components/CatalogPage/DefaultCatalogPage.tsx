@@ -87,9 +87,14 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker />
+
               <EntityLifecyclePicker />
+
               <EntityTagPicker />
+              {/* 
+              // TODO(vinzscam): migrate this picker as well
               <EntityProcessingStatusPicker />
+  */}
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <CatalogTable

@@ -118,18 +118,18 @@ describe('<EntityListProvider />', () => {
     jest.clearAllMocks();
   });
 
-  it('resolves backend filters', async () => {
+  it('resolves filters', async () => {
     const { result, waitForValueToChange } = renderHook(() => useEntityList(), {
       wrapper,
     });
-    await waitForValueToChange(() => result.current.backendEntities);
-    expect(result.current.backendEntities.length).toBe(2);
+    await waitForValueToChange(() => result.current.entities);
+    expect(result.current.entities.length).toBe(2);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
     });
   });
 
-  it('resolves frontend filters', async () => {
+  it('apply new filters', async () => {
     const { result, waitFor } = renderHook(() => useEntityList(), {
       wrapper,
       initialProps: {
@@ -137,22 +137,26 @@ describe('<EntityListProvider />', () => {
       },
     });
     await waitFor(() => !!result.current.entities.length);
-    expect(result.current.backendEntities.length).toBe(2);
+    expect(result.current.entities.length).toBe(2);
 
+    const ownershipEntityRefs = [
+      'user:default/someone',
+      'group:default/group-a',
+    ];
     act(() =>
       result.current.updateFilters({
-        user: new UserListFilter(
-          'owned',
-          entity => entity.metadata.name === 'component-1',
-          () => true,
-        ),
+        user: UserListFilter.owned(ownershipEntityRefs),
       }),
     );
+    (mockCatalogApi.getEntities as jest.Mock).mockClear();
 
-    await waitFor(() => {
-      expect(result.current.backendEntities.length).toBe(2);
-      expect(result.current.entities.length).toBe(1);
-      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(mockCatalogApi.getEntities).toHaveBeenCalled());
+    expect(result.current.entities.length).toBe(2);
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
+      filter: {
+        kind: 'component',
+        'relations.ownedBy': ownershipEntityRefs,
+      },
     });
   });
 
@@ -166,36 +170,11 @@ describe('<EntityListProvider />', () => {
         location: `/catalog?${query}`,
       },
     });
-    await act(() => waitFor(() => !!result.current.queryParameters));
+    await waitFor(() => expect(mockCatalogApi.getEntities).toHaveBeenCalled());
+    expect(result.current.queryParameters).toBeTruthy();
     expect(result.current.queryParameters).toEqual({
       kind: 'component',
       type: 'service',
-    });
-  });
-
-  it('does not fetch when only frontend filters change', async () => {
-    const { result, waitFor } = renderHook(() => useEntityList(), {
-      wrapper,
-    });
-
-    await waitFor(() => {
-      expect(result.current.entities.length).toBe(2);
-      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
-    });
-
-    act(() =>
-      result.current.updateFilters({
-        user: new UserListFilter(
-          'owned',
-          entity => entity.metadata.name === 'component-1',
-          () => true,
-        ),
-      }),
-    );
-
-    await waitFor(() => {
-      expect(result.current.entities.length).toBe(1);
-      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -206,8 +185,8 @@ describe('<EntityListProvider />', () => {
         wrapper,
       },
     );
-    await waitForValueToChange(() => result.current.backendEntities);
-    expect(result.current.backendEntities.length).toBe(2);
+    await waitForValueToChange(() => result.current.entities);
+    expect(result.current.entities.length).toBe(2);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
 
     act(() => {
@@ -225,8 +204,8 @@ describe('<EntityListProvider />', () => {
         wrapper,
       },
     );
-    await waitForValueToChange(() => result.current.backendEntities);
-    expect(result.current.backendEntities.length).toBe(2);
+    await waitForValueToChange(() => result.current.entities);
+    expect(result.current.entities.length).toBe(2);
 
     mockCatalogApi.getEntities = jest.fn().mockRejectedValue('error');
     act(() => {

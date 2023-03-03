@@ -24,6 +24,8 @@ import { TableColumn, TableProps } from '@backstage/core-components';
 import {
   ConfigApi,
   configApiRef,
+  IdentityApi,
+  identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import {
@@ -42,26 +44,18 @@ import {
   wrapInTestApp,
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { DefaultApiExplorerPage } from './DefaultApiExplorerPage';
 
 describe('DefaultApiExplorerPage', () => {
+  const mockedEntityFacets = jest.fn();
+  const mockedGetEntities = jest.fn();
+  const mockedGetBackstageIdentity = jest.fn();
+
   const catalogApi: Partial<CatalogApi> = {
-    getEntities: () =>
-      Promise.resolve({
-        items: [
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'API',
-            metadata: {
-              name: 'Entity1',
-            },
-            spec: { type: 'openapi' },
-          },
-        ] as Entity[],
-      }),
+    getEntities: mockedGetEntities,
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
     getEntityByRef: async entityRef => {
@@ -78,6 +72,11 @@ describe('DefaultApiExplorerPage', () => {
         ],
       };
     },
+    getEntityFacets: mockedEntityFacets,
+  };
+
+  const identityApi: Partial<IdentityApi> = {
+    getBackstageIdentity: mockedGetBackstageIdentity,
   };
 
   const configApi: ConfigApi = new ConfigReader({
@@ -105,6 +104,7 @@ describe('DefaultApiExplorerPage', () => {
               new DefaultStarredEntitiesApi({ storageApi }),
             ],
             [apiDocsConfigRef, apiDocsConfig],
+            [identityApiRef, identityApi],
           ]}
         >
           {children}
@@ -116,6 +116,39 @@ describe('DefaultApiExplorerPage', () => {
         },
       ),
     );
+
+  beforeEach(() => {
+    mockedEntityFacets.mockImplementation(async () => {
+      return {
+        facets: {
+          'metadata.uid': [{ count: 1, value: 'uid' }],
+          'metadata.name': [],
+          'relations.ownedBy': [{ count: 1, value: 'group:default/a-group' }],
+        },
+      };
+    });
+
+    mockedGetEntities.mockImplementation(() =>
+      Promise.resolve({
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'API',
+            metadata: {
+              name: 'Entity1',
+            },
+            spec: { type: 'openapi' },
+          },
+        ] as Entity[],
+      }),
+    );
+
+    mockedGetBackstageIdentity.mockImplementation(async () => ({
+      ownershipEntityRefs: ['user:default/someone'],
+      type: 'user',
+      userEntityRef: 'user:default/someone',
+    }));
+  });
 
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
@@ -133,16 +166,18 @@ describe('DefaultApiExplorerPage', () => {
     );
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
-    expect(columnHeaderLabels).toEqual([
-      'Name',
-      'System',
-      'Owner',
-      'Type',
-      'Lifecycle',
-      'Description',
-      'Tags',
-      'Actions',
-    ]);
+    await waitFor(() =>
+      expect(columnHeaderLabels).toEqual([
+        'Name',
+        'System',
+        'Owner',
+        'Type',
+        'Lifecycle',
+        'Description',
+        'Tags',
+        'Actions',
+      ]),
+    );
   });
 
   it('should render the custom column passed as prop', async () => {
@@ -160,14 +195,16 @@ describe('DefaultApiExplorerPage', () => {
     );
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    await waitFor(() =>
+      expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']),
+    );
   });
 
   it('should render the default actions of an item in the grid', async () => {
-    const { findByTitle, findByText } = await renderWrapped(
+    const { findByTitle, getByText } = await renderWrapped(
       <DefaultApiExplorerPage />,
     );
-    expect(await findByText(/All \(1\)/)).toBeInTheDocument();
+    await waitFor(() => getByText(/All \(1\)/));
     expect(await findByTitle(/View/)).toBeInTheDocument();
     expect(await findByTitle(/View/)).toBeInTheDocument();
     expect(await findByTitle(/Edit/)).toBeInTheDocument();
@@ -194,12 +231,17 @@ describe('DefaultApiExplorerPage', () => {
       },
     ];
 
-    const { findByTitle, findByText } = await renderWrapped(
-      <DefaultApiExplorerPage actions={actions} />,
-    );
+    const { findByTitle, findByText, getByText, getByTestId } =
+      await renderWrapped(<DefaultApiExplorerPage actions={actions} />);
+
+    await waitFor(() => getByText('Entity1'));
     expect(await findByText(/All \(1\)/)).toBeInTheDocument();
     expect(await findByTitle(/Foo Action/)).toBeInTheDocument();
     expect(await findByTitle(/Bar Action/)).toBeInTheDocument();
-    expect((await findByTitle(/Bar Action/)).firstChild).toBeDisabled();
+
+    await waitFor(() => getByTestId('user-picker-owned'));
+    await waitFor(() => expect(mockedGetEntities).toHaveBeenCalled());
+    await waitFor(() => expect(mockedGetBackstageIdentity).toHaveBeenCalled());
+    await waitFor(() => expect(mockedEntityFacets).toHaveBeenCalled());
   });
 });

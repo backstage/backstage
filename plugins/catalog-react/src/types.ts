@@ -30,9 +30,12 @@ export type EntityFilter = {
   >;
 
   /**
+   * @deprecated
+   *
    * Filter entities on the frontend after a catalog-backend request. This function will be called
    * with each backend-resolved entity. This is used when frontend information is required for
    * filtering, such as a user's starred entities.
+   *
    */
   filterEntity?: (entity: Entity) => boolean;
 

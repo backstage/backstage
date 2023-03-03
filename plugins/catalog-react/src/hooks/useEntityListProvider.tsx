@@ -23,6 +23,7 @@ import React, {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -73,10 +74,16 @@ export type EntityListContextProps<
    */
   entities: Entity[];
 
+  fetchNext?: () => any;
+
+  fetchPrev?: () => any;
+
+  totalItems: number;
+
   /**
    * The resolved list of catalog entities, after _only catalog-backend_ filters are applied.
    */
-  backendEntities: Entity[];
+  //   backendEntities: Entity[];
 
   /**
    * Update one or more of the registered filters. Optional filters can be set to `undefined` to
@@ -88,6 +95,8 @@ export type EntityListContextProps<
       | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
   ) => void;
 
+  updateQuery(query: string): void;
+
   /**
    * Filter values from query parameters.
    */
@@ -95,6 +104,7 @@ export type EntityListContextProps<
 
   loading: boolean;
   error?: Error;
+  filterFacets: React.MutableRefObject<string[]>;
 };
 
 /**
@@ -108,8 +118,13 @@ export const EntityListContext = createContext<
 type OutputState<EntityFilters extends DefaultEntityFilters> = {
   appliedFilters: EntityFilters;
   entities: Entity[];
-  backendEntities: Entity[];
+  totalItems: number;
+  query?: string;
+  next?: string;
+  prev?: string;
 };
+
+const defaultLimit = 20;
 
 /**
  * Provides entities and filters for a catalog listing.
@@ -124,6 +139,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     {} as EntityFilters,
   );
 
+  const filterFacets = useRef<string[]>([]);
+
   // We use react-router's useLocation hook so updates from external sources trigger an update to
   // the queryParameters in outputState. Updates from this hook use replaceState below and won't
   // trigger a useLocation change; this would instead come from an external source, such as a manual
@@ -137,12 +154,14 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     [location],
   );
 
+  const [query, setQuery] = useState('');
+
   const [outputState, setOutputState] = useState<OutputState<EntityFilters>>(
     () => {
       return {
         appliedFilters: {} as EntityFilters,
         entities: [],
-        backendEntities: [],
+        totalItems: 0,
       };
     },
   );
@@ -158,6 +177,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       const previousBackendFilter = reduceCatalogFilters(
         compact(Object.values(outputState.appliedFilters)),
       );
+      const previousQuery = outputState.query;
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
@@ -174,23 +194,38 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       // TODO(mtlewis): currently entities will never be requested unless
       // there's at least one filter, we should allow an initial request
       // to happen with no filters.
-      if (!isEqual(previousBackendFilter, backendFilter)) {
+      if (
+        !isEqual(previousBackendFilter, backendFilter) ||
+        previousQuery !== query
+      ) {
         // TODO(timbonicus): should limit fields here, but would need filter
         // fields + table columns
-        const response = await catalogApi.getEntities({
+        // const response = await catalogApi.getEntities({
+        //   filter: backendFilter,
+        // });
+
+        const response = await catalogApi.queryEntities({
           filter: backendFilter,
+          limit: defaultLimit,
+          fullTextFilter: {
+            term: query,
+          },
         });
+
         setOutputState({
           appliedFilters: requestedFilters,
-          backendEntities: response.items,
+          query,
           entities: response.items.filter(entityFilter),
+          next: response.pageInfo.nextCursor,
+          prev: response.pageInfo.prevCursor,
+          totalItems: response.totalItems,
         });
       } else {
-        setOutputState({
+        setOutputState(prev => ({
+          ...prev,
           appliedFilters: requestedFilters,
-          backendEntities: outputState.backendEntities,
-          entities: outputState.backendEntities.filter(entityFilter),
-        });
+          query,
+        }));
       }
 
       if (isMounted()) {
@@ -210,13 +245,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         window.history?.replaceState(null, document.title, newUrl);
       }
     },
-    [catalogApi, queryParameters, requestedFilters, outputState],
+    [catalogApi, queryParameters, requestedFilters, outputState, query],
     { loading: true },
   );
 
   // Slight debounce on the refresh, since (especially on page load) several
   // filters will be calling this in rapid succession.
-  useDebounce(refresh, 10, [requestedFilters]);
+  useDebounce(refresh, 10, [requestedFilters, query]);
 
   const updateFilters = useCallback(
     (
@@ -233,17 +268,61 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     [],
   );
 
+  const fetchNext = useCallback(async () => {
+    if (outputState.next) {
+      const response = await catalogApi.queryEntities({
+        limit: defaultLimit,
+        cursor: outputState.next,
+      });
+      setOutputState(prev => ({
+        ...prev,
+        entities: response.items,
+        next: response.pageInfo.nextCursor,
+        prev: response.pageInfo.prevCursor,
+        totalItems: response.totalItems,
+      }));
+    }
+  }, [outputState.next, catalogApi]);
+
+  const fetchPrev = useCallback(async () => {
+    if (outputState.prev) {
+      const response = await catalogApi.queryEntities({
+        limit: defaultLimit,
+        cursor: outputState.prev,
+      });
+      setOutputState(prev => ({
+        ...prev,
+        entities: response.items,
+        next: response.pageInfo.nextCursor,
+        prev: response.pageInfo.prevCursor,
+        totalItems: response.totalItems,
+      }));
+    }
+  }, [outputState.prev, catalogApi]);
+
   const value = useMemo(
     () => ({
       filters: outputState.appliedFilters,
       entities: outputState.entities,
-      backendEntities: outputState.backendEntities,
+      totalItems: outputState.totalItems,
+      fetchNext,
+      fetchPrev,
+      updateFilters,
+      updateQuery: setQuery,
+      queryParameters,
+      loading,
+      error,
+      filterFacets,
+    }),
+    [
+      outputState,
       updateFilters,
       queryParameters,
       loading,
       error,
-    }),
-    [outputState, updateFilters, queryParameters, loading, error],
+      fetchPrev,
+      fetchNext,
+    ],
   );
 
   return (

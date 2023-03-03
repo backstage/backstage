@@ -91,7 +91,6 @@ describe('<TemplateTypePicker/>', () => {
         <MockEntityListContextProvider
           value={{
             filters: { kind: new EntityKindFilter('template') },
-            backendEntities: entities,
           }}
         >
           <TemplateTypePicker />
@@ -114,7 +113,6 @@ describe('<TemplateTypePicker/>', () => {
         <MockEntityListContextProvider
           value={{
             filters: { kind: new EntityKindFilter('template') },
-            backendEntities: entities,
           }}
         >
           <TemplateTypePicker />

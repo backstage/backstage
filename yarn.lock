@@ -5509,6 +5509,7 @@ __metadata:
     qs: ^6.9.4
     react-test-renderer: ^16.13.1
     react-use: ^17.2.4
+    swr: ^2.0.0
     yaml: ^2.0.0
     zen-observable: ^0.10.0
   peerDependencies:

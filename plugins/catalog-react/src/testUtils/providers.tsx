@@ -18,6 +18,7 @@ import React, {
   PropsWithChildren,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -62,17 +63,19 @@ export function MockEntityListContextProvider<
     [],
   );
 
-  const resolvedValue: EntityListContextProps<T> = useMemo(
+  const filterFacets = useRef([]);
+
+  const resolvedValue: EntityListContextProps = useMemo(
     () => ({
       entities: value?.entities ?? defaultValues.entities,
-      backendEntities: value?.backendEntities ?? defaultValues.backendEntities,
       updateFilters: value?.updateFilters ?? updateFilters,
+      filterFacets,
       filters,
       loading: value?.loading ?? false,
       queryParameters: value?.queryParameters ?? defaultValues.queryParameters,
       error: value?.error,
     }),
-    [value, defaultValues, filters, updateFilters],
+    [value, defaultValues, filters, updateFilters, filterFacets],
   );
 
   return (

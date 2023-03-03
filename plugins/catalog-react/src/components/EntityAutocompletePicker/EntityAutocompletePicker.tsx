@@ -18,9 +18,6 @@ import { Box, TextFieldProps, Typography } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
-import { catalogApiRef } from '../../api';
 import { EntityAutocompletePickerOption } from './EntityAutocompletePickerOption';
 import { EntityAutocompletePickerInput } from './EntityAutocompletePickerInput';
 import {
@@ -29,6 +26,7 @@ import {
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
 import _ from 'lodash';
+import { useEntityFilter } from '../../hooks';
 
 type KeysMatchingCondition<T, V, K> = T extends V ? K : never;
 type KeysMatching<T, V> = {
@@ -55,6 +53,7 @@ export type EntityAutocompletePickerProps<
   showCounts?: boolean;
   Filter: ConstructableFilter<NonNullable<T[Name]>>;
   InputProps?: TextFieldProps;
+  initialFilter?: string[];
 };
 
 /** @public */
@@ -62,7 +61,15 @@ export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
 >(props: EntityAutocompletePickerProps<T, Name>) {
-  const { label, name, path, showCounts, Filter, InputProps } = props;
+  const {
+    label,
+    name,
+    path,
+    showCounts,
+    Filter,
+    InputProps,
+    initialFilter = [],
+  } = props;
 
   const {
     updateFilters,
@@ -70,18 +77,14 @@ export function EntityAutocompletePicker<
     queryParameters: { [name]: queryParameter },
   } = useEntityList<T>();
 
-  const catalogApi = useApi(catalogApiRef);
-  const { value: availableValues } = useAsync(async () => {
-    const facet = path;
-    const { facets } = await catalogApi.getEntityFacets({
-      facets: [facet],
-      filter: filters.kind?.getCatalogFilters(),
-    });
-
-    return Object.fromEntries(
-      facets[facet].map(({ value, count }) => [value, count]),
-    );
-  }, [filters.kind]);
+  const values = useEntityFilter(path);
+  const availableValues = useMemo(
+    () =>
+      Object.fromEntries(
+        (values || []).map(({ value, count }) => [value, count]),
+      ),
+    [values],
+  );
 
   const queryParameters = useMemo(
     () => [queryParameter].flat().filter(Boolean) as string[],
@@ -91,7 +94,8 @@ export function EntityAutocompletePicker<
   const [selectedOptions, setSelectedOptions] = useState(
     queryParameters.length
       ? queryParameters
-      : (filters[name] as unknown as { values: string[] })?.values ?? [],
+      : (filters[name] as unknown as { values: string[] })?.values ??
+          initialFilter,
   );
 
   // Set selected options on query parameter updates; this happens at initial page load and from
@@ -114,12 +118,7 @@ export function EntityAutocompletePicker<
     } as Partial<T>);
   }, [name, shouldAddFilter, selectedOptions, Filter, updateFilters]);
 
-  if (
-    (filters[name] && !('values' in filters[name])) ||
-    !availableOptions.length
-  ) {
-    return null;
-  }
+  if (!availableOptions.length) return null;
 
   return (
     <Box pb={1} pt={1}>
