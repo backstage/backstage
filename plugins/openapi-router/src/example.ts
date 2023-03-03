@@ -26,7 +26,7 @@ export async function createRouter(
   console.log(options);
   const router = Router() as ApiRouter<typeof doc>;
 
-  router.get('/pets/:uid', (_, res) => {
+  router.get('/pets/:petId', (_, res) => {
     res.json({
       id: 1,
       name: 'test',

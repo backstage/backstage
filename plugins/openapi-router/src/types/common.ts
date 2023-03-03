@@ -58,8 +58,8 @@ export type ValueOf<T> = T[keyof T];
  * @public
  */
 export type PathTemplate<Path extends string> =
-  Path extends `${infer Prefix}{${string}}${infer Suffix}`
-    ? `${Prefix}${string}${PathTemplate<Suffix>}`
+  Path extends `${infer Prefix}{${infer PathName}}${infer Suffix}`
+    ? `${Prefix}:${PathName}${PathTemplate<Suffix>}`
     : Path;
 
 /**
@@ -231,11 +231,17 @@ export type UnknownIfNever<P> = [P] extends [never] ? unknown : P;
  */
 export type ToTypeSafe<T> = UnknownIfNever<ConvertAll<TuplifyUnion<T>>[number]>;
 
-type DiscriminateUnion<T, K extends keyof T, V extends T[K]> = Extract<
+/**
+ * @public
+ */
+export type DiscriminateUnion<T, K extends keyof T, V extends T[K]> = Extract<
   T,
   Record<K, V>
 >;
 
+/**
+ * @public
+ */
 export type MapDiscriminatedUnion<
   T extends Record<K, string>,
   K extends keyof T,
@@ -243,23 +249,41 @@ export type MapDiscriminatedUnion<
   [V in T[K]]: DiscriminateUnion<T, K, V>;
 };
 
+/**
+ * @public
+ */
 export type PickOptionalKeys<T extends { [key: string]: any }> = {
   [K in keyof T]: true extends T[K]['required'] ? never : K;
 }[keyof T];
 
+/**
+ * @public
+ */
 export type PickRequiredKeys<T extends { [key: string]: any }> = {
   [K in keyof T]: true extends T[K]['required'] ? K : never;
 }[keyof T];
 
+/**
+ * @public
+ */
 export type OptionalMap<T extends { [key: string]: any }> = {
   [P in Exclude<PickOptionalKeys<T>, undefined>]?: NonNullable<T[P]>;
 };
 
+/**
+ * @public
+ */
 export type RequiredMap<T extends { [key: string]: any }> = {
   [P in Exclude<PickRequiredKeys<T>, undefined>]: NonNullable<T[P]>;
 };
 
+/**
+ * @public
+ */
 export type FullMap<T extends { [key: string]: any }> = RequiredMap<T> &
   OptionalMap<T>;
 
+/**
+ * @public
+ */
 export type Filter<T, U> = T extends U ? T : never;

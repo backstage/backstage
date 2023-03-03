@@ -36,8 +36,10 @@ import {
   RequiredDoc,
 } from './common';
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
-import spec from '../schema/petstore';
 
+/**
+ * @public
+ */
 export type DocParameter<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
@@ -74,6 +76,9 @@ export type DocParameters<
     }
   : never;
 
+/**
+ * @public
+ */
 export type ResolveDocParameterSchema<
   Doc extends RequiredDoc,
   Schema extends ImmutableParameterObject['schema'],
@@ -83,6 +88,9 @@ export type ResolveDocParameterSchema<
     : never
   : Schema;
 
+/**
+ * @public
+ */
 export type ParameterSchema<
   Doc extends RequiredDoc,
   Schema extends ImmutableParameterObject['schema'],
@@ -94,7 +102,10 @@ export type ParameterSchema<
     : never
   : never;
 
-type MapToSchema<
+/**
+ * @public
+ */
+export type MapToSchema<
   Doc extends RequiredDoc,
   T extends Record<string, ImmutableParameterObject>,
 > = {
@@ -103,6 +114,9 @@ type MapToSchema<
     : never;
 };
 
+/**
+ * @public
+ */
 export type ParametersSchema<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
@@ -120,24 +134,36 @@ export type ParametersSchema<
     >
   : never;
 
+/**
+ * @public
+ */
 export type HeaderSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableHeaderObject>;
 
+/**
+ * @public
+ */
 export type CookieSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableCookieObject>;
 
+/**
+ * @public
+ */
 export type PathSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutablePathObject>;
 
+/**
+ * @public
+ */
 export type QuerySchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,

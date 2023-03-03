@@ -18,3 +18,4 @@ export * from './express';
 export * from './requests';
 export * from './responses';
 export * from './immutable';
+export * from './params';

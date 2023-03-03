@@ -8,10 +8,12 @@ import core from 'express-serve-static-core';
 import { FromSchema } from 'json-schema-to-ts';
 import { JSONSchema7 } from 'json-schema-to-ts';
 import type { OpenAPIObject } from 'openapi3-ts';
+import type { ParameterObject } from 'openapi3-ts';
 import type { ReferenceObject } from 'openapi3-ts';
 import type { RequestBodyObject } from 'openapi3-ts';
 import type { ResponseObject } from 'openapi3-ts';
 import { Router } from 'express';
+import type { SchemaObject } from 'openapi3-ts';
 
 // @public
 export interface ApiRouter<Doc extends RequiredDoc> extends Router {
@@ -63,11 +65,67 @@ export type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
   : R;
 
 // @public (undocumented)
+export interface CookieObject extends ParameterObject {
+  // (undocumented)
+  in: 'cookie';
+  // (undocumented)
+  style?: 'form';
+}
+
+// @public (undocumented)
+export type CookieSchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableCookieObject>;
+
+// @public (undocumented)
+export type DiscriminateUnion<T, K extends keyof T, V extends T[K]> = Extract<
+  T,
+  Record<K, V>
+>;
+
+// @public (undocumented)
 export type DocOperation<
   Doc extends RequiredDoc,
   Path extends keyof Doc['paths'],
   Method extends keyof Doc['paths'][Path],
 > = Doc['paths'][Path][Method];
+
+// @public (undocumented)
+export type DocParameter<
+  Doc extends RequiredDoc,
+  Path extends Extract<keyof Doc['paths'], string>,
+  Method extends keyof Doc['paths'][Path],
+  Parameter extends keyof Doc['paths'][Path][Method]['parameters'],
+> = DocOperation<
+  Doc,
+  Path,
+  Method
+>['parameters'][Parameter] extends ImmutableReferenceObject
+  ? 'parameters' extends ComponentTypes<Doc>
+    ? ComponentRef<
+        Doc,
+        'parameters',
+        DocOperation<Doc, Path, Method>['parameters'][Parameter]
+      >
+    : never
+  : DocOperation<Doc, Path, Method>['parameters'][Parameter];
+
+// @public (undocumented)
+export type DocParameters<
+  Doc extends RequiredDoc,
+  Path extends Extract<keyof Doc['paths'], string>,
+  Method extends keyof Doc['paths'][Path],
+> = DocOperation<Doc, Path, Method>['parameters'] extends ReadonlyArray<any>
+  ? {
+      [Index in keyof DocOperation<
+        Doc,
+        Path,
+        Method
+      >['parameters']]: DocParameter<Doc, Path, Method, Index>;
+    }
+  : never;
 
 // @public
 export type DocPath<
@@ -97,10 +155,10 @@ export type DocRequestHandler<
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
 > = core.RequestHandler<
-  core.ParamsDictionary,
+  PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
   RequestBodyToJsonSchema<Doc, Path, Method>,
-  ParsedQs,
+  QuerySchema<Doc, Path, Method>,
   Record<string, string>
 >;
 
@@ -110,10 +168,10 @@ export type DocRequestHandlerParams<
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
 > = core.RequestHandlerParams<
-  core.ParamsDictionary,
+  PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
   RequestBodyToJsonSchema<Doc, Path, Method>,
-  ParsedQs,
+  QuerySchema<Doc, Path, Method>,
   Record<string, string>
 >;
 
@@ -143,6 +201,31 @@ export interface DocRequestMatcher<
   ): T;
 }
 
+// @public (undocumented)
+export type Filter<T, U> = T extends U ? T : never;
+
+// @public (undocumented)
+export type FullMap<
+  T extends {
+    [key: string]: any;
+  },
+> = RequiredMap<T> & OptionalMap<T>;
+
+// @public (undocumented)
+export interface HeaderObject extends ParameterObject {
+  // (undocumented)
+  in: 'header';
+  // (undocumented)
+  style: 'simple';
+}
+
+// @public (undocumented)
+export type HeaderSchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableHeaderObject>;
+
 // @public
 export type Immutable<T> = T extends
   | Function
@@ -164,6 +247,12 @@ export type Immutable<T> = T extends
 export type ImmutableContentObject = ImmutableObject<ContentObject>;
 
 // @public (undocumented)
+export type ImmutableCookieObject = ImmutableObject<CookieObject>;
+
+// @public (undocumented)
+export type ImmutableHeaderObject = ImmutableObject<HeaderObject>;
+
+// @public (undocumented)
 export type ImmutableObject<T> = {
   readonly [K in keyof T]: Immutable<T[K]>;
 };
@@ -172,10 +261,22 @@ export type ImmutableObject<T> = {
 export type ImmutableOpenAPIObject = ImmutableObject<OpenAPIObject>;
 
 // @public (undocumented)
+export type ImmutableParameterObject = ImmutableObject<ParameterObject>;
+
+// @public (undocumented)
+export type ImmutablePathObject = ImmutableObject<PathObject>;
+
+// @public (undocumented)
+export type ImmutableQueryObject = ImmutableObject<QueryObject>;
+
+// @public (undocumented)
 export type ImmutableReferenceObject = ImmutableObject<ReferenceObject>;
 
 // @public (undocumented)
 export type ImmutableRequestBodyObject = ImmutableObject<RequestBodyObject>;
+
+// @public (undocumented)
+export type ImmutableSchemaObject = ImmutableObject<SchemaObject>;
 
 // @public (undocumented)
 export type LastOf<T> = UnionToIntersection<
@@ -183,6 +284,24 @@ export type LastOf<T> = UnionToIntersection<
 > extends () => infer R
   ? R
   : never;
+
+// @public (undocumented)
+export type MapDiscriminatedUnion<
+  T extends Record<K, string>,
+  K extends keyof T,
+> = {
+  [V in T[K]]: DiscriminateUnion<T, K, V>;
+};
+
+// @public (undocumented)
+export type MapToSchema<
+  Doc extends RequiredDoc,
+  T extends Record<string, ImmutableParameterObject>,
+> = {
+  [V in keyof T]: NonNullable<T[V]> extends ImmutableParameterObject
+    ? ParameterSchema<Doc, NonNullable<T[V]>['schema']>
+    : never;
+};
 
 // @public (undocumented)
 export type MethodAwareDocPath<
@@ -210,6 +329,45 @@ export type ObjectWithContentSchema<
   ? SchemaRef<Doc, Object['content']['application/json']['schema']>
   : never;
 
+// @public (undocumented)
+export type OptionalMap<
+  T extends {
+    [key: string]: any;
+  },
+> = {
+  [P in Exclude<PickOptionalKeys<T>, undefined>]?: NonNullable<T[P]>;
+};
+
+// @public (undocumented)
+export type ParameterSchema<
+  Doc extends RequiredDoc,
+  Schema extends ImmutableParameterObject['schema'],
+> = ResolveDocParameterSchema<Doc, Schema> extends infer R
+  ? R extends ImmutableSchemaObject
+    ? R extends JSONSchema7
+      ? FromSchema<R>
+      : never
+    : never
+  : never;
+
+// @public (undocumented)
+export type ParametersSchema<
+  Doc extends RequiredDoc,
+  Path extends Extract<keyof Doc['paths'], string>,
+  Method extends keyof Doc['paths'][Path],
+  FilterType extends ImmutableParameterObject,
+> = number extends keyof DocParameters<Doc, Path, Method>
+  ? MapToSchema<
+      Doc,
+      FullMap<
+        MapDiscriminatedUnion<
+          Filter<DocParameters<Doc, Path, Method>[number], FilterType>,
+          'name'
+        >
+      >
+    >
+  : never;
+
 // @public
 export interface ParsedQs {
   // (undocumented)
@@ -219,14 +377,62 @@ export interface ParsedQs {
 // @public (undocumented)
 export type PathDoc = Pick<ImmutableOpenAPIObject, 'paths'>;
 
+// @public (undocumented)
+export interface PathObject extends ParameterObject {
+  // (undocumented)
+  in: 'path';
+  // (undocumented)
+  style?: 'simple' | 'label' | 'matrix';
+}
+
+// @public (undocumented)
+export type PathSchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutablePathObject>;
+
 // @public
 export type PathTemplate<Path extends string> =
-  Path extends `${infer Prefix}{${string}}${infer Suffix}`
-    ? `${Prefix}${string}${PathTemplate<Suffix>}`
+  Path extends `${infer Prefix}{${infer PathName}}${infer Suffix}`
+    ? `${Prefix}:${PathName}${PathTemplate<Suffix>}`
     : Path;
 
 // @public (undocumented)
+export type PickOptionalKeys<
+  T extends {
+    [key: string]: any;
+  },
+> = {
+  [K in keyof T]: true extends T[K]['required'] ? never : K;
+}[keyof T];
+
+// @public (undocumented)
+export type PickRequiredKeys<
+  T extends {
+    [key: string]: any;
+  },
+> = {
+  [K in keyof T]: true extends T[K]['required'] ? K : never;
+}[keyof T];
+
+// @public (undocumented)
 export type Push<T extends any[], V> = [...T, V];
+
+// @public (undocumented)
+export interface QueryObject extends ParameterObject {
+  // (undocumented)
+  in: 'query';
+  // (undocumented)
+  style?: 'form' | 'deepObject' | 'pipeDelimited' | 'spaceDelimited';
+}
+
+// @public (undocumented)
+export type QuerySchema<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableQueryObject>;
 
 // @public (undocumented)
 export type RequestBody<
@@ -269,6 +475,25 @@ export type RequestBodyToJsonSchema<
 
 // @public
 export type RequiredDoc = Pick<ImmutableOpenAPIObject, 'paths' | 'components'>;
+
+// @public (undocumented)
+export type RequiredMap<
+  T extends {
+    [key: string]: any;
+  },
+> = {
+  [P in Exclude<PickRequiredKeys<T>, undefined>]: NonNullable<T[P]>;
+};
+
+// @public (undocumented)
+export type ResolveDocParameterSchema<
+  Doc extends RequiredDoc,
+  Schema extends ImmutableParameterObject['schema'],
+> = Schema extends ImmutableReferenceObject
+  ? 'parameters' extends ComponentTypes<Doc>
+    ? ComponentRef<Doc, 'parameters', Schema>
+    : never
+  : Schema;
 
 // @public (undocumented)
 type Response_2<

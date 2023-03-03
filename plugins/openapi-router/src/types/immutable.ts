@@ -71,34 +71,64 @@ export type ImmutableContentObject = ImmutableObject<ContentObject>;
  */
 export type ImmutableRequestBodyObject = ImmutableObject<RequestBodyObject>;
 
+/**
+ * @public
+ */
 export type ImmutableParameterObject = ImmutableObject<ParameterObject>;
 
+/**
+ * @public
+ */
 export interface HeaderObject extends ParameterObject {
   in: 'header';
   style: 'simple';
 }
 
+/**
+ * @public
+ */
 export type ImmutableHeaderObject = ImmutableObject<HeaderObject>;
 
+/**
+ * @public
+ */
 export interface CookieObject extends ParameterObject {
   in: 'cookie';
   style?: 'form';
 }
 
+/**
+ * @public
+ */
 export type ImmutableCookieObject = ImmutableObject<CookieObject>;
 
+/**
+ * @public
+ */
 export interface QueryObject extends ParameterObject {
   in: 'query';
   style?: 'form' | 'deepObject' | 'pipeDelimited' | 'spaceDelimited';
 }
 
+/**
+ * @public
+ */
 export type ImmutableQueryObject = ImmutableObject<QueryObject>;
 
+/**
+ * @public
+ */
 export interface PathObject extends ParameterObject {
   in: 'path';
   style?: 'simple' | 'label' | 'matrix';
 }
 
+/**
+ * @public
+ */
 export type ImmutablePathObject = ImmutableObject<PathObject>;
 
+/**
+ * @public
+ */
 export type ImmutableSchemaObject = ImmutableObject<SchemaObject>;
