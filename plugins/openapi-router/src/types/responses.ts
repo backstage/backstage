@@ -18,7 +18,6 @@
  * Pulled from https://github.com/varanauskas/oatx.
  */
 
-import type { ReferenceObject, ResponseObject } from 'openapi3-ts';
 import type {
   ComponentRef,
   ComponentTypes,
@@ -32,6 +31,7 @@ import type {
   ToTypeSafe,
   ValueOf,
 } from './common';
+import { ImmutableReferenceObject, ImmutableResponseObject } from './immutable';
 
 /**
  * @public
@@ -45,7 +45,7 @@ export type Response<
   Doc,
   Path,
   Method
->['responses'][StatusCode] extends ReferenceObject
+>['responses'][StatusCode] extends ImmutableReferenceObject
   ? 'responses' extends ComponentTypes<Doc>
     ? ComponentRef<
         Doc,
@@ -76,7 +76,7 @@ export type Responses<
  */
 export type ResponseSchema<
   Doc extends RequiredDoc,
-  Object extends ResponseObject,
+  Object extends ImmutableResponseObject,
 > = ObjectWithContentSchema<Doc, Object>;
 
 /**
@@ -91,7 +91,7 @@ export type ResponseSchemas<
     Doc,
     DocPath<Doc, Path>,
     Method
-  >[StatusCode] extends ResponseObject
+  >[StatusCode] extends ImmutableResponseObject
     ? ResponseSchema<
         Doc,
         Responses<Doc, DocPath<Doc, Path>, Method>[StatusCode]

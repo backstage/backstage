@@ -20,6 +20,7 @@ import type {
   RequestBodyObject,
   ParameterObject,
   SchemaObject,
+  ResponseObject,
 } from 'openapi3-ts';
 
 /**
@@ -70,6 +71,11 @@ export type ImmutableContentObject = ImmutableObject<ContentObject>;
  * @public
  */
 export type ImmutableRequestBodyObject = ImmutableObject<RequestBodyObject>;
+
+/**
+ * @public
+ */
+export type ImmutableResponseObject = ImmutableObject<ResponseObject>;
 
 /**
  * @public
