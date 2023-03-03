@@ -70,6 +70,7 @@
     "@backstage/plugin-tech-insights-node": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@backstage/plugin-todo-backend": "workspace:^",
+    "@backstage/plugin-toolkit-backend": "workspace:^",
     "@gitbeaker/node": "^35.1.0",
     "@octokit/rest": "^19.0.3",
     "azure-devops-node-api": "^11.0.1",

@@ -8686,6 +8686,57 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-toolkit-backend@workspace:^, @backstage/plugin-toolkit-backend@workspace:plugins/toolkit-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-toolkit-backend@workspace:plugins/toolkit-backend"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    express: ^4.18.1
+    express-promise-router: ^4.1.0
+    knex: ^2.4.2
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-toolkit@workspace:^, @backstage/plugin-toolkit@workspace:plugins/toolkit":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-toolkit@workspace:plugins/toolkit"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-home": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.57
+    "@reduxjs/toolkit": ^1.9.2
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    "@types/node": "*"
+    cross-fetch: ^3.1.5
+    msw: ^1.0.0
+    react-redux: ^8.0.5
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend"
@@ -13030,6 +13081,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@reduxjs/toolkit@npm:^1.9.2":
+  version: 1.9.3
+  resolution: "@reduxjs/toolkit@npm:1.9.3"
+  dependencies:
+    immer: ^9.0.16
+    redux: ^4.2.0
+    redux-thunk: ^2.4.2
+    reselect: ^4.1.7
+  peerDependencies:
+    react: ^16.9.0 || ^17.0.0 || ^18
+    react-redux: ^7.2.1 || ^8.0.2
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-redux:
+      optional: true
+  checksum: d965fc6197fd420e4b8eb714015aa908d4ea214e6e10889cf4521e64ac4f8e0a7de29ee4e8da63b291acc40ac330dd31682334090d54838add73c746dc590650
+  languageName: node
+  linkType: hard
+
 "@remix-run/router@npm:1.3.2":
   version: 1.3.2
   resolution: "@remix-run/router@npm:1.3.2"
@@ -14777,7 +14848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/hoist-non-react-statics@npm:^3.3.0":
+"@types/hoist-non-react-statics@npm:^3.3.0, @types/hoist-non-react-statics@npm:^3.3.1":
   version: 3.3.1
   resolution: "@types/hoist-non-react-statics@npm:3.3.1"
   dependencies:
@@ -15905,6 +15976,13 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
+  languageName: node
+  linkType: hard
+
+"@types/use-sync-external-store@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "@types/use-sync-external-store@npm:0.0.3"
+  checksum: 161ddb8eec5dbe7279ac971531217e9af6b99f7783213566d2b502e2e2378ea19cf5e5ea4595039d730aa79d3d35c6567d48599f69773a02ffcff1776ec2a44e
   languageName: node
   linkType: hard
 
@@ -22683,6 +22761,7 @@ __metadata:
     "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/plugin-todo": "workspace:^"
+    "@backstage/plugin-toolkit": "workspace:^"
     "@backstage/plugin-user-settings": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
@@ -22781,6 +22860,7 @@ __metadata:
     "@backstage/plugin-tech-insights-node": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
     "@backstage/plugin-todo-backend": "workspace:^"
+    "@backstage/plugin-toolkit-backend": "workspace:^"
     "@gitbeaker/node": ^35.1.0
     "@octokit/rest": ^19.0.3
     "@types/dockerode": ^3.3.0
@@ -25280,7 +25360,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:^9.0.1, immer@npm:^9.0.7":
+"immer@npm:^9.0.1, immer@npm:^9.0.16, immer@npm:^9.0.7":
   version: 9.0.19
   resolution: "immer@npm:9.0.19"
   checksum: f02ee53989989c287cd548a3d817fccf0bfe56db919755ee94a72ea3ae78a00363fba93ee6c010fe54a664380c29c53d44ed4091c6a86cae60957ad2cfabc010
@@ -27977,7 +28057,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.0.0":
+"knex@npm:^2.0.0, knex@npm:^2.4.2":
   version: 2.4.2
   resolution: "knex@npm:2.4.2"
   dependencies:
@@ -33546,6 +33626,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-redux@npm:^8.0.5":
+  version: 8.0.5
+  resolution: "react-redux@npm:8.0.5"
+  dependencies:
+    "@babel/runtime": ^7.12.1
+    "@types/hoist-non-react-statics": ^3.3.1
+    "@types/use-sync-external-store": ^0.0.3
+    hoist-non-react-statics: ^3.3.2
+    react-is: ^18.0.0
+    use-sync-external-store: ^1.0.0
+  peerDependencies:
+    "@types/react": ^16.8 || ^17.0 || ^18.0
+    "@types/react-dom": ^16.8 || ^17.0 || ^18.0
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+    react-native: ">=0.59"
+    redux: ^4
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+    redux:
+      optional: true
+  checksum: a108f4f7ead6ac005e656d46051474a2bbdb31ede481bbbb3d8d779c1a35e1940b8655577cc5021313411864d305f67fc719aa48d6e5ed8288cf9cbe8b7042e4
+  languageName: node
+  linkType: hard
+
 "react-refresh@npm:^0.14.0":
   version: 0.14.0
   resolution: "react-refresh@npm:0.14.0"
@@ -34075,12 +34187,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux@npm:^4.0.0, redux@npm:^4.0.4, redux@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "redux@npm:4.1.2"
+"redux-thunk@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "redux-thunk@npm:2.4.2"
+  peerDependencies:
+    redux: ^4
+  checksum: c7f757f6c383b8ec26152c113e20087818d18ed3edf438aaad43539e9a6b77b427ade755c9595c4a163b6ad3063adf3497e5fe6a36c68884eb1f1cfb6f049a5c
+  languageName: node
+  linkType: hard
+
+"redux@npm:^4.0.0, redux@npm:^4.0.4, redux@npm:^4.1.2, redux@npm:^4.2.0":
+  version: 4.2.1
+  resolution: "redux@npm:4.2.1"
   dependencies:
     "@babel/runtime": ^7.9.2
-  checksum: 6a839cee5bd580c5298d968e9e2302150e961318253819bcd97f9d945a5a409559eacddf6026f4118bb68b681c593d90e8a2c5bbf278f014aff9bf0d2d8fa084
+  checksum: f63b9060c3a1d930ae775252bb6e579b42415aee7a23c4114e21a0b4ba7ec12f0ec76936c00f546893f06e139819f0e2855e0d55ebfce34ca9c026241a6950dd
   languageName: node
   linkType: hard
 
@@ -34412,10 +34533,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reselect@npm:^4.1.5":
-  version: 4.1.5
-  resolution: "reselect@npm:4.1.5"
-  checksum: 54c13c1e795b2ea70cba8384138aebe78adda00cbea303cc94b64da0a70d74c896cc9a03115ae38b8bff990e7a60dcd6452ab68cbec01b0b38c1afda70714cf0
+"reselect@npm:^4.1.5, reselect@npm:^4.1.7":
+  version: 4.1.7
+  resolution: "reselect@npm:4.1.7"
+  checksum: 738d8e2b8f0dca154ad29de6a209c9fbca2d70ae6788fd85df87f2c74b95a65bbf2d16d43a9e2faff39de34d17a29d706ba08a6b2ee5660c09589edbd19af7e1
   languageName: node
   linkType: hard
 
@@ -38083,7 +38204,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.2.0":
+"use-sync-external-store@npm:^1.0.0, use-sync-external-store@npm:^1.2.0":
   version: 1.2.0
   resolution: "use-sync-external-store@npm:1.2.0"
   peerDependencies:

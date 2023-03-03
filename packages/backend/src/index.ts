@@ -68,6 +68,8 @@ import linguist from './plugins/linguist';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import toolkit from './plugins/toolkit';
+
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -129,6 +131,8 @@ async function main() {
   const codeCoverageEnv = useHotMemoize(module, () =>
     createEnv('code-coverage'),
   );
+
+  const toolkitEnv = useHotMemoize(module, () => createEnv('toolkit'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
@@ -188,6 +192,7 @@ async function main() {
   apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
   apiRouter.use('/adr', await adr(adrEnv));
   apiRouter.use('/linguist', await linguist(linguistEnv));
+  apiRouter.use('/toolkit', await toolkit(toolkitEnv));
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);

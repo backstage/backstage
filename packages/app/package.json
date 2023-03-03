@@ -67,6 +67,7 @@
     "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^",
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/plugin-todo": "workspace:^",
+    "@backstage/plugin-toolkit": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@internal/plugin-catalog-customized": "workspace:^",
