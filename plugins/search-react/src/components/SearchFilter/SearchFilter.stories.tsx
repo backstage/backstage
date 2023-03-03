@@ -97,7 +97,6 @@ export const AllOptionSelectFilter = () => {
         label="Search Select Filter"
         name="select_filter"
         values={['value1', 'value2']}
-        renderValue={value => <i>{value}</i>}
       />
     </Paper>
   );
@@ -106,7 +105,8 @@ export const AllOptionSelectFilter = () => {
 export const MultiSelectFilter = () => {
   return (
     <Paper style={{ padding: 10 }}>
-      <SearchFilter.MultiSelect
+      <SearchFilter.Select<string[]>
+        multiple
         label="Search Select Filter"
         name="select_filter"
         values={['value1', 'value2']}

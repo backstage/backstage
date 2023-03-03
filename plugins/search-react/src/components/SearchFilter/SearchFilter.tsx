@@ -94,14 +94,6 @@ export interface SelectFilterProps<T extends SearchFilterValue = string>
 /**
  * @public
  */
-export type MultiselectFilterProps<T extends SearchFilterValue = string> = Omit<
-  SelectFilterProps<T>,
-  'multiple' | 'renderValue' | 'allOptionLabel'
->;
-
-/**
- * @public
- */
 export const CheckboxFilter = (props: SearchFilterComponentProps) => {
   const {
     className,
@@ -241,6 +233,10 @@ export function SelectFilter<T extends SearchFilterValue = string>(
             return renderValue(selected as T);
           }
 
+          if (multiple) {
+            return (selected as any[]).join(', ');
+          }
+
           return selected as T;
         }}
         MenuProps={{
@@ -268,19 +264,6 @@ export function SelectFilter<T extends SearchFilterValue = string>(
 /**
  * @public
  */
-export const MultiSelectFilter = (props: MultiselectFilterProps) => {
-  return (
-    <SelectFilter<string[]>
-      {...props}
-      multiple
-      renderValue={selected => selected.join(', ')}
-    />
-  );
-};
-
-/**
- * @public
- */
 const SearchFilter = ({
   component: Element,
   ...props
@@ -291,13 +274,9 @@ SearchFilter.Checkbox = (
     SearchFilterComponentProps,
 ) => <SearchFilter {...props} component={CheckboxFilter} />;
 
-SearchFilter.Select = (
-  props: Omit<SearchFilterWrapperProps, 'component'> & SelectFilterProps,
+SearchFilter.Select = <T extends SearchFilterValue = string>(
+  props: Omit<SearchFilterWrapperProps, 'component'> & SelectFilterProps<T>,
 ) => <SearchFilter {...props} component={SelectFilter} />;
-
-SearchFilter.MultiSelect = (
-  props: Omit<SearchFilterWrapperProps, 'component'> & MultiselectFilterProps,
-) => <SearchFilter {...props} component={MultiSelectFilter} />;
 
 /**
  * A control surface for a given filter field name, rendered as an autocomplete

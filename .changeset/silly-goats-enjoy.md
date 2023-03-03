@@ -2,4 +2,4 @@
 '@backstage/plugin-search-react': minor
 ---
 
-Make Search Select filter more re-customizable. Add `MultiSelect` filter.
+Make Search Select filter more re-customizable.

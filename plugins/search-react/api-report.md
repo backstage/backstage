@@ -83,15 +83,6 @@ export class MockSearchApi implements SearchApi {
 }
 
 // @public (undocumented)
-export const MultiSelectFilter: (props: MultiselectFilterProps) => JSX.Element;
-
-// @public (undocumented)
-export type MultiselectFilterProps<T extends SearchFilterValue = string> = Omit<
-  SelectFilterProps<T>,
-  'multiple' | 'renderValue' | 'allOptionLabel'
->;
-
-// @public (undocumented)
 export interface SearchApi {
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
@@ -207,11 +198,8 @@ export const SearchFilter: {
     props: Omit<SearchFilterWrapperProps, 'component'> &
       SearchFilterComponentProps,
   ): JSX.Element;
-  Select(
-    props: Omit<SearchFilterWrapperProps, 'component'> & SelectFilterProps,
-  ): JSX.Element;
-  MultiSelect(
-    props: Omit<SearchFilterWrapperProps, 'component'> & MultiselectFilterProps,
+  Select<T extends SearchFilterValue = string>(
+    props: Omit<SearchFilterWrapperProps, 'component'> & SelectFilterProps<T>,
   ): JSX.Element;
   Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
 };
