@@ -29,9 +29,9 @@ const useStyles = makeStyles<BackstageTheme>(
       gridTemplateRows: 'max-content auto 1fr',
       gridTemplateColumns: 'auto 1fr auto',
       overflowY: 'auto',
-      height: '100%',
-      [theme.breakpoints.up('md')]: {
-        height: '100vh',
+      height: '100vh',
+      [theme.breakpoints.down('xs')]: {
+        height: '100%',
       },
     },
   }),
