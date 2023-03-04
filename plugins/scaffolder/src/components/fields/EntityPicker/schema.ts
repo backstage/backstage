@@ -20,7 +20,10 @@ import { makeFieldSchemaFromZod } from '../utils';
  * @public
  */
 export const entityQueryFilterExpressionSchema = z.record(
-  z.string().or(z.array(z.string())),
+  z
+    .string()
+    .or(z.array(z.string().or(z.boolean())))
+    .or(z.boolean()),
 );
 
 /**

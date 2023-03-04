@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type EntityFilterQuery } from '@backstage/catalog-client';
+import {
+  type EntityFilterQuery,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/catalog-client';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -24,7 +27,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { EntityPickerProps } from './schema';
+import { EntityPickerProps, EntityPickerUiOptions } from './schema';
 
 export { EntityPickerSchema } from './schema';
 
@@ -44,12 +47,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     formData,
     idSchema,
   } = props;
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
-
-  const catalogFilter: EntityFilterQuery | undefined =
-    uiSchema['ui:options']?.catalogFilter ||
-    (allowedKinds && { kind: allowedKinds });
-
+  const catalogFilter = buildCatalogFilter(uiSchema);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
 
@@ -109,3 +107,70 @@ export const EntityPicker = (props: EntityPickerProps) => {
     </FormControl>
   );
 };
+
+/**
+ * Converts a boolean value `true` to `CATALOG_FILTER_EXISTS`.
+ * Returns the input value if it is not a boolean `true`.
+ *
+ * @param value - The value to convert.
+ * @returns The converted value.
+ */
+function convertTrueToExists(value: string | boolean): string | symbol {
+  if (value === true) {
+    return CATALOG_FILTER_EXISTS;
+  }
+  return value?.toString();
+}
+
+/**
+ * Converts schema filters to entity filter query, replacing boolean `true` values
+ * with the constant `CATALOG_FILTER_EXISTS`.
+ *
+ * @param schemaFilters - An object containing schema filters with keys as filter names
+ * and values as filter values.
+ * @returns An object with the same keys as the input object, but with `true` boolean values
+ * transformed to `CATALOG_FILTER_EXISTS` symbol.
+ */
+function convertSchemaFiltersToQuery(
+  schemaFilters: Record<string, string | boolean | (string | boolean)[]>,
+): Record<string, string | symbol | (string | symbol)[]> {
+  const query: EntityFilterQuery = {};
+
+  for (const [key, value] of Object.entries(schemaFilters)) {
+    if (Array.isArray(value)) {
+      query[key] = value.map(convertTrueToExists) as string[];
+    } else {
+      query[key] = convertTrueToExists(value) as string;
+    }
+  }
+
+  return query;
+}
+
+/**
+ * Builds an `EntityFilterQuery` based on the `uiSchema` passed in.
+ * If `catalogFilter` is specified in the `uiSchema`, it is converted to a `EntityFilterQuery`.
+ * If `allowedKinds` is specified in the `uiSchema` will support the legacy `allowedKinds` option.
+ *
+ * @param uiSchema The `uiSchema` of an `EntityPicker` component.
+ * @returns An `EntityFilterQuery` based on the `uiSchema`, or `undefined` if `catalogFilter` is not specified in the `uiSchema`.
+ */
+function buildCatalogFilter(
+  uiSchema: EntityPickerProps['uiSchema'],
+): EntityFilterQuery | undefined {
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+
+  const catalogFilter: EntityPickerUiOptions['catalogFilter'] | undefined =
+    uiSchema['ui:options']?.catalogFilter ||
+    (allowedKinds && { kind: allowedKinds });
+
+  if (!catalogFilter) {
+    return undefined;
+  }
+
+  if (Array.isArray(catalogFilter)) {
+    return catalogFilter.map(convertSchemaFiltersToQuery);
+  }
+
+  return convertSchemaFiltersToQuery(catalogFilter);
+}

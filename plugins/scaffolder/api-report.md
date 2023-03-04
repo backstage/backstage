@@ -80,8 +80,8 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<string, string | boolean | (string | boolean)[]>
+      | Record<string, string | boolean | (string | boolean)[]>[]
       | undefined;
   }
 >;
@@ -95,8 +95,8 @@ export const EntityPickerFieldSchema: FieldSchema<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<string, string | boolean | (string | boolean)[]>
+      | Record<string, string | boolean | (string | boolean)[]>[]
       | undefined;
   }
 >;
@@ -212,8 +212,8 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<string, string | boolean | (string | boolean)[]>
+      | Record<string, string | boolean | (string | boolean)[]>[]
       | undefined;
   }
 >;
@@ -226,8 +226,8 @@ export const OwnerPickerFieldSchema: FieldSchema<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<string, string | boolean | (string | boolean)[]>
+      | Record<string, string | boolean | (string | boolean)[]>[]
       | undefined;
   }
 >;
