@@ -95,36 +95,48 @@ export const getRepoUrlFromLocationAnnotation = (
   parsedLocationAnnotation: ParsedLocationAnnotation,
   scmIntegrations: ScmIntegrationRegistry,
   docsFolder: string = 'docs',
-): { repo_url?: string; edit_uri?: string } => {
+): { repo_url?: string; edit_uri_template?: string } => {
   const { type: locationType, target } = parsedLocationAnnotation;
 
-  if (locationType === 'url') {
-    const integration = scmIntegrations.byUrl(target);
-
-    // We only support it for github, gitlab and bitbucketServer for now as the edit_uri
-    // is not properly supported for others yet.
-    if (
-      integration &&
-      ['github', 'gitlab', 'bitbucketServer'].includes(integration.type)
-    ) {
-      // handle the case where a user manually writes url:https://github.com/backstage/backstage i.e. without /blob/...
-      const { filepathtype } = gitUrlParse(target);
-      if (filepathtype === '') {
-        return { repo_url: target };
-      }
-
-      const sourceFolder = integration.resolveUrl({
-        url: `./${docsFolder}`,
-        base: target,
-      });
-      return {
-        repo_url: target,
-        edit_uri: integration.resolveEditUrl(sourceFolder),
-      };
-    }
+  if (locationType !== 'url') {
+    return {};
   }
 
-  return {};
+  const integration = scmIntegrations.byUrl(target);
+  if (!integration) {
+    return {};
+  }
+
+  // handle the case where a user manually writes url:https://github.com/backstage/backstage i.e. without /blob/...
+  const { filepathtype } = gitUrlParse(target);
+  if (filepathtype === '') {
+    return { repo_url: target };
+  }
+
+  // https://www.mkdocs.org/user-guide/configuration/#edit_uri_template
+  // equivalent:
+  //   - edit_uri: 'blob/main/docs/'
+  //   - edit_uri_template: 'blob/main/docs/{path}'
+  // template fields:
+  //   - {path}, e.g. foo/bar.md
+  //   - {path_noexit}, e.g. foo/bar
+  // conversions:
+  //   - {path!q}, e.g. foo%2Fbar.md
+  const sourceTemplate = integration.resolveUrl({
+    url: `./${docsFolder}/{path}`,
+    base: target,
+  });
+  const editTemplate = integration.resolveEditUrl(sourceTemplate);
+
+  // integrations which don't support an edit URL return the URL unmodified
+  if (sourceTemplate === editTemplate) {
+    return { repo_url: target };
+  }
+
+  return {
+    repo_url: target,
+    edit_uri_template: editTemplate.replace('%7Bpath%7D', '{path}'),
+  };
 };
 
 class UnknownTag {
