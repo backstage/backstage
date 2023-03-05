@@ -189,7 +189,7 @@ export const examplesExtensionPoint =
 class ExamplesExtension implements ExamplesExtensionPoint {
   #examples: Example[] = [];
 
-  addActions(example: Examples): void {
+  addExample(example: Example): void {
     this.#examples.push(example);
   }
 
@@ -210,8 +210,8 @@ export const examplePlugin = createBackendPlugin({
     env.registerInit({
       deps: { logger: coreServices.logger },
       async init({ logger }) {
-        // We can access `actionsExtension` directly, giving us access to the internal interface.
-        const examples = actionsExtension.getRegisteredActions();
+        // We can access `examplesExtension` directly, giving us access to the internal interface.
+        const examples = examplesExtension.getRegisteredExamples();
 
         logger.info(`The following examples have been registered: ${examples}`);
       },
