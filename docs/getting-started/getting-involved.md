@@ -1,6 +1,6 @@
 ---
-id: get-involved
-title: Get Involved
+id: getting-involved
+title: Getting Involved
 # prettier-ignore
 description: How can you help us build Backstage? We welcome contributions of all kinds, from documentation to code to design.
 ---
@@ -29,11 +29,11 @@ If you start developing a plugin that you aim to release as open source, we sugg
 
 You can also use this process if you have an idea for a good plugin but you hope that someone else will pick up the work.
 
-### Adding Non-code Contributions
+### Adding non-code Contributions
 
 Since there is such a large landscape of possible development, build, and deployment environments, we welcome community contributions in these areas in the [`/contrib`](https://github.com/backstage/backstage/tree/master/contrib) folder of the project. This is an excellent place to put things that help out the community at large, but which may not fit within the scope of the core product to support natively. Here, you will find Helm charts, alternative Docker images, and much more.
 
-### Write Documentation or improve the website
+### Write documentation or improve the website
 
 The current documentation is very limited. Help us make the `/docs` folder come alive.
 
@@ -49,7 +49,7 @@ We think the best way to ensure different plugins provide a consistent experienc
 
 Either help us [create new components](https://github.com/backstage/backstage/labels/help%20wanted) or improve stories for the existing ones (look for files with `*.stories.tsx`).
 
-### Submit Feedback
+### Submit feedback
 
 The best way to send feedback is to file [an issue](https://github.com/backstage/backstage/issues).
 
