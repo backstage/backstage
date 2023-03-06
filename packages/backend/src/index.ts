@@ -70,7 +70,6 @@ import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import toolkit from './plugins/toolkit';
 
-
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
