@@ -3929,9 +3929,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-openapi-utils@workspace:^, @backstage/backend-openapi-utils@workspace:plugins/openapi-router":
+"@backstage/backend-openapi-utils@workspace:^, @backstage/backend-openapi-utils@workspace:plugins/openapi-utils":
   version: 0.0.0-use.local
-  resolution: "@backstage/backend-openapi-utils@workspace:plugins/openapi-router"
+  resolution: "@backstage/backend-openapi-utils@workspace:plugins/openapi-utils"
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
