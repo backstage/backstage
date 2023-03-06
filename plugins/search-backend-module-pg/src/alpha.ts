@@ -20,6 +20,10 @@ import {
 import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 import { PgSearchEngine } from './PgSearchEngine';
 
+/**
+ * @alpha
+ * Search backend module for the Postgres engine.
+ */
 export const pgSearchEngineModule = createBackendModule({
   moduleId: 'pgSearchEngineModule',
   pluginId: 'search',

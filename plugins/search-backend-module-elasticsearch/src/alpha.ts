@@ -20,18 +20,30 @@ import {
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
+  ElasticSearchHighlightConfig,
+  ElasticSearchQueryTranslatorOptions,
+  ElasticSearchConcreteQuery,
   ElasticSearchCustomIndexTemplate,
+  ElasticSearchCustomIndexTemplateBody,
   ElasticSearchQueryTranslator,
   ElasticSearchSearchEngine,
 } from './engines';
 
-export type ElasticSearchEngineModuleOptions = {
+/**
+ * @alpha
+ * Options for {@link elasticSearchEngineModule}.
+ */
+export type ElasticsearchEngineModuleOptions = {
   translator?: ElasticSearchQueryTranslator;
   indexTemplate?: ElasticSearchCustomIndexTemplate;
 };
 
+/**
+ * @alpha
+ * Search backend module for the Elasticsearch engine.
+ */
 export const elasticSearchEngineModule = createBackendModule(
-  (options?: ElasticSearchEngineModuleOptions) => ({
+  (options?: ElasticsearchEngineModuleOptions) => ({
     moduleId: 'elasticSearchEngineModule',
     pluginId: 'search',
     register(env) {
@@ -46,7 +58,7 @@ export const elasticSearchEngineModule = createBackendModule(
             logger: loggerToWinstonLogger(logger),
             config: config,
           });
-          searchEngineRegistry.setSearchEngine(searchEngine);
+
           // set custom translator if available
           if (options?.translator) {
             searchEngine.setTranslator(options.translator);
@@ -56,8 +68,19 @@ export const elasticSearchEngineModule = createBackendModule(
           if (options?.indexTemplate) {
             searchEngine.setIndexTemplate(options.indexTemplate);
           }
+
+          searchEngineRegistry.setSearchEngine(searchEngine);
         },
       });
     },
   }),
 );
+
+export type {
+  ElasticSearchCustomIndexTemplate,
+  ElasticSearchCustomIndexTemplateBody,
+  ElasticSearchQueryTranslator,
+  ElasticSearchQueryTranslatorOptions,
+  ElasticSearchHighlightConfig,
+  ElasticSearchConcreteQuery,
+};

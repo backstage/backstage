@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { LunrSearchEngine, lunrSearchEngineModule } from './LunrSearchEngine';
+export { LunrSearchEngine } from './LunrSearchEngine';
 export type {
   ConcreteLunrQuery,
   LunrQueryTranslator,

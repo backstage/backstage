@@ -26,12 +26,6 @@ import lunr from 'lunr';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
-import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { searchEngineRegistryExtensionPoint } from '../alpha';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 /**
  * Type of translated query for the Lunr Search Engine.
@@ -340,21 +334,3 @@ export function parseHighlightFields({
     }),
   );
 }
-
-export const lunrSearchEngineModule = createBackendModule({
-  moduleId: 'lunrSearchEngineModule',
-  pluginId: 'search',
-  register(env) {
-    env.registerInit({
-      deps: {
-        searchEngineRegistry: searchEngineRegistryExtensionPoint,
-        logger: coreServices.logger,
-      },
-      async init({ searchEngineRegistry, logger }) {
-        searchEngineRegistry.setSearchEngine(
-          new LunrSearchEngine({ logger: loggerToWinstonLogger(logger) }),
-        );
-      },
-    });
-  },
-});

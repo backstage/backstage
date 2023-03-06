@@ -34,43 +34,70 @@ import {
 } from './types';
 
 import { IndexBuilder } from './IndexBuilder';
-import { Scheduler } from './Scheduler';
 
-export interface SearchIndexBuilderService {
-  build(options: IndexBuilderServiceBuildOptions): Promise<{
-    scheduler: Scheduler;
-  }>;
+/**
+ * @alpha
+ * Options for build method on {@link SearchIndexService}.
+ */
+export type IndexServiceBuildOptions = {
+  searchEngine: SearchEngine;
+  collators: RegisterCollatorParameters[];
+  decorators: RegisterDecoratorParameters[];
+};
+
+/**
+ * @alpha
+ * Interface for implementation of index service.
+ */
+export interface SearchIndexService {
+  /**
+   * Starts indexing process
+   */
+  start(options: IndexServiceBuildOptions): Promise<void>;
+  /**
+   * Returns an index types list.
+   */
   getDocumentTypes(): Record<string, DocumentTypeInfo>;
 }
 
+/**
+ * @alpha
+ * Interface for search index registry extension point.
+ */
 export interface SearchIndexRegistryExtensionPoint {
   addCollator(options: RegisterCollatorParameters): void;
   addDecorator(options: RegisterDecoratorParameters): void;
 }
 
+/**
+ * @alpha
+ * Interface for search engine registry extension point.
+ */
 export interface SearchEngineRegistryExtensionPoint {
   setSearchEngine(searchEngine: SearchEngine): void;
 }
 
-type DefaultSearchIndexBuilderServiceOptions = {
+type DefaultSearchIndexServiceOptions = {
   logger: Logger;
 };
 
-class DefaultSearchIndexBuilderService implements SearchIndexBuilderService {
+/**
+ * @alpha
+ * Reponsible for register the indexing task and start the schedule.
+ */
+class DefaultSearchIndexService implements SearchIndexService {
   private logger: Logger;
   private indexBuilder: IndexBuilder | null = null;
 
-  private constructor(options: DefaultSearchIndexBuilderServiceOptions) {
+  private constructor(options: DefaultSearchIndexServiceOptions) {
     this.logger = options.logger;
   }
 
-  static fromConfig(options: DefaultSearchIndexBuilderServiceOptions) {
-    return new DefaultSearchIndexBuilderService(options);
+  static fromConfig(options: DefaultSearchIndexServiceOptions) {
+    return new DefaultSearchIndexService(options);
   }
 
-  build(
-    options: IndexBuilderServiceBuildOptions,
-  ): Promise<{ scheduler: Scheduler }> {
+  async start(options: IndexServiceBuildOptions): Promise<void> {
     this.indexBuilder = new IndexBuilder({
       logger: this.logger,
       searchEngine: options.searchEngine,
@@ -84,7 +111,8 @@ class DefaultSearchIndexBuilderService implements SearchIndexBuilderService {
       this.indexBuilder?.addDecorator(decorator),
     );
 
-    return this.indexBuilder?.build();
+    const { scheduler } = await this.indexBuilder?.build();
+    scheduler.start();
   }
 
   getDocumentTypes(): Record<string, DocumentTypeInfo> {
@@ -92,35 +120,48 @@ class DefaultSearchIndexBuilderService implements SearchIndexBuilderService {
   }
 }
 
-export const searchIndexBuilderService =
-  createServiceRef<SearchIndexBuilderService>({
-    id: 'search.index.builder',
-    defaultFactory: async service =>
-      createServiceFactory({
-        service,
-        deps: {
-          logger: coreServices.logger,
-        },
-        factory({ logger }) {
-          return DefaultSearchIndexBuilderService.fromConfig({
-            logger: loggerToWinstonLogger(logger),
-          });
-        },
-      }),
-  });
+/**
+ * @alpha
+ * Service that builds a search index.
+ */
+export const searchIndexServiceRef = createServiceRef<SearchIndexService>({
+  id: 'search.index.service',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {
+        logger: coreServices.logger,
+      },
+      factory({ logger }) {
+        return DefaultSearchIndexService.fromConfig({
+          logger: loggerToWinstonLogger(logger),
+        });
+      },
+    }),
+});
 
+/**
+ * @alpha
+ * Extension point for register a search engine.
+ */
 export const searchEngineRegistryExtensionPoint =
   createExtensionPoint<SearchEngineRegistryExtensionPoint>({
     id: 'search.engine.registry',
   });
 
+/**
+ * @alpha
+ * Extension point for registering collators and decorators
+ */
 export const searchIndexRegistryExtensionPoint =
   createExtensionPoint<SearchIndexRegistryExtensionPoint>({
     id: 'search.index.registry',
   });
 
-export type IndexBuilderServiceBuildOptions = {
-  searchEngine: SearchEngine;
-  collators: RegisterCollatorParameters[];
-  decorators: RegisterDecoratorParameters[];
-};
+/**
+ * @alpha
+ */
+export type {
+  RegisterCollatorParameters,
+  RegisterDecoratorParameters,
+} from './types';
