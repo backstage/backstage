@@ -39,9 +39,12 @@ export function createPgDatabaseClient(
   const role = dbConfig.getOptionalString('role');
 
   if (role) {
-    database.client.pool.on('createSuccess', (_event: any, pgClient: any) => {
-      pgClient.query(`SET ROLE ${role}`, () => {});
-    });
+    database.client.pool.on(
+      'createSuccess',
+      (_event: number, pgClient: Knex.Client) => {
+        pgClient.query(`SET ROLE ${role}`, () => {});
+      },
+    );
   }
   return database;
 }
