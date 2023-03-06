@@ -25,10 +25,15 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-app-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-explore-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
+    "@backstage/plugin-search-backend": "workspace:^",
+    "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@backstage/plugin-todo-backend": "workspace:^"
   },

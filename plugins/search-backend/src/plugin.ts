@@ -117,7 +117,7 @@ export const searchPlugin = createBackendPlugin({
           engine: searchEngine,
           types: searchIndexBuilder.getDocumentTypes(),
         });
-        // We register the router with the http service.
+
         http.use(router);
       },
     });

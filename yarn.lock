@@ -7773,6 +7773,7 @@ __metadata:
   resolution: "@backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
@@ -22481,11 +22482,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-backend-next@workspace:packages/backend-next"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-explore-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-search-backend": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
     "@backstage/plugin-todo-backend": "workspace:^"
   languageName: unknown

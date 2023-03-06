@@ -557,7 +557,7 @@ export const elasticSearchEngineModule = createBackendModule(
             searchEngine.setTranslator(options.translator);
           }
 
-          // set custom index template if available TODO(emmaindal): make it possible to pass in mutliple index templates
+          // set custom index template if available
           if (options?.indexTemplate) {
             searchEngine.setIndexTemplate(options.indexTemplate);
           }
