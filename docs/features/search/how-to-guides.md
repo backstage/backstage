@@ -369,3 +369,85 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => (
 ```
 
 There are other more specific search results layout components that also accept result item extensions, check their documentation: [SearchResultList](https://backstage.io/storybook/?path=/story/plugins-search-searchresultlist--with-result-item-extensions) and [SearchResultGroup](https://backstage.io/storybook/?path=/story/plugins-search-searchresultgroup--with-result-item-extensions).
+
+## How to migrate to use Search together with the new backend system
+
+> DISCLAIMER: The new backend system is in alpha, and so are the search backend support for the new backend system. We don't recommend you to migrate your backend installations to the new system yet. But if you want to experiment, this is the guide for you!
+
+Recently, the Backstage maintainers [announced the new Backend System](https://backstage.io/blog/2023/02/15/backend-system-alpha). The search plugins are now migrated to support the new backend system. In this guide you will learn how to update your backend set up.
+
+1. In packages/backend/search.ts
+
+```ts
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
+import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+import { ToolDocumentCollatorFactory } from '@backstage/plugin-explore-backend';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
+
+export const searchIndexRegistry = createBackendModule({
+  moduleId: 'searchIndexRegistry',
+  pluginId: 'search',
+  register(env) {
+    env.registerInit({
+      deps: {
+        indexRegistry: searchIndexRegistryExtensionPoint,
+        config: coreServices.config,
+        discovery: coreServices.discovery,
+        tokenManager: coreServices.tokenManager,
+        logger: coreServices.logger,
+        scheduler: coreServices.scheduler,
+      },
+      async init({
+        indexRegistry,
+        config,
+        logger,
+        discovery,
+        tokenManager,
+        scheduler,
+      }) {
+        // define scheule, the same way you did it before
+        const schedule = scheduler.createScheduledTaskRunner({
+          frequency: { minutes: 10 },
+          timeout: { minutes: 15 },
+          // A 3 second delay gives the backend server a chance to initialize before
+          // any collators are executed, which may attempt requests against the API.
+          initialDelay: { seconds: 3 },
+        });
+
+        indexRegistry.addCollator({
+          schedule,
+          factory: DefaultCatalogCollatorFactory.fromConfig(config, {
+            discovery,
+            tokenManager,
+          }),
+        });
+
+        // .... other collators and decorators
+      },
+    });
+  },
+});
+```
+
+2. In packages/backend/index.ts
+
+```ts
+import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
+import { elasticSearchEngineModule } from '@backstage/plugin-search-backend-module-elasticsearch/alpha';
+import { searchIndexRegistry } from './plugins/search';
+
+const backend = createBackend();
+// ...other modules
+backend.add(searchPlugin());
+backend.add(searchIndexRegistry());
+
+// the default search engine is Lunr, if you want to extend the search backend with another search engine.
+backend.add(elasticSearchEngineModule());
+
+backend.start();
+```
