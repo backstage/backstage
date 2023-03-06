@@ -61,10 +61,7 @@ export const ToolkitPage = toolkitPlugin.provide(
 );
 
 /**
-<<<<<<< HEAD
  * The toolkit instance
-=======
->>>>>>> cee45b77ca (pipeline issues resolved)
  * @public
  */
 export const Toolkit = toolkitPlugin.provide(
