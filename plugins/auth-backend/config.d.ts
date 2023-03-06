@@ -62,30 +62,72 @@ export interface Config {
      */
     providers?: {
       google?: {
-        [authEnv: string]: { [key: string]: string };
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          callbackUrl: string;
+        };
       };
       github?: {
-        [authEnv: string]: { [key: string]: string };
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          callbackUrl?: string;
+          enterpriseInstanceUrl?: string;
+        };
       };
       gitlab?: {
-        [authEnv: string]: { [key: string]: string };
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          audience?: string;
+          callbackUrl?: string;
+        };
       };
       saml?: {
         entryPoint: string;
         logoutUrl?: string;
         issuer: string;
+        /**
+         * @visibility secret
+         */
         cert: string;
         audience?: string;
+        /**
+         * @visibility secret
+         */
         privateKey?: string;
         authnContext?: string[];
         identifierFormat?: string;
+        /**
+         * @visibility secret
+         */
         decryptionPvk?: string;
         signatureAlgorithm?: 'sha256' | 'sha512';
         digestAlgorithm?: string;
         acceptedClockSkewMs?: number;
       };
       okta?: {
-        [authEnv: string]: { [key: string]: string };
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          audience: string;
+          authServerId?: string;
+          idp?: string;
+          callbackUrl?: string;
+        };
       };
       oauth2?: {
         [authEnv: string]: {
@@ -101,19 +143,56 @@ export interface Config {
         };
       };
       oidc?: {
-        [authEnv: string]: { [key: string]: string };
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          callbackUrl?: string;
+          metadataUrl: string;
+          scope?: string;
+          prompt?: string;
+        };
       };
       auth0?: {
-        [authEnv: string]: { [key: string]: string };
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          domain: string;
+          callbackUrl?: string;
+          audience?: string;
+          connection?: string;
+          connectionScope?: string;
+        };
       };
       microsoft?: {
-        [authEnv: string]: { [key: string]: string };
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          tenantId: string;
+          callbackUrl?: string;
+        };
       };
       onelogin?: {
-        [authEnv: string]: { [key: string]: string };
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          issuer: string;
+          callbackUrl?: string;
+        };
       };
       awsalb?: {
-        issuer?: string;
+        iss?: string;
         region: string;
       };
       cfaccess?: {
