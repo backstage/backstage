@@ -93,7 +93,7 @@ export const EntityOwnerPicker = () => {
           .filter(Boolean) as string[],
       ),
     ];
-    const { items } = await catalogApi.getEntitiesByRefs({
+    const { items: ownerEntitiesOrNull } = await catalogApi.getEntitiesByRefs({
       entityRefs: ownerEntityRefs,
       fields: [
         'kind',
@@ -103,8 +103,7 @@ export const EntityOwnerPicker = () => {
         'spec.profile.displayName',
       ],
     });
-    const owners = ownerEntityRefs.map((ref, index) => {
-      const entity = items[index];
+    const owners = ownerEntitiesOrNull.map((entity, index) => {
       if (entity) {
         return {
           label: humanizeEntity(entity, { defaultKind: 'Group' }),
@@ -113,10 +112,10 @@ export const EntityOwnerPicker = () => {
       }
       return {
         label: humanizeEntityRef(
-          parseEntityRef(ref, { defaultKind: 'Group' }),
+          parseEntityRef(ownerEntityRefs[index], { defaultKind: 'Group' }),
           { defaultKind: 'group' },
         ),
-        entityRef: ref,
+        entityRef: ownerEntityRefs[index],
       };
     });
 
