@@ -17,11 +17,13 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { CodeOwnersProcessor } from './CodeOwnersProcessor';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 const mockCodeOwnersText = () => `
-*       @acme/team-foo @acme/team-bar
-/docs   @acme/team-docs
+*                   @acme/team-foo @acme/team-bar
+/docs               @acme/team-docs
+/plugins/catalog-*  @backstage/maintainers @backstage/catalog-core
+**/logs             @logs-owner
 `;
 
 describe('CodeOwnersProcessor', () => {
@@ -105,7 +107,7 @@ describe('CodeOwnersProcessor', () => {
         spec: { owner: 'team-foo' },
       });
     });
-    it('should use the "backstage.io/managed-by-location" annotation as pattern', async () => {
+    it('should match owner based on the targetUrl', async () => {
       const { entity, processor } = setupTest();
 
       const result = await processor.preProcessEntity(
@@ -116,6 +118,32 @@ describe('CodeOwnersProcessor', () => {
       expect(result).toEqual({
         ...entity,
         spec: { owner: 'team-docs' },
+      });
+    });
+    it('should match wildcard pattern', async () => {
+      const { entity, processor } = setupTest();
+
+      const result = await processor.preProcessEntity(
+        entity as any,
+        mockLocation({ basePath: 'plugins/catalog-foo' }),
+      );
+
+      expect(result).toEqual({
+        ...entity,
+        spec: { owner: 'maintainers' },
+      });
+    });
+    it('should match glob pattern', async () => {
+      const { entity, processor } = setupTest();
+
+      const result = await processor.preProcessEntity(
+        entity as any,
+        mockLocation({ basePath: 'plugins/catalog-foo/logs/1.txt' }),
+      );
+
+      expect(result).toEqual({
+        ...entity,
+        spec: { owner: 'User:logs-owner' },
       });
     });
   });
