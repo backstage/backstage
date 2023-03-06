@@ -42,7 +42,9 @@ export function createPgDatabaseClient(
     database.client.pool.on(
       'createSuccess',
       (_event: number, pgClient: Knex.Client) => {
-        pgClient.query(`SET ROLE ${role}`, () => {});
+        pgClient.query(`SET ROLE ${role}`, (err: Error, _res: any) => {
+          if (err) throw err;
+        });
       },
     );
   }
