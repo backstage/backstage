@@ -140,7 +140,6 @@ export class CatalogBuilder {
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder;
   replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder;
   setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder;
-  // (undocumented)
   setConflictHandler(
     handler: (options: ConflictHandlerOptions) => Promise<void>,
   ): CatalogBuilder;

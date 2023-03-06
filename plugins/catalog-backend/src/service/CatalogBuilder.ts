@@ -411,6 +411,11 @@ export class CatalogBuilder {
     return this;
   }
 
+  /**
+   * Sets a function that will be called when a conflict is detected so that custom logic can be used to resolve conflicts
+   *
+   * @param options - the parameters available to the handler.
+   */
   setConflictHandler(
     handler: (options: ConflictHandlerOptions) => Promise<void>,
   ): CatalogBuilder {
