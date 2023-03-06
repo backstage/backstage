@@ -52,7 +52,7 @@ type Answers = {
 
 export const gitlab = async () => {
   Task.log(`
-    To add GitLub authentication, you must create an Application from the GitLab Settings: ${chalk.blue(
+    To add GitLab authentication, you must create an Application from the GitLab Settings: ${chalk.blue(
       'https://gitlab.com/-/profile/applications',
     )}
     The Redirect URI should point to your Backstage backend auth handler.

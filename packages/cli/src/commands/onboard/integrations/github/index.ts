@@ -48,46 +48,42 @@ const getConfig = ({ isEnterprise, host, apiBaseUrl, token }: Answers) => ({
 
 export const github = async () => {
   let host = 'github.com';
-  let apiBaseUrl: string | undefined;
 
   // TODO(tudi2d): Is GitHub Enterprise a valid setup if there is no Authentication?
-  const { isEnterprise } = await inquirer.prompt<{
+  const {
+    isEnterprise,
+    host: _host,
+    apiBaseUrl,
+  } = await inquirer.prompt<{
     isEnterprise: Answers['isEnterprise'];
+    apiBaseUrl: Answers['apiBaseUrl'];
+    host: Answers['host'];
   }>([
     {
       type: 'confirm',
       name: 'isEnterprise',
       message: 'Are you using GitHub Enterprise?',
     },
+    {
+      type: 'input',
+      name: 'apiBaseUrl',
+      when: ({ isEnterprise: _isEnterprise }) => _isEnterprise,
+      message:
+        'What is your GitHub Enterprise REST API URL (e.g. https://ghe.example.net/api/v3)?',
+      // TODO(tudi2d): Fetch API using OAuth Token if Auth was set up
+      validate: (input: string) => Boolean(new URL(input)),
+    },
+    {
+      type: 'input',
+      name: 'host',
+      when: ({ isEnterprise: _isEnterprise }) => _isEnterprise,
+      message: 'What is your GitHub Enterprise Host (e.g. ghe.example.net)?',
+      // TODO(tudi2d): validate: Must the host be part of the REST API URL?
+    },
   ]);
 
   if (isEnterprise) {
-    try {
-      const answers = await inquirer.prompt<
-        Pick<Answers, 'host' | 'apiBaseUrl'>
-      >([
-        {
-          type: 'input',
-          name: 'apiBaseUrl',
-          message:
-            'What is your GitHub Enterprise REST API URL (e.g. https://ghe.example.net/api/v3)?',
-          // TODO(tudi2d): Fetch API using OAuth Token if Auth was set up
-          validate: (input: string) => Boolean(new URL(input)),
-        },
-        {
-          type: 'input',
-          name: 'host',
-          message:
-            'What is your GitHub Enterprise Host (e.g. ghe.example.net)?',
-          // TODO(tudi2d): validate: Must the host be part of the REST API URL?
-        },
-      ]);
-
-      host = answers.host;
-      apiBaseUrl = answers.apiBaseUrl;
-    } catch (err) {
-      return;
-    }
+    host = _host;
   }
 
   Task.log(`
@@ -123,7 +119,7 @@ export const github = async () => {
       name: 'token',
       message:
         'Please insert your personal access token to setup the GitHub Integration',
-      // TODO(tudi2d): validate: Must the host be part of the REST API URL?
+      // TODO(tudi2d): validate
     },
   ]);
 
