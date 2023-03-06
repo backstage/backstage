@@ -22,6 +22,7 @@ import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
+import { Client } from 'pg';
 
 /**
  * Creates a knex postgres database connection
@@ -41,7 +42,7 @@ export function createPgDatabaseClient(
   if (role) {
     database.client.pool.on(
       'createSuccess',
-      (_event: number, pgClient: Knex.Client) => {
+      (_event: number, pgClient: Client) => {
         pgClient.query(`SET ROLE ${role}`, (err: Error, _res: any) => {
           if (err) throw err;
         });
