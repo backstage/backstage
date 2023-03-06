@@ -16,6 +16,7 @@
 
 import {
   Entity,
+  parseEntityRef,
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -81,7 +82,7 @@ export const EntityOwnerPicker = () => {
     error,
     value: ownerEntities,
   } = useAsync(async () => {
-    const availableOwners = [
+    const ownerEntityRefs = [
       ...new Set(
         backendEntities
           .flatMap((e: Entity) =>
@@ -93,7 +94,7 @@ export const EntityOwnerPicker = () => {
       ),
     ];
     const { items } = await catalogApi.getEntitiesByRefs({
-      entityRefs: availableOwners,
+      entityRefs: ownerEntityRefs,
       fields: [
         'kind',
         'metadata.name',
@@ -102,17 +103,29 @@ export const EntityOwnerPicker = () => {
         'spec.profile.displayName',
       ],
     });
-    return availableOwners
-      .map(
-        (e, i) =>
-          items[i] || ({ metadata: { name: e }, kind: 'Group' } as Entity),
-      )
-      .sort((a, b) =>
-        new Intl.Collator().compare(
-          humanizeEntity(a).toLocaleUpperCase('en-US'),
-          humanizeEntity(b).toLocaleUpperCase('en-US'),
+    const owners = ownerEntityRefs.map((ref, index) => {
+      const entity = items[index];
+      if (entity) {
+        return {
+          label: humanizeEntity(entity, { defaultKind: 'Group' }),
+          entityRef: humanizeEntityRef(entity, { defaultKind: 'Group' }),
+        };
+      }
+      return {
+        label: humanizeEntityRef(
+          parseEntityRef(ref, { defaultKind: 'Group' }),
+          { defaultKind: 'group' },
         ),
-      );
+        entityRef: ref,
+      };
+    });
+
+    return owners.sort((a, b) =>
+      a.label.localeCompare(b.label, 'en-US', {
+        ignorePunctuation: true,
+        caseFirst: 'upper',
+      }),
+    );
   }, [backendEntities]);
 
   useEffect(() => {
@@ -159,20 +172,13 @@ export const EntityOwnerPicker = () => {
           options={ownerEntities || []}
           value={
             ownerEntities?.filter(e =>
-              selectedOwners.some(
-                (f: string) =>
-                  f === humanizeEntityRef(e, { defaultKind: 'Group' }),
-              ),
+              selectedOwners.some((f: string) => f === e.entityRef),
             ) ?? []
           }
-          onChange={(_: object, value: Entity[]) =>
-            setSelectedOwners(
-              value.map(e => humanizeEntityRef(e, { defaultKind: 'Group' })),
-            )
+          onChange={(_: object, value: { entityRef: string }[]) =>
+            setSelectedOwners(value.map(e => e.entityRef))
           }
-          getOptionLabel={option =>
-            humanizeEntity(option, { defaultKind: 'Group' })
-          }
+          getOptionLabel={option => option.label}
           renderOption={(option, { selected }) => (
             <FormControlLabel
               control={
@@ -183,7 +189,7 @@ export const EntityOwnerPicker = () => {
                 />
               }
               onClick={event => event.preventDefault()}
-              label={humanizeEntity(option, { defaultKind: 'Group' })}
+              label={option.label}
             />
           )}
           size="small"
