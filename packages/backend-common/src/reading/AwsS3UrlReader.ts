@@ -162,10 +162,10 @@ export class AwsS3UrlReader implements UrlReader {
     secretAccessKey: string,
   ): AwsCredentialIdentityProvider {
     return async () => {
-      return Promise.resolve({
+      return {
         accessKeyId,
         secretAccessKey,
-      });
+      };
     };
   }
 
@@ -210,7 +210,7 @@ export class AwsS3UrlReader implements UrlReader {
     return explicitCredentials;
   }
 
-  async buildS3Client(
+  private async buildS3Client(
     defaultConfig: Config,
     region: string,
     integration: AwsS3Integration,
@@ -231,7 +231,7 @@ export class AwsS3UrlReader implements UrlReader {
     return s3;
   }
 
-  async retrieveS3ObjectData(stream: Readable): Promise<Readable> {
+  private async retrieveS3ObjectData(stream: Readable): Promise<Readable> {
     return new Promise((resolve, reject) => {
       try {
         const chunks: any[] = [];

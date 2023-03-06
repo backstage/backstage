@@ -50,7 +50,6 @@ import { ReadUrlOptions } from '@backstage/backend-plugin-api';
 import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
-import { S3Client } from '@aws-sdk/client-s3';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SearchOptions } from '@backstage/backend-plugin-api';
 import { SearchResponse } from '@backstage/backend-plugin-api';
@@ -74,12 +73,6 @@ export class AwsS3UrlReader implements UrlReader {
     },
   );
   // (undocumented)
-  buildS3Client(
-    defaultConfig: Config,
-    region: string,
-    integration: AwsS3Integration,
-  ): Promise<S3Client>;
-  // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
   read(url: string): Promise<Buffer>;
@@ -87,8 +80,6 @@ export class AwsS3UrlReader implements UrlReader {
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  retrieveS3ObjectData(stream: Readable): Promise<Readable>;
   // (undocumented)
   search(): Promise<SearchResponse>;
   // (undocumented)
