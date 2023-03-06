@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Use css media query in BackstagePage style hook to eliminate style hook props
+Use media queries to change layout instead of `isMobile` prop in `BackstagePage` component
