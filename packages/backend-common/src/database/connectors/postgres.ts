@@ -42,10 +42,8 @@ export function createPgDatabaseClient(
   if (role) {
     database.client.pool.on(
       'createSuccess',
-      (_event: number, pgClient: Client) => {
-        pgClient.query(`SET ROLE ${role}`, (err: Error, _res: any) => {
-          if (err) throw err;
-        });
+      async (_event: number, pgClient: Client) => {
+        await pgClient.query(`SET ROLE ${role}`);
       },
     );
   }
