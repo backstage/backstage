@@ -152,11 +152,11 @@ export class CatalogBuilder {
     key: string,
     resolver: PlaceholderResolver,
   ): CatalogBuilder;
+  setProcessingDatabase(database: ProcessingDatabase): CatalogBuilder;
   setProcessingInterval(
     processingInterval: ProcessingIntervalFunction,
   ): CatalogBuilder;
   setProcessingIntervalSeconds(seconds: number): CatalogBuilder;
-  setProcessorDatabase(database: ProcessingDatabase): CatalogBuilder;
   setProviderDatabase(database: ProviderDatabase): CatalogBuilder;
   // (undocumented)
   subscribe(options: {

@@ -262,7 +262,7 @@ export class CatalogBuilder {
   /**
    * Overwrites the default processing database.
    */
-  setProcessorDatabase(database: ProcessingDatabase): CatalogBuilder {
+  setProcessingDatabase(database: ProcessingDatabase): CatalogBuilder {
     this.processingDatabase = database;
     return this;
   }
