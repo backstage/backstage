@@ -97,7 +97,7 @@ export interface Config {
        */
       pluginDivisionMode?: 'database' | 'schema';
       /** Configures the ownership of newly created schemas in pg databases. */
-      setOwner?: string;
+      role?: string;
       /**
        * Arbitrary config object to pass to knex when initializing
        * (https://knexjs.org/#Installation-client). Most notable is the debug
@@ -128,7 +128,7 @@ export interface Config {
            */
           knexConfig?: object;
           /** Configures the ownership of newly created schemas in pg databases. */
-          setOwner?: string;
+          role?: string;
         };
       };
     };

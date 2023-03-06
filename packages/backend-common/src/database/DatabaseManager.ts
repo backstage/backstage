@@ -186,10 +186,10 @@ export class DatabaseManager {
     };
   }
 
-  private getSetOwnerConfig(pluginId: string): string | undefined {
+  private getRoleConfig(pluginId: string): string | undefined {
     return (
-      this.config.getOptionalString(`${pluginPath(pluginId)}.setOwner`) ??
-      this.config.getOptionalString('setOwner')
+      this.config.getOptionalString(`${pluginPath(pluginId)}.role`) ??
+      this.config.getOptionalString('role')
     );
   }
 
@@ -285,13 +285,13 @@ export class DatabaseManager {
    */
   private getConfigForPlugin(pluginId: string): Knex.Config {
     const { client } = this.getClientType(pluginId);
-    const setOwner = this.getSetOwnerConfig(pluginId);
+    const role = this.getRoleConfig(pluginId);
 
     return {
       ...this.getAdditionalKnexConfig(pluginId),
       client,
       connection: this.getConnectionConfig(pluginId),
-      ...(setOwner && { setOwner }),
+      ...(role && { role }),
     };
   }
 

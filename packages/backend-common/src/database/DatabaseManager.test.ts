@@ -698,7 +698,7 @@ describe('DatabaseManager', () => {
                 host: 'localhost',
                 database: 'foodb',
               },
-              setOwner: 'backstage',
+              role: 'backstage',
               plugin: {
                 testowner: {},
               },
@@ -711,7 +711,7 @@ describe('DatabaseManager', () => {
       const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
       const [baseConfig] = mockCalls[0];
 
-      expect(baseConfig.data.setOwner).toEqual('backstage');
+      expect(baseConfig.data.role).toEqual('backstage');
     });
 
     it('sets the owner config for plugin using plugin config', async () => {
@@ -724,10 +724,10 @@ describe('DatabaseManager', () => {
                 host: 'localhost',
                 database: 'foodb',
               },
-              setOwner: 'backstage',
+              role: 'backstage',
               plugin: {
                 testowner: {
-                  setOwner: 'backstage-plugin',
+                  role: 'backstage-plugin',
                 },
               },
             },
@@ -739,7 +739,7 @@ describe('DatabaseManager', () => {
       const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
       const [baseConfig] = mockCalls[0];
 
-      expect(baseConfig.data.setOwner).toEqual('backstage-plugin');
+      expect(baseConfig.data.role).toEqual('backstage-plugin');
     });
   });
 });
