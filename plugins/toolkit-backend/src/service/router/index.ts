@@ -24,9 +24,9 @@ import { databaseConnection } from '../DatabaseHandler';
 import ToolkitRoute from './toolkit';
 
 /**
- * @public
  *
  * RouterOptions to construct Toolkit endpoints
+ * @public
  */
 export interface RouterOptions {
   /**
