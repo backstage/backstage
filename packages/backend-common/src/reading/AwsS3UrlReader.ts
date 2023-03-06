@@ -180,7 +180,6 @@ export class AwsS3UrlReader implements UrlReader {
       return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
     }
 
-    // Pull credentials from the techdocs config section (deprecated)
     const accessKeyId = integration.config.accessKeyId;
     const secretAccessKey = integration.config.secretAccessKey;
     let explicitCredentials: AwsCredentialIdentityProvider;
