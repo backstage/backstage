@@ -14,6 +14,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     outputs:
       compose-file-cache-key: ${{ env.COMPOSE_FILE_HASH }}
+      git-ref: ${{ env.GIT_REF }}
       pr-number: ${{ env.PR_NUMBER }}
     steps:
       - name: 'Download artifacts'
@@ -67,10 +68,15 @@ jobs:
         id: pr
         run: echo "PR_NUMBER=${{ fromJSON(env.EVENT_JSON).number }}" >> $GITHUB_ENV
 
+      - name: Read Git Ref From Event Object
+        id: ref
+        run: echo "GIT_REF=${{ fromJSON(env.EVENT_JSON).head.sha }}" >> $GITHUB_ENV
+
       - name: DEBUG - Print Job Outputs
         if: ${{ runner.debug }}
         run: |
           echo "PR number: ${{ env.PR_NUMBER }}"
+          echo "Git Ref: ${{ env.GIT_REF }}"
           echo "Compose file hash: ${{ env.COMPOSE_FILE_HASH }}"
           cat event.json
 
@@ -85,8 +91,9 @@ jobs:
       # and this reusable workflow will delete the preview deployment.
       compose-file-cache-key: ${{ needs.cache-compose-file.outputs.compose-file-cache-key }}
       compose-file-cache-path: docker-compose.rendered.yml
-      server: https://app.uffizzi.com
+      git-ref: ${{ needs.cache-compose-file.outputs.git-ref }}
       pr-number: ${{ needs.cache-compose-file.outputs.pr-number }}
+      server: https://app.uffizzi.com
     permissions:
       contents: read
       pull-requests: write
