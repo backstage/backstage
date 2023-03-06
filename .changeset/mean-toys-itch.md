@@ -7,7 +7,7 @@ Adds config option `backend.database.role` to set ownership for newly created sc
 ### example config
 
 The example config below connects to the database as user `v-backstage-123` but sets the ownership of
-the create schema's and tables to `backstage`
+the create schemas and tables to `backstage`
 
 ```yaml
 backend:
