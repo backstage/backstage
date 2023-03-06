@@ -24,6 +24,7 @@ import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
 import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
 import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
 import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
+import { kubernetesPlugin } from '@backstage/plugin-kubernetes-backend';
 
 const backend = createBackend();
 
@@ -45,4 +46,6 @@ backend.add(searchModuleCatalogCollator());
 backend.add(searchModuleTechDocsCollator());
 backend.add(searchModuleExploreCollator());
 
+// Kubernetes
+backend.add(kubernetesPlugin());
 backend.start();

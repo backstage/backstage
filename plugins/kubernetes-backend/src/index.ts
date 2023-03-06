@@ -23,3 +23,4 @@
 export * from './kubernetes-auth-translator';
 export * from './service';
 export * from './types';
+export * from './plugin';
