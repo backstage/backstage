@@ -252,7 +252,7 @@ export function encodePageCursor({ page }: { page: number }): string {
 
 export const pgSearchEngineModule = createBackendModule({
   moduleId: 'pgSearchEngineModule',
-  pluginId: 'search-backend',
+  pluginId: 'search',
   register(env) {
     env.registerInit({
       deps: {

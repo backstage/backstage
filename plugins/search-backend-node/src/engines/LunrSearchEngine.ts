@@ -343,7 +343,7 @@ export function parseHighlightFields({
 
 export const lunrSearchEngineModule = createBackendModule({
   moduleId: 'lunrSearchEngineModule',
-  pluginId: 'search-backend',
+  pluginId: 'search',
   register(env) {
     env.registerInit({
       deps: {

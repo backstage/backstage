@@ -538,7 +538,7 @@ export type ElasticSearchEngineModuleOptions = {
 export const elasticSearchEngineModule = createBackendModule(
   (options?: ElasticSearchEngineModuleOptions) => ({
     moduleId: 'elasticSearchEngineModule',
-    pluginId: 'search-backend',
+    pluginId: 'search',
     register(env) {
       env.registerInit({
         deps: {
