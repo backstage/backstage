@@ -22,7 +22,7 @@ Out of the box, Backstage includes:
 
 - [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/) for managing all your software (microservices, libraries, data pipelines, websites, ML models, etc.)
 - [Backstage Software Templates](https://backstage.io/docs/features/software-templates/) for quickly spinning up new projects and standardizing your tooling with your organization’s best practices
-- [Backstage TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
+- [Backstage TechDocs](https://backstage.io/docs/features/techdocs/) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
 - Plus, a growing ecosystem of [open source plugins](https://github.com/backstage/backstage/tree/master/plugins) that further expand Backstage’s customizability and functionality
 
 Backstage was created by Spotify but is now hosted by the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io) as an Incubation level project. Read the announcement [here](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
