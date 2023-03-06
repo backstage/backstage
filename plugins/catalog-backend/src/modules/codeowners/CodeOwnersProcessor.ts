@@ -80,14 +80,10 @@ export class CodeOwnersProcessor implements CatalogProcessor {
       return entity;
     }
 
-    const pattern =
-      entity.metadata?.annotations?.['backstage.io/managed-by-location'];
-
     const owner = await findCodeOwnerByTarget(
       this.reader,
       location.target,
       scmIntegration,
-      pattern,
     );
 
     if (!owner) {

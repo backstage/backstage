@@ -106,15 +106,11 @@ describe('CodeOwnersProcessor', () => {
       });
     });
     it('should use the "backstage.io/managed-by-location" annotation as pattern', async () => {
-      const { entity, processor } = setupTest({
-        metadata: {
-          annotations: { 'backstage.io/managed-by-location': '/docs' },
-        },
-      });
+      const { entity, processor } = setupTest();
 
       const result = await processor.preProcessEntity(
         entity as any,
-        mockLocation(),
+        mockLocation({ basePath: 'docs/' }),
       );
 
       expect(result).toEqual({

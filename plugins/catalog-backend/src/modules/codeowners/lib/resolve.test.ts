@@ -23,15 +23,28 @@ const mockCodeOwnersText = () => `
 
 describe('resolveCodeOwner', () => {
   it('should parse the codeowners file', () => {
-    expect(resolveCodeOwner(mockCodeOwnersText())).toBe('team-foo');
+    expect(
+      resolveCodeOwner(
+        mockCodeOwnersText(),
+        'https://github.com/can/be/tree/anything/catalog-info.yaml',
+      ),
+    ).toBe('team-foo');
   });
   it('should include the codeowners path into the provided pattern', () => {
     expect(
       resolveCodeOwner(
         mockCodeOwnersText(),
-        'url:https://github.com/acem/repo/main/docs/catalog-info.yaml',
+        'https://github.com/acme/repo/tree/main/docs/catalog-info.yaml',
       ),
     ).toBe('team-docs');
+  });
+  it('should match only in resource path', () => {
+    expect(
+      resolveCodeOwner(
+        mockCodeOwnersText(),
+        'https://github.com/acme/repo/tree/docs/catalog-info.yaml',
+      ),
+    ).toBe('team-foo');
   });
 });
 
