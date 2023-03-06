@@ -23,6 +23,7 @@ import {
   AwsS3Integration,
   readAwsS3IntegrationConfig,
 } from '@backstage/integration';
+import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { UrlReaderPredicateTuple } from './types';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
@@ -440,8 +441,10 @@ describe('AwsS3UrlReader', () => {
         secretAccessKey: 'fake-secret-key',
       });
 
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+
       awsS3UrlReader = new AwsS3UrlReader(
-        config,
+        credsManager,
         new AwsS3Integration(readAwsS3IntegrationConfig(config)),
         { treeResponseFactory },
       );

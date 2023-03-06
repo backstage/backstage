@@ -33,7 +33,6 @@ import {
   ScmIntegrations,
   AwsS3IntegrationConfig,
 } from '@backstage/integration';
-import { Config } from '@backstage/config';
 import { ForwardedError, NotModifiedError } from '@backstage/errors';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
@@ -134,9 +133,10 @@ export function parseUrl(
 export class AwsS3UrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
+    const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
 
     return integrations.awsS3.list().map(integration => {
-      const reader = new AwsS3UrlReader(config, integration, {
+      const reader = new AwsS3UrlReader(credsManager, integration, {
         treeResponseFactory,
       });
       const predicate = (url: URL) =>
@@ -146,7 +146,7 @@ export class AwsS3UrlReader implements UrlReader {
   };
 
   constructor(
-    private readonly defaultConfig: Config,
+    private readonly credsManager: AwsCredentialsManager,
     private readonly integration: AwsS3Integration,
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
@@ -210,11 +210,10 @@ export class AwsS3UrlReader implements UrlReader {
   }
 
   private async buildS3Client(
-    defaultConfig: Config,
+    credsManager: AwsCredentialsManager,
     region: string,
     integration: AwsS3Integration,
   ): Promise<S3Client> {
-    const credsManager = DefaultAwsCredentialsManager.fromConfig(defaultConfig);
     const credentials = await AwsS3UrlReader.buildCredentials(
       credsManager,
       region,
@@ -257,7 +256,7 @@ export class AwsS3UrlReader implements UrlReader {
     try {
       const { path, bucket, region } = parseUrl(url, this.integration.config);
       const s3Client = await this.buildS3Client(
-        this.defaultConfig,
+        this.credsManager,
         region,
         this.integration,
       );
@@ -306,7 +305,7 @@ export class AwsS3UrlReader implements UrlReader {
     try {
       const { path, bucket, region } = parseUrl(url, this.integration.config);
       const s3Client = await this.buildS3Client(
-        this.defaultConfig,
+        this.credsManager,
         region,
         this.integration,
       );

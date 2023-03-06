@@ -6,6 +6,7 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
+import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -66,7 +67,7 @@ import { Writable } from 'stream';
 // @public
 export class AwsS3UrlReader implements UrlReader {
   constructor(
-    defaultConfig: Config,
+    credsManager: AwsCredentialsManager,
     integration: AwsS3Integration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
