@@ -9,22 +9,16 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
-// Warning: (ae-missing-release-tag) "createRouter" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface RouterOptions {
-  // (undocumented)
   config?: Config;
   // (undocumented)
   database?: PluginDatabaseManager;
   // (undocumented)
   identity?: IdentityApi;
-  // (undocumented)
   logger: Logger;
 }
 

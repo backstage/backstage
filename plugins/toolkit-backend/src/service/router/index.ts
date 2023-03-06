@@ -23,13 +23,34 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { databaseConnection } from '../DatabaseHandler';
 import ToolkitRoute from './toolkit';
 
+/**
+ * @public
+ *
+ * RouterOptions to construct Toolkit endpoints
+ */
 export interface RouterOptions {
+  /**
+   * Implementation of Winston logger
+   */
   logger: Logger;
   database?: PluginDatabaseManager;
+  /**
+   * Backstage config object
+   */
   config?: Config;
   identity?: IdentityApi;
 }
 
+/**
+ * @public
+ *
+ * Constructs a toolkit router.
+ *
+ * Exposes endpoints to handle facts
+ * Exposes optional endpoints to handle checks if a FactChecker implementation is passed in
+ *
+ * @param options - RouterOptions object
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

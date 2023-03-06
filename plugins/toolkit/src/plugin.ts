@@ -25,6 +25,9 @@ import {
 import { rootRouteRef } from './routes';
 import { toolkitApiRef, ToolkitClient } from './api';
 
+/**
+ * @public
+ */
 export const toolkitPlugin = createPlugin({
   id: 'toolkit',
   routes: {
@@ -44,6 +47,10 @@ export const toolkitPlugin = createPlugin({
   ],
 });
 
+/**
+ * The Toolkit page instance
+ * @public
+ */
 export const ToolkitPage = toolkitPlugin.provide(
   createRoutableExtension({
     name: 'ToolkitDetails',
@@ -52,6 +59,11 @@ export const ToolkitPage = toolkitPlugin.provide(
     mountPoint: rootRouteRef,
   }),
 );
+
+/**
+ * The toolkit instance
+ * @public
+ */
 export const Toolkit = toolkitPlugin.provide(
   createRoutableExtension({
     name: 'Toolkit',

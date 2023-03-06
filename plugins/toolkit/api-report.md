@@ -8,18 +8,12 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "Toolkit" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const Toolkit: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ToolkitPage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const ToolkitPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "toolkitPlugin" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const toolkitPlugin: BackstagePlugin<
   {
