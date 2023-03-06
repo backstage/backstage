@@ -1,43 +1,62 @@
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for general contribution guidelines.
 - See [GOVERNANCE.md](GOVERNANCE.md) for governance guidelines and responsibilities.
 
-This page lists all active sponsors and maintainers.
+## Core Maintainers
+
+| Maintainer      | Organization | GitHub                                          | Discord       |
+| --------------- | ------------ | ----------------------------------------------- | ------------- |
+| Patrik Oldsberg | Spotify      | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019` |
+| Fredrik Adelöw  | Spotify      | [freben](https://github.com/freben)             | `freben#3926` |
+| Ben Lambert     | Spotify      | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`   |
+| Johan Haals     | Spotify      | [jhaals](https://github.com/jhaals)             | `Johan#0679`  |
+
+# Project Areas
+
+## Catalog
+
+Team: @backstage/catalog
+
+| Name | Organization | GitHub                       | Discord |
+| ---- | ------------ | ---------------------------- | ------- |
+| TBD  | TBD          | [TBD](http://github.com/TBD) | TBD     |
+
+## TechDocs
+
+Team: @backstage/techdocs
+
+| Name | Organization | GitHub                       | Discord |
+| ---- | ------------ | ---------------------------- | ------- |
+| TBD  | TBD          | [TBD](http://github.com/TBD) | TBD     |
+
+## Search
+
+Team: @backstage/search
+
+| Name | Organization | GitHub                       | Discord |
+| ---- | ------------ | ---------------------------- | ------- |
+| TBD  | TBD          | [TBD](http://github.com/TBD) | TBD     |
 
 # Sponsors
 
-- Niklas Gustavsson ([protocol7](https://github.com/protocol7)) (ngn@spotify.com)
-- Dave Zolotusky ([dzolotusky](https://github.com/dzolotusky)) (dzolo@spotify.com)
-- Lee Mills ([leemills83](https://github.com/leemills83)) (leem@spotify.com)
+| Name              | Organization | GitHub                                      | Email             |
+| ----------------- | ------------ | ------------------------------------------- | ----------------- |
+| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com   |
+| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com |
+| Lee Mills         | Spotify      | [leemills83](https://github.com/leemills83) | leem@spotify.com  |
 
-# Maintainers
+# Organization Members
 
-- Patrik Oldsberg ([rugvip](https://github.com/rugvip)) (Discord: @Rugvip)
-- Fredrik Adelöw ([freben](https://github.com/freben)) (Discord: @freben)
-- Ben Lambert ([benjdlambert](https://github.com/benjdlambert)) (Discord: @blam)
-- Johan Haals ([jhaals](https://github.com/jhaals)) (Discord: @jhaals)
+People that have made significant contributions to the project
 
-# Reviewers
+| Name          | Organization | GitHub                                          | Discord                        |
+| ------------- | ------------ | ----------------------------------------------- | ------------------------------ |
+| Andrew Thauer | Wealthsimple | [andrewthauer](https://github.com/andrewthauer) | `andrewthauer#3060`            |
+| David Tuite   | Roadie       | [dtuite](https://github.com/dtuite)             | `David Tuite (roadie.io)#1010` |
+| Jussi Hallila | Roadie       | [Xantier](https://github.com/Xantier)           | `Xantier#0086`                 |
+| Adam Harvey   | Cisco        | [adamdmharvey](https://github.com/adamdmharvey) | `adamharvey#3739`              |
 
-See [`GOVERNANCE.md`](./GOVERNANCE.md) for details about how the reviewers team
-works.
+# Emeritus Core Maintainers
 
-- Patrik Oldsberg ([rugvip](https://github.com/rugvip)) (Discord: @Rugvip)
-- Fredrik Adelöw ([freben](https://github.com/freben)) (Discord: @freben)
-- Ben Lambert ([benjdlambert](https://github.com/benjdlambert)) (Discord: @blam)
-- Johan Haals ([jhaals](https://github.com/jhaals)) (Discord: @jhaals)
-- Himanshu Mishra ([OrkoHunter](https://github.com/OrkoHunter)) (Discord: @OrkoHunter)
-- Tim Hansen ([timbonicus](https://github.com/timbonicus)) (Discord: @timbonicus)
-
-# Emeritus maintainers
-
-- Stefan Ålund ([stefanalund](https://github.com/stefanalund)) (Discord: @stalund)
-
-# Hall of Fame
-
-People that have made significant contributions to the project and earned write access.
-
-- Andrew Thauer - Wealthsimple (GitHub: [andrewthauer](https://github.com/andrewthauer))
-- Oliver Sand - SDA SE (GitHub: [Fox32](https://github.com/Fox32))
-- David Tuite - Roadie (GitHub: [dtuite](https://github.com/dtuite))
-- Adam Harvey - Cisco (GitHub: [adamdmharvey](https://github.com/adamdmharvey))
-- Dominik Henneke - SDA SE (GitHub: [dhenneke](https://github.com/dhenneke))
+| Maintainer   | Organization | GitHub                                        | Discord        |
+| ------------ | ------------ | --------------------------------------------- | -------------- |
+| Stefan Ålund | Spotify      | [stefanalund](https://github.com/stefanalund) | `stalund#9602` |
