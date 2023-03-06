@@ -167,6 +167,7 @@ export class CatalogBuilder {
   private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
+  private conflictHandler: (options: ConflictHandlerOptions) => Promise<void>;
 
   /**
    * Creates a catalog builder.
@@ -188,6 +189,7 @@ export class CatalogBuilder {
     this.parser = undefined;
     this.permissionRules = Object.values(catalogPermissionRules);
     this.allowedLocationType = ['url'];
+    this.conflictHandler = () => Promise.resolve();
   }
 
   /**
@@ -409,6 +411,13 @@ export class CatalogBuilder {
     return this;
   }
 
+  setConflictHandler(
+    handler: (options: ConflictHandlerOptions) => Promise<void>,
+  ): CatalogBuilder {
+    this.conflictHandler = handler;
+    return this;
+  }
+
   /**
    * Enables the legacy behaviour of canceling validation early whenever only a
    * single processor declares an entity kind to be valid.
@@ -421,9 +430,7 @@ export class CatalogBuilder {
   /**
    * Wires up and returns all of the component parts of the catalog
    */
-  async build(
-    conflictHandler?: (options: ConflictHandlerOptions) => Promise<void>,
-  ): Promise<{
+  async build(): Promise<{
     processingEngine: CatalogProcessingEngine;
     router: Router;
   }> {
@@ -527,7 +534,7 @@ export class CatalogBuilder {
       stitcher,
       () => createHash('sha1'),
       1000,
-      conflictHandler,
+      this.conflictHandler,
       event => {
         this.onProcessingError?.(event);
       },
