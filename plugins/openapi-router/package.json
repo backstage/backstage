@@ -1,6 +1,6 @@
 {
-  "name": "@backstage/plugin-openapi-router",
-  "description": "OpenAPI router with type completions.",
+  "name": "@backstage/backend-openapi-utils",
+  "description": "OpenAPI typescript support.",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -12,7 +12,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "node-library"
   },
   "scripts": {
     "start": "backstage-cli package start",

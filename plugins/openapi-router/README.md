@@ -8,7 +8,7 @@ This package is meant to provide a typed Express router for an OpenAPI spec. Spe
 
 ### Configuration
 
-In your plugin's `schema/openapi`,
+In your plugin's `schema/openapi.ts`,
 
 ```ts
 export default {
@@ -34,7 +34,7 @@ export function createRouter(){
 1. OpenAPI definitions must be converted to Typescript files
    From [#32063](https://github.com/microsoft/TypeScript/issues/32063), we cannot import JSON `as const`. If we could, this would allow us to force all specs to be JSON and then just import from a spec.
 2. `as const` makes all fields `readonly`
-   To ensure a good DX of
+   To ensure a good DX of using a simple imported JSON spec, we want to remove any type issues between `readonly` arrays and mutable arrays. Typescript does not allow them to be compared, so converting all imports from the `openapi3-ts` library to `readonly` is important.
 
 ```tsx
 ...

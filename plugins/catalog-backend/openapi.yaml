@@ -731,9 +731,18 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                type: string
+              type: object
+              required:
+                - entityRefs
+              properties:
+                entityRefs:
+                  type: array
+                  items:
+                    type: string
+                fields:
+                  type: array
+                  items:
+                    type: string
   /entities/by-query:
     get:
       operationId: GetEntitiesByQuery
@@ -768,15 +777,6 @@ paths:
               type: string
           explode: false
           style: form
-
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
   /entity-facets:
     get:
       operationId: GetEntityFacets

@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -54,7 +55,6 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
-    "@backstage/plugin-openapi-router": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
@@ -71,7 +71,6 @@
     "fs-extra": "10.1.0",
     "git-url-parse": "^13.0.0",
     "glob": "^7.1.6",
-    "js-yaml": "^4.1.0",
     "knex": "^2.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",

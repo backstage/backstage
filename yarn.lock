@@ -3929,6 +3929,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/backend-openapi-utils@workspace:^, @backstage/backend-openapi-utils@workspace:plugins/openapi-router":
+  version: 0.0.0-use.local
+  resolution: "@backstage/backend-openapi-utils@workspace:plugins/openapi-router"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@types/express": ^4.17.6
+    "@types/express-serve-static-core": ^4.17.33
+    expect-type: ^0.15.0
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    json-schema-to-ts: ^2.6.2
+    openapi-types: ^12.1.0
+    openapi3-ts: ^3.1.2
+    ts-node: ^10.9.1
+    winston: ^3.8.2
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/backend-plugin-api@workspace:^, @backstage/backend-plugin-api@workspace:packages/backend-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-plugin-api@workspace:packages/backend-plugin-api"
@@ -5691,6 +5711,7 @@ __metadata:
   resolution: "@backstage/plugin-catalog-backend@workspace:plugins/catalog-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
@@ -5701,7 +5722,6 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
-    "@backstage/plugin-openapi-router": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
@@ -5725,7 +5745,6 @@ __metadata:
     fs-extra: 10.1.0
     git-url-parse: ^13.0.0
     glob: ^7.1.6
-    js-yaml: ^4.1.0
     knex: ^2.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -7791,26 +7810,6 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  languageName: unknown
-  linkType: soft
-
-"@backstage/plugin-openapi-router@workspace:^, @backstage/plugin-openapi-router@workspace:plugins/openapi-router":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-openapi-router@workspace:plugins/openapi-router"
-  dependencies:
-    "@backstage/backend-common": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@types/express": ^4.17.6
-    "@types/express-serve-static-core": ^4.17.33
-    expect-type: ^0.15.0
-    express: ^4.17.1
-    express-promise-router: ^4.1.0
-    json-schema-to-ts: ^2.6.2
-    openapi-types: ^12.1.0
-    openapi3-ts: ^3.1.2
-    ts-node: ^10.9.1
-    winston: ^3.8.2
-    yn: ^4.0.0
   languageName: unknown
   linkType: soft
 

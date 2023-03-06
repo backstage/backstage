@@ -934,9 +934,21 @@ export default {
           content: {
             'application/json': {
               schema: {
-                type: 'array',
-                items: {
-                  type: 'string',
+                type: 'object',
+                required: ['entityRefs'],
+                properties: {
+                  entityRefs: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                  },
+                  fields: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                  },
                 },
               },
             },
@@ -1003,19 +1015,6 @@ export default {
             style: 'form',
           },
         ],
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-        },
       },
     },
     '/entity-facets': {
