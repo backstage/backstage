@@ -75,11 +75,8 @@ export interface SearchIndexBuilderService {
 export interface SearchIndexRegistryExtensionPoint {
   addCollator(options: RegisterCollatorParameters): void;
   addDecorator(options: RegisterDecoratorParameters): void;
-  getCollators(): RegisterCollatorParameters[];
-  getDecorators(): RegisterDecoratorParameters[];
 }
 
 export interface SearchEngineRegistryExtensionPoint {
   setSearchEngine(searchEngine: SearchEngine): void;
-  getSearchEngine(): SearchEngine | null;
 }
