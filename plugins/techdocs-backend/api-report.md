@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
@@ -128,6 +129,9 @@ export type TechDocsCollatorOptions = {
 };
 
 export { TechDocsDocument };
+
+// @public
+export const techdocsPlugin: () => BackendFeature;
 
 export * from '@backstage/plugin-techdocs-node';
 ```

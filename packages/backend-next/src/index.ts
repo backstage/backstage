@@ -19,6 +19,7 @@ import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend/
 import { createBackend } from '@backstage/backend-defaults';
 import { appPlugin } from '@backstage/plugin-app-backend/alpha';
 import { todoPlugin } from '@backstage/plugin-todo-backend';
+import { techdocsPlugin } from '@backstage/plugin-techdocs-backend';
 
 const backend = createBackend();
 
@@ -26,4 +27,5 @@ backend.add(catalogPlugin());
 backend.add(catalogModuleTemplateKind());
 backend.add(appPlugin({ appPackageName: 'example-app' }));
 backend.add(todoPlugin());
+backend.add(techdocsPlugin());
 backend.start();

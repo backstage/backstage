@@ -37,6 +37,7 @@ export type {
   TechDocsCollatorFactoryOptions,
   TechDocsCollatorOptions,
 } from './search';
+export { techdocsPlugin } from './plugin';
 
 /**
  * @deprecated Use directly from @backstage/plugin-techdocs-node
