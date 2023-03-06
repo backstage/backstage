@@ -144,6 +144,7 @@ export class CatalogBuilder {
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder;
   replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder;
   setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder;
+  setCatalogDatabase(database: CatalogDatabase): CatalogBuilder;
   setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder;
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): CatalogBuilder;
@@ -155,6 +156,8 @@ export class CatalogBuilder {
     processingInterval: ProcessingIntervalFunction,
   ): CatalogBuilder;
   setProcessingIntervalSeconds(seconds: number): CatalogBuilder;
+  setProcessorDatabase(database: ProcessingDatabase): CatalogBuilder;
+  setProviderDatabase(database: ProviderDatabase): CatalogBuilder;
   // (undocumented)
   subscribe(options: {
     onProcessingError: (event: {
@@ -188,9 +191,6 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
-  processingDatabase?: ProcessingDatabase;
-  providerDatabase?: ProviderDatabase;
-  catalogDatabase?: CatalogDatabase;
 };
 
 // @public

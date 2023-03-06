@@ -120,9 +120,6 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
-  processingDatabase?: ProcessingDatabase;
-  providerDatabase?: ProviderDatabase;
-  catalogDatabase?: CatalogDatabase;
 };
 
 /**
@@ -174,6 +171,9 @@ export class CatalogBuilder {
   private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
+  private providerDatabase: ProviderDatabase | undefined;
+  private processingDatabase: ProcessingDatabase | undefined;
+  private catalogDatabase: CatalogDatabase | undefined;
 
   /**
    * Creates a catalog builder.
@@ -195,6 +195,9 @@ export class CatalogBuilder {
     this.parser = undefined;
     this.permissionRules = Object.values(catalogPermissionRules);
     this.allowedLocationType = ['url'];
+    this.providerDatabase = undefined;
+    this.processingDatabase = undefined;
+    this.catalogDatabase = undefined;
   }
 
   /**
@@ -245,6 +248,30 @@ export class CatalogBuilder {
    */
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): CatalogBuilder {
     this.locationAnalyzer = locationAnalyzer;
+    return this;
+  }
+
+  /**
+   * Overwrites the default provider database.
+   */
+  setProviderDatabase(database: ProviderDatabase): CatalogBuilder {
+    this.providerDatabase = database;
+    return this;
+  }
+
+  /**
+   * Overwrites the default processing database.
+   */
+  setProcessorDatabase(database: ProcessingDatabase): CatalogBuilder {
+    this.processingDatabase = database;
+    return this;
+  }
+
+  /**
+   * Overwrites the default catalog database.
+   */
+  setCatalogDatabase(database: CatalogDatabase): CatalogBuilder {
+    this.catalogDatabase = database;
     return this;
   }
 
@@ -433,7 +460,6 @@ export class CatalogBuilder {
     router: Router;
   }> {
     const { config, database, logger, permissions } = this.env;
-    let { processingDatabase, providerDatabase, catalogDatabase } = this.env;
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -445,21 +471,21 @@ export class CatalogBuilder {
       await applyDatabaseMigrations(dbClient);
     }
 
-    processingDatabase =
-      processingDatabase ??
+    const processingDatabase =
+      this.processingDatabase ??
       new DefaultProcessingDatabase({
         database: dbClient,
         logger,
         refreshInterval: this.processingInterval,
       });
-    providerDatabase =
-      providerDatabase ??
+    const providerDatabase =
+      this.providerDatabase ??
       new DefaultProviderDatabase({
         database: dbClient,
         logger,
       });
-    catalogDatabase =
-      catalogDatabase ??
+    const catalogDatabase =
+      this.catalogDatabase ??
       new DefaultCatalogDatabase({
         database: dbClient,
         logger,
