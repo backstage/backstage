@@ -45,9 +45,11 @@ export type onSignInFailure = () => void;
 export type onSignInStarted = () => void;
 
 export type ProviderComponent = ComponentType<
-  { onSignInStarted: onSignInStarted } & {
-    onSignInFailure: onSignInFailure;
-  } & SignInPageProps & { config: SignInProviderConfig }
+  SignInPageProps & {
+    config: SignInProviderConfig;
+    onSignInStarted(): void;
+    onSignInFailure(): void;
+  }
 >;
 
 export type ProviderLoader = (

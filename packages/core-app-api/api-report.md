@@ -535,7 +535,7 @@ export class OneLoginAuth {
 
 // @public
 export type OneLoginAuthCreateOptions = {
-  configApi: ConfigApi;
+  configApi?: ConfigApi;
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;

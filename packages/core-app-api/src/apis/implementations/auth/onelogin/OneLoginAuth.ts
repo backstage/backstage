@@ -28,7 +28,7 @@ import { OAuth2 } from '../oauth2';
  * @public
  */
 export type OneLoginAuthCreateOptions = {
-  configApi: ConfigApi;
+  configApi?: ConfigApi;
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
