@@ -1,5 +1,5 @@
 ---
-'@backstage/core-components': minor
+'@backstage/core-components': patch
 ---
 
 Button labels in the sidebar (previously displayed in uppercase) will be displayed in the case that is provided without any transformations.
