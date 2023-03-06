@@ -34,6 +34,7 @@ export async function command(opts: OptionValues): Promise<void> {
   if (role === 'backend') {
     return buildBackend({
       targetDir: paths.targetDir,
+      configPaths: opts.config as string[],
       skipBuildDependencies: Boolean(opts.skipBuildDependencies),
     });
   }

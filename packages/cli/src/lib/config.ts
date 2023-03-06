@@ -38,7 +38,7 @@ export async function loadCliConfig(options: Options) {
   const configTargets: ConfigTarget[] = [];
   options.args.forEach(arg => {
     if (!isValidUrl(arg)) {
-      configTargets.push({ path: paths.resolveTarget(arg) });
+      configTargets.push({ path: paths.resolveTargetRoot(arg) });
     }
   });
 
