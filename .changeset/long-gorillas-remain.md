@@ -1,11 +1,9 @@
 ---
-'@backstage/core-components': minor
-'@backstage/core-plugin-api': minor
-'@backstage/plugin-gitops-profiles': minor
+'@backstage/core-components': patch
 '@backstage/app-defaults': minor
 '@backstage/core-app-api': minor
-'@backstage/plugin-auth-backend': minor
+'@backstage/plugin-auth-backend': patch
 '@backstage/test-utils': minor
 ---
 
-Introduce a new global config parameter, "enableExperimentalRedirectFlow" When enabled, instead of having a popup window where the authentication takes place, backstage will redirect to the authentication backend plugin, followed by a redirect back to the backstage frontend after authentication takes place.
+Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
