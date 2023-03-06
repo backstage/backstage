@@ -15,19 +15,42 @@
  */
 
 import { Logger } from 'winston';
+
 import {
   createServiceRef,
   createServiceFactory,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { DocumentTypeInfo } from '@backstage/plugin-search-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
+import {
+  DocumentTypeInfo,
+  SearchEngine,
+} from '@backstage/plugin-search-common';
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+
+import {
+  RegisterCollatorParameters,
+  RegisterDecoratorParameters,
+} from './types';
+
 import { IndexBuilder } from './IndexBuilder';
 import { Scheduler } from './Scheduler';
-import {
-  IndexBuilderServiceBuildOptions,
-  SearchIndexBuilderService,
-} from './types';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+
+export interface SearchIndexBuilderService {
+  build(options: IndexBuilderServiceBuildOptions): Promise<{
+    scheduler: Scheduler;
+  }>;
+  getDocumentTypes(): Record<string, DocumentTypeInfo>;
+}
+
+export interface SearchIndexRegistryExtensionPoint {
+  addCollator(options: RegisterCollatorParameters): void;
+  addDecorator(options: RegisterDecoratorParameters): void;
+}
+
+export interface SearchEngineRegistryExtensionPoint {
+  setSearchEngine(searchEngine: SearchEngine): void;
+}
 
 type DefaultSearchIndexBuilderServiceOptions = {
   logger: Logger;
@@ -85,3 +108,19 @@ export const searchIndexBuilderService =
         },
       }),
   });
+
+export const searchEngineRegistryExtensionPoint =
+  createExtensionPoint<SearchEngineRegistryExtensionPoint>({
+    id: 'search.engine.registry',
+  });
+
+export const searchIndexRegistryExtensionPoint =
+  createExtensionPoint<SearchIndexRegistryExtensionPoint>({
+    id: 'search.index.registry',
+  });
+
+export type IndexBuilderServiceBuildOptions = {
+  searchEngine: SearchEngine;
+  collators: RegisterCollatorParameters[];
+  decorators: RegisterDecoratorParameters[];
+};

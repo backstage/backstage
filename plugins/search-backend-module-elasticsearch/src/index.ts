@@ -23,7 +23,6 @@
 export {
   decodeElasticSearchPageCursor,
   ElasticSearchSearchEngine,
-  elasticSearchEngineModule,
   isOpenSearchCompatible,
 } from './engines';
 export type {

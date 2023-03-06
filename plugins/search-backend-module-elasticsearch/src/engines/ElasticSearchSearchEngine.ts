@@ -30,17 +30,9 @@ import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchCustomIndexTemplate } from './types';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 import { Logger } from 'winston';
-import {
-  MissingIndexError,
-  searchEngineRegistryExtensionPoint,
-} from '@backstage/plugin-search-backend-node';
+import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
 import { v4 as uuid } from 'uuid';
-import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 export type { ElasticSearchClientOptions };
 
@@ -529,40 +521,3 @@ export async function createElasticSearchClientOptions(
       : {}),
   };
 }
-
-export type ElasticSearchEngineModuleOptions = {
-  translator?: ElasticSearchQueryTranslator;
-  indexTemplate?: ElasticSearchCustomIndexTemplate;
-};
-
-export const elasticSearchEngineModule = createBackendModule(
-  (options?: ElasticSearchEngineModuleOptions) => ({
-    moduleId: 'elasticSearchEngineModule',
-    pluginId: 'search',
-    register(env) {
-      env.registerInit({
-        deps: {
-          searchEngineRegistry: searchEngineRegistryExtensionPoint,
-          logger: coreServices.logger,
-          config: coreServices.config,
-        },
-        async init({ searchEngineRegistry, logger, config }) {
-          const searchEngine = await ElasticSearchSearchEngine.fromConfig({
-            logger: loggerToWinstonLogger(logger),
-            config: config,
-          });
-          searchEngineRegistry.setSearchEngine(searchEngine);
-          // set custom translator if available
-          if (options?.translator) {
-            searchEngine.setTranslator(options.translator);
-          }
-
-          // set custom index template if available
-          if (options?.indexTemplate) {
-            searchEngine.setIndexTemplate(options.indexTemplate);
-          }
-        },
-      });
-    },
-  }),
-);

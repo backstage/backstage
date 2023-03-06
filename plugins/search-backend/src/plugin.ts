@@ -20,15 +20,17 @@ import {
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
+  RegisterCollatorParameters,
+  RegisterDecoratorParameters,
+  LunrSearchEngine,
+} from '@backstage/plugin-search-backend-node';
+import {
   searchIndexBuilderService,
   searchIndexRegistryExtensionPoint,
   SearchIndexRegistryExtensionPoint,
-  searchEngineRegistryExtensionPoint,
-  RegisterCollatorParameters,
-  RegisterDecoratorParameters,
   SearchEngineRegistryExtensionPoint,
-  LunrSearchEngine,
-} from '@backstage/plugin-search-backend-node';
+  searchEngineRegistryExtensionPoint,
+} from '@backstage/plugin-search-backend-node/alpha';
 
 import { createRouter } from './service/router';
 import { SearchEngine } from '@backstage/plugin-search-common';

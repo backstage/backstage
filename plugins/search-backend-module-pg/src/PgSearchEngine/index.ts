@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { PgSearchEngine, pgSearchEngineModule } from './PgSearchEngine';
+export { PgSearchEngine } from './PgSearchEngine';
 export type {
   ConcretePgSearchQuery,
   PgSearchQueryTranslatorOptions,

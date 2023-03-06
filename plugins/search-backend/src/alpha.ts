@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import {
-  SearchEngineRegistryExtensionPoint,
-  SearchIndexRegistryExtensionPoint,
-} from './types';
-
-export const searchEngineRegistryExtensionPoint =
-  createExtensionPoint<SearchEngineRegistryExtensionPoint>({
-    id: 'search.engine.registry',
-  });
-
-export const searchIndexRegistryExtensionPoint =
-  createExtensionPoint<SearchIndexRegistryExtensionPoint>({
-    id: 'search.index.registry',
-  });
+export { searchPlugin } from './plugin';

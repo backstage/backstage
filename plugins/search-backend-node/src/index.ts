@@ -33,15 +33,9 @@ export type {
   IndexBuilderOptions,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
-  SearchIndexRegistryExtensionPoint,
-  SearchEngineRegistryExtensionPoint,
 } from './types';
 export * from './errors';
 export * from './indexing';
 export * from './test-utils';
 
 export type { ScheduleTaskParameters } from './Scheduler';
-
-// TODO: export as alfa subpath
-export * from './services';
-export * from './extensions';

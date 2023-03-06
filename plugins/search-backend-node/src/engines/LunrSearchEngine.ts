@@ -30,7 +30,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { searchEngineRegistryExtensionPoint } from '../extensions';
+import { searchEngineRegistryExtensionPoint } from '../alpha';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 /**

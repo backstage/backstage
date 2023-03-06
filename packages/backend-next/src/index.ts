@@ -20,7 +20,7 @@ import { createBackend } from '@backstage/backend-defaults';
 import { appPlugin } from '@backstage/plugin-app-backend/alpha';
 import { todoPlugin } from '@backstage/plugin-todo-backend';
 import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
-import { searchPlugin } from '@backstage/plugin-search-backend';
+import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
 import { searchIndexRegistry } from './plugins/search';
 
 const backend = createBackend();
