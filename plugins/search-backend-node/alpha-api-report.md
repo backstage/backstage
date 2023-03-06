@@ -56,7 +56,7 @@ export interface SearchIndexService {
 }
 
 // @alpha
-export const searchIndexService: ServiceRef<SearchIndexService, 'plugin'>;
+export const searchIndexServiceRef: ServiceRef<SearchIndexService, 'plugin'>;
 
 // (No @packageDocumentation comment for this package)
 ```
