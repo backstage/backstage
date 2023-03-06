@@ -131,9 +131,7 @@ export class CatalogBuilder {
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
   ): CatalogBuilder;
-  build(
-    conflictHandler?: (options: ConflictHandlerOptions) => Promise<void>,
-  ): Promise<{
+  build(): Promise<{
     processingEngine: CatalogProcessingEngine;
     router: Router;
   }>;
@@ -142,6 +140,10 @@ export class CatalogBuilder {
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder;
   replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder;
   setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder;
+  // (undocumented)
+  setConflictHandler(
+    handler: (options: ConflictHandlerOptions) => Promise<void>,
+  ): CatalogBuilder;
   setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder;
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): CatalogBuilder;
