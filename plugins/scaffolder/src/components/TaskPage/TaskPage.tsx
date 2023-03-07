@@ -50,8 +50,8 @@ import useInterval from 'react-use/lib/useInterval';
 import {
   ScaffolderTaskStatus,
   ScaffolderTaskOutput,
+  useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
-import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskErrors } from './TaskErrors';
 import { TaskPageLinks } from './TaskPageLinks';
 import {
@@ -243,7 +243,9 @@ export type TaskPageProps = {
  *
  * @public
  */
-export const TaskPage = ({ loadingText }: TaskPageProps) => {
+export const TaskPage = (props: TaskPageProps) => {
+  const { loadingText } = props;
+
   const classes = useStyles();
   const navigate = useNavigate();
   const rootPath = useRouteRef(rootRouteRef);

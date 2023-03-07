@@ -1,0 +1,61 @@
+{
+  "name": "@backstage/plugin-catalog-backend-module-puppetdb",
+  "description": "A Backstage catalog backend module that helps integrate towards PuppetDB",
+  "version": "0.1.0-next.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-puppetdb"
+  },
+  "keywords": [
+    "backstage",
+    "puppetdb",
+    "puppet"
+  ],
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
+    "node-fetch": "^2.6.7",
+    "uuid": "^8.0.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/lodash": "^4.14.151",
+    "msw": "^0.49.0"
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
+}

@@ -18,12 +18,12 @@ import {
   NextCustomFieldValidator,
   NextFieldExtensionOptions,
   NextFieldExtensionComponentProps,
+  NextFieldExtensionUiSchema,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { UIOptionsType } from '@rjsf/utils';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
 import { FIELD_EXTENSION_KEY } from '../../extensions/keys';
+import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
 
 /**
  * Method for creating field extensions that can be used in the scaffolder
@@ -55,4 +55,5 @@ export type {
   NextCustomFieldValidator,
   NextFieldExtensionOptions,
   NextFieldExtensionComponentProps,
+  NextFieldExtensionUiSchema,
 };

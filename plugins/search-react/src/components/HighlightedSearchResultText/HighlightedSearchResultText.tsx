@@ -38,16 +38,17 @@ export type HighlightedSearchResultTextProps = {
 /**
  * @public
  */
-export const HighlightedSearchResultText = ({
-  text,
-  preTag,
-  postTag,
-}: HighlightedSearchResultTextProps) => {
+export const HighlightedSearchResultText = (
+  props: HighlightedSearchResultTextProps,
+) => {
+  const { text, preTag, postTag } = props;
+
   const classes = useStyles();
   const terms = useMemo(
     () => text.split(new RegExp(`(${preTag}.+?${postTag})`)),
     [postTag, preTag, text],
   );
+
   return (
     <>
       {terms.map((t, idx) =>

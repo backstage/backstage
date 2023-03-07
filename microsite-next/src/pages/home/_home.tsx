@@ -188,7 +188,7 @@ const HomePage = () => {
             <h1>Learn more about the software catalog</h1>
 
             <Link
-              to="https://backstage.io/docs/features/software-catalog/software-catalog-overview"
+              to="https://backstage.io/docs/features/software-catalog/"
               className="button button--secondary"
             >
               READ
@@ -312,7 +312,7 @@ const HomePage = () => {
             <h1>Learn more about TechDocs</h1>
 
             <Link
-              to="https://backstage.io/docs/features/techdocs/techdocs-overview"
+              to="https://backstage.io/docs/features/techdocs/"
               className="button button--secondary"
             >
               DOCS
@@ -373,7 +373,7 @@ const HomePage = () => {
             <h1>Learn more about Backstage Search</h1>
 
             <Link
-              to="https://backstage.io/docs/features/search/search-overview"
+              to="https://backstage.io/docs/features/search/"
               className="button button--secondary"
             >
               READ

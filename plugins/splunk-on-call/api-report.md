@@ -214,19 +214,12 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
   // (undocumented)
   getUsers(): Promise<User[]>;
   // (undocumented)
-  incidentAction({
-    routingKey,
-    incidentType,
-    incidentId,
-    incidentDisplayName,
-    incidentMessage,
-    incidentStartTime,
-  }: TriggerAlarmRequest): Promise<Response>;
+  incidentAction(options: TriggerAlarmRequest): Promise<Response>;
 }
 
 // @public (undocumented)
 export const SplunkOnCallPage: {
-  ({ title, subtitle, pageTitle }: SplunkOnCallPageProps): JSX.Element;
+  (props: SplunkOnCallPageProps): JSX.Element;
   defaultProps: {
     title: string;
     subtitle: string;

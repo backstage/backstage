@@ -29,11 +29,9 @@ export class DefaultIdentityClient implements IdentityApi {
   authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
   static create(options: IdentityClientOptions): DefaultIdentityClient;
   // (undocumented)
-  getIdentity({
-    request,
-  }: IdentityApiGetIdentityRequest): Promise<
-    BackstageIdentityResponse | undefined
-  >;
+  getIdentity(
+    options: IdentityApiGetIdentityRequest,
+  ): Promise<BackstageIdentityResponse | undefined>;
 }
 
 // @public

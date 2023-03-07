@@ -8,7 +8,7 @@ description: TechDocs CLI - a utility command line interface for managing TechDo
 Utility command line interface for managing TechDocs sites in
 [Backstage](https://github.com/backstage/backstage).
 
-https://backstage.io/docs/features/techdocs/techdocs-overview
+https://backstage.io/docs/features/techdocs/
 
 ## Features
 
@@ -176,29 +176,28 @@ Usage: techdocs-cli publish [options]
 Publish generated TechDocs site to an external storage AWS S3, Google GCS, etc.
 
 Options:
-  --publisher-type <TYPE>                  (Required always) awsS3 | googleGcs | azureBlobStorage
-                                           - same as techdocs.publisher.type in Backstage
-                                           app-config.yaml
-  --storage-name <BUCKET/CONTAINER NAME>   (Required always) In case of AWS/GCS, use the bucket
-                                           name. In case of Azure, use container name. Same as
-                                           techdocs.publisher.[TYPE].bucketName
-  --entity <NAMESPACE/KIND/NAME>           (Required always) Entity uid separated by / in
-                                           namespace/kind/name order (case-sensitive). Example:
-                                           default/Component/myEntity
-  --legacyUseCaseSensitiveTripletPaths     Publishes objects with cased entity triplet prefix when set (e.g. namespace/Kind/name).
-                                           Only use if your TechDocs backend is configured the same way
-  --azureAccountName <AZURE ACCOUNT NAME>  (Required for Azure) specify when --publisher-type
-                                           azureBlobStorage
-  --azureAccountKey <AZURE ACCOUNT KEY>    Azure Storage Account key to use for authentication.
-                                           If not specified, you must set AZURE_TENANT_ID,
-                                           AZURE_CLIENT_ID & AZURE_CLIENT_SECRET as environment
-                                           variables.
-  --awsRoleArn <AWS ROLE ARN>              Optional AWS ARN of role to be assumed.
-  --awsEndpoint <AWS ENDPOINT>             Optional AWS endpoint to send requests to.
-  --awsS3ForcePathStyle                    Optional AWS S3 option to force path style.
-  --directory <PATH>                       Path of the directory containing generated files to
-                                           publish (default: "./site/")
-  -h, --help                               display help for command
+  --publisher-type <TYPE>                                       (Required always) awsS3 | googleGcs | azureBlobStorage | openStackSwift - same as techdocs.publisher.type in Backstage app-config.yaml
+  --storage-name <BUCKET/CONTAINER NAME>                        (Required always) In case of AWS/GCS, use the bucket name. In case of Azure, use container name. Same as
+                                                                techdocs.publisher.[TYPE].bucketName
+  --entity <NAMESPACE/KIND/NAME>                                (Required always) Entity uid separated by / in namespace/kind/name order (case-sensitive). Example: default/Component/myEntity
+  --legacyUseCaseSensitiveTripletPaths                          Publishes objects with cased entity triplet prefix when set (e.g. namespace/Kind/name). Only use if your TechDocs backend is configured
+                                                                the same way. (default: false)
+  --azureAccountName <AZURE ACCOUNT NAME>                       (Required for Azure) specify when --publisher-type azureBlobStorage
+  --azureAccountKey <AZURE ACCOUNT KEY>                         Azure Storage Account key to use for authentication. If not specified, you must set AZURE_TENANT_ID, AZURE_CLIENT_ID &
+                                                                AZURE_CLIENT_SECRET as environment variables.
+  --awsRoleArn <AWS ROLE ARN>                                   Optional AWS ARN of role to be assumed.
+  --awsEndpoint <AWS ENDPOINT>                                  Optional AWS endpoint to send requests to.
+  --awsProxy <HTTPS Proxy>                                      Optional Proxy to use for AWS requests.
+  --awsS3sse <AWS SSE>                                          Optional AWS S3 Server Side Encryption.
+  --awsS3ForcePathStyle                                         Optional AWS S3 option to force path style.
+  --awsBucketRootPath <AWS BUCKET ROOT PATH>                    Optional sub-directory to store files in Amazon S3
+  --osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>  (Required for OpenStack) specify when --publisher-type openStackSwift
+  --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>    (Required for OpenStack) specify when --publisher-type openStackSwift
+  --osAuthUrl <OPENSTACK SWIFT AUTHURL>                         (Required for OpenStack) specify when --publisher-type openStackSwift
+  --osSwiftUrl <OPENSTACK SWIFT SWIFTURL>                       (Required for OpenStack) specify when --publisher-type openStackSwift
+  --gcsBucketRootPath <GCS BUCKET ROOT PATH>                    Optional sub-directory to store files in Google cloud storage
+  --directory <PATH>                                            Path of the directory containing generated files to publish (default: "./site/")
+  -h, --help                                                    display help for command
 ```
 
 ### Migrate content for case-insensitive access

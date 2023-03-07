@@ -20,11 +20,11 @@ The permissions framework depends on a few other Backstage systems, which must b
 
 The permissions framework itself is new to Backstage and still evolving quickly. To ensure your version of Backstage has all the latest permission-related functionality, it’s important to upgrade to the latest version. The [Backstage upgrade helper](https://backstage.github.io/upgrade-helper/) is a great tool to help ensure that you’ve made all the necessary changes during the upgrade!
 
-### Enable backend-to-backend authentication
+### Enable service-to-service authentication
 
-Backend-to-backend authentication allows Backstage backend code to verify that a given request originates from elsewhere in the Backstage backend. This is useful for tasks like collation of catalog entities in the search index. This type of request shouldn’t be permissioned, so it’s important to configure this feature before trying to use the permissions framework.
+Service-to-service authentication allows Backstage backend code to verify that a given request originates from elsewhere in the Backstage backend. This is useful for tasks like collation of catalog entities in the search index. This type of request shouldn’t be permissioned, so it’s important to configure this feature before trying to use the permissions framework.
 
-To set up backend-to-backend authentication, follow the [backend-to-backend authentication docs](../tutorials/backend-to-backend-auth.md).
+To set up service-to-service authentication, follow the [service-to-service authentication docs](../auth/service-to-service-auth.md).
 
 ### Supply an identity resolver to populate group membership on sign in
 

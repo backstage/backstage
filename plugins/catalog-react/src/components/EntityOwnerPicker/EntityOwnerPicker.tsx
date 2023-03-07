@@ -108,6 +108,7 @@ export const EntityOwnerPicker = () => {
         Owner
         <Autocomplete
           multiple
+          disableCloseOnSelect
           options={availableOwners}
           value={selectedOwners}
           onChange={(_: object, value: string[]) => setSelectedOwners(value)}

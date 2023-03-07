@@ -15,14 +15,13 @@
  */
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { JsonObject } from '@backstage/types';
 import { TemplateActionRegistry } from '../actions';
 
 /** @internal */
 export class DecoratedActionsRegistry extends TemplateActionRegistry {
   constructor(
     private readonly innerRegistry: TemplateActionRegistry,
-    extraActions: Array<TemplateAction<JsonObject>>,
+    extraActions: Array<TemplateAction>,
   ) {
     super();
     for (const action of extraActions) {
@@ -30,7 +29,7 @@ export class DecoratedActionsRegistry extends TemplateActionRegistry {
     }
   }
 
-  get(actionId: string): TemplateAction<JsonObject> {
+  get(actionId: string): TemplateAction {
     try {
       return super.get(actionId);
     } catch {

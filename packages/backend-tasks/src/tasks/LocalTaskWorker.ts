@@ -39,8 +39,9 @@ export class LocalTaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
-    let attemptNum = 1;
+
     (async () => {
+      let attemptNum = 1;
       for (;;) {
         try {
           if (settings.initialDelayDuration) {
@@ -60,6 +61,7 @@ export class LocalTaskWorker {
               options?.signal,
             );
           }
+
           this.logger.info(`Task worker finished: ${this.taskId}`);
           attemptNum = 0;
           break;

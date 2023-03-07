@@ -48,9 +48,9 @@ export type TechDocsReaderProviderProps = {
  *
  * @public
  */
-export const TechDocsReaderProvider = ({
-  children,
-}: TechDocsReaderProviderProps) => {
+export const TechDocsReaderProvider = (props: TechDocsReaderProviderProps) => {
+  const { children } = props;
+
   const { '*': path = '' } = useParams();
   const { entityRef } = useTechDocsReaderPage();
   const { kind, namespace, name } = entityRef;

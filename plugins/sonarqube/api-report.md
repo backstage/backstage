@@ -44,10 +44,7 @@ export const SonarQubeCard: (props: {
 
 // @public (undocumented)
 export class SonarQubeClient implements SonarQubeApi {
-  constructor({
-    discoveryApi,
-    identityApi,
-  }: {
+  constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
   });

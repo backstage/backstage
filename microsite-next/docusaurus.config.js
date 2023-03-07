@@ -96,6 +96,33 @@ module.exports = {
         };
       },
     }),
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            from: '/docs',
+            to: '/docs/overview/what-is-backstage',
+          },
+          {
+            from: '/docs/features/software-catalog/software-catalog-overview',
+            to: '/docs/features/software-catalog/',
+          },
+          {
+            from: '/docs/features/software-templates/software-templates-index',
+            to: '/docs/features/software-templates/',
+          },
+          {
+            from: '/docs/features/techdocs/techdocs-overview',
+            to: '/docs/features/techdocs/',
+          },
+          {
+            from: '/docs/features/search/search-overview',
+            to: '/docs/features/search/',
+          },
+        ],
+      },
+    ],
   ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
@@ -170,7 +197,7 @@ module.exports = {
               },
               {
                 label: 'Software Catalog',
-                to: 'docs/features/software-catalog/software-catalog-overview',
+                to: 'docs/features/software-catalog/',
               },
               {
                 label: 'Create a Plugin',

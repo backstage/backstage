@@ -70,7 +70,7 @@ describe('ServerPermissionClient', () => {
         tokenManager: ServerTokenManager.noop(),
       }),
     ).toThrow(
-      'Backend-to-backend authentication must be configured before enabling permissions. Read more here https://backstage.io/docs/tutorials/backend-to-backend-auth',
+      'Service-to-service authentication must be configured before enabling permissions. Read more here https://backstage.io/docs/auth/service-to-service-auth',
     );
   });
 

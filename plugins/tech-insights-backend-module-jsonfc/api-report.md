@@ -46,13 +46,7 @@ export interface JsonRuleCheckResponse extends CheckResponse {
 export class JsonRulesEngineFactChecker
   implements FactChecker<TechInsightJsonRuleCheck, JsonRuleBooleanCheckResult>
 {
-  constructor({
-    checks,
-    repository,
-    logger,
-    checkRegistry,
-    operators,
-  }: JsonRulesEngineFactCheckerOptions);
+  constructor(options: JsonRulesEngineFactCheckerOptions);
   // (undocumented)
   getChecks(): Promise<TechInsightJsonRuleCheck[]>;
   // (undocumented)
@@ -66,12 +60,7 @@ export class JsonRulesEngineFactChecker
 
 // @public
 export class JsonRulesEngineFactCheckerFactory {
-  constructor({
-    checks,
-    logger,
-    checkRegistry,
-    operators,
-  }: JsonRulesEngineFactCheckerFactoryOptions);
+  constructor(options: JsonRulesEngineFactCheckerFactoryOptions);
   // (undocumented)
   construct(repository: TechInsightsStore): JsonRulesEngineFactChecker;
 }

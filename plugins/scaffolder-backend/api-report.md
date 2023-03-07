@@ -24,6 +24,7 @@ import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
@@ -31,8 +32,11 @@ import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node'
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
+import { ZodType } from 'zod';
+import { ZodTypeDef } from 'zod';
 
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
@@ -40,7 +44,7 @@ export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
 // @public
 export const createBuiltinActions: (
   options: CreateBuiltInActionsOptions,
-) => TemplateAction_2<JsonObject>[];
+) => TemplateAction_2[];
 
 // @public
 export interface CreateBuiltInActionsOptions {
@@ -72,7 +76,7 @@ export function createCatalogRegisterAction(options: {
 // @public
 export function createCatalogWriteAction(): TemplateAction_2<{
   filePath?: string | undefined;
-  entity: Entity;
+  entity: {};
 }>;
 
 // @public
@@ -459,11 +463,9 @@ export function createPublishGithubAction(options: {
 }>;
 
 // @public
-export const createPublishGithubPullRequestAction: ({
-  integrations,
-  githubCredentialsProvider,
-  clientFactory,
-}: CreateGithubPullRequestActionOptions) => TemplateAction_2<{
+export const createPublishGithubPullRequestAction: (
+  options: CreateGithubPullRequestActionOptions,
+) => TemplateAction_2<{
   title: string;
   branchName: string;
   description: string;
@@ -514,9 +516,16 @@ export const createPublishGitlabMergeRequestAction: (options: {
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
-export const createTemplateAction: <TInput extends JsonObject>(
-  templateAction: TemplateAction_2<TInput>,
-) => TemplateAction_2<TInput>;
+export const createTemplateAction: <
+  TParams,
+  TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
+  TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
+  TActionInput = TInputSchema extends ZodType<any, any, infer IReturn>
+    ? IReturn
+    : TParams,
+>(
+  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
+) => TemplateAction_2<TActionInput>;
 
 // @public
 export type CreateWorkerOptions = {
@@ -581,7 +590,7 @@ export class DatabaseTaskStore implements TaskStore {
     }[];
   }>;
   // (undocumented)
-  shutdownTask({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -792,7 +801,7 @@ export interface TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
   // (undocumented)
-  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
+  emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
@@ -802,7 +811,7 @@ export interface TaskStore {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
-  listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
+  listEvents(options: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
   // (undocumented)
@@ -812,7 +821,7 @@ export interface TaskStore {
     }[];
   }>;
   // (undocumented)
-  shutdownTask?({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -863,11 +872,11 @@ export type TemplateAction<TInput extends JsonObject> =
 // @public
 export class TemplateActionRegistry {
   // (undocumented)
-  get(actionId: string): TemplateAction_2<JsonObject>;
+  get(actionId: string): TemplateAction_2;
   // (undocumented)
-  list(): TemplateAction_2<JsonObject>[];
+  list(): TemplateAction_2[];
   // (undocumented)
-  register<TInput extends JsonObject>(action: TemplateAction_2<TInput>): void;
+  register(action: TemplateAction_2): void;
 }
 
 // @public (undocumented)

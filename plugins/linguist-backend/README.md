@@ -85,6 +85,17 @@ return createRouter({ schedule: schedule, age: { days: 30 } }, { ...env });
 
 With the `age` setup like this if the language breakdown is older than 15 days it will get regenerated. It's recommended that if you choose to use this configuration to set it to a large value - 30, 90, or 180 - as this data generally does not change drastically.
 
+## Linguist JS options
+
+The default setup will use the default [linguist-js](https://www.npmjs.com/package/linguist-js) options, a full list of the available options can be found [here](https://www.npmjs.com/package/linguist-js#API).
+
+```ts
+return createRouter(
+  { schedule: schedule, linguistJsOptions: { offline: true } },
+  { ...env },
+);
+```
+
 ## Use Source Location
 
 You may wish to use the `backstage.io/source-location` annotation over using the `backstage.io/linguist` as you may not be able to quickly add that annotation to your Entities. To do this you'll just need to set the `useSourceLocation` boolean to `true` in your `packages/backend/src/plugins/linguist.ts` when you call `createRouter`:

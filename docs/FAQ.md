@@ -176,7 +176,7 @@ By far, our most-used plugin is our TechDocs plugin, which we use for creating
 technical documentation. Our philosophy at Spotify is to treat "docs like code",
 where you write documentation using the same workflow as you write your code.
 This makes it easier to create, find, and update documentation.
-[TechDocs is now open source.](https://backstage.io/docs/features/techdocs/techdocs-overview)
+[TechDocs is now open source.](https://backstage.io/docs/features/techdocs/)
 (See also:
 "[Will Spotify's internal plugins be open sourced, too?](#will-spotifys-internal-plugins-be-open-sourced-too)"
 above)

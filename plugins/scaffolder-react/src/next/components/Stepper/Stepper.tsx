@@ -26,7 +26,6 @@ import { type IChangeEvent } from '@rjsf/core-v5';
 import { ErrorSchema } from '@rjsf/utils';
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
-import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import {
   createAsyncValidators,
   type FormValidation,
@@ -36,11 +35,14 @@ import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv8';
 import { useFormDataFromQuery } from '../../hooks';
 import { FormProps } from '../../types';
-import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 import { hasErrors } from './utils';
 import * as FieldOverrides from './FieldOverrides';
 import { Form } from '../Form';
+import {
+  TemplateParameterSchema,
+  LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 
 const useStyles = makeStyles(theme => ({
   backButton: {

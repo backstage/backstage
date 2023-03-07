@@ -15,8 +15,8 @@
  */
 import React from 'react';
 import { TaskSteps } from './TaskSteps';
-import { ScaffolderTaskStatus } from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp } from '@backstage/test-utils';
+import { ScaffolderTaskStatus } from '../../../api';
 
 describe('TaskSteps', () => {
   it('should render each of the steps', async () => {

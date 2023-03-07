@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
-import { InfoCardVariants } from '@backstage/core-components';
+import { RELATION_DEPENDS_ON, ResourceEntity } from '@backstage/catalog-model';
+import { InfoCardVariants, TableColumn } from '@backstage/core-components';
 import React from 'react';
 import {
   asResourceEntities,
@@ -27,17 +27,23 @@ import {
 /** @public */
 export interface DependsOnResourcesCardProps {
   variant?: InfoCardVariants;
+  title?: string;
+  columns?: TableColumn<ResourceEntity>[];
 }
 
 export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
-  const { variant = 'gridItem' } = props;
+  const {
+    variant = 'gridItem',
+    title = 'Depends on resources',
+    columns = resourceEntityColumns,
+  } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Depends on resources"
+      title={title}
       entityKind="Resource"
       relationType={RELATION_DEPENDS_ON}
-      columns={resourceEntityColumns}
+      columns={columns}
       emptyMessage="No resource is a dependency of this component"
       emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asResourceEntities}
