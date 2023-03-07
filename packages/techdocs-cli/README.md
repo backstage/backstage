@@ -41,7 +41,8 @@ yarn techdocs-cli:dev [...options]
 ```
 
 ### Connecting behind a proxy
-```sh 
+
+```sh
 # Prior to executing the techdocs-cli command
 export GLOBAL_AGENT_HTTPS_PROXY=${HTTP_PROXY}
 export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}
