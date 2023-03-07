@@ -33,6 +33,7 @@ export interface RouterOptions {
   catalog?: CatalogApi;
   config: Config;
   discovery: PluginEndpointDiscovery;
+  env: any;
 }
 
 /** @public */
@@ -45,14 +46,14 @@ export async function createRouter(
     options.badgeBuilder ||
     new DefaultBadgeBuilder(options.badgeFactories || {});
   const router = Router();
+  const { tokenManager } = options.env;
 
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
+    const token = await tokenManager.getToken();
     const { namespace, kind, name } = req.params;
     const entity = await catalog.getEntityByRef(
       { namespace, kind, name },
-      {
-        token: getBearerToken(req.headers.authorization),
-      },
+      token,
     );
     if (!entity) {
       throw new NotFoundError(
@@ -85,11 +86,10 @@ export async function createRouter(
     '/entity/:namespace/:kind/:name/badge/:badgeId',
     async (req, res) => {
       const { namespace, kind, name, badgeId } = req.params;
+      const token = await tokenManager.getToken();
       const entity = await catalog.getEntityByRef(
         { namespace, kind, name },
-        {
-          token: getBearerToken(req.headers.authorization),
-        },
+        token,
       );
       if (!entity) {
         throw new NotFoundError(
@@ -142,8 +142,4 @@ async function getBadgeUrl(
 ): Promise<string> {
   const baseUrl = await options.discovery.getExternalBaseUrl('badges');
   return `${baseUrl}/entity/${namespace}/${kind}/${name}/badge/${badgeId}`;
-}
-
-function getBearerToken(header?: string): string | undefined {
-  return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }

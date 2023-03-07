@@ -18,6 +18,7 @@ import express from 'express';
 import request from 'supertest';
 import {
   PluginEndpointDiscovery,
+  ServerTokenManager,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -29,6 +30,7 @@ import { BadgeBuilder } from '../lib';
 describe('createRouter', () => {
   let app: express.Express;
   let badgeBuilder: jest.Mocked<BadgeBuilder>;
+
   const catalog = {
     addLocation: jest.fn(),
     getEntities: jest.fn(),
@@ -42,6 +44,7 @@ describe('createRouter', () => {
     getEntityFacets: jest.fn(),
     validateEntity: jest.fn(),
   };
+
   let config: Config;
   let discovery: PluginEndpointDiscovery;
 
@@ -75,13 +78,15 @@ describe('createRouter', () => {
         listen: { port: 7007 },
       },
     });
-    discovery = SingleHostDiscovery.fromConfig(config);
 
+    discovery = SingleHostDiscovery.fromConfig(config);
+    const tokenManager = ServerTokenManager.noop();
     const router = await createRouter({
       badgeBuilder,
       catalog: catalog as Partial<CatalogApi> as CatalogApi,
       config,
       discovery,
+      env: { tokenManager },
     });
     app = express().use(router);
   });
@@ -96,6 +101,7 @@ describe('createRouter', () => {
       catalog: catalog as Partial<CatalogApi> as CatalogApi,
       config,
       discovery,
+      env: {},
     });
     expect(router).toBeDefined();
   });
@@ -121,7 +127,7 @@ describe('createRouter', () => {
           kind: 'service',
           name: 'test',
         },
-        { token: undefined },
+        { token: '' },
       );
 
       expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(1);
@@ -160,7 +166,7 @@ describe('createRouter', () => {
           kind: 'service',
           name: 'test',
         },
-        { token: undefined },
+        { token: '' },
       );
 
       expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(0);
