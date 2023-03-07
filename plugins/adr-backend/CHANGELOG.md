@@ -1,5 +1,15 @@
 # @backstage/plugin-adr-backend
 
+## 0.3.1-next.2
+
+### Patch Changes
+
+- 2a73ded3861: Support MADR v3 format
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
 ## 0.3.1-next.1
 
 ### Patch Changes

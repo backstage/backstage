@@ -1,5 +1,16 @@
 # @backstage/plugin-api-docs
 
+## 0.9.1-next.2
+
+### Patch Changes
+
+- 8bc7dcec820: Fix dark theme Swagger's clear button font color.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/plugin-catalog@1.9.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+
 ## 0.9.1-next.1
 
 ### Patch Changes

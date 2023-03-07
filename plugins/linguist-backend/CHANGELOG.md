@@ -1,5 +1,16 @@
 # @backstage/plugin-linguist-backend
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 8a298b47240: Added support for linguist-js options using the linguistJSOptions in the plugin, the available config can be found [here](https://www.npmjs.com/package/linguist-js#API).
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
 ## 0.2.0-next.1
 
 ### Patch Changes

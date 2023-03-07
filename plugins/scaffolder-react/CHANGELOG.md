@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.2.0-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 3c96e77b513: Make scaffolder adhere to page themes by using page `fontColor` consistently. If your theme overwrites template list or card headers, review those styles.
+- d9893263ba9: scaffolder/next: Fix for steps without properties
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+
 ## 1.2.0-next.1
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.1.4-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.4-next.2
+  - @backstage/config@1.0.7-next.0
+
 ## 1.1.4-next.1
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.5.2-next.2
+
+### Patch Changes
+
+- 26eef93c547: Fixed msgraph catalog backend to use user.select option when fetching user from AzureAD
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/config@1.0.7-next.0
+
 ## 0.5.2-next.1
 
 ### Patch Changes
