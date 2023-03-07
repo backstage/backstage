@@ -24,7 +24,7 @@ import { Task } from '../../lib/tasks';
 import { basename, resolve } from 'path';
 
 const createFile = async (fileName: string) => {
-  const BASE_PATH_OF_DEV_FILES = 'src/commands/deploy/files';
+  const BASE_PATH_OF_DEV_FILES = 'templates/pulumi';
   await Task.forItem('creating', fileName, async () => {
     const content = await fs.readFile(
       paths.resolveOwn(`${BASE_PATH_OF_DEV_FILES}/${fileName}`),
@@ -44,12 +44,6 @@ export default async (opts: OptionValues) => {
     await createFile(pulumiFileName);
   }
 
-  if (!fs.existsSync(opts.dockerfile) && !opts.createDockerfile) {
-    throw new Error(
-      `Didn't find a Dockerfile at ${opts.dockerfile}. Use --create-dockerfile to create one or use --dockerfile to pass in the path of your Dockerfile.`,
-    );
-  }
-
   if (opts.createDockerfile) {
     if (fs.existsSync(opts.dockerfile)) {
       throw new Error(
@@ -61,6 +55,12 @@ export default async (opts: OptionValues) => {
     for (const file of dockerFiles) {
       await createFile(file);
     }
+  }
+
+  if (!fs.existsSync(opts.dockerfile)) {
+    throw new Error(
+      `Didn't find a Dockerfile at ${opts.dockerfile}. Use --create-dockerfile to create one or use --dockerfile to pass in the path of your Dockerfile.`,
+    );
   }
 
   const args = {
