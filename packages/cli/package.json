@@ -30,6 +30,7 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",
