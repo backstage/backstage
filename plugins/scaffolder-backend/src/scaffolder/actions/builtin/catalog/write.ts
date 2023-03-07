@@ -70,6 +70,7 @@ export function createCatalogWriteAction() {
         // TODO: this should reference an zod entity validator if it existed.
         entity: z
           .object({})
+          .passthrough()
           .describe(
             'You can provide the same values used in the Entity schema.',
           ),
