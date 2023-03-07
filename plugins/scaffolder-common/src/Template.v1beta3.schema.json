@@ -16,6 +16,9 @@
         "owner": "artist-relations-team",
         "parameters": {
           "required": ["name", "description", "repoUrl"],
+          "backstage:permissions": {
+            "tags": ["one", "two"]
+          },
           "properties": {
             "name": {
               "title": "Name",
@@ -41,6 +44,9 @@
             "action": "fetch:plain",
             "parameters": {
               "url": "./template"
+            },
+            "backstage:permissions": {
+              "tags": ["one", "two"]
             }
           },
           {
