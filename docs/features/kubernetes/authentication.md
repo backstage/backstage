@@ -55,6 +55,37 @@ To get the API server address for your Azure cluster, go to the Azure console pa
 cluster resource, go to `Overview` > `Properties` tab > `Networking` section and copy paste
 the API server address directly in that `url` field.
 
+### AWS
+
+The Amazon Web Services (AWS) server side authentication provider works by connecting to [AWS IAM (Identity and Access Management)][3], which defines who (users) and what (workloads) can access which AWS resources. AWS IAM users can be granted an *Access Key ID* and *Secret Access Key* for authentication. 
+
+In order for Backstage to read Kubernetes clusters running in AWS [Elastic Kubernetes Service (EKS)][4], your chosen IAM user must also have authorization to view EKS clusters. To do this, create or attach an [EKS IAM policy][5] to your IAM user before proceeding. 
+
+To configure the AWS auth provider with the Kubernetes plugin, add the following to the `auth` section of your Backstage configuration: 
+
+```yaml
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: https://<cluster-name>.<region>.eks.amazonaws.com
+          name: <cluster-name> 
+          authProvider: 'aws'
+          skipTLSVerify: true
+          skipMetricsLookup: true
+auth:
+  environment: 'production'
+  providers:
+    aws:
+      development:
+        accessKeyId: ${AWS_ACCESS_KEY_ID}
+        secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+```
+
+Here, the `accessKeyId` and `secretAccessKey` fields represent the IAM keys for your AWS IAM user with EKS access. We recommend mounting these fields as secrets at runtime, eg. with a secret manager. Do not: hardcode credentials in your Backstage config, push config containing IAM credentials to a repository, or push credentialsto a container registry as part of a prebuilt Backstage image. 
+
 ## Client Side Providers
 
 These providers authenticate your _user_ with the cluster. Each Backstage user will be
@@ -71,3 +102,6 @@ The providers available as client side are:
 
 [1]: https://docs.microsoft.com/en-us/azure/aks/managed-aad
 [2]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
+[3]: https://aws.amazon.com/iam/getting-started/
+[4]: https://aws.amazon.com/eks/
+[5]: https://docs.aws.amazon.com/eks/latest/userguide/security_iam_id-based-policy-examples.html#policy_example2
