@@ -565,7 +565,9 @@ describe('helpers', () => {
       } = await getMkdocsYml(inputDir, defaultSiteOptions);
 
       expect(mkdocsPath).toBe(key);
-      expect(content).toBe(mkdocsDefaultYml.toString());
+      expect(content.split(/[\r\n]+/g)).toEqual(
+        mkdocsDefaultYml.toString().split(/[\r\n]+/g),
+      );
       expect(configIsTemporary).toBe(true);
     });
 
