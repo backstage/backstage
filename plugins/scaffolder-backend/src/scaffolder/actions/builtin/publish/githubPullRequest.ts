@@ -116,11 +116,15 @@ type GithubPullRequest = {
  * Creates a Github Pull Request action.
  * @public
  */
-export const createPublishGithubPullRequestAction = ({
-  integrations,
-  githubCredentialsProvider,
-  clientFactory = defaultClientFactory,
-}: CreateGithubPullRequestActionOptions) => {
+export const createPublishGithubPullRequestAction = (
+  options: CreateGithubPullRequestActionOptions,
+) => {
+  const {
+    integrations,
+    githubCredentialsProvider,
+    clientFactory = defaultClientFactory,
+  } = options;
+
   return createTemplateAction<{
     title: string;
     branchName: string;

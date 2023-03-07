@@ -24,7 +24,7 @@ import { ExploreToolsConfig } from '@backstage/plugin-explore-react';
 import { ExploreApi } from './ExploreApi';
 
 /**
- * Default implementation of the ExploreApi.
+ * Default implementation of the {@link ExploreApi}.
  *
  * @public
  */
@@ -35,21 +35,19 @@ export class ExploreClient implements ExploreApi {
   private readonly exploreToolsConfig: ExploreToolsConfig | undefined;
 
   /**
-   * @remarks The exploreToolsConfig is for backwards compatibility with the exporeToolsConfigRef
+   * @remarks
+   *
+   * The `exploreToolsConfig` is for backwards compatibility with the `exploreToolsConfigRef`•
    * and will be removed in the future.
    */
-  constructor({
-    discoveryApi,
-    fetchApi,
-    exploreToolsConfig = undefined,
-  }: {
+  constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
     exploreToolsConfig?: ExploreToolsConfig;
   }) {
-    this.discoveryApi = discoveryApi;
-    this.fetchApi = fetchApi;
-    this.exploreToolsConfig = exploreToolsConfig;
+    this.discoveryApi = options.discoveryApi;
+    this.fetchApi = options.fetchApi;
+    this.exploreToolsConfig = options.exploreToolsConfig;
   }
 
   async getTools(

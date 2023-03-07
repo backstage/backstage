@@ -1,5 +1,13 @@
 # @backstage/config
 
+## 1.0.7-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
 ## 1.0.6
 
 ### Patch Changes

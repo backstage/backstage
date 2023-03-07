@@ -60,11 +60,9 @@ export type DefaultResultListItemProps = {
 };
 
 // @public (undocumented)
-export const HighlightedSearchResultText: ({
-  text,
-  preTag,
-  postTag,
-}: HighlightedSearchResultTextProps) => JSX.Element;
+export const HighlightedSearchResultText: (
+  props: HighlightedSearchResultTextProps,
+) => JSX.Element;
 
 // @public
 export type HighlightedSearchResultTextProps = {
@@ -100,14 +98,9 @@ export type SearchAutocompleteComponent = <Option>(
 ) => JSX.Element;
 
 // @public
-export const SearchAutocompleteDefaultOption: ({
-  icon,
-  primaryText,
-  primaryTextTypographyProps,
-  secondaryText,
-  secondaryTextTypographyProps,
-  disableTextTypography,
-}: SearchAutocompleteDefaultOptionProps) => JSX.Element;
+export const SearchAutocompleteDefaultOption: (
+  props: SearchAutocompleteDefaultOptionProps,
+) => JSX.Element;
 
 // @public
 export type SearchAutocompleteDefaultOptionProps = {
@@ -193,7 +186,7 @@ export type SearchContextValue = {
 
 // @public (undocumented)
 export const SearchFilter: {
-  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
+  (props: SearchFilterWrapperProps): JSX.Element;
   Checkbox(
     props: Omit<SearchFilterWrapperProps, 'component'> &
       SearchFilterComponentProps,
@@ -234,6 +227,7 @@ export type SearchPaginationBaseProps = {
   className?: string;
   total?: number;
   cursor?: string;
+  hasNextPage?: boolean;
   onCursorChange?: (pageCursor: string) => void;
   limit?: number;
   limitLabel?: ReactNode;
@@ -264,7 +258,11 @@ export type SearchPaginationLimitText = (params: {
 // @public
 export type SearchPaginationProps = Omit<
   SearchPaginationBaseProps,
-  'pageLimit' | 'onPageLimitChange' | 'pageCursor' | 'onPageCursorChange'
+  | 'pageLimit'
+  | 'onPageLimitChange'
+  | 'pageCursor'
+  | 'onPageCursorChange'
+  | 'hasNextPage'
 >;
 
 // @public

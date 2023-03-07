@@ -18,7 +18,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
-import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
+import { TemplateParameterSchema } from '../../types';
 
 describe('useTemplateSchema', () => {
   it('should generate the correct schema', () => {
@@ -230,6 +230,40 @@ describe('useTemplateSchema', () => {
             type: 'string',
           },
         },
+      });
+    });
+
+    it('should deal with steps having no properties', () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Test Template',
+        description: 'Test Template Description',
+        steps: [
+          {
+            title: 'About step',
+            description:
+              'The first step giving the initial information about the template',
+            schema: {
+              type: 'object',
+            },
+          },
+        ],
+      };
+
+      const { result } = renderHook(() => useTemplateSchema(manifest), {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      });
+
+      const [first] = result.current.steps;
+
+      expect(first.schema).toEqual({
+        type: 'object',
+        properties: {},
       });
     });
   });

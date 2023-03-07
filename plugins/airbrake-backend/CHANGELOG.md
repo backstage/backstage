@@ -1,5 +1,14 @@
 # @backstage/plugin-airbrake-backend
 
+## 0.2.16-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/config@1.0.7-next.0
+
 ## 0.2.16-next.0
 
 ### Patch Changes

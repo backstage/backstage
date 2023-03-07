@@ -42,7 +42,7 @@ export type HomePageSearchBarProps = Partial<
 /**
  * The search bar created specifically for the composable home page.
  */
-export const HomePageSearchBar = ({ ...props }: HomePageSearchBarProps) => {
+export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
   const classes = useStyles(props);
   const [query, setQuery] = useState('');
   const handleSearch = useNavigateToQuery();

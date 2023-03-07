@@ -50,11 +50,7 @@ export const exploreApiRef: ApiRef<ExploreApi>;
 
 // @public
 export class ExploreClient implements ExploreApi {
-  constructor({
-    discoveryApi,
-    fetchApi,
-    exploreToolsConfig,
-  }: {
+  constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
     exploreToolsConfig?: ExploreToolsConfig;

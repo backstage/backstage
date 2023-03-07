@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
   },
   buttonLink: {
     backgroundColor: '#3b2492',
-    color: '#FFF',
+    color: theme.palette.common.white,
     textTransform: 'none',
     '&:hover': {
       backgroundColor: '#614ab6',

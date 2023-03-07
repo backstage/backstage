@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.9-next.1
+
+### Patch Changes
+
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-kubernetes-common@0.6.1-next.1
+
 ## 0.7.9-next.0
 
 ### Patch Changes

@@ -15,22 +15,23 @@
  */
 import { useImmerReducer } from 'use-immer';
 import { useEffect } from 'react';
-import {
-  ScaffolderTask,
-  ScaffolderTaskStatus,
-  ScaffolderTaskOutput,
-  LogEvent,
-  scaffolderApiRef,
-} from '@backstage/plugin-scaffolder-react';
+
 import { useApi } from '@backstage/core-plugin-api';
 import { Subscription } from '@backstage/types';
+import {
+  LogEvent,
+  scaffolderApiRef,
+  ScaffolderTask,
+  ScaffolderTaskOutput,
+  ScaffolderTaskStatus,
+} from '../api';
 
 /**
  * The status of the step being processed
  *
  * @public
  */
-export type Step = {
+export type ScaffolderStep = {
   id: string;
   status: ScaffolderTaskStatus;
   endedAt?: string;
@@ -48,7 +49,7 @@ export type TaskStream = {
   stepLogs: { [stepId in string]: string[] };
   completed: boolean;
   task?: ScaffolderTask;
-  steps: { [stepId in string]: Step };
+  steps: { [stepId in string]: ScaffolderStep };
   output?: ScaffolderTaskOutput;
 };
 
@@ -75,7 +76,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
       draft.steps = action.data.spec.steps.reduce((current, next) => {
         current[next.id] = { status: 'open', id: next.id };
         return current;
-      }, {} as { [stepId in string]: Step });
+      }, {} as { [stepId in string]: ScaffolderStep });
       draft.stepLogs = action.data.spec.steps.reduce((current, next) => {
         current[next.id] = [];
         return current;
@@ -153,7 +154,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     loading: true,
     completed: false,
     stepLogs: {} as { [stepId in string]: string[] },
-    steps: {} as { [stepId in string]: Step },
+    steps: {} as { [stepId in string]: ScaffolderStep },
   });
 
   useEffect(() => {

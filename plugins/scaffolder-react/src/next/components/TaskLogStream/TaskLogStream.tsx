@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 /**
  * The text of the event stream
  *
- * @public
+ * @alpha
  */
 export const TaskLogStream = (props: { logs: { [k: string]: string[] } }) => {
   const styles = useStyles();

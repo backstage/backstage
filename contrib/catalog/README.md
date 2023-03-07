@@ -1,6 +1,6 @@
 # Catalog Contrib
 
-This directory contains various community contributions related to [the Backstage catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview).
+This directory contains various community contributions related to [the Backstage catalog](https://backstage.io/docs/features/software-catalog/).
 
 There is no guarantee of correctness or fitness of purpose of these
 contributions, but we hope that they are helpful to someone!

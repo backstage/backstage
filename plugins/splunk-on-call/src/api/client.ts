@@ -114,14 +114,16 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     return policies;
   }
 
-  async incidentAction({
-    routingKey,
-    incidentType,
-    incidentId,
-    incidentDisplayName,
-    incidentMessage,
-    incidentStartTime,
-  }: TriggerAlarmRequest): Promise<Response> {
+  async incidentAction(options: TriggerAlarmRequest): Promise<Response> {
+    const {
+      routingKey,
+      incidentType,
+      incidentId,
+      incidentDisplayName,
+      incidentMessage,
+      incidentStartTime,
+    } = options;
+
     const body = JSON.stringify({
       message_type: incidentType,
       ...(incidentId ? { entity_id: incidentId } : {}),
@@ -132,7 +134,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
       ...(incidentStartTime ? { state_start_time: incidentStartTime } : {}),
     });
 
-    const options = {
+    const request = {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -143,7 +145,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
 
     const url = `${this.config.eventsRestEndpoint}/${routingKey}`;
 
-    return this.request(url, options);
+    return this.request(url, request);
   }
 
   private async findByUrl<T>(url: string): Promise<T> {

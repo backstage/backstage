@@ -35,7 +35,7 @@ Check out the [Markdown Guide](https://www.markdownguide.org/) to learn more abo
 simply create documentation.
 
 You can also learn more about how to configure and setup this documentation in Backstage,
-[read up on the TechDocs Overview](https://backstage.io/docs/features/techdocs/techdocs-overview).
+[read up on the TechDocs Overview](https://backstage.io/docs/features/techdocs/).
 
 ## Image Example
 

@@ -1,5 +1,17 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.29-next.1
+
+### Patch Changes
+
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/theme@0.2.18-next.0
+
 ## 0.3.29-next.0
 
 ### Patch Changes

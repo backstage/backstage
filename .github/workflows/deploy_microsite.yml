@@ -14,7 +14,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=7168
+      NODE_OPTIONS: --max-old-space-size=8192
       DOCUSAURUS_SSR_CONCURRENCY: 5
 
     steps:

@@ -53,7 +53,7 @@ export interface ServerTokenManagerOptions {
 }
 
 /**
- * Creates and validates tokens for use during backend-to-backend
+ * Creates and validates tokens for use during service-to-service
  * authentication.
  *
  * @public
@@ -90,7 +90,7 @@ export class ServerTokenManager implements TokenManager {
 
     // For development, if a secret has not been configured, we auto generate a secret instead of throwing.
     options.logger.warn(
-      'Generated a secret for backend-to-backend authentication: DEVELOPMENT USE ONLY.',
+      'Generated a secret for service-to-service authentication: DEVELOPMENT USE ONLY.',
     );
     return new ServerTokenManager([], options);
   }

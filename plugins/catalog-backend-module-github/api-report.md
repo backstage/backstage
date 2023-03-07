@@ -103,7 +103,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
   constructor(options: GithubLocationAnalyzerOptions);
   // (undocumented)
-  analyze({ url, catalogFilename }: AnalyzeOptions): Promise<{
+  analyze(options: AnalyzeOptions): Promise<{
     existing: {
       location: {
         type: string;

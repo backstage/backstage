@@ -74,7 +74,7 @@ const useStyles = makeStyles<Theme>(theme => ({
     userSelect: 'none',
     fontSize: '11px',
     background: '#6f6f6f',
-    color: '#FFF',
+    color: theme.palette.common.white,
   },
   entryLink: {
     pointerEvents: 'visiblePainted',
