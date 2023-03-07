@@ -88,7 +88,6 @@ export interface TemplateEntityStepV1beta3 extends JsonObject {
  */
 export interface TemplateParameter extends JsonObject {
   'backstage:permissions'?: TemplatePermissions;
-  properties?: { [name: string]: JsonObject };
 }
 
 /**
