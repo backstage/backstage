@@ -13923,6 +13923,7 @@ __metadata:
     dockerode: ^3.3.1
     find-process: ^1.4.5
     fs-extra: ^10.0.1
+    global-agent: ^3.0.0
     http-proxy: ^1.18.1
     nodemon: ^2.0.2
     react-dev-utils: ^12.0.0-next.60
