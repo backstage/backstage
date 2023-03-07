@@ -12,6 +12,14 @@
   "backstage": {
     "role": "backend-plugin"
   },
+  "author": {
+    "name": "Statusneo",
+    "email": "reach@statusneo.com",
+    "url": "https://statusneo.com"
+  },
+  "contributors": [
+    "Shubham Kumar <shubhamkaurav72@gmail.com>"
+  ],
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
