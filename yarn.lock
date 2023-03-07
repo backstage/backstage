@@ -6993,16 +6993,23 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@rjsf/material-ui": ^3.2.1
+    "@rjsf/utils": 5.6.0
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react-grid-layout": ^1.3.2
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^1.0.0
+    object-hash: ^3.0.0
+    react-grid-layout: ^1.3.4
+    react-resizable: ^3.0.4
     react-use: ^17.2.4
+    zod: ~3.21.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
@@ -16528,6 +16535,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-grid-layout@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "@types/react-grid-layout@npm:1.3.2"
+  dependencies:
+    "@types/react": "*"
+  checksum: 190492acb69186c651bb99f19028dcd4c65129eae7de6efd41f51b6a6711af490e7b99ad7156b8731b11ecf2ec7c22bcf13c782bfe65be4b4e5c3362b97095bf
+  languageName: node
+  linkType: hard
+
 "@types/react-helmet@npm:^6.1.0":
   version: 6.1.6
   resolution: "@types/react-helmet@npm:6.1.6"
@@ -20097,10 +20113,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^1.0.2, clsx@npm:^1.0.4":
-  version: 1.1.1
-  resolution: "clsx@npm:1.1.1"
-  checksum: ff052650329773b9b245177305fc4c4dc3129f7b2be84af4f58dc5defa99538c61d4207be7419405a5f8f3d92007c954f4daba5a7b74e563d5de71c28c830063
+"clsx@npm:^1.0.2, clsx@npm:^1.0.4, clsx@npm:^1.1.1":
+  version: 1.2.1
+  resolution: "clsx@npm:1.2.1"
+  checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
   languageName: node
   linkType: hard
 
@@ -29579,7 +29595,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.isequal@npm:^4.5.0":
+"lodash.isequal@npm:^4.0.0, lodash.isequal@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.isequal@npm:4.5.0"
   checksum: da27515dc5230eb1140ba65ff8de3613649620e8656b19a6270afe4866b7bd461d9ba2ac8a48dcc57f7adac4ee80e1de9f965d89d4d81a0ad52bb3eec2609644
@@ -34059,7 +34075,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.0.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:15.x, prop-types@npm:^15.0.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -34640,6 +34656,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-draggable@npm:^4.0.0, react-draggable@npm:^4.0.3":
+  version: 4.4.5
+  resolution: "react-draggable@npm:4.4.5"
+  dependencies:
+    clsx: ^1.1.1
+    prop-types: ^15.8.1
+  peerDependencies:
+    react: ">= 16.3.0"
+    react-dom: ">= 16.3.0"
+  checksum: 21c3775db086e13020967627c20acd41d1ddbc7c7d7fca51491a5bbb54a0aa7e1730a4bc9af17141eb50a4954e547a5e25b2368f5f54b70db6f2686a897bacf2
+  languageName: node
+  linkType: hard
+
 "react-error-boundary@npm:^3.1.0":
   version: 3.1.3
   resolution: "react-error-boundary@npm:3.1.3"
@@ -34685,6 +34714,22 @@ __metadata:
     prop-types: ^15.6.0
     react: ^15.6.2 || ^16.0 || ^17 || ^18
   checksum: 3026976d0249fbf80e7b5dad7707964198064d7ac460f3397de40524e76dd6c29dead0900f850e2bd3135a86a9b083af8cda9cfa087f195852bf8d2b17c1fcfb
+  languageName: node
+  linkType: hard
+
+"react-grid-layout@npm:^1.3.4":
+  version: 1.3.4
+  resolution: "react-grid-layout@npm:1.3.4"
+  dependencies:
+    clsx: ^1.1.1
+    lodash.isequal: ^4.0.0
+    prop-types: ^15.8.1
+    react-draggable: ^4.0.0
+    react-resizable: ^3.0.4
+  peerDependencies:
+    react: ">= 16.3.0"
+    react-dom: ">= 16.3.0"
+  checksum: f56c8c452acd9588edf1dc6996a4ea14d9f669d77f6b2ebd50146eaeeb9325c83f5ca44b66bac2b8c24f9cb2ec7ed49396350435991255c3b31e21b8a2e3d243
   languageName: node
   linkType: hard
 
@@ -34853,6 +34898,18 @@ __metadata:
   version: 0.14.0
   resolution: "react-refresh@npm:0.14.0"
   checksum: dc69fa8c993df512f42dd0f1b604978ae89bd747c0ed5ec595c0cc50d535fb2696619ccd98ae28775cc01d0a7c146a532f0f7fb81dc22e1977c242a4912312f4
+  languageName: node
+  linkType: hard
+
+"react-resizable@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "react-resizable@npm:3.0.4"
+  dependencies:
+    prop-types: 15.x
+    react-draggable: ^4.0.3
+  peerDependencies:
+    react: ">= 16.3"
+  checksum: cbf86ad04be0f073102489ad25a2ba101779f0f00e580d48e1be73c4057c36a4e8ee8308b020ad3dd91555bb24082ceeef674d5035a38d33a2d43aed192db7fa
   languageName: node
   linkType: hard
 
@@ -40997,7 +41054,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.21.4":
+"zod@npm:^3.21.4, zod@npm:~3.21.4":
   version: 3.21.4
   resolution: "zod@npm:3.21.4"
   checksum: f185ba87342ff16f7a06686767c2b2a7af41110c7edf7c1974095d8db7a73792696bcb4a00853de0d2edeb34a5b2ea6a55871bc864227dace682a0a28de33e1f
