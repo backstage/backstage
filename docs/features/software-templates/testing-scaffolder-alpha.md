@@ -97,7 +97,7 @@ References for `createScaffolderFieldExtension` have an `/alpha` version of `cre
 
 ```diff
 -import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder';
-+import { createNextScaffolderFieldExtension } from '@backstage/plugin-scaffolder/alpha';
++import { createNextScaffolderFieldExtension } from '@backstage/plugin-scaffolder-react/alpha';
 
 export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
 -  createScaffolderFieldExtension({
