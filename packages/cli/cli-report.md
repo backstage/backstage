@@ -209,6 +209,8 @@ Commands:
   clean
   prepack
   postpack
+  schema:openapi:verify
+  schema:openapi:generate
   help [command]
 ```
 
@@ -260,6 +262,24 @@ Options:
 
 ```
 Usage: backstage-cli package prepack [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli package schema:openapi:generate`
+
+```
+Usage: backstage-cli package schema:openapi:generate [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli package schema:openapi:verify`
+
+```
+Usage: backstage-cli package schema:openapi:verify [options]
 
 Options:
   -h, --help
@@ -403,6 +423,7 @@ Commands:
   lint [options]
   clean
   list-deprecations [options]
+  schema:openapi:verify
   test [options]
   help [command]
 ```
@@ -446,6 +467,15 @@ Usage: backstage-cli repo list-deprecations [options]
 
 Options:
   --json
+  -h, --help
+```
+
+### `backstage-cli repo schema:openapi:verify`
+
+```
+Usage: backstage-cli repo schema:openapi:verify [options]
+
+Options:
   -h, --help
 ```
 
