@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog
 
+## 1.9.0-next.2
+
+### Minor Changes
+
+- 23cc40039c0: allow entity switch to render all cases that match the condition
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/plugin-search-react@1.5.1-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/integration-react@1.1.11-next.2
+
 ## 1.9.0-next.1
 
 ### Minor Changes
