@@ -105,9 +105,13 @@ describe('AzureDevOpsEntityProvider', () => {
     await (taskDef.fn as () => Promise<void>)();
 
     const expectedEntities = codeSearchResults.map(item => {
-      const url = encodeURI(
-        `${expectedBaseUrl}/_git/${item.repository.name}?path=${item.path}`,
-      );
+      const url = item.branch
+        ? encodeURI(
+            `${expectedBaseUrl}/_git/${item.repository.name}?path=${item.path}&version=GBmybranch`,
+          )
+        : encodeURI(
+            `${expectedBaseUrl}/_git/${item.repository.name}?path=${item.path}`,
+          );
       return {
         entity: {
           apiVersion: 'backstage.io/v1alpha1',
@@ -173,6 +177,36 @@ describe('AzureDevOpsEntityProvider', () => {
       {
         'myrepo?path=/catalog-info.yaml':
           'generated-87865246726bb12a8c4fb4f914443f1fbb91648c',
+      },
+    );
+  });
+
+  // eslint-disable-next-line jest/expect-expect
+  it('single mutation when repos use branch filter', async () => {
+    return expectMutation(
+      'allReposSingleFile',
+      {
+        organization: 'myorganization',
+        project: 'myproject',
+        branch: 'mybranch',
+      },
+      [
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/catalog-info.yaml',
+          repository: {
+            name: 'myrepo',
+          },
+          project: {
+            name: 'myproject',
+          },
+          branch: 'mybranch',
+        },
+      ],
+      'https://dev.azure.com/myorganization/myproject',
+      {
+        'myrepo?path=/catalog-info.yaml':
+          'generated-589e8cc47341987c7a34f5291791151fa64f7754',
       },
     );
   });

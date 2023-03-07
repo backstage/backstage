@@ -61,6 +61,7 @@ catalog:
         host: selfhostedazure.yourcompany.com
         organization: myorg
         project: myproject
+        branch: development
 ```
 
 The parameters available are:
@@ -70,6 +71,7 @@ The parameters available are:
 - **`project:`** _(optional)_ Your project slug. Wildcards are supported as show on the examples above. If not set, all projects will be searched. For a project name containing spaces, use both single and double quotes as in `project: '"My Project Name"'`.
 - **`repository:`** _(optional)_ The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.
 - **`path:`** _(optional)_ Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml.
+- **`branch:`** _(optional)_ The branch name to use.
 - **`schedule`** _(optional)_:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
@@ -80,9 +82,10 @@ The parameters available are:
   - **`scope`** _(optional)_:
     `'global'` or `'local'`. Sets the scope of concurrency control.
 
-_Note:_ the path parameter follows the same rules as the search on Azure DevOps
-web interface. For more details visit the
-[official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
+_Note:_
+
+- The path parameter follows the same rules as the search on Azure DevOps web interface. For more details visit the [official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
+- The branch parameters need that the branch desired it`s added on 'Searchable branches' on Azure DevOps Repositories
 
 As this provider is not one of the default providers, you will first need to install
 the Azure catalog plugin:
