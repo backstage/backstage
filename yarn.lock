@@ -4002,7 +4002,7 @@ __metadata:
     msw: ^1.0.0
     pluralize: ^8.0.0
     prop-types: ^15.7.2
-    qs: ^6.9.4
+    qs: ^6.9.6
     rc-progress: 3.4.1
     react-helmet: 6.1.0
     react-hook-form: ^7.12.2
@@ -4462,7 +4462,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^1.0.0
-    qs: ^6.10.1
+    qs: ^6.9.6
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -5219,7 +5219,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.0.2
-    qs: ^6.9.4
+    qs: ^6.9.6
     uuid: ^8.0.0
     winston: ^3.2.1
   languageName: unknown
@@ -5371,7 +5371,7 @@ __metadata:
     classnames: ^2.3.1
     lodash: ^4.17.15
     p-limit: ^3.1.0
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -5531,7 +5531,7 @@ __metadata:
     jwt-decode: ^3.1.0
     lodash: ^4.17.21
     material-ui-popup-state: ^1.9.3
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-test-renderer: ^16.13.1
     react-use: ^17.2.4
     yaml: ^2.0.0
@@ -5682,7 +5682,7 @@ __metadata:
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -5889,7 +5889,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^1.0.0
     pluralize: ^8.0.0
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-use: ^17.2.4
     recharts: ^2.0.0
     regression: ^2.0.1
@@ -6396,7 +6396,7 @@ __metadata:
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
-    qs: ^6.10.1
+    qs: ^6.9.6
     react-use: ^17.2.4
     recharts: ^2.0.0
   peerDependencies:
@@ -6592,7 +6592,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
-    qs: ^6.10.1
+    qs: ^6.9.6
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -7280,7 +7280,7 @@ __metadata:
     msw: ^1.0.0
     p-limit: ^3.1.0
     pluralize: ^8.0.0
-    qs: ^6.10.1
+    qs: ^6.9.6
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -7559,7 +7559,7 @@ __metadata:
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^1.0.0
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-hook-form: ^7.13.0
     react-use: ^17.2.4
     swr: ^2.0.0
@@ -7864,7 +7864,7 @@ __metadata:
     json-schema-library: ^7.3.9
     lodash: ^4.17.21
     luxon: ^3.0.0
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-use: ^17.2.4
     use-immer: ^0.8.0
     zen-observable: ^0.10.0
@@ -7931,7 +7931,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-use: ^17.2.4
     yaml: ^2.0.0
     zen-observable: ^0.10.0
@@ -8024,7 +8024,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
-    qs: ^6.10.1
+    qs: ^6.9.6
     supertest: ^6.1.3
     winston: ^3.2.1
     yn: ^4.0.0
@@ -8073,7 +8073,7 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     lodash: ^4.17.21
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-use: ^17.3.2
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8111,7 +8111,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^1.0.0
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8294,7 +8294,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.0.0
     node-fetch: ^2.6.7
-    qs: ^6.9.4
+    qs: ^6.9.6
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -8323,7 +8323,7 @@ __metadata:
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^1.0.0
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8461,7 +8461,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^1.0.0
-    qs: ^6.9.4
+    qs: ^6.9.6
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -33243,12 +33243,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.11.0, qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
+"qs@npm:6.11.0":
   version: 6.11.0
   resolution: "qs@npm:6.11.0"
   dependencies:
     side-channel: ^1.0.4
   checksum: 6e1f29dd5385f7488ec74ac7b6c92f4d09a90408882d0c208414a34dd33badc1a621019d4c799a3df15ab9b1d0292f97c1dd71dc7c045e69f81a8064e5af7297
+  languageName: node
+  linkType: hard
+
+"qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
+  version: 6.11.1
+  resolution: "qs@npm:6.11.1"
+  dependencies:
+    side-channel: ^1.0.4
+  checksum: 82ee78ef12a16f3372fae5b64f76f8aedecb000feea882bbff1af146c147f6eb66b08f9c3f34d7e076f28563586956318b9b2ca41141846cdd6d5ad6f241d52f
   languageName: node
   linkType: hard
 
