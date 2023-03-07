@@ -89,10 +89,6 @@ export type TemplateInfo = {
 export interface TemplateParameter extends JsonObject {
   // (undocumented)
   'backstage:permissions'?: TemplateSpecValuesMetadata;
-  // (undocumented)
-  properties?: {
-    [name: string]: JsonObject;
-  };
 }
 
 // @public
