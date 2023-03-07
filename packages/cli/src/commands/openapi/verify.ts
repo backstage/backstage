@@ -18,20 +18,43 @@ import fs from 'fs-extra';
 import { paths } from '../../lib/paths';
 import YAML from 'js-yaml';
 import { isEqual } from 'lodash';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import chalk from 'chalk';
 import { relative as relativePath } from 'path';
 import { PackageGraph } from '../../lib/monorepo';
 import { cloneDeep } from 'lodash';
-import { validate as validateSpec } from '@apidevtools/swagger-parser';
+import Parser from '@apidevtools/swagger-parser';
+import { detectRoleFromPackage } from '../../lib/role';
 
-async function verify(directoryPath: string) {
+const SUPPORTED_ROLES = [
+  'backend',
+  'backend-plugin',
+  'backend-plugin-module',
+  'node-library',
+];
+
+async function verify(
+  directoryPath: string,
+  { checkRole }: { checkRole: boolean },
+) {
+  if (checkRole) {
+    const role = detectRoleFromPackage(
+      await fs.readJson(resolve(directoryPath, 'package.json')),
+    );
+
+    if (!SUPPORTED_ROLES.some(r => r === role)) {
+      console.log(chalk.red(`Unsupported role ${role}`));
+      process.exit(1);
+    }
+  }
+
   const openapiPath = join(directoryPath, 'openapi.yaml');
   if (!(await fs.pathExists(openapiPath))) {
     return;
   }
+
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
-  await validateSpec(cloneDeep(yaml) as any);
+  await Parser.validate(cloneDeep(yaml) as any);
 
   const schemaPath = join(directoryPath, 'schema/openapi.ts');
   if (!(await fs.pathExists(schemaPath))) {
@@ -51,7 +74,8 @@ async function verify(directoryPath: string) {
 
 export async function command() {
   try {
-    await verify(paths.resolveTarget('.'));
+    await verify(paths.resolveTarget('.'), { checkRole: true });
+    console.log(chalk.green('OpenAPI files are valid.'));
   } catch (err) {
     console.error(chalk.red(err.message));
     process.exit(1);
@@ -65,7 +89,7 @@ export async function bulkCommand(): Promise<void> {
     packages.map(async pkg => {
       let resultText = '';
       try {
-        await verify(pkg.dir);
+        await verify(pkg.dir, { checkRole: false });
       } catch (err) {
         resultText = err.message;
       }
