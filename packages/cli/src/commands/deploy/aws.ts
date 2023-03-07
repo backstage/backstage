@@ -14,17 +14,55 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
+import fs from 'fs-extra';
 import * as pulumi from '@pulumi/pulumi';
 
 import { OptionValues } from 'commander';
 import { AWSProgram } from './programs';
+import { paths } from '../../lib/paths';
+import { Task } from '../../lib/tasks';
+import { basename, resolve } from 'path';
 
-const chalkOutput = (message?: any) => {
-  return process.stderr.write(chalk.blueBright(message));
+const createFile = async (fileName: string) => {
+  const BASE_PATH_OF_DEV_FILES = 'src/commands/deploy/files';
+  await Task.forItem('creating', fileName, async () => {
+    const content = await fs.readFile(
+      paths.resolveOwn(`${BASE_PATH_OF_DEV_FILES}/${fileName}`),
+      { encoding: 'utf8' },
+    );
+    const destination = `${paths.targetRoot}/${basename(fileName)}`;
+    await fs.writeFile(destination, content).catch(error => {
+      throw new Error(`Failed to create file: ${error.message}`);
+    });
+  });
 };
 
 export default async (opts: OptionValues) => {
+  if (!fs.existsSync(resolve('./Pulumi.yaml'))) {
+    const pulumiFileName = 'Pulumi.yaml';
+    Task.section(`Preparing ${pulumiFileName}`);
+    await createFile(pulumiFileName);
+  }
+
+  if (!fs.existsSync(opts.dockerfile) && !opts.createDockerfile) {
+    throw new Error(
+      `Didn't find a Dockerfile at ${opts.dockerfile}. Use --create-dockerfile to create one or use --dockerfile to pass in the path of your Dockerfile.`,
+    );
+  }
+
+  if (opts.createDockerfile) {
+    if (fs.existsSync(opts.dockerfile)) {
+      throw new Error(
+        `There already is a Dockerfile in the specfied path: ${opts.dockerfile}`,
+      );
+    }
+    Task.section('Preparing docker files');
+    const dockerFiles = ['Dockerfile', '.dockerignore'];
+    for (const file of dockerFiles) {
+      await createFile(file);
+    }
+  }
+
   const args = {
     stackName: opts.stack,
     projectName: opts.stack,
@@ -35,21 +73,22 @@ export default async (opts: OptionValues) => {
     args,
   );
 
-  process.stderr.write(chalk.greenBright('successfully initialized stack\n'));
-  process.stderr.write(chalk.greenBright('installing aws plugin...\n'));
+  Task.log('Starting Pulumi');
+  Task.log('successfully initialized stack');
+  Task.log('installing aws plugin...');
   await stack.workspace.installPlugin('aws', 'v4.0.0');
-  process.stderr.write(chalk.greenBright('plugins installed\n'));
-  process.stderr.write(chalk.greenBright('setting up config\n'));
+  Task.log('plugins installed');
+  Task.log('setting up config');
   await stack.setConfig('aws:region', { value: opts.region });
-  process.stderr.write(chalk.greenBright('refreshing stack...\n'));
-  await stack.refresh({ onOutput: chalkOutput });
-  process.stderr.write(chalk.greenBright('refresh complete\n'));
+  Task.log('refreshing stack...');
+  await stack.refresh({ onOutput: Task.log });
+  Task.log('refresh complete');
 
   if (opts.destroy) {
-    process.stderr.write(chalk.redBright(`destroying stack ${opts.destroy}\n`));
-    await stack.destroy({ onOutput: chalk.blueBright });
+    Task.log(`Destroying ${opts.destroy} stack`);
+    await stack.destroy({ onOutput: Task.log });
   }
 
-  process.stderr.write(chalk.greenBright('updating stack...\n'));
-  await stack.up({ onOutput: chalkOutput });
+  Task.log(`updating stack...`);
+  await stack.up({ onOutput: Task.log });
 };

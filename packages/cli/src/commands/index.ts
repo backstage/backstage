@@ -238,9 +238,13 @@ export function registerDeployCommand(program: Command) {
     .option(
       '--dockerfile <path>',
       'path of dockerfile',
-      resolve('./packages/backend/Dockerfile'),
+      resolve('./Dockerfile'),
     )
-    .option('--pulumiConfigFile <path>', 'config file of pulumi')
+    .option(
+      '--create-dockerfile',
+      'creates a Dockerfile in the root of the project',
+      false,
+    )
     .option('--stack <name>', 'name of the stack', 'backstage')
     .option('--destroy <stack>', 'name of the stack to destroy')
     .option('--region <region>', 'region of your aws console', 'us-east-1')

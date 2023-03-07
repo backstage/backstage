@@ -19,7 +19,6 @@ import * as awsx from '@pulumi/awsx';
 import * as aws from '@pulumi/aws';
 import { OptionValues } from 'commander';
 import { resolve } from 'path';
-import { Output } from '@pulumi/pulumi';
 
 export const AWSProgram = (opts: OptionValues) => {
   return async () => {
