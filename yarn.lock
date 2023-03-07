@@ -13333,14 +13333,14 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-travis-ci@npm:^2.0.5":
-  version: 2.1.5
-  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.1.5"
+  version: 2.1.6
+  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.1.6"
   dependencies:
-    "@backstage/catalog-model": ^1.1.5
-    "@backstage/core-components": ^0.12.3
-    "@backstage/core-plugin-api": ^1.3.0
-    "@backstage/plugin-catalog-react": ^1.2.4
-    "@backstage/theme": ^0.2.16
+    "@backstage/catalog-model": ^1.2.0
+    "@backstage/core-components": ^0.12.4
+    "@backstage/core-plugin-api": ^1.4.0
+    "@backstage/plugin-catalog-react": ^1.3.0
+    "@backstage/theme": ^0.2.17
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": 4.0.0-alpha.57
@@ -13354,7 +13354,7 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 955679aafcc707ca8d0b68eb394736209e13a1dee34fc4e0ff438f64568bcdf225ff5f68f389d89880a27debe06c3e7ae343f6435b942e7f4bda64f90285c4be
+  checksum: 657e58579bdc9387edb61538f4541be4ba2b33f33fcac9129f533b35dc6d207d9930e0eae0937435def7ebf5e791118727417d818dd96de05126bda1041f15d1
   languageName: node
   linkType: hard
 
