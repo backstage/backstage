@@ -25,6 +25,7 @@ import {
   TaskInvocationDefinition,
   TaskRunner,
   TaskScheduleDefinition,
+  TaskSettingsV2,
 } from './types';
 import { validateId } from './util';
 
@@ -57,6 +58,14 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     validateId(task.id);
     const scope = task.scope ?? 'global';
 
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      cadence: parseDuration(task.frequency),
+      initialDelayDuration:
+        task.initialDelay && parseDuration(task.initialDelay),
+      timeoutAfterDuration: parseDuration(task.timeout),
+    };
+
     if (scope === 'global') {
       const knex = await this.databaseFactory();
       const worker = new TaskWorker(
@@ -65,39 +74,22 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
         knex,
         this.logger.child({ task: task.id }),
       );
-
-      await worker.start(
-        {
-          version: 2,
-          cadence: parseDuration(task.frequency),
-          initialDelayDuration:
-            task.initialDelay && parseDuration(task.initialDelay),
-          timeoutAfterDuration: parseDuration(task.timeout),
-        },
-        {
-          signal: task.signal,
-        },
-      );
+      await worker.start(settings, { signal: task.signal });
     } else {
-      const worker = new LocalTaskWorker(task.id, task.fn, this.logger);
-
-      worker.start(
-        {
-          version: 2,
-          cadence: parseDuration(task.frequency),
-          initialDelayDuration:
-            task.initialDelay && parseDuration(task.initialDelay),
-          timeoutAfterDuration: parseDuration(task.timeout),
-        },
-        {
-          signal: task.signal,
-        },
+      const worker = new LocalTaskWorker(
+        task.id,
+        task.fn,
+        this.logger.child({ task: task.id }),
       );
-
+      worker.start(settings, { signal: task.signal });
       this.localTasksById.set(task.id, worker);
     }
-    const { fn: _, signal: __, ...descriptor } = task;
-    this.allScheduledTasks.push(descriptor as TaskDescriptor);
+
+    this.allScheduledTasks.push({
+      id: task.id,
+      scope: scope,
+      settings: settings,
+    });
   }
 
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner {
@@ -108,7 +100,7 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     };
   }
 
-  getScheduledTasks(): TaskDescriptor[] {
+  async getScheduledTasks(): Promise<TaskDescriptor[]> {
     return this.allScheduledTasks;
   }
 }

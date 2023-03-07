@@ -7,6 +7,7 @@ import { Config } from '@backstage/config';
 import { DatabaseManager } from '@backstage/backend-common';
 import { Duration } from 'luxon';
 import { HumanDuration as HumanDuration_2 } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
@@ -16,7 +17,7 @@ export type HumanDuration = HumanDuration_2;
 // @public
 export interface PluginTaskScheduler {
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
-  getScheduledTasks(): TaskDescriptor[];
+  getScheduledTasks(): Promise<TaskDescriptor[]>;
   scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void>;
@@ -29,8 +30,13 @@ export function readTaskScheduleDefinitionFromConfig(
 ): TaskScheduleDefinition;
 
 // @public
-export type TaskDescriptor = TaskScheduleDefinition &
-  Exclude<TaskInvocationDefinition, 'fn' | 'signal'>;
+export type TaskDescriptor = {
+  id: string;
+  scope: 'global' | 'local';
+  settings: {
+    version: number;
+  } & JsonObject;
+};
 
 // @public
 export type TaskFunction =

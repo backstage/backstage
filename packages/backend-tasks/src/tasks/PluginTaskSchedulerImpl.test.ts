@@ -309,9 +309,8 @@ describe('PluginTaskManagerImpl', () => {
       'can fetch both global and local task ids, %p',
       async databaseId => {
         const { manager } = await init(databaseId);
-
         const fn = jest.fn();
-        const promise = new Promise(resolve => fn.mockImplementation(resolve));
+
         await manager.scheduleTask({
           id: 'task1',
           timeout: Duration.fromMillis(5000),
@@ -328,18 +327,18 @@ describe('PluginTaskManagerImpl', () => {
           scope: 'local',
         });
 
-        await promise;
-
-        const tasks = manager.getScheduledTasks();
-        expect(tasks.length).toEqual(2);
-        expect(tasks[0].id).toEqual('task1');
-        expect(tasks[1].id).toEqual('task2');
-        expect(tasks[0].scope).toEqual('global');
-        expect(tasks[1].scope).toEqual('local');
-        expect(tasks[0].fn).toBeUndefined();
-        expect(tasks[1].fn).toBeUndefined();
-        expect(tasks[0].signal).toBeUndefined();
-        expect(tasks[1].signal).toBeUndefined();
+        await expect(manager.getScheduledTasks()).resolves.toEqual([
+          {
+            id: 'task1',
+            scope: 'global',
+            settings: expect.objectContaining({ cadence: 'PT5S' }),
+          },
+          {
+            id: 'task2',
+            scope: 'local',
+            settings: expect.objectContaining({ cadence: 'PT5S' }),
+          },
+        ]);
       },
       60_000,
     );

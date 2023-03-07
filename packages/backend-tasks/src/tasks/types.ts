@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HumanDuration } from '@backstage/types';
+import { HumanDuration, JsonObject } from '@backstage/types';
 import { CronTime } from 'cron';
 import { Duration } from 'luxon';
 import { z } from 'zod';
@@ -32,12 +32,26 @@ export type TaskFunction =
   | (() => void | Promise<void>);
 
 /**
- * A type to describe a scheduled task.
+ * A semi-opaque type to describe an actively scheduled task.
  *
  * @public
  */
-export type TaskDescriptor = TaskScheduleDefinition &
-  Exclude<TaskInvocationDefinition, 'fn' | 'signal'>;
+export type TaskDescriptor = {
+  /**
+   * The unique identifier of the task.
+   */
+  id: string;
+  /**
+   * The scope of the task.
+   */
+  scope: 'global' | 'local';
+  /**
+   * The settings that control the task flow. This is a semi-opaque structure
+   * that is mainly there for debugging purposes. Do not make any assumptions
+   * about the contents of this field.
+   */
+  settings: { version: number } & JsonObject;
+};
 
 /**
  * Options that control the scheduling of a task.
@@ -327,7 +341,7 @@ export interface PluginTaskScheduler {
    *
    * @returns Scheduled tasks
    */
-  getScheduledTasks(): TaskDescriptor[];
+  getScheduledTasks(): Promise<TaskDescriptor[]>;
 }
 
 function isValidOptionalDurationString(d: string | undefined): boolean {
