@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+jest.mock('../../options');
 import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import {
   catalogApiRef,
@@ -27,6 +28,14 @@ import {
 import React from 'react';
 import { nextRouteRef } from '../routes';
 import { TemplateListPage } from './TemplateListPage';
+import { ScaffolderPluginOptions, useScaffolderOptions } from '../../options';
+
+const mockedUseScaffolderOptions =
+  useScaffolderOptions as jest.Mock<ScaffolderPluginOptions>;
+
+mockedUseScaffolderOptions.mockImplementation(() => ({
+  activateExperimentalTemplatesFeature: false,
+}));
 
 describe('TemplateListPage', () => {
   const mockCatalogApi = {
