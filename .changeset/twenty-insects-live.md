@@ -2,4 +2,4 @@
 '@backstage/plugin-proxy-backend': patch
 ---
 
-Pass the current log level to `http-proxy-middleware` to ensure that proxies requests are shown when log level is set to `debug`.
+Ensure that `@backstage/plugin-proxy-backend` logs the requests that it proxies when log level is set to `debug`.
