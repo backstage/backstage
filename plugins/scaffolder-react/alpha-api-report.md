@@ -22,8 +22,10 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RJSFSchema } from '@rjsf/utils';
+import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
+import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { UIOptionsType } from '@rjsf/utils';
@@ -64,13 +66,17 @@ export type FormProps = Pick<
 >;
 
 // @alpha
-export type NextCustomFieldValidator<TFieldReturnValue> = (
+export type NextCustomFieldValidator<
+  TFieldReturnValue,
+  TUiOptions = unknown,
+> = (
   data: TFieldReturnValue,
   field: FieldValidation,
   context: {
     apiHolder: ApiHolder;
     formData: JsonObject;
     schema: JsonObject;
+    uiSchema?: NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
   },
 ) => void | Promise<void>;
 
@@ -80,23 +86,28 @@ export interface NextFieldExtensionComponentProps<
   TUiOptions = {},
 > extends PropsWithChildren<FieldProps<TFieldReturnValue>> {
   // (undocumented)
-  uiSchema?: UiSchema<TFieldReturnValue> & {
-    'ui:options'?: TUiOptions & UIOptionsType;
-  };
+  uiSchema?: NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
 }
 
 // @alpha
 export type NextFieldExtensionOptions<
   TFieldReturnValue = unknown,
-  TInputProps = unknown,
+  TUiOptions = unknown,
 > = {
   name: string;
   component: (
-    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+    props: NextFieldExtensionComponentProps<TFieldReturnValue, TUiOptions>,
   ) => JSX.Element | null;
-  validation?: NextCustomFieldValidator<TFieldReturnValue>;
+  validation?: NextCustomFieldValidator<TFieldReturnValue, TUiOptions>;
   schema?: CustomFieldExtensionSchema;
 };
+
+// @alpha
+export interface NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
+  extends UiSchema<TFieldReturnValue> {
+  // (undocumented)
+  'ui:options'?: TUiOptions & UIOptionsType;
+}
 
 // @alpha
 export interface ParsedTemplateSchema {
@@ -139,6 +150,28 @@ export type StepperProps = {
   };
   layouts?: LayoutOptions[];
 };
+
+// @alpha
+export const TaskLogStream: (props: {
+  logs: {
+    [k: string]: string[];
+  };
+}) => JSX.Element;
+
+// @alpha
+export const TaskSteps: (props: TaskStepsProps) => JSX.Element;
+
+// @alpha
+export interface TaskStepsProps {
+  // (undocumented)
+  activeStep?: number;
+  // (undocumented)
+  isComplete?: boolean;
+  // (undocumented)
+  isError?: boolean;
+  // (undocumented)
+  steps: (TaskStep & ScaffolderStep)[];
+}
 
 // @alpha
 export const TemplateCard: (props: TemplateCardProps) => JSX.Element;

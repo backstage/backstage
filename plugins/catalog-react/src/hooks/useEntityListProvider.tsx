@@ -115,9 +115,9 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
  * Provides entities and filters for a catalog listing.
  * @public
  */
-export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
-  children,
-}: PropsWithChildren<{}>) => {
+export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
+  props: PropsWithChildren<{}>,
+) => {
   const isMounted = useMountedState();
   const catalogApi = useApi(catalogApiRef);
   const [requestedFilters, setRequestedFilters] = useState<EntityFilters>(
@@ -248,7 +248,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
 
   return (
     <EntityListContext.Provider value={value}>
-      {children}
+      {props.children}
     </EntityListContext.Provider>
   );
 };

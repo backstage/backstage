@@ -56,4 +56,19 @@ describe('RadarLegend', () => {
     expect(rendered.getAllByTestId('radar-quadrant')).toHaveLength(1);
     expect(rendered.getAllByTestId('radar-ring')).toHaveLength(1);
   });
+
+  it('should have the correct ring text color', async () => {
+    const rendered = await renderInTestApp(
+      <svg>
+        <RadarLegend {...minProps} />
+      </svg>,
+    );
+
+    expect(rendered.getByTestId('radar-legend')).toBeInTheDocument();
+
+    const legend = rendered.getByTestId('radar-legend-heading');
+    expect(legend).toHaveStyle({
+      color: '#93c47d',
+    });
+  });
 });

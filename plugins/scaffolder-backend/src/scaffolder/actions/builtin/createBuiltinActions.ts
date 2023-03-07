@@ -22,7 +22,6 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { JsonObject } from '@backstage/types';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
   createCatalogRegisterAction,
@@ -95,7 +94,7 @@ export interface CreateBuiltInActionsOptions {
  */
 export const createBuiltinActions = (
   options: CreateBuiltInActionsOptions,
-): TemplateAction<JsonObject>[] => {
+): TemplateAction[] => {
   const {
     reader,
     integrations,
@@ -188,5 +187,5 @@ export const createBuiltinActions = (
     }),
   ];
 
-  return actions as TemplateAction<JsonObject>[];
+  return actions as TemplateAction[];
 };

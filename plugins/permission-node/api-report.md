@@ -112,20 +112,33 @@ export const createConditionTransformer: <
 ) => ConditionTransformer<TQuery>;
 
 // @public
-export const createPermissionIntegrationRouter: <
+export function createPermissionIntegrationRouter<
   TResourceType extends string,
   TResource,
->(options: {
+>(
+  options: CreatePermissionIntegrationRouterResourceOptions<
+    TResourceType,
+    TResource
+  >,
+): express.Router;
+
+// @public
+export function createPermissionIntegrationRouter(options: {
+  permissions: Array<Permission>;
+}): express.Router;
+
+// @public
+export type CreatePermissionIntegrationRouterResourceOptions<
+  TResourceType extends string,
+  TResource,
+> = {
   resourceType: TResourceType;
-  permissions?: Permission[] | undefined;
-  rules: PermissionRule<
-    TResource,
-    any,
-    NoInfer<TResourceType>,
-    PermissionRuleParams
-  >[];
-  getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
-}) => express.Router;
+  permissions?: Array<Permission>;
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
+  getResources?: (
+    resourceRefs: string[],
+  ) => Promise<Array<TResource | undefined>>;
+};
 
 // @public
 export const createPermissionRule: <

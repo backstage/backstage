@@ -70,13 +70,9 @@ export class JsonRulesEngineFactChecker
   private readonly validationSchema: SchemaObject;
   private readonly operators: Operator[];
 
-  constructor({
-    checks,
-    repository,
-    logger,
-    checkRegistry,
-    operators,
-  }: JsonRulesEngineFactCheckerOptions) {
+  constructor(options: JsonRulesEngineFactCheckerOptions) {
+    const { checks, repository, logger, checkRegistry, operators } = options;
+
     this.repository = repository;
     this.logger = logger;
     this.operators = operators || [];
@@ -361,16 +357,11 @@ export class JsonRulesEngineFactCheckerFactory {
   private readonly checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
   private readonly operators?: Operator[];
 
-  constructor({
-    checks,
-    logger,
-    checkRegistry,
-    operators,
-  }: JsonRulesEngineFactCheckerFactoryOptions) {
-    this.logger = logger;
-    this.checks = checks;
-    this.checkRegistry = checkRegistry;
-    this.operators = operators;
+  constructor(options: JsonRulesEngineFactCheckerFactoryOptions) {
+    this.logger = options.logger;
+    this.checks = options.checks;
+    this.checkRegistry = options.checkRegistry;
+    this.operators = options.operators;
   }
 
   /**

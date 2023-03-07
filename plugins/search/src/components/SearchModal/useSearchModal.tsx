@@ -84,15 +84,12 @@ export type SearchModalProviderProps = {
  *
  * @public
  */
-export const SearchModalProvider = ({
-  children,
-  showInitially,
-}: SearchModalProviderProps) => {
-  const value = useSearchModal(showInitially);
+export const SearchModalProvider = (props: SearchModalProviderProps) => {
+  const value = useSearchModal(props.showInitially);
   const versionedValue = createVersionedValueMap({ 1: value });
   return (
     <SearchModalContext.Provider value={versionedValue}>
-      {children}
+      {props.children}
     </SearchModalContext.Provider>
   );
 };

@@ -309,17 +309,27 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     for (const chunk of lodashChunk(request.entityRefs, 200)) {
       let query = this.database<DbFinalEntitiesRow>('final_entities')
-        .innerJoin<DbRefreshStateRow>('refresh_state', {
-          'refresh_state.entity_id': 'final_entities.entity_id',
-        })
+        .innerJoin<DbRefreshStateRow>(
+          'refresh_state',
+          'refresh_state.entity_id',
+          'final_entities.entity_id',
+        )
         .select({
           entityRef: 'refresh_state.entity_ref',
           entity: 'final_entities.final_entity',
         })
         .whereIn('refresh_state.entity_ref', chunk);
+
       if (request?.filter) {
-        query = parseFilter(request.filter, query, this.database);
+        query = parseFilter(
+          request.filter,
+          query,
+          this.database,
+          false,
+          'refresh_state.entity_id',
+        );
       }
+
       for (const row of await query) {
         lookup.set(row.entityRef, row.entity ? JSON.parse(row.entity) : null);
       }

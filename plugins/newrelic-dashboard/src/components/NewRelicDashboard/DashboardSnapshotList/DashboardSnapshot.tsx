@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Box, Grid, MenuItem, Select } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import {
@@ -36,6 +37,11 @@ export const DashboardSnapshot = (props: {
   name: string;
   permalink: string;
 }) => {
+  const {
+    palette: {
+      common: { black },
+    },
+  } = useTheme();
   const { guid, name, permalink } = props;
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const storageApi = useApi(storageApiRef).forBucket('newrelic-dashboard');
@@ -99,7 +105,7 @@ export const DashboardSnapshot = (props: {
               {url ? (
                 <img
                   alt={`${name} Dashbord`}
-                  style={{ border: 'solid 1px black' }}
+                  style={{ border: `solid 1px ${black}` }}
                   src={url}
                 />
               ) : (

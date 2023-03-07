@@ -12,9 +12,9 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchBarBaseProps } from '@backstage/plugin-search-react';
 
 // @public (undocumented)
-export const HomePageSearchBar: ({
-  ...props
-}: Partial<Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>>) => JSX.Element;
+export const HomePageSearchBar: (
+  props: Partial<Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>>,
+) => JSX.Element;
 
 // @public
 export type HomePageSearchBarProps = Partial<
@@ -25,12 +25,7 @@ export type HomePageSearchBarProps = Partial<
 export const Router: () => JSX.Element;
 
 // @public (undocumented)
-export const SearchModal: ({
-  open,
-  hidden,
-  toggleModal,
-  children,
-}: SearchModalProps) => JSX.Element;
+export const SearchModal: (props: SearchModalProps) => JSX.Element;
 
 // @public (undocumented)
 export interface SearchModalChildrenProps {
@@ -46,10 +41,9 @@ export interface SearchModalProps {
 }
 
 // @public
-export const SearchModalProvider: ({
-  children,
-  showInitially,
-}: SearchModalProviderProps) => JSX.Element;
+export const SearchModalProvider: (
+  props: SearchModalProviderProps,
+) => JSX.Element;
 
 // @public
 export type SearchModalProviderProps = {

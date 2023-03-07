@@ -1,5 +1,18 @@
 # @backstage/plugin-octopus-deploy
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- cb0fc15a992: Added Octopus Deploy logo
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+
 ## 0.1.0-next.0
 
 ### Minor Changes

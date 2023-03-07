@@ -33,7 +33,7 @@ import {
 /**
  * A thin wrapper around
  * {@link @backstage/plugin-permission-common#PermissionClient} that allows all
- * backend-to-backend requests.
+ * service-to-service requests.
  * @public
  */
 export class ServerPermissionClient implements PermissionEvaluator {
@@ -58,7 +58,7 @@ export class ServerPermissionClient implements PermissionEvaluator {
       (tokenManager as any).isInsecureServerTokenManager
     ) {
       throw new Error(
-        'Backend-to-backend authentication must be configured before enabling permissions. Read more here https://backstage.io/docs/tutorials/backend-to-backend-auth',
+        'Service-to-service authentication must be configured before enabling permissions. Read more here https://backstage.io/docs/auth/service-to-service-auth',
       );
     }
 

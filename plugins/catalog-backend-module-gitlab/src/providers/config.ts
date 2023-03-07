@@ -17,6 +17,7 @@
 import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { GitlabProviderConfig } from '../lib';
+import { Logger } from 'winston';
 
 /**
  * Extracts the gitlab config from a config object
@@ -25,11 +26,25 @@ import { GitlabProviderConfig } from '../lib';
  *
  * @param id - The provider key
  * @param config - The config object to extract from
+ * @param logger - The logger
  */
-function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
+function readGitlabConfig(
+  id: string,
+  config: Config,
+  logger: Logger,
+): GitlabProviderConfig {
   const group = config.getOptionalString('group') ?? '';
   const host = config.getString('host');
-  const branch = config.getOptionalString('branch') ?? 'master';
+  const branch = config.getOptionalString('branch');
+
+  if (branch) {
+    logger.warn(
+      'The configuration key `branch` has been deprecated in favor of the configuration key `fallbackBranch`.',
+    );
+  }
+
+  const fallbackBranch =
+    config.getOptionalString('fallbackBranch') ?? branch ?? 'master';
   const catalogFile =
     config.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
   const projectPattern = new RegExp(
@@ -50,7 +65,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   return {
     id,
     group,
-    branch,
+    fallbackBranch,
     host,
     catalogFile,
     projectPattern,
@@ -67,8 +82,12 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
  * @public
  *
  * @param config - The config object to extract from
+ * @param logger - The logger
  */
-export function readGitlabConfigs(config: Config): GitlabProviderConfig[] {
+export function readGitlabConfigs(
+  config: Config,
+  logger: Logger,
+): GitlabProviderConfig[] {
   const configs: GitlabProviderConfig[] = [];
 
   const providerConfigs = config.getOptionalConfig('catalog.providers.gitlab');
@@ -78,7 +97,13 @@ export function readGitlabConfigs(config: Config): GitlabProviderConfig[] {
   }
 
   for (const id of providerConfigs.keys()) {
-    configs.push(readGitlabConfig(id, providerConfigs.getConfig(id)));
+    configs.push(
+      readGitlabConfig(
+        id,
+        providerConfigs.getConfig(id),
+        logger.child({ target: id }),
+      ),
+    );
   }
 
   return configs;

@@ -34,6 +34,7 @@ export class LinguistBackendApi {
     age?: HumanDuration,
     batchSize?: number,
     useSourceLocation?: boolean,
+    kind?: string[],
   );
   // (undocumented)
   getEntityLanguages(entityRef: string): Promise<Languages>;
@@ -78,6 +79,8 @@ export interface PluginOptions {
   age?: HumanDuration;
   // (undocumented)
   batchSize?: number;
+  // (undocumented)
+  kind?: string[];
   // (undocumented)
   schedule?: TaskScheduleDefinition;
   // (undocumented)

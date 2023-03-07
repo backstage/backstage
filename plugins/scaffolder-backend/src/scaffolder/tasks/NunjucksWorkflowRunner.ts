@@ -380,10 +380,7 @@ function scaffoldingTracker() {
       template,
     });
 
-    async function skipDryRun(
-      step: TaskStep,
-      action: TemplateAction<JsonObject>,
-    ) {
+    async function skipDryRun(step: TaskStep, action: TemplateAction) {
       task.emitLog(`Skipping because ${action.id} does not support dry-run`, {
         stepId: step.id,
         status: 'skipped',
