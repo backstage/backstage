@@ -146,7 +146,7 @@ Any current project area maintainer or core maintainer may nominate a new projec
 
 ## Core Maintainer
 
-Core Maintainers are responsible for the Backstage project as a whole. They help review and merge project-level pull requests as well as coordinate work affecting multiple project areas. A project maintainer needs to commit the majority of their working time towards the project, and exercise judgment for the good of the project, independent of their employer. Project maintainers should also mentor and seek out new maintainers, lead community meetings, and communicate with the CNCF on behalf of the project. To become a project maintainer one needs to have been the maintainer of a number of different project areas, demonstrate a deep knowledge of large parts of the Backstage project, and be backed by the existing project maintainers.
+Core Maintainers are responsible for the Backstage project as a whole. They help review and merge project-level pull requests as well as coordinate work affecting multiple project areas. A core maintainer needs to commit the majority of their working time towards the project, and exercise judgment for the good of the project, independent of their employer. Core maintainers should also mentor and seek out new maintainers, lead community meetings, and communicate with the CNCF on behalf of the project. To become a core maintainer one needs to have been the maintainer of a number of different project areas, demonstrate a deep knowledge of large parts of the Backstage project, and be backed by the existing core maintainers.
 
 A Core Maintainer have all the rights and responsibilities of a Project Area Maintainer.
 
