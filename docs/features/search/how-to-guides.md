@@ -51,7 +51,7 @@ The TechDocs plugin has supported integrations to Search, meaning that it
 provides a default collator factory ready to be used.
 
 The purpose of this guide is to walk you through how to register the
-[DefaultTechDocsCollatorFactory](https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.ts)
+[DefaultTechDocsCollatorFactory](https://github.com/backstage/backstage/blob/de294ce5c410c9eb56da6870a1fab795268f60e3/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.ts)
 in your App, so that you can get TechDocs documents indexed.
 
 If you have been through the
@@ -376,78 +376,30 @@ There are other more specific search results layout components that also accept 
 
 Recently, the Backstage maintainers [announced the new Backend System](https://backstage.io/blog/2023/02/15/backend-system-alpha). The search plugins are now migrated to support the new backend system. In this guide you will learn how to update your backend set up.
 
-1. In packages/backend/search.ts
-
-```ts
-import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
-import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
-import { ToolDocumentCollatorFactory } from '@backstage/plugin-explore-backend';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
-
-export const searchIndexRegistry = createBackendModule({
-  moduleId: 'searchIndexRegistry',
-  pluginId: 'search',
-  register(env) {
-    env.registerInit({
-      deps: {
-        indexRegistry: searchIndexRegistryExtensionPoint,
-        config: coreServices.config,
-        discovery: coreServices.discovery,
-        tokenManager: coreServices.tokenManager,
-        logger: coreServices.logger,
-        scheduler: coreServices.scheduler,
-      },
-      async init({
-        indexRegistry,
-        config,
-        logger,
-        discovery,
-        tokenManager,
-        scheduler,
-      }) {
-        // define scheule, the same way you did it before
-        const schedule = scheduler.createScheduledTaskRunner({
-          frequency: { minutes: 10 },
-          timeout: { minutes: 15 },
-          // A 3 second delay gives the backend server a chance to initialize before
-          // any collators are executed, which may attempt requests against the API.
-          initialDelay: { seconds: 3 },
-        });
-
-        indexRegistry.addCollator({
-          schedule,
-          factory: DefaultCatalogCollatorFactory.fromConfig(config, {
-            discovery,
-            tokenManager,
-          }),
-        });
-
-        // .... other collators and decorators
-      },
-    });
-  },
-});
-```
-
-2. In packages/backend/index.ts
+In packages/backend-next/index.ts
 
 ```ts
 import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
-import { elasticSearchEngineModule } from '@backstage/plugin-search-backend-module-elasticsearch/alpha';
-import { searchIndexRegistry } from './plugins/search';
+import { searchModuleElasticsearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch/alpha';
+import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
+import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
+import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
+
+const schedule = {
+  frequency: { minutes: 10 },
+  timeout: { minutes: 15 },
+  initialDelay: { seconds: 3 },
+};
 
 const backend = createBackend();
-// ...other modules
+// adding the search plugin to the backend
 backend.add(searchPlugin());
-backend.add(searchIndexRegistry());
-
-// the default search engine is Lunr, if you want to extend the search backend with another search engine.
-backend.add(elasticSearchEngineModule());
+// (optional) the default search engine is Lunr, if you want to extend the search backend with another search engine.
+backend.add(searchModuleElasticsearchEngine());
+// extending search with collator modules to start index documents
+backend.add(searchModuleCatalogCollator({ schedule }));
+backend.add(searchModuleTechDocsCollator({ schedule }));
+backend.add(searchModuleExploreCollator({ schedule }));
 
 backend.start();
 ```
