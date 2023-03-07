@@ -90,7 +90,7 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  permissionApi: PermissionEvaluator;
+  permissionApi?: PermissionEvaluator;
   identity?: IdentityApi;
 }
 
@@ -574,6 +574,10 @@ export async function createRouter(
           (template as Entity).apiVersion
         }`,
       );
+    }
+
+    if (!permissionApi) {
+      return template;
     }
 
     const [parameterDecision, stepDecision] =
