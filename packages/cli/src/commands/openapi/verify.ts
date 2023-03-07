@@ -23,7 +23,7 @@ import chalk from 'chalk';
 import { relative as relativePath } from 'path';
 import { PackageGraph } from '../../lib/monorepo';
 import { cloneDeep } from 'lodash';
-import SwaggerParser from '@apidevtools/swagger-parser';
+import { validate as validateSpec } from '@apidevtools/swagger-parser';
 
 async function verify(directoryPath: string) {
   const openapiPath = join(directoryPath, 'openapi.yaml');
@@ -31,7 +31,7 @@ async function verify(directoryPath: string) {
     return;
   }
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
-  await SwaggerParser.validate(cloneDeep(yaml));
+  await validateSpec(cloneDeep(yaml) as any);
 
   const schemaPath = join(directoryPath, 'schema/openapi.ts');
   if (!(await fs.pathExists(schemaPath))) {
