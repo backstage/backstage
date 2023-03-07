@@ -46,15 +46,10 @@ we need to type all internals of this package as `Immutable<T>`.
 
 ## Future Work
 
-### Automatic generation of the `schema/openapi` file
-
-Ideally, this would be automatically generated on `openapi.yaml` updates (like a Webpack plugin), but could also be a CLI command.
-
 ### Runtime validation
 
 Using a package like [`express-openapi-validator`](https://www.npmjs.com/package/express-openapi-validator), would allow us to remove [validation of request bodies with `AJV`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/service/util.ts#L58).
 
 ### PR-time verification.
 
-1. Verify that Typescript file matches the spec file.
-2. Verify that spec file matches the router input/output.
+1. Verify that spec file matches the router input/output.
