@@ -92,6 +92,9 @@ jobs:
       - name: verify api reference
         run: node scripts/verify-api-reference.js
 
+      - name: verify openapi yaml <> ts files
+        run: yarn backstage-cli schema:openapi:verify
+
       - name: verify doc links
         run: node scripts/verify-links.js
 

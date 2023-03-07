@@ -81,6 +81,13 @@ export function registerRepoCommand(program: Command) {
     );
 
   command
+    .command('schema:openapi:verify')
+    .description(
+      'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.ts` file.',
+    )
+    .action(lazy(() => import('./openapi/verify').then(m => m.bulkCommand)));
+
+  command
     .command('test')
     .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
     .option(
@@ -179,6 +186,20 @@ export function registerScriptCommand(program: Command) {
     .command('postpack')
     .description('Restores the changes made by the prepack command')
     .action(lazy(() => import('./pack').then(m => m.post)));
+
+  command
+    .command('schema:openapi:verify')
+    .description(
+      'Verifies that an OpenAPI spec is defined in both an `openapi.yaml` file and a `schema/openapi.ts` file.',
+    )
+    .action(lazy(() => import('./openapi/verify').then(m => m.command)));
+
+  command
+    .command('schema:openapi:generate')
+    .description(
+      'Generates a `schema/openapi.ts` file from an OpenAPI spec defined in `openapi.yaml`.',
+    )
+    .action(lazy(() => import('./openapi/generate').then(m => m.command)));
 }
 
 export function registerMigrateCommand(program: Command) {
