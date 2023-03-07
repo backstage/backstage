@@ -45,8 +45,38 @@ export const AWSProgram = (opts: OptionValues) => {
         tags: {
           backstage: opts.stack,
         },
+        privateRegistryAccess: {
+          ecrImagePullerRole: {
+            isActive: true,
+          },
+        },
       },
     );
+
+    // create policy that allows lightsail to pull from ECR private registry
+    /* eslint-disable no-new */
+    new aws.ecr.RepositoryPolicy(`${opts.stack}-lightsail-ecr-policy`, {
+      repository: repository.repository.name,
+      policy: containerService.privateRegistryAccess.apply(
+        privateRegistryAccess =>
+          `{
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AllowLightsailPull",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "${privateRegistryAccess.ecrImagePullerRole?.principalArn}"
+              },
+              "Action": [
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
+              ]
+            }
+          ]
+        }`,
+      ),
+    });
 
     /* eslint-disable no-new */
     new aws.lightsail.ContainerServiceDeploymentVersion(
