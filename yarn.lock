@@ -17546,13 +17546,13 @@ __metadata:
   linkType: hard
 
 "aws-sdk-client-mock@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "aws-sdk-client-mock@npm:2.0.1"
+  version: 2.1.0
+  resolution: "aws-sdk-client-mock@npm:2.1.0"
   dependencies:
     "@types/sinon": ^10.0.10
     sinon: ^14.0.2
     tslib: ^2.1.0
-  checksum: 447502ba9270777db129ddcf0245502771c1415d4293f7b001e0a3dc18ab0ce778a7f2d40a86dadb2637d3b83be2df4e833d7f4f6c49678495c932340558c465
+  checksum: c6179c5528709ff1ad7e7308d03c74850fb5b973ca3d63836ca9973ca70de0c3dd7846fcbd3fd02bf4dabe6cae1095683b38c4202878458c8369e7e837962cd2
   languageName: node
   linkType: hard
 
