@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-export { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
-export type { TechDocsCollatorFactoryOptions } from './DefaultTechDocsCollatorFactory';
-
 /**
  * todo(backstage/techdocs-core): stop exporting these in a future release.
  */
 export { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
 export type { TechDocsCollatorOptions } from './DefaultTechDocsCollator';
+
+/**
+ * @deprecated
+ * import from @backstage/search-backend-module-techdocs instead
+ */
+export type { TechDocsCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-techdocs';
+
+/**
+ * @deprecated
+ * import from @backstage/search-backend-module-techdocs instead
+ */
+export { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';

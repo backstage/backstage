@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+
 import {
   ElasticSearchHighlightConfig,
   ElasticSearchQueryTranslatorOptions,
@@ -31,9 +32,9 @@ import {
 
 /**
  * @alpha
- * Options for {@link elasticSearchEngineModule}.
+ * Options for {@link searchModuleElasticsearchEngine}.
  */
-export type ElasticsearchEngineModuleOptions = {
+export type SearchModuleElasticsearchEngineOptions = {
   translator?: ElasticSearchQueryTranslator;
   indexTemplate?: ElasticSearchCustomIndexTemplate;
 };
@@ -42,9 +43,9 @@ export type ElasticsearchEngineModuleOptions = {
  * @alpha
  * Search backend module for the Elasticsearch engine.
  */
-export const elasticSearchEngineModule = createBackendModule(
-  (options?: ElasticsearchEngineModuleOptions) => ({
-    moduleId: 'elasticSearchEngineModule',
+export const searchModuleElasticsearchEngine = createBackendModule(
+  (options?: SearchModuleElasticsearchEngineOptions) => ({
+    moduleId: 'elasticsearchEngine',
     pluginId: 'search',
     register(env) {
       env.registerInit({

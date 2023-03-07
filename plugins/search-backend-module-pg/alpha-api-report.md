@@ -6,7 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const pgSearchEngineModule: () => BackendFeature;
+export const searchModulePostgresEngine: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

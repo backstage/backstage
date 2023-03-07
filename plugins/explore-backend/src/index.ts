@@ -20,7 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './search';
 export * from './service';
 export * from './tools';
 
@@ -28,3 +27,18 @@ export * from './tools';
  * @internal Example only - do not use in production
  */
 export { exampleTools } from './example/exampleTools';
+
+/**
+ * @deprecated
+ * import from @backstage/plugin-search-backend-module-explore instead
+ */
+export { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
+
+/**
+ * @deprecated
+ * import from @backstage/plugin-search-backend-module-explore instead
+ */
+export type {
+  ToolDocument,
+  ToolDocumentCollatorFactoryOptions,
+} from '@backstage/plugin-search-backend-module-explore';

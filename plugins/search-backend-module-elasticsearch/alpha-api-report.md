@@ -26,17 +26,6 @@ export type ElasticSearchCustomIndexTemplateBody = {
   template?: Record<string, any>;
 };
 
-// @alpha
-export const elasticSearchEngineModule: (
-  options?: ElasticsearchEngineModuleOptions | undefined,
-) => BackendFeature;
-
-// @alpha
-export type ElasticsearchEngineModuleOptions = {
-  translator?: ElasticSearchQueryTranslator;
-  indexTemplate?: ElasticSearchCustomIndexTemplate;
-};
-
 // @public (undocumented)
 export type ElasticSearchHighlightConfig = {
   fragmentDelimiter: string;
@@ -55,6 +44,17 @@ export type ElasticSearchQueryTranslator = (
 // @public
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
+};
+
+// @alpha
+export const searchModuleElasticsearchEngine: (
+  options?: SearchModuleElasticsearchEngineOptions | undefined,
+) => BackendFeature;
+
+// @alpha
+export type SearchModuleElasticsearchEngineOptions = {
+  translator?: ElasticSearchQueryTranslator;
+  indexTemplate?: ElasticSearchCustomIndexTemplate;
 };
 
 // (No @packageDocumentation comment for this package)

@@ -27,3 +27,17 @@ export * from './processing';
 export * from './search';
 export * from './service';
 export * from './deprecated';
+
+import {
+  DefaultCatalogCollatorFactory as _DefaultCatalogCollatorFactory,
+  defaultCatalogCollatorEntityTransformer as _defaultCatalogCollatorEntityTransformer,
+} from '@backstage/plugin-search-backend-module-catalog';
+
+/**
+ * @deprecated
+ * import from @backstage/search-backend-module-catalog instead
+ */
+export type {
+  DefaultCatalogCollatorFactoryOptions,
+  CatalogCollatorEntityTransformer,
+} from '@backstage/plugin-search-backend-module-catalog';

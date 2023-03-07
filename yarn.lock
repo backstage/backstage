@@ -5207,6 +5207,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -6048,6 +6049,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-explore-common": "workspace:^"
+    "@backstage/plugin-search-backend-module-explore": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@types/express": "*"
     "@types/supertest": ^2.0.8
@@ -7768,6 +7770,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-search-backend-module-catalog@workspace:^, @backstage/plugin-search-backend-module-catalog@workspace:plugins/search-backend-module-catalog":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-search-backend-module-catalog@workspace:plugins/search-backend-module-catalog"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@elastic/elasticsearch": ^7.13.0
+    "@elastic/elasticsearch-mock": ^1.0.0
+    "@opensearch-project/opensearch": ^2.0.0
+    "@short.io/opensearch-mock": ^0.3.1
+    aws-os-connection: ^0.2.0
+    aws-sdk: ^2.948.0
+    elastic-builder: ^2.16.0
+    lodash: ^4.17.21
+    msw: ^1.0.0
+    uuid: ^8.3.2
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-search-backend-module-elasticsearch@workspace:^, @backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch"
@@ -7791,6 +7824,39 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-search-backend-module-explore@workspace:^, @backstage/plugin-search-backend-module-explore@workspace:plugins/search-backend-module-explore":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-search-backend-module-explore@workspace:plugins/search-backend-module-explore"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-explore-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@types/express": ^4.17.6
+    dockerode: ^3.3.1
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    fs-extra: 10.1.0
+    knex: ^2.0.0
+    lodash: ^4.17.21
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    p-limit: ^3.1.0
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-search-backend-module-pg@workspace:^, @backstage/plugin-search-backend-module-pg@workspace:plugins/search-backend-module-pg":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-pg@workspace:plugins/search-backend-module-pg"
@@ -7805,6 +7871,39 @@ __metadata:
     knex: ^2.0.0
     lodash: ^4.17.21
     uuid: ^8.3.2
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-search-backend-module-techdocs@workspace:^, @backstage/plugin-search-backend-module-techdocs@workspace:plugins/search-backend-module-techdocs":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-search-backend-module-techdocs@workspace:plugins/search-backend-module-techdocs"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/plugin-techdocs-node": "workspace:^"
+    "@types/express": ^4.17.6
+    dockerode: ^3.3.1
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    fs-extra: 10.1.0
+    knex: ^2.0.0
+    lodash: ^4.17.21
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    p-limit: ^3.1.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -8371,6 +8470,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
@@ -22490,11 +22590,12 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
-    "@backstage/plugin-explore-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^"
+    "@backstage/plugin-search-backend-module-explore": "workspace:^"
+    "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
-    "@backstage/plugin-techdocs-backend": "workspace:^"
     "@backstage/plugin-todo-backend": "workspace:^"
   languageName: unknown
   linkType: soft
