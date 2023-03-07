@@ -19,6 +19,7 @@ import * as awsx from '@pulumi/awsx';
 import * as aws from '@pulumi/aws';
 import { OptionValues } from 'commander';
 import { resolve } from 'path';
+import { Task } from '../../../lib/tasks';
 
 export const AWSProgram = (opts: OptionValues) => {
   return async () => {
@@ -81,9 +82,7 @@ export const AWSProgram = (opts: OptionValues) => {
     );
 
     containerService.url.apply(url => {
-      process.stderr.write(
-        chalk.yellowBright(`\n\nInstance will be live at: ${url}\n\n`),
-      );
+      Task.log(chalk.yellowBright(`\n\nInstance will be live at: ${url}\n\n`));
     });
   };
 };
