@@ -24,23 +24,17 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "expect-type": "^0.15.0"
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.33",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "json-schema-to-ts": "^2.6.2",
-    "openapi-types": "^12.1.0",
-    "openapi3-ts": "^3.1.2",
-    "ts-node": "^10.9.1",
-    "winston": "^3.8.2",
-    "yn": "^4.0.0"
+    "openapi3-ts": "^3.1.2"
   }
 }
