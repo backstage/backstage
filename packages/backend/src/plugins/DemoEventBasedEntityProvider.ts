@@ -20,7 +20,6 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
-import { PluginEnvironment } from '../types';
 
 export class DemoEventBasedEntityProvider
   implements EntityProvider, EventSubscriber
@@ -49,15 +48,4 @@ export class DemoEventBasedEntityProvider
   getProviderName(): string {
     return DemoEventBasedEntityProvider.name;
   }
-}
-
-export default async function createCatalogEventBasedProviders(
-  env: PluginEnvironment,
-): Promise<Array<EntityProvider & EventSubscriber>> {
-  const providers: Array<
-    (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
-  > = [];
-  providers.push();
-  // add your event-based entity providers here
-  return providers.flat();
 }

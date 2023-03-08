@@ -24,6 +24,20 @@ to the used event broker.
 yarn add --cwd packages/backend @backstage/plugin-events-backend
 ```
 
+You will need to add the following to the backend configuration `#makeCreateEnv`.
+
+```diff
+// packages/backend/src/index.ts
++   const eventBroker = new InMemoryEventBroker(root.child({ type: 'plugin' }));
+```
+
+Then update plugin environment to include the event broker.
+
+```diff
+// packages/backend/src/types.ts
++  eventBroker: EventBroker;
+```
+
 Add a file [`packages/backend/src/plugins/events.ts`](../../packages/backend/src/plugins/events.ts)
 to your Backstage project.
 
@@ -38,24 +52,19 @@ Additionally, add the events plugin to your backend.
 // [...]
 +  const eventsEnv = useHotMemoize(module, () => createEnv('events'));
 // [...]
-+  apiRouter.use('/events', await events(eventsEnv, []));
++  apiRouter.use('/events', await events(eventsEnv));
 // [...]
 ```
 
 ### With Event-based Entity Providers
 
 In case you use event-based `EntityProviders`,
-you may need something like the following:
+you will need to add the subscription to the catalog plugin creation:
 
 ```diff
-// packages/backend/src/index.ts
--  apiRouter.use('/events', await events(eventsEnv, []));
-+  apiRouter.use('/events', await events(eventsEnv, eventBasedEntityProviders));
+// packages/backend/src/plugins/catalog.ts
++
 ```
-
-as well as a file
-[`packages/backend/src/plugins/catalogEventBasedProviders.ts`](../../packages/backend/src/plugins/catalogEventBasedProviders.ts)
-which contains event-based entity providers.
 
 In case you don't have this dependency added yet:
 
@@ -67,18 +76,19 @@ yarn add --cwd packages/backend @backstage/plugin-events-backend
 ```diff
 // packages/backend/src/plugins/catalog.ts
  import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-+import { EntityProvider } from '@backstage/plugin-catalog-node';
++import { DemoEventBasedEntityProvider } from './DemoEventBasedEntityProvider';
  import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
  import { Router } from 'express';
  import { PluginEnvironment } from '../types';
 
  export default async function createPlugin(
    env: PluginEnvironment,
-+  providers?: Array<EntityProvider>,
  ): Promise<Router> {
    const builder = await CatalogBuilder.create(env);
    builder.addProcessor(new ScaffolderEntitiesProcessor());
-+  builder.addEntityProvider(providers ?? []);
++  const demoProvider = new DemoEventBasedEntityProvider(logger, ['example']);
++  env.eventBroker.subscribe(demoProvider);
++  builder.addEntityProvider(demoProvider);
    const { processingEngine, router } = await builder.build();
    await processingEngine.start();
    return router;
