@@ -30,11 +30,11 @@ import {
   Publisher,
 } from '@backstage/plugin-techdocs-node';
 import Docker from 'dockerode';
-import { createRouter } from './service';
+import { createRouter } from '@backstage/plugin-techdocs-backend';
 
 /**
  * The TechDocs plugin is responsible for serving and building documentation for any entity.
- * @public
+ * @alpha
  */
 export const techdocsPlugin = createBackendPlugin({
   pluginId: 'techdocs-backend',
