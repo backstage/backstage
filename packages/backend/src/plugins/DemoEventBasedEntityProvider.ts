@@ -18,16 +18,29 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import {
+  EventBroker,
+  EventParams,
+  EventSubscriber,
+} from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 
 export class DemoEventBasedEntityProvider
   implements EntityProvider, EventSubscriber
 {
-  constructor(
-    private readonly logger: Logger,
-    private readonly topics: string[],
-  ) {}
+  private readonly logger: Logger;
+  private readonly topics: string[];
+
+  constructor(opts: {
+    eventBroker: EventBroker;
+    logger: Logger;
+    topics: string[];
+  }) {
+    const { eventBroker, logger, topics } = opts;
+    eventBroker.subscribe(this);
+    this.logger = logger;
+    this.topics = topics;
+  }
 
   async onEvent(params: EventParams): Promise<void> {
     this.logger.info(

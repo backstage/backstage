@@ -67,7 +67,7 @@ import linguist from './plugins/linguist';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import { InMemoryEventBroker } from '@backstage/plugin-events-backend';
+import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -85,7 +85,7 @@ function makeCreateEnv(config: Config) {
     discovery,
   });
 
-  const eventBroker = new InMemoryEventBroker(root.child({ type: 'plugin' }));
+  const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
 
   root.info(`Created UrlReader ${reader}`);
 

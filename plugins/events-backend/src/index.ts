@@ -22,4 +22,4 @@
 
 export { EventsBackend } from './service/EventsBackend';
 export { HttpPostIngressEventPublisher } from './service/http';
-export { InMemoryEventBroker } from './service/InMemoryEventBroker';
+export { DefaultEventBroker } from './service/DefaultEventBroker';

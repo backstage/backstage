@@ -22,14 +22,14 @@ import {
 import { Logger } from 'winston';
 
 /**
- * In-memory event broker which will pass the event to all registered subscribers
+ * In process event broker which will pass the event to all registered subscribers
  * interested in it.
  * Events will not be persisted in any form.
  *
  * @public
  */
 // TODO(pjungermann): add prom metrics? (see plugins/catalog-backend/src/util/metrics.ts, etc.)
-export class InMemoryEventBroker implements EventBroker {
+export class DefaultEventBroker implements EventBroker {
   constructor(private readonly logger: Logger) {}
 
   private readonly subscribers: {

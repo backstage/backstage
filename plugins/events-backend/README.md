@@ -28,7 +28,7 @@ You will need to add the following to the backend configuration `#makeCreateEnv`
 
 ```diff
 // packages/backend/src/index.ts
-+   const eventBroker = new InMemoryEventBroker(root.child({ type: 'plugin' }));
++   const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
 ```
 
 Then update plugin environment to include the event broker.

@@ -2,4 +2,6 @@
 '@backstage/plugin-events-backend': patch
 ---
 
-Export `InMemoryEventBroker` to allow decoupling of the catalog and events backends in the `example-backend`.
+Export `DefaultEventBroker` to allow decoupling of the catalog and events backends in the `example-backend`.
+
+Please look at `plugins/events-backend/README.md` for the currently advised was to set up the event backend and catalog providers.

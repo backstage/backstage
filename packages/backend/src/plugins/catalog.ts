@@ -23,13 +23,14 @@ import { DemoEventBasedEntityProvider } from './DemoEventBasedEntityProvider';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const { eventBroker, logger } = env;
-
   const builder = await CatalogBuilder.create(env);
   builder.addProcessor(new ScaffolderEntitiesProcessor());
 
-  const demoProvider = new DemoEventBasedEntityProvider(logger, ['example']);
-  eventBroker.subscribe(demoProvider);
+  const demoProvider = new DemoEventBasedEntityProvider({
+    logger: env.logger,
+    topics: ['example'],
+    eventBroker: env.eventBroker,
+  });
   builder.addEntityProvider(demoProvider);
 
   const { processingEngine, router } = await builder.build();
