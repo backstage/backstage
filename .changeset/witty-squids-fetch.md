@@ -2,4 +2,4 @@
 '@backstage/create-app': patch
 ---
 
-Add .eslintignore with **/public/** to prevent checking JS files
+Added to the template `packages/app/.eslintignore` file to packages to ignore the contents of `packages/app/public`.
