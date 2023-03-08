@@ -25,7 +25,7 @@ import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
 
 /**
  * This is the backend plugin that provides the Kubernetes integration.
- * @public
+ * @alpha
  */
 export const kubernetesPlugin = createBackendPlugin({
   pluginId: 'kubernetes-backend',
@@ -39,6 +39,7 @@ export const kubernetesPlugin = createBackendPlugin({
       },
       async init({ http, logger, config, catalogApi }) {
         const winstonLogger = loggerToWinstonLogger(logger);
+        // TODO: expose all of the customization & extension points of the builder here
         const { router } = await KubernetesBuilder.createBuilder({
           logger: winstonLogger,
           config,
