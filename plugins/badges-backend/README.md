@@ -126,6 +126,34 @@ The badges backend api exposes two main endpoints for entity badges. The
   an SVG image. If the `accept` request header prefers `application/json` the
   badge spec as JSON will be returned instead of the image.
 
+## External access to badges if authentification is enabled
+
+To access the badges from third party applications, you need to make sure that the authMiddleware is disabled for this route. in `src/index.ts`
+
+from :
+
+```ts
+  const apiRouter = Router();
+  ...
+  // 3. Register the badges plugin in the router
+  apiRouter.use('/badges', authMiddleware, await badges(badgesEnv));
+  ...
+  apiRouter.use(notFoundHandler());
+```
+
+to :
+
+```ts
+  const apiRouter = Router();
+  ...
+  // 3. Register the badges plugin in the router
+  apiRouter.use('/badges', await badges(badgesEnv));
+  ...
+  apiRouter.use(notFoundHandler());
+```
+
+> Please think about the security implications of this change before you apply it. It will mean anybody will be able to use the badges API
+
 ## Links
 
 - [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/badges)
