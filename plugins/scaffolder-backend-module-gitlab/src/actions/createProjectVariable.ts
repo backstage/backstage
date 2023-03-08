@@ -61,6 +61,10 @@ export const createGitlabProjectVariable = (options: {
             title: 'Repository Location',
             type: 'string',
           },
+          projectId: {
+            title: 'Project ID',
+            type: ['string', 'number'],
+          },
           key: {
             title:
               'The key of a variable; must have no more than 255 characters; only A-Z, a-z, 0-9, and _ are allowed',

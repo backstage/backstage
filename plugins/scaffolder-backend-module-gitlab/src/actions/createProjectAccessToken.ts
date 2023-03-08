@@ -48,7 +48,7 @@ export const createGitlabProjectAccessToken = (options: {
           },
           projectId: {
             title: 'Project ID',
-            type: 'string | number',
+            type: ['string', 'number'],
           },
           name: {
             title: 'Deploy Token Name',

@@ -19,6 +19,7 @@ import { Gitlab } from '@gitbeaker/node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { DeployTokenScope } from '@gitbeaker/core/dist/types/templates/ResourceDeployTokens';
 import { getToken } from '../util';
+import { InputError } from '@backstage/errors';
 
 /**
  * Creates a `gitlab:create-project-deploy-token` Scaffolder action.
@@ -50,7 +51,7 @@ export const createGitlabProjectDeployToken = (options: {
           },
           projectId: {
             title: 'Project ID',
-            type: 'string | number',
+            type: ['string', 'number'],
           },
           name: {
             title: 'Deploy Token Name',
@@ -108,10 +109,11 @@ export const createGitlabProjectDeployToken = (options: {
         },
       );
 
-      const string = JSON.stringify(deployToken);
-      const result = JSON.parse(string);
+      if (!deployToken.hasOwnProperty('token')) {
+        throw new InputError(`No deploy_token given from gitlab instance`);
+      }
 
-      ctx.output('deploy_token', result.token);
+      ctx.output('deploy_token', deployToken.token as string);
       ctx.output('user', deployToken.username);
     },
   });
