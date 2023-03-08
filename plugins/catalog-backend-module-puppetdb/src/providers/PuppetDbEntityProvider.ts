@@ -17,7 +17,7 @@
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import {
   PuppetDbEntityProviderConfig,

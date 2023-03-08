@@ -29,7 +29,7 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 
 /**
  * Extracts teams and users out of an LDAP server.

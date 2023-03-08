@@ -24,7 +24,7 @@ import { Config } from '@backstage/config';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';

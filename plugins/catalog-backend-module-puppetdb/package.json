@@ -39,7 +39,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",

@@ -27,7 +27,7 @@ import { ConfigReader } from '@backstage/config';
 import {
   EntityProviderConnection,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Events } from '@backstage/plugin-bitbucket-cloud-common';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
