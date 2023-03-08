@@ -27,6 +27,12 @@ export interface Config {
     builder: 'local' | 'external';
 
     /**
+     * Documentation entity name resolution can be overridden with the alternateEntityName attr
+     * and a custom DocsPublishStrategy
+     */
+    alternateName?: string;
+
+    /**
      * Techdocs generator information
      */
     generator?: {

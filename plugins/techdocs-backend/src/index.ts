@@ -27,6 +27,9 @@ export type {
   OutOfTheBoxDeploymentOptions,
   DocsBuildStrategy,
   ShouldBuildParameters,
+  DocsPublishStrategy,
+  EntityNameParameters,
+  UsePublishStrategyParameters,
 } from './service';
 
 export {

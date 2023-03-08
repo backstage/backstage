@@ -674,3 +674,71 @@ entity. If the value of this annotation is `'local'`, the TechDocs backend will 
 and publish the documentation for them. If the value of the `company.com/techdocs-builder`
 annotation is anything other than `'local'`, the user is responsible for publishing
 documentation to the appropriate location in the TechDocs external storage.
+
+## How to implement a custom publish strategy
+
+Another limitation of the [Recommended deployment](./architecture.md#recommended-deployment) is that
+the default publishing location restricts publishing to a path using the default entity
+`{kind}/{namespace}/{name}` triplet. Users may have a requirement to publish to a modified path for an
+entity.
+
+To allow overrides to the publishing path, users can implement a custom [Publish Strategy](./concepts.md#techdocs-publish-strategy)
+with logic to override the default `name`, `namespace`, and `kind` entity fields.
+
+To implement a custom publish strategy:
+
+1. In your backstage instance's `app-config.yaml`, set the `techdocs.alternateName` to any string value.
+   This value will be available to your custom override function. Ex: `github.com/project-slug`
+2. Create a custom publish strategy that implements the `DocsPublishStrategy` interface and also
+   implements the custom functions for determining when to use the custom build strategy and how to resolve
+   the entity fields.
+
+Example, if you wanted to resolve to an entity `annotation` value instead of the entity `name`:
+
+```typescript
+export class GithubAnnotationDocsPublishStrategy
+  implements DocsPublishStrategy
+{
+  private readonly config: Config;
+
+  constructor(config: Config) {
+    this.config = config;
+  }
+
+  static fromConfig(config: Config): GithubAnnotationDocsPublishStrategy {
+    return new GithubAnnotationDocsPublishStrategy(config);
+  }
+
+  async usePublishStrategy(_: { entity: Entity }): Promise<boolean> {
+    return Boolean(
+      this.config.getString('techdocs.alternateName') ===
+        'mycompany.com/custom-strategy',
+    );
+  }
+
+  async resolveEntityName(params: {
+    entity: Entity;
+    alternateName?: string;
+  }): Promise<CompoundEntityRef> {
+    const annotation = params.alternateName;
+    const customEntity: CompoundEntityRef = {
+      name: params.entity.metadata.name,
+      kind: params.entity.kind,
+      namespace: params.entity.metadata.namespace || 'default',
+    };
+
+    if (annotation && params.entity.metadata.annotations?.[annotation]) {
+      customEntity.name = params.entity.metadata.annotations?.[
+        annotation
+      ].replace('MyCompany/', '');
+    }
+    return customEntity;
+  }
+}
+```
+
+3. Pass and instance of the Publish Strategy as the `docsPublishStrategy` parameter of the TechDocs backend
+   `createRouter` method.
+
+Now when an entity is annotated with the `mycompany.com/custom-strategy` key, the custom publish strategy will be used
+to resolve the entity techdocs metadata.

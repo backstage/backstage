@@ -64,6 +64,17 @@ config as well as the entity being processed to make a decision.
 For an example of how the Build Strategy can be used to implement a 'hybrid' build model, refer to
 the [How to implement a hybrid build strategy](./how-to-guides.md#how-to-implement-a-hybrid-build-strategy) guide.
 
+## TechDocs Publish Strategy
+
+To allow more complex logic surrounding the publishing location of the generated TechDocs, the TechDocs
+backend supports a Publish Strategy.
+The Publish Strategy is responsible for determining the resolution path of the techdocs for the entity.
+By default, the path is `{namespace}/{kind}/{name}`. This is sufficient for most cases however the ability to
+override this behaviour removes the limitations.
+
+For an example of how the Publish Strategy can be used to implement a 'custom' publish model, refer to
+the [How to implement a custom publish strategy](./how-to-guides.md#how-to-implement-a-custom-publish-strategy) guide.
+
 ## TechDocs Container
 
 The TechDocs container is a Docker container available at

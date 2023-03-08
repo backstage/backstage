@@ -38,6 +38,10 @@ import {
   DefaultDocsBuildStrategy,
   DocsBuildStrategy,
 } from './DocsBuildStrategy';
+import {
+  DefaultDocsPublishStrategy,
+  DocsPublishStrategy,
+} from './DocsPublishStrategy';
 import * as winston from 'winston';
 import { PassThrough } from 'stream';
 
@@ -57,6 +61,7 @@ export type OutOfTheBoxDeploymentOptions = {
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
+  docsPublishStrategy?: DocsPublishStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
 };
@@ -74,6 +79,7 @@ export type RecommendedDeploymentOptions = {
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
+  docsPublishStrategy?: DocsPublishStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
 };
@@ -99,6 +105,7 @@ function isOutOfTheBoxOption(
   return (opt as OutOfTheBoxDeploymentOptions).preparers !== undefined;
 }
 
+// DocsPublishStrategy
 /**
  * Creates a techdocs router.
  *
@@ -113,6 +120,9 @@ export async function createRouter(
     options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
   const docsBuildStrategy =
     options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
+  const docsPublishStrategy =
+    options.docsPublishStrategy ??
+    DefaultDocsPublishStrategy.fromConfig(config);
   const buildLogTransport =
     options.buildLogTransport ??
     new winston.transports.Stream({ stream: new PassThrough() });
@@ -144,7 +154,7 @@ export async function createRouter(
 
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const entityName = { kind, namespace, name };
+    let entityName = { kind, namespace, name };
     const token = getBearerToken(req.headers.authorization);
 
     // Verify that the related entity exists and the current user has permission to view it.
@@ -156,11 +166,22 @@ export async function createRouter(
       );
     }
 
+    // By default, techdocs-backend will resolve the default entity triplet path of {kind}/{namespace}/{name}
+    // as the publishing path. A custom name resolver can be used in conjunction with `techdocs.alternateName`.
+    // Altering the implementation of the injected docsPublishStrategy allows for more complex behaviours, based on
+    // either config or the properties of the entity
+    const usePublish = await docsPublishStrategy.usePublishStrategy({ entity });
+    if (usePublish) {
+      entityName = await docsPublishStrategy.resolveEntityName({
+        entity,
+        alternateName: config.getOptionalString('techdocs.alternateName'),
+      });
+    }
+
     try {
       const techdocsMetadata = await publisher.fetchTechDocsMetadata(
         entityName,
       );
-
       res.json(techdocsMetadata);
     } catch (err) {
       logger.info(

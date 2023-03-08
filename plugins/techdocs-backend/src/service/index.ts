@@ -24,3 +24,8 @@ export type {
   DocsBuildStrategy,
   ShouldBuildParameters,
 } from './DocsBuildStrategy';
+export type {
+  UsePublishStrategyParameters,
+  EntityNameParameters,
+  DocsPublishStrategy,
+} from './DocsPublishStrategy';
