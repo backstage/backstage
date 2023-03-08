@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { UserEntity } from '@backstage/catalog-model';
 import * as fs from 'fs-extra';
 import yaml from 'yaml';
 
@@ -26,32 +25,6 @@ export const updateConfigFile = async <T>(file: string, config: T) => {
   const content = fs.existsSync(file)
     ? { ...(await readYaml(file)), ...config }
     : { ...config };
-
-  return await fs.writeFile(
-    file,
-    yaml.stringify(content, {
-      indent: 2,
-    }),
-    'utf8',
-  );
-};
-
-export const addUserEntity = async (
-  file: string,
-  username: string,
-  annotations?: Record<string, string>,
-) => {
-  const content: UserEntity = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'User',
-    metadata: {
-      name: username,
-      annotations: { ...annotations },
-    },
-    spec: {
-      memberOf: [],
-    },
-  };
 
   return await fs.writeFile(
     file,

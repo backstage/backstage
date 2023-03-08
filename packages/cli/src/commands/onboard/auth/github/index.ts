@@ -18,30 +18,16 @@ import { OAuthApp } from '@octokit/oauth-app';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
-import fetch from 'node-fetch';
 import { Task } from '../../../../lib/tasks';
-import { addUserEntity, updateConfigFile } from '../../config';
-import { APP_CONFIG_FILE, PATCH_FOLDER, USER_ENTITY_FILE } from '../../files';
+import { updateConfigFile } from '../../config';
+import { APP_CONFIG_FILE, PATCH_FOLDER } from '../../files';
 import { patch } from '../patch';
 
 type Answers = {
-  username: string;
   clientSecret: string;
   clientId: string;
   hasEnterprise: boolean;
   enterpriseInstanceUrl?: string;
-};
-
-const catalogUserLocation = {
-  catalog: {
-    locations: [
-      {
-        type: 'file',
-        target: '../../user-info.yaml',
-        rules: [{ allow: ['User'] }],
-      },
-    ],
-  },
 };
 
 const validateCredentials = async (clientId: string, clientSecret: string) => {
@@ -110,18 +96,6 @@ export const github = async () => {
   const answers = await inquirer.prompt<Answers>([
     {
       type: 'input',
-      name: 'username',
-      message: 'What is your GitHub username?',
-      validate: async (input: string) => {
-        const response = await fetch(`https://api.github.com/users/${input}`);
-        if (!response.ok) {
-          return chalk.red('Unknown user. Please try again.');
-        }
-        return true;
-      },
-    },
-    {
-      type: 'input',
       name: 'clientId',
       message: 'What is your Client Id?',
       validate: (input: string) => (input.length ? true : false),
@@ -146,7 +120,7 @@ export const github = async () => {
     },
   ]);
 
-  const { username, clientId, clientSecret } = answers;
+  const { clientId, clientSecret } = answers;
   const config = getConfig(answers);
 
   Task.log('Setting up GitHub Authentication for you...');
@@ -159,19 +133,7 @@ export const github = async () => {
   await Task.forItem(
     'Updating',
     APP_CONFIG_FILE,
-    async () =>
-      await updateConfigFile(APP_CONFIG_FILE, {
-        ...config,
-        ...catalogUserLocation,
-      }),
-  );
-  await Task.forItem(
-    'Creating',
-    USER_ENTITY_FILE,
-    async () =>
-      await addUserEntity(USER_ENTITY_FILE, username, {
-        'github.com/user-login': username,
-      }),
+    async () => await updateConfigFile(APP_CONFIG_FILE, config),
   );
 
   const patches = await fs.readdir(PATCH_FOLDER);

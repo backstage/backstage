@@ -18,8 +18,8 @@ import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import { Task } from '../../../../lib/tasks';
-import { addUserEntity, updateConfigFile } from '../../config';
-import { APP_CONFIG_FILE, PATCH_FOLDER, USER_ENTITY_FILE } from '../../files';
+import { updateConfigFile } from '../../config';
+import { APP_CONFIG_FILE, PATCH_FOLDER } from '../../files';
 import { patch } from '../patch';
 
 const getConfig = (answers: Answers) => {
@@ -43,7 +43,6 @@ const getConfig = (answers: Answers) => {
 };
 
 type Answers = {
-  username: string;
   clientSecret: string;
   clientId: string;
   hasAudience: boolean;
@@ -71,12 +70,6 @@ export const gitlab = async () => {
   const answers = await inquirer.prompt<Answers>([
     {
       type: 'input',
-      name: 'username',
-      message: 'What is your GitLab username?',
-      validate: (input: string) => (input.length ? true : false),
-    },
-    {
-      type: 'input',
       name: 'clientId',
       message: 'What is your Application Id?',
       validate: (input: string) => (input.length ? true : false),
@@ -101,7 +94,6 @@ export const gitlab = async () => {
     },
   ]);
 
-  const { username } = answers;
   const config = getConfig(answers);
 
   Task.log('Setting up GitLab Authentication for you...');
@@ -110,11 +102,6 @@ export const gitlab = async () => {
     'Updating',
     APP_CONFIG_FILE,
     async () => await updateConfigFile(APP_CONFIG_FILE, config),
-  );
-  await Task.forItem(
-    'Creating',
-    USER_ENTITY_FILE,
-    async () => await addUserEntity(USER_ENTITY_FILE, username),
   );
 
   const patches = await fs.readdir(PATCH_FOLDER);
