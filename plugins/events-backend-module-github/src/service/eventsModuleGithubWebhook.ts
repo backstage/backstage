@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { BitbucketCloudEventRouter } from '../router/BitbucketCloudEventRouter';
+import { createGithubSignatureValidator } from '../http/createGithubSignatureValidator';
 
 /**
- * Module for the events-backend plugin, adding an event router for Bitbucket Cloud.
- *
- * Registers the `BitbucketCloudEventRouter`.
+ * Module for the events-backend plugin,
+ * registering an HTTP POST ingress with request validator
+ * which verifies the webhook signature based on a secret.
  *
  * @alpha
  */
-export const bitbucketCloudEventRouterEventsModule = createBackendModule({
+export const eventsModuleGithubWebhook = createBackendModule({
   pluginId: 'events',
-  moduleId: 'bitbucketCloudEventRouter',
+  moduleId: 'githubWebhook',
   register(env) {
     env.registerInit({
       deps: {
+        config: coreServices.config,
         events: eventsExtensionPoint,
       },
-      async init({ events }) {
-        const eventRouter = new BitbucketCloudEventRouter();
-
-        events.addPublishers(eventRouter);
-        events.addSubscribers(eventRouter);
+      async init({ config, events }) {
+        events.addHttpPostIngress({
+          topic: 'github',
+          validator: createGithubSignatureValidator(config),
+        });
       },
     });
   },

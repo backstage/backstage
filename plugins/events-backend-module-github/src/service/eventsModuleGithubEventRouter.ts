@@ -16,25 +16,25 @@
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { AzureDevOpsEventRouter } from '../router/AzureDevOpsEventRouter';
+import { GithubEventRouter } from '../router/GithubEventRouter';
 
 /**
- * Module for the events-backend plugin, adding an event router for Azure DevOps.
+ * Module for the events-backend plugin, adding an event router for GitHub.
  *
- * Registers the `AzureDevOpsEventRouter`.
+ * Registers the `GithubEventRouter`.
  *
  * @alpha
  */
-export const azureDevOpsEventRouterEventsModule = createBackendModule({
+export const eventsModuleGithubEventRouter = createBackendModule({
   pluginId: 'events',
-  moduleId: 'azureDevOpsEventRouter',
+  moduleId: 'githubEventRouter',
   register(env) {
     env.registerInit({
       deps: {
         events: eventsExtensionPoint,
       },
       async init({ events }) {
-        const eventRouter = new AzureDevOpsEventRouter();
+        const eventRouter = new GithubEventRouter();
 
         events.addPublishers(eventRouter);
         events.addSubscribers(eventRouter);

@@ -20,10 +20,10 @@ import { startTestBackend } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
-import { awsSqsConsumingEventPublisherEventsModule } from './AwsSqsConsumingEventPublisherEventsModule';
+import { eventsModuleAwsSqsConsumingEventPublisher } from './eventsModuleAwsSqsConsumingEventPublisher';
 import { AwsSqsConsumingEventPublisher } from '../publisher/AwsSqsConsumingEventPublisher';
 
-describe('awsSqsEventsModule', () => {
+describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
   it('should be correctly wired and set up', async () => {
     const config = new ConfigReader({
       events: {
@@ -68,7 +68,7 @@ describe('awsSqsEventsModule', () => {
         [coreServices.logger, getVoidLogger()],
         [coreServices.scheduler, scheduler],
       ],
-      features: [awsSqsConsumingEventPublisherEventsModule()],
+      features: [eventsModuleAwsSqsConsumingEventPublisher()],
     });
 
     expect(addedPublishers).not.toBeUndefined();

@@ -16,25 +16,25 @@
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { GithubEventRouter } from '../router/GithubEventRouter';
+import { BitbucketCloudEventRouter } from '../router/BitbucketCloudEventRouter';
 
 /**
- * Module for the events-backend plugin, adding an event router for GitHub.
+ * Module for the events-backend plugin, adding an event router for Bitbucket Cloud.
  *
- * Registers the `GithubEventRouter`.
+ * Registers the `BitbucketCloudEventRouter`.
  *
  * @alpha
  */
-export const githubEventRouterEventsModule = createBackendModule({
+export const eventsModuleBitbucketCloudEventRouter = createBackendModule({
   pluginId: 'events',
-  moduleId: 'githubEventRouter',
+  moduleId: 'bitbucketCloudEventRouter',
   register(env) {
     env.registerInit({
       deps: {
         events: eventsExtensionPoint,
       },
       async init({ events }) {
-        const eventRouter = new GithubEventRouter();
+        const eventRouter = new BitbucketCloudEventRouter();
 
         events.addPublishers(eventRouter);
         events.addSubscribers(eventRouter);

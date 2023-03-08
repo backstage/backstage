@@ -22,7 +22,7 @@ import {
   HttpPostIngressOptions,
   RequestDetails,
 } from '@backstage/plugin-events-node';
-import { gitlabWebhookEventsModule } from './GitlabWebhookEventsModule';
+import { eventsModuleGitlabWebhook } from './eventsModuleGitlabWebhook';
 
 describe('gitlabWebhookEventsModule', () => {
   const requestWithToken = (token?: string) => {
@@ -55,7 +55,7 @@ describe('gitlabWebhookEventsModule', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       services: [[coreServices.config, config]],
-      features: [gitlabWebhookEventsModule()],
+      features: [eventsModuleGitlabWebhook()],
     });
 
     expect(addedIngress).not.toBeUndefined();

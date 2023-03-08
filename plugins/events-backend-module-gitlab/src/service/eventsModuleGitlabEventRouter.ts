@@ -16,25 +16,25 @@
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { GerritEventRouter } from '../router/GerritEventRouter';
+import { GitlabEventRouter } from '../router/GitlabEventRouter';
 
 /**
- * Module for the events-backend plugin, adding an event router for Gerrit.
+ * Module for the events-backend plugin, adding an event router for GitLab.
  *
- * Registers the `GerritEventRouter`.
+ * Registers the `GitlabEventRouter`.
  *
  * @alpha
  */
-export const gerritEventRouterEventsModule = createBackendModule({
+export const eventsModuleGitlabEventRouter = createBackendModule({
   pluginId: 'events',
-  moduleId: 'gerritEventRouter',
+  moduleId: 'gitlabEventRouter',
   register(env) {
     env.registerInit({
       deps: {
         events: eventsExtensionPoint,
       },
       async init({ events }) {
-        const eventRouter = new GerritEventRouter();
+        const eventRouter = new GitlabEventRouter();
 
         events.addPublishers(eventRouter);
         events.addSubscribers(eventRouter);

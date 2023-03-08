@@ -16,13 +16,13 @@
 
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { bitbucketCloudEventRouterEventsModule } from './BitbucketCloudEventRouterEventsModule';
-import { BitbucketCloudEventRouter } from '../router/BitbucketCloudEventRouter';
+import { eventsModuleAzureDevOpsEventRouter } from './eventsModuleAzureDevOpsEventRouter';
+import { AzureDevOpsEventRouter } from '../router/AzureDevOpsEventRouter';
 
-describe('bitbucketCloudEventRouterEventsModule', () => {
+describe('eventsModuleAzureDevOpsEventRouter', () => {
   it('should be correctly wired and set up', async () => {
-    let addedPublisher: BitbucketCloudEventRouter | undefined;
-    let addedSubscriber: BitbucketCloudEventRouter | undefined;
+    let addedPublisher: AzureDevOpsEventRouter | undefined;
+    let addedSubscriber: AzureDevOpsEventRouter | undefined;
     const extensionPoint = {
       addPublishers: (publisher: any) => {
         addedPublisher = publisher;
@@ -35,12 +35,12 @@ describe('bitbucketCloudEventRouterEventsModule', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       services: [],
-      features: [bitbucketCloudEventRouterEventsModule()],
+      features: [eventsModuleAzureDevOpsEventRouter()],
     });
 
     expect(addedPublisher).not.toBeUndefined();
-    expect(addedPublisher).toBeInstanceOf(BitbucketCloudEventRouter);
+    expect(addedPublisher).toBeInstanceOf(AzureDevOpsEventRouter);
     expect(addedSubscriber).not.toBeUndefined();
-    expect(addedSubscriber).toBeInstanceOf(BitbucketCloudEventRouter);
+    expect(addedSubscriber).toBeInstanceOf(AzureDevOpsEventRouter);
   });
 });

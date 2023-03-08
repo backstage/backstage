@@ -27,9 +27,9 @@ import { AwsSqsConsumingEventPublisher } from '../publisher/AwsSqsConsumingEvent
  *
  * @alpha
  */
-export const awsSqsConsumingEventPublisherEventsModule = createBackendModule({
+export const eventsModuleAwsSqsConsumingEventPublisher = createBackendModule({
   pluginId: 'events',
-  moduleId: 'awsSqsConsumingEventPublisherEventsModule',
+  moduleId: 'awsSqsConsumingEventPublisher',
   register(env) {
     env.registerInit({
       deps: {

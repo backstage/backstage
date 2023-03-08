@@ -16,13 +16,13 @@
 
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { azureDevOpsEventRouterEventsModule } from './AzureDevOpsEventRouterEventsModule';
-import { AzureDevOpsEventRouter } from '../router/AzureDevOpsEventRouter';
+import { eventsModuleGerritEventRouter } from './eventsModuleGerritEventRouter';
+import { GerritEventRouter } from '../router/GerritEventRouter';
 
-describe('azureDevOpsEventRouterEventsModule', () => {
+describe('eventsModuleGerritEventRouter', () => {
   it('should be correctly wired and set up', async () => {
-    let addedPublisher: AzureDevOpsEventRouter | undefined;
-    let addedSubscriber: AzureDevOpsEventRouter | undefined;
+    let addedPublisher: GerritEventRouter | undefined;
+    let addedSubscriber: GerritEventRouter | undefined;
     const extensionPoint = {
       addPublishers: (publisher: any) => {
         addedPublisher = publisher;
@@ -35,12 +35,12 @@ describe('azureDevOpsEventRouterEventsModule', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       services: [],
-      features: [azureDevOpsEventRouterEventsModule()],
+      features: [eventsModuleGerritEventRouter()],
     });
 
     expect(addedPublisher).not.toBeUndefined();
-    expect(addedPublisher).toBeInstanceOf(AzureDevOpsEventRouter);
+    expect(addedPublisher).toBeInstanceOf(GerritEventRouter);
     expect(addedSubscriber).not.toBeUndefined();
-    expect(addedSubscriber).toBeInstanceOf(AzureDevOpsEventRouter);
+    expect(addedSubscriber).toBeInstanceOf(GerritEventRouter);
   });
 });
