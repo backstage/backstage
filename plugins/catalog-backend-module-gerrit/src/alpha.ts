@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { gerritEntityProviderCatalogModule } from './service/GerritEntityProviderCatalogModule';
+export * from './module';

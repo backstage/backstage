@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { bitbucketServerEntityProviderCatalogModule } from './service/BitbucketServerEntityProviderCatalogModule';
+export * from './module';
