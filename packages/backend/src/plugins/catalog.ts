@@ -18,16 +18,20 @@ import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import createCatalogEventBasedProviders from './catalogEventBasedProviders';
+import { DemoEventBasedEntityProvider } from './DemoEventBasedEntityProvider';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const providers = await createCatalogEventBasedProviders(env);
+  const { eventBroker, logger } = env;
+
   const builder = await CatalogBuilder.create(env);
   builder.addProcessor(new ScaffolderEntitiesProcessor());
-  env.eventBroker.subscribe(providers);
-  builder.addEntityProvider(providers);
+
+  const demoProvider = new DemoEventBasedEntityProvider(logger, ['example']);
+  eventBroker.subscribe(demoProvider);
+  builder.addEntityProvider(demoProvider);
+
   const { processingEngine, router } = await builder.build();
   await processingEngine.start();
   return router;
