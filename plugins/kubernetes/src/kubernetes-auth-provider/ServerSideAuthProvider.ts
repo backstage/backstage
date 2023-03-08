@@ -31,4 +31,8 @@ export class ServerSideKubernetesAuthProvider
     // No-op, auth will be taken care of on the server-side
     return requestBody;
   }
+
+  async getBearerToken(): Promise<string> {
+    return '';
+  }
 }

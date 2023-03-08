@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import {
+  KubernetesRequestAuth,
+  KubernetesRequestBody,
+} from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthProvider, KubernetesAuthProvidersApi } from './types';
 import { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
 import { ServerSideKubernetesAuthProvider } from './ServerSideAuthProvider';
@@ -80,6 +83,24 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       return await kubernetesAuthProvider.decorateRequestBodyForAuth(
         requestBody,
       );
+    }
+
+    if (authProvider.startsWith('oidc.')) {
+      throw new Error(
+        `KubernetesAuthProviders has no oidcProvider configured for ${authProvider}`,
+      );
+    }
+    throw new Error(
+      `authProvider "${authProvider}" has no KubernetesAuthProvider defined for it`,
+    );
+  }
+
+  async getBearerToken(authProvider: string): Promise<string> {
+    const kubernetesAuthProvider: KubernetesAuthProvider | undefined =
+      this.kubernetesAuthProviderMap.get(authProvider);
+
+    if (kubernetesAuthProvider) {
+      return await kubernetesAuthProvider.getBearerToken();
     }
 
     if (authProvider.startsWith('oidc.')) {

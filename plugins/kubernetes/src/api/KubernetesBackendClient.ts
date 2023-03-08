@@ -23,17 +23,22 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
+import { NotFoundError } from '@backstage/errors';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
+  private readonly kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
+    this.kubernetesAuthProvidersApi = options.kubernetesAuthProvidersApi;
   }
 
   private async handleResponse(response: Response): Promise<any> {
@@ -109,5 +114,69 @@ export class KubernetesBackendClient implements KubernetesApi {
     });
 
     return (await this.handleResponse(response)).items;
+  }
+
+  async proxy(
+    clusterName: string,
+    path: string,
+    init?: RequestInit,
+  ): Promise<Response> {
+    const { authProvider } = await this.getCluster(clusterName);
+    const token = await this.getBearerToken(authProvider);
+
+    const url = `${await this.discoveryApi.getBaseUrl(
+      'kubernetes',
+    )}/proxy${path}`;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      ...init?.headers,
+      [`X-Kubernetes-Cluster`]: clusterName,
+    };
+    const response = await fetch(url, { ...init, headers });
+    return this.handleResponse(response);
+  }
+
+  private async getCluster(
+    clusterName: string,
+  ): Promise<{ name: string; authProvider: string }> {
+    const cluster = await this.getClusters().then(clusters =>
+      clusters.find(c => c.name === clusterName),
+    );
+    if (!cluster) {
+      throw new NotFoundError(`Cluster ${clusterName} not found`);
+    }
+    return cluster;
+  }
+
+  private async getBearerToken(authProvider: string): Promise<string> {
+    // const { auth } =
+    //   await this.kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
+    //     authProvider,
+    //     {
+    //       entity: {
+    //         apiVersion: 'v1',
+    //         kind: 'Pods',
+    //         metadata: {
+    //           name: 'podName',
+    //           annotations: {
+    //             'backstage.io/kubernetes-label-selector': 'k8s-app=kube-dns',
+    //           },
+    //         },
+    //       },
+    //     },
+    //   );
+    return await this.kubernetesAuthProvidersApi.getBearerToken(authProvider);
+
+    // if (auth) {
+    //   if (authProvider === 'google' && auth.google) {
+    //     return auth.google;
+    //   } else if (authProvider.startsWith('oidc.') && auth.oidc) {
+    //     const oidcTokenProvider = authProvider.replace(/^oidc\./, '');
+    //     return auth.oidc[oidcTokenProvider];
+    //   } else {
+    //     throw new Error(`invalid auth provider '${authProvider}'`);
+    //   }
+    // }
+    // return '';
   }
 }

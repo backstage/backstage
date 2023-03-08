@@ -38,4 +38,9 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
     }
     return requestBody;
   }
+  async getBearerToken(): Promise<string> {
+    return await this.authProvider.getAccessToken(
+      'https://www.googleapis.com/auth/cloud-platform',
+    );
+  }
 }

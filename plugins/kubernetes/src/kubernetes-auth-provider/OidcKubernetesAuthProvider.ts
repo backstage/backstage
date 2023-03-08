@@ -40,4 +40,8 @@ export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
     requestBody.auth = auth;
     return requestBody;
   }
+
+  async getBearerToken(): Promise<string> {
+    return await this.authProvider.getIdToken();
+  }
 }

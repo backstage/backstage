@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import {
+  KubernetesRequestAuth,
+  KubernetesRequestBody,
+} from '@backstage/plugin-kubernetes-common';
 import { createApiRef } from '@backstage/core-plugin-api';
 
 export interface KubernetesAuthProvider {
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  getBearerToken(): Promise<string>;
 }
 
 export const kubernetesAuthProvidersApiRef =
@@ -33,4 +37,5 @@ export interface KubernetesAuthProvidersApi {
     authProvider: string,
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  getBearerToken(authProvider: string): Promise<string>;
 }

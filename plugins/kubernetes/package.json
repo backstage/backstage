@@ -37,6 +37,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/theme": "workspace:^",
