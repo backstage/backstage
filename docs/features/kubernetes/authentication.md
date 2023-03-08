@@ -84,7 +84,7 @@ auth:
         secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 ```
 
-Here, the `accessKeyId` and `secretAccessKey` fields represent the IAM keys for your AWS IAM user with EKS access. We recommend mounting these fields as secrets at runtime- for instance, with a secret manager. Do not hard code credentials in your Backstage config, push config containing IAM credentials to a repository, or push credentials to a container registry as part of a prebuilt Backstage image.
+Here, the `accessKeyId` and `secretAccessKey` fields represent the [security credentials][6] for your AWS IAM user with EKS access. We recommend mounting these fields as secrets at runtime- for instance, with a secret manager. Do not hard code credentials in your Backstage config, push config containing IAM credentials to a repository, or push credentials to a container registry as part of a prebuilt Backstage image.
 
 ## Client Side Providers
 
@@ -105,3 +105,4 @@ The providers available as client side are:
 [3]: https://aws.amazon.com/iam/getting-started/
 [4]: https://aws.amazon.com/eks/
 [5]: https://docs.aws.amazon.com/eks/latest/userguide/security_iam_id-based-policy-examples.html#policy_example2
+[6]: https://docs.aws.amazon.com/general/latest/gr/aws-security-credentials.html
