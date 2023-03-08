@@ -24,6 +24,7 @@ import { paths } from './paths';
 import { isValidUrl } from './urls';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './monorepo';
+import { pathExistsSync } from 'fs-extra';
 
 type Options = {
   args: string[];
@@ -38,7 +39,11 @@ export async function loadCliConfig(options: Options) {
   const configTargets: ConfigTarget[] = [];
   options.args.forEach(arg => {
     if (!isValidUrl(arg)) {
-      configTargets.push({ path: paths.resolveTargetRoot(arg) });
+      let path = paths.resolveTarget(arg);
+      if (!pathExistsSync(path)) {
+        path = paths.resolveOwnRoot(arg);
+      }
+      configTargets.push({ path });
     }
   });
 
