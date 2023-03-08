@@ -107,7 +107,7 @@ describe('AzureDevOpsEntityProvider', () => {
     const expectedEntities = codeSearchResults.map(item => {
       const url = item.branch
         ? encodeURI(
-            `${expectedBaseUrl}/_git/${item.repository.name}?path=${item.path}&version=GBmybranch`,
+            `${expectedBaseUrl}/_git/${item.repository.name}?path=${item.path}&version=GB${item.branch}`,
           )
         : encodeURI(
             `${expectedBaseUrl}/_git/${item.repository.name}?path=${item.path}`,
