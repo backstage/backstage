@@ -103,7 +103,7 @@ References for `createScaffolderFieldExtension` have an `/alpha` version of `cre
 /* highlight-remove-next-line */
 import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder';
 /* highlight-add-next-line */
-import { createNextScaffolderFieldExtension } from '@backstage/plugin-scaffolder/alpha';
+import { createNextScaffolderFieldExtension } from '@backstage/plugin-scaffolder-react/alpha';
 
 export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
   /* highlight-remove-next-line */

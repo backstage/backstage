@@ -186,6 +186,13 @@ export class DatabaseManager {
     };
   }
 
+  private getRoleConfig(pluginId: string): string | undefined {
+    return (
+      this.config.getOptionalString(`${pluginPath(pluginId)}.role`) ??
+      this.config.getOptionalString('role')
+    );
+  }
+
   /**
    * Provides the knexConfig which should be used for a given plugin.
    *
@@ -278,11 +285,13 @@ export class DatabaseManager {
    */
   private getConfigForPlugin(pluginId: string): Knex.Config {
     const { client } = this.getClientType(pluginId);
+    const role = this.getRoleConfig(pluginId);
 
     return {
       ...this.getAdditionalKnexConfig(pluginId),
       client,
       connection: this.getConnectionConfig(pluginId),
+      ...(role && { role }),
     };
   }
 

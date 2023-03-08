@@ -121,7 +121,6 @@ describe('CatalogImportClient', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 

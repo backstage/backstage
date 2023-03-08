@@ -1,5 +1,27 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.4-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- 8adfda60ae1: Updated dependency `jss` to `~10.10.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/version-bridge@1.0.3
+
 ## 1.1.4-next.0
 
 ### Patch Changes

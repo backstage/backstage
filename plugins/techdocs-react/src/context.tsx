@@ -111,7 +111,9 @@ export type TechDocsReaderPageProviderProps = {
  * @public
  */
 export const TechDocsReaderPageProvider = memo(
-  ({ entityRef, children }: TechDocsReaderPageProviderProps) => {
+  (props: TechDocsReaderPageProviderProps) => {
+    const { entityRef, children } = props;
+
     const techdocsApi = useApi(techdocsApiRef);
     const config = useApi(configApiRef);
 

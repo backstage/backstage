@@ -89,7 +89,7 @@ indexBuilder.addCollator({
 
 ### Parsing custom ADR document formats
 
-By default, the `DefaultAdrCollatorFactory` will parse and index documents that follow the [MADR v2.x standard file name and template format](https://github.com/adr/madr/tree/2.1.2). If you use a different ADR format and file name convention, you can configure `DefaultAdrCollatorFactory` with custom `adrFilePathFilterFn` and `parser` options (see type definitions for details):
+By default, the `DefaultAdrCollatorFactory` will parse and index documents that follow [MADR v3.0.0](https://github.com/adr/madr/tree/3.0.0) and [MADR v2.x](https://github.com/adr/madr/tree/2.1.2) standard file name and template format. If you use a different ADR format and file name convention, you can configure `DefaultAdrCollatorFactory` with custom `adrFilePathFilterFn` and `parser` options (see type definitions for details):
 
 ```ts
 DefaultAdrCollatorFactory.fromConfig({

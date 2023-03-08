@@ -5,7 +5,7 @@ title: Service to Service Auth
 description: This section describes how to use service to service authentication, both internally within Backstage plugins and towards external services.
 ---
 
-This article describes the steps needed to introduce _backend-to-backend auth_.
+This article describes the steps needed to introduce _service-to-service auth_ (formerly _backend-to-backend_ auth).
 This allows plugin backends to determine whether a given request originates from
 a legitimate Backstage plugin (or other external caller), by requiring a special
 type of service-to-service token which is signed with a shared secret.
@@ -60,7 +60,7 @@ backend:
 
 **NOTE**: For ease of development, we auto-generate a key for you if you haven't
 configured a secret in dev mode. You _must set your own secret_ in order for
-backend-to-backend auth to work in production; the `ServiceTokenManager` will
+service-to-service auth to work in production; the `ServiceTokenManager` will
 throw an exception in production if it has no keys to work with, which will lead
 to the backend failing to start up.
 

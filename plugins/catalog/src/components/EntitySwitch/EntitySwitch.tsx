@@ -49,7 +49,7 @@ interface EntitySwitchCase {
 }
 
 type SwitchCaseResult = {
-  if: boolean | Promise<boolean>;
+  if?: boolean | Promise<boolean>;
   children: JSX.Element;
 };
 
@@ -59,6 +59,7 @@ type SwitchCaseResult = {
  */
 export interface EntitySwitchProps {
   children: ReactNode;
+  renderMultipleMatches?: 'first' | 'all';
 }
 
 /** @public */
@@ -94,25 +95,45 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
           }
           return [
             {
-              if: condition?.(entity, { apis }) ?? true,
+              if: condition?.(entity, { apis }),
               children: elementsChildren,
             },
           ];
         }),
     [apis, entity, loading],
   );
+
   const hasAsyncCases = results.some(
     r => typeof r.if === 'object' && 'then' in r.if,
   );
 
   if (hasAsyncCases) {
-    return <AsyncEntitySwitch results={results} />;
+    return (
+      <AsyncEntitySwitch
+        results={results}
+        renderMultipleMatches={props.renderMultipleMatches}
+      />
+    );
   }
 
-  return results.find(r => r.if)?.children ?? null;
+  if (props.renderMultipleMatches === 'all') {
+    const children = results.filter(r => r.if).map(r => r.children);
+    if (children.length === 0) {
+      return getDefaultChildren(results);
+    }
+    return <>{children}</>;
+  }
+
+  return results.find(r => r.if)?.children ?? getDefaultChildren(results);
 };
 
-function AsyncEntitySwitch({ results }: { results: SwitchCaseResult[] }) {
+function AsyncEntitySwitch({
+  results,
+  renderMultipleMatches,
+}: {
+  results: SwitchCaseResult[];
+  renderMultipleMatches?: 'first' | 'all';
+}) {
   const { loading, value } = useAsync(async () => {
     const promises = results.map(
       async ({ if: condition, children: output }) => {
@@ -123,11 +144,21 @@ function AsyncEntitySwitch({ results }: { results: SwitchCaseResult[] }) {
         } catch {
           /* ignored */
         }
-
         return null;
       },
     );
-    return (await Promise.all(promises)).find(Boolean) ?? null;
+
+    if (renderMultipleMatches === 'all') {
+      const children = (await Promise.all(promises)).filter(Boolean);
+      if (children.length === 0) {
+        return getDefaultChildren(results);
+      }
+      return <>{children}</>;
+    }
+
+    return (
+      (await Promise.all(promises)).find(Boolean) ?? getDefaultChildren(results)
+    );
   }, [results]);
 
   if (loading || !value) {
@@ -135,6 +166,10 @@ function AsyncEntitySwitch({ results }: { results: SwitchCaseResult[] }) {
   }
 
   return value;
+}
+
+function getDefaultChildren(results: SwitchCaseResult[]) {
+  return results.filter(r => r.if === undefined)[0]?.children ?? null;
 }
 
 EntitySwitch.Case = EntitySwitchCaseComponent;

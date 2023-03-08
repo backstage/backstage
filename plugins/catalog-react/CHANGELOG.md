@@ -1,5 +1,35 @@
 # @backstage/plugin-catalog-react
 
+## 1.4.0-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/plugin-permission-react@0.4.11-next.2
+  - @backstage/integration@1.4.3-next.0
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- 24916d23494: Do not close `Autocomplete` powered multiple-selection filters when checking boxes
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-permission-react@0.4.11-next.1
+
 ## 1.4.0-next.0
 
 ### Minor Changes

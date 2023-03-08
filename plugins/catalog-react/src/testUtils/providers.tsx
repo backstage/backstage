@@ -29,12 +29,13 @@ import {
 /** @public */
 export function MockEntityListContextProvider<
   T extends DefaultEntityFilters = DefaultEntityFilters,
->({
-  children,
-  value,
-}: PropsWithChildren<{
-  value?: Partial<EntityListContextProps<T>>;
-}>) {
+>(
+  props: PropsWithChildren<{
+    value?: Partial<EntityListContextProps<T>>;
+  }>,
+) {
+  const { children, value } = props;
+
   // Provides a default implementation that stores filter state, for testing components that
   // reflect filter state.
   const [filters, setFilters] = useState<T>(value?.filters ?? ({} as T));

@@ -1,5 +1,35 @@
 # @backstage/backend-app-api
 
+## 0.4.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-permission-node@0.7.6-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- 915e46622cf: Add support for `NotImplementedError`, properly returning 501 as status code.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
 ## 0.4.1-next.0
 
 ### Patch Changes

@@ -27,13 +27,9 @@ import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 
 // @public
-export const AsyncEntityProvider: ({
-  children,
-  entity,
-  loading,
-  error,
-  refresh,
-}: AsyncEntityProviderProps) => JSX.Element;
+export const AsyncEntityProvider: (
+  props: AsyncEntityProviderProps,
+) => JSX.Element;
 
 // @public
 export interface AsyncEntityProviderProps {
@@ -220,9 +216,9 @@ export type EntityListContextProps<
 };
 
 // @public
-export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>({
-  children,
-}: PropsWithChildren<{}>) => JSX.Element;
+export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
+  props: PropsWithChildren<{}>,
+) => JSX.Element;
 
 // @public (undocumented)
 export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
@@ -476,12 +472,11 @@ export function InspectEntityDialog(props: {
 // @public (undocumented)
 export function MockEntityListContextProvider<
   T extends DefaultEntityFilters = DefaultEntityFilters,
->({
-  children,
-  value,
-}: PropsWithChildren<{
-  value?: Partial<EntityListContextProps<T>>;
-}>): JSX.Element;
+>(
+  props: PropsWithChildren<{
+    value?: Partial<EntityListContextProps<T>>;
+  }>,
+): JSX.Element;
 
 // @public
 export class MockStarredEntitiesApi implements StarredEntitiesApi {

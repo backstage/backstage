@@ -381,7 +381,8 @@ export class DatabaseTaskStore implements TaskStore {
     return { events };
   }
 
-  async shutdownTask({ taskId }: TaskStoreShutDownTaskOptions): Promise<void> {
+  async shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void> {
+    const { taskId } = options;
     const message = `This task was marked as stale as it exceeded its timeout`;
 
     const statusStepEvents = (await this.listEvents({ taskId })).events.filter(

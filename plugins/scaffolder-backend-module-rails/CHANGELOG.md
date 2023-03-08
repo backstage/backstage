@@ -1,5 +1,29 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.12.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/plugin-scaffolder-node@0.1.1-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 0.4.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.12.0-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-node@0.1.1-next.1
+
 ## 0.4.11-next.0
 
 ### Patch Changes

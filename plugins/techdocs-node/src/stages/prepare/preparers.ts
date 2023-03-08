@@ -40,11 +40,14 @@ export class Preparers implements PreparerBuilder {
    */
   static async fromConfig(
     backstageConfig: Config,
-    { logger, reader }: PreparerConfig,
+    options: PreparerConfig,
   ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
 
-    const urlPreparer = UrlPreparer.fromConfig({ reader, logger });
+    const urlPreparer = UrlPreparer.fromConfig({
+      reader: options.reader,
+      logger: options.logger,
+    });
     preparers.register('url', urlPreparer);
 
     /**
@@ -52,8 +55,8 @@ export class Preparers implements PreparerBuilder {
      * When using dir preparer, the docs will be fetched using URL Reader.
      */
     const directoryPreparer = DirectoryPreparer.fromConfig(backstageConfig, {
-      logger,
-      reader,
+      reader: options.reader,
+      logger: options.logger,
     });
     preparers.register('dir', directoryPreparer);
 

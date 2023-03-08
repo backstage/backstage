@@ -24,7 +24,7 @@ const truncate = text =>
 const newForDays = 100;
 
 const addPluginDocsLink = '/docs/plugins/add-to-marketplace';
-const defaultIconUrl = 'img/logo-gradient-on-dark.svg';
+const defaultIconUrl = '/img/logo-gradient-on-dark.svg';
 
 const Plugins = () => (
   <main className="MainContent">

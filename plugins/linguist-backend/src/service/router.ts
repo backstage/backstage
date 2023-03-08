@@ -38,6 +38,7 @@ export interface PluginOptions {
   age?: HumanDuration;
   batchSize?: number;
   useSourceLocation?: boolean;
+  linguistJsOptions?: Record<string, unknown>;
   kind?: string[];
 }
 
@@ -57,7 +58,14 @@ export async function createRouter(
   pluginOptions: PluginOptions,
   routerOptions: RouterOptions,
 ): Promise<express.Router> {
-  const { schedule, age, batchSize, useSourceLocation, kind } = pluginOptions;
+  const {
+    schedule,
+    age,
+    batchSize,
+    useSourceLocation,
+    kind,
+    linguistJsOptions,
+  } = pluginOptions;
 
   const { logger, reader, database, discovery, scheduler, tokenManager } =
     routerOptions;
@@ -78,6 +86,7 @@ export async function createRouter(
       batchSize,
       useSourceLocation,
       kind,
+      linguistJsOptions,
     );
 
   if (scheduler && schedule) {

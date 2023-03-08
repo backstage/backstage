@@ -1,5 +1,34 @@
 # @backstage/plugin-techdocs-node
 
+## 1.6.0-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/integration-aws-node@0.1.2-next.0
+
+## 1.6.0-next.1
+
+### Minor Changes
+
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- bfe350ef4ce: Fixed bug that prevented deletion of stale files when non-empty directories where tried to be deleted as well.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/integration-aws-node@0.1.2-next.0
+  - @backstage/plugin-search-common@1.2.2-next.0
+
 ## 1.5.1-next.0
 
 ### Patch Changes

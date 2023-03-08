@@ -482,7 +482,11 @@ export const githubAuthApiRef: ApiRef<
 
 // @public
 export const gitlabAuthApiRef: ApiRef<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
 >;
 
 // @public

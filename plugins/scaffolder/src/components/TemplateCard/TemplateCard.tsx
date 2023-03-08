@@ -64,12 +64,16 @@ import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
 import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<
+  BackstageTheme,
+  { fontColor: string; backgroundImage: string }
+>(theme => ({
   cardHeader: {
     position: 'relative',
   },
   title: {
-    backgroundImage: ({ backgroundImage }: any) => backgroundImage,
+    backgroundImage: ({ backgroundImage }) => backgroundImage,
+    color: ({ fontColor }) => fontColor,
   },
   box: {
     overflow: 'hidden',
@@ -103,7 +107,7 @@ const useStyles = makeStyles(theme => ({
     top: theme.spacing(0.5),
     right: theme.spacing(0.5),
     padding: '0.25rem',
-    color: '#fff',
+    color: theme.palette.common.white,
   },
 }));
 
@@ -186,7 +190,10 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
     ? templateProps.type
     : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
-  const classes = useStyles({ backgroundImage: theme.backgroundImage });
+  const classes = useStyles({
+    fontColor: theme.fontColor,
+    backgroundImage: theme.backgroundImage,
+  });
   const { name, namespace } = parseEntityRef(stringifyEntityRef(template));
   const href = templateRoute({ templateName: name, namespace });
 

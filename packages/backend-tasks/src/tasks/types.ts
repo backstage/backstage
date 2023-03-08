@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HumanDuration } from '@backstage/types';
+import { HumanDuration, JsonObject } from '@backstage/types';
 import { CronTime } from 'cron';
 import { Duration } from 'luxon';
 import { z } from 'zod';
@@ -30,6 +30,28 @@ import { z } from 'zod';
 export type TaskFunction =
   | ((abortSignal: AbortSignal) => void | Promise<void>)
   | (() => void | Promise<void>);
+
+/**
+ * A semi-opaque type to describe an actively scheduled task.
+ *
+ * @public
+ */
+export type TaskDescriptor = {
+  /**
+   * The unique identifier of the task.
+   */
+  id: string;
+  /**
+   * The scope of the task.
+   */
+  scope: 'global' | 'local';
+  /**
+   * The settings that control the task flow. This is a semi-opaque structure
+   * that is mainly there for debugging purposes. Do not make any assumptions
+   * about the contents of this field.
+   */
+  settings: { version: number } & JsonObject;
+};
 
 /**
  * Options that control the scheduling of a task.
@@ -307,6 +329,19 @@ export interface PluginTaskScheduler {
    * @param schedule - The task schedule
    */
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
+
+  /**
+   * Returns all scheduled tasks registered to this scheduler.
+   *
+   * @remarks
+   *
+   * This method is useful for triggering tasks manually using the triggerTask
+   * functionality. Note that the returned tasks contain only tasks that have
+   * been initialized in this instance of the scheduler.
+   *
+   * @returns Scheduled tasks
+   */
+  getScheduledTasks(): Promise<TaskDescriptor[]>;
 }
 
 function isValidOptionalDurationString(d: string | undefined): boolean {

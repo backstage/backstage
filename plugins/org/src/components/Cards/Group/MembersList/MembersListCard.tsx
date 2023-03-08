@@ -44,6 +44,7 @@ import {
   Progress,
   ResponseErrorPanel,
   Link,
+  OverflowTooltip,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -58,18 +59,6 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(4, 1, 1),
       flex: '1',
       minWidth: '0px',
-    },
-    email: {
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      display: 'inline-block',
-      verticalAlign: 'middle',
-      maxWidth: '100%',
-      '&:hover': {
-        overflow: 'visible',
-        whiteSpace: 'normal',
-      },
     },
   }),
 );
@@ -103,23 +92,23 @@ const MemberComponent = (props: { member: UserEntity }) => {
           <Box
             pt={2}
             sx={{
-              maxWidth: '100%',
+              width: '100%',
             }}
             textAlign="center"
           >
-            <Typography variant="h5">
+            <Typography variant="h6">
               <Link
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
                   entityRouteParams(props.member),
                 )}
               >
-                {displayName}
+                <OverflowTooltip text={displayName} />
               </Link>
             </Typography>
             {profile?.email && (
-              <Link className={classes.email} to={`mailto:${profile.email}`}>
-                {profile.email}
+              <Link to={`mailto:${profile.email}`}>
+                <OverflowTooltip text={profile.email} />
               </Link>
             )}
             {description && (

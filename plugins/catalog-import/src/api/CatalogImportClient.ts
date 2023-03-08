@@ -164,7 +164,7 @@ export class CatalogImportClient implements CatalogImportApi {
 to this repository so that the component can be added to the \
 [${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
 the component will become available.\n\nFor more information, read an \
-[overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview).`,
+[overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/).`,
     };
   }
 

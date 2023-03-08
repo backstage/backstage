@@ -25,6 +25,9 @@ const useStyles = makeStyles(theme => ({
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.text.primary,
 
+      ['& .btn-clear']: {
+        color: theme.palette.text.primary,
+      },
       [`& .scheme-container`]: {
         backgroundColor: theme.palette.background.default,
       },

@@ -18,13 +18,13 @@ import Chip from '@material-ui/core/Chip';
 import { withStyles } from '@material-ui/core/styles';
 import { AlertSource } from '../../types';
 
-const MaintenanceChip = withStyles({
+const MaintenanceChip = withStyles(theme => ({
   root: {
     backgroundColor: '#92949c',
-    color: 'white',
+    color: theme.palette.common.white,
     marginTop: 8,
   },
-})(Chip);
+}))(Chip);
 
 export const ILertCardHeaderStatus = ({
   alertSource,

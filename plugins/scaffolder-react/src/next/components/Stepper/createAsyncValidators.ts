@@ -18,9 +18,10 @@ import { FieldValidation } from '@rjsf/utils';
 import type { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { Draft07 as JSONSchema } from 'json-schema-library';
-import { createFieldValidation } from '../../lib';
+import { createFieldValidation, extractSchemaFromStep } from '../../lib';
 import { NextCustomFieldValidator } from '../../extensions';
 import { isObject } from './utils';
+import { NextFieldExtensionUiSchema } from '../../extensions/types';
 
 /**
  * @internal
@@ -31,7 +32,10 @@ export type FormValidation = {
 
 export const createAsyncValidators = (
   rootSchema: JsonObject,
-  validators: Record<string, undefined | NextCustomFieldValidator<unknown>>,
+  validators: Record<
+    string,
+    undefined | NextCustomFieldValidator<unknown, unknown>
+  >,
   context: {
     apiHolder: ApiHolder;
   },
@@ -49,6 +53,7 @@ export const createAsyncValidators = (
       key: string,
       value: JsonValue | undefined,
       schema: JsonObject,
+      uiSchema: NextFieldExtensionUiSchema<unknown, unknown>,
     ) => {
       const validator = validators[validatorName];
       if (validator) {
@@ -58,6 +63,7 @@ export const createAsyncValidators = (
             ...context,
             formData,
             schema,
+            uiSchema,
           });
         } catch (ex) {
           fieldValidation.addError(ex.message);
@@ -69,28 +75,41 @@ export const createAsyncValidators = (
     for (const [key, value] of Object.entries(current)) {
       const path = `${pathPrefix}/${key}`;
       const definitionInSchema = parsedSchema.getSchema(path, formData);
+      const { schema, uiSchema } = extractSchemaFromStep(definitionInSchema);
+
+      const hasItems = definitionInSchema && definitionInSchema.items;
+
+      const doValidateItem = async (
+        propValue: JsonObject,
+        itemSchema: JsonObject,
+        itemUiSchema: NextFieldExtensionUiSchema<unknown, unknown>,
+      ) => {
+        await validateForm(
+          propValue['ui:field'] as string,
+          key,
+          value,
+          itemSchema,
+          itemUiSchema,
+        );
+      };
+
+      const doValidate = async (propValue: JsonObject) => {
+        if ('ui:field' in propValue) {
+          const { schema: itemsSchema, uiSchema: itemsUiSchema } =
+            extractSchemaFromStep(definitionInSchema.items);
+          await doValidateItem(propValue, itemsSchema, itemsUiSchema);
+        }
+      };
 
       if (definitionInSchema && 'ui:field' in definitionInSchema) {
-        if ('ui:field' in definitionInSchema) {
-          await validateForm(
-            definitionInSchema['ui:field'],
-            key,
-            value,
-            definitionInSchema,
-          );
-        }
-      } else if (
-        definitionInSchema &&
-        definitionInSchema.items &&
-        'ui:field' in definitionInSchema.items
-      ) {
-        if ('ui:field' in definitionInSchema.items) {
-          await validateForm(
-            definitionInSchema.items['ui:field'],
-            key,
-            value,
-            definitionInSchema.items,
-          );
+        await doValidateItem(definitionInSchema, schema, uiSchema);
+      } else if (hasItems && 'ui:field' in definitionInSchema.items) {
+        await doValidate(definitionInSchema.items);
+      } else if (hasItems && definitionInSchema.items.type === 'object') {
+        const properties = (definitionInSchema.items?.properties ??
+          []) as JsonObject[];
+        for (const [, propValue] of Object.entries(properties)) {
+          await doValidate(propValue);
         }
       } else if (isObject(value)) {
         formValidation[key] = await validate(formData, path, value);

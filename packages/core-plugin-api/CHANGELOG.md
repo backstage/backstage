@@ -1,5 +1,26 @@
 # @backstage/core-plugin-api
 
+## 1.5.0-next.2
+
+### Minor Changes
+
+- ab750ddc4f2: The GitLab auth provider can now be used to get OpenID tokens.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
 ## 1.4.1-next.0
 
 ### Patch Changes

@@ -55,13 +55,8 @@ export interface AsyncEntityProviderProps {
  *
  * @public
  */
-export const AsyncEntityProvider = ({
-  children,
-  entity,
-  loading,
-  error,
-  refresh,
-}: AsyncEntityProviderProps) => {
+export const AsyncEntityProvider = (props: AsyncEntityProviderProps) => {
+  const { children, entity, loading, error, refresh } = props;
   const value = { entity, loading, error, refresh };
   // We provide both the old and the new context, since
   // consumers might be doing things like `useContext(EntityContext)`

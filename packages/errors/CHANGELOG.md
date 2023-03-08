@@ -1,5 +1,13 @@
 # @backstage/errors
 
+## 1.1.5-next.0
+
+### Patch Changes
+
+- 3bf83a2aabf: Added `NotImplementedError`, which can be used when the server does not recognize the request method and is incapable of supporting it for any resource.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
 ## 1.1.4
 
 ### Patch Changes
