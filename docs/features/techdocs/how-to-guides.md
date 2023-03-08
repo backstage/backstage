@@ -433,7 +433,7 @@ const app = createApp({
 
 ## How to add the documentation setup to your software templates
 
-[Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
+[Software Templates](https://backstage.io/docs/features/software-templates/)
 in Backstage is a tool that can help your users to create new components out of
 already configured templates. It comes with a set of default templates to use,
 but you can also

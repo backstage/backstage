@@ -304,6 +304,46 @@ describe('PluginTaskManagerImpl', () => {
     );
   });
 
+  describe('can fetch task ids', () => {
+    it.each(databases.eachSupportedId())(
+      'can fetch both global and local task ids, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+        const fn = jest.fn();
+
+        await manager.scheduleTask({
+          id: 'task1',
+          timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromMillis(5000),
+          fn,
+          scope: 'global',
+        });
+
+        await manager.scheduleTask({
+          id: 'task2',
+          timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromMillis(5000),
+          fn,
+          scope: 'local',
+        });
+
+        await expect(manager.getScheduledTasks()).resolves.toEqual([
+          {
+            id: 'task1',
+            scope: 'global',
+            settings: expect.objectContaining({ cadence: 'PT5S' }),
+          },
+          {
+            id: 'task2',
+            scope: 'local',
+            settings: expect.objectContaining({ cadence: 'PT5S' }),
+          },
+        ]);
+      },
+      60_000,
+    );
+  });
+
   describe('parseDuration', () => {
     it('should parse durations', () => {
       expect(parseDuration({ milliseconds: 5000 })).toEqual('PT5S');

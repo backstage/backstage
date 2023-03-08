@@ -687,5 +687,59 @@ describe('DatabaseManager', () => {
         }),
       );
     });
+
+    it('sets the owner config for plugin using default config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                database: 'foodb',
+              },
+              role: 'backstage',
+              plugin: {
+                testowner: {},
+              },
+            },
+          },
+        }),
+      );
+      await testManager.forPlugin('testowner').getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig] = mockCalls[0];
+
+      expect(baseConfig.data.role).toEqual('backstage');
+    });
+
+    it('sets the owner config for plugin using plugin config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                database: 'foodb',
+              },
+              role: 'backstage',
+              plugin: {
+                testowner: {
+                  role: 'backstage-plugin',
+                },
+              },
+            },
+          },
+        }),
+      );
+      await testManager.forPlugin('testowner').getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig] = mockCalls[0];
+
+      expect(baseConfig.data.role).toEqual('backstage-plugin');
+    });
   });
 });

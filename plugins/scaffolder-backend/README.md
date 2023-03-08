@@ -1,7 +1,7 @@
 # Scaffolder Backend
 
 This is the backend for the default Backstage [software
-templates](https://backstage.io/docs/features/software-templates/software-templates-index).
+templates](https://backstage.io/docs/features/software-templates/).
 This provides the API for the frontend [scaffolder
 plugin](https://github.com/backstage/backstage/tree/master/plugins/scaffolder),
 as well as the built-in template actions, tasks and stages.

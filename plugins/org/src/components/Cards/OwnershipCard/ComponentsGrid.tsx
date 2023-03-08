@@ -15,7 +15,12 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { Link, Progress, ResponseErrorPanel } from '@backstage/core-components';
+import {
+  Link,
+  OverflowTooltip,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import {
@@ -47,6 +52,9 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
     bold: {
       fontWeight: theme.typography.fontWeightBold,
     },
+    smallFont: {
+      fontSize: theme.typography.body2.fontSize,
+    },
     entityTypeBox: {
       background: (props: { type: string }) =>
         theme.getPageTheme({ themeId: props.type }).backgroundImage,
@@ -68,6 +76,7 @@ const EntityCountTile = ({
   const classes = useStyles({ type: type ?? kind });
 
   const rawTitle = type ?? kind;
+  const isLongText = rawTitle.length > 10;
 
   return (
     <Link to={url} variant="body2">
@@ -80,9 +89,16 @@ const EntityCountTile = ({
         <Typography className={classes.bold} variant="h6">
           {counter}
         </Typography>
-        <Typography className={classes.bold} variant="h6">
-          {pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
-        </Typography>
+        <Box sx={{ width: '100%', textAlign: 'center' }}>
+          <Typography
+            className={`${classes.bold} ${isLongText && classes.smallFont}`}
+            variant="h6"
+          >
+            <OverflowTooltip
+              text={pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
+            />
+          </Typography>
+        </Box>
         {type && <Typography variant="subtitle1">{kind}</Typography>}
       </Box>
     </Link>

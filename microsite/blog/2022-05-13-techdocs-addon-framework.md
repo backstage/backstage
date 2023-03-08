@@ -14,7 +14,7 @@ _TL;DR:_ Introducing the TechDocs Addon Framework — a way for us all to contri
 
 <!--truncate-->
 
-[TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview) is a centralized platform for publishing, viewing, and discovering technical documentation across an entire organization. It's a solid foundation! But TechDocs doesn't solve higher order documentation needs on its own such as: How do you create and reinforce a culture of documentation? How do you build trust in the quality of technical documentation?
+[TechDocs](https://backstage.io/docs/features/techdocs/) is a centralized platform for publishing, viewing, and discovering technical documentation across an entire organization. It's a solid foundation! But TechDocs doesn't solve higher order documentation needs on its own such as: How do you create and reinforce a culture of documentation? How do you build trust in the quality of technical documentation?
 
 To address this need, we’re proud to introduce the [TechDocs Addon Framework](https://github.com/backstage/backstage/issues/9636) — a way for us all to contribute and share additional features, TechDocs Addons, on top of the base docs-like-code experience. Using TechDocs Addons, you can customize the TechDocs experience to address some of these higher order needs.
 

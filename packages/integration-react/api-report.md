@@ -23,7 +23,11 @@ export class ScmAuth implements ScmAuthApi {
     ScmAuthApi,
     {
       github: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
-      gitlab: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
+      gitlab: OAuthApi &
+        OpenIdConnectApi &
+        ProfileInfoApi &
+        BackstageIdentityApi &
+        SessionApi;
       azure: OAuthApi &
         OpenIdConnectApi &
         ProfileInfoApi &

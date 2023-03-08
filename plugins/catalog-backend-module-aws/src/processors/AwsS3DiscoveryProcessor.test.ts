@@ -22,29 +22,26 @@ import {
   CatalogProcessorResult,
   processingResult,
 } from '@backstage/plugin-catalog-backend';
-import AWSMock from 'aws-sdk-mock';
-import aws from 'aws-sdk';
+import {
+  S3Client,
+  ListObjectsV2Command,
+  ListObjectsV2Output,
+  GetObjectCommand,
+} from '@aws-sdk/client-s3';
+import { mockClient } from 'aws-sdk-client-mock';
+import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
+import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
 
-AWSMock.setSDKInstance(aws);
-const object: aws.S3.Types.Object = {
+const s3Client = mockClient(S3Client);
+const object: Object = {
   Key: 'awsS3-mock-object.txt',
 };
-const objectList: aws.S3.ObjectList = [object];
-const output: aws.S3.Types.ListObjectsV2Output = {
+const objectList: Object[] = [object];
+const output: ListObjectsV2Output = {
   Contents: objectList,
 };
-AWSMock.mock('S3', 'listObjectsV2', output);
-AWSMock.mock(
-  'S3',
-  'getObject',
-  Buffer.from(
-    require('fs').readFileSync(
-      path.resolve(__dirname, '__fixtures__/awsS3-mock-object.txt'),
-    ),
-  ),
-);
 
 const logger = getVoidLogger();
 const reader = UrlReaders.default({
@@ -60,6 +57,18 @@ describe('readLocation', () => {
     type: 's3-discovery',
     target: 'https://testbucket.s3.us-east-2.amazonaws.com',
   };
+
+  beforeEach(() => {
+    s3Client.reset();
+    s3Client.on(ListObjectsV2Command).resolves(output);
+    s3Client.on(GetObjectCommand).resolves({
+      Body: sdkStreamMixin(
+        fs.createReadStream(
+          path.resolve(__dirname, '__fixtures__/awsS3-mock-object.txt'),
+        ),
+      ),
+    });
+  });
 
   it('should load from url', async () => {
     const generated = (await new Promise<CatalogProcessorResult>(emit =>

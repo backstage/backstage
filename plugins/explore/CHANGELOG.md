@@ -1,5 +1,17 @@
 # @backstage/plugin-explore
 
+## 0.4.1-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/plugin-search-react@1.5.1-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/plugin-explore-react@0.0.27-next.2
+
 ## 0.4.1-next.1
 
 ### Patch Changes
