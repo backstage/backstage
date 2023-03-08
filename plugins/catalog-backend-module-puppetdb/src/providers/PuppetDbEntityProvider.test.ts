@@ -21,7 +21,7 @@ import { PuppetDbEntityProvider } from './PuppetDbEntityProvider';
 import {
   DeferredEntity,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import * as puppetFunctions from '../puppet/read';
 import { ANNOTATION_PUPPET_CERTNAME } from '../puppet';
 import {
