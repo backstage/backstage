@@ -16,8 +16,7 @@
 
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import type { JsonObject, JsonValue } from '@backstage/types';
-import { mergeJson } from '@backstage/types';
+import type { JsonValue } from '@backstage/types';
 
 export class ObservableConfigProxy implements ConfigService {
   private config: ConfigService = new ConfigReader({});
@@ -61,12 +60,6 @@ export class ObservableConfigProxy implements ConfigService {
         }
       },
     };
-  }
-  mergeConfig(configData: JsonObject) {
-    if (this.parent) {
-      throw new Error('immutable');
-    }
-    this.setConfig(new ConfigReader(mergeJson(this.config.get(), configData)));
   }
 
   private select(required: true): ConfigService;
