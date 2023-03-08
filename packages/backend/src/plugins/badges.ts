@@ -28,6 +28,6 @@ export default async function createPlugin(
     config: env.config,
     discovery: env.discovery,
     badgeFactories: createDefaultBadgeFactories(),
-    env: env,
+    tokenManager: env.tokenManager,
   });
 }

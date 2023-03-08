@@ -20,6 +20,7 @@ import {
   createServiceBuilder,
   loadBackendConfig,
   SingleHostDiscovery,
+  ServerTokenManager,
 } from '@backstage/backend-common';
 import { createRouter } from './router';
 
@@ -37,8 +38,8 @@ export async function startStandaloneServer(
   const discovery = SingleHostDiscovery.fromConfig(config);
 
   logger.debug('Creating application...');
-
-  const router = await createRouter({ config, discovery, env: undefined });
+  const tokenManager = ServerTokenManager.noop();
+  const router = await createRouter({ config, discovery, tokenManager });
 
   let service = createServiceBuilder(module)
     .setPort(options.port)

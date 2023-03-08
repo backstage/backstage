@@ -86,7 +86,7 @@ describe('createRouter', () => {
       catalog: catalog as Partial<CatalogApi> as CatalogApi,
       config,
       discovery,
-      env: { tokenManager },
+      tokenManager,
     });
     app = express().use(router);
   });
@@ -96,12 +96,13 @@ describe('createRouter', () => {
   });
 
   it('works', async () => {
+    const tokenManager = ServerTokenManager.noop();
     const router = await createRouter({
       badgeBuilder,
       catalog: catalog as Partial<CatalogApi> as CatalogApi,
       config,
       discovery,
-      env: {},
+      tokenManager,
     });
     expect(router).toBeDefined();
   });

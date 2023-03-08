@@ -19,6 +19,7 @@ import Router from 'express-promise-router';
 import {
   errorHandler,
   PluginEndpointDiscovery,
+  TokenManager,
 } from '@backstage/backend-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
@@ -33,7 +34,7 @@ export interface RouterOptions {
   catalog?: CatalogApi;
   config: Config;
   discovery: PluginEndpointDiscovery;
-  env: any;
+  tokenManager: TokenManager;
 }
 
 /** @public */
@@ -46,7 +47,7 @@ export async function createRouter(
     options.badgeBuilder ||
     new DefaultBadgeBuilder(options.badgeFactories || {});
   const router = Router();
-  const { tokenManager } = options.env;
+  const tokenManager = options.tokenManager;
 
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
     const token = await tokenManager.getToken();
