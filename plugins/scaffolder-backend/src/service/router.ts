@@ -34,6 +34,8 @@ import {
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  scaffolderPermissions,
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
@@ -59,7 +61,10 @@ import {
 } from '@backstage/plugin-auth-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { createIsAuthorized } from '@backstage/plugin-permission-node';
+import {
+  createIsAuthorized,
+  createPermissionIntegrationRouter,
+} from '@backstage/plugin-permission-node';
 import { scaffolderTemplateRules } from './rules';
 
 const isAuthorized = createIsAuthorized(Object.values(scaffolderTemplateRules));
@@ -260,6 +265,14 @@ export async function createRouter(
     additionalTemplateFilters,
     additionalTemplateGlobals,
   });
+
+  const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+    permissions: scaffolderPermissions,
+    rules: Object.values(scaffolderTemplateRules),
+  });
+
+  router.use(permissionIntegrationRouter);
 
   router
     .get(
