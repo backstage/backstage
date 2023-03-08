@@ -258,10 +258,8 @@ describe('AwsS3UrlReader', () => {
         reader.readUrl(
           'https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml',
         ),
-      ).rejects.toThrow(
-        Error(
-          `Could not retrieve file from S3; caused by Error: Invalid AWS S3 URL https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
-        ),
+      ).rejects.toMatchInlineSnapshot(
+        `[Error: Could not retrieve file from S3; caused by Error: Invalid AWS S3 URL https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml]`,
       );
     });
   });
@@ -316,10 +314,8 @@ describe('AwsS3UrlReader', () => {
         reader.readUrl!(
           'https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml',
         ),
-      ).rejects.toThrow(
-        Error(
-          `Could not retrieve file from S3; caused by Error: Invalid AWS S3 URL https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
-        ),
+      ).rejects.toMatchInlineSnapshot(
+        `[Error: Could not retrieve file from S3; caused by Error: Invalid AWS S3 URL https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml]`,
       );
     });
   });
