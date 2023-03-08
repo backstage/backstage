@@ -19,76 +19,74 @@ import inquirer from 'inquirer';
 import { Task } from '../../../../lib/tasks';
 import { updateConfigFile } from '../../config';
 import { APP_CONFIG_FILE } from '../../files';
+import { GitHubAnswers } from '../../auth';
 
 type Answers = {
-  isEnterprise: boolean;
-  host: string;
-  apiBaseUrl?: string;
-  token: string;
+  hasEnterprise: boolean;
+  enterpriseInstanceUrl: string;
+  apiBaseUrl: string;
 };
 
-const getConfig = ({ isEnterprise, host, apiBaseUrl, token }: Answers) => ({
+const getConfig = ({
+  hasEnterprise,
+  apiBaseUrl,
+  host,
+  token,
+}: {
+  hasEnterprise: boolean;
+  apiBaseUrl: string;
+  host: string;
+  token: string;
+}) => ({
   integrations: {
-    github: isEnterprise
-      ? [
-          {
-            host,
-            apiBaseUrl,
-            token,
-          },
-        ]
-      : [
-          {
-            host,
-            token,
-          },
-        ],
+    github: [
+      {
+        host,
+        token,
+        ...(hasEnterprise && {
+          apiBaseUrl,
+        }),
+      },
+    ],
   },
 });
 
-export const github = async () => {
-  let host = 'github.com';
-
+export const github = async (providerAnswers?: GitHubAnswers) => {
   // TODO(tudi2d): Is GitHub Enterprise a valid setup if there is no Authentication?
-  const {
-    isEnterprise,
-    host: _host,
-    apiBaseUrl,
-  } = await inquirer.prompt<{
-    isEnterprise: Answers['isEnterprise'];
-    apiBaseUrl: Answers['apiBaseUrl'];
-    host: Answers['host'];
-  }>([
+  const answers = await inquirer.prompt<Answers>([
     {
       type: 'confirm',
-      name: 'isEnterprise',
+      name: 'hasEnterprise',
       message: 'Are you using GitHub Enterprise?',
+      when: () => typeof providerAnswers === 'undefined',
     },
     {
       type: 'input',
-      name: 'apiBaseUrl',
-      when: ({ isEnterprise: _isEnterprise }) => _isEnterprise,
-      message:
-        'What is your GitHub Enterprise REST API URL (e.g. https://ghe.example.net/api/v3)?',
-      // TODO(tudi2d): Fetch API using OAuth Token if Auth was set up
+      name: 'enterpriseInstanceUrl',
+      message: 'What is your URL for GitHub Enterprise?',
+      when: ({ hasEnterprise }) => hasEnterprise,
       validate: (input: string) => Boolean(new URL(input)),
     },
     {
       type: 'input',
-      name: 'host',
-      when: ({ isEnterprise: _isEnterprise }) => _isEnterprise,
-      message: 'What is your GitHub Enterprise Host (e.g. ghe.example.net)?',
-      // TODO(tudi2d): validate: Must the host be part of the REST API URL?
+      name: 'apiBaseUrl',
+      message: 'What is your GitHub Enterprise API path?',
+      default: '/api/v3',
+      when: ({ hasEnterprise }) =>
+        hasEnterprise || providerAnswers?.hasEnterprise,
+      // TODO(tudi2d): Fetch API using OAuth Token if Auth was set up
     },
   ]);
 
-  if (isEnterprise) {
-    host = _host;
-  }
+  const host = new URL(
+    providerAnswers?.enterpriseInstanceUrl ??
+      answers?.enterpriseInstanceUrl ??
+      'http://github.com',
+  );
 
   Task.log(`
       To create new repositories in GitHub using Software Templates you first need to create a personal access token: ${chalk.blue(
-        `https://${host}/settings/tokens/new`,
+        `${host.origin}/settings/tokens/new`,
       )}
   
       Select the following scopes:
@@ -111,9 +109,7 @@ export const github = async () => {
       )}
       `);
 
-  const { token } = await inquirer.prompt<{
-    token: Answers['token'];
-  }>([
+  const { token } = await inquirer.prompt<{ token: string }>([
     {
       type: 'input',
       name: 'token',
@@ -124,13 +120,13 @@ export const github = async () => {
   ]);
 
   const config = getConfig({
+    hasEnterprise: providerAnswers?.hasEnterprise ?? answers.hasEnterprise,
+    apiBaseUrl: host.origin + answers.apiBaseUrl,
+    host: host.hostname,
     token,
-    isEnterprise,
-    host,
-    apiBaseUrl,
   });
 
-  Task.log('Setting up GitHub Integration for you...');
+  Task.log('Setting up Software Templates using GitHub integration for you...');
 
   await Task.forItem(
     'Updating',

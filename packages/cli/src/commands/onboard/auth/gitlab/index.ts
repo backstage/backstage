@@ -42,14 +42,14 @@ const getConfig = (answers: Answers) => {
   };
 };
 
-type Answers = {
+export type Answers = {
   clientSecret: string;
   clientId: string;
   hasAudience: boolean;
   audience?: string;
 };
 
-export const gitlab = async () => {
+export const gitlab = async (): Promise<Answers> => {
   Task.log(`
     To add GitLab authentication, you must create an Application from the GitLab Settings: ${chalk.blue(
       'https://gitlab.com/-/profile/applications',
@@ -110,4 +110,6 @@ export const gitlab = async () => {
       await patch(patchFile);
     });
   }
+
+  return answers;
 };

@@ -14,44 +14,50 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Task } from '../../../lib/tasks';
-import { github } from './github';
-import { gitlab } from './gitlab';
+import { github, Answers as GitHubAnswers } from './github';
+import { gitlab, Answers as GitLabAnswers } from './gitlab';
 
-export async function auth(): Promise<void> {
+export { type GitHubAnswers, type GitLabAnswers };
+
+export async function auth(): Promise<{
+  provider: string;
+  answers: GitHubAnswers | GitLabAnswers;
+}> {
   const answers = await inquirer.prompt<{
-    provider?: string;
+    provider: string;
   }>([
     {
       type: 'list',
       name: 'provider',
-      message: 'Please select a provider:',
+      message: 'Please select an authentication provider:',
       choices: ['GitHub', 'GitLab'],
     },
   ]);
 
   const { provider } = answers;
 
+  let providerAnswers;
   switch (provider) {
     case 'GitHub': {
-      await github();
+      providerAnswers = await github();
       break;
     }
     case 'GitLab': {
-      await gitlab();
+      providerAnswers = await gitlab();
       break;
     }
     default:
       throw new Error(`Provider ${provider} not implemented yet.`);
   }
 
+  Task.log();
   Task.log(`Done setting up ${provider} Authentication!`);
   Task.log();
-  Task.log(
-    `You can now start your app with ${chalk.inverse(
-      chalk.italic('yarn dev'),
-    )}`,
-  );
+
+  return {
+    provider,
+    answers: providerAnswers,
+  };
 }

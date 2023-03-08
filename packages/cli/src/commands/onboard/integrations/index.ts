@@ -15,6 +15,8 @@
  */
 
 import inquirer from 'inquirer';
+import { Task } from '../../../lib/tasks';
+import { GitHubAnswers, GitLabAnswers } from '../auth';
 import { github } from './github';
 
 enum Integration {
@@ -23,27 +25,51 @@ enum Integration {
 
 const Integrations: Integration[] = [Integration.GITHUB];
 
-export async function integrations(): Promise<void> {
-  await inquirer
-    .prompt<{
-      integration?: Integration;
-    }>([
-      {
-        // TODO(tudi2d): Let's start with one, but it should be multiple choice in the future
-        type: 'list',
-        name: 'integration',
-        message: 'Please select an integration:',
-        choices: Integrations,
-      },
-    ])
-    .then(async ({ integration }) => {
-      if (integration) {
-        switch (integration) {
-          case Integration.GITHUB:
-            await github();
-            break;
-          default:
-        }
-      }
-    });
+export async function integrations(providerInfo?: {
+  provider: string;
+  answers: GitHubAnswers | GitLabAnswers;
+}): Promise<void> {
+  const answers = await inquirer.prompt<{
+    integration?: Integration;
+    shouldUsePreviousProvider: boolean;
+  }>([
+    {
+      type: 'confirm',
+      name: 'shouldUsePreviousProvider',
+      message: `Do you want to keep using ${providerInfo?.provider} as your provider when setting up Software Templates?`,
+      when: () =>
+        providerInfo?.provider &&
+        Object.values(Integrations).includes(
+          providerInfo!.provider as Integration,
+        ),
+    },
+    {
+      // TODO(tudi2d): Let's start with one, but it should be multiple choice in the future
+      type: 'list',
+      name: 'integration',
+      message: 'Please select an integration provider:',
+      choices: Integrations,
+      when: ({ shouldUsePreviousProvider }) => !shouldUsePreviousProvider,
+    },
+  ]);
+
+  if (answers.shouldUsePreviousProvider) {
+    answers.integration = providerInfo!.provider as Integration;
+  }
+
+  switch (answers.integration) {
+    case Integration.GITHUB: {
+      const providerAnswers =
+        providerInfo?.provider === 'GitHub'
+          ? (providerInfo!.answers as GitHubAnswers)
+          : undefined;
+      await github(providerAnswers);
+      break;
+    }
+    default:
+  }
+
+  Task.log();
+  Task.log(`Done setting up ${answers.integration} Integration!`);
+  Task.log();
 }

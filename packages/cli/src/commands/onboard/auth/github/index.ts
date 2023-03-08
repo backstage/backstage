@@ -23,7 +23,7 @@ import { updateConfigFile } from '../../config';
 import { APP_CONFIG_FILE, PATCH_FOLDER } from '../../files';
 import { patch } from '../patch';
 
-type Answers = {
+export type Answers = {
   clientSecret: string;
   clientId: string;
   hasEnterprise: boolean;
@@ -76,7 +76,7 @@ const getConfig = (answers: Answers) => {
   };
 };
 
-export const github = async () => {
+export const github = async (): Promise<Answers> => {
   Task.log(`
     To add GitHub authentication, you must create an OAuth App from the GitHub developer settings: ${chalk.blue(
       'https://github.com/settings/developers',
@@ -142,4 +142,6 @@ export const github = async () => {
       await patch(patchFile);
     });
   }
+
+  return answers;
 };
