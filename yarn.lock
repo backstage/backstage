@@ -16195,11 +16195,11 @@ __metadata:
   linkType: hard
 
 "@types/sanitize-html@npm:^2.6.2":
-  version: 2.8.0
-  resolution: "@types/sanitize-html@npm:2.8.0"
+  version: 2.8.1
+  resolution: "@types/sanitize-html@npm:2.8.1"
   dependencies:
     htmlparser2: ^8.0.0
-  checksum: 6e583cac673832536fac8da53890073f753baf2c49826fd0c2831e615cb5527692d03b2b5ba9eb8caf8694de4bfb1c31fd12398d2b68331725590a6ceb8f82fe
+  checksum: 9c07d3a9d925e291472f74b097fb179b32659ea01834f728887811e5fc75cf2b17d844e32e97c0e583eba993af86a3f8250c82c8fa3152abf9ff2a8582972906
   languageName: node
   linkType: hard
 
