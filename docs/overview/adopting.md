@@ -153,7 +153,7 @@ Backstage as _the_ platform:
   percentage of engineers is below 50%. Most engineers actually use Backstage on
   a daily basis.
 
-Again, any feedback is appreciated. Please use the Edit button at the top of the
+Again, any feedback is appreciated. Please use the Edit button at the bottom of the
 page to make a suggestion.
 
 _**Note!** It might be tempting to try to optimize Backstage usage and
