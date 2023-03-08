@@ -57,11 +57,11 @@ the API server address directly in that `url` field.
 
 ### AWS
 
-The Amazon Web Services (AWS) server side authentication provider works by connecting to [AWS IAM (Identity and Access Management)][3], which defines who (users) and what (workloads) can access which AWS resources. AWS IAM users can be granted an *Access Key ID* and *Secret Access Key* for authentication. 
+The Amazon Web Services (AWS) server side authentication provider works by connecting to [AWS IAM (Identity and Access Management)][3], which defines who (users) and what (workloads) can access which AWS resources. AWS IAM users can be granted an _Access Key ID_ and _Secret Access Key_ for authentication.
 
-In order for Backstage to read Kubernetes clusters running in AWS [Elastic Kubernetes Service (EKS)][4], your chosen IAM user must also have authorization to view EKS clusters. To do this, create or attach an [EKS IAM policy][5] to your IAM user before proceeding. 
+In order for Backstage to read Kubernetes clusters running in AWS [Elastic Kubernetes Service (EKS)][4], your chosen IAM user must also have authorization to view EKS clusters. To do this, create or attach an [EKS IAM policy][5] to your IAM user before proceeding.
 
-To configure the AWS auth provider with the Kubernetes plugin, add the following to the `auth` section of your Backstage configuration: 
+To configure the AWS auth provider with the Kubernetes plugin, add the following to the `auth` section of your Backstage configuration:
 
 ```yaml
 kubernetes:
@@ -71,7 +71,7 @@ kubernetes:
     - type: 'config'
       clusters:
         - url: https://<cluster-name>.<region>.eks.amazonaws.com
-          name: <cluster-name> 
+          name: <cluster-name>
           authProvider: 'aws'
           skipTLSVerify: true
           skipMetricsLookup: true
@@ -84,7 +84,7 @@ auth:
         secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 ```
 
-Here, the `accessKeyId` and `secretAccessKey` fields represent the IAM keys for your AWS IAM user with EKS access. We recommend mounting these fields as secrets at runtime- for instance, with a secret manager. Do not hard code credentials in your Backstage config, push config containing IAM credentials to a repository, or push credentials to a container registry as part of a prebuilt Backstage image. 
+Here, the `accessKeyId` and `secretAccessKey` fields represent the IAM keys for your AWS IAM user with EKS access. We recommend mounting these fields as secrets at runtime- for instance, with a secret manager. Do not hard code credentials in your Backstage config, push config containing IAM credentials to a repository, or push credentials to a container registry as part of a prebuilt Backstage image.
 
 ## Client Side Providers
 
