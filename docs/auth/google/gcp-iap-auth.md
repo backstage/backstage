@@ -104,13 +104,13 @@ installed in `packages/app/src/App.tsx` like this:
 import { ProxiedSignInPage } from '@backstage/core-components';
 
 const app = createApp({
- /* highlight-add-start */
+  /* highlight-add-start */
   components: {
     SignInPage: props => <ProxiedSignInPage {...props} provider="gcp-iap" />,
   },
   /* highlight-add-end */
   // ..
-})
+});
 ```
 
 See the [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) section for more information.

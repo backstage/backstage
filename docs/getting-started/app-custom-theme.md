@@ -346,19 +346,19 @@ You can add more icons, if the [default icons](https://github.com/backstage/back
 2. Then you want to import your icon, add this to the rest of your imports: `import AlarmIcon from '@material-ui/icons/Alarm';`
 3. Next you want to add the icon like this to your `createApp`:
 
-    ```tsx title="packages/app/src/App.tsx"
-    const app = createApp({
-      apis: ...,
-      plugins: ...,
-      /* highlight-add-start */
-      icons: {
-        alert: AlarmIcon,
-      },
-    /* highlight-add-end */
-      themes: ...,
-      components: ...,
-    });
-    ```
+   ```tsx title="packages/app/src/App.tsx"
+   const app = createApp({
+     apis: ...,
+     plugins: ...,
+     /* highlight-add-start */
+     icons: {
+       alert: AlarmIcon,
+     },
+   /* highlight-add-end */
+     themes: ...,
+     components: ...,
+   });
+   ```
 
 4. Now we can reference `alert` for our icon in our entity links like this:
 
@@ -413,71 +413,71 @@ For this example we'll show you how you can expand the sidebar with a sub-menu:
 
 3. Then update the `@backstage/core-components` import like this:
 
-    ```tsx
-    import {
-      Sidebar,
-      sidebarConfig,
-      SidebarDivider,
-      SidebarGroup,
-      SidebarItem,
-      SidebarPage,
-      SidebarScrollWrapper,
-      SidebarSpace,
-      useSidebarOpenState,
-      Link,
-      /* highlight-add-start */
-      GroupIcon,
-      SidebarSubmenu,
-      SidebarSubmenuItem,
-      /* highlight-add-end */
-    } from '@backstage/core-components';
-    ```
+   ```tsx
+   import {
+     Sidebar,
+     sidebarConfig,
+     SidebarDivider,
+     SidebarGroup,
+     SidebarItem,
+     SidebarPage,
+     SidebarScrollWrapper,
+     SidebarSpace,
+     useSidebarOpenState,
+     Link,
+     /* highlight-add-start */
+     GroupIcon,
+     SidebarSubmenu,
+     SidebarSubmenuItem,
+     /* highlight-add-end */
+   } from '@backstage/core-components';
+   ```
 
 4. Finally replace `<SidebarItem icon={HomeIcon} to="catalog" text="Home" />` with this:
 
-    ```tsx
-    <SidebarItem icon={HomeIcon} to="catalog" text="Home">
-      <SidebarSubmenu title="Catalog">
-        <SidebarSubmenuItem
-          title="Domains"
-          to="catalog?filters[kind]=domain"
-          icon={DomainIcon}
-        />
-        <SidebarSubmenuItem
-          title="Systems"
-          to="catalog?filters[kind]=system"
-          icon={SystemIcon}
-        />
-        <SidebarSubmenuItem
-          title="Components"
-          to="catalog?filters[kind]=component"
-          icon={ComponentIcon}
-        />
-        <SidebarSubmenuItem
-          title="APIs"
-          to="catalog?filters[kind]=api"
-          icon={ApiIcon}
-        />
-        <SidebarDivider />
-        <SidebarSubmenuItem
-          title="Resources"
-          to="catalog?filters[kind]=resource"
-          icon={ResourceIcon}
-        />
-        <SidebarDivider />
-        <SidebarSubmenuItem
-          title="Groups"
-          to="catalog?filters[kind]=group"
-          icon={GroupIcon}
-        />
-        <SidebarSubmenuItem
-          title="Users"
-          to="catalog?filters[kind]=user"
-          icon={UserIcon}
-        />
-      </SidebarSubmenu>
-    </SidebarItem>
-    ```
+   ```tsx
+   <SidebarItem icon={HomeIcon} to="catalog" text="Home">
+     <SidebarSubmenu title="Catalog">
+       <SidebarSubmenuItem
+         title="Domains"
+         to="catalog?filters[kind]=domain"
+         icon={DomainIcon}
+       />
+       <SidebarSubmenuItem
+         title="Systems"
+         to="catalog?filters[kind]=system"
+         icon={SystemIcon}
+       />
+       <SidebarSubmenuItem
+         title="Components"
+         to="catalog?filters[kind]=component"
+         icon={ComponentIcon}
+       />
+       <SidebarSubmenuItem
+         title="APIs"
+         to="catalog?filters[kind]=api"
+         icon={ApiIcon}
+       />
+       <SidebarDivider />
+       <SidebarSubmenuItem
+         title="Resources"
+         to="catalog?filters[kind]=resource"
+         icon={ResourceIcon}
+       />
+       <SidebarDivider />
+       <SidebarSubmenuItem
+         title="Groups"
+         to="catalog?filters[kind]=group"
+         icon={GroupIcon}
+       />
+       <SidebarSubmenuItem
+         title="Users"
+         to="catalog?filters[kind]=user"
+         icon={UserIcon}
+       />
+     </SidebarSubmenu>
+   </SidebarItem>
+   ```
 
 When you startup your Backstage app and hover over the Home option on the sidebar you'll now see a nice sub-menu appear with links to the various Kinds in your Catalog. It would look like this:
 

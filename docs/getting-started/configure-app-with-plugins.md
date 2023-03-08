@@ -33,25 +33,25 @@ to an entity in the software catalog.
 
 2. Add the `EntityCircleCIContent` extension to the entity pages in the app:
 
-    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-    /* highlight-add-start */
-    import {
-      EntityCircleCIContent,
-      isCircleCIAvailable,
-    } from '@backstage/plugin-circleci';
-    /* highlight-add-end */
+   ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
+   /* highlight-add-start */
+   import {
+     EntityCircleCIContent,
+     isCircleCIAvailable,
+   } from '@backstage/plugin-circleci';
+   /* highlight-add-end */
 
-    const cicdContent = (
-      <EntitySwitch>
-        {/* ... */}
-        {/* highlight-add-next-line */}
-        <EntitySwitch.Case if={isCircleCIAvailable}>
-          <EntityCircleCIContent />
-        </EntitySwitch.Case>;
-        {/* highlight-add-end */}
-      </EntitySwitch>
-    );
-    ```
+   const cicdContent = (
+     <EntitySwitch>
+       {/* ... */}
+       {/* highlight-add-next-line */}
+       <EntitySwitch.Case if={isCircleCIAvailable}>
+         <EntityCircleCIContent />
+       </EntitySwitch.Case>
+       ;{/* highlight-add-end */}
+     </EntitySwitch>
+   );
+   ```
 
    This is just one example, but each Backstage instance may integrate content or
    cards to suit their needs on different pages, tabs, etc. In addition, while some

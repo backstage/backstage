@@ -44,7 +44,7 @@ export default async function createPlugin(
       schedule: env.scheduler.createScheduledTaskRunner({
         frequency: { minutes: 30 },
         timeout: { minutes: 3 },
-       }),
+      }),
       // optional: alternatively, use schedule
       scheduler: env.scheduler,
     }),
@@ -88,14 +88,14 @@ export default async function createCatalogEventBasedProviders(
   /* highlight-add-start */
   providers.push(
     GithubEntityProvider.fromConfig(env.config, {
-       logger: env.logger,
-       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-       schedule: env.scheduler.createScheduledTaskRunner({
-         frequency: { minutes: 30 },
-         timeout: { minutes: 3 },
-       }),
-       // optional: alternatively, use schedule
-       scheduler: env.scheduler,
+      logger: env.logger,
+      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // optional: alternatively, use schedule
+      scheduler: env.scheduler,
     }),
   );
   /* highlight-add-end */
@@ -269,7 +269,7 @@ import {
 } from '@backstage/plugin-catalog-backend-module-github';
 import {
   ScmIntegrations,
-  DefaultGithubCredentialsProvider
+  DefaultGithubCredentialsProvider,
 } from '@backstage/integration';
 /* highlight-add-end */
 

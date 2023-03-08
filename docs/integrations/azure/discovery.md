@@ -128,7 +128,11 @@ export default async function createPlugin(
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
   /* highlight-add-next-line */
-  builder.addProcessor(AzureDevOpsDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }));
+  builder.addProcessor(
+    AzureDevOpsDiscoveryProcessor.fromConfig(env.config, {
+      logger: env.logger,
+    }),
+  );
 
   // ..
 }

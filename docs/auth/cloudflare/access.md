@@ -100,7 +100,7 @@ const app = createApp({
   },
   /* highlight-add-end */
   // ..
-})
+});
 ```
 
 See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page to also work smoothly for local development.

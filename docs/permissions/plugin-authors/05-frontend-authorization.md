@@ -36,7 +36,9 @@ import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
   const title = useRef('');
   /* highlight-add-next-line */
-  const { loading: loadingPermission, allowed: canAddTodo } = usePermission({ permission: todoListCreatePermission });
+  const { loading: loadingPermission, allowed: canAddTodo } = usePermission({
+    permission: todoListCreatePermission,
+  });
 
   return (
     <>
@@ -78,7 +80,6 @@ Here we are using the [`usePermission` hook](https://backstage.io/docs/reference
 It's really that simple! Let's change our policy to test the disabled button:
 
 ```ts title="packages/backend/src/plugins/permission.ts"
-
 if (isPermission(request.permission, todoListCreatePermission)) {
   return {
     /* highlight-remove-next-line */
@@ -117,10 +118,7 @@ export const TodoListPage = () => {
     </Grid>
     {/* highlight-remove-end */}
     {/* highlight-add-start */}
-    <RequirePermission
-      permission={todoListCreatePermission}
-      errorPage={<></>}
-    >
+    <RequirePermission permission={todoListCreatePermission} errorPage={<></>}>
       <Grid item>
         <AddTodo onAdd={handleAdd} />
       </Grid>
@@ -129,13 +127,15 @@ export const TodoListPage = () => {
     <Grid item>
       <TodoList key={key} onEdit={setEdit} />
     </Grid>
-  </Grid>
-}
+  </Grid>;
+};
 
 function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
   const title = useRef('');
   /* highlight-remove-next-line */
-  const { loading: loadingPermission, allowed: canAddTodo } = usePermission({ permission: todoListCreatePermission });
+  const { loading: loadingPermission, allowed: canAddTodo } = usePermission({
+    permission: todoListCreatePermission,
+  });
 
   return (
     <>

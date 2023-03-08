@@ -44,7 +44,7 @@ For large organizations, this plugin can take a long time, so be careful setting
 import { MicrosoftGraphOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-msgraph';
 
 export default async function createPlugin(
-   env: PluginEnvironment,
+  env: PluginEnvironment,
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
 
@@ -55,7 +55,7 @@ export default async function createPlugin(
       schedule: env.scheduler.createScheduledTaskRunner({
         frequency: { hours: 1 },
         timeout: { minutes: 50 },
-        initialDelay: { seconds: 15}
+        initialDelay: { seconds: 15 },
       }),
     }),
   );

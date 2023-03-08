@@ -88,7 +88,7 @@ import { PluginEnvironment } from '../types';
 export default async function createCatalogEventBasedProviders(
   /* highlight-remove-next-line */
   _: PluginEnvironment,
- /* highlight-add-next-line */
+  /* highlight-add-next-line */
   env: PluginEnvironment,
 ): Promise<Array<EntityProvider & EventSubscriber>> {
   const providers: Array<

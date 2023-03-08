@@ -89,28 +89,23 @@ export const apis: AnyApiFactory[] = [
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
       configApi: configApiRef,
-   },
-  factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
-    OAuth2.create({
-      discoveryApi,
-      oauthRequestApi,
-      provider: {
-        id: 'my-auth-provider',
-        title: 'My custom auth provider',
-        icon: () => null,
-      },
-      environment: configApi.getOptionalString('auth.environment'),
-      defaultScopes: [
-        'openid',
-        'profile',
-        'email',
-      ],
-    }),
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      OAuth2.create({
+        discoveryApi,
+        oauthRequestApi,
+        provider: {
+          id: 'my-auth-provider',
+          title: 'My custom auth provider',
+          icon: () => null,
+        },
+        environment: configApi.getOptionalString('auth.environment'),
+        defaultScopes: ['openid', 'profile', 'email'],
+      }),
   }),
   /* highlight-add-end */
   // ..
-]
-
+];
 ```
 
 Please note we're importing the `OAuth2` class from `@backstage/core-app-api` effectively

@@ -99,7 +99,7 @@ export default async function createPlugin(
   const builder = await CatalogBuilder.create(env);
   /* highlight-add-start */
   builder.addProcessor(
-    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
+    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }),
   );
   /* highlight-add-end */
 

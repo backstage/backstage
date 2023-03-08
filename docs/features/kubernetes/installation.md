@@ -38,7 +38,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
     {/* highlight-add-end */}
   </EntityLayout>
-)
+);
 ```
 
 **Notes:**

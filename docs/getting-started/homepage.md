@@ -58,7 +58,7 @@ const routes = (
     <Navigate key="/" to="catalog" />
     {/* ... */}
   </FlatRoutes>
-)
+);
 ```
 
 Let's replace the `<Navigate>` line and use the new component we created in the previous step as the new homepage.
@@ -80,7 +80,7 @@ const routes = (
     {/* highlight-add-end */}
     {/* ... */}
   </FlatRoutes>
-)
+);
 ```
 
 #### 4. Update sidebar items
@@ -122,7 +122,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       </SidebarGroup>
     </Sidebar>
   </SidebarPage>
-)
+);
 ```
 
 That's it! You should now have _(although slightly boring)_ a homepage!

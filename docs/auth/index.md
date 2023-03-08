@@ -121,12 +121,15 @@ const app = createApp({
     SignInPage: props => (
       <SignInPage
         {...props}
-        providers={['guest', {
-          id: 'github-auth-provider',
-          title: 'GitHub',
-          message: 'Sign in using GitHub',
-          apiRef: githubAuthApiRef,
-        }]}
+        providers={[
+          'guest',
+          {
+            id: 'github-auth-provider',
+            title: 'GitHub',
+            message: 'Sign in using GitHub',
+            apiRef: githubAuthApiRef,
+          },
+        ]}
       />
     ),
   },
@@ -314,7 +317,7 @@ import {
 export const apis: AnyApiFactory[] = [
   /* highlight-add-next-line */
   ScmAuth.createDefaultApiFactory(),
- // ...
+  // ...
 ];
 ```
 

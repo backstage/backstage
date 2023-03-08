@@ -14,11 +14,14 @@ router.get('/todos', async (req, res) => {
   const token = IdentityClient.getBearerToken(req.header('authorization'));
 
   /* highlight-remove-next-line */
-  res.json(getAll())
+  res.json(getAll());
   /* highlight-add-start */
   const items = getAll();
   const decisions = await permissions.authorize(
-    items.map(({ id }) => ({ permission: todoListReadPermission, resourceRef: id })),
+    items.map(({ id }) => ({
+      permission: todoListReadPermission,
+      resourceRef: id,
+    })),
   );
 
   const filteredItems = decisions.filter(
@@ -64,9 +67,16 @@ export const todoListReadPermission = createPermission({
 /* highlight-add-end */
 
 /* highlight-add-next-line */
-export const todoListPermissions = [todoListCreatePermission, todoListUpdatePermission];
+export const todoListPermissions = [
+  todoListCreatePermission,
+  todoListUpdatePermission,
+];
 /* highlight-add-next-line */
-export const todoListPermissions = [todoListCreatePermission, todoListUpdatePermission, todoListReadPermission];
+export const todoListPermissions = [
+  todoListCreatePermission,
+  todoListUpdatePermission,
+  todoListReadPermission,
+];
 ```
 
 ## Using conditional policy decisions

@@ -20,30 +20,30 @@ to do that in two steps.
    [interface](https://github.com/backstage/backstage/blob/db2666b980853c281b8fe77905d7639c5d255f13/plugins/search/src/apis.ts#L31)
    according to your needs.
 
-    ```typescript
-    export class SearchClient implements SearchApi {
-      // your implementation
-    }
-    ```
+   ```typescript
+   export class SearchClient implements SearchApi {
+     // your implementation
+   }
+   ```
 
 2. Override the API ref `searchApiRef` with your new implemented API in the
    `App.tsx` using `ApiFactories`.
    [Read more about App APIs](https://backstage.io/docs/api/utility-apis#app-apis).
 
-    ```typescript
-    const app = createApp({
-      apis: [
-        // SearchApi
-        createApiFactory({
-          api: searchApiRef,
-          deps: { discovery: discoveryApiRef },
-          factory({ discovery }) {
-            return new SearchClient({ discoveryApi: discovery });
-          },
-        }),
-      ],
-    });
-    ```
+   ```typescript
+   const app = createApp({
+     apis: [
+       // SearchApi
+       createApiFactory({
+         api: searchApiRef,
+         deps: { discovery: discoveryApiRef },
+         factory({ discovery }) {
+           return new SearchClient({ discoveryApi: discovery });
+         },
+       }),
+     ],
+   });
+   ```
 
 ## How to index TechDocs documents
 
@@ -63,35 +63,35 @@ getting started guide.
 1. Import the `DefaultTechDocsCollatorFactory` from
    `@backstage/plugin-techdocs-backend`.
 
-    ```typescript
-    import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
-    ```
+   ```typescript
+   import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+   ```
 
 2. If there isn't an existing schedule you'd like to run the collator on, be
    sure to create it first. Something like...
 
-    ```typescript
-    import { Duration } from 'luxon';
+   ```typescript
+   import { Duration } from 'luxon';
 
-    const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
-      frequency: Duration.fromObject({ seconds: 600 }),
-      timeout: Duration.fromObject({ seconds: 900 }),
-      initialDelay: Duration.fromObject({ seconds: 3 }),
-    });
-    ```
+   const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
+     frequency: Duration.fromObject({ seconds: 600 }),
+     timeout: Duration.fromObject({ seconds: 900 }),
+     initialDelay: Duration.fromObject({ seconds: 3 }),
+   });
+   ```
 
 3. Register the `DefaultTechDocsCollatorFactory` with the IndexBuilder.
 
-    ```typescript
-    indexBuilder.addCollator({
-      schedule: every10MinutesSchedule,
-      factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
-        discovery: env.discovery,
-        logger: env.logger,
-        tokenManager: env.tokenManager,
-      }),
-    });
-    ```
+   ```typescript
+   indexBuilder.addCollator({
+     schedule: every10MinutesSchedule,
+     factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+       discovery: env.discovery,
+       logger: env.logger,
+       tokenManager: env.tokenManager,
+     }),
+   });
+   ```
 
 You should now have your TechDocs documents indexed to your search engine of
 choice!
@@ -125,7 +125,9 @@ You can either just simply amend default behaviour, or even to write completely 
 > `authorization` and `location` cannot be modified via a `entityTransformer`, `location` can be modified only through `locationTemplate`.
 
 ```ts title="packages/backend/src/plugins/search.ts"
-const entityTransformer: CatalogCollatorEntityTransformer = (entity: Entity) => {
+const entityTransformer: CatalogCollatorEntityTransformer = (
+  entity: Entity,
+) => {
   if (entity.kind === 'SomeKind') {
     return {
       // customize here output for 'SomeKind' kind
@@ -173,7 +175,7 @@ indexBuilder.addCollator({
     tokenManager: env.tokenManager,
     /* highlight-add-start */
     filter: {
-       kind: ['API', 'Component', 'Domain', 'Group', 'System', 'User'],
+      kind: ['API', 'Component', 'Domain', 'Group', 'System', 'User'],
     },
     /* highlight-add-end */
   }),

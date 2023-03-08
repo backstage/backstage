@@ -254,7 +254,9 @@ export default async function createPlugin(
   /* highlight-add-start */
   await env.scheduler.scheduleTask({
     id: 'run_frobs_refresh',
-    fn: async () => { await frobs.run(); },
+    fn: async () => {
+      await frobs.run();
+    },
     frequency: { minutes: 30 },
     timeout: { minutes: 10 },
   });

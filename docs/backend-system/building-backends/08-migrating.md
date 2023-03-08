@@ -134,7 +134,10 @@ import { createBackend } from '@backstage/backend-defaults';
 /* highlight-remove-next-line */
 import { legacyPlugin } from '@backstage/backend-common';
 /* highlight-add-start */
-import { makeLegacyPlugin, loggerToWinstonLogger } from '@backstage/backend-common';
+import {
+  makeLegacyPlugin,
+  loggerToWinstonLogger,
+} from '@backstage/backend-common';
 import { coreServices } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
@@ -187,16 +190,16 @@ In this example, we'll assume that your added environment field is named
 /* highlight-add-next-line */
 import { exampleServiceRef } from '<somewhere>'; // if the definition is elsewhere
 
- const legacyPlugin = makeLegacyPlugin(
-   {
-     // ... the above core services still go here
-     /* highlight-add-next-line */
-    example: exampleServiceRef
-   },
-   {
-     logger: log => loggerToWinstonLogger(log),
-   },
- );
+const legacyPlugin = makeLegacyPlugin(
+  {
+    // ... the above core services still go here
+    /* highlight-add-next-line */
+    example: exampleServiceRef,
+  },
+  {
+    logger: log => loggerToWinstonLogger(log),
+  },
+);
 ```
 
 After this, your backend will know how to instantiate your thing on demand and
@@ -282,7 +285,7 @@ import { createBackendModule } from '@backstage/backend-plugin-api';
 
 /* highlight-add-start */
 const catalogModuleCustomExtensions = createBackendModule({
-  pluginId: 'catalog',  // name of the plugin that the module is targeting
+  pluginId: 'catalog', // name of the plugin that the module is targeting
   moduleId: 'customExtensions',
   register(env) {
     env.registerInit({
@@ -294,7 +297,7 @@ const catalogModuleCustomExtensions = createBackendModule({
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         catalog.addEntityProvider(new MyEntityProvider()); // just an example
-        catalog.addProcessor(new MyProcessor());           // just an example
+        catalog.addProcessor(new MyProcessor()); // just an example
       },
     });
   },
@@ -352,7 +355,7 @@ import { createBackendModule } from '@backstage/backend-plugin-api';
 
 /* highlight-add-start */
 const eventsModuleCustomExtensions = createBackendModule({
-  pluginId: 'events',  // name of the plugin that the module is targeting
+  pluginId: 'events', // name of the plugin that the module is targeting
   moduleId: 'customExtensions',
   register(env) {
     env.registerInit({
@@ -420,7 +423,7 @@ import { createBackendModule } from '@backstage/backend-plugin-api';
 
 /* highlight-add-start */
 const scaffolderModuleCustomExtensions = createBackendModule({
-  pluginId: 'scaffolder',  // name of the plugin that the module is targeting
+  pluginId: 'scaffolder', // name of the plugin that the module is targeting
   moduleId: 'customExtensions',
   register(env) {
     env.registerInit({

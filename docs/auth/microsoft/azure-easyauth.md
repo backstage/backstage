@@ -67,11 +67,13 @@ import { ProxiedSignInPage } from '@backstage/core-components';
 const app = createApp({
   /* highlight-add-start */
   components: {
-    SignInPage: props => <ProxiedSignInPage {...props} provider="azure-easyauth" />,
+    SignInPage: props => (
+      <ProxiedSignInPage {...props} provider="azure-easyauth" />
+    ),
   },
   /* highlight-add-end */
   // ..
-})
+});
 ```
 
 See the [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) section for more information.

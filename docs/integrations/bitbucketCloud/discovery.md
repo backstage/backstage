@@ -105,8 +105,8 @@ export default async function createCatalogEventBasedProviders(
     }),
   );
   /* highlight-add-end */
-   return providers.flat();
- }
+  return providers.flat();
+}
 ```
 
 **Attention:**

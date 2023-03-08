@@ -46,7 +46,6 @@ The `ScaffolderPage` router has a completely different export for the `scaffolde
 import { ScaffolderPage } from '@backstage/plugin-scaffolder';
 /* highlight-add-next-line */
 import { NextScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
-
 ```
 
 And this API should be the exact same as the previous Router, so you should be able to make a change like the following further down in this file:
@@ -136,7 +135,7 @@ export const EntityNamePicker = (
     placeholder,
   } = props;
   // ..
-}
+};
 ```
 
 There's another `/alpha` export that you need to replace `FieldExtensionComponentProps` with which is the `NextFieldExtensionComponentProps`.
@@ -167,7 +166,7 @@ export const EntityNamePicker = (
     placeholder,
   } = props;
   // ..
-}
+};
 ```
 
 You'll notice that there's an additional change here, which is that we're now defaulting the `uiSchema` to an empty object. This is because the `uiSchema` is now optional, and if you don't provide it, it will be `undefined` instead of an empty object. There's more around this in the [breaking changes](#breaking-changes) section.
@@ -218,20 +217,20 @@ Once we fully release the code that is in the `/alpha` exports right now onto th
 Later releases of `react-jsonschema-form` have made the `uiSchema` optional, and if you don't provide it, it will be `undefined` instead of an empty object. This means that you will need to make sure that you're defaulting the `uiSchema` to an empty object if you're using it in your code.
 
 ```tsx
-  const {
-    onChange,
-    required,
-    schema: { title = 'Name', description = 'Unique name of the component' },
-    rawErrors,
-    formData,
-    /* highlight-remove-next-line */
-    uiSchema: { 'ui:autofocus': autoFocus },
-    /* highlight-add-next-line */
-    uiSchema: { 'ui:autofocus': autoFocus } = {},
-    idSchema,
-    placeholder,
-  } = props;
-  // ..
+const {
+  onChange,
+  required,
+  schema: { title = 'Name', description = 'Unique name of the component' },
+  rawErrors,
+  formData,
+  /* highlight-remove-next-line */
+  uiSchema: { 'ui:autofocus': autoFocus },
+  /* highlight-add-next-line */
+  uiSchema: { 'ui:autofocus': autoFocus } = {},
+  idSchema,
+  placeholder,
+} = props;
+// ..
 ```
 
 ### `formData` can also be `undefined`
@@ -239,18 +238,18 @@ Later releases of `react-jsonschema-form` have made the `uiSchema` optional, and
 If you were using the `formData` and assuming that it was set to an empty object when building `Field Extensions` that return objects, then this will be `undefined` now due to a change in the `react-jsonschema-form` library.
 
 ```tsx
-  const {
-    onChange,
-    required,
-    schema: { title = 'Name', description = 'Unique name of the component' },
-    rawErrors,
-    /* highlight-remove-next-line */
-    formData,
-    /* highlight-add-next-line */
-    formData = {}, // or maybe some other default value that you would prefer
-    uiSchema: { 'ui:autofocus': autoFocus } = {},
-    idSchema,
-    placeholder,
-  } = props;
-  // ..
+const {
+  onChange,
+  required,
+  schema: { title = 'Name', description = 'Unique name of the component' },
+  rawErrors,
+  /* highlight-remove-next-line */
+  formData,
+  /* highlight-add-next-line */
+  formData = {}, // or maybe some other default value that you would prefer
+  uiSchema: { 'ui:autofocus': autoFocus } = {},
+  idSchema,
+  placeholder,
+} = props;
+// ..
 ```
