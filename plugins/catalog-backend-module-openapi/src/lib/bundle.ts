@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import $RefParser from '@apidevtools/json-schema-ref-parser';
+import { bundle } from '@apidevtools/json-schema-ref-parser';
+import { ResolverOptions } from '@apidevtools/json-schema-ref-parser/lib/types';
+import $RefParserOptions from '@apidevtools/json-schema-ref-parser/lib/options';
 import { parse, stringify } from 'yaml';
 import * as path from 'path';
 
@@ -36,7 +38,7 @@ export async function bundleFileWithRefs(
   read: BundlerRead,
   resolveUrl: BundlerResolveUrl,
 ): Promise<string> {
-  const fileUrlReaderResolver: $RefParser.ResolverOptions = {
+  const fileUrlReaderResolver: ResolverOptions = {
     canRead: file => {
       const protocol = getProtocol(file.url);
       return protocol === undefined || protocol === 'file';
@@ -47,7 +49,7 @@ export async function bundleFileWithRefs(
       return await read(url);
     },
   };
-  const httpUrlReaderResolver: $RefParser.ResolverOptions = {
+  const httpUrlReaderResolver: ResolverOptions = {
     canRead: ref => {
       const protocol = getProtocol(ref.url);
       return protocol === 'http' || protocol === 'https';
@@ -58,13 +60,13 @@ export async function bundleFileWithRefs(
     },
   };
 
-  const options: $RefParser.Options = {
+  const options: Partial<$RefParserOptions> = {
     resolve: {
       file: fileUrlReaderResolver,
       http: httpUrlReaderResolver,
     },
   };
   const fileObject = parse(fileWithRefs);
-  const bundledObject = await $RefParser.bundle(fileObject, options);
+  const bundledObject = await bundle(fileObject, options);
   return stringify(bundledObject);
 }
