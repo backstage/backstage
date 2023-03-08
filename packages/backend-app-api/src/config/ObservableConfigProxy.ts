@@ -16,7 +16,7 @@
 
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import type { JsonValue } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 
 export class ObservableConfigProxy implements ConfigService {
   private config: ConfigService = new ConfigReader({});

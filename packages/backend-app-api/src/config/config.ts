@@ -71,7 +71,7 @@ export async function createConfigSecretEnumerator(options: {
 export async function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
-  additionalConfig?: AppConfig;
+  additionalConfigs?: AppConfig[];
 }): Promise<{ config: Config }> {
   const args = parseArgs(options.argv);
 
@@ -115,11 +115,9 @@ export async function loadBackendConfig(options: {
     `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 
-  // add the additional config if provided
-  if (options.additionalConfig) {
-    appConfigs.push(options.additionalConfig);
+  if (options.additionalConfigs) {
+    appConfigs.push(...options.additionalConfigs);
   }
-
   config.setConfig(ConfigReader.fromConfigs(appConfigs));
 
   return { config };

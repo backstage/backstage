@@ -19,7 +19,7 @@ import {
   loadBackendConfig as newLoadBackendConfig,
 } from '@backstage/backend-app-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import type { AppConfig, Config } from '@backstage/config';
+import { AppConfig, Config } from '@backstage/config';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { setRootLoggerRedactionList } from './logging/createRootLogger';
 

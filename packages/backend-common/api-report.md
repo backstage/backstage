@@ -6,9 +6,8 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
+import { AppConfig } from '@backstage/config';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
-import type { AppConfig } from '@backstage/config';
-import aws from 'aws-sdk';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BackendFeature } from '@backstage/backend-plugin-api';

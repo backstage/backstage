@@ -179,7 +179,7 @@ export const lifecycleServiceFactory: () => ServiceFactory<
 export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
-  additionalConfig?: AppConfig;
+  additionalConfigs?: AppConfig[];
 }): Promise<{
   config: Config;
 }>;

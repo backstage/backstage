@@ -139,11 +139,8 @@ export async function loadConfig(
 
   const env = envFunc ?? (async (name: string) => process.env[name]);
 
-  const loadConfigFiles = async (): Promise<{
-    fileConfigs: AppConfig[];
-    loadedPaths: Set<string>;
-  }> => {
-    const fileConfigs: AppConfig[] = [];
+  const loadConfigFiles = async () => {
+    const fileConfigs = [];
     const loadedPaths = new Set<string>();
 
     for (const configPath of configPaths) {
@@ -179,7 +176,7 @@ export async function loadConfig(
     return { fileConfigs, loadedPaths };
   };
 
-  const loadRemoteConfigFiles = async (): Promise<AppConfig[]> => {
+  const loadRemoteConfigFiles = async () => {
     const configs: AppConfig[] = [];
 
     const readConfigFromUrl = async (url: string) => {
