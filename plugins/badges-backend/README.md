@@ -126,7 +126,7 @@ The badges backend api exposes two main endpoints for entity badges. The
   an SVG image. If the `accept` request header prefers `application/json` the
   badge spec as JSON will be returned instead of the image.
 
-## External access to badges if authentification is enabled
+## External access to badges if authentication is enabled
 
 To access the badges from third party applications, you need to make sure that the authMiddleware is disabled for this route. in `src/index.ts`
 
