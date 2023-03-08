@@ -248,6 +248,12 @@ export function registerDeployCommand(program: Command) {
     .option('--stack <name>', 'name of the stack', 'backstage')
     .option('--destroy <stack>', 'name of the stack to destroy')
     .option('--region <region>', 'region of your aws console', 'us-east-1')
+    .option(
+      '--env <name>=<value>',
+      'Pass in environment variables to use at run time',
+      (opt, arr: string[]) => [...arr, opt],
+      [],
+    )
     .action(lazy(() => import('./deploy/aws').then(m => m.default)));
 }
 

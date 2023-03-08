@@ -17,6 +17,7 @@
 import chalk from 'chalk';
 import * as awsx from '@pulumi/awsx';
 import * as aws from '@pulumi/aws';
+import * as pulumi from '@pulumi/pulumi';
 import { OptionValues } from 'commander';
 import { resolve } from 'path';
 import { Task } from '../../../lib/tasks';
@@ -78,6 +79,20 @@ export const AWSProgram = (opts: OptionValues) => {
       ),
     });
 
+    let environmentVariables: Record<string, string> = {};
+    if (opts.env) {
+      environmentVariables = Object.assign(
+        {},
+        ...opts.env.map((e: string) => {
+          const [key, value] = e.split('=');
+          if (!value) {
+            throw new Error(`Environment variable ${key} has no value`);
+          }
+          return { [key]: pulumi.secret(value).apply(output => output) };
+        }),
+      );
+    }
+
     /* eslint-disable no-new */
     new aws.lightsail.ContainerServiceDeploymentVersion(
       `${opts.stack}-deployment`,
@@ -92,6 +107,7 @@ export const AWSProgram = (opts: OptionValues) => {
             },
             environment: {
               BACKSTAGE_HOST: containerService.url,
+              ...environmentVariables,
             },
           },
         ],
