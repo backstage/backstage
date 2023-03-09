@@ -52,7 +52,7 @@ module.exports = {
           sidebarPath: 'sidebars.json',
         },
         blog: {
-          path: '../microsite/blog',
+          path: 'blog',
         },
         theme: {
           customCss: 'src/css/customTheme.css',

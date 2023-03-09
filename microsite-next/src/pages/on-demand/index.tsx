@@ -9,7 +9,7 @@ import Link from '@docusaurus/Link';
 
 //#region Plugin data import
 const onDemandContext = require.context(
-  '../../../../microsite/data/on-demand',
+  '../../../data/on-demand',
   false,
   /\.ya?ml/,
 );
