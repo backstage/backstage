@@ -23,9 +23,9 @@ import {
   RequestDetails,
 } from '@backstage/plugin-events-node';
 import { sign } from '@octokit/webhooks-methods';
-import { githubWebhookEventsModule } from './GithubWebhookEventsModule';
+import { eventsModuleGithubWebhook } from './eventsModuleGithubWebhook';
 
-describe('githubWebhookEventsModule', () => {
+describe('eventsModuleGithubWebhook', () => {
   const secret = 'valid-secret';
   const payload = { test: 'payload' };
   const payloadString = JSON.stringify(payload);
@@ -60,7 +60,7 @@ describe('githubWebhookEventsModule', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       services: [[coreServices.config, config]],
-      features: [githubWebhookEventsModule()],
+      features: [eventsModuleGithubWebhook()],
     });
 
     expect(addedIngress).not.toBeUndefined();

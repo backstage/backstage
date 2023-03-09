@@ -16,13 +16,13 @@
 
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { gerritEventRouterEventsModule } from './GerritEventRouterEventsModule';
-import { GerritEventRouter } from '../router/GerritEventRouter';
+import { eventsModuleGitlabEventRouter } from './eventsModuleGitlabEventRouter';
+import { GitlabEventRouter } from '../router/GitlabEventRouter';
 
-describe('gerritEventRouterEventsModule', () => {
+describe('eventsModuleGitlabEventRouter', () => {
   it('should be correctly wired and set up', async () => {
-    let addedPublisher: GerritEventRouter | undefined;
-    let addedSubscriber: GerritEventRouter | undefined;
+    let addedPublisher: GitlabEventRouter | undefined;
+    let addedSubscriber: GitlabEventRouter | undefined;
     const extensionPoint = {
       addPublishers: (publisher: any) => {
         addedPublisher = publisher;
@@ -35,12 +35,12 @@ describe('gerritEventRouterEventsModule', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       services: [],
-      features: [gerritEventRouterEventsModule()],
+      features: [eventsModuleGitlabEventRouter()],
     });
 
     expect(addedPublisher).not.toBeUndefined();
-    expect(addedPublisher).toBeInstanceOf(GerritEventRouter);
+    expect(addedPublisher).toBeInstanceOf(GitlabEventRouter);
     expect(addedSubscriber).not.toBeUndefined();
-    expect(addedSubscriber).toBeInstanceOf(GerritEventRouter);
+    expect(addedSubscriber).toBeInstanceOf(GitlabEventRouter);
   });
 });

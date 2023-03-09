@@ -14,36 +14,30 @@
  * limitations under the License.
  */
 
-import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
+import { GerritEventRouter } from '../router/GerritEventRouter';
 
 /**
- * Module for the events-backend plugin,
- * registering an HTTP POST ingress with request validator
- * which verifies the webhook token based on a secret.
+ * Module for the events-backend plugin, adding an event router for Gerrit.
  *
- * Registers the `GitlabEventRouter`.
+ * Registers the `GerritEventRouter`.
  *
  * @alpha
  */
-export const gitlabWebhookEventsModule = createBackendModule({
+export const eventsModuleGerritEventRouter = createBackendModule({
   pluginId: 'events',
-  moduleId: 'gitlabWebhook',
+  moduleId: 'gerritEventRouter',
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
         events: eventsExtensionPoint,
       },
-      async init({ config, events }) {
-        events.addHttpPostIngress({
-          topic: 'gitlab',
-          validator: createGitlabTokenValidator(config),
-        });
+      async init({ events }) {
+        const eventRouter = new GerritEventRouter();
+
+        events.addPublishers(eventRouter);
+        events.addSubscribers(eventRouter);
       },
     });
   },

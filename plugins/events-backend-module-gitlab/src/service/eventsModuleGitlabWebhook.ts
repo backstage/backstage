@@ -19,18 +19,20 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { createGithubSignatureValidator } from '../http/createGithubSignatureValidator';
+import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
 
 /**
  * Module for the events-backend plugin,
  * registering an HTTP POST ingress with request validator
- * which verifies the webhook signature based on a secret.
+ * which verifies the webhook token based on a secret.
+ *
+ * Registers the `GitlabEventRouter`.
  *
  * @alpha
  */
-export const githubWebhookEventsModule = createBackendModule({
+export const eventsModuleGitlabWebhook = createBackendModule({
   pluginId: 'events',
-  moduleId: 'githubWebhook',
+  moduleId: 'gitlabWebhook',
   register(env) {
     env.registerInit({
       deps: {
@@ -39,8 +41,8 @@ export const githubWebhookEventsModule = createBackendModule({
       },
       async init({ config, events }) {
         events.addHttpPostIngress({
-          topic: 'github',
-          validator: createGithubSignatureValidator(config),
+          topic: 'gitlab',
+          validator: createGitlabTokenValidator(config),
         });
       },
     });

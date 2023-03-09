@@ -16,13 +16,13 @@
 
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { gitlabEventRouterEventsModule } from './GitlabEventRouterEventsModule';
-import { GitlabEventRouter } from '../router/GitlabEventRouter';
+import { eventsModuleGithubEventRouter } from './eventsModuleGithubEventRouter';
+import { GithubEventRouter } from '../router/GithubEventRouter';
 
-describe('gitlabEventRouterEventsModule', () => {
+describe('eventsModuleGithubEventRouter', () => {
   it('should be correctly wired and set up', async () => {
-    let addedPublisher: GitlabEventRouter | undefined;
-    let addedSubscriber: GitlabEventRouter | undefined;
+    let addedPublisher: GithubEventRouter | undefined;
+    let addedSubscriber: GithubEventRouter | undefined;
     const extensionPoint = {
       addPublishers: (publisher: any) => {
         addedPublisher = publisher;
@@ -35,12 +35,12 @@ describe('gitlabEventRouterEventsModule', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       services: [],
-      features: [gitlabEventRouterEventsModule()],
+      features: [eventsModuleGithubEventRouter()],
     });
 
     expect(addedPublisher).not.toBeUndefined();
-    expect(addedPublisher).toBeInstanceOf(GitlabEventRouter);
+    expect(addedPublisher).toBeInstanceOf(GithubEventRouter);
     expect(addedSubscriber).not.toBeUndefined();
-    expect(addedSubscriber).toBeInstanceOf(GitlabEventRouter);
+    expect(addedSubscriber).toBeInstanceOf(GithubEventRouter);
   });
 });
