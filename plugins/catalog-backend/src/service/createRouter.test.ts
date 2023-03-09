@@ -54,6 +54,7 @@ describe('createRouter readonly disabled', () => {
       entityAncestry: jest.fn(),
       facets: jest.fn(),
       queryEntities: jest.fn(),
+      getConflictingEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -675,6 +676,7 @@ describe('createRouter readonly enabled', () => {
       entityAncestry: jest.fn(),
       facets: jest.fn(),
       queryEntities: jest.fn(),
+      getConflictingEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -866,6 +868,7 @@ describe('NextRouter permissioning', () => {
       entityAncestry: jest.fn(),
       facets: jest.fn(),
       queryEntities: jest.fn(),
+      getConflictingEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),

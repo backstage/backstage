@@ -33,6 +33,7 @@ import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProc
 import { EntityProcessingRequest } from '../processing/types';
 import { Stitcher } from '../stitching/Stitcher';
 import { DefaultRefreshService } from './DefaultRefreshService';
+import { ConfigReader } from '@backstage/config';
 
 describe('DefaultRefreshService', () => {
   const defaultLogger = getVoidLogger();
@@ -44,6 +45,7 @@ describe('DefaultRefreshService', () => {
     databaseId: TestDatabaseId,
     logger: Logger = defaultLogger,
   ) {
+    const mockConfig = new ConfigReader({});
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);
     return {
@@ -52,6 +54,7 @@ describe('DefaultRefreshService', () => {
         database: knex,
         logger,
         refreshInterval: () => 100,
+        config: mockConfig,
       }),
       catalogDb: new DefaultCatalogDatabase({
         database: knex,

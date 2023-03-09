@@ -440,6 +440,7 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       refreshInterval: this.processingInterval,
+      config,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,

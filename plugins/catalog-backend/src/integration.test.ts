@@ -237,6 +237,7 @@ class TestHarness {
       database: db,
       logger,
       refreshInterval: () => 0.05,
+      config,
     });
 
     const integrations = ScmIntegrations.fromConfig(config);

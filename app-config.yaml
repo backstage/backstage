@@ -223,7 +223,7 @@ catalog:
         - System
         - Domain
         - Location
-
+  saveConflicts: true
   processors:
     ldapOrg:
       ### Example for how to add your enterprise LDAP server

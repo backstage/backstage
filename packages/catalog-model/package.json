@@ -50,7 +50,8 @@
     "ajv": "^8.10.0",
     "json-schema": "^0.4.0",
     "lodash": "^4.17.21",
-    "uuid": "^8.0.0"
+    "uuid": "^8.0.0",
+    "luxon": "^3.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -38,6 +38,7 @@ import {
   UpdateEntityCacheOptions,
   UpdateProcessedEntityOptions,
 } from './types';
+import { Config } from '@backstage/config';
 
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
@@ -57,6 +58,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       database: Knex;
       logger: Logger;
       refreshInterval: ProcessingIntervalFunction;
+      config: Config;
     },
   ) {
     initDatabaseMetrics(options.database);
@@ -354,8 +356,20 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       });
       if (conflictingKey) {
         this.options.logger.warn(
-          `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
+          `Detected conflicting entityRef ${entityRef} already referenced by ${locationKey} and now also ${conflictingKey}`,
         );
+        if (this.options.config.getOptionalBoolean('catalog.saveConflicts')) {
+          this.options.logger.info(
+            `Saving conflict location ${conflictingKey} to entity ${entityRef}`,
+          );
+          await tx<DbRefreshStateRow>('refresh_state')
+            .update({
+              conflicting_location_key: conflictingKey,
+              last_conflict_at: tx.fn.now(),
+            })
+            .where('entity_ref', entityRef)
+            .andWhere('location_key', locationKey);
+        }
       }
     }
 

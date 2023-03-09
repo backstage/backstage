@@ -40,6 +40,7 @@ import {
   QueryEntitiesRequest,
   QueryEntitiesResponse,
   EntityOrder,
+  EntityWithConflict,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -56,6 +57,7 @@ import {
   isQueryEntitiesCursorRequest,
   isQueryEntitiesInitialRequest,
 } from './util';
+import { timestampToDateTime } from '../database/conversion';
 
 const defaultSortField: EntityOrder = {
   field: 'metadata.uid',
@@ -586,6 +588,22 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .delete();
 
     await this.stitcher.stitch(new Set(relationPeers.map(p => p.ref)));
+  }
+
+  async getConflictingEntities(): Promise<EntityWithConflict[]> {
+    const rows = await this.database<DbRefreshStateRow>('refresh_state')
+      .whereNotNull('location_key')
+      .whereNotNull('conflicting_location_key')
+      .whereNotNull('last_conflict_at')
+      .select('*');
+
+    return rows.map(e => ({
+      entityId: e.entity_id,
+      entityRef: e.entity_ref,
+      locationKey: e.location_key!,
+      conflictingLocationKey: e.conflicting_location_key!,
+      lastConflictAt: timestampToDateTime(e.last_conflict_at!),
+    }));
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {

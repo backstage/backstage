@@ -36,6 +36,7 @@ import {
   EntityFacetsRequest,
   EntityFacetsResponse,
   EntityFilter,
+  EntityWithConflict,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '../catalog/types';
@@ -262,6 +263,22 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
           ),
       ),
     };
+  }
+
+  async getConflictingEntities(options?: {
+    authorizationToken?: string;
+  }): Promise<EntityWithConflict[]> {
+    const authorizeDecision = (
+      await this.permissionApi.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { token: options?.authorizationToken },
+      )
+    )[0];
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError();
+    }
+
+    return this.entitiesCatalog.getConflictingEntities();
   }
 
   async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {

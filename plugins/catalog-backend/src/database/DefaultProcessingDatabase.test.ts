@@ -32,6 +32,7 @@ import {
 import { createRandomProcessingInterval } from '../processing/refresh';
 import { timestampToDateTime } from './conversion';
 import { generateStableHash } from './util';
+import { ConfigReader } from '@backstage/config';
 
 describe('DefaultProcessingDatabase', () => {
   const defaultLogger = getVoidLogger();
@@ -44,6 +45,8 @@ describe('DefaultProcessingDatabase', () => {
     logger: Logger = defaultLogger,
   ) {
     const knex = await databases.init(databaseId);
+    const mockConfig = new ConfigReader({});
+
     await applyDatabaseMigrations(knex);
     return {
       knex,
@@ -54,6 +57,7 @@ describe('DefaultProcessingDatabase', () => {
           minSeconds: 100,
           maxSeconds: 150,
         }),
+        config: mockConfig,
       }),
     };
   }

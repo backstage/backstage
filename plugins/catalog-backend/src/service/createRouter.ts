@@ -215,6 +215,12 @@ export async function createRouter(
           authorizationToken: getBearerToken(req.header('authorization')),
         });
         res.status(200).json(response);
+      })
+      .get('/entities/conflicts', async (req, res) => {
+        const items = await entitiesCatalog.getConflictingEntities({
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
+        res.status(200).json(items);
       });
   }
 

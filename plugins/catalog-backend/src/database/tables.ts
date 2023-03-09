@@ -41,6 +41,8 @@ export type DbRefreshStateRow = {
   last_discovery_at: string | Date; // remove?
   errors?: string;
   location_key?: string;
+  conflicting_location_key?: string;
+  last_conflict_at?: string | Date;
 };
 
 export type DbRefreshKeysRow = {

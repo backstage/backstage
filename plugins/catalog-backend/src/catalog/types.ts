@@ -15,6 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { DateTime } from 'luxon';
 
 /**
  * A filter expression for entities.
@@ -184,6 +185,13 @@ export interface EntitiesCatalog {
   queryEntities(request: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
 
   /**
+   * Request conflicting entities in the refresh state.
+   */
+  getConflictingEntities(options?: {
+    authorizationToken?: string;
+  }): Promise<EntityWithConflict[]>;
+
+  /**
    * Removes a single entity.
    *
    * @param uid - The metadata.uid of the entity
@@ -271,6 +279,18 @@ export interface QueryEntitiesResponse {
    */
   totalItems: number;
 }
+
+/**
+ * The response object for {@link EntitiesCatalog.getConflictingEntities}.
+ * Represents an entity in the refresh_state table that has had a conflicting entity attempt to override it.
+ */
+export type EntityWithConflict = {
+  entityId: string;
+  entityRef: string;
+  locationKey: string;
+  conflictingLocationKey: string;
+  lastConflictAt: DateTime;
+};
 
 /**
  * The Cursor used internally by the catalog.
