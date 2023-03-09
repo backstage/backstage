@@ -21,26 +21,16 @@ import * as pulumi from '@pulumi/pulumi';
 import { OptionValues } from 'commander';
 import { resolve } from 'path';
 import { Task } from '../../../lib/tasks';
-import { Output } from '@pulumi/pulumi';
-
-function parseEnvironmentVariables(envStrings: string[]) {
-  const environmentVariables: Record<string, Output<string>> = {};
-  for (const str of envStrings) {
-    const [key] = str.split('=', 1);
-    const value = str.slice(key.length + 1);
-    if (!key || str[key.length] !== '=') {
-      throw new Error(
-        `Invalid option '${str}', must be of the format <key>=<value>`,
-      );
-    }
-    environmentVariables[key] = pulumi.secret(value).apply(output => output);
-  }
-  return environmentVariables;
-}
+import { parseOptions } from '../../../lib/parseOptions';
 
 export const AWSProgram = (opts: OptionValues) => {
   return async () => {
-    const providedEnvironmentVariables = parseEnvironmentVariables(opts.env);
+    const providedEnvironmentVariables = Object.fromEntries(
+      Object.entries(parseOptions(opts.env)).map(([key, value]) => [
+        key,
+        pulumi.secret(value).apply(output => output),
+      ]),
+    );
     const repository = new awsx.ecr.Repository(`${opts.stack}`, {
       name: opts.stack,
     });
