@@ -385,21 +385,15 @@ import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-mo
 import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
 import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
 
-const schedule = {
-  frequency: { minutes: 10 },
-  timeout: { minutes: 15 },
-  initialDelay: { seconds: 3 },
-};
-
 const backend = createBackend();
 // adding the search plugin to the backend
 backend.add(searchPlugin());
 // (optional) the default search engine is Lunr, if you want to extend the search backend with another search engine.
 backend.add(searchModuleElasticsearchEngine());
-// extending search with collator modules to start index documents
-backend.add(searchModuleCatalogCollator({ schedule }));
-backend.add(searchModuleTechDocsCollator({ schedule }));
-backend.add(searchModuleExploreCollator({ schedule }));
+// extending search with collator modules to start index documents, take in optional schedule parameters.
+backend.add(searchModuleCatalogCollator());
+backend.add(searchModuleTechDocsCollator());
+backend.add(searchModuleExploreCollator());
 
 backend.start();
 ```

@@ -47,7 +47,7 @@ export type SearchModuleExploreCollatorOptions = Omit<
   ToolDocumentCollatorFactoryOptions,
   'logger' | 'discovery'
 > & {
-  schedule: TaskScheduleDefinition;
+  schedule?: TaskScheduleDefinition;
 };
 
 /**
@@ -55,7 +55,7 @@ export type SearchModuleExploreCollatorOptions = Omit<
  * Search backend module for the Explore index.
  */
 export const searchModuleExploreCollator = createBackendModule(
-  (options: SearchModuleExploreCollatorOptions) => ({
+  (options?: SearchModuleExploreCollatorOptions) => ({
     moduleId: 'exploreCollator',
     pluginId: 'search',
     register(env) {
@@ -68,12 +68,18 @@ export const searchModuleExploreCollator = createBackendModule(
           indexRegistry: searchIndexRegistryExtensionPoint,
         },
         async init({ config, logger, discovery, scheduler, indexRegistry }) {
-          const { schedule, ...rest } = options;
+          const defaultSchedule = {
+            frequency: { minutes: 10 },
+            timeout: { minutes: 15 },
+            initialDelay: { seconds: 3 },
+          };
 
           indexRegistry.addCollator({
-            schedule: scheduler.createScheduledTaskRunner(schedule),
+            schedule: scheduler.createScheduledTaskRunner(
+              options?.schedule ?? defaultSchedule,
+            ),
             factory: ToolDocumentCollatorFactory.fromConfig(config, {
-              ...rest,
+              ...options,
               discovery,
               logger: loggerToWinstonLogger(logger),
             }),

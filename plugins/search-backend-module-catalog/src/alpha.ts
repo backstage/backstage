@@ -46,7 +46,7 @@ export type SearchModuleCatalogCollatorOptions = Omit<
   DefaultCatalogCollatorFactoryOptions,
   'discovery' | 'tokenManager'
 > & {
-  schedule: TaskScheduleDefinition;
+  schedule?: TaskScheduleDefinition;
 };
 
 /**
@@ -54,7 +54,7 @@ export type SearchModuleCatalogCollatorOptions = Omit<
  * Search backend module for the Catalog index.
  */
 export const searchModuleCatalogCollator = createBackendModule(
-  (options: SearchModuleCatalogCollatorOptions) => ({
+  (options?: SearchModuleCatalogCollatorOptions) => ({
     moduleId: 'catalogCollator',
     pluginId: 'search',
     register(env) {
@@ -73,12 +73,18 @@ export const searchModuleCatalogCollator = createBackendModule(
           scheduler,
           indexRegistry,
         }) {
-          const { schedule, ...rest } = options;
+          const defaultSchedule = {
+            frequency: { minutes: 10 },
+            timeout: { minutes: 15 },
+            initialDelay: { seconds: 3 },
+          };
 
           indexRegistry.addCollator({
-            schedule: scheduler.createScheduledTaskRunner(schedule),
+            schedule: scheduler.createScheduledTaskRunner(
+              options?.schedule ?? defaultSchedule,
+            ),
             factory: DefaultCatalogCollatorFactory.fromConfig(config, {
-              ...rest,
+              ...options,
               discovery,
               tokenManager,
             }),

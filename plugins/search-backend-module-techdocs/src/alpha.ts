@@ -42,7 +42,7 @@ export type SearchModuleTechDocsCollatorOptions = Omit<
   TechDocsCollatorFactoryOptions,
   'logger' | 'discovery' | 'tokenManager'
 > & {
-  schedule: TaskScheduleDefinition;
+  schedule?: TaskScheduleDefinition;
 };
 
 /**
@@ -50,7 +50,7 @@ export type SearchModuleTechDocsCollatorOptions = Omit<
  * Search backend module for the TechDocs index.
  */
 export const searchModuleTechDocsCollator = createBackendModule(
-  (options: SearchModuleTechDocsCollatorOptions) => ({
+  (options?: SearchModuleTechDocsCollatorOptions) => ({
     moduleId: 'techDocsCollator',
     pluginId: 'search',
     register(env) {
@@ -71,12 +71,18 @@ export const searchModuleTechDocsCollator = createBackendModule(
           scheduler,
           indexRegistry,
         }) {
-          const { schedule, ...rest } = options;
+          const defaultSchedule = {
+            frequency: { minutes: 10 },
+            timeout: { minutes: 15 },
+            initialDelay: { seconds: 3 },
+          };
 
           indexRegistry.addCollator({
-            schedule: scheduler.createScheduledTaskRunner(schedule),
+            schedule: scheduler.createScheduledTaskRunner(
+              options?.schedule ?? defaultSchedule,
+            ),
             factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
-              ...rest,
+              ...options,
               discovery,
               tokenManager,
               logger: loggerToWinstonLogger(logger),

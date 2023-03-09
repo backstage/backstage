@@ -40,14 +40,9 @@ backend.add(catalogPlugin());
 backend.add(catalogModuleTemplateKind());
 
 // Search
-const schedule = {
-  frequency: { minutes: 10 },
-  timeout: { minutes: 15 },
-  initialDelay: { seconds: 3 },
-};
 backend.add(searchPlugin());
-backend.add(searchModuleCatalogCollator({ schedule }));
-backend.add(searchModuleTechDocsCollator({ schedule }));
-backend.add(searchModuleExploreCollator({ schedule }));
+backend.add(searchModuleCatalogCollator());
+backend.add(searchModuleTechDocsCollator());
+backend.add(searchModuleExploreCollator());
 
 backend.start();
