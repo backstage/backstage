@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
+import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { performance } from 'perf_hooks';
