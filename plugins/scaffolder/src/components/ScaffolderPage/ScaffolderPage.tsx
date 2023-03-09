@@ -49,6 +49,7 @@ export type ScaffolderPageProps = {
     title?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  templateFilter?: (entity: Entity) => boolean;
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
@@ -64,6 +65,7 @@ export type ScaffolderPageProps = {
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
   groups,
+  templateFilter,
   contextMenu,
   headerOptions,
 }: ScaffolderPageProps) => {
@@ -123,11 +125,13 @@ export const ScaffolderPageContents = ({
                   key={index}
                   TemplateCardComponent={TemplateCardComponent}
                   group={group}
+                  templateFilter={templateFilter}
                 />
               ))}
             <TemplateList
               key="other"
               TemplateCardComponent={TemplateCardComponent}
+              templateFilter={templateFilter}
               group={otherTemplatesGroup}
             />
           </CatalogFilterLayout.Content>
@@ -140,6 +144,7 @@ export const ScaffolderPageContents = ({
 export const ScaffolderPage = ({
   TemplateCardComponent,
   groups,
+  templateFilter,
   contextMenu,
   headerOptions,
 }: ScaffolderPageProps) => (
@@ -147,6 +152,7 @@ export const ScaffolderPage = ({
     <ScaffolderPageContents
       TemplateCardComponent={TemplateCardComponent}
       groups={groups}
+      templateFilter={templateFilter}
       contextMenu={contextMenu}
       headerOptions={headerOptions}
     />

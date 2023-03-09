@@ -40,6 +40,7 @@ export type TemplateListProps = {
     title?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   };
+  templateFilter?: (entity: Entity) => boolean;
 };
 
 /**
@@ -48,12 +49,13 @@ export type TemplateListProps = {
 export const TemplateList = ({
   TemplateCardComponent,
   group,
+  templateFilter,
 }: TemplateListProps) => {
   const { loading, error, entities } = useEntityList();
   const Card = TemplateCardComponent || TemplateCard;
-  const maybeFilteredEntities = group
-    ? entities.filter(e => group.filter(e))
-    : entities;
+  const maybeFilteredEntities = (
+    group ? entities.filter(e => group.filter(e)) : entities
+  ).filter(e => (templateFilter ? !templateFilter(e) : true));
 
   const titleComponent: React.ReactNode = (() => {
     if (group && group.title) {

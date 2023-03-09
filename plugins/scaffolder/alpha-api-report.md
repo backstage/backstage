@@ -31,6 +31,7 @@ export type NextRouterProps = {
     }>;
   };
   groups?: TemplateGroupFilter[];
+  templateFilter?: TemplatetemplateFilterFilter;
   FormProps?: FormProps_2;
   contextMenu?: {
     editor?: boolean;
@@ -49,6 +50,10 @@ export type TemplateGroupFilter = {
   title?: React_2.ReactNode;
   filter: (entity: Entity) => boolean;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/next/Router/Router.d.ts:22:5 - (ae-forgotten-export) The symbol "TemplatetemplateFilterFilter" needs to be exported by the entry point alpha.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

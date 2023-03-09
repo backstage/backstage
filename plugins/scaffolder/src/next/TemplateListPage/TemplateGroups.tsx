@@ -34,6 +34,8 @@ import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
 import { viewTechDocRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
 
+export type TemplatetemplateFilterFilter = (entity: Entity) => boolean;
+
 /**
  * @alpha
  */
@@ -44,6 +46,7 @@ export type TemplateGroupFilter = {
 
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
+  templateFilter?: TemplatetemplateFilterFilter;
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
@@ -51,7 +54,7 @@ export interface TemplateGroupsProps {
 
 export const TemplateGroups = (props: TemplateGroupsProps) => {
   const { loading, error, entities } = useEntityList();
-  const { groups, TemplateCardComponent } = props;
+  const { groups, templateFilter, TemplateCardComponent } = props;
   const errorApi = useApi(errorApiRef);
   const app = useApp();
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
@@ -90,6 +93,7 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
     <>
       {groups.map(({ title, filter }, index) => {
         const templates = entities
+          .filter(e => (templateFilter ? !templateFilter(e) : true))
           .filter((e): e is TemplateEntityV1beta3 => filter(e))
           .map(template => {
             const { kind, namespace, name } = parseEntityRef(
