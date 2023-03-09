@@ -17,6 +17,7 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Table } from './Table';
+import { prettyDOM } from '@testing-library/react';
 
 const column1 = {
   title: 'Column 1',
@@ -138,6 +139,62 @@ describe('<Table />', () => {
           color: 'red',
           'font-weight': 700,
         });
+      });
+    });
+  });
+
+  describe('with style headers', () => {
+    describe('with CSS properties object', () => {
+      it('renders styled headers', async () => {
+        const columns = [
+          column1,
+          {
+            ...column2,
+            headerStyle: {
+              backgroundColor: 'pink',
+            },
+          },
+        ];
+
+        const rendered = await renderInTestApp(
+          <Table data={minProps.data} columns={columns} />,
+        );
+
+        expect(rendered.getByText(column1.title).closest('th')).not.toHaveStyle(
+          {
+            backgroundColor: 'pink',
+          },
+        );
+        expect(rendered.getByText(column2.title).closest('th')).toHaveStyle({
+          backgroundColor: 'pink',
+        });
+      });
+
+      it('renders styled headers with highlight', async () => {
+        const columns = [
+          {
+            ...column1,
+            highlight: true,
+          },
+          {
+            ...column2,
+            highlight: true,
+            headerStyle: {
+              backgroundColor: 'pink',
+            },
+          },
+        ];
+
+        const rendered = await renderInTestApp(
+          <Table data={minProps.data} columns={columns} />,
+        );
+
+        const column1Header = rendered.getByText(column1.title).closest('th');
+        expect(column1Header?.style.backgroundColor).toBe('');
+        expect(column1Header?.style.color).toBe('rgb(0, 0, 0)');
+        const column2Header = rendered.getByText(column2.title).closest('th');
+        expect(column2Header?.style.backgroundColor).toBe('pink');
+        expect(column2Header?.style.color).toBe('rgb(0, 0, 0)');
       });
     });
   });
