@@ -25,9 +25,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-defaults": "workspace:^",
-    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-app-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
