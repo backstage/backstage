@@ -18,7 +18,7 @@ for more details check this
 The provider configuration can be added to your `app-config.yaml` under the root
 `auth` configuration:
 
-```yaml
+```yaml title="app-config.yaml"
 auth:
   providers:
     oauth2Proxy: {}
@@ -63,12 +63,20 @@ providerFactories: {
 It is recommended to use the `ProxiedSignInPage` for this provider, which is
 installed in `packages/app/src/App.tsx` like this:
 
-```diff
-+import { ProxiedSignInPage } from '@backstage/core-components';
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-next-line */
+import { ProxiedSignInPage } from '@backstage/core-components';
 
- const app = createApp({
-   components: {
-+    SignInPage: props => <ProxiedSignInPage {...props} provider="oauth2Proxy" />,
+const app = createApp({
+  /* highlight-add-start */
+  components: {
+    SignInPage: props => (
+      <ProxiedSignInPage {...props} provider="oauth2Proxy" />
+    ),
+  },
+  /* highlight-add-end */
+  // ..
+});
 ```
 
 See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page to also work smoothly for local development.

@@ -265,5 +265,28 @@ module.exports = {
         appId: 'JCMFNHCHI8',
         searchParameters: {},
       },
+      prism: {
+        magicComments: [
+          // Extend the default highlight class name
+          {
+            className: 'theme-code-block-highlighted-line',
+            line: 'highlight-next-line',
+            block: { start: 'highlight-start', end: 'highlight-end' },
+          },
+          {
+            className: 'code-block-add-line',
+            line: 'highlight-add-next-line',
+            block: { start: 'highlight-add-start', end: 'highlight-add-end' },
+          },
+          {
+            className: 'code-block-remove-line',
+            line: 'highlight-remove-next-line',
+            block: {
+              start: 'highlight-remove-start',
+              end: 'highlight-remove-end',
+            },
+          },
+        ],
+      },
     },
 };

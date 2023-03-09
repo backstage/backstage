@@ -46,64 +46,67 @@ The permissions framework uses a new `permission-backend` plugin to accept autho
 
 1. Add `@backstage/plugin-permission-backend` as a dependency of your Backstage backend:
 
-```bash
-# From your Backstage root directory
-$ yarn add --cwd packages/backend @backstage/plugin-permission-backend
-```
+   ```bash
+   # From your Backstage root directory
+   $ yarn add --cwd packages/backend @backstage/plugin-permission-backend
+   ```
 
 2. Add the following to a new file, `packages/backend/src/plugins/permission.ts`. This adds the permission-backend router, and configures it with a policy which allows everything.
 
-```typescript
-import { createRouter } from '@backstage/plugin-permission-backend';
-import {
-  AuthorizeResult,
-  PolicyDecision,
-} from '@backstage/plugin-permission-common';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
+   ```typescript title="packages/backend/src/plugins/permission.ts"
+   import { createRouter } from '@backstage/plugin-permission-backend';
+   import {
+     AuthorizeResult,
+     PolicyDecision,
+   } from '@backstage/plugin-permission-common';
+   import { PermissionPolicy } from '@backstage/plugin-permission-node';
+   import { Router } from 'express';
+   import { PluginEnvironment } from '../types';
 
-class TestPermissionPolicy implements PermissionPolicy {
-  async handle(): Promise<PolicyDecision> {
-    return { result: AuthorizeResult.ALLOW };
-  }
-}
+   class TestPermissionPolicy implements PermissionPolicy {
+     async handle(): Promise<PolicyDecision> {
+       return { result: AuthorizeResult.ALLOW };
+     }
+   }
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    config: env.config,
-    logger: env.logger,
-    discovery: env.discovery,
-    policy: new TestPermissionPolicy(),
-    identity: env.identity,
-  });
-}
-```
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     return await createRouter({
+       config: env.config,
+       logger: env.logger,
+       discovery: env.discovery,
+       policy: new TestPermissionPolicy(),
+       identity: env.identity,
+     });
+   }
+   ```
 
 3. Wire up the permission policy in `packages/backend/src/index.ts`. [The index in the example backend](https://github.com/backstage/backstage/blob/master/packages/backend/src/index.ts) shows how to do this. You’ll need to import the module from the previous step, create a plugin environment, and add the router to the express app:
 
-```diff
-  import proxy from './plugins/proxy';
-  import techdocs from './plugins/techdocs';
-  import search from './plugins/search';
-+ import permission from './plugins/permission';
+   ```ts title="packages/backend/src/index.ts"
+   import proxy from './plugins/proxy';
+   import techdocs from './plugins/techdocs';
+   import search from './plugins/search';
+   /* highlight-add-next-line */
+   import permission from './plugins/permission';
 
-  ...
+   async function main() {
+     const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
+     const searchEnv = useHotMemoize(module, () => createEnv('search'));
+     const appEnv = useHotMemoize(module, () => createEnv('app'));
+     /* highlight-add-next-line */
+     const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
+     // ..
 
-  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
-  const searchEnv = useHotMemoize(module, () => createEnv('search'));
-  const appEnv = useHotMemoize(module, () => createEnv('app'));
-+ const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
-
-  ...
-
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
-  apiRouter.use('/proxy', await proxy(proxyEnv));
-  apiRouter.use('/search', await search(searchEnv));
-+ apiRouter.use('/permission', await permission(permissionEnv));
-```
+     apiRouter.use('/techdocs', await techdocs(techdocsEnv));
+     apiRouter.use('/proxy', await proxy(proxyEnv));
+     apiRouter.use('/search', await search(searchEnv));
+     /* highlight-add-next-line */
+     apiRouter.use('/permission', await permission(permissionEnv));
+     // ..
+   }
+   ```
 
 ### 2. Enable and test the permissions system
 
@@ -111,40 +114,46 @@ Now that the permission backend is running, it’s time to enable the permission
 
 1. Set the property `permission.enabled` to `true` in `app-config.yaml`.
 
-```yaml
-permission:
-  enabled: true
-```
+   ```yaml title="app-config.yaml"
+   permission:
+     enabled: true
+   ```
 
 2. Update the PermissionPolicy in `packages/backend/src/plugins/permission.ts` to disable a permission that’s easy for us to test. This policy rejects any attempt to delete a catalog entity:
 
-```diff
-  import { createRouter } from '@backstage/plugin-permission-backend';
-  import {
-    AuthorizeResult,
-    PolicyDecision,
-  } from '@backstage/plugin-permission-common';
--  import { PermissionPolicy } from '@backstage/plugin-permission-node';
-+ import {
-+   PermissionPolicy,
-+   PolicyQuery,
-+ } from '@backstage/plugin-permission-node';
-  import { Router } from 'express';
-  import { PluginEnvironment } from '../types';
+   ```ts title="packages/backend/src/plugins/permission.ts"
+   import { createRouter } from '@backstage/plugin-permission-backend';
+   import {
+     AuthorizeResult,
+     PolicyDecision,
+   } from '@backstage/plugin-permission-common';
+   /* highlight-remove-next-line */
+   import { PermissionPolicy } from '@backstage/plugin-permission-node';
+   /* highlight-add-start */
+   import {
+     PermissionPolicy,
+     PolicyQuery,
+   } from '@backstage/plugin-permission-node';
+   /* highlight-add-end */
+   import { Router } from 'express';
+   import { PluginEnvironment } from '../types';
 
-  class TestPermissionPolicy implements PermissionPolicy {
--   async handle(): Promise<PolicyDecision> {
-+   async handle(request: PolicyQuery): Promise<PolicyDecision> {
-+     if (request.permission.name === 'catalog.entity.delete') {
-+       return {
-+         result: AuthorizeResult.DENY,
-+       };
-+     }
-+
-      return { result: AuthorizeResult.ALLOW };
-    }
-  }
-```
+   class TestPermissionPolicy implements PermissionPolicy {
+     /* highlight-remove-next-line */
+     async handle(): Promise<PolicyDecision> {
+     /* highlight-add-start */
+     async handle(request: PolicyQuery): Promise<PolicyDecision> {
+       if (request.permission.name === 'catalog.entity.delete') {
+         return {
+           result: AuthorizeResult.DENY,
+         };
+       }
+     /* highlight-add-end */
+
+       return { result: AuthorizeResult.ALLOW };
+     }
+   }
+   ```
 
 3. Now that you’ve made this change, you should find that the unregister entity menu option on the catalog entity page is disabled.
 

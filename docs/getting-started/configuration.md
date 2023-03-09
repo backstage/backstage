@@ -74,22 +74,26 @@ Use your favorite editor to open `app-config.yaml` and add your PostgreSQL
 configuration. in the root directory of your Backstage app using the credentials
 from the previous steps.
 
-```diff
+```yaml title="app-config.yaml"
 backend:
   database:
--    client: better-sqlite3
--    connection: ':memory:'
-+    # config options: https://node-postgres.com/apis/client
-+    client: pg
-+    connection:
-+      host: ${POSTGRES_HOST}
-+      port: ${POSTGRES_PORT}
-+      user: ${POSTGRES_USER}
-+      password: ${POSTGRES_PASSWORD}
-+      # https://node-postgres.com/features/ssl
-+      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-+        #ca: # if you have a CA file and want to verify it you can uncomment this section
-+        #$file: <file-path>/ca/server.crt
+    # highlight-remove-start
+    client: better-sqlite3
+    connection: ':memory:'
+    # highlight-remove-end
+    # highlight-add-start
+    # config options: https://node-postgres.com/apis/client
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+      # https://node-postgres.com/features/ssl
+      # ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+        #ca: # if you have a CA file and want to verify it you can uncomment this section
+        #$file: <file-path>/ca/server.crt
+        # highlight-add-end
 ```
 
 You'll use the connection details from the previous step. You can either set the
@@ -142,7 +146,7 @@ Take note of the `Client ID` and the `Client Secret`. Open `app-config.yaml`,
 and add your `clientId` and `clientSecret` to this file. It should end up
 looking like this:
 
-```yaml
+```yaml title="app-config.yaml"
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
   environment: development
@@ -161,14 +165,14 @@ change the sign-in page, this you actually need to add in the source code.
 
 Open `packages/app/src/App.tsx` and below the last `import` line, add:
 
-```typescript
+```typescript title="packages/app/src/App.tsx"
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInPage } from '@backstage/core-components';
 ```
 
 Search for `const app = createApp({` in this file, and below `apis,` add:
 
-```typescript
+```tsx title="packages/app/src/App.tsx"
 components: {
   SignInPage: props => (
     <SignInPage
@@ -221,7 +225,7 @@ This file should also be excluded in `.gitignore`, to avoid accidental committin
 
 In your `app-config.local.yaml` go ahead and add the following:
 
-```yaml
+```yaml title="app-config.local.yaml"
 integrations:
   github:
     - host: github.com
@@ -232,7 +236,7 @@ That's settled. This information will be leveraged by other plugins.
 
 If you're looking for a more production way to manage this secret, then you can do the following with the token being stored in an environment variable called `GITHUB_TOKEN`.
 
-```yaml
+```yaml title="app-config.local.yaml"
 integrations:
   github:
     - host: github.com
