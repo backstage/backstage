@@ -7849,7 +7849,7 @@ __metadata:
     "@rjsf/core": ^3.2.1
     "@rjsf/core-v5": "npm:@rjsf/core@5.1.0"
     "@rjsf/material-ui": ^3.2.1
-    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.1.0"
+    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.2.1"
     "@rjsf/utils": 5.1.0
     "@rjsf/validator-ajv8": 5.1.0
     "@testing-library/jest-dom": ^5.10.1
@@ -13199,16 +13199,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/material-ui-v5@npm:@rjsf/material-ui@5.1.0":
-  version: 5.1.0
-  resolution: "@rjsf/material-ui@npm:5.1.0"
+"@rjsf/material-ui-v5@npm:@rjsf/material-ui@5.2.1":
+  version: 5.2.1
+  resolution: "@rjsf/material-ui@npm:5.2.1"
   peerDependencies:
     "@material-ui/core": ^4.12.3
     "@material-ui/icons": ^4.11.2
     "@rjsf/core": ^5.0.0
     "@rjsf/utils": ^5.0.0
     react: ^16.14.0 || >=17
-  checksum: f8e2c486f33a60703cae5bb42ae82bc431b3d743c239868ca71907e7b4127a39d1688200820c0c8acdf3ecd3f5eaddef4ba47264695feead28e9b439d9be7ce8
+  checksum: de469b60670049d1be78d95a288d5dba07dd4eb28a8f8defb6f8c45e61dc90af81d980fc3b0290325ce7965c57ace32d75882882d23936b2d784f7065d9ee088
   languageName: node
   linkType: hard
 
