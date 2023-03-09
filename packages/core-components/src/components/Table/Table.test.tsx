@@ -17,7 +17,6 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Table } from './Table';
-import { prettyDOM } from '@testing-library/react';
 
 const column1 = {
   title: 'Column 1',
