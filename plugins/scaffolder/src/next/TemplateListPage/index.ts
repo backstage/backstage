@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 export { TemplateListPage } from './TemplateListPage';
-export type { TemplateGroupFilter } from './TemplateGroups';
+export type { TemplateGroupFilter, TemplateFilter } from './TemplateGroups';

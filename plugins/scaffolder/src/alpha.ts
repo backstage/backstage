@@ -17,6 +17,7 @@
 export { NextScaffolderPage } from './plugin';
 export {
   type TemplateGroupFilter,
+  type TemplateFilter,
   type NextRouterProps,
   type FormProps,
 } from './next';

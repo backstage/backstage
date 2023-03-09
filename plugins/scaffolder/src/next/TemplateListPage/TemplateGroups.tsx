@@ -34,7 +34,10 @@ import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
 import { viewTechDocRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
 
-export type TemplatetemplateFilterFilter = (entity: Entity) => boolean;
+/**
+ * @alpha
+ */
+export type TemplateFilter = (entity: Entity) => boolean;
 
 /**
  * @alpha
@@ -46,7 +49,7 @@ export type TemplateGroupFilter = {
 
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
-  templateFilter?: TemplatetemplateFilterFilter;
+  templateFilter?: TemplateFilter;
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;

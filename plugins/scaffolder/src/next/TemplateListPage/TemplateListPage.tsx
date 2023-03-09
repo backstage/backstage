@@ -38,7 +38,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   TemplateGroupFilter,
   TemplateGroups,
-  TemplatetemplateFilterFilter,
+  TemplateFilter,
 } from './TemplateGroups';
 import { registerComponentRouteRef } from '../../routes';
 import { ContextMenu } from './ContextMenu';
@@ -48,7 +48,7 @@ export type TemplateListPageProps = {
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];
-  templateFilter?: TemplatetemplateFilterFilter;
+  templateFilter?: TemplateFilter;
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;

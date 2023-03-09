@@ -29,10 +29,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import {
-  TemplateGroupFilter,
-  TemplatetemplateFilterFilter,
-} from '../TemplateListPage/TemplateGroups';
+import { TemplateGroupFilter, TemplateFilter } from '../TemplateListPage';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {
@@ -64,7 +61,7 @@ export type NextRouterProps = {
     }>;
   };
   groups?: TemplateGroupFilter[];
-  templateFilter?: TemplatetemplateFilterFilter;
+  templateFilter?: TemplateFilter;
   // todo(blam): rename this to formProps
   FormProps?: FormProps;
   contextMenu?: {
