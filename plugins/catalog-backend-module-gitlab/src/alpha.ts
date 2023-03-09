@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { gitlabDiscoveryEntityProviderCatalogModule } from './service/GitlabDiscoveryEntityProviderCatalogModule';
+export { catalogModuleGitlabDiscoveryEntityProvider } from './module/catalogModuleGitlabDiscoveryEntityProvider';

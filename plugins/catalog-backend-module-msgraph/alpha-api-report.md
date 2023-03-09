@@ -9,10 +9,10 @@ import { OrganizationTransformer } from '@backstage/plugin-catalog-backend-modul
 import { UserTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 
 // @alpha
-export const microsoftGraphOrgEntityProviderCatalogModule: () => BackendFeature;
+export const catalogModuleMicrosoftGraphOrgEntityProvider: () => BackendFeature;
 
 // @alpha
-export interface MicrosoftGraphOrgEntityProviderCatalogModuleOptions {
+export interface CatalogModuleMicrosoftGraphOrgEntityProviderOptions {
   groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
   organizationTransformer?:
     | OrganizationTransformer

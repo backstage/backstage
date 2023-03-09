@@ -25,7 +25,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
 import { IncrementalEntityProvider } from '.';
-import { incrementalIngestionEntityProviderCatalogModule } from './alpha';
+import { catalogModuleIncrementalIngestionEntityProvider } from './alpha';
 
 const provider: IncrementalEntityProvider<number, {}> = {
   getProviderName: () => 'test-provider',
@@ -63,7 +63,7 @@ async function main() {
 
   backend.add(catalogPlugin());
   backend.add(
-    incrementalIngestionEntityProviderCatalogModule({
+    catalogModuleIncrementalIngestionEntityProvider({
       providers: [
         {
           provider: provider,

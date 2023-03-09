@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { azureDevOpsEntityProviderCatalogModule } from './service/AzureDevOpsEntityProviderCatalogModule';
+export * from './module';

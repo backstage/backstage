@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { awsS3EntityProviderCatalogModule } from './service/AwsS3EntityProviderCatalogModule';
+export * from './module';
