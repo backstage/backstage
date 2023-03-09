@@ -37,7 +37,7 @@ import { createRouter } from '@backstage/plugin-techdocs-backend';
  * @alpha
  */
 export const techdocsPlugin = createBackendPlugin({
-  pluginId: 'techdocs-backend',
+  pluginId: 'techdocs',
   register(env) {
     env.registerInit({
       deps: {
