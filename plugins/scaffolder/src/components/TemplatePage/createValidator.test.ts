@@ -15,7 +15,10 @@
  */
 
 import { createValidator } from './createValidator';
-import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
+import {
+  ExtendedFieldValidation,
+  CustomFieldValidator,
+} from '@backstage/plugin-scaffolder-react';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { FieldValidation, FormValidation } from '@rjsf/core';
 
@@ -56,12 +59,16 @@ describe('createValidator', () => {
       },
       TagPicker: (
         values: unknown,
-        fieldValidation: FieldValidation,
+        fieldValidation: ExtendedFieldValidation,
         _context: { apiHolder: ApiHolder },
       ) => {
         const input = values as string[];
+
+        const { pattern } = fieldValidation.schema.properties.tags;
+        const validTagCheck = new RegExp(pattern);
+
         for (const item of input) {
-          if (!/^[a-z0-9-]+$/.test(item)) {
+          if (!validTagCheck.test(item)) {
             fieldValidation.addError(
               'A tag name can only contain lowercase letters, numeric characters or dashes',
             );
@@ -124,6 +131,7 @@ describe('createValidator', () => {
             type: 'string',
             'ui:field': 'TagPicker',
           },
+          pattern: '^[a-z0-9-]+$',
         },
       },
     };
@@ -137,6 +145,13 @@ describe('createValidator', () => {
       tags: {
         addError: jest.fn(),
       } as unknown as FormValidation,
+      schema: {
+        properties: {
+          tags: {
+            pattern: '^[a-z0-9-]+$',
+          },
+        },
+      },
     } as unknown as FormValidation;
 
     /* WHEN */

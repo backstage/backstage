@@ -18,6 +18,7 @@ import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { FormValidation } from '@rjsf/core';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ExtendedFieldValidation } from '@backstage/plugin-scaffolder-react';
 
 function isObject(obj: unknown): obj is JsonObject {
   return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
@@ -48,7 +49,7 @@ export const createValidator = (
 
     if (schemaProps) {
       for (const [key, propData] of Object.entries(formData)) {
-        const propValidation = errors[key];
+        const propValidation = { ...errors[key], schema };
 
         const doValidate = (item: JsonValue | undefined) => {
           if (item && isObject(item)) {
@@ -68,7 +69,7 @@ export const createValidator = (
           validate(
             propSchemaProps,
             propData as JsonObject,
-            propValidation as FormValidation,
+            propValidation as ExtendedFieldValidation,
           );
         } else if (isArray(propData)) {
           if (isObject(propSchemaProps)) {
