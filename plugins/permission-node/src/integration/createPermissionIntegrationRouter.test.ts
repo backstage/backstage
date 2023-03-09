@@ -25,7 +25,7 @@ import { z } from 'zod';
 import {
   createPermissionIntegrationRouter,
   CreatePermissionIntegrationRouterResourceOptions,
-  createIsAuthorized,
+  createConditionAuthorizer,
 } from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -633,13 +633,13 @@ describe('createPermissionIntegrationRouter', () => {
   });
 });
 
-describe('createIsAuthorized', () => {
+describe('createConditionAuthorizer', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should return true in case of allowed decision', () => {
-    const isAuthorized = createIsAuthorized([testRule1, testRule2]);
+    const isAuthorized = createConditionAuthorizer([testRule1, testRule2]);
     expect(
       isAuthorized(
         {
@@ -653,7 +653,7 @@ describe('createIsAuthorized', () => {
     expect(mockTestRule2Apply).not.toHaveBeenCalled();
   });
   it('should return false in case of denied decision', () => {
-    const isAuthorized = createIsAuthorized([testRule1, testRule2]);
+    const isAuthorized = createConditionAuthorizer([testRule1, testRule2]);
     expect(
       isAuthorized(
         {
@@ -668,7 +668,7 @@ describe('createIsAuthorized', () => {
   });
 
   it('should apply conditions to a resource in case of conditional decision', () => {
-    const isAuthorized = createIsAuthorized([testRule1, testRule2]);
+    const isAuthorized = createConditionAuthorizer([testRule1, testRule2]);
     expect(
       isAuthorized(
         {

@@ -168,7 +168,7 @@ const applyConditions = <TResourceType extends string, TResource>(
  *
  * @public
  */
-export const createIsAuthorized = <TResource, TQuery>(
+export const createConditionAuthorizer = <TResource, TQuery>(
   rules: PermissionRule<TResource, TQuery, string>[],
 ) => {
   const getRule = createGetRule(rules);

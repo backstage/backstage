@@ -62,12 +62,14 @@ import {
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
-  createIsAuthorized,
+  createConditionAuthorizer,
   createPermissionIntegrationRouter,
 } from '@backstage/plugin-permission-node';
 import { scaffolderTemplateRules } from './rules';
 
-const isAuthorized = createIsAuthorized(Object.values(scaffolderTemplateRules));
+const isAuthorized = createConditionAuthorizer(
+  Object.values(scaffolderTemplateRules),
+);
 
 /**
  * RouterOptions
