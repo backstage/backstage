@@ -163,12 +163,20 @@ describe('templateEntityV1beta3Validator', () => {
   });
 
   it('rejects parameters with wrong backstage:permissions', async () => {
+    (entity.spec.parameters as TemplateParameter)[
+      'backstage:permissions'
+    ]!.tags = true as unknown as [];
+    expect(() => validator(entity)).toThrow(/must be array/);
+
     (entity.spec.parameters as TemplateParameter)['backstage:permissions'] =
       true as {};
     expect(() => validator(entity)).toThrow(/must be object/);
   });
 
   it('rejects steps with wrong backstage:permissions', async () => {
+    entity.spec.steps[0]['backstage:permissions']!.tags = true as unknown as [];
+    expect(() => validator(entity)).toThrow(/must be array/);
+
     entity.spec.steps[0]['backstage:permissions'] = true as {};
     expect(() => validator(entity)).toThrow(/must be object/);
   });
