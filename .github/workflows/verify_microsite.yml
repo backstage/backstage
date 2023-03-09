@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/verify_microsite-next.yml'
-      - 'microsite-next/**'
+      - 'microsite/**'
       - 'docs/**'
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
 
       - name: yarn install
         run: yarn install --immutable
-        working-directory: microsite-next
+        working-directory: microsite
 
       - name: build API reference
         run: yarn build:api-docs
@@ -44,8 +44,8 @@ jobs:
 
       - name: prettier
         run: yarn prettier:check
-        working-directory: microsite-next
+        working-directory: microsite
 
-      - name: build microsite-next
+      - name: build microsite
         run: yarn build
-        working-directory: microsite-next
+        working-directory: microsite
