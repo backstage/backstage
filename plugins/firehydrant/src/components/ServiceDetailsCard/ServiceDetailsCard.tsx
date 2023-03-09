@@ -39,6 +39,7 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { isFireHydrantAvailable, getFireHydrantServiceName } from '../hooks';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -149,14 +150,14 @@ export const ServiceDetailsCard = () => {
   const startDate = DateTime.now().minus({ days: 30 }).toUTC();
   const endDate = DateTime.now().toUTC();
 
+  // The service name is provided by an annotation or a Backstage generated service name.
   // The Backstage service name in FireHydrant is a unique formatted string
   // that requires the entity's kind, name, and namespace.
-  const fireHydrantServiceName = `${entity?.kind}:${
-    entity?.metadata?.namespace ?? 'default'
-  }/${entity?.metadata?.name}`;
+  const fireHydrantServiceName = getFireHydrantServiceName(entity);
 
   const { loading, value, error } = useServiceDetails({
     serviceName: fireHydrantServiceName,
+    lookupByName: isFireHydrantAvailable(entity),
   });
 
   const activeIncidents: string[] = value?.service?.active_incidents ?? [];

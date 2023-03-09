@@ -56,3 +56,11 @@ proxy:
     # Supply the token you generated from https://app.firehydrant.io/organizations/bots
     Authorization: Bearer fhb-e4911b22bcd788c4a4afeb0c111ffbfa
 ```
+
+4. Optionally add an annotation to the yaml config file of a component
+
+```yaml
+metadata:
+  annotations:
+    firehydrant.com/service-name: <firehydrant-service-name>
+```
