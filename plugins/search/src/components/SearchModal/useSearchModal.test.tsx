@@ -16,6 +16,7 @@
 
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useSearchModal } from './useSearchModal';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('useSearchModal', () => {
   it.each([
@@ -24,14 +25,18 @@ describe('useSearchModal', () => {
   ])(
     'should return the correct state when initial state is %s',
     (initialState, result) => {
-      const rendered = renderHook(() => useSearchModal(initialState));
+      const rendered = renderHook(() => useSearchModal(initialState), {
+        wrapper: BrowserRouter,
+      });
 
       expect(rendered.result.current.state).toEqual(result);
     },
   );
 
   it('should keep open forever to true once modal is toggled', () => {
-    const rendered = renderHook(() => useSearchModal());
+    const rendered = renderHook(() => useSearchModal(), {
+      wrapper: BrowserRouter,
+    });
     act(() => rendered.result.current.toggleModal());
 
     expect(rendered.result.current.state).toEqual({
@@ -47,7 +52,9 @@ describe('useSearchModal', () => {
   });
 
   it('should keep open to false if setOpen(false) is invoked on an initially closed modal', () => {
-    const rendered = renderHook(() => useSearchModal());
+    const rendered = renderHook(() => useSearchModal(), {
+      wrapper: BrowserRouter,
+    });
     act(() => rendered.result.current.setOpen(false));
     expect(rendered.result.current.state).toEqual({
       open: false,
@@ -56,7 +63,9 @@ describe('useSearchModal', () => {
   });
 
   it('should keep open forever to true even when the modal transition from opened to closed', () => {
-    const rendered = renderHook(() => useSearchModal());
+    const rendered = renderHook(() => useSearchModal(), {
+      wrapper: BrowserRouter,
+    });
 
     act(() => rendered.result.current.setOpen(true));
     expect(rendered.result.current.state).toEqual({
