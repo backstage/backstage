@@ -27,8 +27,8 @@ export interface Config {
     builder: 'local' | 'external';
 
     /**
-     * Documentation entity name resolution can be overridden with the alternateEntityName attr
-     * and a custom DocsPublishStrategy
+     * Documentation entity name resolution can be overridden with the alternateName
+     * attr and a custom DocsPublishStrategy.
      */
     alternateName?: string;
 

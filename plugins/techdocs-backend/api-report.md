@@ -7,6 +7,7 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
@@ -69,6 +70,20 @@ export interface DocsBuildStrategy {
 }
 
 // @public
+export interface DocsPublishStrategy {
+  // (undocumented)
+  resolveEntityName(params: EntityNameParameters): Promise<CompoundEntityRef>;
+  // (undocumented)
+  usePublishStrategy(param: UsePublishStrategyParameters): Promise<boolean>;
+}
+
+// @public
+export type EntityNameParameters = {
+  entity: Entity;
+  alternateName?: string;
+};
+
+// @public
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
@@ -79,6 +94,7 @@ export type OutOfTheBoxDeploymentOptions = {
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
+  docsPublishStrategy?: DocsPublishStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
 };
@@ -91,6 +107,7 @@ export type RecommendedDeploymentOptions = {
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
+  docsPublishStrategy?: DocsPublishStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
 };
@@ -128,6 +145,11 @@ export type TechDocsCollatorOptions = {
 };
 
 export { TechDocsDocument };
+
+// @public
+export type UsePublishStrategyParameters = {
+  entity: Entity;
+};
 
 export * from '@backstage/plugin-techdocs-node';
 ```
