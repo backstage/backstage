@@ -14,7 +14,7 @@ npx @backstage/create-app
 cd new-backstage-app
 
 # Run the modded cli in the new app
-../github/backstage/packages/cli/bin/backstage-cli admin
+../github/backstage/packages/cli/bin/backstage-cli onboard
 ? Do you want to set up Authentication for this project? (Y/n)
 ...
 
