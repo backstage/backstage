@@ -30,9 +30,7 @@ import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-back
 import {
   DefaultTechDocsCollatorFactory,
   TechDocsCollatorFactoryOptions,
-} from './collators';
-
-export type { TechDocsCollatorFactoryOptions };
+} from '@backstage/plugin-search-backend-module-techdocs';
 
 /**
  * @alpha

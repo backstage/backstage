@@ -28,16 +28,9 @@ import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 
 import {
-  ToolDocument,
   ToolDocumentCollatorFactory,
   ToolDocumentCollatorFactoryOptions,
-} from './collators';
-
-export type {
-  ToolDocumentCollatorFactoryOptions,
-  ToolDocument,
-  ToolDocumentCollatorFactory,
-};
+} from '@backstage/plugin-search-backend-module-explore';
 
 /**
  * @alpha

@@ -21,14 +21,10 @@ import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 
 import {
-  ElasticSearchHighlightConfig,
-  ElasticSearchQueryTranslatorOptions,
-  ElasticSearchConcreteQuery,
   ElasticSearchCustomIndexTemplate,
-  ElasticSearchCustomIndexTemplateBody,
   ElasticSearchQueryTranslator,
   ElasticSearchSearchEngine,
-} from './engines';
+} from '@backstage/plugin-search-backend-module-elasticsearch';
 
 /**
  * @alpha
@@ -76,12 +72,3 @@ export const searchModuleElasticsearchEngine = createBackendModule(
     },
   }),
 );
-
-export type {
-  ElasticSearchCustomIndexTemplate,
-  ElasticSearchCustomIndexTemplateBody,
-  ElasticSearchQueryTranslator,
-  ElasticSearchQueryTranslatorOptions,
-  ElasticSearchHighlightConfig,
-  ElasticSearchConcreteQuery,
-};

@@ -27,16 +27,9 @@ import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 
 import {
-  CatalogCollatorEntityTransformer,
   DefaultCatalogCollatorFactory,
   DefaultCatalogCollatorFactoryOptions,
-} from './collators';
-
-export type {
-  CatalogCollatorEntityTransformer,
-  DefaultCatalogCollatorFactory,
-  DefaultCatalogCollatorFactoryOptions,
-};
+} from '@backstage/plugin-search-backend-module-catalog';
 
 /**
  * @alpha
