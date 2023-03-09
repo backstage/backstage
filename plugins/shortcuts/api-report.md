@@ -58,6 +58,8 @@ export const shortcutsPlugin: BackstagePlugin<{}, {}, {}>;
 // @public
 export interface ShortcutsProps {
   // (undocumented)
+  allowExternalLinks?: boolean;
+  // (undocumented)
   icon?: IconComponent;
 }
 ```
