@@ -15,118 +15,118 @@
  */
 
 import {
-  locationSpecToMetadataName as nodeLocationSpecToMetadataName,
-  locationSpecToLocationEntity as nodeLocationSpecToLocationEntity,
-  processingResult as nodeProcessingResult,
-  type DeferredEntity as NodeDeferredEntity,
-  type EntityRelationSpec as NodeEntityRelationSpec,
-  type CatalogProcessor as NodeCatalogProcessor,
-  type CatalogProcessorParser as NodeCatalogProcessorParser,
-  type CatalogProcessorCache as NodeCatalogProcessorCache,
-  type CatalogProcessorEmit as NodeCatalogProcessorEmit,
-  type CatalogProcessorLocationResult as NodeCatalogProcessorLocationResult,
-  type CatalogProcessorEntityResult as NodeCatalogProcessorEntityResult,
-  type CatalogProcessorRelationResult as NodeCatalogProcessorRelationResult,
-  type CatalogProcessorErrorResult as NodeCatalogProcessorErrorResult,
-  type CatalogProcessorRefreshKeysResult as NodeCatalogProcessorRefreshKeysResult,
-  type CatalogProcessorResult as NodeCatalogProcessorResult,
-  type EntityProvider as NodeEntityProvider,
-  type EntityProviderConnection as NodeEntityProviderConnection,
-  type EntityProviderMutation as NodeEntityProviderMutation,
+  locationSpecToMetadataName as _locationSpecToMetadataName,
+  locationSpecToLocationEntity as _locationSpecToLocationEntity,
+  processingResult as _processingResult,
+  type DeferredEntity as _DeferredEntity,
+  type EntityRelationSpec as _EntityRelationSpec,
+  type CatalogProcessor as _CatalogProcessor,
+  type CatalogProcessorParser as _CatalogProcessorParser,
+  type CatalogProcessorCache as _CatalogProcessorCache,
+  type CatalogProcessorEmit as _CatalogProcessorEmit,
+  type CatalogProcessorLocationResult as _CatalogProcessorLocationResult,
+  type CatalogProcessorEntityResult as _CatalogProcessorEntityResult,
+  type CatalogProcessorRelationResult as _CatalogProcessorRelationResult,
+  type CatalogProcessorErrorResult as _CatalogProcessorErrorResult,
+  type CatalogProcessorRefreshKeysResult as _CatalogProcessorRefreshKeysResult,
+  type CatalogProcessorResult as _CatalogProcessorResult,
+  type EntityProvider as _EntityProvider,
+  type EntityProviderConnection as _EntityProviderConnection,
+  type EntityProviderMutation as _EntityProviderMutation,
 } from '@backstage/plugin-catalog-node';
-import { type LocationSpec as CommonLocationSpec } from '@backstage/plugin-catalog-common';
+import { type LocationSpec as _LocationSpec } from '@backstage/plugin-catalog-common';
 
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export const locationSpecToMetadataName = nodeLocationSpecToMetadataName;
+export const locationSpecToMetadataName = _locationSpecToMetadataName;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export const locationSpecToLocationEntity = nodeLocationSpecToLocationEntity;
+export const locationSpecToLocationEntity = _locationSpecToLocationEntity;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export const processingResult = nodeProcessingResult;
+export const processingResult = _processingResult;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type DeferredEntity = NodeDeferredEntity;
+export type DeferredEntity = _DeferredEntity;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type EntityRelationSpec = NodeEntityRelationSpec;
+export type EntityRelationSpec = _EntityRelationSpec;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type CatalogProcessor = NodeCatalogProcessor;
+export type CatalogProcessor = _CatalogProcessor;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type CatalogProcessorParser = NodeCatalogProcessorParser;
+export type CatalogProcessorParser = _CatalogProcessorParser;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type CatalogProcessorCache = NodeCatalogProcessorCache;
+export type CatalogProcessorCache = _CatalogProcessorCache;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type CatalogProcessorEmit = NodeCatalogProcessorEmit;
+export type CatalogProcessorEmit = _CatalogProcessorEmit;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type CatalogProcessorLocationResult = NodeCatalogProcessorLocationResult;
+export type CatalogProcessorLocationResult = _CatalogProcessorLocationResult;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type CatalogProcessorEntityResult = NodeCatalogProcessorEntityResult;
+export type CatalogProcessorEntityResult = _CatalogProcessorEntityResult;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type CatalogProcessorRelationResult = NodeCatalogProcessorRelationResult;
+export type CatalogProcessorRelationResult = _CatalogProcessorRelationResult;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type CatalogProcessorErrorResult = NodeCatalogProcessorErrorResult;
+export type CatalogProcessorErrorResult = _CatalogProcessorErrorResult;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export type CatalogProcessorRefreshKeysResult =
-  NodeCatalogProcessorRefreshKeysResult;
+  _CatalogProcessorRefreshKeysResult;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type CatalogProcessorResult = NodeCatalogProcessorResult;
+export type CatalogProcessorResult = _CatalogProcessorResult;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type EntityProvider = NodeEntityProvider;
+export type EntityProvider = _EntityProvider;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type EntityProviderConnection = NodeEntityProviderConnection;
+export type EntityProviderConnection = _EntityProviderConnection;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
-export type EntityProviderMutation = NodeEntityProviderMutation;
+export type EntityProviderMutation = _EntityProviderMutation;
 
 /**
  * Holds the entity location information.
@@ -140,4 +140,4 @@ export type EntityProviderMutation = NodeEntityProviderMutation;
  * @public
  * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
-export type LocationSpec = CommonLocationSpec;
+export type LocationSpec = _LocationSpec;

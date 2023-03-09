@@ -468,11 +468,7 @@ export const processingResult: Readonly<{
     atLocation: LocationSpec_2,
     newEntity: Entity,
   ) => CatalogProcessorResult_2;
-  readonly relation: (spec: EntityRelationSpec_2) => CatalogProcessorResult_2
-  /**
-   * @public
-   * @deprecated import from `@backstage/plugin-catalog-node` instead
-   */;
+  readonly relation: (spec: EntityRelationSpec_2) => CatalogProcessorResult_2;
   readonly refresh: (key: string) => CatalogProcessorResult_2;
 }>;
 
