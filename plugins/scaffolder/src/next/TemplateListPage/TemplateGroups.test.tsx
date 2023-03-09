@@ -207,4 +207,52 @@ describe('TemplateGroups', () => {
       {},
     );
   });
+
+  it('should filter out templates based on filter condition', async () => {
+    const mockEntities = [
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't1',
+        },
+        spec: {},
+      },
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't2',
+        },
+        spec: {},
+      },
+    ];
+
+    (useEntityList as jest.Mock).mockReturnValue({
+      entities: mockEntities,
+      loading: false,
+      error: null,
+    });
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[errorApiRef, {}]]}>
+        <TemplateGroups
+          groups={[{ title: 'all', filter: _ => true }]}
+          templateFilter={e => e.metadata.name === 't1'}
+        />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/next': nextRouteRef,
+        },
+      },
+    );
+
+    expect(TemplateGroup).toHaveBeenCalledWith(
+      expect.objectContaining({
+        templates: [expect.objectContaining({ template: mockEntities[1] })],
+      }),
+      {},
+    );
+  });
 });

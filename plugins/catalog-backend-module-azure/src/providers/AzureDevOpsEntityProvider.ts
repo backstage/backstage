@@ -22,7 +22,7 @@ import {
   EntityProviderConnection,
   LocationSpec,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { readAzureDevOpsConfigs } from './config';
 import { Logger } from 'winston';
 import { AzureDevOpsConfig } from './types';

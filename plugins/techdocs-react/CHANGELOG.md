@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.4-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
 ## 1.1.4-next.1
 
 ### Patch Changes

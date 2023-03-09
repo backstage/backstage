@@ -6,7 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const azureDevOpsEntityProviderCatalogModule: () => BackendFeature;
+export const catalogModuleAzureDevOpsEntityProvider: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

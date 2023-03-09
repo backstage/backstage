@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.9-next.2
+
+### Patch Changes
+
+- 8adeb19b37d: GitLab can now be used as an `oidcTokenProvider` for Kubernetes clusters
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
 ## 0.7.9-next.1
 
 ### Patch Changes

@@ -58,6 +58,7 @@ export type RouterProps = {
     title?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  templateFilter?: (entity: Entity) => boolean;
   defaultPreviewTemplate?: string;
   headerOptions?: {
     pageTitleOverride?: string;
@@ -81,7 +82,12 @@ export type RouterProps = {
  * @public
  */
 export const Router = (props: RouterProps) => {
-  const { groups, components = {}, defaultPreviewTemplate } = props;
+  const {
+    groups,
+    templateFilter,
+    components = {},
+    defaultPreviewTemplate,
+  } = props;
 
   const { ReviewStepComponent, TemplateCardComponent, TaskPageComponent } =
     components;
@@ -126,6 +132,7 @@ export const Router = (props: RouterProps) => {
         element={
           <ScaffolderPage
             groups={groups}
+            templateFilter={templateFilter}
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
             headerOptions={props.headerOptions}

@@ -6,10 +6,10 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const gitlabEventRouterEventsModule: () => BackendFeature;
+export const eventsModuleGitlabEventRouter: () => BackendFeature;
 
 // @alpha
-export const gitlabWebhookEventsModule: () => BackendFeature;
+export const eventsModuleGitlabWebhook: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

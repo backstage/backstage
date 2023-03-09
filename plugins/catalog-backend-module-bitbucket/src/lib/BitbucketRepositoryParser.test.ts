@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { processingResult } from '@backstage/plugin-catalog-backend';
+import { processingResult } from '@backstage/plugin-catalog-node';
 import { defaultRepositoryParser } from './BitbucketRepositoryParser';
 
 describe('BitbucketRepositoryParser', () => {

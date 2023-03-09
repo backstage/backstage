@@ -6,7 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
-export const bitbucketCloudEntityProviderCatalogModule: () => BackendFeature;
+export const catalogModuleBitbucketCloudEntityProvider: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```
