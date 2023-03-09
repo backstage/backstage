@@ -217,4 +217,3 @@ Full documentation can be found on the [Docusaurus website](https://docusaurus.i
 
 - If you want to make images zoomable on click, add the `data-zoomable` attribute to your `img` element.
   - In a docs or blog `.md` file, convert `![This is image](/microsite/static/img/code.png)` syntax to `<img data-zoomable src="/microsite/static/img/code.png" alt="This is image" />`
-
