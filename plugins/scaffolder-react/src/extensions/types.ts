@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { FieldValidation, FieldProps } from '@rjsf/core';
 import { JSONSchema7 } from 'json-schema';
+
+/**
+ * Type for field validation that includes
+ * errors and, optionally, the JSON schema for
+ * the field in question.
+ *
+ * @public
+ */
+export type ExtendedFieldValidation =
+  | FieldValidation & {
+      schema?: JsonObject;
+    };
 
 /**
  * Field validation type for Custom Field Extensions.
@@ -24,7 +37,7 @@ import { JSONSchema7 } from 'json-schema';
  */
 export type CustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
-  field: FieldValidation,
+  field: ExtendedFieldValidation,
   context: { apiHolder: ApiHolder },
 ) => void | Promise<void>;
 
