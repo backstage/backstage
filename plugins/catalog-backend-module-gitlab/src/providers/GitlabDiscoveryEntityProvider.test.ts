@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-tasks';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';

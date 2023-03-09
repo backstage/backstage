@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { Page, Header, Content, ErrorPanel } from '@backstage/core-components';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, makeStyles, Paper } from '@material-ui/core';
 import {
@@ -105,6 +105,8 @@ export const OngoingTask = (props: {
   const templateName =
     taskStream.task?.spec.templateInfo?.entity?.metadata.name;
 
+  const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
+
   return (
     <Page themeId="website">
       <Header
@@ -117,9 +119,11 @@ export const OngoingTask = (props: {
         subtitle={`Task ${taskId}`}
       >
         <ContextMenu
-          onToggleLogs={setLogVisibleState}
-          onStartOver={startOver}
+          cancelEnabled={cancelEnabled}
           logsVisible={logsVisible}
+          onStartOver={startOver}
+          onToggleLogs={setLogVisibleState}
+          taskId={taskId}
         />
       </Header>
       <Content className={classes.contentWrapper}>

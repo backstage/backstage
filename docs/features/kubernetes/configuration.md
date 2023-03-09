@@ -160,8 +160,9 @@ auth:
         audience: ${AUTH_OKTA_AUDIENCE}
 ```
 
-The following values are supported out-of-the-box by the frontend: `google`, `microsoft`,
-`okta`, `onelogin`.
+The following values are supported out-of-the-box by the frontend: `gitlab` (the
+application whose `clientId` is used by the auth provider should be granted the
+`openid` scope), `google`, `microsoft`, `okta`, `onelogin`.
 
 Take note that `oidcTokenProvider` is just the issuer for the token, you can use any
 of these with an OIDC enabled cluster, like using `microsoft` as the issuer for a EKS

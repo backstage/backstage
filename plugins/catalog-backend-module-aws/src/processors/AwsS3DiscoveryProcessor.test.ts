@@ -21,7 +21,7 @@ import {
   CatalogProcessorEntityResult,
   CatalogProcessorResult,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import {
   S3Client,
   ListObjectsV2Command,

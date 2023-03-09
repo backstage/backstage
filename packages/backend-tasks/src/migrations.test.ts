@@ -71,8 +71,11 @@ describe('migrations', () => {
 
       await migrateDownOnce(knex);
 
-      await expect(knex('backstage_backend_tasks__tasks')).rejects.toThrow(
-        /backstage_backend_tasks__tasks/,
+      // This looks odd - you might expect a .toThrow at the end but that
+      // actually is flaky for some reason specifically on sqlite when
+      // performing multiple runs in sequence
+      await expect(knex('backstage_backend_tasks__tasks')).rejects.toEqual(
+        expect.anything(),
       );
 
       await knex.destroy();

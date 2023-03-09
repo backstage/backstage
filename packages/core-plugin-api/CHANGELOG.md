@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.5.0-next.2
+
+### Minor Changes
+
+- ab750ddc4f2: The GitLab auth provider can now be used to get OpenID tokens.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+
 ## 1.4.1-next.1
 
 ### Patch Changes

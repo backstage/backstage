@@ -1,5 +1,33 @@
 # @backstage/backend-common
 
+## 0.18.3-next.2
+
+### Patch Changes
+
+- f75097868a7: Adds config option `backend.database.role` to set ownership for newly created schemas and tables in Postgres
+
+  The example config below connects to the database as user `v-backstage-123` but sets the ownership of
+  the create schemas and tables to `backstage`
+
+  ```yaml
+  backend:
+    database:
+      client: pg
+      pluginDivisionMode: schema
+      role: backstage
+      connection:
+        user: v-backstage-123
+        ...
+  ```
+
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.1-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/integration-aws-node@0.1.2-next.0
+
 ## 0.18.3-next.1
 
 ### Patch Changes

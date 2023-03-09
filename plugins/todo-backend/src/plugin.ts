@@ -27,7 +27,7 @@ import { createRouter } from './service/router';
  * @public
  */
 export const todoPlugin = createBackendPlugin({
-  pluginId: 'todo-backend',
+  pluginId: 'todo',
   register(env) {
     env.registerInit({
       deps: {

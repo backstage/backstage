@@ -26,7 +26,7 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import { getOrganizationRepositories } from '../lib';

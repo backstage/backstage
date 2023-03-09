@@ -1,5 +1,17 @@
 # @backstage/backend-tasks
 
+## 0.5.0-next.2
+
+### Minor Changes
+
+- 1578276708a: add functionality to get descriptions from the scheduler for triggering
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
 ## 0.4.4-next.1
 
 ### Patch Changes
